@@ -157,6 +157,7 @@
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "プレイ時間をデータベースと同期させる",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
 
@@ -165,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "分",
     "GamePlaytime_Idle_ResetBtn": "リセット",
     "GamePlaytime_Idle_ChangeBtn": "変更",
+    "GamePlaytime_Idle_SyncDb": "同期",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
-    "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断される（閉じた瞬間までのプレイ時間が記録されます）ことと、Collapseから起動したプレイ時間のみが加算されることに注意してください。",
+    "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断されます。（閉じた瞬間までのプレイ時間が記録されます）",
     "GamePlaytime_Display": "{0}時間 {1}分",
-    "GamePlaytime_ToolTipDisplay": "前回の起動は{2:0000}年{1:00}月{0:00}日 {3:00}時{4:00}分",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "プレイ時間の統計",
+    "GamePlaytime_Stats_NeverPlayed": "未プレイ",
+    "GamePlaytime_Stats_LastSession": "前回の起動",
+    "GamePlaytime_Stats_LastSession_StartTime": "開始時刻",
+    "GamePlaytime_Stats_LastSession_Duration": "プレイ時間",
+    "GamePlaytime_Stats_Daily": "今日",
+    "GamePlaytime_Stats_Weekly": "今週",
+    "GamePlaytime_Stats_Monthly": "今月",
 
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
@@ -534,6 +544,7 @@
 
     "EnableAcrylicEffect": "ランチャーUIに透明効果を付ける",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
+    "Enforce7ZipExtract": "ゲームのインストール/更新で常に7-zipを使用する",
     "UseExternalBrowser": "リンクを常に外部ブラウザで開く",
 
     "LowerCollapsePrioOnGameLaunch": "ゲーム起動中のランチャーの使用リソースを削減",
@@ -626,7 +637,25 @@
     "FileDownloadSettings_BurstDownloadHelp4": "のダウンロードプロセスが並行して行われるようになり、より効率的になります。",
     "FileDownloadSettings_BurstDownloadHelp5": "機能を無効化すると、",
     "FileDownloadSettings_BurstDownloadHelp6": "と",
-    "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。"
+    "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。",
+
+    "Database_Title": "ユーザーデータベースと同期",
+    "Database_ConnectionOk": "データベースとの接続に成功しました！",
+    "Database_ConnectFail": "データベースに接続できませんでした。エラーを参照してください:",
+    "Database_Toggle": "オンラインデータベースを使用する",
+    "Database_Url": "データベースのURL",
+    "Database_Url_Example": "サンプル: https://db-collapse.turso.io",
+    "Database_Token": "トークン",
+    "Database_UserId": "ユーザーID",
+    "Database_GenerateGuid": "UID生成",
+    "Database_Validate": "設定を検証＆保存",
+    "Database_Error_EmptyUri": "データベースのURLが空です！",
+    "Database_Error_EmptyToken": "データベースのトークンが空です！",
+    "Database_Error_InvalidGuid": "ユーザーIDが有効なGUIDではありません！",
+    "Database_Warning_PropertyChanged": "データベースの設定が変更されました",
+    "Database_ValidationChecking": "設定を検証しています…",
+    "Database_Placeholder_DbUserIdTextBox": "GUIDサンプル: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください"
   },
 
   "_Misc": {
@@ -646,6 +675,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "これでヨシ！",
     "Cancel": "キャンセル",
     "Close": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
@@ -805,7 +835,7 @@
     "RepairCompletedSubtitle": "{0}個のファイルが修復されました。",
     "RepairCompletedSubtitleNoBroken": "壊れたファイルは見つかりませんでした。",
     "ExtremeGraphicsSettingsWarnTitle": "超すごい設定のプリセットが選択されました！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
+    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはMSAA有効・レンダリング精度1.6で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
     "MigrateExistingMoveDirectoryTitle": "現在のインストールを移動させる：{0}",
     "MigrateExistingInstallChoiceTitle": "{0}の既存のインストールを検出しました！",
     "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
@@ -870,7 +900,7 @@
     "ChangePlaytimeTitle": "本当にプレイ時間を編集しますか？",
     "ChangePlaytimeSubtitle": "プレイ時間を編集すると、現在の値が入力した値で上書きされます。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "ResetPlaytimeTitle": "本当にプレイ時間をリセットしますか？",
-    "ResetPlaytimeSubtitle": "プレイ時間をリセットすると、記録されたプレイ時間が0になります。これは",
+    "ResetPlaytimeSubtitle": "プレイ時間をリセットすると、プレイ時間の記録と統計が削除されます。これは",
     "ResetPlaytimeSubtitle2": "元に戻せない",
     "ResetPlaytimeSubtitle3": "変更です。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "InvalidPlaytimeTitle": "プレイ時間の保存中に問題が発生しました",
@@ -883,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "無効なフォルダーです！",
     "CannotUseAppLocationForGameDirSubtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+    "InvalidGameDirNewTitleFormat": "無効なパスです: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "選択したパス:",
+    "InvalidGameDirNewSubtitleSelectOther": "別のフォルダー/場所を選択してください！",
+    "InvalidGameDirNew1Title": "無効なフォルダーです！",
+    "InvalidGameDirNew1Subtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+    "InvalidGameDirNew2Title": "選択したフォルダーにアクセスできません",
+    "InvalidGameDirNew2Subtitle": "ランチャーにこのフォルダーへアクセスする権限がありません！",
+    "InvalidGameDirNew3Title": "ルートディレクトリは選択できません",
+    "InvalidGameDirNew3Subtitle": "選択したパスはルートディレクトリ上のパスであるため、使用できません！",
+    "InvalidGameDirNew4Title": "Windowsフォルダーは選択できません",
+    "InvalidGameDirNew4Subtitle": "無用なトラブルを避けるため、Windowsフォルダーをゲームのインストール先に選ぶことはできません。",
+    "InvalidGameDirNew5Title": "Program Dataフォルダーは選択できません",
+    "InvalidGameDirNew5Subtitle": "無用なトラブルを避けるため、Program Dataフォルダーをゲームのインストール先に選ぶことはできません。",
+    "InvalidGameDirNew6Title": "Program FilesおよびProgram Files (x86)フォルダーは選択できません",
+    "InvalidGameDirNew6Subtitle": "無用なトラブルを避けるため、Program FilesおよびProgram Files (x86)フォルダーをゲームのインストール先に選ぶことはできません。",
+    "FolderDialogTitle1": "ゲームのインストール位置を選択",
 
     "StopGameTitle": "ゲームを強制終了します",
     "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
@@ -937,7 +983,10 @@
     "DownloadSettingsOption1": "インストール完了後にゲームを起動",
 
     "OpenInExternalBrowser": "外部ブラウザで開く",
-    "CloseOverlay": "閉じる"
+    "CloseOverlay": "閉じる",
+
+    "DbGenerateUid_Title": "本当にユーザーIDを変更しますか？",
+    "DbGenerateUid_Content": "現在のユーザーIDを変更すると、ユーザーIDを紛失した場合にその関連データも失われます。"
   },
 
   "_FileMigrationProcess": {

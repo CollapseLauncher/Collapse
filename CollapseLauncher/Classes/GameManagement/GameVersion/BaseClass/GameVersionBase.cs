@@ -83,7 +83,7 @@ namespace CollapseLauncher.GameVersioning
                     }
                 }
             };
-            string uapcValue = uapc.Serialize(InternalAppJSONContext.Default, false);
+            string uapcValue = uapc.Serialize(InternalAppJSONContext.Default.DictionaryStringDictionaryStringString, false);
             return new IniValue(uapcValue);
         }
 
@@ -580,7 +580,7 @@ namespace CollapseLauncher.GameVersioning
                         if (string.IsNullOrEmpty(line))
                             continue;
 
-                        PkgVersionProperties pkgVersion = line.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                        PkgVersionProperties pkgVersion = line.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
 
                         if (pkgVersion != null)
                         {

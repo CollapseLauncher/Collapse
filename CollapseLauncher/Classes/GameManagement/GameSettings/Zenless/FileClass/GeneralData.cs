@@ -5,7 +5,7 @@ using Hi3Helper;
 using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-// ReSharper disable ReturnTypeCanBeNotNullable
+using System.Text.Json.Serialization.Metadata;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless;
@@ -19,7 +19,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
 
     [JsonPropertyName("SystemSettingDataMap")]
     [JsonIgnore] // We ignore this one from getting serialized to default JSON value
-    public JsonNode? SystemSettingDataMap
+    public JsonNode SystemSettingDataMap
     {
         // Cache the SystemSettingDataMap inside the parent SettingsJsonNode
         // and ensure that the node for SystemSettingDataMap exists. If not exist,
@@ -29,7 +29,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
 
     [JsonPropertyName("KeyboardBindingMap")]
     [JsonIgnore] // We ignore this one from getting serialized to default JSON value
-    public JsonNode? KeyboardBindingMap
+    public JsonNode KeyboardBindingMap
     {
         // Cache the KeyboardBindingMap inside the parent SettingsJsonNode
         // and ensure that the node for KeyboardBindingMap exists. If not exist,
@@ -39,7 +39,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
 
     [JsonPropertyName("MouseBindingMap")]
     [JsonIgnore] // We ignore this one from getting serialized to default JSON value
-    public JsonNode? MouseBindingMap
+    public JsonNode MouseBindingMap
     {
         // Cache the MouseBindingMap inside the parent SettingsJsonNode
         // and ensure that the node for MouseBindingMap exists. If not exist,
@@ -49,7 +49,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
 
     [JsonPropertyName("GamepadBindingMap")]
     [JsonIgnore] // We ignore this one from getting serialized to default JSON value
-    public JsonNode? GamepadBindingMap
+    public JsonNode GamepadBindingMap
     {
         // Cache the GamepadBindingMap inside the parent SettingsJsonNode
         // and ensure that the node for GamepadBindingMap exists. If not exist,
@@ -98,14 +98,14 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public LanguageText DeviceLanguageType
     {
         get => SettingsJsonNode.GetNodeValueEnum("DeviceLanguageType", LanguageText.Unset);
-        set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageType", value, JsonEnumStoreType.AsNumber);
+        set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageType", value);
     }
 
     [JsonPropertyName("DeviceLanguageVoiceType")]
     public LanguageVoice DeviceLanguageVoiceType
     {
         get => SettingsJsonNode.GetNodeValueEnum("DeviceLanguageVoiceType", LanguageVoice.Unset);
-        set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageVoiceType", value, JsonEnumStoreType.AsNumber);
+        set => SettingsJsonNode.SetNodeValueEnum("DeviceLanguageVoiceType", value);
     }
     
     [JsonPropertyName("PlayerPrefs_StringContainer")]
@@ -206,12 +206,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public GraphicsPresetOption GraphicsPreset
     {
-        get => (_graphicsPresData.HasValue
-                   ? _graphicsPresData
-                   : _graphicsPresData =
-                       SystemSettingDataMap!
-                          .AsSystemSettingLocalData("3", GraphicsPresetOption.Medium))
-              .Value.GetDataEnum<GraphicsPresetOption>();
+        get => (_graphicsPresData ??= SystemSettingDataMap
+                  .AsSystemSettingLocalData("3", GraphicsPresetOption.Medium))
+                  .GetDataEnum<GraphicsPresetOption>();
         set => _graphicsPresData?.SetDataEnum(value);
     }
 
@@ -224,12 +221,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public int ResolutionIndex
     {
-        get => (_resolutionIndexData.HasValue
-                   ? _resolutionIndexData
-                   : _resolutionIndexData =
-                       SystemSettingDataMap!
-                          .AsSystemSettingLocalData("5", -1))
-              .Value.GetData();
+        get => (_resolutionIndexData ??= SystemSettingDataMap
+                  .AsSystemSettingLocalData("5", -1)).GetData();
         set => _resolutionIndexData?.SetData(value);
     }
 
@@ -244,10 +237,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     {
         // Initialize the field under _vSyncData as SystemSettingLocalData<TValue>
         get =>
-            (_vSyncData.HasValue
-                ? _vSyncData
-                : _vSyncData = SystemSettingDataMap!
-                   .AsSystemSettingLocalData("8", 1)).Value.GetData() == 1;
+            (_vSyncData ??= SystemSettingDataMap
+               .AsSystemSettingLocalData("8", 1)).GetData() == 1;
         set =>
             _vSyncData?.SetData(value ? 1 : 0);
     }
@@ -264,12 +255,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     {
         // Initialize the field under _renderResolutionData as SystemSettingLocalData<TValue>
         get =>
-            (_renderResolutionData.HasValue
-                ? _renderResolutionData
-                : _renderResolutionData = SystemSettingDataMap!
-                   .AsSystemSettingLocalData("9",
-                                             RenderResOption.f10)).Value
-                                                                  .GetDataEnum<RenderResOption>();
+            (_renderResolutionData ??= SystemSettingDataMap
+               .AsSystemSettingLocalData("9",
+                                         RenderResOption.f10)).GetDataEnum<RenderResOption>();
         set =>
             _renderResolutionData?.SetDataEnum(value);
     }
@@ -286,11 +274,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     {
         // Initialize the field under _shadowQualityData as SystemSettingLocalData<TValue>
         get =>
-            (_shadowQualityData.HasValue
-                ? _shadowQualityData
-                : _shadowQualityData = SystemSettingDataMap!.AsSystemSettingLocalData("10",
-                    QualityOption3.Medium)).Value
-                                           .GetDataEnum<QualityOption3>();
+            (_shadowQualityData ??= SystemSettingDataMap.AsSystemSettingLocalData("10",
+                QualityOption3.Medium)).GetDataEnum<QualityOption3>();
         set =>
             _shadowQualityData?.SetDataEnum(value);
     }
@@ -303,12 +288,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     {
         // Initialize the field under _antiAliasingData as SystemSettingLocalData<TValue>
         get =>
-            (_antiAliasingData.HasValue
-                ? _antiAliasingData
-                : _antiAliasingData = SystemSettingDataMap!
-                   .AsSystemSettingLocalData("12",
-                                             AntiAliasingOption.TAA)).Value
-                                                                     .GetDataEnum<AntiAliasingOption>();
+            (_antiAliasingData ??= SystemSettingDataMap
+               .AsSystemSettingLocalData("12",
+                                         AntiAliasingOption.TAA)).GetDataEnum<AntiAliasingOption>();
         set =>
             _antiAliasingData?.SetDataEnum(value);
     }
@@ -323,11 +305,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public QualityOption4 VolumetricFogQuality
     {
-        get => (_volFogQualityData.HasValue
-                ? _volFogQualityData
-                : _volFogQualityData = SystemSettingDataMap!
-                   .AsSystemSettingLocalData("13", QualityOption4.Medium)).Value
-                                                                          .GetDataEnum<QualityOption4>();
+        get => (_volFogQualityData ??= SystemSettingDataMap
+               .AsSystemSettingLocalData("13", QualityOption4.Medium)).GetDataEnum<QualityOption4>();
         set => _volFogQualityData?.SetDataEnum(value);
     }
     
@@ -337,10 +316,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public bool Bloom
     {
-        get => (_bloomData.HasValue
-                ? _bloomData
-                : _bloomData = SystemSettingDataMap!.AsSystemSettingLocalData("14", 1)).Value
-           .GetData() == 1;
+        get => (_bloomData ??= SystemSettingDataMap.AsSystemSettingLocalData("14", 1)).GetData() == 1;
         set => _bloomData?.SetData(value ? 1 : 0);
     }
     
@@ -355,11 +331,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public QualityOption4 ReflectionQuality
     {
         get =>
-            (_reflQualityData.HasValue
-                ? _reflQualityData
-                : _reflQualityData = SystemSettingDataMap!.AsSystemSettingLocalData("15",
-                    QualityOption4.Medium)).Value
-                                           .GetDataEnum<QualityOption4>();
+            (_reflQualityData ??= SystemSettingDataMap.AsSystemSettingLocalData("15",
+                QualityOption4.Medium)).GetDataEnum<QualityOption4>();
         set =>
             _reflQualityData?.SetDataEnum(value);
     }
@@ -375,11 +348,9 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public QualityOption3 FxQuality
     {
         get =>
-            (_fxQualityData.HasValue
-                ? _fxQualityData
-                : _fxQualityData = SystemSettingDataMap!.AsSystemSettingLocalData("16", 
-                    QualityOption3.Medium)).Value
-                                           .GetDataEnum<QualityOption3>();
+            (_fxQualityData ??= SystemSettingDataMap.AsSystemSettingLocalData("16", 
+                                                                               QualityOption3.Medium))
+                                        .GetDataEnum<QualityOption3>();
         set =>
             _fxQualityData?.SetDataEnum(value);
     }
@@ -389,10 +360,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
 
     public int ColorFilter
     {
-        get => (_colorFilterData.HasValue
-                   ? _colorFilterData
-                   : _colorFilterData = SystemSettingDataMap!.AsSystemSettingLocalData("95", 10))
-              .Value.GetData();
+        get => (_colorFilterData ??= SystemSettingDataMap.AsSystemSettingLocalData("95", 10)).GetData();
         set => _colorFilterData?.SetData(value);
     }
     
@@ -407,11 +375,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public QualityOption2 CharacterQuality
     {
         get =>
-            (_charQualityData.HasValue
-                ? _charQualityData
-                : _charQualityData = SystemSettingDataMap!.AsSystemSettingLocalData("99",
-                    QualityOption2.High)).Value
-                                         .GetDataEnum<QualityOption2>();
+            (_charQualityData ??= SystemSettingDataMap.AsSystemSettingLocalData("99",
+                QualityOption2.High)).GetDataEnum<QualityOption2>();
         set =>
             _charQualityData?.SetDataEnum(value);
     }
@@ -422,10 +387,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public bool Distortion
     {
-        get => (_distortionData.HasValue
-                   ? _distortionData
-                   : _distortionData = SystemSettingDataMap!.AsSystemSettingLocalData("107", 1))
-              .Value.GetData() == 1;
+        get => (_distortionData ??= SystemSettingDataMap.AsSystemSettingLocalData("107", 1))
+            .GetData() == 1;
         set => _distortionData?.SetData(value ? 1 : 0);
     }
     
@@ -440,11 +403,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public QualityOption3 ShadingQuality
     {
         get =>
-            (_shadingQualityData.HasValue
-                ? _shadingQualityData
-                : _shadingQualityData = SystemSettingDataMap!.AsSystemSettingLocalData("108",
-                    QualityOption3.Medium)).Value
-                                           .GetDataEnum<QualityOption3>();
+            (_shadingQualityData ??= SystemSettingDataMap.AsSystemSettingLocalData("108",
+                QualityOption3.Medium)).GetDataEnum<QualityOption3>();
         set =>
             _shadingQualityData?.SetDataEnum(value);
     }
@@ -460,15 +420,46 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public QualityOption2 EnvironmentQuality
     {
         get =>
-            (_envQualityData.HasValue
-                ? _envQualityData
-                : _envQualityData = SystemSettingDataMap!.AsSystemSettingLocalData("109",
-                    QualityOption2.High)).Value
-                                         .GetDataEnum<QualityOption2>();
+            (_envQualityData ??= SystemSettingDataMap.AsSystemSettingLocalData("109",
+                                                                                    QualityOption2.High))
+                                      .GetDataEnum<QualityOption2>();
         set =>
             _envQualityData?.SetDataEnum(value);
     }
-    
+
+    // Key 12155 Global Illumination
+    private SystemSettingLocalData<QualityOption3>? _envGlobalIllumination;
+
+    /// <summary>
+    /// Sets the in-game global illumination settings for Environment
+    /// </summary>
+    /// <see cref="QualityOption3"/>
+    [JsonIgnore]
+    public QualityOption3 GlobalIllumination
+    {
+        get =>
+            (_envGlobalIllumination ??= SystemSettingDataMap.AsSystemSettingLocalData("12155",
+                QualityOption3.High)).GetDataEnum<QualityOption3>();
+        set =>
+            _envGlobalIllumination?.SetDataEnum(value);
+    }
+
+    // Key 8 VSync
+    private SystemSettingLocalData<int>? _vMotionBlur;
+
+    /// <summary>
+    /// Set Motion Blur mode
+    /// </summary>
+    [JsonIgnore]
+    public bool MotionBlur
+    {
+        get =>
+            (_vMotionBlur ??= SystemSettingDataMap
+               .AsSystemSettingLocalData("106", 1)).GetData() == 1;
+        set =>
+            _vMotionBlur?.SetData(value ? 1 : 0);
+    }
+
     // Key 110 FPS
     private SystemSettingLocalData<FpsOption>? _fpsData;
 
@@ -480,8 +471,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     public FpsOption Fps
     {
         // Initialize the field under _fpsData as SystemSettingLocalData<TValue>
-        get => (_fpsData.HasValue ? _fpsData : _fpsData = SystemSettingDataMap!
-           .AsSystemSettingLocalData("110", FpsOption.Hi60)).Value.GetDataEnum<FpsOption>();
+        get => (_fpsData ??= SystemSettingDataMap
+           .AsSystemSettingLocalData("110", FpsOption.Hi60)).GetDataEnum<FpsOption>();
         set => _fpsData?.SetDataEnum(value);
     }
 
@@ -494,9 +485,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public int Audio_MainVolume
     {
-        get => (_mainVolData.HasValue
-            ? _mainVolData
-            : _mainVolData = SystemSettingDataMap!.AsSystemSettingLocalData("31", 10)).Value.GetData();
+        get => (_mainVolData ??= SystemSettingDataMap.AsSystemSettingLocalData("31", 10)).GetData();
         set => _mainVolData?.SetData(value);
     }
     
@@ -506,9 +495,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public int Audio_MusicVolume
     {
-        get => (_musicVolData.HasValue
-            ? _musicVolData
-            : _musicVolData = SystemSettingDataMap!.AsSystemSettingLocalData("32", 10)).Value.GetData();
+        get => (_musicVolData ??= SystemSettingDataMap.AsSystemSettingLocalData("32", 10)).GetData();
         set => _musicVolData?.SetData(value);
     }
     
@@ -518,9 +505,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public int Audio_DialogVolume
     {
-        get => (_dialogVolData.HasValue
-            ? _dialogVolData
-            : _dialogVolData = SystemSettingDataMap!.AsSystemSettingLocalData("33", 10)).Value.GetData();
+        get => (_dialogVolData ??= SystemSettingDataMap.AsSystemSettingLocalData("33", 10)).GetData();
         set => _dialogVolData?.SetData(value);
     }
 
@@ -530,9 +515,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public int Audio_SfxVolume
     {
-        get => (_sfxVolData.HasValue
-            ? _sfxVolData
-            : _sfxVolData = SystemSettingDataMap!.AsSystemSettingLocalData("34", 10)).Value.GetData();
+        get => (_sfxVolData ??= SystemSettingDataMap.AsSystemSettingLocalData("34", 10)).GetData();
         set => _sfxVolData?.SetData(value);
     }
     
@@ -542,11 +525,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public AudioPlaybackDevice Audio_PlaybackDevice
     {
-        get => (_playDevData.HasValue
-                ? _playDevData
-                : _playDevData =
-                    SystemSettingDataMap!.AsSystemSettingLocalData("10104",
-                                                                   AudioPlaybackDevice.Headphones)).Value
+        get => (_playDevData ??= SystemSettingDataMap.AsSystemSettingLocalData("10104",
+                                                                                    AudioPlaybackDevice.Headphones))
            .GetDataEnum<AudioPlaybackDevice>();
         set => _playDevData?.SetDataEnum(value);
     }
@@ -557,10 +537,8 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [JsonIgnore]
     public bool Audio_MuteOnMinimize
     {
-        get => (_muteAudOnMinimizeData.HasValue
-            ? _muteAudOnMinimizeData
-            : _muteAudOnMinimizeData = SystemSettingDataMap!.AsSystemSettingLocalData("10113", 1)).Value.GetData() == 1;
-        set => _muteAudOnMinimizeData?.SetData((value ? 1 : 0));
+        get => (_muteAudOnMinimizeData ??= SystemSettingDataMap.AsSystemSettingLocalData("10113", 1)).GetData() == 1;
+        set => _muteAudOnMinimizeData?.SetData(value ? 1 : 0);
     }
     
     #endregion
@@ -569,10 +547,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
     [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!", true)]
     public new static GeneralData Load() => throw new NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");
 
-    public new static GeneralData LoadWithMagic(byte[]                magic, SettingsGameVersionManager versionManager,
-                                                JsonSerializerContext context)
+    public new static GeneralData LoadWithMagic(byte[]                    magic, SettingsGameVersionManager versionManager,
+                                                JsonTypeInfo<GeneralData?> typeInfo)
     {
-        var returnVal    = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, context);
+        var returnVal    = MagicNodeBaseValues<GeneralData>.LoadWithMagic(magic, versionManager, typeInfo);
         
     #if DEBUG
         const bool isPrintDebug = true;

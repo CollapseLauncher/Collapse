@@ -29,8 +29,12 @@ namespace CollapseLauncher
         private async ValueTask<List<PkgVersionProperties>> Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            _status.ActivityStatus = Lang._GameRepairPage.Status2;
-            _status.IsProgressAllIndetermined = true;
+            if (_status != null)
+            {
+                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+                _status.IsProgressAllIndetermined = true;
+            }
+
             UpdateStatus();
 
             // Initialize hashtable for duplicate keys checking
@@ -333,7 +337,7 @@ namespace CollapseLauncher
             while (!reader.EndOfStream)
             {
                 string               manifestLine  = reader.ReadLine();
-                PkgVersionProperties manifestEntry = manifestLine.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                PkgVersionProperties manifestEntry = manifestLine.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
 
                 // Ignore if the remote name is "svc_catalog" or "ctable.dat"
                 if (Path.GetFileName(manifestEntry.remoteName).Equals("svc_catalog", StringComparison.OrdinalIgnoreCase) ||
@@ -529,7 +533,7 @@ namespace CollapseLauncher
             foreach (string data in File.ReadAllLines(manifestPath).Where(x => x.EndsWith(acceptedExtension, StringComparison.OrdinalIgnoreCase)))
             {
                 // Deserialize JSON line into local entry.
-                entry = data.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                entry = data.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
 
                 // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
                 if (!string.IsNullOrEmpty(parentPath))
@@ -556,11 +560,19 @@ namespace CollapseLauncher
         {
             // Update fetch status
             double speed = downloadProgress.BytesDownloaded / _stopwatch.Elapsed.TotalSeconds;
-            _status.IsProgressPerFileIndetermined = false;
-            _status.ActivityPerFile = string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
+            if (_status != null)
+            {
+                _status.IsProgressPerFileIndetermined = false;
+                _status.ActivityPerFile =
+                    string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
+            }
 
             // Update fetch progress
-            _progress.ProgressPerFilePercentage = GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
+            if (_progress != null)
+            {
+                _progress.ProgressPerFilePercentage =
+                    GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
+            }
 
             // Push status and progress update
             UpdateStatus();

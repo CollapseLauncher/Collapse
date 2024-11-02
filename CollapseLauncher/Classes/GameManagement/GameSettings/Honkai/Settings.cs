@@ -38,7 +38,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             base.InitializeSettings();
 
             // Load Preset
-            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameNameType.Honkai, HonkaiSettingsJSONContext.Default);
+            Preset_SettingsGraphics = Preset<PersonalGraphicsSettingV2, HonkaiSettingsJSONContext>.LoadPreset(GameNameType.Honkai, HonkaiSettingsJSONContext.Default.DictionaryStringPersonalGraphicsSettingV2);
         }
 
         public override void ReloadSettings() => InitializeSettings();

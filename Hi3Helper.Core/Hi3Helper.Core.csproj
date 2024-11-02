@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
 		<Platforms>x64</Platforms>
 		<Configurations>Debug;Release;Publish</Configurations>
 		<WarningLevel>6</WarningLevel>
@@ -18,13 +18,10 @@
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+        <IsAotCompatible>true</IsAotCompatible>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<Optimize>True</Optimize>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|x64'">
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 
@@ -45,8 +42,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.6" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
-		<ProjectReference Include="..\Hi3Helper.Http\Hi3Helper.Http.csproj" />
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">

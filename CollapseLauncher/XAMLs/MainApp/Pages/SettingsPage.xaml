@@ -197,7 +197,8 @@
                                 <Border Background="Transparent"
                                         ToolTipService.ToolTip="{x:Bind Waifu2XToolTip}"
                                         Visibility="{x:Bind IsWaifu2XUsable, Converter={StaticResource InverseBooleanVisibilityConverter}}" />
-                                <ToggleSwitch IsEnabled="{x:Bind IsWaifu2XUsable}"
+                                <ToggleSwitch x:Name="Waifu2XToggleSwitch"
+                                              IsEnabled="{x:Bind IsWaifu2XUsable}"
                                               IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
@@ -576,13 +577,13 @@
                                           IsOn="{x:Bind IsAllowUntrustedCert, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                            <NumberBox HorizontalAlignment="Left"
+                            <NumberBox x:Name="HttpClientTimeoutNumberBox"
+                                       HorizontalAlignment="Left"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Http_Timeout}"
                                        Maximum="3600"
                                        Minimum="10"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind HttpClientTimeout, Mode=TwoWay}" />
-
                             <StackPanel Margin="0,16,0,0"
                                         Orientation="Horizontal">
                                 <TextBlock FontSize="16"
@@ -964,7 +965,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                        Maximum="16"
                                        Minimum="2"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
                             <NumberBox x:Name="ExtractionThreadsNumBox"
                                        Width="128"
@@ -973,7 +974,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}"
                                        Maximum="128"
                                        Minimum="0"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind CurrentAppThreadExtractValue, Mode=TwoWay}" />
                         </StackPanel>
                         <ToggleSwitch x:Name="OldDownloadChunksMergingToggle"
@@ -1068,7 +1069,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                        Maximum="64"
                                        Minimum="0"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind SophonDownThread, Mode=TwoWay}" />
                             <NumberBox x:Name="SophonHttpConnNumBox"
                                        Width="128"
@@ -1077,7 +1078,7 @@
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.SophonHttpNumberBox}"
                                        Maximum="128"
                                        Minimum="0"
-                                       SpinButtonPlacementMode="Compact"
+                                       SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind SophonHttpConn, Mode=TwoWay}" />
                         </StackPanel>
                         <ToggleSwitch Margin="0,4"
@@ -1086,6 +1087,239 @@
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._SettingsPage.SophonPredownPerfMode_Tooltip}" />
+                        <TextBlock Margin="0,16,0,8"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_Title}" />
+                        <ToggleSwitch x:Name="DbToggle"
+                                      Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Toggle}"
+                                      IsOn="{x:Bind IsDbEnabled, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <Grid x:Name="DbPropertyGrid"
+                              Width="400"
+                              MaxWidth="400"
+                              HorizontalAlignment="Left"
+                              ColumnSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="DbUriTextBox"
+                                     Grid.ColumnSpan="2"
+                                     Margin="0,8,0,8"
+                                     HorizontalAlignment="Stretch"
+                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url}"
+                                     InputScope="Url"
+                                     IsEnabled="{Binding IsOn, ElementName=DbToggle}"
+                                     IsSpellCheckEnabled="False"
+                                     PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url_Example}"
+                                     Text="{x:Bind DbUrl, Mode=TwoWay}" />
+                            <PasswordBox x:Name="DbTokenPasswordBox"
+                                         Grid.Row="1"
+                                         Grid.ColumnSpan="2"
+                                         Margin="0,8,0,8"
+                                         HorizontalAlignment="Stretch"
+                                         Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Token}"
+                                         InputScope="Password"
+                                         IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                         Password="{x:Bind DbToken, Mode=TwoWay}"
+                                         PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbTokenPasswordBox}" />
+                            <TextBox x:Name="DbUserIdTextBox"
+                                     Grid.Row="2"
+                                     Grid.ColumnSpan="2"
+                                     Margin="0,8,0,8"
+                                     HorizontalAlignment="Stretch"
+                                     GotFocus="DbUserIdTextBox_GotFocus"
+                                     Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_UserId}"
+                                     IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                     IsSpellCheckEnabled="False"
+                                     LostFocus="DbUserIdTextBox_LostFocus"
+                                     PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbUserIdTextBox}"
+                                     Text="{x:Bind DbUserId, Mode=TwoWay}" />
+                            <Button x:Name="GenerateGuidButton"
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Click="GenerateGuidButton_Click"
+                                    CornerRadius="14"
+                                    Style="{ThemeResource AccentButtonStyle}">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="16"
+                                              Glyph="" />
+                                    <TextBlock Grid.Column="0"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="SemiBold"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_GenerateGuid}" />
+                                </Grid>
+                            </Button>
+                            <Button x:Name="ValidateDbButton"
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Margin="0,8,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Click="ValidateAndSaveDbButton_Click"
+                                    CornerRadius="14"
+                                    Style="{ThemeResource AccentButtonStyle}">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="16"
+                                              Glyph="" />
+                                    <TextBlock Grid.Column="0"
+                                               HorizontalAlignment="Left"
+                                               FontWeight="SemiBold"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_Validate}" />
+                                </Grid>
+                            </Button>
+                        </Grid>
+                        <StackPanel Width="400"
+                                    MaxWidth="400"
+                                    Margin="0,16,0,0"
+                                    HorizontalAlignment="Left"
+                                    Spacing="8">
+                            <Grid x:Name="DatabaseConnectivityTestTextChecking"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource AccentAcrylicInAppFillColorBaseBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ValidationChecking}" />
+                                <ProgressRing Grid.Column="1"
+                                              Width="18"
+                                              Height="18"
+                                              VerticalAlignment="Center"
+                                              IsIndeterminate="true" />
+                            </Grid>
+                            <Grid x:Name="DatabaseConnectivityTestTextSuccess"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ConnectionOk}" />
+                                <FontIcon Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="18"
+                                          Foreground="{ThemeResource SystemFillColorSuccess}"
+                                          Glyph="" />
+                            </Grid>
+                            <Grid x:Name="DatabaseConnectivityTestTextFailed"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ConnectFail}" />
+                                <FontIcon Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="18"
+                                          Foreground="{ThemeResource SystemFillColorCritical}"
+                                          Glyph="" />
+                                <TextBox Grid.Row="1"
+                                         Grid.ColumnSpan="2"
+                                         MaxHeight="300"
+                                         Margin="0,8,0,4"
+                                         HorizontalAlignment="Stretch"
+                                         AcceptsReturn="True"
+                                         FontSize="12"
+                                         IsReadOnly="True"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                            </Grid>
+                            <Grid x:Name="DatabaseWarningBox"
+                                  Grid.Row="2"
+                                  Grid.Column="0"
+                                  Grid.ColumnSpan="2"
+                                  Padding="12,8"
+                                  HorizontalAlignment="Stretch"
+                                  Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                  CornerRadius="4"
+                                  Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="0,-2,0,0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Medium"
+                                           HorizontalTextAlignment="Left"
+                                           Text="" />
+                                <FontIcon Grid.Column="1"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          FontFamily="{ThemeResource FontAwesomeSolid}"
+                                          FontSize="18"
+                                          Foreground="{ThemeResource SystemFillColorCaution}"
+                                          Glyph="" />
+                            </Grid>
+                        </StackPanel>
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug}" />
@@ -1148,6 +1382,11 @@
                                       IsOn="{x:Bind IsAlwaysUseExternalBrowser, Mode=TwoWay}"
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                        <ToggleSwitch Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.Enforce7ZipExtract}"
+                                      IsOn="{x:Bind IsEnforceToUse7zipOnExtract, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -1202,7 +1441,7 @@
                 <TextBlock IsTextSelectionEnabled="True"
                            Style="{ThemeResource BodyTextBlockStyle}"
                            TextWrapping="Wrap">
-                    <Hyperlink x:Name="GitVersionIndicator_Hyperlink"
+                    <Hyperlink x:Name="GitVersionIndicatorHyperlink"
                                UnderlineStyle="None">
                         <Run x:Name="GitVersionIndicator" />
                     </Hyperlink>

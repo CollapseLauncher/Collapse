@@ -95,6 +95,10 @@ namespace CollapseLauncher
                 case "open":
                     m_appMode = AppMode.Launcher;
                     break;
+                case "generatevelopackmetadata":
+                    m_appMode = AppMode.GenerateVelopackMetadata;
+                    ParseGenerateVelopackMetadataArguments(args);
+                    break;
             }
 
             AddPublicCommands();
@@ -183,6 +187,11 @@ namespace CollapseLauncher
         public static void ParseOOBEArguments(params string[] args)
         {
             rootCommand.AddCommand(new Command("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup"));
+        }
+
+        public static void ParseGenerateVelopackMetadataArguments(params string[] args)
+        {
+            rootCommand.AddCommand(new Command("generatevelopackmetadata", "Generate Velopack metadata to enable update management"));
         }
 
         private static void AddMigrateOptions(bool isBHI3L, Command command)

@@ -19,14 +19,14 @@ namespace CollapseLauncher
         {
             string parentStreamingRelativePath = string.Format(type switch
             {
-                FileType.Blocks => StarRailRepair._assetGameBlocksStreamingPath,
+                FileType.Block => StarRailRepair._assetGameBlocksStreamingPath,
                 FileType.Audio => StarRailRepair._assetGameAudioStreamingPath,
                 FileType.Video => StarRailRepair._assetGameVideoStreamingPath,
                 _ => string.Empty
             }, execName);
             string parentPersistentRelativePath = string.Format(type switch
             {
-                FileType.Blocks => StarRailRepair._assetGameBlocksPersistentPath,
+                FileType.Block => StarRailRepair._assetGameBlocksPersistentPath,
                 FileType.Audio => StarRailRepair._assetGameAudioPersistentPath,
                 FileType.Video => StarRailRepair._assetGameVideoPersistentPath,
                 _ => string.Empty
@@ -89,7 +89,7 @@ namespace CollapseLauncher
                         case FileType.Generic:
                             await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
-                        case FileType.Blocks:
+                        case FileType.Block:
                             await CheckAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                         case FileType.Audio:
@@ -104,10 +104,6 @@ namespace CollapseLauncher
             catch (AggregateException ex)
             {
                 throw ex.Flatten().InnerExceptions.First();
-            }
-            catch (Exception)
-            {
-                throw;
             }
 
             // Re-add the asset index with a broken asset index
@@ -168,35 +164,33 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            using (FileStream filefs = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using FileStream filefs = await NaivelyOpenFileStreamAsync(fileInfo, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // If pass the check above, then do CRC calculation
+            // Additional: the total file size progress is disabled and will be incremented after this
+            byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
             {
-                // If pass the check above, then do CRC calculation
-                // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
-                // If local and asset CRC doesn't match, then add the asset
-                if (!IsArrayMatch(localCRC, asset.CRCArray))
-                {
-                    _progressAllSizeFound += asset.S;
-                    _progressAllCountFound++;
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(asset.N),
+                                                   ConvertRepairAssetTypeEnum(asset.FT),
+                                                   Path.GetDirectoryName(asset.N),
+                                                   asset.S,
+                                                   localCRC,
+                                                   asset.CRCArray
+                                                  )
+                                             ));
 
-                    Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            ConvertRepairAssetTypeEnum(asset.FT),
-                            Path.GetDirectoryName(asset.N),
-                            asset.S,
-                            localCRC,
-                            asset.CRCArray
-                        )
-                    ));
+                // Mark the main block as "need to be repaired"
+                asset.IsBlockNeedRepair = true;
+                targetAssetIndex.Add(asset);
 
-                    // Mark the main block as "need to be repaired"
-                    asset.IsBlockNeedRepair = true;
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
-                }
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
         }
 

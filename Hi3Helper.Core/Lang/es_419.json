@@ -157,6 +157,7 @@
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Sincronizar Tiempo de Juego con Base de Datos",
     "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
     "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
 
@@ -165,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
     "GamePlaytime_Idle_ResetBtn": "Restablecer",
     "GamePlaytime_Idle_ChangeBtn": "Cambiar",
+    "GamePlaytime_Idle_SyncDb": "Sincronizar",
     "GamePlaytime_Running_Info1": "El juego se está ejecutando, por lo tanto no se puede editar el tiempo de juego.",
-    "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar Collapse se detendra el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto) y solo los juegos iniciados usando Collapse tendran seguimiento.",
+    "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar completamente Collapse se detendrá el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto)",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Última Sesión: {0:00}/{1:00}/{2:0000} a las {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Estadísticas de Juego",
+    "GamePlaytime_Stats_NeverPlayed": "Sin jugar",
+    "GamePlaytime_Stats_LastSession": "Sesión más reciente",
+    "GamePlaytime_Stats_LastSession_StartTime": "Hora de inicio",
+    "GamePlaytime_Stats_LastSession_Duration": "Duración",
+    "GamePlaytime_Stats_Daily": "Hoy",
+    "GamePlaytime_Stats_Weekly": "Semana",
+    "GamePlaytime_Stats_Monthly": "Mes",
 
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Anuncios",
@@ -534,6 +544,7 @@
 
     "EnableAcrylicEffect": "Usar Efecto de Desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
+    "Enforce7ZipExtract": "Usar siempre 7-zip para Instalación/Actualización del Juego",
     "UseExternalBrowser": "Usar Navegador Web Externo ",
 
     "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
@@ -626,7 +637,20 @@
     "FileDownloadSettings_BurstDownloadHelp4": "se ejecuten en paralelo para que el proceso de descarga sea más eficiente.",
     "FileDownloadSettings_BurstDownloadHelp5": "Al deshabilitarlo, el proceso de descarga para",
     "FileDownloadSettings_BurstDownloadHelp6": "y",
-    "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial."
+    "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial.",
+    
+    "Database_Title": "Base de datos sincronizable",
+    "Database_ConnectionOk": "¡Base de datos conectada exitosamente!",
+    "Database_ConnectFail": "Falla al conectar a la base de datos, mira los errores a continuación:",
+    "Database_Toggle": "Habilitar Base de datos en línea",
+    "Database_Url": "URL Base de datos",
+    "Database_Url_Example": "Ejemplo: https://db-collapse.turso.io",
+    "Database_Token": "Token",
+    "Database_UserId": "ID Usuario",
+    "Database_GenerateGuid": "Generar UID",
+    "Database_Validate": "Validar y Guardar Ajustes",
+    "Database_Error_EmptyUri": "¡URL no puede estar vacía!",
+    "Database_Error_EmptyToken": "¡Token no puede estar vacío!"
   },
 
   "_Misc": {
@@ -646,6 +670,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "¡Todo Bien!",
     "Cancel": "Cancelar",
     "Close": "Cerrar",
     "UseCurrentDir": "Usar directorio actual",
@@ -805,7 +830,7 @@
     "RepairCompletedSubtitle": "Se repararon {0} archivo(s).",
     "RepairCompletedSubtitleNoBroken": "No se encontraron archivos rotos.",
     "ExtremeGraphicsSettingsWarnTitle": "¡Preajuste Muy Alto Seleccionado!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Estas por seleccionar la opción grafica \"Muy Alto\" \nEsta configuración prestablecida es básicamente 2x Escalado de renderizado con MSAA activado y NO ESTA OPTIMIZADO!\n\n¿Estas seguro que quieres usar esta configuración?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Estas por seleccionar la opción grafica \"Muy Alto\" \nEsta configuración prestablecida es básicamente 1.6x Escalado de renderizado con MSAA activado y NO ESTA OPTIMIZADO!\n\n¿Estas seguro que quieres usar esta configuración?",
     "MigrateExistingMoveDirectoryTitle": "Moviendo la instalación existente para: {0}",
     "MigrateExistingInstallChoiceTitle": "¡Se a detectado una instalación existente de {0} !",
     "MigrateExistingInstallChoiceSubtitle1": "Tienes una instalación del juego usando {0} en esta ubicación:",
@@ -870,7 +895,7 @@
     "ChangePlaytimeTitle": "¿Estás seguro de que quieres cambiar tu tiempo de juego?",
     "ChangePlaytimeSubtitle": "Cambiar el tiempo de juego significa reemplazar los valores actuales con los que acabas de ingresar.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "ResetPlaytimeTitle": "¿Estás seguro de que quieres restablecer tu tiempo de juego?",
-    "ResetPlaytimeSubtitle": "Restablecer el tiempo de juego significa volver a 0 el contador. Esta es una acción ",
+    "ResetPlaytimeSubtitle": "Restablecer el tiempo de juego significa volver a poner a 0 el contador de tiempo de juego y todas las estadísticas relacionadas. Esta es una acción ",
     "ResetPlaytimeSubtitle2": "destructiva",
     "ResetPlaytimeSubtitle3": ", lo que significa que no puedes deshacer esto una vez confirmado.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "InvalidPlaytimeTitle": "Hubo un problema al guardar el tiempo de esta sesión ",
@@ -937,7 +962,10 @@
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
 
     "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
-    "CloseOverlay": "Cerrar Superposición (Overlay)"
+    "CloseOverlay": "Cerrar Superposición (Overlay)",
+    
+    "DbGenerateUid_Title": "¿Estas seguro que quieres cambiar tu ID de Usuario?",
+    "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes."
   },
 
   "_FileMigrationProcess": {

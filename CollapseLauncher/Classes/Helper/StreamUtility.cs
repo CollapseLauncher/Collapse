@@ -17,27 +17,21 @@ namespace CollapseLauncher.Helper
         {
             Mode = FileMode.Open,
             Access = FileAccess.Read,
-            Share = FileShare.Read,
-            BufferSize = DefaultBufferSize,
-            Options = FileOptions.Asynchronous | FileOptions.RandomAccess
+            Share = FileShare.Read
         };
 
         internal static readonly FileStreamOptions FileStreamCreateWriteOpt = new FileStreamOptions
         {
             Mode = FileMode.Create,
             Access = FileAccess.Write,
-            Share = FileShare.Write,
-            BufferSize = DefaultBufferSize,
-            Options = FileOptions.Asynchronous | FileOptions.RandomAccess
+            Share = FileShare.Write
         };
 
         internal static readonly FileStreamOptions FileStreamCreateReadWriteOpt = new FileStreamOptions
         {
             Mode = FileMode.Create,
             Access = FileAccess.ReadWrite,
-            Share = FileShare.ReadWrite,
-            BufferSize = DefaultBufferSize,
-            Options = FileOptions.Asynchronous | FileOptions.RandomAccess
+            Share = FileShare.ReadWrite
         };
 
         /*

@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangSettingsPage _SettingsPage { get; set; } = LangFallback?._SettingsPage;
-            public sealed class LangSettingsPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangSettingsPage
             {
                 public string PageTitle                                 { get; set; } = LangFallback?._SettingsPage.PageTitle;
                 public string Debug                                     { get; set; } = LangFallback?._SettingsPage.Debug;
@@ -97,10 +101,11 @@
                 public string AppChangeReleaseChannel                   { get; set; } = LangFallback?._SettingsPage.AppChangeReleaseChannel;
                 public string EnableAcrylicEffect                       { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging               { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
+                public string Enforce7ZipExtract                        { get; set; } = LangFallback?._SettingsPage.Enforce7ZipExtract;
                 public string LowerCollapsePrioOnGameLaunch             { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
                 public string LowerCollapsePrioOnGameLaunch_Tooltip     { get; set; }  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
                 public string UseExternalBrowser                        { get; set; } = LangFallback?._SettingsPage.UseExternalBrowser;
-				public string KbShortcuts_Title                         { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
+                public string KbShortcuts_Title                         { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn                       { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
                 public string KbShortcuts_ResetBtn                      { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ResetBtn;
                 public string AppBehavior_Title                         { get; set; } = LangFallback?._SettingsPage.AppBehavior_Title;
@@ -194,6 +199,24 @@
                 public string FileDownloadSettings_BurstDownloadHelp5       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp5;
                 public string FileDownloadSettings_BurstDownloadHelp6       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp6;
                 public string FileDownloadSettings_BurstDownloadHelp7       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp7;
+
+                public string Database_Title                            { get; set; } = LangFallback?._SettingsPage.Database_Title;
+                public string Database_ConnectionOk                     { get; set; } = LangFallback?._SettingsPage.Database_ConnectionOk;
+                public string Database_ConnectFail                      { get; set; } = LangFallback?._SettingsPage.Database_ConnectFail;
+                public string Database_Toggle                           { get; set; } = LangFallback?._SettingsPage.Database_Toggle;
+                public string Database_Url                              { get; set; } = LangFallback?._SettingsPage.Database_Url;
+                public string Database_Url_Example                      { get; set; } = LangFallback?._SettingsPage.Database_Url_Example;
+                public string Database_Token                            { get; set; } = LangFallback?._SettingsPage.Database_Token;
+                public string Database_UserId                           { get; set; } = LangFallback?._SettingsPage.Database_UserId;
+                public string Database_GenerateGuid                     { get; set; } = LangFallback?._SettingsPage.Database_GenerateGuid;
+                public string Database_Validate                         { get; set; } = LangFallback?._SettingsPage.Database_Validate;
+                public string Database_Error_EmptyUri                   { get; set; } = LangFallback?._SettingsPage.Database_Error_EmptyUri;
+                public string Database_Error_EmptyToken                 { get; set; } = LangFallback?._SettingsPage.Database_Error_EmptyToken;
+                public string Database_Error_InvalidGuid                { get; set; } = LangFallback?._SettingsPage.Database_Error_InvalidGuid;
+                public string Database_Warning_PropertyChanged          { get; set; } = LangFallback?._SettingsPage.Database_Warning_PropertyChanged;
+                public string Database_ValidationChecking               { get; set; } = LangFallback?._SettingsPage.Database_ValidationChecking;
+                public string Database_Placeholder_DbUserIdTextBox      { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbUserIdTextBox;
+                public string Database_Placeholder_DbTokenPasswordBox   { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbTokenPasswordBox;
             }
         }
         #endregion

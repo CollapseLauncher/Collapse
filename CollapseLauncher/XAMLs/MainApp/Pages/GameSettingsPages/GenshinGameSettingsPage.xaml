@@ -12,7 +12,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.Genshin"
       xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
+      NavigationCacheMode="Enabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -91,7 +93,6 @@
                                                         Height="24"
                                                         Margin="16,0,8,0"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -268,15 +269,15 @@
                                                                     <LineBreak />
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}" />
                                                                 </TextBlock>
-                                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                                           Margin="0,16,0,0">
+                                                                <TextBlock Margin="0,16,0,0"
+                                                                           Style="{ThemeResource SubtitleTextBlockStyle}">
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}" />
                                                                 </TextBlock>
-                                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
-                                                                           Margin="0,16,0,0">
+                                                                <TextBlock Margin="0,16,0,0"
+                                                                           Style="{ThemeResource SubtitleTextBlockStyle}">
                                                                     <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" />
                                                                 </TextBlock>
                                                                 <TextBlock Margin="0,8,0,0">
@@ -314,7 +315,6 @@
                                                     MaxWidth="514"
                                                     Margin="0,8"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="2000.0"
                                                     Minimum="300.0"
                                                     StepFrequency="50"
@@ -344,7 +344,6 @@
                                                     MinWidth="350"
                                                     Margin="0,8"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="500.0"
                                                     Minimum="100.0"
                                                     StepFrequency="5"
@@ -371,7 +370,6 @@
                                                     MinWidth="350"
                                                     Margin="0,8,0,0"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="550.0"
                                                     Minimum="150.0"
                                                     StepFrequency="5"
@@ -408,7 +406,6 @@
                                     </Grid>
                                     <Slider x:Name="GammaSlider"
                                             Margin="0,8,8,8"
-                                            IsThumbToolTipEnabled="False"
                                             Maximum="3.0"
                                             Minimum="1.4"
                                             StepFrequency="0.000001"

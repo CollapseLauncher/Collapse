@@ -68,7 +68,7 @@ public sealed partial class UpdaterWindow
                        .TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json",
                                                 default);
             var updateInfo =
-                await metadataStream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default, default);
+                await metadataStream.DeserializeAsync(InternalAppJSONContext.Default.AppUpdateVersionProp, default);
             NewVersionLabel.Text = updateInfo!.VersionString;
 
             // Initialize new proxy-aware HttpClient

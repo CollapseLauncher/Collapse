@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.Classes.FileDialogCOM;
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
@@ -21,7 +22,9 @@ namespace CollapseLauncher
             // Check whether the input is a file or not.
             bool isFileTransfer = File.Exists(inputPath) && !inputPath.StartsWith('\\');
             outputPath = await InitializeAndCheckOutputPath(parentUI, dialogTitle, inputPath, outputPath, isFileTransfer);
-            if (Helper.FileUtility.IsRootPath(outputPath))
+            if (outputPath == null) return null;
+
+            if (FileDialogHelper.IsRootPath(outputPath))
             {
                 await SimpleDialogs.SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
                                   Lang._HomePage.InstallFolderRootSubtitle,
@@ -30,7 +33,6 @@ namespace CollapseLauncher
                                   null, null, ContentDialogButton.Close, ContentDialogTheme.Error);
                 return null;
             }
-            if (outputPath == null) return null;
 
             if (showWarningMessage)
                 if (await ShowNotCancellableProcedureMessage(parentUI) == ContentDialogResult.None)

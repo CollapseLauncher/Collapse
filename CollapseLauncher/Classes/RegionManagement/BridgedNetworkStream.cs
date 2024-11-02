@@ -11,7 +11,6 @@ namespace CollapseLauncher
         private protected readonly HttpResponseMessage _networkResponse;
         private protected readonly Stream _networkStream;
         private protected long _networkLength;
-        private protected long _currentPosition = 0;
 
         internal static async ValueTask<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
         {
@@ -28,22 +27,19 @@ namespace CollapseLauncher
 
         ~BridgedNetworkStream() => Dispose();
 
-        private int ReadBytes(Span<byte> buffer)
-        {
-            int read = _networkStream.Read(buffer);
-            _currentPosition += read;
-            return read;
-        }
+        private int ReadBytes(Span<byte> buffer) => _networkStream.Read(buffer);
 
-        private int ReadBytes(byte[] buffer, int offset, int count)
-        {
-            int read = _networkStream.Read(buffer, offset, count);
-            _currentPosition += read;
-            return read;
-        }
+        private int ReadBytes(byte[] buffer, int offset, int count) => _networkStream.Read(buffer, offset, count);
 
         public override int Read(Span<byte> buffer) => ReadBytes(buffer);
         public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            _networkStream.ReadAsync(buffer, offset, count, cancellationToken);
+
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
+            _networkStream.ReadAsync(buffer, cancellationToken);
+
         public new async ValueTask ReadExactlyAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
             int totalRead = 0;
@@ -59,34 +55,19 @@ namespace CollapseLauncher
         public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
-        public override bool CanRead
-        {
-            get { return true; }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get { return false; }
-        }
+        public override bool CanSeek => false;
 
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
+        public override bool CanWrite => false;
 
-        public override void Flush()
-        {
-            _networkStream.Flush();
-        }
+        public override void Flush() => _networkStream.Flush();
 
-        public override long Length
-        {
-            get { return _networkLength; }
-        }
+        public override long Length => _networkLength;
 
         public override long Position
         {
-            get { return _currentPosition; }
+            get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }
 

@@ -190,8 +190,7 @@ namespace CollapseLauncher.ShortcutUtils
                 {
                     Access = FileAccess.Write,
                     Mode = FileMode.Create,
-                    Share = FileShare.ReadWrite,
-                    Options = FileOptions.Asynchronous
+                    Share = FileShare.ReadWrite
                 });
 
                 // Get the file length

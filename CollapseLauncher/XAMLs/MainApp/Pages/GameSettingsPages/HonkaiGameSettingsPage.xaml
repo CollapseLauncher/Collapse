@@ -8,7 +8,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
+      NavigationCacheMode="Enabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -292,10 +294,16 @@
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
                                                   SelectedIndex="{x:Bind GraphicsRenderingAccuracy, Mode=TwoWay}">
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
-                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecVeryHigh}" />
+                                            <ComboBoxItem Content="0.6" />
+                                            <ComboBoxItem Content="0.8" />
+                                            <ComboBoxItem Content="0.9" />
+                                            <ComboBoxItem Content="1.0" />
+                                            <ComboBoxItem Content="1.1" />
+                                            <ComboBoxItem Content="1.2" />
+                                            <ComboBoxItem Content="1.3" />
+                                            <ComboBoxItem Content="1.4" />
+                                            <ComboBoxItem Content="1.5" />
+                                            <ComboBoxItem Content="1.6" />
                                         </ComboBox>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1"

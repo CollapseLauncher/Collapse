@@ -4,7 +4,6 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.Region;
-using Squirrel.Sources;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,18 +11,30 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
+#if !USEVELOPACK
+using System.Text;
+using Squirrel.Sources;
+#else
+using System.Text;
+using Velopack.Sources;
+#endif
+
 namespace CollapseLauncher
 {
     public class UpdateManagerHttpAdapter : IFileDownloader
     {
+#if !USEVELOPACK
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
+#else
+#nullable enable
+        public async Task DownloadFile(string url, string targetFile, Action<int> progress, string? authorization = null, string? accept = null, CancellationToken cancelToken = default)
+#endif
         {
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
@@ -36,7 +47,13 @@ namespace CollapseLauncher
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
-                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url), default);
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url),
+#if !USEVELOPACK
+                    default
+#else
+                    cancelToken
+#endif
+                    );
             }
             catch { throw; }
             finally
@@ -45,7 +62,11 @@ namespace CollapseLauncher
             }
         }
 
+#if !USEVELOPACK
         public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
+#else
+        public async Task<byte[]> DownloadBytes(string url, string? authorization = null, string? accept = null)
+#endif
         {
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
             byte[] buffer = new byte[stream.Length];
@@ -53,7 +74,11 @@ namespace CollapseLauncher
             return buffer;
         }
 
+#if !USEVELOPACK
         public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
+#else
+        public async Task<string> DownloadString(string url, string? authorization = null, string? accept = null)
+#endif
         {
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
             byte[] buffer = new byte[stream.Length];
@@ -68,6 +93,10 @@ namespace CollapseLauncher
         }
     }
 
+#if USEVELOPACK
+#nullable restore
+#endif
+
     internal readonly struct CDNUtilHTTPStatus
     {
         internal readonly HttpStatusCode StatusCode;
@@ -80,7 +109,7 @@ namespace CollapseLauncher
             Message = message;
             StatusCode = Message.StatusCode;
             IsSuccessStatusCode = Message.IsSuccessStatusCode;
-            AbsoluteURL = Message.RequestMessage.RequestUri;
+            AbsoluteURL = Message.RequestMessage?.RequestUri;
         }
 
         private CDNUtilHTTPStatus(bool isInitializationError) => IsInitializationError = isInitializationError;
@@ -133,34 +162,6 @@ namespace CollapseLauncher
 
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
-        public static async Task DownloadCDNFallbackContent(Http httpInstance, string outputPath, int parallelThread, string relativeURL, CancellationToken token)
-        {
-            // Get the preferred CDN first and try get the content
-            CDNURLProperty preferredCDN = GetPreferredCDN();
-            bool isSuccess = await TryGetCDNContent(preferredCDN, httpInstance, outputPath, relativeURL, parallelThread, token);
-
-            // If successful, then return
-            if (isSuccess) return;
-
-            // If the fail return code occurred by the token, then throw cancellation exception
-            token.ThrowIfCancellationRequested();
-
-            // If not, then continue to get the content from another CDN
-            foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
-            {
-                isSuccess = await TryGetCDNContent(fallbackCDN, httpInstance, outputPath, relativeURL, parallelThread, token);
-
-                // If successful, then return
-                if (isSuccess) return;
-            }
-
-            // If all of them failed, then throw an exception
-            if (!isSuccess)
-            {
-                throw new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
-            }
-        }
-
         public static async Task DownloadCDNFallbackContent(DownloadClient downloadClient, string outputPath, int parallelThread, string relativeURL, CancellationToken token)
         {
             // Get the preferred CDN first and try get the content
@@ -177,37 +178,6 @@ namespace CollapseLauncher
             foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
             {
                 isSuccess = await TryGetCDNContent(fallbackCDN, downloadClient, outputPath, relativeURL, parallelThread, token);
-
-                // If successful, then return
-                if (isSuccess) return;
-            }
-
-            // If all of them failed, then throw an exception
-            if (!isSuccess)
-            {
-                throw new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
-            }
-        }
-
-        public static async Task DownloadCDNFallbackContent(Http httpInstance, Stream outputStream, string relativeURL, CancellationToken token)
-        {
-            // Argument check
-            PerformStreamCheckAndSeek(outputStream);
-
-            // Get the preferred CDN first and try get the content
-            CDNURLProperty preferredCDN = GetPreferredCDN();
-            bool isSuccess = await TryGetCDNContent(preferredCDN, httpInstance, outputStream, relativeURL, token);
-
-            // If successful, then return
-            if (isSuccess) return;
-
-            // If the fail return code occurred by the token, then throw cancellation exception
-            token.ThrowIfCancellationRequested();
-
-            // If not, then continue to get the content from another CDN
-            foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
-            {
-                isSuccess = await TryGetCDNContent(fallbackCDN, httpInstance, outputStream, relativeURL, token);
 
                 // If successful, then return
                 if (isSuccess) return;
@@ -251,7 +221,7 @@ namespace CollapseLauncher
             }
         }
 
-        public static async ValueTask<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
+        public static async Task<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
         {
             // Get the preferred CDN first and try get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
@@ -290,7 +260,7 @@ namespace CollapseLauncher
             outputStream.Position = 0;
         }
 
-        private static async ValueTask<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
+        private static async Task<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
         {
             try
             {
@@ -311,75 +281,11 @@ namespace CollapseLauncher
             }
         }
 
-        private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, Http httpInstance, Stream outputStream, string relativeURL, CancellationToken token)
-        {
-            try
-            {
-                // Subscribe the progress to the adapter
-                httpInstance.DownloadProgress += HttpInstance_DownloadProgressAdapter;
-
-                // Get the URL Status then return boolean and and URLStatus
-                (bool, string) urlStatus = await TryGetURLStatus(cdnProp, httpInstance, relativeURL, token);
-
-                // If URL status is false, then return false
-                if (!urlStatus.Item1) return false;
-
-                // Continue to get the content and return true if successful
-                await httpInstance.Download(urlStatus.Item2, outputStream, null, null, token);
-                return true;
-            }
-            // Handle the error and log it. If fails, then log it and return false
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
-                return false;
-            }
-            // Finally, unsubscribe the progress from the adapter
-            finally
-            {
-                httpInstance.DownloadProgress -= HttpInstance_DownloadProgressAdapter;
-            }
-        }
-
-        private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, Http httpInstance, string outputPath, string relativeURL, int parallelThread, CancellationToken token)
-        {
-            try
-            {
-                // Subscribe the progress to the adapter
-                httpInstance.DownloadProgress += HttpInstance_DownloadProgressAdapter;
-
-                // Get the URL Status then return boolean and and URLStatus
-                (bool, string) urlStatus = await TryGetURLStatus(cdnProp, httpInstance, relativeURL, token);
-
-                // If URL status is false, then return false
-                if (!urlStatus.Item1) return false;
-
-                // Continue to get the content and return true if successful
-                if (!cdnProp.PartialDownloadSupport)
-                {
-                    // If the CDN marked to not supporting the partial download, then use single thread mode download.
-                    await httpInstance.Download(urlStatus.Item2, outputPath, true, null, null, token);
-                    return true;
-                }
-                await httpInstance.Download(urlStatus.Item2, outputPath, (byte)parallelThread, true, token);
-                await httpInstance.Merge(token);
-                return true;
-            }
-            // Handle the error and log it. If fails, then log it and return false
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
-                return false;
-            }
-            // Finally, unsubscribe the progress from the adapter
-            finally
-            {
-                httpInstance.DownloadProgress -= HttpInstance_DownloadProgressAdapter;
-            }
-        }
-
         private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, DownloadClient downloadClient, Stream outputStream, string relativeURL, CancellationToken token)
         {
+            DownloadEvent DownloadClientAdapter = new DownloadEvent();
+            Stopwatch stopwatch = new Stopwatch();
+
             try
             {
                 // Get the URL Status then return boolean and and URLStatus
@@ -388,8 +294,11 @@ namespace CollapseLauncher
                 // If URL status is false, then return false
                 if (!urlStatus.Item1) return false;
 
+                // Start stopwatch
+                stopwatch.Start();
+
                 // Continue to get the content and return true if successful
-                await downloadClient.DownloadAsync(urlStatus.Item2, outputStream, false, HttpInstance_DownloadProgressAdapter, null, null, cancelToken:token);
+                await downloadClient.DownloadAsync(urlStatus.Item2, outputStream, false, HttpInstanceDownloadProgressAdapter, null, null, cancelToken:token);
                 return true;
             }
             // Handle the error and log it. If fails, then log it and return false
@@ -397,11 +306,30 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
+            }
+            finally
+            {
+                stopwatch.Stop();
+            }
+
+            void HttpInstanceDownloadProgressAdapter(int read, DownloadProgress downloadProgress)
+            {
+                DownloadClientAdapter.SizeToBeDownloaded = downloadProgress.BytesTotal;
+                DownloadClientAdapter.SizeDownloaded = downloadProgress.BytesDownloaded;
+                DownloadClientAdapter.Read = read;
+
+                long speed = (long)(downloadProgress.BytesDownloaded / stopwatch.Elapsed.TotalSeconds);
+                DownloadClientAdapter.Speed = speed;
+                
+                DownloadProgress?.Invoke(null, DownloadClientAdapter);
             }
         }
 
         private static async ValueTask<bool> TryGetCDNContent(CDNURLProperty cdnProp, DownloadClient downloadClient, string outputPath, string relativeURL, int parallelThread, CancellationToken token)
         {
+            DownloadEvent DownloadClientAdapter = new DownloadEvent();
+            Stopwatch stopwatch = new Stopwatch();
+
             try
             {
                 // Get the URL Status then return boolean and and URLStatus
@@ -409,16 +337,19 @@ namespace CollapseLauncher
 
                 // If URL status is false, then return false
                 if (!urlStatus.Item1) return false;
+
+                // Start stopwatch
+                stopwatch.Start();
 
                 // Continue to get the content and return true if successful
                 if (!cdnProp.PartialDownloadSupport)
                 {
                     // If the CDN marked to not supporting the partial download, then use single thread mode download.
                     using FileStream stream = File.Create(outputPath);
-                    await downloadClient.DownloadAsync(urlStatus.Item2, stream, false, HttpInstance_DownloadProgressAdapter, null, null, cancelToken:token);
+                    await downloadClient.DownloadAsync(urlStatus.Item2, stream, false, HttpInstanceDownloadProgressAdapter, null, null, cancelToken:token);
                     return true;
                 }
-                await downloadClient.DownloadAsync(urlStatus.Item2, outputPath, true, progressDelegateAsync: HttpInstance_DownloadProgressAdapter, maxConnectionSessions: parallelThread, cancelToken: token);
+                await downloadClient.DownloadAsync(urlStatus.Item2, outputPath, true, progressDelegateAsync: HttpInstanceDownloadProgressAdapter, maxConnectionSessions: parallelThread, cancelToken: token);
                 return true;
             }
             // Handle the error and log it. If fails, then log it and return false
@@ -427,30 +358,25 @@ namespace CollapseLauncher
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
-        }
-
-        private static async Task<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, Http httpInstance, string relativeURL, CancellationToken token)
-        {
-            // Concat the URL Prefix and Relative URL
-            string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
-
-            LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
-
-            // Try check the status of the URL
-            Tuple<int, bool> returnCode = await httpInstance.GetURLStatus(absoluteURL, token);
-
-            // If it's not a successful code, then return false
-            if (!returnCode.Item2)
+            finally
             {
-                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned error code: {returnCode.Item1}", LogType.Error, true);
-                return (false, absoluteURL);
+                stopwatch.Stop();
             }
 
-            // Otherwise, return true
-            return (true, absoluteURL);
+            void HttpInstanceDownloadProgressAdapter(int read, DownloadProgress downloadProgress)
+            {
+                DownloadClientAdapter.SizeToBeDownloaded = downloadProgress.BytesTotal;
+                DownloadClientAdapter.SizeDownloaded = downloadProgress.BytesDownloaded;
+                DownloadClientAdapter.Read = read;
+
+                long speed = (long)(downloadProgress.BytesDownloaded / stopwatch.Elapsed.TotalSeconds);
+                DownloadClientAdapter.Speed = speed;
+
+                DownloadProgress?.Invoke(null, DownloadClientAdapter);
+            }
         }
 
-        private static async Task<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, DownloadClient downloadClient, string relativeURL, CancellationToken token)
+        private static async ValueTask<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, DownloadClient downloadClient, string relativeURL, CancellationToken token)
         {
             // Concat the URL Prefix and Relative URL
             string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
@@ -513,22 +439,16 @@ namespace CollapseLauncher
             return CDNList[cdnIndex];
         }
 
-        public static async Task<T> DownloadAsJSONType<T>(string URL, JsonSerializerContext context, CancellationToken token)
-            => (T)await _client.GetFromJsonAsync(URL, typeof(T), context, token) ?? default;
-
-        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
-        {
-            return isForceUncompressRequest ? await _clientNoCompression.GetURLHttpResponse(URL, HttpMethod.Get, token)
-                                            : await _client.GetURLHttpResponse(URL, HttpMethod.Get, token);
-        }
+        public static async Task<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
+            => isForceUncompressRequest ? await _clientNoCompression.GetURLHttpResponse(URL, HttpMethod.Get, token)
+                                        : await _client.GetURLHttpResponse(URL, HttpMethod.Get, token);
 
 #nullable enable
-        public static async ValueTask<HttpResponseMessage> GetURLHttpResponse(this HttpClient client, string url, HttpMethod? httpMethod = null, CancellationToken token = default)
-        {
-            httpMethod ??= HttpMethod.Get;
-            using HttpRequestMessage requestMsg = new HttpRequestMessage(httpMethod, url);
-            return await client.SendAsync(requestMsg, HttpCompletionOption.ResponseHeadersRead, token);
-        }
+        public static async Task<T?> DownloadAsJSONType<T>(string? URL, JsonTypeInfo<T> typeInfo, CancellationToken token)
+            => await _client.GetFromJsonAsync(URL, typeInfo, token);
+
+        public static async Task<HttpResponseMessage> GetURLHttpResponse(this HttpClient client, string url, HttpMethod? httpMethod = null, CancellationToken token = default)
+            => await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
         public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
              => await _client.GetURLStatusCode(URL, token);
@@ -540,13 +460,13 @@ namespace CollapseLauncher
         }
 #nullable restore
 
-        public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
+        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
             HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
-        public static async ValueTask<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
+        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
             => await BridgedNetworkStream.CreateStream(responseMsg, token);
 
         public static async ValueTask<long[]> GetCDNLatencies(CancellationTokenSource tokenSource, int pingCount = 1)
@@ -591,17 +511,12 @@ namespace CollapseLauncher
             return latencies;
         }
 
-        public static async ValueTask<long> GetContentLength(string url, CancellationToken token)
-        {
-            using HttpRequestMessage message = new HttpRequestMessage() { RequestUri = new Uri(url) };
-            using HttpResponseMessage response = await _clientNoCompression.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, token);
-            long Length = response.Content.Headers.ContentLength ?? 0;
-            return Length;
-        }
+        public static async ValueTask<long> GetContentLength(string url, CancellationToken token) =>
+            (await _clientNoCompression.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token)).Content.Headers.ContentLength ?? 0;
 
         public static string TryGetAbsoluteToRelativeCDNURL(string URL, string searchIndexStr)
         {
-            int indexOf = URL.IndexOf(searchIndexStr);
+            int indexOf = URL.IndexOf(searchIndexStr, StringComparison.Ordinal);
             if (indexOf < 0)
                 return URL;
 
@@ -611,18 +526,6 @@ namespace CollapseLauncher
             string cdnParentURL = preferredCDN.URLPrefix;
             URL = ConverterTool.CombineURLFromString(cdnParentURL, relativeURL);
             return URL;
-        }
-
-        // Re-send the events to the static DownloadProgress
-        private static void HttpInstance_DownloadProgressAdapter(object sender, DownloadEvent e) => DownloadProgress?.Invoke(sender, e);
-
-        private static DownloadEvent DownloadClientAdapter = new DownloadEvent();
-
-        private static void HttpInstance_DownloadProgressAdapter(int read, DownloadProgress downloadProgress)
-        {
-            DownloadClientAdapter.SizeToBeDownloaded = downloadProgress.BytesTotal;
-            DownloadClientAdapter.SizeDownloaded = downloadProgress.BytesDownloaded;
-            DownloadClientAdapter.Read = read;
         }
     }
 }

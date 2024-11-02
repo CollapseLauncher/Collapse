@@ -1,4 +1,5 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.Classes.FileDialogCOM;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -9,8 +10,8 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI.Animations;
-using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
+using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Composition;
@@ -23,6 +24,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -35,6 +37,9 @@ using static CollapseLauncher.WindowSize.WindowSize;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable CollectionNeverQueried.Local
+// ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -759,8 +764,8 @@ namespace CollapseLauncher.Pages.OOBE
             { "vi", "vi-vn" }
         };
 
-        private List<string> LangList =
-            LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})").ToList();
+        private readonly ObservableCollection<string> LangList =
+            new(LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})"));
 
         private int SelectedLangIndex
         {
@@ -833,29 +838,17 @@ namespace CollapseLauncher.Pages.OOBE
                     selected = true;
                     break;
                 case ContentDialogResult.Secondary:
-                    var folder = await FileDialogNative.GetFolderPicker();
+                    var folder = await FileDialogHelper.GetRestrictedFolderPathDialog(Lang._Dialogs.FolderDialogTitle1);
                     if (!string.IsNullOrEmpty(folder))
                     {
-                        if (!CheckIfFolderIsValid(folder))
-                        {
-                            await SimpleDialogs.Dialog_CannotUseAppLocationForGameDir(Content);
-                            break;
-                        }
-
-                        if (ConverterTool.IsUserHasPermission(folder))
-                        {
-                            AppGameFolder = folder;
-                            SetAppConfigValue("GameFolder", AppGameFolder);
-                            selected = true;
-                            _log?.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
-                        }
-                        else
-                        {
-                            ErrMsg.Text = Lang._StartupPage.FolderInsufficientPermission;
-                        }
+                        AppGameFolder = folder;
+                        SetAppConfigValue("GameFolder", AppGameFolder);
+                        selected = true;
+                        _log?.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
                     }
                     else
                     {
+                        ToggleEnableNextPageButton(false);
                         ErrMsg.Text = Lang._StartupPage.FolderNotSelected;
                     }
 
@@ -876,27 +869,7 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private bool CheckIfFolderIsValid(string basePath)
-        {
-            bool isInAppFolderExist = File.Exists(Path.Combine(basePath,                       AppExecutableName))
-                                      || File.Exists(Path.Combine($"{basePath}\\..\\",         AppExecutableName))
-                                      || File.Exists(Path.Combine($"{basePath}\\..\\..\\",     AppExecutableName))
-                                      || File.Exists(Path.Combine($"{basePath}\\..\\..\\..\\", AppExecutableName));
-
-            string? driveLetter = Path.GetPathRoot(basePath);
-            if (string.IsNullOrEmpty(driveLetter))
-            {
-                return false;
-            }
-
-            bool isInAppFolderExist2 = basePath.EndsWith("Collapse Launcher")
-                                       || basePath.StartsWith(Path.Combine(driveLetter, "Program Files"))
-                                       || basePath.StartsWith(Path.Combine(driveLetter, "Program Files (x86)"))
-                                       || basePath.StartsWith(Path.Combine(driveLetter, "Windows"));
-
-            return !(isInAppFolderExist || isInAppFolderExist2);
-        }
-
+        
         #endregion
 
         #region Prepare Metadata and Settings Apply

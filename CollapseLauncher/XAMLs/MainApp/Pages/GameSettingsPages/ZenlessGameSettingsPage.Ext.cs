@@ -37,6 +37,7 @@ namespace CollapseLauncher.Pages
                     VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
                     FxQualitySelector.SelectedIndex          = (int)QualityOption3.High;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
@@ -46,11 +47,13 @@ namespace CollapseLauncher.Pages
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.High;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
+                    MotionBlurToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Medium:
                     VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
                     FxQualitySelector.SelectedIndex          = (int)QualityOption3.Medium;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
@@ -60,11 +63,13 @@ namespace CollapseLauncher.Pages
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Medium;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
+                    MotionBlurToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Low:
                     VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Medium;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
                     FxQualitySelector.SelectedIndex          = (int)QualityOption3.Low;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
@@ -74,6 +79,7 @@ namespace CollapseLauncher.Pages
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Low;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
+                    MotionBlurToggle.IsChecked               = true;
                     break;
             }
 
@@ -480,7 +486,13 @@ namespace CollapseLauncher.Pages
             get => Settings.GeneralData.Bloom;
             set => Settings.GeneralData.Bloom = value;
         }
-        
+
+        public bool Graphics_MotionBlur
+        {
+            get => Settings.GeneralData.MotionBlur;
+            set => Settings.GeneralData.MotionBlur = value;
+        }
+
         public int Graphics_Reflection
         {
             get => (int)Settings.GeneralData.ReflectionQuality;
@@ -522,7 +534,13 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.GeneralData.EnvironmentQuality;
             set => Settings.GeneralData.EnvironmentQuality = (QualityOption2)value;
         }
-        
+
+        public int Graphics_GlobalIllumination
+        {
+            get => (int)Settings.GeneralData.GlobalIllumination;
+            set => Settings.GeneralData.GlobalIllumination = (QualityOption3)value;
+        }
+
         public int Graphics_Fps
         {
             get => (int)Settings.GeneralData.Fps;

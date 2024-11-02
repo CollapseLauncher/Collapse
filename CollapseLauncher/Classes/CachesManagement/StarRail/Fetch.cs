@@ -45,7 +45,7 @@ namespace CollapseLauncher
                 throw new InvalidDataException("The dispatcher response is invalid! Please open an issue to our GitHub page to report this issue.");
 
             // Iterate type and do fetch
-            foreach (SRAssetType type in Enum.GetValues<SRAssetType>())
+            await Parallel.ForEachAsync(Enum.GetValues<SRAssetType>(), token, async (type, innerCancelToken) =>
             {
                 // Skip for unused type
                 switch (type)
@@ -54,12 +54,12 @@ namespace CollapseLauncher
                     case SRAssetType.Video:
                     case SRAssetType.Block:
                     case SRAssetType.Asb:
-                        continue;
+                        return;
                 }
 
                 // uint = Count of the assets available
                 // long = Total size of the assets available
-                (int, long) count = await FetchByType(downloadClient, _httpClient_FetchAssetProgress, type, returnAsset, token);
+                (int, long) count = await FetchByType(downloadClient, _httpClient_FetchAssetProgress, type, returnAsset, innerCancelToken);
 
                 // Write a log about the metadata
                 LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
@@ -67,9 +67,9 @@ namespace CollapseLauncher
                 LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
 
                 // Increment the Total Size and Count
-                _progressAllCountTotal += count.Item1;
-                _progressAllSizeTotal += count.Item2;
-            }
+                Interlocked.Add(ref _progressAllCountTotal, count.Item1);
+                Interlocked.Add(ref _progressAllSizeTotal,  count.Item2);
+            }).ConfigureAwait(false);
 
             // Return asset index
             return returnAsset;

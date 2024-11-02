@@ -22,22 +22,23 @@ namespace CollapseLauncher.Interfaces
         public GamePropertyBase(UIElement parentUI, IGameVersionCheck gameVersionManager, string gamePath, string gameRepoURL, string versionOverride)
         {
             _gameVersionManager = gameVersionManager;
-            _parentUI = parentUI;
-            _gamePathField = gamePath;
-            _gameRepoURL = gameRepoURL;
-            _token = new CancellationTokenSourceWrapper();
-            AssetEntry = new ObservableCollection<IAssetProperty>();
+            _parentUI           = parentUI;
+            _gamePathField      = gamePath;
+            _gameRepoURL        = gameRepoURL;
+            _token              = new CancellationTokenSourceWrapper();
+            AssetEntry          = new ObservableCollection<IAssetProperty>();
+            _isVersionOverride  = versionOverride != null;
 
             // If the version override is not null, then assign the override value
-            if (_isVersionOverride = versionOverride != null)
+            if (_isVersionOverride)
             {
                 _gameVersionOverride = new GameVersion(versionOverride);
             }
         }
 
-        protected const int _bufferLength = 4 << 10;
-        protected const int _bufferMediumLength = 512 << 10;
-        protected const int _bufferBigLength = 1 << 20;
+        protected const int _bufferLength = 4 << 10; // 4 KiB
+        protected const int _bufferMediumLength = 4 << 17; // 512 KiB
+        protected const int _bufferBigLength = 1 << 20; // 1 MiB
         protected const int _sizeForMultiDownload = 10 << 20;
         protected const int _downloadThreadCountReserved = 16;
         protected virtual string _userAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
@@ -51,7 +52,18 @@ namespace CollapseLauncher.Interfaces
         protected Stopwatch _stopwatch { get; set; }
         protected Stopwatch _refreshStopwatch { get; set; }
         protected Stopwatch _downloadSpeedRefreshStopwatch { get; set; }
-        protected GameVersion _gameVersion { get => _isVersionOverride ? _gameVersionOverride : _gameVersionManager.GetGameExistingVersion().Value; }
+        protected GameVersion _gameVersion
+        {
+            get
+            {
+                if (_gameVersionManager != null && _isVersionOverride)
+                {
+                    return _gameVersionOverride;
+                }
+                return _gameVersionManager?.GetGameExistingVersion() ?? throw new NullReferenceException();
+            }
+        }
+
         protected IGameVersionCheck _gameVersionManager { get; set; }
         protected IGameSettings _gameSettings { get; set; }
         protected string _gamePath { get => string.IsNullOrEmpty(_gamePathField) ? _gameVersionManager.GameDirPath : _gamePathField; }

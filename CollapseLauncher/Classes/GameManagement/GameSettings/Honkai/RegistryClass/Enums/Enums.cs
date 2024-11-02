@@ -5,10 +5,32 @@
 namespace CollapseLauncher.GameSettings.Honkai.Enums
 {
     /// <summary>
-    /// This selection has 4 name types: Low (0), Middle (1), High (2), VHigh (3)<br/>
+    /// This selection has 10 name types:
+    /// - 0.6 (Quality06)
+    /// - 0.8 (Quality08)
+    /// - 0.9 (Quality09)
+    /// - 1.0 (Low)
+    /// - 1.1 (Quality11)
+    /// - 1.2 (Middle)
+    /// - 1.3 (Quality13)
+    /// - 1.4 (Quality14)
+    /// - 1.5 (High)
+    /// - 1.6 (VHigh)
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectResolutionQuality>))]
-    internal enum SelectResolutionQuality { Low, Middle, High, VHigh }
+    internal enum SelectResolutionQuality
+    { 
+        Quality06,
+        Quality08,
+        Quality09,
+        Low,
+        Quality11,
+        Middle,
+        Quality13,
+        Quality14,
+        High,
+        VHigh
+    }
 
     /// <summary>
     /// This selection has 5 name types: DISABLED (0), LOW (1), MIDDLE (2), HIGH (3), ULTRA (4)<br/>

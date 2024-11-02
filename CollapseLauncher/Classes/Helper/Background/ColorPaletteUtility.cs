@@ -210,7 +210,7 @@ namespace CollapseLauncher.Helper.Background
             {
                 LumaUtils.DarkThreshold        = isLight ? 200f : 400f;
                 LumaUtils.IgnoreWhiteThreshold = isLight ? 900f : 800f;
-                LumaUtils.ChangeCoeToBT601();
+                // LumaUtils.ChangeCoeToBT601();
 
                 QuantizedColor averageColor = await Task.Run(() =>
                                                                  ColorThief.GetColor(bitmapInput.Buffer,
@@ -219,7 +219,7 @@ namespace CollapseLauncher.Helper.Background
                                                         ;
 
                 WColor wColor        = DrawingColorToColor(averageColor);
-                WColor adjustedColor = wColor.SetSaturation(1.5);
+                WColor adjustedColor = wColor.SetSaturation(1.2);
                 adjustedColor = isLight ? adjustedColor.GetDarkColor() : adjustedColor.GetLightColor();
 
                 return adjustedColor;

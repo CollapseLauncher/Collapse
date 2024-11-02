@@ -22,8 +22,8 @@
         private GamePresetProperty CurrentGameProperty { get; set; }
         public RepairPage()
         {
-            CurrentGameProperty = GetCurrentGameProperty();
             BackgroundImgChanger.ToggleBackground(true);
+            CurrentGameProperty = GetCurrentGameProperty();
             this.InitializeComponent();
         }
 
@@ -220,10 +220,12 @@
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             CurrentGameProperty._GameRepair?.CancelRoutine();
+            CurrentGameProperty._GameRepair?.AssetEntry.Clear();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            BackgroundImgChanger.ToggleBackground(true);
             if (GameInstallationState == GameInstallStateEnum.NotInstalled
                 || GameInstallationState == GameInstallStateEnum.NeedsUpdate
                 || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin

@@ -37,7 +37,7 @@ namespace CollapseLauncher.Helper.Background
         internal static readonly string[] SupportedMediaPlayerExt =
             [".mp4", ".mov", ".mkv", ".webm", ".avi", ".gif"];
 
-        private FrameworkElement?   _parentUI;
+        private static FrameworkElement?   _parentUI;
         private ImageUI?            _bgImageBackground;
         private ImageUI?            _bgImageBackgroundLast;
         private MediaPlayerElement? _bgMediaPlayerBackground;
@@ -61,8 +61,17 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) => {
-            await action;
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) =>
+        {
+            try
+            {
+                await action;
+            }
+            catch (Exception ex)
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                    ErrorSender.SendException(ex));
+            }
         },
         new ExecutionDataflowBlockOptions
         {
@@ -72,6 +81,25 @@ namespace CollapseLauncher.Helper.Background
             BoundedCapacity = 1,
             TaskScheduler = TaskScheduler.Current
         });
+        internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
+        {
+            try
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
+            }
+            catch (Exception ex)
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                    ErrorSender.SendException(ex));
+            }
+        },
+            new ExecutionDataflowBlockOptions
+            {
+                EnsureOrdered = true,
+                MaxMessagesPerTask = 1,
+                MaxDegreeOfParallelism = 1,
+                BoundedCapacity = 1
+            });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -86,6 +114,14 @@ namespace CollapseLauncher.Helper.Background
                                                                                Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
                                                                                Grid              bgMediaPlayerGrid)
         {
+            CurrentAppliedMediaPath = null;
+            CurrentAppliedMediaType = MediaType.Unknown;
+            if (_alternativeFileStream != null)
+            {
+                await _alternativeFileStream.DisposeAsync();
+                _alternativeFileStream = null;
+            }
+
             // Set the parent UI
             FrameworkElement? ui = parentUI;
 
@@ -297,7 +333,12 @@ namespace CollapseLauncher.Helper.Background
                                            ThrowExceptionAction? throwAction          = null,
                                            Action?               actionAfterLoaded    = null)
         {
-            await (SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded)) ?? Task.CompletedTask);
+            while (!await SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded))!)
+            {
+                // Delay the invoke 1/4 second and wait until the action can
+                // be sent again.
+                await Task.Delay(250);
+            }
         }
 
         private async Task LoadBackgroundInner(string mediaPath,                  bool                  isRequestInit = false,

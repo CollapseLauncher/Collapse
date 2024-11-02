@@ -23,10 +23,9 @@
 
         public CachesPage()
         {
-            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-
-            this.InitializeComponent();
             BackgroundImgChanger.ToggleBackground(true);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+            this.InitializeComponent();
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -215,6 +214,7 @@
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            BackgroundImgChanger.ToggleBackground(true);
             if (m_appMode == AppMode.Hi3CacheUpdater) return;
 
             if (GameInstallationState == GameInstallStateEnum.NotInstalled
@@ -245,6 +245,7 @@
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             CurrentGameProperty._GameCache?.CancelRoutine();
+            CurrentGameProperty._GameCache?.AssetEntry.Clear();
         }
     }
 }
