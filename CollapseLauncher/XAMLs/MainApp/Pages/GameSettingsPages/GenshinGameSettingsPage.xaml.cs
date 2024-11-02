@@ -69,16 +69,18 @@
                     RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
-                
+
+#nullable enable
                 // ReSharper disable once UnusedVariable
-                DisplayAdvancedColorInfo colorInfo = WindowUtility.CurrentWindowDisplayColorInfo;
+                DisplayAdvancedColorInfo? colorInfo = WindowUtility.CurrentWindowDisplayColorInfo;
 #if SIMULATEGIHDR
                 IsHDREnabled = true;
                 IsHDRSupported = true;
 #else
-                IsHDREnabled = colorInfo.CurrentAdvancedColorKind == DisplayAdvancedColorKind.HighDynamicRange;
-                IsHDRSupported = colorInfo.IsAdvancedColorKindAvailable(DisplayAdvancedColorKind.HighDynamicRange);
+                IsHDREnabled = colorInfo?.CurrentAdvancedColorKind == DisplayAdvancedColorKind.HighDynamicRange;
+                IsHDRSupported = colorInfo?.IsAdvancedColorKindAvailable(DisplayAdvancedColorKind.HighDynamicRange) ?? false;
 #endif
+#nullable restore
 
                 LoadPage();
             }
