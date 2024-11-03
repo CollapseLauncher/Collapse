@@ -1560,37 +1560,52 @@ namespace CollapseLauncher.InstallManager.Base
 
                     try
                     {
-                        string argument = "";
+                        string arguments = "";
                         string executableName;
-                        int indexOfArgument = asset.RunCommand.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase) + 5;
-                        if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
-                        {
-                            indexOfArgument = asset.RunCommand.IndexOf(' ');
-                        }
-                        else
-                        {
-                            indexOfArgument = -1;
-                        }
+                        // int indexOfArgument = asset.RunCommand.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase) + 5;
+                        // if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
+                        // {
+                        //     indexOfArgument = asset.RunCommand.IndexOf(' ');
+                        // }
+                        // else
+                        // {
+                        //     indexOfArgument = -1;
+                        // }
+                        //
+                        // if (indexOfArgument >= 0)
+                        // {
+                        //     argument = asset.RunCommand.Substring(indexOfArgument);
+                        //     executableName =
+                        //         ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument)
+                        //                                          .TrimEnd(' '));
+                        // }
+                        // else
+                        // {
+                        //     executableName = asset.RunCommand;
+                        // }
 
-                        if (indexOfArgument >= 0)
+                        var firstSpaceIndex = asset.RunCommand.IndexOf(' ');
+                        if (firstSpaceIndex != -1)
                         {
-                            argument = asset.RunCommand.Substring(indexOfArgument);
-                            executableName =
-                                ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument)
-                                                                 .TrimEnd(' '));
+                            // Split into executable and arguments
+                            executableName = asset.RunCommand.Substring(0, firstSpaceIndex);
+                            arguments = asset.RunCommand.Substring(firstSpaceIndex + 1);
                         }
                         else
                         {
+                            // No arguments, only executable
                             executableName = asset.RunCommand;
+                            arguments = string.Empty;
                         }
-
+                        
+                        
                         string executablePath = ConverterTool.NormalizePath(Path.Combine(_gamePath, executableName));
                         Process commandProcess = new Process
                         {
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName        = executablePath,
-                                Arguments       = argument,
+                                Arguments       = arguments,
                                 UseShellExecute = true,
                                 WorkingDirectory = Path.GetDirectoryName(executablePath)
                             }
@@ -1603,7 +1618,7 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         else
                         {
-                            LogWriteLine($"Starting plugin process {executablePath} with argument {argument}");
+                            LogWriteLine($"Starting plugin process {executablePath} with argument {arguments}");
                             await commandProcess.WaitForExitAsync();
                         }
                     }
