@@ -638,7 +638,7 @@
     "FileDownloadSettings_BurstDownloadHelp5": "禁用后，",
     "FileDownloadSettings_BurstDownloadHelp6": "与",
     "FileDownloadSettings_BurstDownloadHelp7": "功能的下载过程将会按顺序下载。",
-    
+
     "Database_Title": "用户同步数据库",
     "Database_ConnectionOk": "数据库连接成功！",
     "Database_ConnectFail": "连接数据库失败，请参阅下面的错误：",
@@ -650,7 +650,12 @@
     "Database_GenerateGuid": "生成 UID",
     "Database_Validate": "验证并保存设置",
     "Database_Error_EmptyUri": "数据库 URL 不能为空！",
-    "Database_Error_EmptyToken": "数据库令牌不能为空！"
+    "Database_Error_EmptyToken": "数据库令牌不能为空！",
+    "Database_Error_InvalidGuid": "用户 ID 不是有效的 GUID！",
+    "Database_Warning_PropertyChanged": "数据库设置已更改",
+    "Database_ValidationChecking": "验证设置中……",
+    "Database_Placeholder_DbUserIdTextBox": "GUID 示例：ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "在这里输入您的身份验证令牌"
   },
 
   "_Misc": {
@@ -908,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "文件夹无效！",
     "CannotUseAppLocationForGameDirSubtitle": "您无法使用此文件夹，因为它已被用作系统文件夹或被用于存放应用程序的主执行文件。请选择其他文件夹！",
+    "InvalidGameDirNewTitleFormat": "路径无效：{0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "选择的路径：",
+    "InvalidGameDirNewSubtitleSelectOther": "请选择另一个文件夹/位置！",
+    "InvalidGameDirNew1Title": "文件夹无效！",
+    "InvalidGameDirNew1Subtitle": "您不能使用此文件夹，因为它被用作系统文件夹或应用程序的主执行文件。请选择其他文件夹！",
+    "InvalidGameDirNew2Title": "无法访问所选文件夹",
+    "InvalidGameDirNew2Subtitle": "启动器没有访问此文件夹的权限！",
+    "InvalidGameDirNew3Title": "无法选择驱动器根目录",
+    "InvalidGameDirNew3Subtitle": "您选择了驱动器的根目录，这是禁止的！",
+    "InvalidGameDirNew4Title": "无法选择 Windows 文件夹",
+    "InvalidGameDirNew4Subtitle": "您不能使用 Windows 文件夹作为游戏安装位置，以免发生任何不必要的情况。",
+    "InvalidGameDirNew5Title": "无法选择 Program Data 文件夹",
+    "InvalidGameDirNew5Subtitle": "您不能使用 Program Data 文件夹作为游戏安装位置，以免发生任何不必要的情况。",
+    "InvalidGameDirNew6Title": "无法选择 Program Files 或 Program Files (x86) 文件夹",
+    "InvalidGameDirNew6Subtitle": "您不能使用 Program Files 或 Program Files (x86) 文件夹作为游戏安装位置，以免发生任何不必要的情况。",
+    "FolderDialogTitle1": "选择游戏安装位置",
 
     "StopGameTitle": "强制停止游戏",
     "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。",
@@ -963,7 +984,7 @@
 
     "OpenInExternalBrowser": "在外部浏览器中打开",
     "CloseOverlay": "关闭",
-    
+
     "DbGenerateUid_Title": "您确定要更改用户 ID 吗？",
     "DbGenerateUid_Content": "更改用户 ID 后，如果遗失了用户 ID，与之相关的数据将会丢失。"
   },
