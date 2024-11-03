@@ -1584,14 +1584,15 @@ namespace CollapseLauncher.InstallManager.Base
                             executableName = asset.RunCommand;
                         }
 
-                        string executablePath = Path.Combine(_gamePath, executableName);
+                        string executablePath = ConverterTool.NormalizePath(Path.Combine(_gamePath, executableName));
                         Process commandProcess = new Process
                         {
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName        = executablePath,
                                 Arguments       = argument,
-                                UseShellExecute = true
+                                UseShellExecute = true,
+                                WorkingDirectory = Path.GetDirectoryName(executablePath)
                             }
                         };
 
@@ -1602,6 +1603,7 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         else
                         {
+                            LogWriteLine($"Starting plugin process {executablePath} with argument {argument}");
                             await commandProcess.WaitForExitAsync();
                         }
                     }
