@@ -16,7 +16,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
@@ -63,6 +62,7 @@ using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 using SophonManifest = Hi3Helper.Sophon.SophonManifest;
 using CollapseLauncher.Classes.FileDialogCOM;
+using CollapseLauncher.DiscordPresence;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -3858,12 +3858,18 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning   = true;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
+                    #endif
                     break;
                 case CompletenessStatus.Completed:
                     IsRunning           = false;
                     _status.IsRunning   = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     // HACK: Fix the progress not achieving 100% while completed
                     _progress.ProgressAllPercentage     = 100f;
                     _progress.ProgressPerFilePercentage = 100f;
@@ -3873,12 +3879,18 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = true;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     break;
                 case CompletenessStatus.Idle:
                     IsRunning           = false;
                     _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     break;
             }
 
