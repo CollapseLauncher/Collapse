@@ -1100,7 +1100,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get the remote chunk size
-                _progressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize();
+                _progressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
                 _progressPerFileSizeCurrent = 0;
 
                 // Get the remote total size and current total size
