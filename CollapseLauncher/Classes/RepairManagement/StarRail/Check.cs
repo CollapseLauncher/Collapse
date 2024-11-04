@@ -220,7 +220,9 @@ namespace CollapseLauncher
 
             // Check if the file exist on both persistent and streaming path for non-patch file, then mark the
             // persistent path as redundant (unused)
-            if (IsPersistentExist && IsStreamingExist && !asset.IsPatchApplicable)
+            bool isNonPatchHasRedundantPersistent = !asset.IsPatchApplicable && IsPersistentExist && IsStreamingExist && fileInfoStreaming.Length == asset.S;
+
+            if (isNonPatchHasRedundantPersistent)
             {
                 // Add the count and asset. Mark the type as "RepairAssetType.Unused"
                 _progressAllCountFound++;
@@ -236,14 +238,18 @@ namespace CollapseLauncher
                     )
                 ));
 
-                // Fix the asset detected as a used file even though it's actually unused
-                asset.FT = FileType.Unused;
-                targetAssetIndex.Add(asset);
+                // Create a new instance as unused one
+                FilePropertiesRemote unusedAsset = new FilePropertiesRemote
+                {
+                    N = fileInfoPersistent.FullName,
+                    FT = FileType.Unused,
+                    RN = asset.RN,
+                    CRC = asset.CRC,
+                    S = asset.S
+                };
+                targetAssetIndex.Add(unusedAsset);
 
-                // Set the file to be used from Persistent one
-                UsePersistent = true;
-
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.FT}]: {unusedAsset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
             }
 
             // If the file has Hash Mark or is persistent, then create the hash mark file
