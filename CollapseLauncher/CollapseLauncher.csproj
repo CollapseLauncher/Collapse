@@ -31,7 +31,7 @@
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
         <!-- AoT Configs -->
-		<PublishAot>true</PublishAot>
+		<PublishAot>false</PublishAot>
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
