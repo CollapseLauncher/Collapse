@@ -13,7 +13,7 @@
       xmlns:static="using:CollapseLauncher.GameSettings.Zenless"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      NavigationCacheMode="Enabled"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>

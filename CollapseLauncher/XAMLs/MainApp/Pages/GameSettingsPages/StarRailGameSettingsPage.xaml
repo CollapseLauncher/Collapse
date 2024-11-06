@@ -11,7 +11,7 @@
       xmlns:static="using:CollapseLauncher.GameSettings.StarRail"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      NavigationCacheMode="Enabled"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
