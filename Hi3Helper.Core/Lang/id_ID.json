@@ -157,6 +157,7 @@
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
     "GameSettings_Panel4ShowPlaytimeButton": "Munculkan Tombol \"Waktu Main\"",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Sinkronisasi Waktu Mulai dengan Database",
     "GameSettings_Panel4CreateShortcutBtn": "Buat pintasan",
     "GameSettings_Panel4AddToSteamBtn": "Tambahkan ke Steam",
 
@@ -165,6 +166,7 @@
     "GamePlaytime_Idle_Panel1Minutes": "Menit",
     "GamePlaytime_Idle_ResetBtn": "Atur Ulang",
     "GamePlaytime_Idle_ChangeBtn": "Ubah",
+    "GamePlaytime_Idle_SyncDb": "Sinkronkan",
     "GamePlaytime_Running_Info1": "Game ini sedang berjalan, maka dari itu waktu main tidak dapat diubah.",
     "GamePlaytime_Running_Info2": "Perlu diingat bahwa menutup Collapse Launcher akan menghentikan penghitungan waktu main (selama game dimainkan dari awal sampai akhir).",
     "GamePlaytime_Display": "{0}j {1}m",
@@ -635,7 +637,25 @@
     "FileDownloadSettings_BurstDownloadHelp4": "berjalan secara bersamaan sehingga proses unduhan berjalan lebih cepat dan efisien.",
     "FileDownloadSettings_BurstDownloadHelp5": "Ketika dimatikan, proses unduhan pada",
     "FileDownloadSettings_BurstDownloadHelp6": "dan",
-    "FileDownloadSettings_BurstDownloadHelp7": "akan berjalan satu-per-satu."
+    "FileDownloadSettings_BurstDownloadHelp7": "akan berjalan satu-per-satu.",
+
+    "Database_Title": "Sinkronisasi Database Pengguna",
+    "Database_ConnectionOk": "Database berhasil terhubung!",
+    "Database_ConnectFail": "Gagal menghubungi database, periksa error di bawah ini:",
+    "Database_Toggle": "Gunakan Database Online",
+    "Database_Url": "URL Database",
+    "Database_Url_Example": "Contoh: https://db-collapse.turso.io",
+    "Database_Token": "Token",
+    "Database_UserId": "ID Pengguna",
+    "Database_GenerateGuid": "Hasilkan UID",
+    "Database_Validate": "Validasi & Simpan Pengaturan",
+    "Database_Error_EmptyUri": "URL Database tidak boleh kosong!",
+    "Database_Error_EmptyToken": "Token Database tidak boleh kosong!",
+    "Database_Error_InvalidGuid": "GUID pada User ID tidak valid!",
+    "Database_Warning_PropertyChanged": "Pengaturan Database telah berubah",
+    "Database_ValidationChecking": "Validasi Pengaturan...",
+    "Database_Placeholder_DbUserIdTextBox": "Contoh GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini"
   },
 
   "_Misc": {
@@ -655,6 +675,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "Semuanya Berhasil!",
     "Cancel": "Batal",
     "Close": "Tutup",
     "UseCurrentDir": "Pakai lokasi saat ini",
@@ -892,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "Folder tidak valid!",
     "CannotUseAppLocationForGameDirSubtitle": "Anda tidak dapat menggunakan folder ini karena digunakan sebagai folder sistem atau digunakan sebagai folder utama dari executable aplikasi ini. Mohon untuk gunakan folder lainnya!",
+    "InvalidGameDirNewTitleFormat": "Path tidak valid: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Path Terpilih: ",
+    "InvalidGameDirNewSubtitleSelectOther": "Mohon pilih lokasi/folder lainnya!",
+    "InvalidGameDirNew1Title": "Folder tidak valid!",
+    "InvalidGameDirNew1Subtitle": "Kamu tidak bisa menggunakan folder ini karena folder ini digunakan oleh system ataupun digunakan oleh aplikasi ini. Silahkan pilih folder lainnya!",
+    "InvalidGameDirNew2Title": "Tidak dapat mengakses folder yang dipilih",
+    "InvalidGameDirNew2Subtitle": "Launcher tidak memiliki izin untuk mengakses folder ini!",
+    "InvalidGameDirNew3Title": "Tidak dapat memilih root drive",
+    "InvalidGameDirNew3Subtitle": "Kamu memilih path pada root drive. Kamu tidak bisa memilih path ini!",
+    "InvalidGameDirNew4Title": "Tidak dapat memilih folder Windows",
+    "InvalidGameDirNew4Subtitle": "Kamu tidak dapat menggunakan folder Windows sebagai lokasi pemasangan Game, hal ini untuk mencegah hal yang tidak diinginkan terjadi.",
+    "InvalidGameDirNew5Title": "Tidak dapat memilih folder Program Data",
+    "InvalidGameDirNew5Subtitle": "Kamu tidak dapat menggunakan folder Program Data sebagai lokasi pemasangan Game, hal ini untuk mencegah hal yang diinginkan terjadi.",
+    "InvalidGameDirNew6Title": "Tidak dapat memilih folder Program Files atau Program Files (x86)",
+    "InvalidGameDirNew6Subtitle": "Kamu tidak dapat menggunakan folder Program Files atau Program Files (x86) sebagai lokasi pemasangan Game, hal ini untuk mencegah hal yang diinginkan terjadi.",
+    "FolderDialogTitle1": "Pilih Lokasi Pemsangan Game",
 
     "StopGameTitle": "Tutup Paksa Game",
     "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
@@ -946,7 +983,10 @@
     "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
 
     "OpenInExternalBrowser": "Buka di Browser Eksternal",
-    "CloseOverlay": "Tutup Overlay"
+    "CloseOverlay": "Tutup Overlay",
+
+    "DbGenerateUid_Title": "Apakah kamu yakin ingin mengubah ID User-mu?",
+    "DbGenerateUid_Content": "Mengubah User ID-mu dapat menyebabkan kehilangan data yang sudah tersimpan."
   },
 
   "_FileMigrationProcess": {
@@ -1466,6 +1506,7 @@
     "Graphics_EffectsQ": "Kualitas Efek",
     "Graphics_ShadingQ": "Kualitas Shading",
     "Graphics_Distortion": "Distorsi",
+    "Graphics_HighPrecisionCharacterAnimation": "Animasi Akurasi Tinggi pada Karakter",
     "Audio_PlaybackDev": "Perangkat Pemutaran Suara",
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
