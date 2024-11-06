@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless;
-internal class GeneralData : MagicNodeBaseValues<GeneralData>
+
+internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
 {
     #region Disposer
-    public void Dispose() => DisposeAsync().GetAwaiter().GetResult();
-    
-    public async Task DisposeAsync()
+
+    ~GeneralData()
     {
         _systemSettingDataMap = null;
         _keyboardBindingMap = null;
@@ -47,8 +47,10 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
         _playDevData = null;
         _muteAudOnMinimizeData = null;
 
-        await Task.CompletedTask;
+        GC.Collect();
     }
+
+    public void Dispose() => GC.SuppressFinalize(this);
 
     #endregion
     #region Node Based Properties
