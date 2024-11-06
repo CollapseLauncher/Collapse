@@ -638,7 +638,7 @@
     "FileDownloadSettings_BurstDownloadHelp5": "Al deshabilitarlo, el proceso de descarga para",
     "FileDownloadSettings_BurstDownloadHelp6": "y",
     "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial.",
-    
+
     "Database_Title": "Base de datos sincronizable",
     "Database_ConnectionOk": "¡Base de datos conectada exitosamente!",
     "Database_ConnectFail": "Falla al conectar a la base de datos, mira los errores a continuación:",
@@ -650,7 +650,12 @@
     "Database_GenerateGuid": "Generar UID",
     "Database_Validate": "Validar y Guardar Ajustes",
     "Database_Error_EmptyUri": "¡URL no puede estar vacía!",
-    "Database_Error_EmptyToken": "¡Token no puede estar vacío!"
+    "Database_Error_EmptyToken": "¡Token no puede estar vacío!",
+    "Database_Error_InvalidGuid": "¡El ID de Usuario no es un GUID valido!",
+    "Database_Warning_PropertyChanged": "Ajustes de Base de datos han cambiado",
+    "Database_ValidationChecking": "Validando Configuración...",
+    "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí"
   },
 
   "_Misc": {
@@ -908,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "¡La carpeta no es válida!",
     "CannotUseAppLocationForGameDirSubtitle": "No puede utilizar esta carpeta ya que está siendo usada como una carpeta del sistema o usada para el ejecutable principal de la aplicación. ¡Por favor, elige otra carpeta!",
+    "InvalidGameDirNewTitleFormat": "Ubicación Invalida: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Ubicación Seleccionada:",
+    "InvalidGameDirNewSubtitleSelectOther": "¡Por favor, selecciona otra carpeta/ubicación!",
+    "InvalidGameDirNew1Title": "¡Carpeta Invalida!",
+    "InvalidGameDirNew1Subtitle": "No puedes utilizar esta carpeta, ya que se utiliza como carpeta del sistema o como ejecutable principal de la aplicación. ¡Por favor, selecciona otra carpeta!",
+    "InvalidGameDirNew2Title": "No se puede acceder a la carpeta seleccionada",
+    "InvalidGameDirNew2Subtitle": "¡El Launcher no tiene permisos para acceder a esta carpeta!",
+    "InvalidGameDirNew3Title": "No puedes seleccionar el directorio raíz",
+    "InvalidGameDirNew3Subtitle": "Has seleccionado una ubicación en el directorio raíz de tu disco, lo cual está prohibido! ",
+    "InvalidGameDirNew4Title": "No puedes seleccionar la carpeta de Windows",
+    "InvalidGameDirNew4Subtitle": "No puedes usar la carpeta de Windows como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
+    "InvalidGameDirNew5Title": "No puedes seleccionar la carpeta ProgramData",
+    "InvalidGameDirNew5Subtitle": "No puedes usar la carpeta ProgramData como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
+    "InvalidGameDirNew6Title": "No puedes seleccionar la carpeta Archivos de Programa o Archivos de Programa (x86)",
+    "InvalidGameDirNew6Subtitle": "No puedes usar la carpeta Archivos de Programa o Archivos de Programa (x86) como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
+    "FolderDialogTitle1": "Seleccionar Ubicación Instalación del Juego",
 
     "StopGameTitle": "Forzar el cierre del juego",
     "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego.",
@@ -963,7 +984,7 @@
 
     "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
     "CloseOverlay": "Cerrar Superposición (Overlay)",
-    
+
     "DbGenerateUid_Title": "¿Estas seguro que quieres cambiar tu ID de Usuario?",
     "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes."
   },
@@ -1485,6 +1506,7 @@
     "Graphics_EffectsQ": "Calidad del Efectos",
     "Graphics_ShadingQ": "Calidad Sombreado",
     "Graphics_Distortion": "Distorción",
+    "Graphics_HighPrecisionCharacterAnimation": "Animación de Alta Precisión de Personajes",
     "Audio_PlaybackDev": "Dispositivo de Audio",
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
