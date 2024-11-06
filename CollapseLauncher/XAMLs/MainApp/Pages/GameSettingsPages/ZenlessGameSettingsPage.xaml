@@ -500,6 +500,7 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0"
                                             VerticalAlignment="Center">
@@ -534,6 +535,19 @@
                                               IsChecked="{x:Bind Graphics_MotionBlur, Mode=TwoWay}"
                                               Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_MotionBlur}"
+                                                   TextWrapping="Wrap" />
+                                    </CheckBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="3"
+                                            VerticalAlignment="Center">
+                                    <!-- ReSharper disable once InconsistentNaming -->
+                                    <CheckBox x:Name="HPCAToggle"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Checked="EnforceCustomPreset_Checkbox"
+                                              IsChecked="{x:Bind Graphics_HiPreCharaAnim, Mode=TwoWay}"
+                                              Unchecked="EnforceCustomPreset_Checkbox">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
                                 </StackPanel>
