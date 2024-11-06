@@ -2199,37 +2199,56 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Open Button Method
-        private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = NormalizePath(GameDirPath);
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                string gameFolder = NormalizePath(GameDirPath);
+                LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
+
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = gameFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
-        private void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            string cacheFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+            LogWriteLine($"Opening Game Folder:\r\n\t{cacheFolder}");
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = cacheFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
-        private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
             string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
             {
@@ -2242,15 +2261,24 @@ namespace CollapseLauncher.Pages
             if (!Directory.Exists(ScreenshotFolder))
                 Directory.CreateDirectory(ScreenshotFolder);
 
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = ScreenshotFolder
-                }
-            }.Start();
+                await Task.Run(() => 
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = ScreenshotFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game screenshot folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private async void CleanupFilesButton_Click(object sender, RoutedEventArgs e)

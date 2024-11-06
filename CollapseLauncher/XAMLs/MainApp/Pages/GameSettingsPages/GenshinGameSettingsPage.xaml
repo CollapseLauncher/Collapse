@@ -14,7 +14,7 @@
       xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      NavigationCacheMode="Enabled"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>

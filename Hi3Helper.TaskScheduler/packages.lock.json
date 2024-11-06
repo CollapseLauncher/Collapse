@@ -50,13 +50,13 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[0.0.626, )",
-        "resolved": "0.0.626",
-        "contentHash": "el6qqNyJM3GA11j6SFZgcQJ/AFg7ocQQSu+Tk/+OIzejZlROGLK+RDWPb4tcp9E9ug9aT4HV0m35zISMSC++/Q==",
+        "requested": "[0.0.869, )",
+        "resolved": "0.0.869",
+        "contentHash": "oGk+2xphxXDm2rsj4z5JTOnfE7CydgEmsbadubkJOUAbLcaAnuLZQF+3EgVZEiuEFLgtdtl7BBhZ8GrDs41l1g==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
-          "Newtonsoft.Json": "13.0.1",
-          "NuGet.Versioning": "6.10.1"
+          "Newtonsoft.Json": "13.0.3",
+          "NuGet.Versioning": "6.11.1"
         }
       },
       "Microsoft.Extensions.Logging.Abstractions": {
@@ -132,13 +132,13 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
       },
       "NuGet.Versioning": {
         "type": "Transitive",
-        "resolved": "6.10.1",
-        "contentHash": "tovHZ3OlMVmsTdhv2z5nwnnhoA1ryhfJMyVQ9/+iv6d3h78fp230XaGy3K/iVcLwB50DdfNfIsitW97KSOWDFg=="
+        "resolved": "6.11.1",
+        "contentHash": "YNn3BB71F+guJW42TbAhGcMh3gpyqFMZcPVD9pm5vcvGivTALtRely/VCPWQQ6JQ5PfwIrjPaJMO7VnqyeK3rg=="
       },
       "System.AppContext": {
         "type": "Transitive",

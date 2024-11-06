@@ -28,6 +28,9 @@ namespace Hi3Helper
                 public string Graphics_Distortion { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Graphics_Distortion;
 
+                public string Graphics_HighPrecisionCharacterAnimation { get; set; } =
+                    LangFallback?._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation;
+
                 public string Audio_PlaybackDev { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Audio_PlaybackDev;
                 

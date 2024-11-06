@@ -86,11 +86,11 @@
       },
       "GitInfo": {
         "type": "Direct",
-        "requested": "[3.3.5, )",
-        "resolved": "3.3.5",
-        "contentHash": "xt8tAMq42KompgmZI5fpko9IY9cuGqjvNFCc+B6iZeoCHlqcbuGZz33SFD+jTsPZTFfrxqTXvywm/s8DcFcEIg==",
+        "requested": "[3.5.0, )",
+        "resolved": "3.5.0",
+        "contentHash": "w7pFvv7PutCdK126BSq9O+wXfiyXQ68c2BeZnd9AHAbkV+IlTCF47LCZHNCqNchWMEv+GBbWGHCcGzZT411tIw==",
         "dependencies": {
-          "ThisAssembly.Constants": "1.4.1"
+          "ThisAssembly.Constants": "2.0.6"
         }
       },
       "HtmlAgilityPack": {
@@ -110,12 +110,6 @@
         "requested": "[0.38.0, )",
         "resolved": "0.38.0",
         "contentHash": "zfi6kNm5QJnsCGm5a0hMG2qw8juYbOfsS4c1OuTcqkbYQUCdkam6d6Nt7nPIrbV4D+U7sHChidSQlg+ViiMPuw=="
-      },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.2.24473.5, )",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA=="
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
@@ -262,12 +256,12 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[0.0.626, )",
-        "resolved": "0.0.626",
-        "contentHash": "el6qqNyJM3GA11j6SFZgcQJ/AFg7ocQQSu+Tk/+OIzejZlROGLK+RDWPb4tcp9E9ug9aT4HV0m35zISMSC++/Q==",
+        "requested": "[0.0.869, )",
+        "resolved": "0.0.869",
+        "contentHash": "oGk+2xphxXDm2rsj4z5JTOnfE7CydgEmsbadubkJOUAbLcaAnuLZQF+3EgVZEiuEFLgtdtl7BBhZ8GrDs41l1g==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
-          "NuGet.Versioning": "6.10.1"
+          "NuGet.Versioning": "6.11.1"
         }
       },
       "CommunityToolkit.WinUI.Animations": {
@@ -335,8 +329,8 @@
       },
       "NuGet.Versioning": {
         "type": "Transitive",
-        "resolved": "6.10.1",
-        "contentHash": "tovHZ3OlMVmsTdhv2z5nwnnhoA1ryhfJMyVQ9/+iv6d3h78fp230XaGy3K/iVcLwB50DdfNfIsitW97KSOWDFg=="
+        "resolved": "6.11.1",
+        "contentHash": "YNn3BB71F+guJW42TbAhGcMh3gpyqFMZcPVD9pm5vcvGivTALtRely/VCPWQQ6JQ5PfwIrjPaJMO7VnqyeK3rg=="
       },
       "System.Drawing.Common": {
         "type": "Transitive",
@@ -358,8 +352,8 @@
       },
       "ThisAssembly.Constants": {
         "type": "Transitive",
-        "resolved": "1.4.1",
-        "contentHash": "sV0CDYlC6YSIkYbdwd4+jRinLb888Dac71pmNhF2Ll6UXY1J+1oVt3EfmX6euXEKz2RLdfV+4GyZctfEA0NSqA==",
+        "resolved": "2.0.6",
+        "contentHash": "XF1RWxkEx+xvSRZOpkLF0rrclMsjKYkO+j7UoCk+ebSzKcxoIye7Na4HvkmIJogNoB+vZqSz7df5McxgzZHtbg==",
         "dependencies": {
           "Microsoft.CSharp": "4.7.0",
           "System.Threading.Tasks.Extensions": "4.5.4"
@@ -479,15 +473,6 @@
         "requested": "[0.5.0, )",
         "resolved": "0.5.0",
         "contentHash": "5Tw6O9sBDAN1aV+kpOSVvqvFk6Ahk6bYz0TTx3808Dp40M45gKTtzTzI9SS1VeAkljE6BAOeKaykpPnG36oOgw=="
-      },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0-rc.2.24473.5, )",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "+4KH+fbuWXX+I1nM+iP84N0nnorwxY3N8SrNLDNdWdblCPcWXSZnnst/IS+NEHTavnoTErwFNwk7IP8rPrNAQA==",
-        "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.0-rc.2.24473.5"
-        }
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",

@@ -2000,38 +2000,56 @@ namespace CollapseLauncher
             }.Start();
         }
 
-        private void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private async void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsGameInstalled()) return;
-
-            string GameFolder = NormalizePath(GameDirPath);
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                if (!IsGameInstalled()) return;
+
+                string GameFolder = NormalizePath(GameDirPath);
+                LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = GameFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
-        private void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private async void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsGameInstalled()) return;
-
-            string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                if (!IsGameInstalled()) return;
+
+                string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+                LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = GameFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)

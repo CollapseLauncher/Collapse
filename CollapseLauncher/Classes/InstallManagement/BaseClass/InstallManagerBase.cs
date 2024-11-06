@@ -16,7 +16,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
@@ -63,6 +62,7 @@ using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 using SophonManifest = Hi3Helper.Sophon.SophonManifest;
 using CollapseLauncher.Classes.FileDialogCOM;
+using CollapseLauncher.DiscordPresence;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -1100,7 +1100,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get the remote chunk size
-                _progressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize();
+                _progressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
                 _progressPerFileSizeCurrent = 0;
 
                 // Get the remote total size and current total size
@@ -1560,38 +1560,54 @@ namespace CollapseLauncher.InstallManager.Base
 
                     try
                     {
-                        string argument = "";
+                        string arguments = "";
                         string executableName;
-                        int indexOfArgument = asset.RunCommand.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase) + 5;
-                        if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
-                        {
-                            indexOfArgument = asset.RunCommand.IndexOf(' ');
-                        }
-                        else
-                        {
-                            indexOfArgument = -1;
-                        }
+                        // int indexOfArgument = asset.RunCommand.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase) + 5;
+                        // if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
+                        // {
+                        //     indexOfArgument = asset.RunCommand.IndexOf(' ');
+                        // }
+                        // else
+                        // {
+                        //     indexOfArgument = -1;
+                        // }
+                        //
+                        // if (indexOfArgument >= 0)
+                        // {
+                        //     argument = asset.RunCommand.Substring(indexOfArgument);
+                        //     executableName =
+                        //         ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument)
+                        //                                          .TrimEnd(' '));
+                        // }
+                        // else
+                        // {
+                        //     executableName = asset.RunCommand;
+                        // }
 
-                        if (indexOfArgument >= 0)
+                        var firstSpaceIndex = asset.RunCommand.IndexOf(' ');
+                        if (firstSpaceIndex != -1)
                         {
-                            argument = asset.RunCommand.Substring(indexOfArgument);
-                            executableName =
-                                ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument)
-                                                                 .TrimEnd(' '));
+                            // Split into executable and arguments
+                            executableName = asset.RunCommand.Substring(0, firstSpaceIndex);
+                            arguments = asset.RunCommand.Substring(firstSpaceIndex + 1);
                         }
                         else
                         {
+                            // No arguments, only executable
                             executableName = asset.RunCommand;
+                            arguments = string.Empty;
                         }
-
-                        string executablePath = Path.Combine(_gamePath, executableName);
+                        
+                        
+                        string executablePath = ConverterTool.NormalizePath(Path.Combine(_gamePath, executableName));
                         Process commandProcess = new Process
                         {
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName        = executablePath,
-                                Arguments       = argument,
-                                UseShellExecute = true
+                                Arguments       = arguments,
+                                UseShellExecute = true,
+                                WorkingDirectory = Path.GetDirectoryName(executablePath)
                             }
                         };
 
@@ -1602,6 +1618,7 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         else
                         {
+                            LogWriteLine($"Starting plugin process {executablePath} with argument {arguments}");
                             await commandProcess.WaitForExitAsync();
                         }
                     }
@@ -3858,12 +3875,18 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning   = true;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
+                    #endif
                     break;
                 case CompletenessStatus.Completed:
                     IsRunning           = false;
                     _status.IsRunning   = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     // HACK: Fix the progress not achieving 100% while completed
                     _progress.ProgressAllPercentage     = 100f;
                     _progress.ProgressPerFilePercentage = 100f;
@@ -3873,12 +3896,18 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = true;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     break;
                 case CompletenessStatus.Idle:
                     IsRunning           = false;
                     _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     break;
             }
 

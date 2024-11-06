@@ -58,6 +58,7 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         public override void ReloadSettings()
         {
+            GeneralData.Dispose();
             InitializeSettings();
         }
 
