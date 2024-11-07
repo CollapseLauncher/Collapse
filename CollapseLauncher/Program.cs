@@ -370,17 +370,17 @@ public static class MainEntryPoint
 
     public static string FindCollapseStubPath()
     {
-        var collapseExecName = "CollapseLauncher.exe";
         var collapseMainPath = Process.GetCurrentProcess().MainModule!.FileName;
-        var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
-                                            collapseExecName);
-        if (File.Exists(collapseStubPath))
-        {
-            LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
-            return collapseStubPath;
-        }
+        // var collapseExecName = "CollapseLauncher.exe";
+        // var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
+        //                                     collapseExecName);
+        // if (File.Exists(collapseStubPath))
+        // {
+        //     LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
+        //     return collapseStubPath;
+        // }
 
-        LogWriteLine($"Collapse stub does not exist, returning current executable path!\r\n\t{collapseStubPath}",
+        LogWriteLine($"Collapse stub is not used anymore, returning current executable path!\r\n\t{collapseMainPath}",
                      LogType.Default, true);
         return collapseMainPath;
     }
