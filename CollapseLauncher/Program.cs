@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
+using Hi3Helper.Core.Classes.Remote;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -82,33 +83,20 @@ public static class MainEntryPoint
                 }
                 
                 // Sentry SDK Entry
-#if USEREMOTELOGGING
-                LogWriteLine("Initializing SentrySdk...", LogType.Remote, false);
-                SentrySdk.Init(o =>
+                LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
+                GlobalSentryHandler.InitializeSentrySdk();
+                LogWriteLine("Loading Sentry SDK...", LogType.Remote, true);
+                try
                 {
-                    o.Dsn = "https://2acc39f86f2b4f5a99bac09494af13c6@bugsink.bagelnl.my.id/1";
-
+                    GlobalSentryHandler.InitializeExceptionRedirector();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine("Failed to load Sentry SDK.", LogType.Remote, true);
 #if DEBUG
-                    o.Debug = true;
-                    o.DiagnosticLogger = new ConsoleDiagnosticLogger(SentryLevel.Debug);
-                    o.DiagnosticLevel = SentryLevel.Debug;
-#else
-                    o.Debug = false;
+                    LogWriteLine(ex.Message, LogType.Debug, true);
 #endif
-                    o.TracesSampleRate = 1.0;
-                    o.IsGlobalModeEnabled = true;
-                    o.DisableWinUiUnhandledExceptionIntegration();
-                    o.StackTraceMode = StackTraceMode.Enhanced;
-                    
-#if DEBUG
-                    o.Distribution = "Debug";
-#else
-                    o.Distribution = IsPreview ? "Preview" : "Stable";
-#endif
-                    
-                    o.MaxAttachmentSize = 5 * 1024 * 1024; // 5 MB
-                });
-#endif
+                }
 
                 StartUpdaterHook();
 
