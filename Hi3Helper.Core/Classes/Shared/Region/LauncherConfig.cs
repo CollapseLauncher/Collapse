@@ -408,6 +408,10 @@ namespace Hi3Helper.Shared.Region
             #else
             { "EnableConsole", false },
             #endif
+            #if USEREMOTELOGGING
+            { "SendRemoteCrashData", true },
+            #endif
+            { "SendRemoteCrashData", false },
             { "EnableMultipleInstance", false },
             { "DontAskUpdate", false },
             { "ThemeMode", new IniValue(AppThemeMode.Default) },

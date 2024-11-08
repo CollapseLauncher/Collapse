@@ -1335,6 +1335,13 @@
                                       OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                       OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
                                       Visibility="Collapsed" />
+                        <ToggleSwitch x:Name="ToggleSendRemoteCrashData"
+                                      Margin="0,4"
+                                      Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_SendRemoteCrashData}"
+                                      IsOn="{x:Bind IsSendRemoteCrashData, Mode=TwoWay}"
+                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                      Visibility="Visible" />
                         <ToggleSwitch Margin="0,4"
                                       Header="{x:Bind helper:Locale.Lang._SettingsPage.Debug_MultipleInstance}"
                                       IsOn="{x:Bind IsMultipleInstanceEnabled, Mode=TwoWay}"
