@@ -22,6 +22,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Sentry;
+using Sentry.Infrastructure;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -78,6 +80,33 @@ public static class MainEntryPoint
                         LogType.Warning, true);
                     Directory.SetCurrentDirectory(AppFolder);
                 }
+                
+                // Sentry SDK Entry
+                // TODO: Make this disableable or whatever that spelled
+                SentrySdk.Init(o =>
+                {
+                    o.Dsn = "https://2acc39f86f2b4f5a99bac09494af13c6@bugsink.bagelnl.my.id/1";
+
+#if DEBUG
+                    o.Debug = true;
+                    o.DiagnosticLogger = new ConsoleDiagnosticLogger(SentryLevel.Debug);
+                    o.DiagnosticLevel = SentryLevel.Debug;
+#else
+                    o.Debug = false;
+#endif
+                    o.TracesSampleRate = 1.0;
+                    o.IsGlobalModeEnabled = true;
+                    o.DisableWinUiUnhandledExceptionIntegration();
+                    o.StackTraceMode = StackTraceMode.Enhanced;
+                    
+#if DEBUG
+                    o.Distribution = "Debug";
+#else
+                    o.Distribution = IsPreview ? "Preview" : "Stable";
+#endif
+                    
+                    o.MaxAttachmentSize = 5 * 1024 * 1024; // 5 MB
+                });
 
                 StartUpdaterHook();
 

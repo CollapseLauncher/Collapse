@@ -10,6 +10,8 @@ using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Linq;
 using Windows.UI;
+using Sentry;
+using Sentry.Protocol;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
@@ -51,9 +53,17 @@ namespace CollapseLauncher
                 UnhandledException += static (sender, e) =>
                 {
                     LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true);
-                #if !DEBUG
+                    var ex = e.Exception;
+                    if (ex != null)
+                    {
+                        ex.Data[Mechanism.HandledKey] = false;
+                        ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
+                        SentrySdk.CaptureException(ex);
+                        SentrySdk.FlushAsync(TimeSpan.FromSeconds(1)).GetAwaiter().GetResult();
+                    }
+#if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(e!.Exception);
-                #endif
+#endif
                 };
             }
 

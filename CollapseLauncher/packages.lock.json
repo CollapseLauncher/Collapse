@@ -196,6 +196,12 @@
         "resolved": "9.0.0-rc.2.24473.5",
         "contentHash": "gtZORh0O2hlNn8D+ezseJs1SEAI83Ca+LC8vmAIqaYUbiAn5+6iqD+ytuztGo4Thjr/2qWXKn3l7GGQEQiCJMg=="
       },
+      "Sentry": {
+        "type": "Direct",
+        "requested": "[4.13.0, )",
+        "resolved": "4.13.0",
+        "contentHash": "Wfw3M1WpFcrYaGzPm7QyUTfIOYkVXQ1ry6p4WYjhbLz9fPwV23SGQZTFDpdox67NHM0V0g1aoQ4YKLm4ANtEEg=="
+      },
       "SharpCompress": {
         "type": "Direct",
         "requested": "[0.38.0, )",
