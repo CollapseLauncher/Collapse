@@ -82,7 +82,8 @@ public static class MainEntryPoint
                 }
                 
                 // Sentry SDK Entry
-                // TODO: Make this disableable or whatever that spelled
+#if USEREMOTELOGGING
+                LogWriteLine("Initializing SentrySdk...", LogType.Remote, false);
                 SentrySdk.Init(o =>
                 {
                     o.Dsn = "https://2acc39f86f2b4f5a99bac09494af13c6@bugsink.bagelnl.my.id/1";
@@ -107,6 +108,7 @@ public static class MainEntryPoint
                     
                     o.MaxAttachmentSize = 5 * 1024 * 1024; // 5 MB
                 });
+#endif
 
                 StartUpdaterHook();
 
