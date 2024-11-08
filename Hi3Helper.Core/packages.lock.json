@@ -14,6 +14,12 @@
         "resolved": "2.1.6",
         "contentHash": "k5G30dezZjGnGyLokTkj+yBX9gyAhDSm8pY7MqEUX1Dorl4GfSywfodOA8wmhFaNuUd4OI6q1MuQQaxQIA/t0w=="
       },
+      "Sentry": {
+        "type": "Direct",
+        "requested": "[4.13.0, )",
+        "resolved": "4.13.0",
+        "contentHash": "Wfw3M1WpFcrYaGzPm7QyUTfIOYkVXQ1ry6p4WYjhbLz9fPwV23SGQZTFDpdox67NHM0V0g1aoQ4YKLm4ANtEEg=="
+      },
       "Google.Protobuf": {
         "type": "Transitive",
         "resolved": "3.28.3",

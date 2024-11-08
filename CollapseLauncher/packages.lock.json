@@ -407,7 +407,8 @@
         "type": "Project",
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
-          "Microsoft.Windows.CsWinRT": "[2.1.6, )"
+          "Microsoft.Windows.CsWinRT": "[2.1.6, )",
+          "Sentry": "[4.13.0, )"
         }
       },
       "hi3helper.enctool": {

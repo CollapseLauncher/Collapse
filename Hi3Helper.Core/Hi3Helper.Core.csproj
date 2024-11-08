@@ -43,6 +43,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.6" />
+	  <PackageReference Include="Sentry" Version="4.13.0" />
 	</ItemGroup>
 
 	<ItemGroup>
