@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -133,7 +134,12 @@ namespace CollapseLauncher
         public static ErrorType ExceptionType;
         public static string ExceptionTitle;
         public static string ExceptionSubtitle;
-        public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled) => invoker!.SendException(e, eT);
+
+        public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled)
+        {
+            SentryHelper.ExceptionHandler(e);
+            invoker!.SendException(e, eT);
+        } 
         public static void SendWarning(Exception e, ErrorType eT = ErrorType.Warning) =>
             invoker!.SendException(e, eT);
         public static void SendExceptionWithoutPage(Exception e, ErrorType eT = ErrorType.Unhandled)
