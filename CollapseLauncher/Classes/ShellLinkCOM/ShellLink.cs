@@ -41,9 +41,9 @@ namespace CollapseLauncher.ShellLinkCOM
                 ).ThrowOnFailure();
 
             linkW = shellLink;
-            persistFileW = shellLink?.QueryInterfaceAs<IShellLinkW, IPersistFile>(in CLSIDGuid.IGuid_IPersistFile);
-            persistW = shellLink?.QueryInterfaceAs<IShellLinkW, IPersist>(in CLSIDGuid.IGuid_IPersist);
-            propertyStoreW = shellLink?.QueryInterfaceAs<IShellLinkW, IPropertyStore>(in CLSIDGuid.IGuid_IPropertyStore);
+            persistFileW = shellLink?.CastComInterfaceAs<IShellLinkW, IPersistFile>(in CLSIDGuid.IGuid_IPersistFile);
+            persistW = shellLink?.CastComInterfaceAs<IShellLinkW, IPersist>(in CLSIDGuid.IGuid_IPersist);
+            propertyStoreW = shellLink?.CastComInterfaceAs<IShellLinkW, IPropertyStore>(in CLSIDGuid.IGuid_IPropertyStore);
         }
 
         /// <summary>

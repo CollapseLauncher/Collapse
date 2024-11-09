@@ -151,7 +151,7 @@ namespace CollapseLauncher
         public static unsafe extern HRESULT CoCreateInstance(in Guid rclsid, IntPtr pUnkOuter, CLSCTX dwClsContext, in Guid riid, out void* ppObj);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe TInterfaceTo? QueryInterfaceAs<TInterfaceFrom, TInterfaceTo>(this TInterfaceFrom interfaceFrom, in Guid interfaceToGuid)
+        internal static unsafe TInterfaceTo? CastComInterfaceAs<TInterfaceFrom, TInterfaceTo>(this TInterfaceFrom interfaceFrom, in Guid interfaceToGuid)
             where TInterfaceFrom : class
             where TInterfaceTo : class
         {
