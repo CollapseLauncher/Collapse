@@ -6,7 +6,7 @@ using Hi3Helper.Shared.Region;
 using Sentry.Protocol;
 
 #nullable enable
-namespace Hi3Helper.Core.SentryHelper
+namespace Hi3Helper.SentryHelper
 {
     public static class SentryHelper
     {

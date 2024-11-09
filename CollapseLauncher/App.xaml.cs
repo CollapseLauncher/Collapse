@@ -1,6 +1,7 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -10,9 +11,6 @@ using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Linq;
 using Windows.UI;
-using Hi3Helper.Core.SentryHelper;
-using Sentry;
-using Sentry.Protocol;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;

@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
-using Hi3Helper.Core.SentryHelper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -23,8 +23,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Sentry;
-using Sentry.Infrastructure;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;

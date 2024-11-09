@@ -14,6 +14,7 @@
     using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
+    using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Input;
@@ -571,12 +572,8 @@ namespace CollapseLauncher.Pages
 
         private bool IsSendRemoteCrashData
         {
-            get => GetAppConfigValue("SendRemoteCrashData").ToBool();
-            set
-            {
-                SetAndSaveConfigValue("SendRemoteCrashData", value);
-                // TODO: Include some setup stuff here
-            }
+            get => SentryHelper.IsEnabled;
+            set => SentryHelper.IsEnabled = value;
         }
 
         private bool IsIntroEnabled
