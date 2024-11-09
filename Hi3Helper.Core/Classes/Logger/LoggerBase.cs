@@ -18,7 +18,7 @@ namespace Hi3Helper
         private string _logFolder { get; set; }
 #if !APPLYUPDATE
         private string _logPath { get; set; }
-        public static string LogPath;
+        public static string LogPath { get; set; }
 #endif
         private StringBuilder _stringBuilder { get; set; }
         #endregion
@@ -277,7 +277,7 @@ namespace Hi3Helper
             LogType.Game    => "[Game]  ",
             LogType.Debug   => "[DBG]   ",
             LogType.GLC     => "[GLC]   ",
-            LogType.Sentry   => "[Remo]  ",
+            LogType.Sentry   => "[Sentry]  ",
             LogType.NoTag   => "      ",
             _ => throw ThrowInvalidType()
         };

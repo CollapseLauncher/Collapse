@@ -81,6 +81,7 @@ public static class MainEntryPoint
                 }
 
 
+                SentryHelper.IsPreview = IsPreview;
                 if (SentryHelper.IsEnabled)
                 {
                     try
@@ -93,10 +94,7 @@ public static class MainEntryPoint
                     }
                     catch (Exception ex)
                     {
-                        LogWriteLine("Failed to load Sentry SDK.", LogType.Sentry, true);
-#if DEBUG
-                        LogWriteLine(ex.Message, LogType.Debug, true);
-#endif
+                        LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
                     }
                 }
 
@@ -105,7 +103,11 @@ public static class MainEntryPoint
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                     LauncherUpdateHelper.LauncherCurrentVersionString,
                     GetVersionString(),
+                    #if DEBUG
                     Environment.UserName,
+                    #else
+                    "[REDACTED]",
+                    #endif
                     IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
                 var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
