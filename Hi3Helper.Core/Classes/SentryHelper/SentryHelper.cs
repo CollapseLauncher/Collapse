@@ -64,6 +64,12 @@ namespace Hi3Helper.SentryHelper
                 o.Distribution = IsPreview ? "Preview" : "Stable";
 #endif
                 o.MaxAttachmentSize = 5 * 1024 * 1024; // 5 MB
+                o.DeduplicateMode = DeduplicateMode.All;
+            });
+            
+            SentrySdk.ConfigureScope(s =>
+            {
+                s.AddAttachment(LoggerBase.LogPath);
             });
         }
 

@@ -18,6 +18,7 @@ namespace Hi3Helper
         private string _logFolder { get; set; }
 #if !APPLYUPDATE
         private string _logPath { get; set; }
+        public static string LogPath;
 #endif
         private StringBuilder _stringBuilder { get; set; }
         #endregion
@@ -224,6 +225,7 @@ namespace Hi3Helper
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
             _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}.log");
+            LogPath = _logPath;
 
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
