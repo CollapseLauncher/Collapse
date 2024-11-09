@@ -1,6 +1,8 @@
-﻿using Microsoft.Win32.TaskScheduler;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Win32.TaskScheduler;
 using NuGet.Versioning;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -83,7 +85,10 @@ namespace Hi3Helper.TaskScheduler
         static int RecreateIcons(string executablePath)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            new Shortcuts(null, new CollapseVelopackLocator(executablePath)).CreateShortcut(executablePath, ShortcutLocation.Desktop | ShortcutLocation.StartMenuRoot, false, null);
+            ILogger logger = new DummyILoggerWrapper();
+            VelopackLocator locator = new CollapseVelopackLocator(executablePath);
+            ShortcutTool shortcuts = new ShortcutTool(logger, locator);
+            shortcuts.CreateShortcut(executablePath, ShortcutLocation.Desktop | ShortcutLocation.StartMenuRoot, false, null);
 #pragma warning restore CS0618 // Type or member is obsolete
             return 0;
         }
@@ -129,13 +134,13 @@ namespace Hi3Helper.TaskScheduler
             }
         }
 
-        static TaskSched GetExistingTask(TaskService taskService, string schedName, string execPath)
+        static TaskSched? GetExistingTask(TaskService taskService, string schedName, string execPath)
         {
             // Try get the tasks
             TaskSched[] tasks = taskService.FindAllTasks(new System.Text.RegularExpressions.Regex(schedName), false);
 
             // Try get the first task
-            TaskSched task = tasks?
+            TaskSched? task = tasks?
                 .FirstOrDefault(x =>
                     x.Name.Equals(schedName, StringComparison.OrdinalIgnoreCase));
 
@@ -146,7 +151,7 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // Get actionPath
-            string actionPath = task.Definition.Actions?.FirstOrDefault()?.ToString();
+            string? actionPath = task.Definition.Actions?.FirstOrDefault()?.ToString();
 
             // If actionPath is null, then return null as empty
             if (string.IsNullOrEmpty(actionPath))
@@ -155,14 +160,14 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // if actionPath isn't matched, then replace with current executable path
-            if (!actionPath.StartsWith(execPath, StringComparison.OrdinalIgnoreCase))
+            if (!actionPath?.StartsWith(execPath, StringComparison.OrdinalIgnoreCase) ?? false)
             {
                 // Check if the last action path runs on tray
-                bool isLastHasTray = actionPath.EndsWith("tray", StringComparison.OrdinalIgnoreCase);
+                bool isLastHasTray = actionPath?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
 
                 // Register changes
-                task.Definition.Actions.Clear();
-                task.Definition.Actions.Add(new ExecAction(execPath, isLastHasTray ? "tray" : null));
+                task.Definition.Actions?.Clear();
+                task.Definition.Actions?.Add(new ExecAction(execPath, isLastHasTray ? "tray" : null));
                 task.RegisterChanges();
             }
 
@@ -175,7 +180,7 @@ namespace Hi3Helper.TaskScheduler
             using (TaskService taskService = new TaskService())
             {
                 // Get the task
-                TaskSched task = GetExistingTask(taskService, schedName, execPath);
+                TaskSched? task = GetExistingTask(taskService, schedName, execPath);
 
                 // If the task is not null, then do further check
                 if (task != null)
@@ -184,7 +189,7 @@ namespace Hi3Helper.TaskScheduler
                     bool isOnTray = task.Definition?.Actions?.FirstOrDefault()?.ToString()?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
 
                     // If the task definition is enabled, then return 1 (true) or 2 (true with tray)
-                    if (task.Definition.Settings.Enabled)
+                    if (task.Definition?.Settings.Enabled ?? false)
                         return isOnTray ? 2 : 1;
 
                     // Otherwise, if the task exist but not enabled, then return 0 (false) or -1 (false with tray)
@@ -201,7 +206,7 @@ namespace Hi3Helper.TaskScheduler
             using (TaskService taskService = new TaskService())
             {
                 // Try get existing task
-                TaskSched task = GetExistingTask(taskService, schedName, execPath);
+                TaskSched? task = GetExistingTask(taskService, schedName, execPath);
 
                 try
                 {
@@ -241,29 +246,29 @@ namespace Hi3Helper.TaskScheduler
         const string SpecVersionFileName = "sq.version";
 
         /// <inheritdoc />
-        public override string AppId { get; }
+        public override string? AppId { get; }
 
         /// <inheritdoc />
-        public override string RootAppDir { get; }
+        public override string? RootAppDir { get; }
 
         /// <inheritdoc />
-        public override string UpdateExePath { get; }
+        public override string? UpdateExePath { get; }
 
         /// <inheritdoc />
-        public override string AppContentDir { get; }
+        public override string? AppContentDir { get; }
 
         /// <inheritdoc />
-        public override SemanticVersion CurrentlyInstalledVersion { get; }
+        public override SemanticVersion? CurrentlyInstalledVersion { get; }
 
         /// <inheritdoc />
-        public override string PackagesDir => CreateSubDirIfDoesNotExist(RootAppDir, "packages");
+        public override string? PackagesDir => CreateSubDirIfDoesNotExist(RootAppDir, "packages");
 
         /// <inheritdoc />
         public override bool IsPortable =>
             RootAppDir != null ? File.Exists(Path.Combine(RootAppDir, ".portable")) : false;
 
         /// <inheritdoc />
-        public override string Channel { get; }
+        public override string? Channel { get; }
 
         /// <summary>
         /// Internal use only. Auto detect app details from the specified EXE path.
@@ -335,6 +340,65 @@ namespace Hi3Helper.TaskScheduler
                     Channel = manifest.Channel;
                 }
             }
+        }
+
+        public override List<VelopackAsset> GetLocalPackages()
+        {
+            try
+            {
+                if (CurrentlyInstalledVersion == null)
+                    return new List<VelopackAsset>(0);
+
+                var list = new List<VelopackAsset>();
+                if (PackagesDir != null)
+                {
+                    foreach (var pkg in Directory.EnumerateFiles(PackagesDir, "*.nupkg"))
+                    {
+                        try
+                        {
+                            var asset = VelopackAsset.FromNupkg(pkg);
+                            if (asset?.Version != null)
+                            {
+                                list.Add(asset);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.LogWarning(ex, $"Error while reading local package '{pkg}'.");
+                        }
+                    }
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                Log.LogError(ex, "Error while reading local packages.");
+                return new List<VelopackAsset>(0);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override VelopackAsset? GetLatestLocalFullPackage()
+        {
+            return GetLocalPackages()
+                .OrderByDescending(x => x.Version)
+                .FirstOrDefault(x => x.Type == VelopackAssetType.Full);
+        }
+    }
+
+    internal class DummyILoggerWrapper : ILogger
+    {
+        internal DummyILoggerWrapper() { }
+
+        public IDisposable BeginScope<TState>(TState state)
+            where TState : notnull => default!;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            string message = formatter(state, exception);
+            Console.WriteLine(string.Format("[{0}] {1}", logLevel, message));
         }
     }
 }
