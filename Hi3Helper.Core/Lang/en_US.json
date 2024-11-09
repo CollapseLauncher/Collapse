@@ -422,6 +422,7 @@
     "Debug": "Additional Settings",
     "Debug_Console": "Show Console",
     "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
+    "Debug_SendRemoteCrashData": "Send anonymous crash reports to developers",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",

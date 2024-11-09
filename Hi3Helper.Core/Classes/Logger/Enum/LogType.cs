@@ -9,6 +9,7 @@
         NoTag,
         Game,
         Debug,
-        GLC
+        GLC,
+        Remote
     }
 }

@@ -569,6 +569,16 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        private bool IsSendRemoteCrashData
+        {
+            get => GetAppConfigValue("SendRemoteCrashData").ToBool();
+            set
+            {
+                SetAndSaveConfigValue("SendRemoteCrashData", value);
+                // TODO: Include some setup stuff here
+            }
+        }
+
         private bool IsIntroEnabled
         {
             get => LauncherConfig.IsIntroEnabled;
