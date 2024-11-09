@@ -256,7 +256,7 @@ namespace Hi3Helper
             LogType.Game => "\u001b[35;1m",
             LogType.Debug => "\u001b[36;1m",
             LogType.GLC => "\u001b[91;1m",
-            LogType.Remote => "\u001b[42;1m",
+            LogType.Sentry => "\u001b[42;1m",
             _ => string.Empty
         };
 
@@ -275,7 +275,7 @@ namespace Hi3Helper
             LogType.Game    => "[Game]  ",
             LogType.Debug   => "[DBG]   ",
             LogType.GLC     => "[GLC]   ",
-            LogType.Remote   => "[Remo]  ",
+            LogType.Sentry   => "[Remo]  ",
             LogType.NoTag   => "      ",
             _ => throw ThrowInvalidType()
         };

@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
-using Hi3Helper.Core.Classes.Remote;
+using Hi3Helper.Core.SentryHelper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -81,21 +81,25 @@ public static class MainEntryPoint
                         LogType.Warning, true);
                     Directory.SetCurrentDirectory(AppFolder);
                 }
-                
-                // Sentry SDK Entry
-                LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
-                GlobalSentryHandler.InitializeSentrySdk();
-                LogWriteLine("Loading Sentry SDK...", LogType.Remote, true);
-                try
+
+
+                if (SentryHelper.IsEnabled)
                 {
-                    GlobalSentryHandler.InitializeExceptionRedirector();
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine("Failed to load Sentry SDK.", LogType.Remote, true);
+                    try
+                    {
+                        // Sentry SDK Entry
+                        LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
+                        LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
+                        SentryHelper.InitializeSentrySdk();
+                        SentryHelper.InitializeExceptionRedirect();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine("Failed to load Sentry SDK.", LogType.Sentry, true);
 #if DEBUG
-                    LogWriteLine(ex.Message, LogType.Debug, true);
+                        LogWriteLine(ex.Message, LogType.Debug, true);
 #endif
+                    }
                 }
 
                 StartUpdaterHook();

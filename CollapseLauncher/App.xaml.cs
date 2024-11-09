@@ -10,6 +10,7 @@ using PhotoSauce.NativeCodecs.Libwebp;
 using System;
 using System.Linq;
 using Windows.UI;
+using Hi3Helper.Core.SentryHelper;
 using Sentry;
 using Sentry.Protocol;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -56,10 +57,7 @@ namespace CollapseLauncher
                     var ex = e.Exception;
                     if (ex != null)
                     {
-                        ex.Data[Mechanism.HandledKey] = false;
-                        ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
-                        SentrySdk.CaptureException(ex);
-                        SentrySdk.FlushAsync(TimeSpan.FromSeconds(1)).GetAwaiter().GetResult();
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledXaml);
                     }
 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(e!.Exception);

@@ -71,12 +71,11 @@
                                 This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
 		- USEVELOPACK : Use Velopack as the update manager
-		- USEREMOTELOGGING : Use Sentry SDK to log errors remotely to Bugsink instance
 -->
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT;USEREMOTELOGGING</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
 		<TrimMode>full</TrimMode>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -89,7 +88,7 @@
     <PropertyGroup Condition="'$(Configuration)'=='Publish'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT;USEREMOTELOGGING</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>

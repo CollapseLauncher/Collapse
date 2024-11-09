@@ -10,6 +10,6 @@
         Game,
         Debug,
         GLC,
-        Remote
+        Sentry
     }
 }
