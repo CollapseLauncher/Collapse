@@ -51,19 +51,18 @@ namespace Hi3Helper.SentryHelper
                 o.DiagnosticLogger = new ConsoleDiagnosticLogger(SentryLevel.Debug);
                 o.DiagnosticLevel = SentryLevel.Debug;
 #else
-                    o.Debug = false;
+                o.Debug = false;
 #endif
                 o.TracesSampleRate = 1.0;
                 o.IsGlobalModeEnabled = true;
                 o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
                 o.StackTraceMode = StackTraceMode.Enhanced;
-
+                o.SendDefaultPii = false;
 #if DEBUG
                 o.Distribution = "Debug";
 #else
                 o.Distribution = IsPreview ? "Preview" : "Stable";
 #endif
-
                 o.MaxAttachmentSize = 5 * 1024 * 1024; // 5 MB
             });
         }
