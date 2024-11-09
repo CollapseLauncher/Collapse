@@ -527,13 +527,11 @@ namespace CollapseLauncher.Helper.Image
             // Ignore cancellation exceptions
             catch (TaskCanceledException) { }
             catch (OperationCanceledException) { }
-#if !DEBUG
             catch (Exception ex)
             {
                 // ErrorSender.SendException(ex, ErrorType.Connection);
                 Logger.LogWriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
             }
-#endif
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
