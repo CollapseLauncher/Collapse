@@ -1,7 +1,6 @@
 using Sentry;
 using Sentry.Infrastructure;
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;

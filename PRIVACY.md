@@ -1,6 +1,6 @@
 # Privacy Policy for Collapse Launcher
 
-_Last Updated: June 1st, 2024_
+_Last Updated: November 11th, 2024_
 
 Thank you for using Collapse Launcher! This Privacy Policy outlines the information practices of Collapse Launcher and how any third-party services utilized may collect, use, and disclose data.
 
@@ -9,6 +9,7 @@ Please read this Privacy Policy carefully to understand how we may use and proce
 ## 1. Information We Do Not Collect
 
 Collapse Launcher is committed to preserving your privacy and does not collect any personally identifiable information (PII). We do not track your usage, access, or any personal data related to your interaction with the program.
+However, we do collect error data to aid in development. This data is stored on our self-hosted, Sentry-compatible dashboard server, which is accessible only to our core development team. We try our best to strip any PII data from being collected. You can disable this anytime by going to the application settings.
 
 ## 2. Third-Party Services
 
