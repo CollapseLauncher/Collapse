@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,6 +65,7 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 throw ex.Flatten().InnerExceptions.First();
             }
 

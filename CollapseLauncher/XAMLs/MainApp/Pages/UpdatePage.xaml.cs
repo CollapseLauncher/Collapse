@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 #if !USEVELOPACK
@@ -63,8 +64,9 @@ namespace CollapseLauncher.Pages
 
                 await StartUpdateRoutine();
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                await SentryHelper.ExceptionHandlerAsync(tce);
                 Logger.LogWriteLine("Update countdown has been cancelled!", LogType.Default, true);
             }
             catch (Exception ex)
@@ -99,8 +101,9 @@ namespace CollapseLauncher.Pages
 
                 await _StartUpdateRoutine();
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                await SentryHelper.ExceptionHandlerAsync(oce);
                 Logger.LogWriteLine("Update has been canceled!", LogType.Warning, true);
             }
             catch (Exception ex)

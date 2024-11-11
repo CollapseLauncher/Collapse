@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics;
@@ -47,15 +48,20 @@ namespace CollapseLauncher
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
-                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url),
-#if !USEVELOPACK
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread,
+                                                                 GetRelativePathOnly(url),
+                                                             #if !USEVELOPACK
                     default
-#else
-                    cancelToken
-#endif
-                    );
+                                                             #else
+                                                                 cancelToken
+                                                             #endif
+                                                                );
             }
-            catch { throw; }
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                throw;
+            }
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= progressEvent;
