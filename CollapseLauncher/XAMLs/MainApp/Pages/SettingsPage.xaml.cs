@@ -161,8 +161,9 @@ namespace CollapseLauncher.Pages
                         File.Delete(AppNotifIgnoreFile);
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         // Pipe error
                     }
                     MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
@@ -287,8 +288,9 @@ namespace CollapseLauncher.Pages
                 }.Start();
                 (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
             }
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Pipe error
             }
         }
@@ -1168,8 +1170,9 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    await SentryHelper.ExceptionHandlerAsync(ex);
                     InvokeError();
                     return;
                 }

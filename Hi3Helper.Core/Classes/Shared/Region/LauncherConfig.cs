@@ -244,8 +244,9 @@ namespace Hi3Helper.Shared.Region
                         string version = $"{verInfo.FileMajorPart}.{verInfo.FileMinorPart}.{verInfo.FileBuildPart}";
                         return _appCurrentVersionString = version;
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        SentryHelper.SentryHelper.ExceptionHandler(ex);
                         return "Unknown";
                     }
                 }

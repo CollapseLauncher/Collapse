@@ -23,6 +23,7 @@ using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Screen;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
@@ -275,6 +276,7 @@ namespace CollapseLauncher.Pages
             }
             catch (ArgumentNullException ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
@@ -367,6 +369,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
             }
         }
@@ -396,9 +399,10 @@ namespace CollapseLauncher.Pages
             {
                 // Ignore
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{e}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -719,6 +723,7 @@ namespace CollapseLauncher.Pages
             // If the error has occured, then return null to fallback (open the URL).
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Failed while parsing Tag Property: {tagProperty}!\r\n{ex}", LogType.Warning, true);
             }
             return null;
@@ -803,7 +808,7 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             // Try to get the file path
-                            file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
+                            file = await GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
                             // If the file returns null because of getting cancelled, then back to loop again.
                             if (string.IsNullOrEmpty(file)) continue;
                             // Otherwise, assign the value to applicationPath variable and save it to the app config
@@ -842,7 +847,9 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 // If error happened while running the app, then log and return true as successful
-                // Thoughts @Cyr0? Should we mark it as successful (true) or failed (false)?
+                // Thoughts @Cry0? Should we mark it as successful (true) or failed (false)?
+                // Mark is as true, since the app still ran but it's an error outside our scope.
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Unable to start app {applicationName}! {ex}", LogType.Error, true);
                 return true;
             }
@@ -1082,8 +1089,9 @@ namespace CollapseLauncher.Pages
                 // Ignore
                 LogWriteLine($"Game run watcher has been terminated!");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error when checking if game is running!\r\n{e}", LogType.Error, true);
             }
         }
@@ -1167,6 +1175,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
             }
         }
@@ -1246,8 +1255,9 @@ namespace CollapseLauncher.Pages
                                                        );
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                await SentryHelper.ExceptionHandlerAsync(oce);
                 LogWriteLine("Pre-Download paused!", LogType.Warning);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
@@ -1387,20 +1397,23 @@ namespace CollapseLauncher.Pages
                                                        );
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                await SentryHelper.ExceptionHandlerAsync(tce);
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                await SentryHelper.ExceptionHandlerAsync(oce);
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
             catch (NotSupportedException ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
@@ -1766,6 +1779,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Win32Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
@@ -1833,6 +1847,7 @@ namespace CollapseLauncher.Pages
             }
             catch(Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
             }
 
@@ -2188,11 +2203,13 @@ namespace CollapseLauncher.Pages
                         }
                     }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                SentryHelper.ExceptionHandler(oce, SentryHelper.ExceptionType.UnhandledOther);
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
             }
         }
@@ -2535,20 +2552,23 @@ namespace CollapseLauncher.Pages
                                                        );
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                await SentryHelper.ExceptionHandlerAsync(tce);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                await SentryHelper.ExceptionHandlerAsync(oce);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
             catch (NullReferenceException ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
@@ -2661,6 +2681,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -2677,6 +2698,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"There was an error trying to force enable HDR on Genshin!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -2716,6 +2738,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }
@@ -2790,14 +2813,17 @@ namespace CollapseLauncher.Pages
                 LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
             }
             // Ignore external errors
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ioe)
             {
+                SentryHelper.ExceptionHandler(ioe);
             }
-            catch (Win32Exception)
+            catch (Win32Exception we)
             {
+                SentryHelper.ExceptionHandler(we);
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
             }
         }

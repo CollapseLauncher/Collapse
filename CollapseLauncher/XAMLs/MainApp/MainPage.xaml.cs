@@ -424,7 +424,7 @@ namespace CollapseLauncher
                         }
                         catch (Exception ex)
                         {
-                            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                            await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                             LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
                         }
                         break;
@@ -660,7 +660,7 @@ namespace CollapseLauncher
             }
             catch (JsonException ex)
             {
-                SentryHelper.ExceptionHandler(ex);
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
@@ -709,7 +709,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
             }
         }

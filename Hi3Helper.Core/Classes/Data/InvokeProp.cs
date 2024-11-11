@@ -555,13 +555,15 @@ namespace Hi3Helper
                     await Task.Delay(60000, _preventSleepToken.Token);
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                SentryHelper.SentryHelper.ExceptionHandler(tce); // still log for good measure, as handled
                 //do nothing, its cancelled :)
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogWriteLine($"[InvokeProp::PreventSleep()] Errors while preventing sleep!\r\n{e}",
+                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"[InvokeProp::PreventSleep()] Errors while preventing sleep!\r\n{ex}",
                              LogType.Error, true);
             }
             finally
@@ -694,6 +696,7 @@ namespace Hi3Helper
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Failed when trying to fetch an instance information! " +
                                      $"InstanceCount is not incremented.\r\n{ex}",
                                      LogType.Error, true);

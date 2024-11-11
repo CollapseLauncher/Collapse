@@ -173,6 +173,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 ReleaseNotesBox.Text = string.Format(Lang._UpdatePage.LoadingReleaseFailed, ex);
             }
         }

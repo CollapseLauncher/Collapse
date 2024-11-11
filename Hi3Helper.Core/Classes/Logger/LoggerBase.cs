@@ -60,8 +60,9 @@ namespace Hi3Helper
                     // Initialize writer and the path of the log file.
                     InitializeWriter(false, logEncoding);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex);
                     // If the initialization above fails, then use fallback.
                     InitializeWriter(true, logEncoding);
                 }
@@ -103,6 +104,7 @@ namespace Hi3Helper
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
                 }
             }
@@ -131,6 +133,7 @@ namespace Hi3Helper
                 }
                 catch (IOException ex) when (ex.HResult == unchecked((int)0x80070070)) // Disk full? Delete all logs <:
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex);
                 #nullable enable
                     Console.WriteLine("Disk is full.. Resetting log files!");
                     // Rewrite log
@@ -143,12 +146,14 @@ namespace Hi3Helper
                     }
                     catch (Exception retryEx)
                     {
+                        SentryHelper.SentryHelper.ExceptionHandler(retryEx, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                         Console.WriteLine($"Error while writing log file after reset!\r\n{retryEx}");
                     }
                 #nullable restore
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                     Console.WriteLine($"Error while writing log file!\r\n{ex}");
                 }
             }

@@ -9,6 +9,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Http;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Win32;
 using System;
@@ -408,6 +409,7 @@ namespace CollapseLauncher
             // If a throw was thrown, then try to redownload the manifest.m file and try deserialize it again
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Exception was thrown while reading audio manifest file!\r\n{ex}", LogType.Warning, true);
             }
         }

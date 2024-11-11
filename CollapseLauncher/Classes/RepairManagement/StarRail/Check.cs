@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -103,7 +104,9 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
-                throw ex.Flatten().InnerExceptions.First();
+                var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
+                SentryHelper.ExceptionHandler(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                throw innerExceptionsFirst;
             }
 
             // Re-add the asset index with a broken asset index
@@ -297,8 +300,9 @@ namespace CollapseLauncher
             {
                 await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"File {fileNameToOpen} is not found while UsePersistent is {UsePersistent}. " +
                              $"Creating hard link and retrying...", LogType.Warning, true);
 

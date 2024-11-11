@@ -4,6 +4,7 @@
     using CollapseLauncher.Helper;
     using CollapseLauncher.Statics;
     using Hi3Helper;
+    using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
@@ -80,12 +81,14 @@
                                                        );
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                await SentryHelper.ExceptionHandlerAsync(tce);
                 ResetStatusAndButtonState();
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                await SentryHelper.ExceptionHandlerAsync(oce);
                 ResetStatusAndButtonState();
             }
             catch (Exception ex)
@@ -130,12 +133,14 @@
                                                        );
                 }
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException tce)
             {
+                await SentryHelper.ExceptionHandlerAsync(tce);
                 ResetStatusAndButtonState();
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException oce)
             {
+                await SentryHelper.ExceptionHandlerAsync(oce);
                 ResetStatusAndButtonState();
             }
             catch (Exception ex)

@@ -184,13 +184,15 @@ public static class MainEntryPoint
             #if !DEBUG
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 SpawnFatalErrorConsole(ex);
             }
             #else
             // ReSharper disable once RedundantCatchClause
             // Reason: warning shaddap-er
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
             #endif
@@ -377,6 +379,7 @@ public static class MainEntryPoint
         }
         catch (Exception ex)
         {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
         }
 
@@ -426,6 +429,7 @@ public static class MainEntryPoint
         }
         catch (Exception ex)
         {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}", LogType.Error, true);
         }
     }
