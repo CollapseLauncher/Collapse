@@ -84,7 +84,7 @@ namespace Hi3Helper.SentryHelper
             });
         }
 
-        private static void StopSentrySdk()
+        public static void StopSentrySdk()
         {
             try
             {
@@ -135,6 +135,8 @@ namespace Hi3Helper.SentryHelper
             ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
             if (exT == ExceptionType.UnhandledXaml) 
                 ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
+            else if (exT == ExceptionType.UnhandledOther)
+                ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             SentrySdk.CaptureException(ex);
             SentrySdk.Flush(TimeSpan.FromSeconds(5));
         }
@@ -145,6 +147,8 @@ namespace Hi3Helper.SentryHelper
             ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
             if (exT == ExceptionType.UnhandledXaml) 
                 ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
+            else if (exT == ExceptionType.UnhandledOther)
+                ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             SentrySdk.CaptureException(ex);
             await SentrySdk.FlushAsync(TimeSpan.FromSeconds(1));
         }
@@ -175,19 +179,21 @@ namespace Hi3Helper.SentryHelper
                 //ignore
             }
         }
+
+        public static void ExceptionHandler_ForLoop(Exception ex, ExceptionType exT = ExceptionType.Handled) =>
+            ExceptionHandler_ForLoop_Async(ex, exT).GetAwaiter().GetResult();
         
-        public static void ExceptionHandler_ForLoop(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        public static async Task ExceptionHandler_ForLoop_Async(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
             if (ex == _exHLoopLastEx) return;
-            _loopToken.Cancel();
+            await _loopToken.CancelAsync();
             _loopToken = new CancellationTokenSource();
             _exHLoopLastEx = ex;
             ExHLoopLastEx_AutoClean(); 
             
             ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
             SentrySdk.CaptureException(ex);
-            SentrySdk.Flush(TimeSpan.FromSeconds(5));
         }
     }
 }

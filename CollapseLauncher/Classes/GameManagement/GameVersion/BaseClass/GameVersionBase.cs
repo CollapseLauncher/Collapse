@@ -19,6 +19,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
+
 // ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameVersioning
@@ -601,6 +603,7 @@ namespace CollapseLauncher.GameVersioning
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Failed while checking the SDK file update\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 return false;
             }
         }

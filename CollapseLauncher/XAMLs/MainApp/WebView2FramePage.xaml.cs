@@ -6,6 +6,7 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
@@ -54,6 +55,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error while initialize WebView2. Open it to browser instead!\r\n{ex}", LogType.Error, true);
                 new Process
                 {
@@ -103,6 +105,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 if (ex is NotSupportedException nsEx)
                 {
                     LogWriteLine($"Half-baked NativeAOT Bug (nice MSFT!) :) https://github.com/MicrosoftEdge/WebView2Feedback/issues/4783\r\n{nsEx}", LogType.Error, true);

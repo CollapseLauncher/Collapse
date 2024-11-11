@@ -59,7 +59,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
             finally
@@ -282,6 +282,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return null;
             }
@@ -310,6 +311,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
@@ -361,6 +363,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
@@ -424,6 +427,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}", LogType.Error, true);
                 return CDNUtilHTTPStatus.CreateInitializationError();
             }

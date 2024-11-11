@@ -133,7 +133,6 @@ namespace Hi3Helper
                 }
                 catch (IOException ex) when (ex.HResult == unchecked((int)0x80070070)) // Disk full? Delete all logs <:
                 {
-                    SentryHelper.SentryHelper.ExceptionHandler(ex);
                 #nullable enable
                     Console.WriteLine("Disk is full.. Resetting log files!");
                     // Rewrite log

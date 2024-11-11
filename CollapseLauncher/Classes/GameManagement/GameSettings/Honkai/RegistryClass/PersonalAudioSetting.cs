@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Logger;
@@ -223,6 +224,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 

@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using Hi3Helper.SentryHelper;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
@@ -319,6 +320,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
                 return DefaultValue(magic, versionManager, typeInfo);
             }

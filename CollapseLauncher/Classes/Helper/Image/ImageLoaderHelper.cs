@@ -25,6 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
@@ -223,6 +224,7 @@ namespace CollapseLauncher.Helper.Image
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Exception caught at [ImageLoaderHelper::SpawnImageCropperDialog]\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
 
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
@@ -297,6 +299,7 @@ namespace CollapseLauncher.Helper.Image
                 catch (IOException ex)
                 {
                     Logger.LogWriteLine($"[ImageLoaderHelper::GenerateCachedStream] IOException Caught! Opening InputFile instead...\r\n{ex}", LogType.Error, true);
+                    await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                     return InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
                 }
             }
@@ -530,6 +533,7 @@ namespace CollapseLauncher.Helper.Image
             catch (Exception ex)
             {
                 // ErrorSender.SendException(ex, ErrorType.Connection);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
             }
             finally

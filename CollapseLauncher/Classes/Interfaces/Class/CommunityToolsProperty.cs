@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher
 {
@@ -43,6 +44,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Error while parsing Community Tools list from the {(fileStream is FileStream fs ? $"FileStream: {fs.Name}" : "Stream")}\r\n{ex}", LogType.Error, true);
                 return new CommunityToolsProperty();
             }

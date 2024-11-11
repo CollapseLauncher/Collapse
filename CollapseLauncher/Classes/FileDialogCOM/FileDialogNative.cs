@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher.FileDialogCOM
 {
@@ -79,6 +80,7 @@ namespace CollapseLauncher.FileDialogCOM
             }
             catch (COMException ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"COM Exception: {ex}", LogType.Error, true);
                 return new ValueTask<object>(defaultValue);
             }
@@ -117,6 +119,7 @@ namespace CollapseLauncher.FileDialogCOM
             }
             catch (COMException ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"COM Exception: {ex}", LogType.Error, true);
                 return new ValueTask<string>(defaultValue);
             }
@@ -187,6 +190,7 @@ namespace CollapseLauncher.FileDialogCOM
             }
             catch (Exception e)
             {
+                SentryHelper.ExceptionHandler(e, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Error while marshalling COM Pointer {ptr} to string!\r\n{e}");
                 throw;
             }

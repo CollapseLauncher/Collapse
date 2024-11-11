@@ -1,6 +1,5 @@
 ﻿using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
-using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,10 +64,7 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
-                var exFlattened = ex.Flatten().InnerExceptions.First();
-                if (exFlattened is not (TaskCanceledException or OperationCanceledException))
-                    await SentryHelper.ExceptionHandlerAsync(exFlattened);
-                throw exFlattened;
+                throw ex.Flatten().InnerExceptions.First();
             }
 
             // Return the asset index

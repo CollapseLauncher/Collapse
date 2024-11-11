@@ -341,7 +341,7 @@ namespace CollapseLauncher.InstallManager.Base
                 catch (Exception ex)
 
                 {
-                    await SentryHelper.ExceptionHandlerAsync(ex);
+                    await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                     IsRunning = false;
                     throw;
                 }
@@ -427,7 +427,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
                 throw;
             }
@@ -1629,7 +1629,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
-                        await SentryHelper.ExceptionHandlerAsync(ex);
+                        SentryHelper.ExceptionHandler_ForLoop(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}",
                                      LogType.Error, true);
                     }
@@ -1999,7 +1999,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
-                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                        await SentryHelper.ExceptionHandler_ForLoop_Async(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error,
                                      true);
                     }
@@ -2025,7 +2025,7 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         catch (Exception ex)
                         {
-                            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                            await SentryHelper.ExceptionHandler_ForLoop_Async(ex, SentryHelper.ExceptionType.UnhandledOther);
                             LogWriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}",
                                          LogType.Error, true);
                         }
@@ -2059,7 +2059,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
-                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                    await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"An error occurred while deleting game AppData folder: {_gameVersionManager.GameDirAppDataPath}\r\n{ex}",
                                  LogType.Error, true);
                 }
@@ -2074,7 +2074,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
-                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}",
                                      LogType.Error, true);
                     }
@@ -2087,7 +2087,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - Region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}",
                              LogType.Error, true);
             }
@@ -2182,7 +2182,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
-                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                        SentryHelper.ExceptionHandler_ForLoop(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Failed deleting old file: {fileInfo.FullName}\r\n{ex}", LogType.Warning, true);
                     }
                 }, innerToken));
@@ -2227,7 +2227,7 @@ namespace CollapseLauncher.InstallManager.Base
                     patcher.Patch(sourceBasePath, destPath, true, token, false, true);
                     File.Move(destPath, sourceBasePath, true);
                 }
-                catch (InvalidDataException) when (!token.IsCancellationRequested)
+                catch (InvalidDataException ex) when (!token.IsCancellationRequested)
                 {
                     // ignored
                     // Get the base and new target file size
@@ -2240,7 +2240,7 @@ namespace CollapseLauncher.InstallManager.Base
                         throw;
 
                     // Otherwise, log the error
-                    SentryHelper.ExceptionHandler(new InvalidDataException(), SentryHelper.ExceptionType.UnhandledOther);
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
                 }
             }, token);
@@ -2300,7 +2300,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
-                    await SentryHelper.ExceptionHandlerAsync(ex);
+                    await SentryHelper.ExceptionHandler_ForLoop_Async(ex);
                     LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning,
                                  true);
 
@@ -2328,7 +2328,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
-                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                        await SentryHelper.ExceptionHandler_ForLoop_Async(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Failed while trying to delete temporary file: {destPath}, skipping!\r\n{ex}",
                                      LogType.Warning, true);
                     }
@@ -2351,7 +2351,7 @@ namespace CollapseLauncher.InstallManager.Base
             catch (AggregateException ex)
             {
                 var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
-                SentryHelper.ExceptionHandler(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
                 throw innerExceptionsFirst;
             }
             finally

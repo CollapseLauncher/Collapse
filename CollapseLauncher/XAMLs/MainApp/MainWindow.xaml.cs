@@ -19,6 +19,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
@@ -59,6 +60,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 //Console.ReadLine();
                 throw;
             }
@@ -245,6 +247,7 @@ namespace CollapseLauncher
         /// </summary>
         public void CloseApp()
         {
+            SentryHelper.StopSentrySdk();
             _TrayIcon?.Dispose();
             Close();
             Application.Current.Exit();

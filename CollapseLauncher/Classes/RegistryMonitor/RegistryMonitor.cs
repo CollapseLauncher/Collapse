@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 namespace RegistryUtils
@@ -99,6 +100,7 @@ namespace RegistryUtils
         /// </remarks>
         protected virtual void OnError(Exception e)
         {
+            SentryHelper.ExceptionHandler(e, SentryHelper.ExceptionType.UnhandledOther);
             ErrorEventHandler handler = Error;
             if (handler != null)
                 handler(this, new ErrorEventArgs(e));
@@ -170,6 +172,7 @@ namespace RegistryUtils
             catch (Exception ex)
             {
                 LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
             }
             _disposed = true;

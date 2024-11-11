@@ -421,6 +421,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception("Failed to save Genshin settings, please report them to GitHub issues!", ex));
             }
         }
 
