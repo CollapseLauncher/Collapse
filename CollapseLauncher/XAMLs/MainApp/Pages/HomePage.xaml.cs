@@ -1092,7 +1092,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Error when checking if game is running!\r\n{e}", LogType.Error, true);
+                LogWriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
             }
         }
         #endregion
