@@ -183,6 +183,11 @@ namespace CollapseLauncher.Helper
                 RedirectStandardOutput = true,
                 CreateNoWindow         = true
             };
+
+#if DEBUG
+            Logger.LogWriteLine("[TaskSchedulerHelper] Running TaskSchedulerHelper with command:\r\n" + appletPath + " " + argument, LogType.Debug, true);
+#endif
+
             int lastErrCode = short.MaxValue;
             try
             {

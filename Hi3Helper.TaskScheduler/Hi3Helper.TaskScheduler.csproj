@@ -5,6 +5,7 @@
     <TargetFramework>netframework462</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Platforms>x64</Platforms>
+    <Nullable>enable</Nullable>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <DebugType>portable</DebugType>
     <ProductName>Task Scheduler Shell</ProductName>
@@ -14,6 +15,7 @@
     <Company>Collapse Launcher Team</Company>
     <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
     <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
