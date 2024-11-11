@@ -65,8 +65,10 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex);
-                throw ex.Flatten().InnerExceptions.First();
+                var exFlattened = ex.Flatten().InnerExceptions.First();
+                if (exFlattened is not (TaskCanceledException or OperationCanceledException))
+                    await SentryHelper.ExceptionHandlerAsync(exFlattened);
+                throw exFlattened;
             }
 
             // Return the asset index

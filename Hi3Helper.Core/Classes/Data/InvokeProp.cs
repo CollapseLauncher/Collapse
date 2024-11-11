@@ -555,14 +555,13 @@ namespace Hi3Helper
                     await Task.Delay(60000, _preventSleepToken.Token);
                 }
             }
-            catch (TaskCanceledException tce)
+            catch (TaskCanceledException)
             {
-                SentryHelper.SentryHelper.ExceptionHandler(tce); // still log for good measure, as handled
                 //do nothing, its cancelled :)
             }
             catch (Exception ex)
             {
-                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[InvokeProp::PreventSleep()] Errors while preventing sleep!\r\n{ex}",
                              LogType.Error, true);
             }

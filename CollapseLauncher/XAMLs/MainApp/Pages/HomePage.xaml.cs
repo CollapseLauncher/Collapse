@@ -1255,9 +1255,8 @@ namespace CollapseLauncher.Pages
                                                        );
                 }
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(oce);
                 LogWriteLine("Pre-Download paused!", LogType.Warning);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
@@ -1397,16 +1396,14 @@ namespace CollapseLauncher.Pages
                                                        );
                 }
             }
-            catch (TaskCanceledException tce)
+            catch (TaskCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(tce);
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(oce);
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
@@ -2203,13 +2200,13 @@ namespace CollapseLauncher.Pages
                         }
                     }
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                SentryHelper.ExceptionHandler(oce, SentryHelper.ExceptionType.UnhandledOther);
+                // Ignore when cancelled
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
             }
         }
@@ -2552,16 +2549,14 @@ namespace CollapseLauncher.Pages
                                                        );
                 }
             }
-            catch (TaskCanceledException tce)
+            catch (TaskCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(tce);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(oce);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
                 LogWriteLine($"Update cancelled!", LogType.Warning);

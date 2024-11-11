@@ -64,9 +64,8 @@ namespace CollapseLauncher.Pages
 
                 await StartUpdateRoutine();
             }
-            catch (TaskCanceledException tce)
+            catch (TaskCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(tce);
                 Logger.LogWriteLine("Update countdown has been cancelled!", LogType.Default, true);
             }
             catch (Exception ex)
@@ -101,9 +100,8 @@ namespace CollapseLauncher.Pages
 
                 await _StartUpdateRoutine();
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(oce);
                 Logger.LogWriteLine("Update has been canceled!", LogType.Warning, true);
             }
             catch (Exception ex)

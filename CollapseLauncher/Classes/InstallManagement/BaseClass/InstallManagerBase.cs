@@ -2292,10 +2292,9 @@ namespace CollapseLauncher.InstallManager.Base
                         await FileHdiffPatcherInner(patchPath, sourceBasePath, destPath, innerToken);
                     }
                 }
-                catch (OperationCanceledException oce)
+                catch (OperationCanceledException)
                 {
                     await _token.CancelAsync();
-                    await SentryHelper.ExceptionHandlerAsync(oce, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine("Cancelling patching process!...", LogType.Warning, true);
                     throw;
                 }

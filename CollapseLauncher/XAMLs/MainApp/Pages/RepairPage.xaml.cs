@@ -81,14 +81,12 @@
                                                        );
                 }
             }
-            catch (TaskCanceledException tce)
+            catch (TaskCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(tce);
                 ResetStatusAndButtonState();
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(oce);
                 ResetStatusAndButtonState();
             }
             catch (Exception ex)
@@ -133,14 +131,12 @@
                                                        );
                 }
             }
-            catch (TaskCanceledException tce)
+            catch (TaskCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(tce);
                 ResetStatusAndButtonState();
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
-                await SentryHelper.ExceptionHandlerAsync(oce);
                 ResetStatusAndButtonState();
             }
             catch (Exception ex)
