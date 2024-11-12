@@ -52,6 +52,7 @@ namespace Hi3Helper.SentryHelper
                 if (value)
                 {
                     InitializeSentrySdk();
+                    InitializeExceptionRedirect();
                 }
                 else
                 {
