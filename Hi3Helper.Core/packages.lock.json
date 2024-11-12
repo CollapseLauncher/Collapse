@@ -21,15 +21,15 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.0-rc.2.24473.5",
-        "contentHash": "BWkkIwLhG75+RnyBHGQd0Vrti8wqIBeNiAmHQrb6UiFny6qEQ+z6r61bFAOubw8dbp5S8nQrTS/wjJtpolkYTA=="
+        "resolved": "9.0.0",
+        "contentHash": "seeO8icDfED/Qwl9PDFUx2Gf/7xv7dPsMnw5PnRwNZuz4EWMpy0wIVohC4MfCcTIoJgp+KUrWG4WH3NPSusQOA=="
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[3.28.3, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "System.IO.Hashing": "[9.0.0-rc.2.24473.5, )"
+          "System.IO.Hashing": "[9.0.0, )"
         }
       },
       "hi3helper.http": {
