@@ -9,18 +9,11 @@ using System.Runtime.Versioning;
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
 namespace CollapseLauncher.ShellLinkCOM
 {
+    unsafe delegate void ToDelegateInvoke(char* buffer, int length);
+    unsafe delegate void ToDelegateWithW32FindDataInvoke(char* buffer, nint findDataPtr, int length);
+
     public class ShellLink : IDisposable
     {
-        private unsafe delegate void ToDelegateInvoke(char* buffer, int length);
-        private unsafe delegate void ToDelegateWithW32FindDataInvoke(char* buffer, nint findDataPtr, int length);
-
-        public enum LinkDisplayMode : uint
-        {
-            edmNormal = EShowWindowFlags.SW_NORMAL,
-            edmMinimized = EShowWindowFlags.SW_SHOWMINNOACTIVE,
-            edmMaximized = EShowWindowFlags.SW_MAXIMIZE
-        }
-
         // Use Unicode (W) under NT, otherwise use ANSI      
         IShellLinkW? linkW;
         IPersistFile? persistFileW;
@@ -87,14 +80,9 @@ namespace CollapseLauncher.ShellLinkCOM
                 SHGetFileInfoConstants flags =
                     SHGetFileInfoConstants.SHGFI_ICON |
                         SHGetFileInfoConstants.SHGFI_ATTRIBUTES;
-                if (large)
-                {
-                    flags = flags | SHGetFileInfoConstants.SHGFI_LARGEICON;
-                }
-                else
-                {
-                    flags = flags | SHGetFileInfoConstants.SHGFI_SMALLICON;
-                }
+
+                flags = flags | (large ? SHGetFileInfoConstants.SHGFI_LARGEICON : SHGetFileInfoConstants.SHGFI_SMALLICON);
+
                 FileIcon fileIcon = new FileIcon(Target, flags);
                 return fileIcon.ShellIcon;
             }

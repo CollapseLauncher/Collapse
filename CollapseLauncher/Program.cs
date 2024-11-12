@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
+using CollapseLauncher.ShellLinkCOM;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -17,6 +19,7 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -293,13 +296,17 @@ public static class MainEntryPoint
     public static void TryCleanupFallbackUpdate(SemanticVersion newVersion)
     {
         string currentExecutedAppFolder = AppFolder.TrimEnd('\\');
+        string currentExecutedPath = AppExecutablePath;
+        string currentExecutedFilename = Path.GetFileName(currentExecutedPath);
 
         // If the path is not actually running under "current" velopack folder, then return
+#if !DEBUG
         if (!currentExecutedAppFolder.EndsWith("current", StringComparison.OrdinalIgnoreCase)) // Expecting "current"
         {
             Logger.LogWriteLine("[TryCleanupFallbackUpdate] The launcher does not run from \"current\" folder");
             return;
         }
+#endif
 
         try
         {
@@ -349,8 +356,35 @@ public static class MainEntryPoint
                 }
             }
 
+            // Try to delete all possible shortcuts on any users (since the shortcut used will be the global one)
+            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive, "Users");
+            foreach (string userDirInfoPath in Directory
+                .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
+                .Where(ConverterTool.IsUserHasPermission))
+            {
+                // Get the shortcut file
+                string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath, @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
+                if (File.Exists(thisUserStartMenuShortcut))
+                {
+                    // Try open the shortcut and check whether this shortcut is actually pointing to
+                    // CollapseLauncher.exe file
+                    using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
+                    {
+                        // Try get the target path and its filename
+                        string shortcutTargetPath = shellLink.Target;
+                        string shortcutTargetFilename = Path.GetFileName(shortcutTargetPath);
+
+                        // Compare if the filename is equal, then delete it.
+                        if (shortcutTargetFilename.Equals(currentExecutedFilename, StringComparison.OrdinalIgnoreCase))
+                            File.Delete(thisUserStartMenuShortcut);
+
+                        LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: {thisUserStartMenuShortcut} -> {shortcutTargetPath}", LogType.Default, true);
+                    }
+                }
+            }
+
             // Try to recreate shortcuts
-            TaskSchedulerHelper.RecreateIconShortcuts().GetAwaiter().GetResult();
+            TaskSchedulerHelper.RecreateIconShortcuts();
         }
         catch (Exception ex)
         {
@@ -384,13 +418,13 @@ public static class MainEntryPoint
                      LogType.Default, true);
         return collapseMainPath;
     }
-    
+
     private static async Task CheckRuntimeFeatures()
     {
         try
         {
             await Task.Run(() =>
-                { 
+                {
                     // RuntimeFeature docs https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimefeature?view=net-9.0
                     LogWriteLine($"Available Runtime Features:\r\n\t" +
                                  $"PortablePdb: {RuntimeFeature.IsSupported(RuntimeFeature.PortablePdb)}\r\n\t" +
@@ -479,7 +513,7 @@ public static class MainEntryPoint
             return $"Windows 11 (build: {version.Build}.{version.Revision})";
         return $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
     }
-    
+
     public static string MD5Hash(string path)
     {
         if (!File.Exists(path))

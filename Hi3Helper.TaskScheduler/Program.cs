@@ -1,15 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Win32.TaskScheduler;
-using NuGet.Versioning;
+﻿using Microsoft.Win32.TaskScheduler;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Velopack;
-using Velopack.Locators;
-using Velopack.NuGet;
-using Velopack.Windows;
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 
 namespace Hi3Helper.TaskScheduler
@@ -33,7 +26,6 @@ namespace Hi3Helper.TaskScheduler
             Console.WriteLine($"{executableName} [EnableToTray] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [Disable] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [DisableToTray] \"Scheduler name\" \"Executable path\"");
-            Console.WriteLine($"{executableName} [RecreateIcons] \"Executable path\"");
             return int.MaxValue;
         }
 
@@ -41,9 +33,6 @@ namespace Hi3Helper.TaskScheduler
         {
             try
             {
-                if (args.Length == 2 && args[0].ToLower() == "recreateicons")
-                    return RecreateIcons(args[1]);
-
                 if (args.Length < 3)
                     return PrintUsage().ReturnValAsConsole();
 
@@ -80,17 +69,6 @@ namespace Hi3Helper.TaskScheduler
             }
 
             return 0.ReturnValAsConsole();
-        }
-
-        static int RecreateIcons(string executablePath)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ILogger logger = new DummyILoggerWrapper();
-            VelopackLocator locator = new CollapseVelopackLocator(executablePath);
-            ShortcutTool shortcuts = new ShortcutTool(logger, locator);
-            shortcuts.CreateShortcut(executablePath, ShortcutLocation.Desktop | ShortcutLocation.StartMenuRoot, false, null);
-#pragma warning restore CS0618 // Type or member is obsolete
-            return 0;
         }
 
         static TaskSched Create(TaskService taskService, string schedName, string execPath)
@@ -239,166 +217,5 @@ namespace Hi3Helper.TaskScheduler
 
         static void WriteConsole(string message) =>
             Console.WriteLine(message);
-    }
-
-    internal class CollapseVelopackLocator : VelopackLocator
-    {
-        const string SpecVersionFileName = "sq.version";
-
-        /// <inheritdoc />
-        public override string? AppId { get; }
-
-        /// <inheritdoc />
-        public override string? RootAppDir { get; }
-
-        /// <inheritdoc />
-        public override string? UpdateExePath { get; }
-
-        /// <inheritdoc />
-        public override string? AppContentDir { get; }
-
-        /// <inheritdoc />
-        public override SemanticVersion? CurrentlyInstalledVersion { get; }
-
-        /// <inheritdoc />
-        public override string? PackagesDir => CreateSubDirIfDoesNotExist(RootAppDir, "packages");
-
-        /// <inheritdoc />
-        public override bool IsPortable =>
-            RootAppDir != null ? File.Exists(Path.Combine(RootAppDir, ".portable")) : false;
-
-        /// <inheritdoc />
-        public override string? Channel { get; }
-
-        /// <summary>
-        /// Internal use only. Auto detect app details from the specified EXE path.
-        /// </summary>
-        internal CollapseVelopackLocator(string ourExePath)
-            : base(null)
-        {
-            if (!VelopackRuntimeInfo.IsWindows)
-                throw new NotSupportedException("Cannot instantiate WindowsLocator on a non-Windows system.");
-
-            // We try various approaches here. Firstly, if Update.exe is in the parent directory,
-            // we use that. If it's not present, we search for a parent "current" or "app-{ver}" directory,
-            // which could designate that this executable is running in a nested sub-directory.
-            // There is some legacy code here, because it's possible that we're running in an "app-{ver}" 
-            // directory which is NOT containing a sq.version, in which case we need to infer a lot of info.
-
-            ourExePath = Path.GetFullPath(ourExePath);
-            string myDirPath = Path.GetDirectoryName(ourExePath);
-            var myDirName = Path.GetFileName(myDirPath);
-            var possibleUpdateExe = Path.GetFullPath(Path.Combine(myDirPath, "..", "Update.exe"));
-            var ixCurrent = ourExePath.LastIndexOf("/current/", StringComparison.InvariantCultureIgnoreCase);
-
-            Console.WriteLine($"Initializing {nameof(CollapseVelopackLocator)}");
-
-            if (File.Exists(possibleUpdateExe))
-            {
-                Console.WriteLine("Update.exe found in parent directory");
-                // we're running in a directory with an Update.exe in the parent directory
-                var manifestFile = Path.Combine(myDirPath, SpecVersionFileName);
-                if (PackageManifest.TryParseFromFile(manifestFile, out var manifest))
-                {
-                    // ideal, the info we need is in a manifest file.
-                    Console.WriteLine("Located valid manifest file at: " + manifestFile);
-                    AppId = manifest.Id;
-                    CurrentlyInstalledVersion = manifest.Version;
-                    RootAppDir = Path.GetDirectoryName(possibleUpdateExe);
-                    UpdateExePath = possibleUpdateExe;
-                    AppContentDir = myDirPath;
-                    Channel = manifest.Channel;
-                }
-                else if (myDirName.StartsWith("app-", StringComparison.OrdinalIgnoreCase) && NuGetVersion.TryParse(myDirName.Substring(4), out var version))
-                {
-                    // this is a legacy case, where we're running in an 'root/app-*/' directory, and there is no manifest.
-                    Console.WriteLine("Legacy app-* directory detected, sq.version not found. Using directory name for AppId and Version.");
-                    AppId = Path.GetFileName(Path.GetDirectoryName(possibleUpdateExe));
-                    CurrentlyInstalledVersion = version;
-                    RootAppDir = Path.GetDirectoryName(possibleUpdateExe);
-                    UpdateExePath = possibleUpdateExe;
-                    AppContentDir = myDirPath;
-                }
-            }
-            else if (ixCurrent > 0)
-            {
-                // this is an attempt to handle the case where we are running in a nested current directory.
-                var rootDir = ourExePath.Substring(0, ixCurrent);
-                var currentDir = Path.Combine(rootDir, "current");
-                var manifestFile = Path.Combine(currentDir, SpecVersionFileName);
-                possibleUpdateExe = Path.GetFullPath(Path.Combine(rootDir, "Update.exe"));
-                // we only support parsing a manifest when we're in a nested current directory. no legacy fallback.
-                if (File.Exists(possibleUpdateExe) && PackageManifest.TryParseFromFile(manifestFile, out var manifest))
-                {
-                    Console.WriteLine("Running in deeply nested directory. This is not an advised use-case.");
-                    Console.WriteLine("Located valid manifest file at: " + manifestFile);
-                    RootAppDir = Path.GetDirectoryName(possibleUpdateExe);
-                    UpdateExePath = possibleUpdateExe;
-                    AppId = manifest.Id;
-                    CurrentlyInstalledVersion = manifest.Version;
-                    AppContentDir = currentDir;
-                    Channel = manifest.Channel;
-                }
-            }
-        }
-
-        public override List<VelopackAsset> GetLocalPackages()
-        {
-            try
-            {
-                if (CurrentlyInstalledVersion == null)
-                    return new List<VelopackAsset>(0);
-
-                var list = new List<VelopackAsset>();
-                if (PackagesDir != null)
-                {
-                    foreach (var pkg in Directory.EnumerateFiles(PackagesDir, "*.nupkg"))
-                    {
-                        try
-                        {
-                            var asset = VelopackAsset.FromNupkg(pkg);
-                            if (asset?.Version != null)
-                            {
-                                list.Add(asset);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.LogWarning(ex, $"Error while reading local package '{pkg}'.");
-                        }
-                    }
-                }
-                return list;
-            }
-            catch (Exception ex)
-            {
-                Log.LogError(ex, "Error while reading local packages.");
-                return new List<VelopackAsset>(0);
-            }
-        }
-
-        /// <inheritdoc/>
-        public override VelopackAsset? GetLatestLocalFullPackage()
-        {
-            return GetLocalPackages()
-                .OrderByDescending(x => x.Version)
-                .FirstOrDefault(x => x.Type == VelopackAssetType.Full);
-        }
-    }
-
-    internal class DummyILoggerWrapper : ILogger
-    {
-        internal DummyILoggerWrapper() { }
-
-        public IDisposable BeginScope<TState>(TState state)
-            where TState : notnull => default!;
-
-        public bool IsEnabled(LogLevel logLevel) => true;
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            string message = formatter(state, exception);
-            Console.WriteLine(string.Format("[{0}] {1}", logLevel, message));
-        }
     }
 }

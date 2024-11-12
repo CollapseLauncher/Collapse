@@ -50,6 +50,13 @@ namespace CollapseLauncher.ShellLinkCOM
         SHGFI_OVERLAYINDEX = 0x000000040 // Get the index of the overlay
     }
 
+    public enum LinkDisplayMode : uint
+    {
+        edmNormal = EShowWindowFlags.SW_NORMAL,
+        edmMinimized = EShowWindowFlags.SW_SHOWMINNOACTIVE,
+        edmMaximized = EShowWindowFlags.SW_MAXIMIZE
+    }
+
     /// <summary>
     /// Flags determining how the links with missing
     /// targets are resolved.
