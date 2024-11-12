@@ -1,4 +1,6 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.ShellLinkCOM;
+using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics;
@@ -140,8 +142,11 @@ namespace CollapseLauncher.Helper
             argumentBuilder.Append('"');
         }
 
-        internal static async Task RecreateIconShortcuts()
+        internal static void RecreateIconShortcuts()
         {
+            /* Invocation from Hi3Helper.TaskScheduler is no longer being user.
+             * Moving to Main App's ShellLink implementation instead!
+            
             // Build the argument and get the current executable path
             StringBuilder argumentBuilder = new StringBuilder();
             argumentBuilder.Append("RecreateIcons");
@@ -160,6 +165,51 @@ namespace CollapseLauncher.Helper
 
             // Print init determination
             CheckInitDetermination(returnCode);
+            */
+
+            // Get current executable path as its target.
+            string currentExecPath = LauncherConfig.AppExecutablePath;
+            string workingDirPath = Path.GetDirectoryName(currentExecPath);
+
+            // Get exe's description
+            FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(currentExecPath);
+            string currentExecDescription = currentExecVersionInfo.FileDescription ?? "";
+
+            // Create shell link instance and save the shortcut under Desktop and User's Start menu
+            using ShellLink shellLink = new ShellLink()
+            {
+                IconIndex = 0,
+                IconPath = currentExecPath,
+                DisplayMode = LinkDisplayMode.edmNormal,
+                WorkingDirectory = workingDirPath,
+                Target = currentExecPath,
+                Description = currentExecDescription
+            };
+
+            // Get paths
+            string shortcutFilename = currentExecVersionInfo.ProductName + ".lnk";
+            string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
+            string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
+            string iconLocationStartMenu = Path.Combine(
+                startMenuLocation,
+                "Programs",
+                currentExecVersionInfo.CompanyName,
+                shortcutFilename);
+            string iconLocationDesktop = Path.Combine(
+                desktopLocation,
+                shortcutFilename);
+
+            // Get icon location directory
+            string iconLocationStartMenuDir = Path.GetDirectoryName(iconLocationStartMenu);
+            string iconLocationDesktopDir = Path.GetDirectoryName(iconLocationDesktop);
+
+            // Try create directory
+            Directory.CreateDirectory(iconLocationStartMenuDir);
+            Directory.CreateDirectory(iconLocationDesktopDir);
+
+            // Save the icons
+            shellLink.Save(iconLocationStartMenu);
+            shellLink.Save(iconLocationDesktop);
         }
 
         private static async Task<int> GetInvokeCommandReturnCode(string argument)
