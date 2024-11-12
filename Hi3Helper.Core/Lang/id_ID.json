@@ -548,7 +548,7 @@
     "UseExternalBrowser": "Selalu Gunakan Browser Eksternal",
 
     "LowerCollapsePrioOnGameLaunch": "Turunkan Prioritas Collapse saat Game Berjalan",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan tayangan slide gambar di halaman utama dan menurunkan prioritas Collapse ke Dibawah Normal ",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan carousel gambar pada Home Page dan turunkan prioritas Collapse menjadi \"dibawah normal\"",
 
     "KbShortcuts_Title": "Pintasan Keyboard",
     "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",
