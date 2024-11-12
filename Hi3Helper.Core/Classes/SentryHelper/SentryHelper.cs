@@ -72,6 +72,7 @@ namespace Hi3Helper.SentryHelper
             {
                 o.Dsn = SentryDsn;
                 o.AddEventProcessor(new SentryEventProcessor());
+                o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
 
 #if DEBUG
                 o.Debug = true;
@@ -97,13 +98,6 @@ namespace Hi3Helper.SentryHelper
                 o.MaxAttachmentSize = SentryMaxAttachmentSize;
                 o.DeduplicateMode = DeduplicateMode.All;
             });
-            
-            SentrySdk.ConfigureScope(s =>
-            {
-                // Broken atm due to length = 0
-                // dunno why
-                s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-            });
         }
 
         /// <summary>
@@ -115,6 +109,7 @@ namespace Hi3Helper.SentryHelper
             {
                 SentrySdk.Flush(TimeSpan.FromSeconds(5));
                 SentrySdk.EndSession();
+                ReleaseExceptionRedirect();
             }
             catch (Exception ex)
             {
@@ -129,24 +124,33 @@ namespace Hi3Helper.SentryHelper
 
         public static void InitializeExceptionRedirect()
         {
+            AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledExceptionEvent;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        private static void ReleaseExceptionRedirect()
+        {
+            AppDomain.CurrentDomain.UnhandledException -= AppDomain_UnhandledExceptionEvent;
+            TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
+        }
+
+        private static void AppDomain_UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs a)
+        {
             // Handle any unhandled errors in app domain
             // https://learn.microsoft.com/en-us/dotnet/api/system.appdomain?view=net-9.0
-            AppDomain.CurrentDomain.UnhandledException += (_, args) =>
-            {
-                var ex = args.ExceptionObject as Exception;
-                if (ex == null) return;
-                ex.Data[Mechanism.HandledKey] = false;
-                ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-                ExceptionHandler(ex, ExceptionType.UnhandledOther);
+            var ex = a.ExceptionObject as Exception;
+            if (ex == null) return;
+            ex.Data[Mechanism.HandledKey] = false;
+            ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
+            ExceptionHandler(ex, ExceptionType.UnhandledOther);
 
-                throw ex;
-            };
-
-            TaskScheduler.UnobservedTaskException += (_, args) =>
-            {
-                args.Exception.Data[Mechanism.HandledKey] = false;
-                ExceptionHandler(args.Exception, ExceptionType.UnhandledOther);
-            };
+            throw ex;
+        }
+        
+        private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            e.Exception.Data[Mechanism.HandledKey] = false;
+            ExceptionHandler(e.Exception, ExceptionType.UnhandledOther);
         }
 
         /// <summary>
@@ -157,13 +161,18 @@ namespace Hi3Helper.SentryHelper
         public static void ExceptionHandler(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
-            ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
+            ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
             if (exT == ExceptionType.UnhandledXaml) 
                 ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
             else if (exT == ExceptionType.UnhandledOther)
                 ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-            SentrySdk.CaptureException(ex);
-            SentrySdk.Flush(TimeSpan.FromSeconds(5));
+            if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
+                SentrySdk.CaptureException(ex);
+            else
+                SentrySdk.CaptureException(ex, s =>
+                {
+                    s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                });
         }
 
         /// <summary>
@@ -179,8 +188,15 @@ namespace Hi3Helper.SentryHelper
                 ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
             else if (exT == ExceptionType.UnhandledOther)
                 ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-            SentrySdk.CaptureException(ex);
-            await SentrySdk.FlushAsync(TimeSpan.FromSeconds(1));
+            if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
+                SentrySdk.CaptureException(ex);
+            else
+                SentrySdk.CaptureException(ex, s =>
+                {
+                    s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                });
+
+            await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));
         }
         
         private static Exception? _exHLoopLastEx;
@@ -227,14 +243,21 @@ namespace Hi3Helper.SentryHelper
         public static async Task ExceptionHandler_ForLoopAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
-            if (ex == _exHLoopLastEx) return;
-            await _loopToken.CancelAsync();
-            _loopToken = new CancellationTokenSource();
+            if (ex == _exHLoopLastEx) return; // If exception pointer is the same as the last one, ignore it.
+            await _loopToken.CancelAsync(); // Cancel the previous loop
+            _loopToken.Dispose(); 
+            _loopToken = new CancellationTokenSource(); // Create new token
             _exHLoopLastEx = ex;
-            ExHLoopLastEx_AutoClean(); 
+            ExHLoopLastEx_AutoClean(); // Start auto clean loop
             
             ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
-            SentrySdk.CaptureException(ex);
+            if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
+                SentrySdk.CaptureException(ex);
+            else
+                SentrySdk.CaptureException(ex, s =>
+                {
+                    s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                });
         }
     }
 }

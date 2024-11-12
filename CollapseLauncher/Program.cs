@@ -87,9 +87,9 @@ public static class MainEntryPoint
                     try
                     {
                         // Sentry SDK Entry
-                        LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
                         LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
                         SentryHelper.InitializeSentrySdk();
+                        LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
                         SentryHelper.InitializeExceptionRedirect();
                     }
                     catch (Exception ex)
