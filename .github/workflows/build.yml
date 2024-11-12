@@ -30,7 +30,7 @@ jobs:
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
       DOTNET_VERSION: '9.x'
-      DOTNET_QUALITY: 'preview'
+      DOTNET_QUALITY: 'ga'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
@@ -71,7 +71,7 @@ jobs:
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
       DOTNET_VERSION: '9.x'
-      DOTNET_QUALITY: 'preview'
+      DOTNET_QUALITY: 'ga'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
