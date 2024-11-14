@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Sentry.Protocol;
-
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable HeuristicUnreachableCode
+// ReSharper disable RedundantIfElseBlock
 #nullable enable
 namespace Hi3Helper.SentryHelper
 {
@@ -14,12 +16,17 @@ namespace Hi3Helper.SentryHelper
         /// <summary>
         /// DSN (Data Source Name a.k.a. upstream server) to be used for error reporting.
         /// </summary>
-        private const string SentryDsn = "https://2acc39f86f2b4f5a99bac09494af13c6@bugsink.bagelnl.my.id/1";
+        private const string SentryDsn = "https://38ac2201fe414e719a5b8297cc5f1aa0@glitchtip.bagelnl.my.id/1";
         
         /// <summary>
         /// <inheritdoc cref="SentryOptions.MaxAttachmentSize"/>
         /// </summary>
         private const long SentryMaxAttachmentSize = 2 * 1024 * 1024; // 2 MB
+
+        /// <summary>
+        /// Whether to upload log file when exception is caught.
+        /// </summary>
+        private const bool SentryUploadLog = false;
         
         
         /// <summary>
@@ -74,14 +81,15 @@ namespace Hi3Helper.SentryHelper
                 o.Dsn = SentryDsn;
                 o.AddEventProcessor(new SentryEventProcessor());
                 o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-
 #if DEBUG
                 o.Debug = true;
                 o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
                 o.DiagnosticLevel = SentryLevel.Debug;
+                o.Distribution = "Debug";
 #else
                 o.Debug = false;
                 o.DiagnosticLevel = SentryLevel.Error;
+                o.Distribution = IsPreview ? "Preview" : "Stable";
 #endif
                 o.AutoSessionTracking = true;
                 o.StackTraceMode = StackTraceMode.Enhanced;
@@ -91,11 +99,6 @@ namespace Hi3Helper.SentryHelper
                 o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
                 o.StackTraceMode = StackTraceMode.Enhanced;
                 o.SendDefaultPii = false;
-#if DEBUG
-                o.Distribution = "Debug";
-#else
-                o.Distribution = IsPreview ? "Preview" : "Stable";
-#endif
                 o.MaxAttachmentSize = SentryMaxAttachmentSize;
                 o.DeduplicateMode = DeduplicateMode.All;
             });
@@ -167,13 +170,22 @@ namespace Hi3Helper.SentryHelper
                 ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
             else if (exT == ExceptionType.UnhandledOther)
                 ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-            if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
-                SentrySdk.CaptureException(ex);
+            if (SentryUploadLog) // Upload log file if enabled
+        #pragma warning disable CS0162 // Unreachable code detected
+            {
+                if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
+                    SentrySdk.CaptureException(ex);
+                else
+                    SentrySdk.CaptureException(ex, s =>
+                                                   {
+                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                                                   });
+            }
+        #pragma warning restore CS0162 // Unreachable code detected
             else
-                SentrySdk.CaptureException(ex, s =>
-                {
-                    s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                });
+            {
+                SentrySdk.CaptureException(ex);
+            }
         }
 
         /// <summary>
@@ -189,13 +201,23 @@ namespace Hi3Helper.SentryHelper
                 ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
             else if (exT == ExceptionType.UnhandledOther)
                 ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-            if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
-                SentrySdk.CaptureException(ex);
+            if (SentryUploadLog) // Upload log file if enabled
+        #pragma warning disable CS0162 // Unreachable code detected
+                // ReSharper disable once HeuristicUnreachableCode
+            {
+                if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
+                    SentrySdk.CaptureException(ex);
+                else
+                    SentrySdk.CaptureException(ex, s =>
+                                                   {
+                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                                                   });
+            }
+        #pragma warning restore CS0162 // Unreachable code detected
             else
-                SentrySdk.CaptureException(ex, s =>
-                {
-                    s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                });
+            {
+                SentrySdk.CaptureException(ex);
+            }
 
             await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));
         }
@@ -252,13 +274,23 @@ namespace Hi3Helper.SentryHelper
             ExHLoopLastEx_AutoClean(); // Start auto clean loop
             
             ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
-            if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
-                SentrySdk.CaptureException(ex);
+            if (SentryUploadLog) // Upload log file if enabled
+        #pragma warning disable CS0162 // Unreachable code detected
+                // ReSharper disable once HeuristicUnreachableCode
+            {
+                if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
+                    SentrySdk.CaptureException(ex);
+                else
+                    SentrySdk.CaptureException(ex, s =>
+                                                   {
+                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                                                   });
+            }
+        #pragma warning restore CS0162 // Unreachable code detected
             else
-                SentrySdk.CaptureException(ex, s =>
-                {
-                    s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                });
+            {
+                SentrySdk.CaptureException(ex);
+            }
         }
     }
 }

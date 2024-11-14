@@ -4,7 +4,6 @@
     using CollapseLauncher.Helper;
     using CollapseLauncher.Statics;
     using Hi3Helper;
-    using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
@@ -38,7 +37,7 @@
 
         private void StartGameCheck(object sender, RoutedEventArgs e)
         {
-            string tag = (string)(sender as ButtonBase).Tag;
+            string tag = (string)(sender as ButtonBase)?.Tag;
             bool isFast = tag == "Fast";
 
             RunCheckRoutine(sender, isFast, false);
@@ -247,7 +246,7 @@
             else
             {
 #if !DISABLEDISCORD
-                InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.Repair);
+                InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Repair);
 #endif
             }
         }
