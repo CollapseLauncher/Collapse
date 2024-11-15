@@ -1,7 +1,7 @@
 {
   "LanguageName": "Українська",
   "LanguageID": "uk-UA",
-  "Author": "vitalitk",
+  "Author": "vitalitk, Eley_Kiro",
 
   "_StartupPage": {
     "SelectLang": "Оберіть вашу мову",
@@ -66,10 +66,10 @@
     "Footer2": "на Паймон",
     "Footer3": "щоб спробувати знову.",
     "ShowErrorBtn": "Показати повідомлення про помилку",
-    "GoToAppSettingsBtn": "Go to App Settings",
-    "GoBackOverlayFrameBtn": "Go Back",
-    "RegionChangerTitle": "Change the Game Region",
-    "RegionChangerSubtitle": "In-case you're stuck in this page"
+    "GoToAppSettingsBtn": "Перейти в налаштування додатку.",
+    "GoBackOverlayFrameBtn": "Повернутися назад",
+    "RegionChangerTitle": "Зменити регіон гри",
+    "RegionChangerSubtitle": "Якщо ви застрягли на цій сторінці"
   },
 
   "_UnhandledExceptionPage": {
@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "Вилетіла гра з деталями про помилку знизу:",
     "UnhandledTitle4": "Увага",
     "UnhandledSubtitle4": "Це не велика проблема, але думаємо, що краще вас повідомити:\r\nЧерез тестування A/B miHoYo, Collapse не підтримує читання цієї клавіші: App_Settings_h2319593470ю\r\nПросимо вибачення за незручність та дякуємо за ваше розуміння.",
+    "UnhandledTitleDiskCrc": "Виявлено пошкодження диска!",
+    "UnhandledSubDiskCrc": "Виявлено пошкодження диска під час доступу до файлу. Будь ласка, перевірте диск за допомогою команди chkdsk.",
     "CopyClipboardBtn1": "Скопіювати все",
     "CopyClipboardBtn2": "Скопійовано в буфер обміну!",
     "GoBackPageBtn1": "Повернутися до минулої сторінки"
@@ -133,8 +135,8 @@
     "PauseCancelBtn": "Пауза/Скасувати",
     "DownloadBtn": "Завантажити гру",
 
-    "GameStatusPlaceholderComingSoonBtn": "Coming Soon",
-    "GameStatusPlaceholderPreRegisterBtn": "Pre-Register Now!",
+    "GameStatusPlaceholderComingSoonBtn": "Скоро буде",
+    "GameStatusPlaceholderPreRegisterBtn": "Зареєструйтесь зараз!",
 
     "GameSettingsBtn": "Швидкі налаштування",
     "GameSettings_Panel1": "Швидкі налаштування",
@@ -146,12 +148,15 @@
     "GameSettings_Panel2UninstallGame": "Видалити гру",
     "GameSettings_Panel2ConvertVersion": "Змінити версію гри",
     "GameSettings_Panel2MoveGameLocationGame": "Перемістити гру",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Не вдається перемістити гру в кореневий каталог вашого диска!\r\nБудь ласка, створіть папку та спробуйте знову.",
     "GameSettings_Panel2StopGame": "Примусово закрити гру",
     "GameSettings_Panel3": "Кастомні команди запуску",
+    "GameSettings_Panel3CustomBGRegion": "Змінити фон регіону",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Кастомний фон регіону",
     "GameSettings_Panel4": "Різне",
     "GameSettings_Panel4ShowEventsPanel": "Показати панель подій",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показати панель соц. мереж",
-    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
+    "GameSettings_Panel4ShowPlaytimeButton": "Показати час гри",
     "GameSettings_Panel4CreateShortcutBtn": "Створити ярлик",
     "GameSettings_Panel4AddToSteamBtn": "Додати в Steam",
 
@@ -161,9 +166,17 @@
     "GamePlaytime_Idle_ResetBtn": "Скинути",
     "GamePlaytime_Idle_ChangeBtn": "Змінити",
     "GamePlaytime_Running_Info1": "Ця гра вже запущена, тому час гри змінити не можна.",
-    "GamePlaytime_Running_Info2": "Будь ласка, пам'ятайте, що повне закриття Collapse зупинить відслідження часу гри (збережеться те, що було дограно до того часу), і відсліджуватися будуть лише сесії запущені за допомогою Collapse.",
+    "GamePlaytime_Running_Info2": "Зверніть увагу, що повне закриття Collapse зупинить відстеження часу гри (збереження того, що було зіграно до цього моменту).",
     "GamePlaytime_Display": "{0}г {1}хв",
-    "GamePlaytime_ToolTipDisplay": "Last opened in {0:00}/{1:00}/{2:0000} at {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Статистика ігрового часу",
+    "GamePlaytime_Stats_NeverPlayed": "Ніколи не грав",
+    "GamePlaytime_Stats_LastSession": "Останній сеанс",
+    "GamePlaytime_Stats_LastSession_StartTime": "Час початку",
+    "GamePlaytime_Stats_LastSession_Duration": "Тривалість",
+    "GamePlaytime_Stats_Daily": "Сьогодні",
+    "GamePlaytime_Stats_Weekly": "Тиждень",
+    "GamePlaytime_Stats_Monthly": "Місяць",
 
     "PostPanel_Events": "Події",
     "PostPanel_Notices": "Примітки",
@@ -177,9 +190,25 @@
 
     "CreateShortcut_FolderPicker": "Оберіть куди поставити ярлик",
 
-    "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
-    "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
-    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
+    "Exception_DownloadTimeout1": "Виник таймаут під час спроби встановлення {0}",
+    "Exception_DownloadTimeout2": "Перевірте стабільність вашого інтернету! Якщо швидкість інтернету низька, будь ласка, зменішть кількість потоків завантаження.",
+    "Exception_DownloadTimeout3": "**УВАГА** Зміна кількості потоків завантаження ПРИВЕДЕ до скидання вашого завантаження на 0, і вам потрібно буде вручну видалити існуючі частини завантаження!",
+
+    "GameStateInvalid_Title": "Директорія даних гри/Ім'я виконуваного файлу/Config.ini/App.Info файл є недійсним!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher виявив, що властивості файлів гри недійсні для регіону:\r\n",
+    "GameStateInvalid_Subtitle2": "Рекомендується виконати виправлення, щоб програма запуску правильно визначала гру",
+    "GameStateInvalid_Subtitle3": "Натисніть \"",
+    "GameStateInvalid_Subtitle4": "\" щоб виправити властивості гри, або натисніть \"",
+    "GameStateInvalid_Subtitle5": "\" щоб скасувати операцію.",
+
+    "GameStateInvalidFixed_Title": "Властивості ігрових файлів успішно виправлено!",
+    "GameStateInvalidFixed_Subtitle1": "Виправлено властивості файлів гри для регіону:",
+    "GameStateInvalidFixed_Subtitle2": "Будь ласка, виконайте \"",
+    "GameStateInvalidFixed_Subtitle3": "\" в \"",
+    "GameStateInvalidFixed_Subtitle4": "\", щоб переконатися, що всі файли перевірено.",
+
+    "InstallFolderRootTitle": "Кореневий каталог диска надано!",
+    "InstallFolderRootSubtitle": "Не вдається встановити гру в кореневий каталог вашого диска!\nБудь ласка, створіть нову папку та спробуйте знову."
   },
 
   "_GameRepairPage": {
@@ -203,8 +232,8 @@
     "Status11": "Чекаємо на початок процесу відновлення...",
     "Status12": "Оновлення аудіо: {0}",
     "Status13": "Оновлення блоку: {0}",
-    "Status14": "Trying to determine CG asset availability: {0}",
-    "Status15": "Trying to determine audio asset availability: {0}",
+    "Status14": "Спроба визначити наявність CG-ресурсів: {0}",
+    "Status15": "Спроба визначити наявність аудіо-ресурсів: {0}",
     "StatusNone": "Нічого",
     "PerProgressTitle1": "Прогрес по файлу",
     "PerProgressSubtitle1": "Чекаємо...",
@@ -235,7 +264,7 @@
     "ListCol6": "R.CRC",
     "ListCol7": "Статус",
     "Status1": "Натисніть \"Швидка перевірка\" або \"Повна перевірка\" щоб перевірити кеш на оновлення",
-    "Status2": "Trying to determine \"{0}\" cache asset availability: {1}",
+    "Status2": "Спроба визначити наявність кешованого ресурсу \"{0}\": {1}",
     "CachesStatusHeader1": "Повний прогрес",
     "CachesStatusCancelled": "Операцію скасовано!",
     "CachesStatusFetchingType": "Отримуємо тип кешу: {0}",
@@ -274,13 +303,13 @@
     "Graphics_ResCustom": "Використати кастомне розширення",
     "Graphics_ResCustomW": "Ш",
     "Graphics_ResCustomH": "В",
-    "Graphics_ResPrefixFullscreen": "{0}x{1} Fullscreen",
-    "Graphics_ResPrefixWindowed": "{0}x{1} Windowed",
+    "Graphics_ResPrefixFullscreen": "{0}x{1} На весь екран",
+    "Graphics_ResPrefixWindowed": "{0}x{1} Віконний режим",
 
-    "Graphics_VSync": "VSync",
+    "Graphics_VSync": "Вертикальна синхронізація",
 
     "Graphics_FPS": "FPS",
-    "Graphics_FPSUnlimited": "Unlimited",
+    "Graphics_FPSUnlimited": "Без обмеження",
     "Graphics_FPSPanel": "Максималні FPS",
     "Graphics_FPSInCombat": "Під час битви",
     "Graphics_FPSInMenu": "В головному меню",
@@ -309,24 +338,24 @@
     "Graphics_APHO2AO": "Оклюзія",
     "Graphics_APHO2LOD": "Рівень деталі",
 
-    "Graphics_ParticleQuality": "Particle Quality",
-    "Graphics_LightingQuality": "Lighting Quality",
-    "Graphics_PostFXQuality": "Post-FX Quality",
-    "Graphics_AAMode": "Anti-Aliasing Mode",
-    "Graphics_CharacterQuality": "Character Quality",
-    "Graphics_WeatherQuality": "Weather Quality",
+    "Graphics_ParticleQuality": "Якість частинок",
+    "Graphics_LightingQuality": "Якість освітлення",
+    "Graphics_PostFXQuality": "Якість постобробки",
+    "Graphics_AAMode": "Режим згладжування",
+    "Graphics_CharacterQuality": "Якість персонажів",
+    "Graphics_WeatherQuality": "Якість погоди",
 
-    "Graphics_Legacy_Title": "Legacy Settings",
-    "Graphics_Legacy_Subtitle": "These settings are not present in-game and might not have any effect.",
+    "Graphics_Legacy_Title": "Застарілі налаштування",
+    "Graphics_Legacy_Subtitle": "Ці налаштування відсутні в грі і можуть не мати жодного ефекту.",
 
     "SpecDisabled": "Вимкнено",
-    "SpecCustom": "Custom",
+    "SpecCustom": "Вручну",
     "SpecLow": "Низька",
     "SpecMedium": "Середня",
     "SpecHigh": "Висока",
     "SpecVeryHigh": "Дуже висока",
     "SpecMaximum": "Максимальна",
-    "SpecUltra": "Ultra",
+    "SpecUltra": "Ультра",
 
     "Audio_Title": "Налаштування аудіо",
     "Audio_Master": "Загальна гучність",
@@ -370,7 +399,7 @@
     "CustomArgs_Footer3": "щоб побачити більше параметрів.",
 
     "GameBoost": "Прискорити пріорітет гри [Експериментально]",
-    "MobileLayout": "Use Mobile Layout",
+    "MobileLayout": "Використовувати мобільну версію оформлення",
 
     "Advanced_Title": "Розширені налаштування",
     "Advanced_Subtitle1": "Команда Collapse Launcher",
@@ -380,7 +409,7 @@
     "Advanced_GLC_PreLaunch_Title": "Команди передзапуску",
     "Advanced_GLC_PreLaunch_Subtitle": "Команди, які будуть виконані перед запуском гри",
     "Advanced_GLC_PreLaunch_Exit": "Примусово зупинити процес, коли гру закрито/зупинено",
-    "Advanced_GLC_PreLaunch_Delay": "Delay Game Launch (ms)",
+    "Advanced_GLC_PreLaunch_Delay": "Затримка запуску гри (мс)",
     "Advanced_GLC_PostExit_Title": "Команди після виходу",
     "Advanced_GLC_PostExit_Subtitle": "Команди, які будуть виконані після виходу з гри"
   },
@@ -394,7 +423,7 @@
     "Debug_MultipleInstance": "Дозволити декілька запущених вікон Collapse",
 
     "ChangeRegionWarning_Toggle": "Показувати попередження про зміну регіону",
-    "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
+    "ChangeRegionInstant_Toggle": "Миттєва змінювати регіон під час вибору",
     "ChangeRegionWarning_Warning": "*Вам потрібно перезапустити програму, щоб зміни вступили в силу.",
 
     "Language": "Мова програми",
@@ -407,7 +436,7 @@
     "AppThemes_Dark": "Темна",
     "AppThemes_ApplyNeedRestart": "*Вам потрібно перезапустити програму, щоб зміна теми вступила в силу.",
 
-    "IntroSequenceToggle": "Use Intro Animation Sequence",
+    "IntroSequenceToggle": "Використовувати анімацію вступу",
 
     "AppWindowSize": "Розмір вікна",
     "AppWindowSize_Normal": "Нормальний",
@@ -417,7 +446,8 @@
 
     "AppBG": "Фон програми",
     "AppBG_Checkbox": "Використовувати кастомний фон",
-    "AppBG_Note": "Accepted formats:\r\nImage: {0}\r\nVideo: {1}",
+    "AppBG_Note": "Прийняті формати:\r\nЗображення: {0}\r\nВідео: {1}",
+    "AppBG_Note_Regional": "Налаштування фону, специфічні для регіону, знаходяться в кнопці \"Швидкі налаштування\" на головній сторінці.",
 
     "AppThreads": "Потоки програми",
     "AppThreads_Download": "Потоки завантаження",
@@ -429,36 +459,42 @@
     "AppThreads_Help5": "Цей потік буде обробляти процес видобутку/верифікації під час встановлення/відновлення гри.",
     "AppThreads_Help6": "Примітка: Це налаштування більше не ефективне при встановленні Honkai Impact 3rd.",
 
-    "SophonSettingsTitle": "Sophon Mode Settings",
-    "SophonHelp_Title": "What is Sophon Downloader Mode?",
-    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
-    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
-    "SophonHelp_IndicatorTitle": "Indicator Icons",
-    "SophonHelp_Indicator1": "File Size to Write on Disk",
-    "SophonHelp_Indicator2": "File Size to Download",
-    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
-    "SophonHelp_Indicator4": "Network I/O Speed on Write",
-    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
-    "SophonHttpNumberBox": "Maximum HTTP Connections",
-    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
-    "SophonToggle": "Enable Sophon on Supported Regions",
+    "SophonSettingsTitle": "Налаштування режиму Sophon",
+    "SophonHelp_Title": "Що таке режим завантаження Sophon?",
+    "SophonHelp_1": "\"Sophon\" — це новий механізм завантаження, нещодавно представлений HoYoVerse, який дозволяє завантажувати файли у вигляді \"частин\", а не завантажувати великий ZIP-архів. Основні переваги — зменшена вимога до простору на диску та підвищена ефективність завантажень і оновлень.",
+    "SophonHelp_2": "Цей метод може бути повільнішим для тих, хто використовує жорсткі диски для своєї гри.",
+    "SophonHelp_IndicatorTitle": "Іконки індикаторів",
+    "SophonHelp_Indicator1": "Розмір файлу для запису на диск",
+    "SophonHelp_Indicator2": "Розмір файлу для завантаження",
+    "SophonHelp_Indicator3": "Швидкість вводу/виводу на диску під час запису",
+    "SophonHelp_Indicator4": "Швидкість мережевого вводу/виводу під час запису",
+    "SophonHelp_Thread": "Це налаштовує кількість одночасних частин, які завантажує Collapse. Зменшіть це значення, якщо у вас виникають раптові зависання під час завантаження.",
+    "SophonHttpNumberBox": "Максимальная кількість HTTP-з'єднань",
+    "SophonHelp_Http": "Це налаштовує максимальну кількість мережевих з'єднань, які встановлює Collapse для завантаження частин.",
+    "SophonToggle": "Увімкнути Sophon у підтримуваних регіонах",
+    "SophonPredownPerfMode_Toggle": "[ЕКСПЕРИМЕНТАЛЬНО] Використовуйте всі ядра процесора під час застосування попереднього завантаження.",
+    "SophonPredownPerfMode_Tooltip": "Увімкнення цього параметра встановить максимальну кількість потоків процесора для вашої системи. Вимкніть, якщо виникають проблеми.",
 
-    "AppThreads_Attention": "Attention",
-    "AppThreads_Attention1": "Before you change the",
-    "AppThreads_Attention2": "value, please consider to",
-    "AppThreads_Attention3": "NOT MODIFYING",
-    "AppThreads_Attention4": "the value if you have an existing download as it might",
-    "AppThreads_Attention5": "RE-DOWNLOAD THE ENTIRE THING",
-    "AppThreads_Attention6": "due to the session count needed for the download do not match.",
+    "AppThreads_Attention": "Увага!",
+    "AppThreads_Attention1": "Перед тим, як змінити",
+    "AppThreads_Attention2": "значення, будь ласка, розгляньте можливість",
+    "AppThreads_Attention3": "НІ МОДИФІКУЄТЬСЯ",
+    "AppThreads_Attention4": "значення, якщо у вас є активне завантаження, оскільки це може",
+    "AppThreads_Attention5": "ПЕРЕЗАВАНТАЖИТИ ВСЕ ЦЕ",
+    "AppThreads_Attention6": "через те, що кількість сеансів, необхідних для завантаження, не збігається.",
+    "AppThreads_AttentionTop1": "Наведені нижче проблеми більше не виникнуть, якщо у вас є",
+    "AppThreads_AttentionTop2": "включене налаштування.",
 
     "DiscordRPC": "Discord Rich Presense",
     "DiscordRPC_Toggle": "Показувати Discord Rich Presence",
     "DiscordRPC_GameStatusToggle": "Показувати поточну гру в статусі Discord",
     "DiscordRPC_IdleStatusToggle": "Показувати RPC в режимі очікування",
 
-    "VideoBackground": "Video Background Settings",
-    "VideoBackground_IsEnableAudio": "Enable Audio",
-    "VideoBackground_AudioVolume": "Audio Volume",
+    "ImageBackground": "Налаштування фону зображення.",
+    "VideoBackground": "Налаштування фонового відео",
+    "VideoBackground_IsEnableAudio": "Увімкнути аудіо",
+    "VideoBackground_IsEnableAcrylicBackground": "Використовувати акриловий ефект під час використання відео фону.",
+    "VideoBackground_AudioVolume": "Гучність звуку",
 
     "Update": "Перевірити оновлення",
     "Update_CurVer": "Поточна версія:",
@@ -467,6 +503,8 @@
     "Update_NewVer1": "Оновлення до",
     "Update_NewVer2": "доступне!",
     "Update_LatestVer": "Ви використовуєте останню версію",
+    "Update_SeeChangelog": "Переглянути останні зміни (EN)",
+    "Update_ChangelogTitle": "Останні зміни",
 
     "AppFiles": "Керування файлами програми",
     "AppFiles_OpenDataFolderBtn": "Відкрити папку з даними програми",
@@ -485,11 +523,11 @@
 
     "About": "Про програму",
     "About_Copyright1": "© 2022-2024",
-    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
+    "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\nshatyuka & gablm",
     "About_Copyright3": "під",
     "About_Copyright4": ". Всі права захищено.",
 
-    "LicenseType": "MIT License",
+    "LicenseType": "MIT Ліцензія",
 
     "Disclaimer": "Дисклеймер",
     "Disclaimer1": "Ця програма не пов'язана з",
@@ -504,6 +542,7 @@
 
     "EnableAcrylicEffect": "Використовувати ефект розмиття",
     "EnableDownloadChunksMerging": "Об'єднати частини завантаженого пакету",
+    "Enforce7ZipExtract": "Завжди використовуйте 7-zip для встановлення/оновлення гри.",
     "UseExternalBrowser": "Завжди використовувати зовнішній браузер",
 
     "LowerCollapsePrioOnGameLaunch": "Знизити використані процесом Collapse ресурси, коли гра запущена",
@@ -522,13 +561,81 @@
     "AppBehavior_LaunchOnStartup": "Автоматично відкривати Collapse при запуску комп'ютера",
     "AppBehavior_StartupToTray": "Сховати вікно Collapse при автозапуску",
 
-    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
-    "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
-    "Waifu2X_Help2": "Only available for still images!",
-    "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
-    "Waifu2X_Warning_D3DMappingLayers": "WARNING: Your system has the \"OpenCL™, OpenGL®, and Vulkan® Compatibility Pack\" installed. It is reported to be incompatible with the Vulkan Loader and will crash on some GPUs. Please remove this package to enable GPU mode.",
-    "Waifu2X_Error_Loader": "ERROR: Failed to initialize Vulkan Loader. Make sure you have a Vulkan-compatible GPU with a proper GPU driver installed.",
-    "Waifu2X_Error_Output": "ERROR: Failed to pass Waifu2X self-test, got an empty output image."
+    "Waifu2X_Toggle": "Використовувати Waifu2X [Експериментально]",
+    "Waifu2X_Help": "Використовуйте Waifu2X для збільшення фонових зображень.\nКоли ця опція ввімкнена, якість зображення значно покращується, але на завантаження зображення вперше знадобиться трохи більше часу.",
+    "Waifu2X_Help2": "Доступно тільки для статичних зображень!",
+    "Waifu2X_Warning_CpuMode": "УВАГА: Не знайдено доступного Vulkan GPU пристрою, тому буде використано режим CPU. Це значно збільшить час обробки зображень.",
+    "Waifu2X_Warning_D3DMappingLayers": "Попередження: У вашій системі встановлено \"OpenCL™, OpenGL® та Vulkan® Compatibility Pack\". Відомо, що він несумісний із завантажувачем Vulkan і може спричинити збій на деяких графічних процесорах. Будь ласка, видаліть цей пакет, щоб увімкнути режим GPU.",
+    "Waifu2X_Error_Loader": "ПОМИЛКА: Не вдалося ініціалізувати завантажувач Vulkan. Переконайтеся, що у вас є сумісний із Vulkan графічний процесор з відповідним драйвером GPU.",
+    "Waifu2X_Error_Output": "ПОМИЛКА: Не вдалося пройти самоперевірку Waifu2X, отримано порожнє вихідне зображення.",
+
+    "NetworkSettings_Title": "Налаштування мережі",
+    "NetworkSettings_Proxy_Title": "Налаштування проксі-сервера",
+
+    "NetworkSettings_Proxy_Hostname": "Ім'я хоста проксі-сервера",
+    "NetworkSettings_Proxy_HostnameHelp1": "Відображає URL-адресу проксі-сервера для використання",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse може підтримувати лише",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS та SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "тип проксі на даний момент.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "Введена URL-адреса є недійсною!",
+    "NetworkSettings_ProxyWarn_NotSupported": "Схема проксі не підтримується! Collapse підтримує тільки http://, https://, socks4://, socks4a:// та socks5://",
+
+    "NetworkSettings_Proxy_Username": "Ім'я користувача проксі-сервера",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Введіть ім'я користувача проксі-сервера",
+    "NetworkSettings_Proxy_UsernameHelp1": "За замовчуванням:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Пусто]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Залиште це поле порожнім, якщо ваш проксі-сервер не вимагає автентифікації.",
+
+    "NetworkSettings_Proxy_Password": "Пароль проксі-сервера",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Введіть пароль проксі-сервера",
+    "NetworkSettings_Proxy_PasswordHelp1": "За замовчуванням:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Пусто]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Залиште це поле порожнім, якщо ваш проксі-сервер не вимагає автентифікації.",
+
+    "NetworkSettings_ProxyTest_Button": "Протестуйте підключення проксі-сервера",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Перевірка підключення...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Тест підключення проксі успішно завершено!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Тест не пройдено! Проксі недоступний",
+
+    "NetworkSettings_Http_Title": "Налаштування HTTP-клієнта .NET",
+    "NetworkSettings_Http_Redirect": "Дозволити перенаправлення HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Дозволити імітувати HTTP файли cookie",
+    "NetworkSettings_Http_UntrustedHttps": "Дозволити ненадійний сертифікат HTTPS",
+    "NetworkSettings_Http_Timeout": "Час очікування HTTP-клієнта (в секундах).",
+
+    "FileDownloadSettings_Title": "Налаштування завантаження файлів.",
+    "FileDownloadSettings_SpeedLimit_Title": "Обмежити швидкість завантаження.",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Обмеження швидкості (в МіБ).",
+    "FileDownloadSettings_SpeedLimitHelp1": "За замовчуванням: ",
+    "FileDownloadSettings_SpeedLimitHelp2": "Діапазон значень обмеження швидкості:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 МіБ/с",
+    "FileDownloadSettings_SpeedLimitHelp4": "Обмежує максимальну дозволену пропускну здатність для завантаження. Це налаштування не можна використовувати разом з",
+    "FileDownloadSettings_SpeedLimitHelp5": "Налаштування.",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Новий попередньо виділений завантажувач",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Тільки для встановлення гри, ремонту гри та оновлень кешу.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Розмір фрагмента (в МіБ)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "За замовчуванням:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Діапазон значень розміру фрагмента:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 МіБ",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Якщо увімкнено, завантажувач динамічно розподілятиме розмір файлу під час його завантаження.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Це дозволяє завантажувачу безпосередньо записувати фрагменти даних у файл без розділення їх на окремі файли.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Якщо цей параметр вимкнено, програма запуску використовуватиме старий метод розподілу, коли фрагменти даних записуватимуться в окремі файли. Також буде вимкнено",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "також",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "Налаштування.",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Примітка:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Ця функція доступна лише для встановлення гри (таких як первинне встановлення, оновлення та попереднє завантаження), ремонту гри та етапів оновлення кешу.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Режим завантаження файлів з максимальним потоком",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Лише для відновлення гри та оновлення кешу.",
+    "FileDownloadSettings_BurstDownloadHelp1": "За замовчуванням:",
+    "FileDownloadSettings_BurstDownloadHelp2": "Якщо увімкнено, ця функція дозволить процес завантаження на",
+    "FileDownloadSettings_BurstDownloadHelp3": "Також",
+    "FileDownloadSettings_BurstDownloadHelp4": "функції для паралельного запуску, щоб зробити процес завантаження більш ефективним.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Коли вимкнено, процес завантаження для",
+    "FileDownloadSettings_BurstDownloadHelp6": "Також",
+    "FileDownloadSettings_BurstDownloadHelp7": "будуть використовувати послідовний процес завантаження."
   },
 
   "_Misc": {
@@ -542,7 +649,7 @@
     "TimeRemainHMSFormat": "{0:%h}г{0:%m}хв{0:%s}с залишилось",
     "TimeRemainHMSFormatPlaceholder": "--г--хв--с залишилось",
     "Speed": "Швидкість: {0}/с",
-    "SpeedTextOnly": "Speed",
+    "SpeedTextOnly": "Швидкість",
     "SpeedPerSec": "{0}/с",
     "SpeedPlaceholder": "Швидкість: - /с",
     "PerFromTo": "{0} / {1}",
@@ -587,20 +694,20 @@
     "IAcceptAgreement": "Я приймаю угоду",
     "IDoNotAcceptAgreement": "Я не приймаю угоду",
 
-    "LangNameENUS": "English",
+    "LangNameENUS": "Англійська",
     "LangNameJP": "Японська",
-    "LangNameCN": "Chinese",
+    "LangNameCN": "Китайська",
     "LangNameKR": "Корейська",
 
     "Downloading": "Завантаження",
-    "Updating": "Updating",
-    "UpdatingAndApplying": "Update + Applying",
-    "Applying": "Applying",
+    "Updating": "Оновлення",
+    "UpdatingAndApplying": "Оновити та застосувати",
+    "Applying": "Застосовування",
     "Merging": "Об'єднання",
     "Idle": "Очікуємо",
     "Change": "Змінити",
     "Cancelled": "Скасовано",
-    "FinishingUp": "Finishing Up",
+    "FinishingUp": "Закінчуємо",
     "Extracting": "Видобуток",
     "Converting": "Конвертування",
     "Patching": "Встановлення патчу",
@@ -615,7 +722,7 @@
     "ApplyingPatch": "Встановлюємо патч",
     "Disabled": "Вимкнено",
     "Enabled": "Ввімкнено",
-    "UseAsDefault": "Use as Default",
+    "UseAsDefault": "Використовувати за замовчуванням",
 
     "BuildChannelPreview": "Передогляд",
     "BuildChannelStable": "Стабільний",
@@ -623,8 +730,8 @@
     "CDNDescription_Github": "Офіційний (основний) репозиторій для лаунчера.",
     "CDNDescription_Cloudflare": "Дзеркало офіційного (основного) репозиторію, опубліковане на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Дзеркало офіційного (основного) репозиторію, опубліковане на Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
+    "CDNDescription_GitLab": "Дзеркало офіційного (основного) репозиторію, розміщене на GitLab.",
+    "CDNDescription_Coding": "Дзеркало офіційного (основного) репозиторію, розміщене на Coding.",
 
     "LocateExecutable": "Знайти виконуваний файл",
     "OpenDownloadPage": "Відкрити сторінку завантаження",
@@ -641,7 +748,7 @@
     "DiscordRP_Ad": "- З Collapse Launcher",
     "DiscordRP_Region": "Регіон:",
 
-    "DownloadModeLabelSophon": "Sophon Mode",
+    "DownloadModeLabelSophon": "Режим Sophon",
 
     "Taskbar_PopupHelp1": "Натисніть, щоб перенести Collapse з фону",
     "Taskbar_PopupHelp2": "Натисніть двічі щоб перемкнути видимість вікна",
@@ -656,7 +763,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Назва лаунчера невідома)",
 
-    "ImageCropperTitle": "Обрізати зображення"
+    "ImageCropperTitle": "Обрізати зображення",
+
+    "IsBytesMoreThanBytes": "= {0} байт (-/+ {1})",
+    "IsBytesUnlimited": "= Необмежено",
+    "IsBytesNotANumber": "= NaN"
   },
 
   "_BackgroundNotification": {
@@ -703,7 +814,7 @@
     "RepairCompletedSubtitle": "{0} файл(ів) було відновлено.",
     "RepairCompletedSubtitleNoBroken": "Пошкоджених файлів не знайдено.",
     "ExtremeGraphicsSettingsWarnTitle": "Пресет дуже високої графіки обрано!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Ви намагаєтеся встановити пресет на дуже високу графіку!\r\nДуже висока графіка - це практично 2х-кратний масштаб рендерингу з ввівкненим MSAA і вона ДУЖЕ НЕОПТИМІЗОВАНА!\r\n\r\nВи впевнені, що хочете використати це налаштування?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Ви збираєтеся встановити налаштування параметра на \"Дуже високий\"!\r\nналаштування параметра на \"Дуже високий\" - це, по суті, 1,6-кратний масштаб рендерингу з увімкненим MSAA, який є ДУЖЕ неоптимізованим!\r\n\r\nВи впевнені, що хочете використовувати цей параметр?",
     "MigrateExistingMoveDirectoryTitle": "Переміщаємо існуюче встановлення для: {0}",
     "MigrateExistingInstallChoiceTitle": "Знайдено існуюче встановлення {0}!",
     "MigrateExistingInstallChoiceSubtitle1": "Ви маєте існуюче встановлення гри використовуючи {0} у цій директорії:",
@@ -729,7 +840,7 @@
     "InstallDataDownloadResumeTitle": "Продовжити завантаження?",
     "InstallDataDownloadResumeSubtitle": "Минулого разу, ви завантажили {0}/{1} гри.\r\n\r\nЧи бажаєте ви продовжити завантаження?",
     "InsufficientDiskTitle": "Недостатньо місця",
-    "InsufficientDiskSubtitle": "You do not have enough free space to install this game on your {2} drive!\r\n\r\nFree Space: {0}\r\nRequired Space: {1}\r\n\r\nPlease ensure that you have enough disk space before proceeding with the installation.",
+    "InsufficientDiskSubtitle": "У вас недостатньо вільного місця для встановлення цієї гри на вашому диску {2}!\r\n\r\nВільно: {0}\r\nПотрібно: {1}.\r\nБудь ласка, переконайтеся, що у вас достатньо місця на диску перед встановленням.",
     "RelocateFolderTitle": "Перемістити папку з даними програми",
     "RelocateFolderSubtitle": "Зараз ви користуєтесь цією папкою як папкою з даними програми:\r\n\r\n{0}\r\n\r\nЧи бажаєте ви змінити її локацію?",
     "UninstallGameTitle": "Видаляємо гру: {0}",
@@ -768,7 +879,7 @@
     "ChangePlaytimeTitle": "Ви впевнені, що бажаєте змінити час гри?",
     "ChangePlaytimeSubtitle": "Зміна часу гри означає перезапис поточного значення на введене вами. \n\nЧи бажаєте ви продовжити?\n\nПримітка: Це не впливає на роботу Collapse, і ви можете змінити це значення знову в будь-який час, коли не граєте в гру.",
     "ResetPlaytimeTitle": "Ви впевнені, що бажаєте скинути час гри?",
-    "ResetPlaytimeSubtitle": "Скидання часу гри означає встановлення часу гри назад на 0. Це",
+    "ResetPlaytimeSubtitle": "Скидання часу гри означає встановлення лічильника часу гри та всіх пов'язаних статистичних даних на 0. Це",
     "ResetPlaytimeSubtitle2": "руйнівна",
     "ResetPlaytimeSubtitle3": "дія, що означає що ви не можете скасувати зміни після підтвердження.\n\nЧи бажаєте ви продовжити?\n\nПримітка: Це не впливає на роботу Collapse, і ви можете змінити це значення знову в будь-який час, коли не граєте в гру.",
     "InvalidPlaytimeTitle": "Виникла проблема із збереженням ігрового часу цієї сесії",
@@ -813,7 +924,7 @@
     "ShortcutCreationSuccessSubtitle2": "Локація:",
     "ShortcutCreationSuccessSubtitle3": "Примітки:",
     "ShortcutCreationSuccessSubtitle4": " • Використання цього ярлика запустить гру після завантаження регіону.",
-    "ShortcutCreationSuccessSubtitle5": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
+    "ShortcutCreationSuccessSubtitle5": "• Якщо гра не встановлена або не оновлена, Collapse спробує встановити або оновити її. Будь ласка, зверніть увагу, що діалогові вікна, пов’язані з цими процесами, все ще будуть відображатися.",
 
     "SteamShortcutCreationConfirmTitle": "Ви впевнені, що хочете продовжити?",
     "SteamShortcutCreationConfirmSubtitle1": "Ярлик буде додано для кожного користувача Steam на цьому компʼютері.",
@@ -826,13 +937,16 @@
     "SteamShortcutCreationSuccessSubtitle4": "• Повторний запуск процесу виправить будь-які пошкоджені/відсутні зображення, які належать до ярлика.",
     "SteamShortcutCreationSuccessSubtitle5": " • Нові ярлики будуть показані лише після перезапуску Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Щоб користуватися оверлеєм Steam, Steam має бути запущеним з правами адміністратора, та Collapse має бути повністю закритим, або мати ввімкненою функцію декількох запущених вікон в налаштуваннях.",
-    "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
+    "SteamShortcutCreationSuccessSubtitle7": "• Якщо гра не встановлена або не оновлена, Collapse спробує встановити або оновити її. Будь ласка, зверніть увагу, що діалогові вікна, пов’язані з цими процесами, все ще будуть відображатися.",
 
     "SteamShortcutCreationFailureTitle": "Некоректна папка з даними Steam",
     "SteamShortcutCreationFailureSubtitle": "Неможливо знайти коректну папку даних користувача.\n\nУвійдіть в Steam хоча б раз перед використанням цієї функції.",
 
-    "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsTitle": "Завантажити налаштування",
+    "DownloadSettingsOption1": "Запустіть гру після встановлення",
+
+    "OpenInExternalBrowser": "Відкрити в зовнішньому браузері",
+    "CloseOverlay": "Закрити накладання"
   },
 
   "_FileMigrationProcess": {
@@ -842,8 +956,8 @@
     "LocateFolderSubtitle": "Оберіть локацію для переміщення файлу/папки до цільового шляху.",
     "ChoosePathTextBoxPlaceholder": "Оберіть цільовий шлях...",
     "ChoosePathButton": "Оберіть ціль",
-    "ChoosePathErrorTitle": "Error has Occured!",
-    "ChoosePathErrorPathIdentical": "The output path you choose is within or identical to the current location!\r\nPlease move to another location!",
+    "ChoosePathErrorTitle": "Виникла помилка!",
+    "ChoosePathErrorPathIdentical": "Вибраний вами шлях для збереження знаходиться в межах або ідентичний поточному місцю!\r\nБудь ласка, виберіть інше місце!",
     "ChoosePathErrorPathUnselected": "Будь ласка, перевірте ваш шлях перед продовженням!",
     "ChoosePathErrorPathNotExist": "Шляху не існує!",
     "ChoosePathErrorPathNoPermission": "Ви не маєте дозволу на доступ до цієї локації! Будь ласка, оберіть іншу локацію!"
@@ -885,7 +999,7 @@
     "CookbookDownloadTitle": "Завантажуємо рецепт",
     "CookbookDownloadSubtitle": "Завантажуємо рецепт для конвертації з {0} до {1}",
 
-    "CookbookFileBrowserFileTypeCategory": "{0} to {1} Cookbook",
+    "CookbookFileBrowserFileTypeCategory": "{0} до {1} Кулінарна книга",
 
     "CancelBtn": "Скасувати конвертацію",
     "CancelMsgTitle": "Скасовуємо конвертацію...",
@@ -956,7 +1070,7 @@
     "UpdateHeader4": "Швидкість:",
     "UpdateHeader5PlaceHolder": "Завантажуємо оновлення [- / -]:",
 
-    "UpdateForcedHeader": "The launcher will be forcely updated due to urgent changes to ensure the launcher to work properly.",
+    "UpdateForcedHeader": "Програма буде примусово оновлена у зв'язку з нагальними змінами, щоб забезпечити належну роботу програми.",
 
     "UpdateStatus1": "Отримуємо оновлення:",
     "UpdateMessage1": "Підключаємося до репозиторію оновлення:",
@@ -1052,7 +1166,7 @@
 
     "Graphics_FPS": "FPS",
     "Graphics_FPS_Help": "120 FPS - ЕСПЕРИМЕНТАЛЬНА ФУНКЦІЯ! Використовуйте на свій страх, оскільки Honkai: Star Rail не має офіційної підтримки на це!",
-    "Graphics_FPS_Help2": "Setting the FPS value to 120 no longer causes the menu to break, but changing the in-game FPS setting to a lower value will no longer work.\r\nShould you use the 120 FPS option, use Collapse to change the Game Graphics Settings.",
+    "Graphics_FPS_Help2": "Встановлення значення FPS на 120 більше не призводить до збоїв у меню, але зміна налаштувань FPS в грі на менше значення більше не буде працювати.\r\nЯкщо ви використовуєте опцію 120 FPS, скористайтеся Collapse для зміни налаштувань графіки гри.",
     "Graphics_VSync": "Вертикальна синхронізація",
     "Graphics_VSync_Help": "Верт. синхр. недоступна з 120 FPS",
     "Graphics_RenderScale": "Масштаб рендерингу",
@@ -1065,8 +1179,8 @@
     "Graphics_BloomQuality": "Якість світіння",
     "Graphics_AAMode": "Режим анти-згладжування",
     "Graphics_SFXQuality": "Якість ефектів",
-    "Graphics_SelfShadow": "Character Shadow in Map Exploration",
-    "Graphics_HalfResTransparent": "Half Resolution Transparency",
+    "Graphics_SelfShadow": "Тіни персонажів під час дослідження карти",
+    "Graphics_HalfResTransparent": "Прозорість у половині роздільної здатності",
 
     "Graphics_SpecPanel": "Глобальні налаштування графіки",
     "SpecEnabled": "Ввімкнено",
@@ -1283,29 +1397,29 @@
   },
 
   "_FileCleanupPage": {
-    "Title": "Files Clean-up",
-    "TopButtonRescan": "Re-Scan",
-    "NoFilesToBeDeletedText": "No files need to be deleted!",
-    "ListViewFieldFileName": "File Name",
-    "ListViewFieldFileSize": "File Size",
-    "LoadingTitle": "Processing",
-    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
-    "LoadingSubtitle2": "Checking pkg_version's availability...",
-    "BottomButtonDeleteAllFiles": "Delete All Files",
-    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
-    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
-    "BottomCheckboxNoFileSelected": "No File Selected",
-    "DialogDeletingFileTitle": "Deleting Files",
-    "DialogDeletingFileSubtitle1": "You're about to",
-    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
-    "DialogDeletingFileSubtitle3": "which contains",
-    "DialogDeletingFileSubtitle4": "{0} in size.",
-    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
-    "DialogDeleteSuccessTitle": "Files Deleted!",
-    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
-    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
-    "DialogMoveToRecycleBin": "Move to Recycle Bin",
-    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
+    "Title": "Очищення файлів",
+    "TopButtonRescan": "Пересканувати",
+    "NoFilesToBeDeletedText": "Видаляти файли не потрібно!",
+    "ListViewFieldFileName": "Ім'я файлу",
+    "ListViewFieldFileSize": "Розмір файлу",
+    "LoadingTitle": "Обробка",
+    "LoadingSubtitle1": "Обчислення існуючих файлів ({0} файл(и) знайдено - {1} всього)...",
+    "LoadingSubtitle2": "Перевірка доступності версії pkg_version...",
+    "BottomButtonDeleteAllFiles": "Видалити всі файли",
+    "BottomButtonDeleteSelectedFiles": "Видалити {0} Вибрані файл(и)",
+    "BottomCheckboxFilesSelected": "{0} Вибрані файл(и) ({1} / {2} Всього)",
+    "BottomCheckboxNoFileSelected": "Файл не вибрано",
+    "DialogDeletingFileTitle": "Видалення файлів",
+    "DialogDeletingFileSubtitle1": "Ви збираєтеся",
+    "DialogDeletingFileSubtitle2": "видалити {0} файл(и)",
+    "DialogDeletingFileSubtitle3": "які містять",
+    "DialogDeletingFileSubtitle4": "{0} за розміром.",
+    "DialogDeletingFileSubtitle5": "Ви впевнені, що хочете видалити файли?",
+    "DialogDeleteSuccessTitle": "Файли видалено!",
+    "DialogDeleteSuccessSubtitle1": "{0} файл(и) успішно видалено",
+    "DialogDeleteSuccessSubtitle2": "з {0} не вдалося видалити",
+    "DialogMoveToRecycleBin": "Перемістити до кошика",
+    "DialogTitleMovedToRecycleBin": "Файли переміщено до Кошика!"
   },
 
   "_OOBEStartUpMenu": {
@@ -1330,8 +1444,8 @@
     "CustomizationSettingsStyleCustomBackgroundHeader": "Кастомний фон",
     "CustomizationSettingsStyleCustomBackgroundDescription": "Використайте кастомне зображення замість того, що за замовчуванням.",
 
-    "VideoBackgroundPreviewUnavailableHeader": "Video Background Preview is Unavailable",
-    "VideoBackgroundPreviewUnavailableDescription": "You cannot preview your video background in OOBE but do not worry! Your video background will be applied once you are completing OOBE.",
+    "VideoBackgroundPreviewUnavailableHeader": "Попередній перегляд фону відео недоступний",
+    "VideoBackgroundPreviewUnavailableDescription": "Ви не можете переглянути відео-фон у OOBE, але не хвилюйтеся! Ваш відео-фон буде застосовано після завершення OOBE.",
 
     "LoadingInitializationTitle": "Ініціалізуємо перший запуск лаунчера",
     "LoadingCDNCheckboxCheckLatency": "(Первіряємо затримку...)",
@@ -1347,14 +1461,43 @@
   },
 
   "_ZenlessGameSettingsPage": {
-    "Graphics_ColorFilter": "Color Filter Strength",
-    "Graphics_RenderRes": "Render Resolution",
-    "Graphics_EffectsQ": "Effects Quality",
-    "Graphics_ShadingQ": "Shading Quality",
-    "Graphics_Distortion": "Distortion",
-    "Audio_PlaybackDev": "Audio Playback Device",
-    "Audio_PlaybackDev_Headphones": "Headphones",
-    "Audio_PlaybackDev_Speakers": "Speakers",
-    "Audio_PlaybackDev_TV": "TV"
+    "Graphics_ColorFilter": "Ефективність кольорового фільтра",
+    "Graphics_RenderRes": "Роздільна здатність рендерингу",
+    "Graphics_EffectsQ": "Якість ефектів ",
+    "Graphics_ShadingQ": "Якість затінення",
+    "Graphics_Distortion": "Спотворення",
+    "Audio_PlaybackDev": "Пристрій для відтворення аудіо",
+    "Audio_PlaybackDev_Headphones": "Навушники",
+    "Audio_PlaybackDev_Speakers": "Колонки",
+    "Audio_PlaybackDev_TV": "ТБ"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Згорнути програму запуску в системний трей.",
+    "WindowHiddenToTray_Subtitle": "Тепер програма запуску працює у фоновому режимі.\r\nНатисніть на це повідомлення або на іконку в треї, щоб відновити вікно.",
+
+    "GameInstallCompleted_Title": "{0} готовий до гри.",
+    "GameInstallCompleted_Subtitle": "{0} було успішно встановлено!",
+
+    "GameUpdateCompleted_Title": "{0} було оновлено",
+    "GameUpdateCompleted_Subtitle": "{0} успішно оновлено до v{1}!",
+
+    "GamePreloadCompleted_Title": "Попереднє завантаження для {0} завантажено",
+
+    "GameRepairCheckCompleted_Title": "Перевірку відновлення гри завершено",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} файл(и) потрібно оновити/виправити. Натисніть це сповіщення, щоб повернутися до панелі запуску.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Файли не потрібно оновлювати/виправляти.",
+
+    "GameRepairDownloadCompleted_Title": "Завантаження відновлення гри завершено",
+    "GameRepairDownloadCompleted_Subtitle": "{0} файл(и) успішно оновлено/виправлено.",
+
+    "CacheUpdateCheckCompleted_Title": "Перевірка оновлення кешу завершена",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} файл(и) кешу потрібно оновити. Натисніть на це сповіщення, щоб повернутися до панелі запуску.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Файли кешу не потрібно оновлювати.",
+
+    "CacheUpdateDownloadCompleted_Title": "Завантаження оновлення кешу завершено",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} файл(и) кешу успішно оновлено.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Натисніть на це сповіщення, щоб повернутися до панелі запуску."
   }
 }

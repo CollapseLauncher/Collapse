@@ -15,7 +15,6 @@ namespace CollapseLauncher
     internal partial class HonkaiRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
-        private const ulong _assetIndexSignature = 0x657370616C6C6F43; // 657370616C6C6F43 is "Collapse"
         private const string _assetBasePath = "BH3_Data/StreamingAssets/";
         private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic" };
         private HonkaiCache _cacheUtil { get; init; }
@@ -40,25 +39,21 @@ namespace CollapseLauncher
         private protected List<FilePropertiesRemote> _originAssetIndex { get; set; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager, IGameSettings GameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, GameVersionManager, GameSettings, null, "", versionOverride)
+        public HonkaiRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, ICache gameCacheManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, gameVersionManager, gameSettings, null, "", versionOverride)
         {
-            _cacheUtil = (GameCacheManager as ICacheBase<HonkaiCache>).AsBaseType();
+            _cacheUtil = (gameCacheManager as ICacheBase<HonkaiCache>)?.AsBaseType();
 
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
 
             // Initialize audio asset language
-            string audioLanguage = (GameSettings as HonkaiSettings).SettingsAudio._userCVLanguage;
-            switch (audioLanguage)
-            {
-                case "Chinese(PRC)":
-                    _audioLanguage = AudioLanguageType.Chinese;
-                    break;
-                default:
-                    _audioLanguage = _gameVersionManager.GamePreset.GameDefaultCVLanguage;
-                    break;
-            }
+            string audioLanguage = (gameSettings as HonkaiSettings)?.SettingsAudio._userCVLanguage;
+            _audioLanguage = audioLanguage switch
+                             {
+                                 "Chinese(PRC)" => AudioLanguageType.Chinese,
+                                 _ => _gameVersionManager.GamePreset.GameDefaultCVLanguage
+                             };
         }
 
         ~HonkaiRepair() => Dispose();
@@ -75,7 +70,7 @@ namespace CollapseLauncher
         {
             if (_assetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't do the repair process!");
 
-            if (showInteractivePrompt)
+            if (showInteractivePrompt && actionIfInteractiveCancel != null)
             {
                 await SpawnRepairDialog(_assetIndex, actionIfInteractiveCancel);
             }
@@ -98,7 +93,7 @@ namespace CollapseLauncher
             CountAssetIndex(_assetIndex);
 
             // Copy list to _originAssetIndex
-            _originAssetIndex = new List<FilePropertiesRemote>(_assetIndex);
+            _originAssetIndex = [.._assetIndex];
 
             // Step 3: Check for the asset indexes integrity
             await Check(_assetIndex, _token.Token);
@@ -126,9 +121,12 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            _status.IsCompleted = true;
-            _status.IsCanceled = false;
-            _status.ActivityStatus = Lang._GameRepairPage.Status7;
+            if (_status != null)
+            {
+                _status.IsCompleted    = true;
+                _status.IsCanceled     = false;
+                _status.ActivityStatus = Lang._GameRepairPage.Status7;
+            }
 
             // Update status and progress
             UpdateAll();

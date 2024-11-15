@@ -166,6 +166,13 @@ internal static class Sleepy
 
     internal static void WriteString(string filePath, ReadOnlySpan<char> content, ReadOnlySpan<byte> magic)
     {
+        // Ensure the folder always exist
+        string? fileDir = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrEmpty(fileDir) && !Directory.Exists(fileDir))
+        {
+            Directory.CreateDirectory(fileDir);
+        }
+
         // Get the FileInfo
         FileInfo fileInfo = new FileInfo(filePath);
 

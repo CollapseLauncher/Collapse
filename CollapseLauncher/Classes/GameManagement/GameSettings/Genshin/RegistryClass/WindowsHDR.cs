@@ -19,7 +19,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// Range: 0 - 1
         /// Default: 0
         /// </summary>
-        public int HDR { get; set; } = 0;
+        public int HDR { get; set; }
 
         /// <summary>
         /// Converted value from HDR integer inside WINDOWS_HDR_ON registry to usable boolean.
@@ -64,7 +64,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot?.SetValue(_ValueName, HDR, RegistryValueKind.DWord);
+                RegistryRoot.SetValue(_ValueName, HDR, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Genshin Settings: {_ValueName} : {HDR}", LogType.Debug, true);
 #endif

@@ -6,22 +6,24 @@
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
     using CollapseLauncher.Helper.Background;
+    using CollapseLauncher.Helper.Database;
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
     using CollapseLauncher.Pages.OOBE;
+    using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
-    using Hi3Helper.Data;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
+    using Microsoft.UI.Input;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
+    using Microsoft.UI.Xaml.Controls.Primitives;
     using Microsoft.UI.Xaml.Data;
     using Microsoft.UI.Xaml.Input;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.UI.Xaml.Media.Animation;
-    using Microsoft.Win32.TaskScheduler;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -38,7 +40,6 @@
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
     using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
-    using TaskSched = Microsoft.Win32.TaskScheduler.Task;
     using Task = System.Threading.Tasks.Task;
 
 // ReSharper disable CheckNamespace
@@ -52,7 +53,6 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
 
-        private const string _collapseStartupTaskName = "CollapseLauncherStartupTask";
         private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
         
         private readonly bool _initIsInstantRegionChange;
@@ -67,6 +67,7 @@ namespace CollapseLauncher.Pages
                 
             InitializeComponent();
             this.EnableImplicitAnimation(true);
+            this.SetAllControlsCursorRecursive(InputSystemCursor.Create(InputSystemCursorShape.Hand));
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             LoadAppConfig();
@@ -85,7 +86,7 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = Version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
-            GitVersionIndicator_Hyperlink.NavigateUri = 
+            GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
@@ -105,7 +106,7 @@ namespace CollapseLauncher.Pages
             ToggleDiscordRPC.Visibility = Visibility.Collapsed;
 #endif
 
-            AppBGCustomizerNote.Text = String.Format(Lang._SettingsPage.AppBG_Note,
+            AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
                 string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
                 string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
@@ -303,14 +304,15 @@ namespace CollapseLauncher.Pages
 
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
                 bool isUpdateAvailable = await LauncherUpdateHelper.IsUpdateAvailable(true);
-                if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+                LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
                 {
-                    LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
-                    {
-                        IsUpdateAvailable = isUpdateAvailable,
-                        NewVersionName    = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
-                    });
-                }
+                    IsUpdateAvailable = isUpdateAvailable, 
+                    // ReSharper disable PossibleInvalidOperationException
+                    NewVersionName = (GameVersion)(isUpdateAvailable
+                        ? LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
+                        : LauncherUpdateHelper.LauncherCurrentVersion)
+                    // ReSharper restore PossibleInvalidOperationException
+                });
             }
             catch (Exception ex)
             {
@@ -421,17 +423,16 @@ namespace CollapseLauncher.Pages
                 LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
                 SetAndSaveConfigValue("CustomBGPath", file);
                 BGPathDisplay.Text = file;
-                BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
                 
-                if (currentMediaType == MediaType.Media)
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                bool isUseRegionCustomBG = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                if (!isUseRegionCustomBG)
                 {
-                    CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Visible;
+                    BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
                 }
-                else
+                else if (!string.IsNullOrEmpty(currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath))
                 {
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+                    _ = BackgroundMediaUtility.GetMediaType(currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath);
                 }
             }
         }
@@ -441,26 +442,6 @@ namespace CollapseLauncher.Pages
         {
             if (EggsAttempt++ >= 10)
                 HerLegacy.Visibility = Visibility.Visible;
-        }
-
-        private TaskSched CreateScheduledTask(string taskName)
-        {
-            string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
-
-            using TaskService ts = new TaskService();
-
-            TaskDefinition taskDefinition = TaskService.Instance.NewTask();
-            taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
-            taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
-            taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
-            taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
-            taskDefinition.Settings.Enabled             = false;
-            taskDefinition.Triggers.Add(new LogonTrigger());
-            taskDefinition.Actions.Add(new ExecAction(collapseStartupTarget));
-
-            TaskSched task = TaskService.Instance.RootFolder.RegisterTaskDefinition(taskName, taskDefinition);
-            taskDefinition.Dispose();
-            return task;
         }
 
         private void EnableHeaderMouseEvent(object sender, RoutedEventArgs e)
@@ -476,6 +457,7 @@ namespace CollapseLauncher.Pages
             {
                 bool isEnabled = GetAppConfigValue("UseCustomBG").ToBool();
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                LogWriteLine("Read " + isEnabled + " BG Path: " + BGPath + " from config", LogType.Scheme, true);
                 if (!string.IsNullOrEmpty(BGPath))
                     BGPathDisplay.Text = BGPath;
                 else
@@ -485,24 +467,11 @@ namespace CollapseLauncher.Pages
                 {
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-                    if (currentMediaType == MediaType.Media)
-                    {
-                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                    }
                 }
                 else
                 {
                     AppBGCustomizer.Visibility       = Visibility.Collapsed;
                     AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
                 }
 
                 BGSelector.IsEnabled = isEnabled;
@@ -510,20 +479,27 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                SetAndSaveConfigValue("UseCustomBG", new IniValue(value));
+                SetAndSaveConfigValue("UseCustomBG", value);
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                bool isUseRegionCustomBG = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!value)
                 {
-                    BGPathDisplay.Text = Lang._Misc.NotSelected;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
-                    AppBGCustomizer.Visibility       = Visibility.Collapsed;
-                    AppBGCustomizerNote.Visibility   = Visibility.Collapsed;
-                    CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                    CustomBGVideoSettings.Visibility = Visibility.Collapsed;
+
+                    ToggleCustomBgButtons();
+                }
+                else if (isUseRegionCustomBG)
+                {
+                    string currentRegionCustomBg = currentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
+                    LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
+                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+                    ToggleCustomBgButtons();
                 }
                 else
                 {
-                    string BGPath = GetAppConfigValue("CustomBGPath").ToString();
+                    var BGPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(BGPath))
                     {
                         LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
@@ -541,22 +517,23 @@ namespace CollapseLauncher.Pages
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
-                    AppBGCustomizer.Visibility       = Visibility.Visible;
-                    AppBGCustomizerNote.Visibility   = Visibility.Visible;
-                        
-                    var currentMediaType = BackgroundMediaUtility.GetMediaType(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-                    if (currentMediaType == MediaType.Media)
-                    {
-                        CustomBGImageSettings.Visibility = Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        CustomBGImageSettings.Visibility = IsWaifu2XUsable ? Visibility.Visible : Visibility.Collapsed;
-                        CustomBGVideoSettings.Visibility = Visibility.Collapsed;
-                    }
                 }
+
+                if (value)
+                {
+                    BGPathDisplay.Text = GetAppConfigValue("CustomBGPath").ToString();
+                    AppBGCustomizer.Visibility = Visibility.Visible;
+                    AppBGCustomizerNote.Visibility = Visibility.Visible;
+                }
+
                 BGSelector.IsEnabled = value;
+
+                return;
+                void ToggleCustomBgButtons()
+                {
+                    AppBGCustomizer.Visibility = Visibility.Collapsed;
+                    AppBGCustomizerNote.Visibility = Visibility.Collapsed;
+                }
             }
         }
 
@@ -710,12 +687,29 @@ namespace CollapseLauncher.Pages
 #endif
         private bool IsAcrylicEffectEnabled
         {
-            get => GetAppConfigValue("EnableAcrylicEffect").ToBool();
+            get => LauncherConfig.EnableAcrylicEffect;
             set
             {
-                SetAndSaveConfigValue("EnableAcrylicEffect", value);
-                if (MainPage.CurrentBackgroundHandler?.CurrentAppliedMediaType == MediaType.StillImage)
-                    App.ToggleBlurBackdrop(value);
+                LauncherConfig.EnableAcrylicEffect = value;
+
+                if (BackgroundMediaUtility.CurrentAppliedMediaType == MediaType.Media
+                 && value && !IsUseVideoBGDynamicColorUpdate)
+                    return;
+
+                App.ToggleBlurBackdrop(value);
+            }
+        }
+
+        private bool IsUseVideoBGDynamicColorUpdate
+        {
+            get => LauncherConfig.IsUseVideoBGDynamicColorUpdate;
+            set
+            {
+                LauncherConfig.IsUseVideoBGDynamicColorUpdate = value;
+                if (MediaType.StillImage == BackgroundMediaUtility.CurrentAppliedMediaType)
+                    return;
+
+                App.ToggleBlurBackdrop(value);
             }
         }
 
@@ -853,7 +847,7 @@ namespace CollapseLauncher.Pages
                     comboBoxOthers.SelectedIndex = lastSelected;
                 }
 
-                UpdateBindingsEvents(this, null);
+                UpdateBindings.Update();
             }
         }
 
@@ -1005,13 +999,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
-
-                bool value = task.Definition.Settings.Enabled;
-                task.Dispose();
+                bool value = TaskSchedulerHelper.IsEnabled();
 
                 if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
                 else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
@@ -1020,12 +1008,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                task.Definition.Settings.Enabled = value;
-                task.RegisterChanges();
-                task.Dispose();
+                TaskSchedulerHelper.ToggleEnabled(value);
 
                 if (value) StartupToTrayToggle.Visibility = Visibility.Visible;
                 else StartupToTrayToggle.Visibility       = Visibility.Collapsed;
@@ -1034,31 +1017,8 @@ namespace CollapseLauncher.Pages
 
         private bool IsStartupToTray
         {
-            get
-            {
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                if (task == null) task = CreateScheduledTask(_collapseStartupTaskName);
-
-                bool? value = false;
-                if (task.Definition.Actions[0] is ExecAction execAction)
-                    value = execAction.Arguments?.Trim().Contains("tray", StringComparison.OrdinalIgnoreCase);
-
-                task.Dispose();
-                return value ?? false;
-            }
-            set
-            {
-                string collapseStartupTarget = MainEntryPoint.FindCollapseStubPath();
-                using TaskService ts = new TaskService();
-
-                TaskSched task = ts.GetTask(_collapseStartupTaskName);
-                task.Definition.Actions.Clear();
-                task.Definition.Actions.Add(new ExecAction(collapseStartupTarget, value ? "tray" : null));
-                task.RegisterChanges();
-                task.Dispose();
-            }
+            get => TaskSchedulerHelper.IsOnTrayEnabled();
+            set => TaskSchedulerHelper.ToggleTrayEnabled(value);
         }
 
         private bool IsEnableSophon
@@ -1077,6 +1037,12 @@ namespace CollapseLauncher.Pages
         {
             get => GetAppConfigValue("SophonHttpConnInt").ToInt();
             set => SetAndSaveConfigValue("SophonHttpConnInt", value);
+        }
+
+        private bool IsSophonPreloadPerfMode
+        {
+            get => GetAppConfigValue("SophonPreloadApplyPerfMode").ToBool();
+            set => SetAndSaveConfigValue("SophonPreloadApplyPerfMode", value);
         }
 
 #nullable enable
@@ -1105,7 +1071,15 @@ namespace CollapseLauncher.Pages
         private double HttpClientTimeout
         {
             get => GetAppConfigValue("HttpClientTimeout").ToDouble();
-            set => SetAndSaveConfigValue("HttpClientTimeout", value);
+            set
+            {
+                if (double.IsNaN(value))
+                {
+                    value = HttpClientTimeoutNumberBox.Minimum;
+                    HttpClientTimeoutNumberBox.Value = value;
+                }
+                SetAndSaveConfigValue("HttpClientTimeout", value);
+            }
         }
 
         private string? HttpProxyUrl
@@ -1265,8 +1239,337 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
             }
         }
+        
+        private bool IsBurstDownloadModeEnabled
+        {
+            get => LauncherConfig.IsBurstDownloadModeEnabled;
+            set => LauncherConfig.IsBurstDownloadModeEnabled = value;
+        }
 
+        private bool IsUseDownloadSpeedLimiter
+        {
+            get
+            {
+                bool value = LauncherConfig.IsUseDownloadSpeedLimiter;
+                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
+                if (value)
+                    NetworkBurstDownloadModeToggle.IsOn = false;
+                NetworkBurstDownloadModeToggle.IsEnabled = !value;
+                return value;
+            }
+            set
+            {
+                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
+                if (value)
+                    NetworkBurstDownloadModeToggle.IsOn = false;
+                NetworkBurstDownloadModeToggle.IsEnabled = !value;
+                LauncherConfig.IsUseDownloadSpeedLimiter = value;
+            }
+        }
+
+        private bool IsUsePreallocatedDownloader
+        {
+            get
+            {
+                bool value = LauncherConfig.IsUsePreallocatedDownloader;
+                NetworkDownloadChunkSizeGrid.Opacity = value ? 1 : 0.45;
+                OldDownloadChunksMergingToggle.IsEnabled = !value;
+
+                if (!value)
+                {
+                    NetworkDownloadSpeedLimitToggle.IsOn = value;
+                    NetworkBurstDownloadModeToggle.IsOn = value;
+                }
+                NetworkDownloadSpeedLimitToggle.IsEnabled = value;
+                NetworkBurstDownloadModeToggle.IsEnabled = value;
+                return value;
+            }
+            set
+            {
+                NetworkDownloadChunkSizeGrid.Opacity = value ? 1 : 0.45;
+                OldDownloadChunksMergingToggle.IsEnabled = !value;
+
+                if (!value)
+                {
+                    NetworkDownloadSpeedLimitToggle.IsOn = value;
+                    NetworkBurstDownloadModeToggle.IsOn = value;
+                }
+                NetworkDownloadSpeedLimitToggle.IsEnabled = value;
+                NetworkBurstDownloadModeToggle.IsEnabled = value;
+                LauncherConfig.IsUsePreallocatedDownloader = value;
+            }
+        }
+
+        private bool IsEnforceToUse7zipOnExtract
+        {
+            get => LauncherConfig.IsEnforceToUse7zipOnExtract;
+            set => LauncherConfig.IsEnforceToUse7zipOnExtract = value;
+        }
+
+        private double DownloadSpeedLimit
+        {
+            get
+            {
+                double val = LauncherConfig.DownloadSpeedLimit;
+                double valDividedM = val / (1 << 20);
+                return valDividedM;
+            }
+            set
+            {
+                long valBfromM = (long)(value * (1 << 20));
+                
+                LauncherConfig.DownloadSpeedLimit = Math.Max(valBfromM, 0);
+            }
+        }
+
+        private double DownloadChunkSize
+        {
+            get
+            {
+                double val = LauncherConfig.DownloadChunkSize;
+                double valDividedM = val / (1 << 20);
+                return valDividedM;
+            }
+            set
+            {
+                int valBfromM = (int)(value * (1 << 20));
+
+                LauncherConfig.DownloadChunkSize = Math.Max(valBfromM, 0);
+            }
+        }
 #nullable restore
+
+        #region Database
+
+        // Temporary prop store
+        private string _dbUrl;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string _dbToken;
+        private string _dbUserId;
+        
+        private bool IsDbEnabled
+        {
+            get => DbHandler.IsEnabled;
+            set
+            {
+                DbHandler.IsEnabled = value;
+                if (value) _ = DbHandler.Init();
+            }
+        }
+
+        private string DbUrl
+        {
+            get
+            {
+                var c = DbHandler.Uri;
+                _dbUrl = c;
+                return c;
+            }  
+            set
+            {
+                // Automatically replace libsql protocol to https
+                if (value.Contains("libsql://", StringComparison.InvariantCultureIgnoreCase))
+                    value = value.Replace("libsql", "https");
+                if (!value.Contains("https://"))
+                {
+                    DbUriTextBox.Text = DbHandler.Uri;
+                    return;
+                }
+
+                DbUriTextBox.Text = value;
+                _dbUrl            = value;
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+            }
+        }
+
+        private string DbToken
+        {
+            get
+            {
+                var c =  DbHandler.Token;
+                _dbToken = c;
+                return c;
+            }
+            set
+            {
+                _dbToken = value;
+                if (string.IsNullOrEmpty(value))
+                    return;
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+            }
+        }
+
+        private string _currentDbGuid;
+        private string DbUserId
+        {
+            get
+            {
+              _dbUserId = DbHandler.UserId;
+              return  DbHandler.UserId;
+            } 
+            set
+            {
+                _dbUserId        = value;
+                DbHandler.UserId = value;
+            }
+        }
+
+        private void DbUserIdTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _currentDbGuid = DbUserIdTextBox.Text;
+        }
+
+        private async void DbUserIdTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var t = sender as TextBox;
+            if (t == null) return;
+
+            var newGuid = t.Text;
+            if (_currentDbGuid == newGuid) return; // Return if no change
+            
+            if (!string.IsNullOrEmpty(newGuid) && !Guid.TryParse(newGuid, out _))
+            {
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Error_InvalidGuid);
+                return;
+            }
+
+            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
+            {
+                t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
+            }
+            else
+            {
+                _currentDbGuid = t.Text;
+                _dbUserId      = t.Text; // Store to temp prop
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+            }
+        }
+
+        private void ShowDbWarningStatus(string message)
+        {
+            DatabaseWarningBox.Visibility = Visibility.Visible;
+
+            TextBlock textBlock = DatabaseWarningBox.Children.OfType<TextBlock>().FirstOrDefault();
+            if (textBlock == null)
+                return;
+
+            textBlock.Text = message;
+        }
+
+        [DebuggerHidden]
+        private async void ValidateAndSaveDbButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Disable the validation button while the check is happening
+            ButtonBase senderAsButtonBase = sender as ButtonBase;
+            senderAsButtonBase.IsEnabled = false;
+
+            // Store current value in local vars
+            var curUrl   = DbHandler.Uri;
+            var curToken = DbHandler.Token;
+            var curGuid  = DbHandler.UserId;
+
+            try
+            {
+                // Show checking bar status
+                ShowChecking();
+
+                // Set the value from prop
+                DbHandler.Uri    = _dbUrl;
+                DbHandler.Token  = _dbToken;
+                DbHandler.UserId = _dbUserId;
+                
+                var r = Random.Shared.Next(100); // Generate random int for data verification
+
+                await DbHandler.Init(true, true); // Initialize database
+                await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
+                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
+
+                // Show success bar status
+                ShowSuccess();
+                await SpawnDialog(
+                                  Lang._Misc.EverythingIsOkay,
+                                  Lang._SettingsPage.Database_ConnectionOk,
+                                  sender as UIElement,
+                                  Lang._Misc.Close,
+                                  null,
+                                  null,
+                                  ContentDialogButton.Close,
+                                  CustomControls.ContentDialogTheme.Success
+                                 ); // Show success dialog
+            }
+            catch (Exception ex)
+            {
+                // Revert value if fail
+                DbHandler.Uri    = curUrl;
+                DbHandler.Token  = curToken;
+                DbHandler.UserId = curGuid;
+                
+                var newEx = new Exception(Lang._SettingsPage.Database_ConnectFail, ex);
+
+                // Show exception
+                ShowFailed(ex);
+                ErrorSender.SendException(newEx); // Send error with dialog
+            }
+            finally
+            {
+                // Re-enable the validation button
+                senderAsButtonBase.IsEnabled = true;
+            }
+
+            void ShowChecking()
+            {
+                // Reset status
+                DatabaseConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+                DatabaseConnectivityTestTextFailed.Visibility = Visibility.Collapsed;
+                DatabaseWarningBox.Visibility = Visibility.Collapsed;
+
+                // Show checking bar status
+                DatabaseConnectivityTestTextChecking.Visibility = Visibility.Visible;
+            }
+
+            async void ShowSuccess()
+            {
+                // Show success bar status
+                DatabaseConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                DatabaseConnectivityTestTextSuccess.Visibility = Visibility.Visible;
+
+                // Hide success bar status after 2 seconds
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                DatabaseConnectivityTestTextSuccess.Visibility = Visibility.Collapsed;
+            }
+
+            void ShowFailed(Exception ex)
+            {
+                // Show failed bar status
+                DatabaseConnectivityTestTextChecking.Visibility = Visibility.Collapsed;
+                DatabaseConnectivityTestTextFailed.Visibility = Visibility.Visible;
+
+                // Find the text box
+                TextBox textBox = DatabaseConnectivityTestTextFailed.Children.OfType<TextBox>().FirstOrDefault();
+                if (textBox == null)
+                    return;
+
+                // Set the exception text
+                textBox.Text = ex.ToString();
+            }
+        }
+
+        private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (await Dialog_DbGenerateUid(sender as UIElement) == ContentDialogResult.Primary)
+            {
+                var g = Guid.CreateVersion7();
+                DbUserIdTextBox.Text         = g.ToString();
+                _dbUserId                    = g.ToString();
+
+                ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
+            }
+        }
+        #endregion
         #endregion
 
         #region Keyboard Shortcuts

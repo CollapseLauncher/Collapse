@@ -2,12 +2,22 @@
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
+#if !USEVELOPACK
 using Squirrel;
 using Squirrel.Sources;
+#else
+using Microsoft.Extensions.Logging;
+using Velopack;
+using Velopack.Locators;
+using Velopack.Sources;
+#endif
 using System;
 using System.Diagnostics;
 using System.IO;
+#if !USEVELOPACK
 using System.Linq;
+#endif
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -15,6 +25,8 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using Hi3Helper.Shared.Region;
+using Hi3Helper.Data;
 
 namespace CollapseLauncher;
 
@@ -26,6 +38,10 @@ public class Updater : IDisposable
     private Stopwatch       UpdateStopwatch;
     private UpdateManager   UpdateManager;
     private IFileDownloader UpdateDownloader;
+#if USEVELOPACK
+    private ILogger         UpdateManagerLogger;
+    private VelopackAsset   VelopackVersionToUpdate;
+#endif
     private GameVersion     NewVersionTag;
 
     // ReSharper disable once RedundantDefaultMemberInitializer
@@ -45,9 +61,34 @@ public class Updater : IDisposable
     public Updater(string ChannelName)
     {
         this.ChannelName = ChannelName;
-        ChannelURL = CombineURLFromString(FallbackCDNUtil.GetPreferredCDN().URLPrefix, "squirrel", this.ChannelName);
+        ChannelURL = CombineURLFromString(FallbackCDNUtil.GetPreferredCDN().URLPrefix,
+#if USEVELOPACK
+                "velopack",
+#else
+                "squirrel",
+#endif
+                this.ChannelName
+                );
         UpdateDownloader = new UpdateManagerHttpAdapter();
+#if USEVELOPACK
+        UpdateManagerLogger = ILoggerHelper.CreateCollapseILogger();
+        VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(UpdateManagerLogger);
+        UpdateOptions updateManagerOptions = new UpdateOptions
+        {
+            AllowVersionDowngrade = true,
+            ExplicitChannel = this.ChannelName
+        };
+
+        // Initialize update manager source
+        IUpdateSource updateSource = new SimpleWebSource(ChannelURL, UpdateDownloader);
+        UpdateManager = new UpdateManager(
+                updateSource,
+                updateManagerOptions,
+                UpdateManagerLogger,
+                updateManagerLocator);
+#else
         UpdateManager = new UpdateManager(ChannelURL, null, null, UpdateDownloader);
+#endif
         UpdateStopwatch = Stopwatch.StartNew();
         Status = new UpdaterStatus();
         Progress = new UpdaterProgress(UpdateStopwatch, 0, 100);
@@ -60,19 +101,33 @@ public class Updater : IDisposable
 
     public void Dispose()
     {
+#if !USEVELOPACK
         UpdateManager?.Dispose();
+#endif
     }
 
     public async Task<UpdateInfo> StartCheck()
     {
+#if !USEVELOPACK
         return await UpdateManager.CheckForUpdate();
+#else
+        return await UpdateManager.CheckForUpdatesAsync();
+#endif
     }
 
     public bool IsUpdateAvailable(UpdateInfo info)
     {
+#if !USEVELOPACK
         if (!info.ReleasesToApply.Any())
+#else
+        if (info.DeltasToTarget.Length != 0)
+#endif
         {
+#if !USEVELOPACK
             NewVersionTag = new GameVersion(info.FutureReleaseEntry.Version.Version);
+#else
+            NewVersionTag = new GameVersion(info.TargetFullRelease.Version.ToString());
+#endif
             return DoesLatestVersionExist(NewVersionTag.VersionString);
         }
 
@@ -90,9 +145,17 @@ public class Updater : IDisposable
 
         try
         {
+#if !USEVELOPACK
             if (!UpdateInfo.ReleasesToApply.Any())
+#else
+            if (UpdateInfo.DeltasToTarget.Length != 0)
+#endif
             {
+#if !USEVELOPACK
                 NewVersionTag = new GameVersion(UpdateInfo.FutureReleaseEntry.Version.Version);
+#else
+                NewVersionTag = new GameVersion(UpdateInfo.TargetFullRelease.Version.ToString());
+#endif
                 if (DoesLatestVersionExist(NewVersionTag.VersionString))
                 {
                     Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
@@ -108,27 +171,42 @@ public class Updater : IDisposable
                 return false;
             }
 
+#if !USEVELOPACK
             NewVersionTag = new GameVersion(UpdateInfo.ReleasesToApply.FirstOrDefault()!.Version.Version);
+#else
+            NewVersionTag = new GameVersion(UpdateInfo.TargetFullRelease.Version.ToString());
+#endif
 
-            await UpdateManager.DownloadReleases(UpdateInfo.ReleasesToApply, (progress) =>
-                                                                             {
-                                                                                 Progress =
-                                                                                     new
-                                                                                         UpdaterProgress(UpdateStopwatch,
-                                                                                             progress / 2, 100);
-                                                                                 UpdateProgress();
-                                                                             });
+#if !USEVELOPACK
+            await UpdateManager.DownloadReleases(UpdateInfo.ReleasesToApply, InvokeDownloadUpdateProgress);
 
-            await UpdateManager.ApplyReleases(UpdateInfo, (progress) =>
-                                                          {
-                                                              Progress = new UpdaterProgress(UpdateStopwatch,
-                                                                  progress / 2 + 50, 100);
-                                                              UpdateProgress();
-                                                          });
+            await UpdateManager.ApplyReleases(UpdateInfo, InvokeApplyUpdateProgress);
+#else
+            await UpdateManager.DownloadUpdatesAsync(UpdateInfo, InvokeDownloadUpdateProgress, false, token);
+            VelopackVersionToUpdate = UpdateInfo.TargetFullRelease;
+#endif
+
+            void InvokeDownloadUpdateProgress(int progress)
+            {
+                Progress = new UpdaterProgress(UpdateStopwatch, progress
+#if !USEVELOPACK
+                    / 2
+#endif
+                    , 100);
+                UpdateProgress();
+            }
+
+#if !USEVELOPACK
+            void InvokeApplyUpdateProgress(int progress)
+            {
+                Progress = new UpdaterProgress(UpdateStopwatch, progress / 2 + 50, 100);
+                UpdateProgress();
+            }
+#endif
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"Failed while running update via Squirrel. Failback to legacy method...\r\n{ex}",
+            Logger.LogWriteLine($"Failed while running update via Squirrel. Fallback to legacy method...\r\n{ex}",
                                 LogType.Error, true);
             IsUseLegacyDownload = true;
             await StartLegacyUpdate();
@@ -145,32 +223,31 @@ public class Updater : IDisposable
             .SetAllowedDecompression(DecompressionMethods.None)
             .Create();
 
-        using (var _httpClient = new Http(true, customHttpClient: client))
-        {
-            UpdateStopwatch = Stopwatch.StartNew();
+        DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            await using (var stream =
-                         await FallbackCDNUtil.TryGetCDNFallbackStream($"{ChannelName.ToLower()}/fileindex.json"))
-            {
-                var updateInfo =
-                    await stream.DeserializeAsync<AppUpdateVersionProp>(InternalAppJSONContext.Default);
-                var gameVersion = updateInfo!.Version;
+        UpdateStopwatch = Stopwatch.StartNew();
 
-                if (gameVersion != null) NewVersionTag = gameVersion.Value!;
-                UpdateStatus();
-                UpdateProgress();
-            }
+        CDNURLProperty preferredCdn = FallbackCDNUtil.GetPreferredCDN();
+        string updateFileIndexUrl = ConverterTool.CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
 
-            FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
-            await FallbackCDNUtil.DownloadCDNFallbackContent(_httpClient, applyElevatedPath,
-                                                             Environment.ProcessorCount > 8
-                                                                 ? 8
-                                                                 : Environment.ProcessorCount,
-                                                             $"{ChannelName.ToLower()}/ApplyUpdate.exe", default);
-            FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
+        AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
+                                            InternalAppJSONContext.Default.AppUpdateVersionProp, default)!;
 
-            await File.WriteAllTextAsync(Path.Combine(workingDir, "..\\", "release"), ChannelName.ToLower());
-        }
+        GameVersion? gameVersion = updateInfo!.Version;
+
+        if (gameVersion.HasValue) NewVersionTag = gameVersion.Value!;
+        UpdateStatus();
+        UpdateProgress();
+
+        FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
+        await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, applyElevatedPath,
+                                                         Environment.ProcessorCount > 8
+                                                             ? 8
+                                                             : Environment.ProcessorCount,
+                                                         $"{ChannelName.ToLower()}/ApplyUpdate.exe", default);
+        FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
+
+        await File.WriteAllTextAsync(Path.Combine(workingDir, "..\\", "release"), ChannelName.ToLower());
     }
 
     private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
@@ -181,12 +258,40 @@ public class Updater : IDisposable
 
     private bool DoesLatestVersionExist(string versionString)
     {
+        // Check legacy version first
         var filePath = Path.Combine(AppFolder, $"..\\app-{versionString}\\{Path.GetFileName(AppExecutablePath)}");
+        if (File.Exists(filePath)) return true;
 
-        return File.Exists(filePath);
+        // If none does not exist, then check the latest version
+        filePath = Path.Combine(AppFolder, $"..\\current\\{Path.GetFileName(AppExecutablePath)}");
+        if (!Version.TryParse(versionString, out Version currentVersion))
+        {
+            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] versionString is not valid! {versionString}", LogType.Error, true);
+            return false;
+        }
+
+        // If the Velopack current folder doesn't exist, then return false
+        if (!File.Exists(filePath))
+        {
+            return false;
+        }
+
+        // Try get the version info and if the version info is null, return false
+        FileVersionInfo toCheckVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
+
+        // Otherwise, try compare the version info.
+        if (!Version.TryParse(toCheckVersionInfo.ProductVersion, out Version latestVersion))
+        {
+            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.ProductVersion is not valid! {versionString}", LogType.Error, true);
+            return false;
+        }
+
+        // Try compare. If latestVersion is more or equal to current version, return true. 
+        // Otherwise, return false.
+        return latestVersion >= currentVersion;
     }
 
-    public async Task FinishUpdate(bool NoSuicide = false)
+    public async Task FinishUpdate(bool noSuicide = false)
     {
         var newVerTagPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData",
                                          "LocalLow", "CollapseLauncher", "_NewVer");
@@ -200,8 +305,8 @@ public class Updater : IDisposable
         Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
         UpdateProgress();
 
-        File.WriteAllText(newVerTagPath,         NewVersionTag.VersionString);
-        File.WriteAllText(needInnoLogUpdatePath, NewVersionTag.VersionString);
+        await File.WriteAllTextAsync(newVerTagPath,         NewVersionTag.VersionString);
+        await File.WriteAllTextAsync(needInnoLogUpdatePath, NewVersionTag.VersionString);
 
         if (IsUseLegacyDownload)
         {
@@ -209,17 +314,28 @@ public class Updater : IDisposable
             return;
         }
 
-        if (!NoSuicide)
+        if (!noSuicide)
             await Suicide();
     }
 
     private async Task Suicide()
     {
         await Task.Delay(3000);
+#if !USEVELOPACK
         UpdateManager.RestartApp();
+#else
+        if (VelopackVersionToUpdate != null)
+        {
+            string currentAppPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "current");
+            if (!Directory.Exists(currentAppPath))
+                Directory.CreateDirectory(currentAppPath);
+
+            UpdateManager.ApplyUpdatesAndRestart(VelopackVersionToUpdate);
+        }
+#endif
     }
 
-    private void SuicideLegacy()
+    private static void SuicideLegacy()
     {
         var applyUpdate = new Process()
         {

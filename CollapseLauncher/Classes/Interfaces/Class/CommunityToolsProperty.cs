@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using System;
 using System.Collections.Generic;
@@ -35,12 +36,64 @@ namespace CollapseLauncher
         {
             try
             {
-                return await fileStream.DeserializeAsync<CommunityToolsProperty>(InternalAppJSONContext.Default);
+                CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync(InternalAppJSONContext.Default.CommunityToolsProperty);
+                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty.OfficialToolsDictionary);
+                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty.CommunityToolsDictionary);
+                return communityToolkitProperty;
             }
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Error while parsing Community Tools list from the {(fileStream is FileStream fs ? $"FileStream: {fs.Name}" : "Stream")}\r\n{ex}", LogType.Error, true);
                 return new CommunityToolsProperty();
+            }
+        }
+
+        private static void ResolveCommunityToolkitFontAwesomeGlyph(Dictionary<GameNameType, List<CommunityToolsEntry>> dictionary)
+        {
+            // Get font paths
+            string fontAwesomeSolidPath = FontCollections.FontAwesomeSolid.Source;
+            string fontAwesomeRegularPath = FontCollections.FontAwesomeRegular.Source;
+            string fontAwesomeBrandPath = FontCollections.FontAwesomeBrand.Source;
+
+            // Enumerate key pairs
+            foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> keyPair in dictionary)
+            {
+                // Skip if value list is null or empty
+                if ((keyPair.Value?.Count ?? 0) == 0)
+                    continue;
+
+                // Enumerate list
+                foreach (CommunityToolsEntry entry in keyPair.Value)
+                {
+                    // Get the last index of font namespace. If none was found, then skip
+                    int lastIndexOfNamespace = entry.IconFontFamily.LastIndexOf("#");
+                    if (lastIndexOfNamespace == -1)
+                        continue;
+
+                    // Get the font path as its base only
+                    ReadOnlySpan<char> currentEntryFontPath = entry.IconFontFamily.AsSpan(0, lastIndexOfNamespace).TrimEnd('/');
+
+                    // Check if the path has Solid font-family.
+                    if (fontAwesomeSolidPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.IconFontFamily = fontAwesomeSolidPath;
+                        continue;
+                    }
+
+                    // Check if the path has Regular font-family
+                    if (fontAwesomeRegularPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.IconFontFamily = fontAwesomeRegularPath;
+                        continue;
+                    }
+
+                    // Check if the path has Brands font-family
+                    if (fontAwesomeBrandPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.IconFontFamily = fontAwesomeBrandPath;
+                        continue;
+                    }
+                }
             }
         }
     }

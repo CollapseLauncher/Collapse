@@ -1,4 +1,5 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -9,25 +10,26 @@ using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
-        internal static bool IsForceDisableIntro = false;
-
-        public MainWindow() { }
+        private static bool _isForceDisableIntro;
 
         public void InitializeWindowProperties(bool startOOBE = false)
         {
@@ -40,7 +42,7 @@ namespace CollapseLauncher
 
                 if (IsFirstInstall || startOOBE)
                 {
-                    IsForceDisableIntro = true;
+                    _isForceDisableIntro = true;
                     WindowUtility.CurrentWindowTitlebarExtendContent = true;
                     WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
@@ -57,7 +59,8 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 LogWriteLine($"Failure while initializing window properties!!!\r\n{ex}", LogType.Error, true);
-                Console.ReadLine();
+                //Console.ReadLine();
+                throw;
             }
         }
 
@@ -71,7 +74,7 @@ namespace CollapseLauncher
 
         private async void RunIntroSequence()
         {
-            bool isIntroEnabled = IsIntroEnabled && !IsForceDisableIntro;
+            bool isIntroEnabled = IsIntroEnabled && !_isForceDisableIntro;
             RootFrameGrid.Opacity = 0;
 
             if (isIntroEnabled)
@@ -90,7 +93,6 @@ namespace CollapseLauncher
                     IntroAnimation.Stop();
                 }
                 IntroAnimation.Source = null;
-                newIntro = null;
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
@@ -109,7 +111,7 @@ namespace CollapseLauncher
             }
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
 
-            IsForceDisableIntro = true;
+            _isForceDisableIntro = true;
             IntroSequenceToggle.Visibility = Visibility.Collapsed;
             IntroAnimationGrid.Visibility = Visibility.Collapsed;
 
@@ -163,8 +165,13 @@ namespace CollapseLauncher
                 WindowUtility.CurrentWindowIsResizable = false;
                 WindowUtility.CurrentWindowIsMaximizable = false;
 
-                WindowUtility.CurrentAppWindow.TitleBar.ButtonBackgroundColor = new Color { A = 0, B = 0, G = 0, R = 0 };
-                WindowUtility.CurrentAppWindow.TitleBar.ButtonInactiveBackgroundColor = new Color { A = 0, B = 0, G = 0, R = 0 };
+                if (WindowUtility.CurrentAppWindow != null)
+                {
+                    WindowUtility.CurrentAppWindow.TitleBar.ButtonBackgroundColor =
+                        new Color { A = 0, B = 0, G = 0, R = 0 };
+                    WindowUtility.CurrentAppWindow.TitleBar.ButtonInactiveBackgroundColor =
+                        new Color { A = 0, B = 0, G = 0, R = 0 };
+                }
 
                 // Hide system menu
                 var controlsHwnd = FindWindowEx(WindowUtility.CurrentWindowPtr, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
@@ -240,6 +247,7 @@ namespace CollapseLauncher
         {
             _TrayIcon?.Dispose();
             Close();
+            Application.Current.Exit();
         }
         
         private void MainWindow_OnSizeChanged(object sender, WindowSizeChangedEventArgs args)
@@ -271,5 +279,8 @@ namespace CollapseLauncher
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 0.25f)
                 );
         }
+
+        private void SetWindowCaptionLoadedCursor(object sender, RoutedEventArgs e)
+            => (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
     }
 }

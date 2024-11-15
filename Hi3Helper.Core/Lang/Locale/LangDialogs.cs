@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangDialogs _Dialogs { get; set; } = LangFallback?._Dialogs;
-            public sealed class LangDialogs
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangDialogs
             {
                 public string DeltaPatchDetectedTitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
                 public string DeltaPatchDetectedSubtitle { get; set; } = LangFallback?._Dialogs.PreloadVerifiedTitle;
@@ -111,6 +115,22 @@ namespace Hi3Helper
                 public string LocateExePathTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
                 public string CannotUseAppLocationForGameDirTitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirTitle;
                 public string CannotUseAppLocationForGameDirSubtitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirSubtitle;
+                public string InvalidGameDirNewTitleFormat { get; set; } = LangFallback?._Dialogs.InvalidGameDirNewTitleFormat;
+                public string InvalidGameDirNewSubtitleSelectedPath { get; set; } = LangFallback?._Dialogs.InvalidGameDirNewSubtitleSelectedPath;
+                public string InvalidGameDirNewSubtitleSelectOther { get; set; } = LangFallback?._Dialogs.InvalidGameDirNewSubtitleSelectOther;
+                public string InvalidGameDirNew1Title { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew1Title;
+                public string InvalidGameDirNew1Subtitle { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew1Subtitle;
+                public string InvalidGameDirNew2Title { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew2Title;
+                public string InvalidGameDirNew2Subtitle { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew2Subtitle;
+                public string InvalidGameDirNew3Title { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew3Title;
+                public string InvalidGameDirNew3Subtitle { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew3Subtitle;
+                public string InvalidGameDirNew4Title { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew4Title;
+                public string InvalidGameDirNew4Subtitle { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew4Subtitle;
+                public string InvalidGameDirNew5Title { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew5Title;
+                public string InvalidGameDirNew5Subtitle { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew5Subtitle;
+                public string InvalidGameDirNew6Title { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew6Title;
+                public string InvalidGameDirNew6Subtitle { get; set; } = LangFallback?._Dialogs.InvalidGameDirNew6Subtitle;
+                public string FolderDialogTitle1 { get; set; } = LangFallback?._Dialogs.FolderDialogTitle1;
                 public string LocateExePathSubtitle { get; set; } = LangFallback?._Dialogs.LocateExePathSubtitle;
                 public string StopGameTitle { get; set; } = LangFallback?._Dialogs.StopGameTitle;
                 public string StopGameSubtitle { get; set; } = LangFallback?._Dialogs.StopGameSubtitle;
@@ -154,6 +174,9 @@ namespace Hi3Helper
                 public string DownloadSettingsOption1 { get; set; } = LangFallback?._Dialogs.DownloadSettingsOption1;
                 public string OpenInExternalBrowser { get; set; } = LangFallback?._Dialogs.OpenInExternalBrowser;
                 public string CloseOverlay { get; set; } = LangFallback?._Dialogs.CloseOverlay;
+
+                public string DbGenerateUid_Title   { get; set; } = LangFallback?._Dialogs.DbGenerateUid_Title;
+                public string DbGenerateUid_Content { get; set; } = LangFallback?._Dialogs.DbGenerateUid_Content;
             }
         }
         #endregion

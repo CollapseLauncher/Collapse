@@ -79,10 +79,7 @@ namespace CollapseLauncher.Pages
 
         private void LoadPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
-
             this.InitializeComponent();
-            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
@@ -162,6 +159,8 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                BackgroundImgChanger.ToggleBackground(true);
+
                 var resList = new List<string>();
                 List<string> resFullscreen = GetResPairs_Fullscreen();
                 List<string> resWindowed = GetResPairs_Windowed();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using WinRT;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 #if !APPLYUPDATE
@@ -89,7 +90,7 @@ namespace Hi3Helper
 
         public LocalizationParams LoadLang(Stream langStream)
         {
-            LocalizationParams _langData = (LocalizationParams)JsonSerializer.Deserialize(langStream!, typeof(LocalizationParams), CoreLibraryFieldsJSONContext.Default);
+            LocalizationParams _langData = JsonSerializer.Deserialize(langStream!, CoreLibraryFieldsJSONContext.Default.LocalizationParams);
             this.LangAuthor = _langData!.Author;
             this.LangID = _langData.LanguageID.ToLower();
             this.LangName = _langData.LanguageName;
@@ -106,6 +107,7 @@ namespace Hi3Helper
         public bool LangIsLoaded;
     }
 
+    [GeneratedBindableCustomProperty]
     public sealed partial class Locale
     {
         public const string FallbackLangID = "en-us";
@@ -226,6 +228,8 @@ namespace Hi3Helper
         public static LocalizationParams Lang;
 #nullable enable
         public static LocalizationParams? LangFallback;
+
+        [GeneratedBindableCustomProperty]
         public sealed partial class LocalizationParams
         {
             public string LanguageName { get; set; } = "";

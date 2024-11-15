@@ -55,7 +55,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
     // Frame rate:  60 fps
     // Frame count: 180
     // Duration:    3000.0 mS
-    sealed class LoadingSprite
+    sealed partial class LoadingSprite
         : Microsoft.UI.Xaml.Controls.IAnimatedVisualSource
         , Microsoft.UI.Xaml.Controls.IAnimatedVisualSource2
     {
@@ -128,7 +128,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
         {
         }
 
-        sealed class LoadingSprite_AnimatedVisual
+        sealed partial class LoadingSprite_AnimatedVisual
             : Microsoft.UI.Xaml.Controls.IAnimatedVisual
             , Microsoft.UI.Xaml.Controls.IAnimatedVisual2
         {

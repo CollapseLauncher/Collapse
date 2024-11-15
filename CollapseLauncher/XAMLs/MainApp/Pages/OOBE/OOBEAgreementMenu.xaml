@@ -54,9 +54,9 @@
                             <ScrollViewer>
                                 <Grid>
                                     <markdown:MarkdownTextBlock Margin="24"
-                                                                Config="{x:Bind markdownConfig, Mode=OneWay}"
+                                                                Config="{x:Bind markdownConfig}"
                                                                 TabNavigation="Once"
-                                                                Text="{x:Bind text, Mode=OneWay}" />
+                                                                Text="{x:Bind text}" />
                                 </Grid>
                             </ScrollViewer>
                         </Grid>
@@ -75,7 +75,7 @@
                           FontFamily="{ThemeResource FontAwesomeSolid}"
                           FontSize="16"
                           Glyph="&#xf00c;" />
-                <TextBlock Margin="8,-1,0,0"
+                <TextBlock Margin="8,0,0,0"
                            VerticalAlignment="Center"
                            FontSize="16"
                            FontWeight="Medium"

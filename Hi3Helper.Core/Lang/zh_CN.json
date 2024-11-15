@@ -80,7 +80,9 @@
     "UnhandledTitle3": "游戏已崩溃",
     "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
     "UnhandledTitle4": "警告",
-    "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470.\n给您带来的不便我们深表歉意，感谢您的理解。",
+    "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470。\n给您带来的不便我们深表歉意，感谢您的理解。",
+    "UnhandledTitleDiskCrc": "检测到硬盘损坏！",
+    "UnhandledSubDiskCrc": "访问文件时检测到硬盘损坏。请使用 chkdsk 检查您的硬盘。",
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页"
@@ -95,7 +97,7 @@
     "RegionLoadingTitle": "正在加载区服",
     "RegionLoadingAPITitle1": "正在加载",
     "RegionLoadingAPITitle2": "启动器API",
-    "RegionLoadingSubtitleTimeOut": "操作已超时（>{1}秒）。正在重新尝试加载区服{0}……",
+    "RegionLoadingSubtitleTimeOut": "操作已超时（> {1} 秒）。正在重新尝试加载区服 {0}……",
     "RegionLoadingSubtitleTooLong": "重试的时间比预期的长一些……请确保您的网络连接稳定！",
     "NavCtrlTitleSettings": "程序设置",
     "NotifNeverAsk": "不再显示",
@@ -146,12 +148,16 @@
     "GameSettings_Panel2UninstallGame": "卸载游戏",
     "GameSettings_Panel2ConvertVersion": "转换游戏版本",
     "GameSettings_Panel2MoveGameLocationGame": "移动游戏位置",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "无法将游戏移动到硬盘根目录！\r\n请新建一个文件夹并重试。",
     "GameSettings_Panel2StopGame": "强制关闭游戏",
     "GameSettings_Panel3": "自定义启动参数",
+    "GameSettings_Panel3CustomBGRegion": "修改区服背景",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "自定义区服背景",
     "GameSettings_Panel4": "杂项",
     "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
     "GameSettings_Panel4ShowPlaytimeButton": "显示游戏时间",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "同步游戏时间到数据库",
     "GameSettings_Panel4CreateShortcutBtn": "创建快捷方式",
     "GameSettings_Panel4AddToSteamBtn": "添加到 Steam",
 
@@ -160,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "分钟",
     "GamePlaytime_Idle_ResetBtn": "重置",
     "GamePlaytime_Idle_ChangeBtn": "更改",
+    "GamePlaytime_Idle_SyncDb": "同步",
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
-    "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 会导致游戏时间记录停止（之前的记录会被保存），并且时间会在下次 Collapse 启动时再次开始记录。",
+    "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 将停止游戏时间统计（将仅记录至退出的时刻）。",
     "GamePlaytime_Display": "{0}小时 {1}分钟",
-    "GamePlaytime_ToolTipDisplay": "最后打开于 {2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "游戏时间统计",
+    "GamePlaytime_Stats_NeverPlayed": "从未玩过",
+    "GamePlaytime_Stats_LastSession": "最近一次会话",
+    "GamePlaytime_Stats_LastSession_StartTime": "开始时间",
+    "GamePlaytime_Stats_LastSession_Duration": "持续时间",
+    "GamePlaytime_Stats_Daily": "今天",
+    "GamePlaytime_Stats_Weekly": "本周",
+    "GamePlaytime_Stats_Monthly": "本月",
 
     "PostPanel_Events": "活动",
     "PostPanel_Notices": "公告",
@@ -179,7 +194,23 @@
 
     "Exception_DownloadTimeout1": "尝试安装 {0} 时发生超时",
     "Exception_DownloadTimeout2": "请检查您网络的可靠性！如果您的网速较慢，请降低下载线程数。",
-    "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！"
+    "Exception_DownloadTimeout3": "**警告** 更改下载线程计数会将您的下载进度归零，并且您必须手动删除已下载的分块！",
+
+    "GameStateInvalid_Title": "游戏数据目录/可执行文件名/Config.ini/App.Info 文件无效！",
+    "GameStateInvalid_Subtitle1": "Collapse 启动器检测到游戏文件中的属性对于区服无效：\r\n",
+    "GameStateInvalid_Subtitle2": "建议执行修复，以便启动器能够正确检测游戏",
+    "GameStateInvalid_Subtitle3": "点击“",
+    "GameStateInvalid_Subtitle4": "”以修复游戏属性或点击“",
+    "GameStateInvalid_Subtitle5": "”以取消操作。",
+
+    "GameStateInvalidFixed_Title": "游戏文件属性已成功修复！",
+    "GameStateInvalidFixed_Subtitle1": "已为如下区域修复游戏文件属性：",
+    "GameStateInvalidFixed_Subtitle2": "请执行“",
+    "GameStateInvalidFixed_Subtitle3": "”（在“",
+    "GameStateInvalidFixed_Subtitle4": "”菜单内）以确保所有文件都经过验证。",
+
+    "InstallFolderRootTitle": "提供了根目录！",
+    "InstallFolderRootSubtitle": "无法将游戏安装到硬盘根目录！请新建一个文件夹并重试。"
   },
 
   "_GameRepairPage": {
@@ -418,6 +449,7 @@
     "AppBG": "应用背景",
     "AppBG_Checkbox": "使用自定义背景",
     "AppBG_Note": "可接受的格式：\r\n图像：{0}\r\n视频：{1}",
+    "AppBG_Note_Regional": "区服特定的自定义背景设置在主页的“快速设置”按钮中。",
 
     "AppThreads": "应用线程",
     "AppThreads_Download": "下载线程",
@@ -426,22 +458,24 @@
     "AppThreads_Help2": "默认值：",
     "AppThreads_Help3": "取值范围：",
     "AppThreads_Help4": "0（自动检测）",
-    "AppThreads_Help5": "这个线程将在 安装/修复 游戏时处理 解压/验证 过程。",
-    "AppThreads_Help6": "注：在安装崩坏3时，该设置无效。",
+    "AppThreads_Help5": "这个线程将在安装或修复游戏的同时处理解压和验证过程。",
+    "AppThreads_Help6": "注：在安装 崩坏3 时，该设置无效。",
 
-    "SophonSettingsTitle": "Sophon Mode Settings",
-    "SophonHelp_Title": "What is Sophon Downloader Mode?",
-    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
-    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
-    "SophonHelp_IndicatorTitle": "Indicator Icons",
-    "SophonHelp_Indicator1": "File Size to Write on Disk",
-    "SophonHelp_Indicator2": "File Size to Download",
-    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
-    "SophonHelp_Indicator4": "Network I/O Speed on Write",
-    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
-    "SophonHttpNumberBox": "Maximum HTTP Connections",
-    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
-    "SophonToggle": "Enable Sophon on Supported Regions",
+    "SophonSettingsTitle": "Sophon 模式设置",
+    "SophonHelp_Title": "什么是 Sophon 下载器模式？",
+    "SophonHelp_1": "Sophon（智子）是米哈游最近推出的一种新的下载机制，允许将文件下载成“分块”，而不是下载一个大的 ZIP 压缩包。其优点主要是降低了对硬盘空间的要求，提高了下载和更新的效率。",
+    "SophonHelp_2": "对于使用机械硬盘进行游戏的用户来说，此方法可能会更慢。",
+    "SophonHelp_IndicatorTitle": "指示器图标",
+    "SophonHelp_Indicator1": "要写入硬盘的文件大小",
+    "SophonHelp_Indicator2": "要下载的文件大小",
+    "SophonHelp_Indicator3": "磁盘 I/O 写入速度",
+    "SophonHelp_Indicator4": "网络 I/O 写入速度",
+    "SophonHelp_Thread": "该值控制 Collapse 可同时下载分块的数量。如果您下载时突然卡住，请降低该值。",
+    "SophonHttpNumberBox": "最大 HTTP 连接数",
+    "SophonHelp_Http": "该值控制 Collapse 建立的用于下载分块的最大网络连接数。",
+    "SophonToggle": "在受支持的区服启用 Sophon",
+    "SophonPredownPerfMode_Toggle": "［实验性］应用预下载时使用所有 CPU 核心",
+    "SophonPredownPerfMode_Tooltip": "启用后，CPU 线程将设置为系统可用的最大值。如果出现任何问题，请禁用。",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "在您更改",
@@ -450,14 +484,18 @@
     "AppThreads_Attention4": "该值，因为它可能会因下载所需的会话数不匹配而",
     "AppThreads_Attention5": "重新下载所有内容",
     "AppThreads_Attention6": "。",
+    "AppThreads_AttentionTop1": "如果您开启了",
+    "AppThreads_AttentionTop2": "，以下问题将不会再出现。",
 
     "DiscordRPC": "Discord 活动状态",
     "DiscordRPC_Toggle": "显示 Discord 状态",
     "DiscordRPC_GameStatusToggle": "在 Discord 状态中显示当前游戏",
     "DiscordRPC_IdleStatusToggle": "闲置时显示 RPC",
 
+    "ImageBackground": "图像背景设置",
     "VideoBackground": "视频背景设置",
     "VideoBackground_IsEnableAudio": "启用声音",
+    "VideoBackground_IsEnableAcrylicBackground": "使用视频背景时使用亚克力效果",
     "VideoBackground_AudioVolume": "音量",
 
     "Update": "检查更新",
@@ -467,6 +505,8 @@
     "Update_NewVer1": "可更新至",
     "Update_NewVer2": "！",
     "Update_LatestVer": "您正在使用最新的版本。",
+    "Update_SeeChangelog": "查看更新日志（英文）",
+    "Update_ChangelogTitle": "更新日志",
 
     "AppFiles": "应用文件管理",
     "AppFiles_OpenDataFolderBtn": "打开应用数据文件夹",
@@ -504,6 +544,7 @@
 
     "EnableAcrylicEffect": "使用亚克力模糊效果",
     "EnableDownloadChunksMerging": "合并已下载的软件包块",
+    "Enforce7ZipExtract": "在游戏安装或更新时总是使用 7-zip",
     "UseExternalBrowser": "永远使用外部浏览器",
 
     "LowerCollapsePrioOnGameLaunch": "在游戏启动后降低 Collapse 进程的资源占用",
@@ -528,7 +569,93 @@
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系统安装了“OpenCL™、OpenGL® 和 Vulkan® 兼容包”。该软件包被报告与 Vulkan Loader 不兼容，并且会在某些 GPU 上崩溃。请移除此软件包以启用 GPU 模式。",
     "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
-    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。"
+    "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。",
+
+    "NetworkSettings_Title": "网络设置",
+    "NetworkSettings_Proxy_Title": "代理设置",
+
+    "NetworkSettings_Proxy_Hostname": "代理主机名",
+    "NetworkSettings_Proxy_HostnameHelp1": "表示要使用的代理 URL。",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse 目前仅支持",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS 和 SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "类型的代理。",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "输入的 URL 不合法！",
+    "NetworkSettings_ProxyWarn_NotSupported": "代理格式不受支持！Collapse 仅支持 http://、https://、socks4://、socks4a:// 和socks5://",
+
+    "NetworkSettings_Proxy_Username": "代理用户名",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "输入代理用户名",
+    "NetworkSettings_Proxy_UsernameHelp1": "默认：",
+    "NetworkSettings_Proxy_UsernameHelp2": "[空]",
+    "NetworkSettings_Proxy_UsernameHelp3": "如果您的代理不需要身份验证，请将此字段留空。",
+
+    "NetworkSettings_Proxy_Password": "代理密码",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "输入代理密码",
+    "NetworkSettings_Proxy_PasswordHelp1": "默认：",
+    "NetworkSettings_Proxy_PasswordHelp2": "[空]",
+    "NetworkSettings_Proxy_PasswordHelp3": "如果您的代理不需要身份验证，请将此字段留空。",
+
+    "NetworkSettings_ProxyTest_Button": "测试代理可联通性",
+    "NetworkSettings_ProxyTest_ButtonChecking": "检查可联通性中……",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "代理可联通性测试成功！",
+    "NetworkSettings_ProxyTest_ButtonFailed": "测试失败！代理无法访问",
+
+    "NetworkSettings_Http_Title": ".NET HTTP 客户端设置",
+    "NetworkSettings_Http_Redirect": "允许 HTTP 重定向",
+    "NetworkSettings_Http_SimulateCookies": "允许模拟 HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "允许不受信任的 HTTPS 证书",
+    "NetworkSettings_Http_Timeout": "HTTP 客户端超时（秒）",
+
+    "FileDownloadSettings_Title": "文件下载设置",
+    "FileDownloadSettings_SpeedLimit_Title": "限制下载速度",
+    "FileDownloadSettings_SpeedLimit_NumBox": "速度限制（MiB）",
+    "FileDownloadSettings_SpeedLimitHelp1": "默认：",
+    "FileDownloadSettings_SpeedLimitHelp2": "速度限制取值范围：",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "限制允许的最大下载带宽。该设置不能与",
+    "FileDownloadSettings_SpeedLimitHelp5": "同时使用。",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "预分配下载器（新）",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "仅适用于游戏安装、游戏修复与缓存更新。",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "分块大小（MiB）",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "默认：",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "分块大小取值范围：",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "启用后，下载器将在下载过程中动态预分配文件大小。",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "允许下载器直接将数据块写入文件，而无需将其分割成单独的文件。",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "禁用后，启动器将使用旧的分配方法，将数据分块写入单独的文件。同时会禁用",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "与",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "设置。",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "注：",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "该功能仅适用于游戏安装（如初始安装、更新和预加载）、游戏修复和缓存更新步骤。",
+
+    "FileDownloadSettings_BurstDownload_Title": "爆发下载模式",
+    "FileDownloadSettings_BurstDownload_Subtitle": "仅适用于游戏修复与缓存更新。",
+    "FileDownloadSettings_BurstDownloadHelp1": "默认：",
+    "FileDownloadSettings_BurstDownloadHelp2": "启用后，将允许",
+    "FileDownloadSettings_BurstDownloadHelp3": "与",
+    "FileDownloadSettings_BurstDownloadHelp4": "功能的下载过程并行执行，以让下载过程更高效。",
+    "FileDownloadSettings_BurstDownloadHelp5": "禁用后，",
+    "FileDownloadSettings_BurstDownloadHelp6": "与",
+    "FileDownloadSettings_BurstDownloadHelp7": "功能的下载过程将会按顺序下载。",
+
+    "Database_Title": "用户同步数据库",
+    "Database_ConnectionOk": "数据库连接成功！",
+    "Database_ConnectFail": "连接数据库失败，请参阅下面的错误：",
+    "Database_Toggle": "启用在线数据库",
+    "Database_Url": "数据库 URL",
+    "Database_Url_Example": "示例：https://db-collapse.turso.io",
+    "Database_Token": "令牌",
+    "Database_UserId": "用户 ID",
+    "Database_GenerateGuid": "生成 UID",
+    "Database_Validate": "验证并保存设置",
+    "Database_Error_EmptyUri": "数据库 URL 不能为空！",
+    "Database_Error_EmptyToken": "数据库令牌不能为空！",
+    "Database_Error_InvalidGuid": "用户 ID 不是有效的 GUID！",
+    "Database_Warning_PropertyChanged": "数据库设置已更改",
+    "Database_ValidationChecking": "验证设置中……",
+    "Database_Placeholder_DbUserIdTextBox": "GUID 示例：ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "在这里输入您的身份验证令牌"
   },
 
   "_Misc": {
@@ -548,6 +675,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "一切正常！",
     "Cancel": "取消",
     "Close": "关闭",
     "UseCurrentDir": "使用当前目录",
@@ -656,7 +784,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(启动器名称未知)",
 
-    "ImageCropperTitle": "裁剪图像"
+    "ImageCropperTitle": "裁剪图像",
+
+    "IsBytesMoreThanBytes": "= {0} 字节 (-/+ {1})",
+    "IsBytesUnlimited": "= 无限制",
+    "IsBytesNotANumber": "= NaN"
   },
 
   "_BackgroundNotification": {
@@ -700,10 +832,10 @@
     "AddtDownloadCompletedTitle": "附加组件下载已完成！",
     "AddtDownloadCompletedSubtitle": "附加组件/持久性文件下载已完成！\n祝您游戏愉快！",
     "RepairCompletedTitle": "修复已完成！",
-    "RepairCompletedSubtitle": "{0}个文件已被修复。",
+    "RepairCompletedSubtitle": "{0} 个文件已被修复。",
     "RepairCompletedSubtitleNoBroken": "未找到损坏的文件。",
     "ExtremeGraphicsSettingsWarnTitle": "您选择了“非常高”的设置预设！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "您将把设置预设为非常高！\n非常高的设置预设基本上是2倍的渲染比例，并启用了MSAA，它是非常不稳定的！（除非您有NASA的超级计算机来运行）。\n\n您确定您要使用这个设置吗？",
+    "ExtremeGraphicsSettingsWarnSubtitle": "您将把设置预设调整为非常高！\n非常高的设置预设基本上是 1.6 倍的渲染精度，并启用了 MSAA，而且没有启用优化！\n\n您确定您要使用这个设置吗？",
     "MigrateExistingMoveDirectoryTitle": "移动已存在的安装到：{0}",
     "MigrateExistingInstallChoiceTitle": "在 {0} 检测到到已存在的安装！",
     "MigrateExistingInstallChoiceSubtitle1": "您已经在这个目录中存在一个使用 {0} 安装了的游戏：",
@@ -768,7 +900,7 @@
     "ChangePlaytimeTitle": "是否确认更改游戏时间？",
     "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "ResetPlaytimeTitle": "是否确认更改游戏时间？",
-    "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间设置为 0。这是一个 ",
+    "ResetPlaytimeSubtitle": "重置游戏时间意味着将游戏时间和所有相关统计数据设置为 0。这是一个",
     "ResetPlaytimeSubtitle2": "破坏性的",
     "ResetPlaytimeSubtitle3": " 操作，一旦确认，此操作将无法撤销。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "InvalidPlaytimeTitle": "保存此会话的游戏时间时出现问题",
@@ -781,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "文件夹无效！",
     "CannotUseAppLocationForGameDirSubtitle": "您无法使用此文件夹，因为它已被用作系统文件夹或被用于存放应用程序的主执行文件。请选择其他文件夹！",
+    "InvalidGameDirNewTitleFormat": "路径无效：{0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "选择的路径：",
+    "InvalidGameDirNewSubtitleSelectOther": "请选择另一个文件夹/位置！",
+    "InvalidGameDirNew1Title": "文件夹无效！",
+    "InvalidGameDirNew1Subtitle": "您不能使用此文件夹，因为它被用作系统文件夹或应用程序的主执行文件。请选择其他文件夹！",
+    "InvalidGameDirNew2Title": "无法访问所选文件夹",
+    "InvalidGameDirNew2Subtitle": "启动器没有访问此文件夹的权限！",
+    "InvalidGameDirNew3Title": "无法选择驱动器根目录",
+    "InvalidGameDirNew3Subtitle": "您选择了驱动器的根目录，这是禁止的！",
+    "InvalidGameDirNew4Title": "无法选择 Windows 文件夹",
+    "InvalidGameDirNew4Subtitle": "您不能使用 Windows 文件夹作为游戏安装位置，以免发生任何不必要的情况。",
+    "InvalidGameDirNew5Title": "无法选择 Program Data 文件夹",
+    "InvalidGameDirNew5Subtitle": "您不能使用 Program Data 文件夹作为游戏安装位置，以免发生任何不必要的情况。",
+    "InvalidGameDirNew6Title": "无法选择 Program Files 或 Program Files (x86) 文件夹",
+    "InvalidGameDirNew6Subtitle": "您不能使用 Program Files 或 Program Files (x86) 文件夹作为游戏安装位置，以免发生任何不必要的情况。",
+    "FolderDialogTitle1": "选择游戏安装位置",
 
     "StopGameTitle": "强制停止游戏",
     "StopGameSubtitle": "您确定要强制中止当前正在运行的游戏吗？\n您的游戏进度可能会丢失。",
@@ -832,7 +980,13 @@
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。",
 
     "DownloadSettingsTitle": "下载设置",
-    "DownloadSettingsOption1": "安装后启动游戏"
+    "DownloadSettingsOption1": "安装后启动游戏",
+
+    "OpenInExternalBrowser": "在外部浏览器中打开",
+    "CloseOverlay": "关闭",
+
+    "DbGenerateUid_Title": "您确定要更改用户 ID 吗？",
+    "DbGenerateUid_Content": "更改用户 ID 后，如果遗失了用户 ID，与之相关的数据将会丢失。"
   },
 
   "_FileMigrationProcess": {
@@ -898,7 +1052,7 @@
     "Step1Title": "检查文件夹权限",
     "Step1Subtitle": "检查文件夹权限",
     "Step2Title": "迁移游戏位置",
-    "Step2Subtitle1": "迁移过程将在  秒钟后运行。",
+    "Step2Subtitle1": "迁移过程将在 5 秒钟后运行。",
     "Step2Subtitle2": "运行中……",
     "Step3Title": "比较游戏数据的完整性以进行转换",
     "Step3Subtitle": "获取参考 API……",
@@ -927,7 +1081,7 @@
 
   "_InstallMigrate": {
     "PageTitle": "游戏迁移",
-    "Step1Title": "进程将在 5 秒后开始。请接受 UAC（管理员权限）的提示后开始迁移。",
+    "Step1Title": "进程将在 5 秒后启动。请接受 UAC（管理员权限）的提示后开始迁移。",
     "Step2Title": "迁移正在进行中。您可能会看到一个控制台窗口弹出。请等待直到该过程完成",
     "Step3Title": "迁移已完成！正在返回……",
     "StepCancelledTitle": "迁移已取消！正在返回……",
@@ -956,7 +1110,7 @@
     "UpdateHeader4": "速度：",
     "UpdateHeader5PlaceHolder": "正在下载更新 [- / -]：",
 
-    "UpdateForcedHeader": "由于紧急的变更，启动器将被强制更新以确保启动器正常工作。",
+    "UpdateForcedHeader": "由于紧急的变更，启动器将被强制更新以确保正常工作。",
 
     "UpdateStatus1": "正在获取更新：",
     "UpdateMessage1": "正在连接到更新仓库……",
@@ -1283,29 +1437,29 @@
   },
 
   "_FileCleanupPage": {
-    "Title": "Files Clean-up",
-    "TopButtonRescan": "Re-Scan",
-    "NoFilesToBeDeletedText": "No files need to be deleted!",
-    "ListViewFieldFileName": "File Name",
-    "ListViewFieldFileSize": "File Size",
-    "LoadingTitle": "Processing",
-    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
-    "LoadingSubtitle2": "Checking pkg_version's availability...",
-    "BottomButtonDeleteAllFiles": "Delete All Files",
-    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
-    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
-    "BottomCheckboxNoFileSelected": "No File Selected",
-    "DialogDeletingFileTitle": "Deleting Files",
-    "DialogDeletingFileSubtitle1": "You're about to",
-    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
-    "DialogDeletingFileSubtitle3": "which contains",
-    "DialogDeletingFileSubtitle4": "{0} in size.",
-    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
-    "DialogDeleteSuccessTitle": "Files Deleted!",
-    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
-    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
-    "DialogMoveToRecycleBin": "Move to Recycle Bin",
-    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
+    "Title": "文件清理",
+    "TopButtonRescan": "重新扫描",
+    "NoFilesToBeDeletedText": "没有需要删除的文件！",
+    "ListViewFieldFileName": "文件名",
+    "ListViewFieldFileSize": "文件大小",
+    "LoadingTitle": "处理中……",
+    "LoadingSubtitle1": "正在计算现有文件（找到 {0} 个文件 - 总共 {1} 个）……",
+    "LoadingSubtitle2": "正在检查 pkg_version 的可用性……",
+    "BottomButtonDeleteAllFiles": "删除所有文件",
+    "BottomButtonDeleteSelectedFiles": "删除 {0} 个选中的文件",
+    "BottomCheckboxFilesSelected": "选中了 {0} 个文件（总计 {1}/{2}）",
+    "BottomCheckboxNoFileSelected": "没有选中文件",
+    "DialogDeletingFileTitle": "删除文件中",
+    "DialogDeletingFileSubtitle1": "您将要",
+    "DialogDeletingFileSubtitle2": "删除 {0} 个文件",
+    "DialogDeletingFileSubtitle3": "，",
+    "DialogDeletingFileSubtitle4": "大小总计 {0}。",
+    "DialogDeletingFileSubtitle5": "您确定要删除这些文件吗？",
+    "DialogDeleteSuccessTitle": "文件已删除！",
+    "DialogDeleteSuccessSubtitle1": "成功删除 {0} 个文件",
+    "DialogDeleteSuccessSubtitle2": "，且有 {0} 个删除失败",
+    "DialogMoveToRecycleBin": "移动到回收站",
+    "DialogTitleMovedToRecycleBin": "文件已移动到回收站！"
   },
 
   "_OOBEStartUpMenu": {
@@ -1352,9 +1506,39 @@
     "Graphics_EffectsQ": "特效质量",
     "Graphics_ShadingQ": "着色质量",
     "Graphics_Distortion": "扭曲",
+    "Graphics_HighPrecisionCharacterAnimation": "角色动态高精度",
     "Audio_PlaybackDev": "声音播放设备",
     "Audio_PlaybackDev_Headphones": "耳机",
     "Audio_PlaybackDev_Speakers": "音响",
     "Audio_PlaybackDev_TV": "电视"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse 启动器已最小化到托盘",
+    "WindowHiddenToTray_Subtitle": "启动器正在后台运行。\r\n点击此通知或托盘图标以还原窗口。",
+
+    "GameInstallCompleted_Title": "{0} 已准备好开始游戏",
+    "GameInstallCompleted_Subtitle": "{0} 已成功安装！",
+
+    "GameUpdateCompleted_Title": "{0} 已更新",
+    "GameUpdateCompleted_Subtitle": "{0} 已更新到 v{1}！",
+
+    "GamePreloadCompleted_Title": "{0} 预载包已下载",
+
+    "GameRepairCheckCompleted_Title": "游戏修复检查已完成",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} 个文件需要更新或修复。点击此通知以返回到启动器。",
+    "GameRepairCheckCompletedNotFound_Subtitle": "没有文件需要更新或修复。",
+
+    "GameRepairDownloadCompleted_Title": "游戏修复下载已完成",
+    "GameRepairDownloadCompleted_Subtitle": "{0} 个文件已成功更新或修复。",
+
+    "CacheUpdateCheckCompleted_Title": "缓存检查已完成",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} 个缓存文件需要更新。点击此通知以返回到启动器。",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "没有缓存文件需要更新。",
+
+    "CacheUpdateDownloadCompleted_Title": "缓存更新下载已完成",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} 个缓存文件已成功更新。",
+
+    "GenericClickNotifToGoBack_Subtitle": "点击此通知以返回到启动器。"
   }
 }

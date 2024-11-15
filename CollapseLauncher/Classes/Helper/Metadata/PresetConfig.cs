@@ -94,7 +94,7 @@ namespace CollapseLauncher.Helper.Metadata
             // Fetch branch info
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
                 async innerToken =>
-                    await FallbackCDNUtil.DownloadAsJSONType<HoYoPlayLauncherGameInfo>(branchUrl, InternalAppJSONContext.Default, innerToken);
+                    await FallbackCDNUtil.DownloadAsJSONType(branchUrl, InternalAppJSONContext.Default.HoYoPlayLauncherGameInfo, innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await hypLauncherBranchCallback.WaitForRetryAsync(
                 LauncherApiBase.ExecutionTimeout,
@@ -135,7 +135,7 @@ namespace CollapseLauncher.Helper.Metadata
                 string packageIdValue = branch.GamePreloadField.PackageId;
                 string passwordValue = branch.GamePreloadField.Password;
 
-                PreloadUrl = MainUrl.AssociateGameAndLauncherId(
+                PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(
                     QueryPasswordHead,
                     QueryPackageIdHead,
                     passwordValue,
@@ -425,8 +425,8 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? IsHideSocMedDesc           { get; init; } = true;
         
         #if !DEBUG
-        public bool? IsRepairEnabled            { get; init; }
-        public bool? IsCacheUpdateEnabled       { get; init; }
+        public bool? IsRepairEnabled            { get; set; }
+        public bool? IsCacheUpdateEnabled       { get; set; }
         #else
         public bool? IsRepairEnabled      = true;
         public bool? IsCacheUpdateEnabled = true;

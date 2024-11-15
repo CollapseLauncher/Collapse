@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
     "UnhandledSubtitle4": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:\r\nAkibat miHoYo A/B testing, Collapse tidak dapat memproses pengaturan ini: App_Settings_h2319593470.\r\nKami mohon maaf atas ketidaknyamanannya.",
+    "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
+    "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
     "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
@@ -146,12 +148,16 @@
     "GameSettings_Panel2UninstallGame": "Hapus Game",
     "GameSettings_Panel2ConvertVersion": "Ubah Versi",
     "GameSettings_Panel2MoveGameLocationGame": "Pindah Lokasi Game",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Kamu tidak bisa memilih lokasi root dari drivemu!\r\nMohon buat folder baru dan coba lagi.",
     "GameSettings_Panel2StopGame": "Tutup Paksa Game",
     "GameSettings_Panel3": "Penyesuaian Argumen Pemulaian",
+    "GameSettings_Panel3CustomBGRegion": "Ubah Latar Belakang Regional",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Latar Belakang Lainnya untuk Region",
     "GameSettings_Panel4": "Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
     "GameSettings_Panel4ShowPlaytimeButton": "Munculkan Tombol \"Waktu Main\"",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Sinkronisasi Waktu Mulai dengan Database",
     "GameSettings_Panel4CreateShortcutBtn": "Buat pintasan",
     "GameSettings_Panel4AddToSteamBtn": "Tambahkan ke Steam",
 
@@ -160,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "Menit",
     "GamePlaytime_Idle_ResetBtn": "Atur Ulang",
     "GamePlaytime_Idle_ChangeBtn": "Ubah",
+    "GamePlaytime_Idle_SyncDb": "Sinkronkan",
     "GamePlaytime_Running_Info1": "Game ini sedang berjalan, maka dari itu waktu main tidak dapat diubah.",
-    "GamePlaytime_Running_Info2": "Perlu diketahui bahwa dengan menutup Collapse akan memberhentikan tracking dari waktu main (untuk disimpan pada saat dimainkan) dan hanya sesi yang dijalankan dari Collapse saja yang dapat ditrack.",
+    "GamePlaytime_Running_Info2": "Perlu diingat bahwa menutup Collapse Launcher akan menghentikan penghitungan waktu main (selama game dimainkan dari awal sampai akhir).",
     "GamePlaytime_Display": "{0}j {1}m",
-    "GamePlaytime_ToolTipDisplay": "Terakhir dibuka pada {0:00}/{1:00}/{2:0000} pukul {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Statistik Waktu Main",
+    "GamePlaytime_Stats_NeverPlayed": "Tidak Pernah Dimainkan",
+    "GamePlaytime_Stats_LastSession": "Waktu Sesi Terakhir",
+    "GamePlaytime_Stats_LastSession_StartTime": "Waktu Mulai",
+    "GamePlaytime_Stats_LastSession_Duration": "Durasi",
+    "GamePlaytime_Stats_Daily": "Hari Ini",
+    "GamePlaytime_Stats_Weekly": "Minggu",
+    "GamePlaytime_Stats_Monthly": "Bulan",
 
     "PostPanel_Events": "Event",
     "PostPanel_Notices": "Pengumuman",
@@ -192,7 +207,10 @@
     "GameStateInvalidFixed_Subtitle1": "File Properti Game telah berhasil diperbaiki untuk region:",
     "GameStateInvalidFixed_Subtitle2": "Silahkan lakukan \"",
     "GameStateInvalidFixed_Subtitle3": "\" pada menu \"",
-    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi."
+    "GameStateInvalidFixed_Subtitle4": "\" untuk memastikan bahwa semua file game terverifikasi.",
+
+    "InstallFolderRootTitle": "Tidak Bisa Memilih Drive Root!",
+    "InstallFolderRootSubtitle": "Kamu tidak bisa memasang game di lokasi root dari drivemu! Mohon buat folder baru dan coba lagi."
   },
 
   "_GameRepairPage": {
@@ -431,6 +449,7 @@
     "AppBG": "Latar Belakang",
     "AppBG_Checkbox": "Gunakan Latar Belakang Lainnya",
     "AppBG_Note": "Format yang didukung:\r\nGambar: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Pengaturan Latar Belakang Lainnya untuk region tertentu berada di tombol \"Pengaturan Cepat\" pada menu awal launcher.",
 
     "AppThreads": "Utas Aplikasi",
     "AppThreads_Download": "Utas Unduhan",
@@ -455,6 +474,8 @@
     "SophonHttpNumberBox": "Jumlah Max. Koneksi HTTP",
     "SophonHelp_Http": "Bagian ini mengatur banyaknya jumlah koneksi yang akan dipakai oleh Collapse saat mengunduh chunks secara bersamaan.",
     "SophonToggle": "Gunakan Sophon pada Wilayah yang Didukung",
+    "SophonPredownPerfMode_Toggle": "[EKSPERIMENTAL] Gunakan semua CPU core saat menerapkan pra-unduh",
+    "SophonPredownPerfMode_Tooltip": "Saat dinyalakan, semua CPU thread pada sistem-mu akan digunakan seluruhnya. Matikan apabila masalah terjadi.",
 
     "AppThreads_Attention": "Perhatian",
     "AppThreads_Attention1": "Sebelum kamu mengubah pengaturan",
@@ -463,14 +484,18 @@
     "AppThreads_Attention4": "nilai dari pengaturan dikarenakan hal ini akan membuat proses unduhan kamu",
     "AppThreads_Attention5": "TERULANG DARI AWAL",
     "AppThreads_Attention6": "dikarenakan jumlah sesi yang dibutuhkan untuk unduhan tidak sama.",
+    "AppThreads_AttentionTop1": "Issue dibawah tidak akan berpengaruh apabila fitur",
+    "AppThreads_AttentionTop2": "dinyalakan.",
 
     "DiscordRPC": "Discord Rich Presence",
     "DiscordRPC_Toggle": "Perlihatkan Discord Presence",
     "DiscordRPC_GameStatusToggle": "Munculkan game yang dimainkan pada status Discord",
     "DiscordRPC_IdleStatusToggle": "Tampilkan RPC saat idle",
 
+    "ImageBackground": "Pengaturan Gambar Latar Belakang",
     "VideoBackground": "Pengaturan Latar Belakang Video",
     "VideoBackground_IsEnableAudio": "Nyalakan Suara",
+    "VideoBackground_IsEnableAcrylicBackground": "Gunakan Efek Akrilik saat menggunakan Latar Belakang Video",
     "VideoBackground_AudioVolume": "Volume Suara",
 
     "Update": "Periksa Pembaruan",
@@ -519,10 +544,11 @@
 
     "EnableAcrylicEffect": "Gunakan Efek Blur Akrilik",
     "EnableDownloadChunksMerging": "Gabung Potongan Unduhan Package",
+    "Enforce7ZipExtract": "Selalu Gunakan 7-zip untuk Pemasangan atau Pembaruan Game",
     "UseExternalBrowser": "Selalu Gunakan Browser Eksternal",
 
     "LowerCollapsePrioOnGameLaunch": "Turunkan Prioritas Collapse saat Game Berjalan",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan tayangan slide gambar di halaman utama dan menurunkan prioritas Collapse ke Dibawah Normal ",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan carousel gambar pada Home Page dan turunkan prioritas Collapse menjadi \"dibawah normal\"",
 
     "KbShortcuts_Title": "Pintasan Keyboard",
     "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",
@@ -551,10 +577,13 @@
     "NetworkSettings_Proxy_Hostname": "Hostname Proxy",
     "NetworkSettings_Proxy_HostnameHelp1": "Merepresentasikan URL dari Proxy yang akan digunakan.",
     "NetworkSettings_Proxy_HostnameHelp2": "Collapse hanya mendukung tipe proxy",
-    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS dan SOCKS4/4a/5",
     "NetworkSettings_Proxy_HostnameHelp4": "untuk saat ini.",
 
-    "NetworkSettings_Proxy_Username": "Hostname Proxy",
+    "NetworkSettings_ProxyWarn_UrlInvalid": "URL yang dimasukkan tidak valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "Skema proxy tidak didukung! Collapse hanya mendukung http://, https://, socks4://, socks4a:// dan socks5://",
+
+    "NetworkSettings_Proxy_Username": "Username Proxy",
     "NetworkSettings_Proxy_UsernamePlaceholder": "Masukkan Username Proxy",
     "NetworkSettings_Proxy_UsernameHelp1": "Nilai Bawaan:",
     "NetworkSettings_Proxy_UsernameHelp2": "[Kosong]",
@@ -566,11 +595,67 @@
     "NetworkSettings_Proxy_PasswordHelp2": "[Kosong]",
     "NetworkSettings_Proxy_PasswordHelp3": "Kosongkan bagian ini apabila proxy tidak membutuhkan proses autentikasi.",
 
+    "NetworkSettings_ProxyTest_Button": "Test Konektivitas Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Memeriksa Konektivitas...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Test Konektivitas Proxy telah Berhasil!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Gagal! Proxy tidak dapat Dihubungi",
+
     "NetworkSettings_Http_Title": "Pengaturan .NET HTTP Client",
     "NetworkSettings_Http_Redirect": "Perbolehkan Pengalihan HTTP",
     "NetworkSettings_Http_SimulateCookies": "Perbolehkan Simuliasi Cookie pada HTTP",
     "NetworkSettings_Http_UntrustedHttps": "Perbolehkan Sertifikat HTTPS Untrusted",
-    "NetworkSettings_Http_Timeout": "Masa Tenggang HTTP Client (dalam Detik)"
+    "NetworkSettings_Http_Timeout": "Masa Tenggang HTTP Client (dalam detik)",
+
+    "FileDownloadSettings_Title": "Pengaturan Unduhan File",
+    "FileDownloadSettings_SpeedLimit_Title": "Batasi Kecepatan Unduhan",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Batasan Kecepatan (dalam MiB)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Nilai Bawaan:",
+    "FileDownloadSettings_SpeedLimitHelp2": "Jangkauan nilai untuk Batasan Kecepatan:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/d",
+    "FileDownloadSettings_SpeedLimitHelp4": "Membatasi berapa banyak maksimum bandwidth yang diperbolehkan saat mengunduh. Pengaturan",
+    "FileDownloadSettings_SpeedLimitHelp5": "tidak dapat digunakan apabila pengaturan Batasan Kecepatan sedang digunakan.",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Gunakan Pengunduh Baru Berbasis Prealokasi",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Hanya untuk Pemasangan Game, Perbaikan Game dan Pembaruan Cache.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Ukuran Potongan (dalam MiB)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Nilai Bawaan:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Jangkauan nilai untuk Ukuran Potongan:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Saat dinyalakan, pengunduh akan mengalokasikan ukuran file secara dinamik saat proses unduhan berlangsung.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Fitur ini memberikan proses pengunduhan akses untuk mengunduh potongan-potongan data ke dalam file tanpa harus memisahkan terlebih dahulu ke dalam file terpisah.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Saat dimatikan, launcher akan balik menggunakan proses unduhan yang lama dimana potongan-potongan data akan diunduh ke dalam file terpisah. Pengaturan",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "dan",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "tidak dapat digunakan saat pengaturan \"Pengunduhan Baru Berbasis Prealokasi\" dimatikan.",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Catatan:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Pengaturan ini hanya tersedia untuk proses unduhan (seperti Pemasangan Game, Pembaruan Game dan Pre-load) serta untuk Perbaikan Game dan Pembaruan Cache.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Mode Unduhan File Beruntun",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Hanya untuk Perbaikan Game dan Pembaruan Cache.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Nilai Bawaan:",
+    "FileDownloadSettings_BurstDownloadHelp2": "Ketika dinyalakan, pengaturan ini akan membuat proses unduhan untuk beberapa file pada",
+    "FileDownloadSettings_BurstDownloadHelp3": "dan",
+    "FileDownloadSettings_BurstDownloadHelp4": "berjalan secara bersamaan sehingga proses unduhan berjalan lebih cepat dan efisien.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Ketika dimatikan, proses unduhan pada",
+    "FileDownloadSettings_BurstDownloadHelp6": "dan",
+    "FileDownloadSettings_BurstDownloadHelp7": "akan berjalan satu-per-satu.",
+
+    "Database_Title": "Sinkronisasi Database Pengguna",
+    "Database_ConnectionOk": "Database berhasil terhubung!",
+    "Database_ConnectFail": "Gagal menghubungi database, periksa error di bawah ini:",
+    "Database_Toggle": "Gunakan Database Online",
+    "Database_Url": "URL Database",
+    "Database_Url_Example": "Contoh: https://db-collapse.turso.io",
+    "Database_Token": "Token",
+    "Database_UserId": "ID Pengguna",
+    "Database_GenerateGuid": "Hasilkan UID",
+    "Database_Validate": "Validasi & Simpan Pengaturan",
+    "Database_Error_EmptyUri": "URL Database tidak boleh kosong!",
+    "Database_Error_EmptyToken": "Token Database tidak boleh kosong!",
+    "Database_Error_InvalidGuid": "GUID pada User ID tidak valid!",
+    "Database_Warning_PropertyChanged": "Pengaturan Database telah berubah",
+    "Database_ValidationChecking": "Validasi Pengaturan...",
+    "Database_Placeholder_DbUserIdTextBox": "Contoh GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini"
   },
 
   "_Misc": {
@@ -590,6 +675,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "Semuanya Berhasil!",
     "Cancel": "Batal",
     "Close": "Tutup",
     "UseCurrentDir": "Pakai lokasi saat ini",
@@ -698,7 +784,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nama launcher tidak diketahui)",
 
-    "ImageCropperTitle": "Memotong Gambar"
+    "ImageCropperTitle": "Memotong Gambar",
+
+    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
+    "IsBytesUnlimited": "= Tidak Terbatas",
+    "IsBytesNotANumber": "= Bukan Nomor"
   },
 
   "_BackgroundNotification": {
@@ -745,7 +835,7 @@
     "RepairCompletedSubtitle": "{0} file telah diperbaiki.",
     "RepairCompletedSubtitleNoBroken": "Tidak ada file yang rusak.",
     "ExtremeGraphicsSettingsWarnTitle": "Pengaturan \"Sangat Tinggi\" Terdeteksi!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Kamu telah memilih pengaturan \"Sangat Tinggi\"!\r\nPerlu diingat bahwa pengaturan ini adalah 2x Render Scale dengan MSAA dinyalakan dan pengaturan ini SANGAT TIDAK OPTIMAL!\r\n\r\nYakin ingin pilih pengaturan ini?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Kamu telah memilih pengaturan \"Sangat Tinggi\"!\n\rPerlu diingat bahwa pengaturan ini adalah 1.6x Render Scale dengan MSAA dinyalakan dan pengaturan ini SANGAT TIDAK OPTIMAL!\n\r\nYakin ingin pilih pengaturan ini?",
     "MigrateExistingMoveDirectoryTitle": "Memindahkan Lokasi Pemasangan untuk: {0}",
     "MigrateExistingInstallChoiceTitle": "Pemasangan untuk {0} yang sudah ada, terdeteksi!",
     "MigrateExistingInstallChoiceSubtitle1": "Kamu memiliki instalasi game yang sudah terpasang menggunakan {0} pada direktori ini:",
@@ -810,7 +900,7 @@
     "ChangePlaytimeTitle": "Apakah anda yakin untuk mengubah waktu main?",
     "ChangePlaytimeSubtitle": "Mengubah waktu main anda berarti menimpa nilai saat ini dengan yang sudah anda masukkan.\n\nLanjut untuk mengubah?\n\nCatatan: Hal ini tidak akan mempengaruhi cara Collapse berjalan dan anda dapat mengubah nilai kembali kapan saja saat anda tidak sedang memainkan gamenya.",
     "ResetPlaytimeTitle": "Apakah anda yakin untuk setel ulang waktu main?",
-    "ResetPlaytimeSubtitle": "Menyetel ulang waktu main anda akan mengatur ulang hitungan menjadi 0. Hal ini bersifat ",
+    "ResetPlaytimeSubtitle": "Mengatur ulang waktu permainan akan mengembalikan perhitungan waktu bermain dan statistik lainnya ke 0. Hal ini bersifat ",
     "ResetPlaytimeSubtitle2": "\"destructive\"",
     "ResetPlaytimeSubtitle3": "yang berarti anda tidak akan bisa mengembalikannya setelah anda mengkonfirmasi.\n\nLanjut untuk mengubah?\n\nCatatan: Hal ini tidak akan mempengaruhi cara Collapse berjalan dan anda dapat mengubah nilai kembali kapan saja saat anda tidak sedang memainkan gamenya.",
     "InvalidPlaytimeTitle": "Terjadi masalah saat menyimpan sesi bermain",
@@ -823,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "Folder tidak valid!",
     "CannotUseAppLocationForGameDirSubtitle": "Anda tidak dapat menggunakan folder ini karena digunakan sebagai folder sistem atau digunakan sebagai folder utama dari executable aplikasi ini. Mohon untuk gunakan folder lainnya!",
+    "InvalidGameDirNewTitleFormat": "Path tidak valid: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Path Terpilih: ",
+    "InvalidGameDirNewSubtitleSelectOther": "Mohon pilih lokasi/folder lainnya!",
+    "InvalidGameDirNew1Title": "Folder tidak valid!",
+    "InvalidGameDirNew1Subtitle": "Kamu tidak bisa menggunakan folder ini karena folder ini digunakan oleh system ataupun digunakan oleh aplikasi ini. Silahkan pilih folder lainnya!",
+    "InvalidGameDirNew2Title": "Tidak dapat mengakses folder yang dipilih",
+    "InvalidGameDirNew2Subtitle": "Launcher tidak memiliki izin untuk mengakses folder ini!",
+    "InvalidGameDirNew3Title": "Tidak dapat memilih root drive",
+    "InvalidGameDirNew3Subtitle": "Kamu memilih path pada root drive. Kamu tidak bisa memilih path ini!",
+    "InvalidGameDirNew4Title": "Tidak dapat memilih folder Windows",
+    "InvalidGameDirNew4Subtitle": "Kamu tidak dapat menggunakan folder Windows sebagai lokasi pemasangan Game, hal ini untuk mencegah hal yang tidak diinginkan terjadi.",
+    "InvalidGameDirNew5Title": "Tidak dapat memilih folder Program Data",
+    "InvalidGameDirNew5Subtitle": "Kamu tidak dapat menggunakan folder Program Data sebagai lokasi pemasangan Game, hal ini untuk mencegah hal yang diinginkan terjadi.",
+    "InvalidGameDirNew6Title": "Tidak dapat memilih folder Program Files atau Program Files (x86)",
+    "InvalidGameDirNew6Subtitle": "Kamu tidak dapat menggunakan folder Program Files atau Program Files (x86) sebagai lokasi pemasangan Game, hal ini untuk mencegah hal yang diinginkan terjadi.",
+    "FolderDialogTitle1": "Pilih Lokasi Pemsangan Game",
 
     "StopGameTitle": "Tutup Paksa Game",
     "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
@@ -875,9 +981,12 @@
 
     "DownloadSettingsTitle": "Pengaturan Unduhan",
     "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
-    
+
     "OpenInExternalBrowser": "Buka di Browser Eksternal",
-    "CloseOverlay": "Tutup Overlay"
+    "CloseOverlay": "Tutup Overlay",
+
+    "DbGenerateUid_Title": "Apakah kamu yakin ingin mengubah ID User-mu?",
+    "DbGenerateUid_Content": "Mengubah User ID-mu dapat menyebabkan kehilangan data yang sudah tersimpan."
   },
 
   "_FileMigrationProcess": {
@@ -1397,9 +1506,39 @@
     "Graphics_EffectsQ": "Kualitas Efek",
     "Graphics_ShadingQ": "Kualitas Shading",
     "Graphics_Distortion": "Distorsi",
+    "Graphics_HighPrecisionCharacterAnimation": "Animasi Akurasi Tinggi pada Karakter",
     "Audio_PlaybackDev": "Perangkat Pemutaran Suara",
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
     "Audio_PlaybackDev_TV": "Televisi"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher Disembunyikan ke Tray",
+    "WindowHiddenToTray_Subtitle": "Saat ini launcher berjalan di latar belakang.\r\nKlik notifikasi ini atau ikon pada tray untuk kembali ke window.",
+
+    "GameInstallCompleted_Title": "Game {0} sudah Siap untuk Dimainkan",
+    "GameInstallCompleted_Subtitle": "Game {0} telah berhasil terpasang!",
+
+    "GameUpdateCompleted_Title": "Game {0} sudah Berhasil Diperbarui",
+    "GameUpdateCompleted_Subtitle": "Game {0} sudah berhasil diperbarui ke v{1}!",
+
+    "GamePreloadCompleted_Title": "Pra-unduh untuk {0} telah Selesai Diunduh",
+
+    "GameRepairCheckCompleted_Title": "Pemeriksaan pada Perbaikan Game sudah Selesai",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} file perlu diperbarui atau diperbaiki. Klik notifikasi ini untuk kembali ke launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Tidak ada file yang perlu diperbarui atau diperbaiki.",
+
+    "GameRepairDownloadCompleted_Title": "Unduhan pada Perbaikan Game sudah Selesai",
+    "GameRepairDownloadCompleted_Subtitle": "{0} file telah berhasil diperbarui atau diperbaiki.",
+
+    "CacheUpdateCheckCompleted_Title": "Pemeriksaan pada Pembaruan Cache sudah Selesai",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} file cache perlu diperbarui. Klik notifikasi ini untuk kembali ke launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Tidak ada file cache yang perlu diperbarui.",
+
+    "CacheUpdateDownloadCompleted_Title": "Unduhan pada Pembaruan Cache sudah Selesai",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} file cache telah berhasil diperbarui.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Klik notifikasi ini untuk kembali ke launcher."
   }
 }

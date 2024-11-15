@@ -50,7 +50,7 @@
     "Pg2Title": "Il est temps de s'envoler~",
     "Subtitle1": "Bonjour !",
     "Subtitle2": "Il semblerait que c'est la première fois que vous utilisez ce launcher.",
-    "Subtitle3": "Merci d'avoir essayé ce projet ! Pour tout configurer, veuillez choisir un dossier dans lequel Collapse sauvegardera ses données.",
+    "Subtitle3": "Merci d'avoir essayé ce projet ! Pour tout configurer, merci de choisir un dossier dans lequel Collapse sauvegardera ses données.",
     "Subtitle4_1": "Pour commencer, cliquez sur «",
     "Subtitle4_2": "Localiser le dossier",
     "Subtitle4_3": "» afin de permettre l'installation de votre jeu.",
@@ -134,12 +134,12 @@
     "DownloadBtn": "Télécharger",
 
     "GameStatusPlaceholderComingSoonBtn": "Bientôt",
-    "GameStatusPlaceholderPreRegisterBtn": "Se pré-inscrire !",
+    "GameStatusPlaceholderPreRegisterBtn": "Se préinscrire !",
 
     "GameSettingsBtn": "Réglages rapides",
     "GameSettings_Panel1": "Réglages rapides",
     "GameSettings_Panel1OpenGameFolder": "Ouvrir le dossier du jeu",
-    "GameSettings_Panel1OpenCacheFolder": "Ouvrir le cache",
+    "GameSettings_Panel1OpenCacheFolder": "Ouvrir le dossier de cache",
     "GameSettings_Panel1OpenScreenshotFolder": "Ouvrir le dossier des captures d'écran",
     "GameSettings_Panel2": "Installation du jeu",
     "GameSettings_Panel2RepairGame": "Réparer le jeu",
@@ -163,11 +163,11 @@
     "GamePlaytime_Running_Info1": "Une instance de ce jeu est actuellement en cours, la durée de jeu ne peut donc pas être modifiée.",
     "GamePlaytime_Running_Info2": "Veuillez noter que la fermeture complète de Collapse arrêtera le suivi du temps de jeu (en sauvegardant ce qui a été joué jusqu'à maintenant) et que seules les sessions commencées à l'aide de Collapse seront suivies.",
     "GamePlaytime_Display": "{0} h {1:00} min",
-    "GamePlaytime_ToolTipDisplay": "Dernière exécution le {0:00}/{1:00}/{2:0000} à {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
 
     "PostPanel_Events": "Évènements",
-    "PostPanel_Notices": "Notes",
-    "PostPanel_Info": "Infos",
+    "PostPanel_Notices": "Annonces",
+    "PostPanel_Info": "Actualités",
     "PostPanel_NoNews": "Quoi ?!\r\nPas de nouvelles pour aujourd'hui ?",
 
     "CommunityToolsBtn": "Outils communautaires",
@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "Une requête n'a pas répondu à temps durant la tentative d'installation de {0}",
     "Exception_DownloadTimeout2": "Veuillez vérifier la stabilité de votre connexion Internet. Si votre débit est lent, veuillez abaisser le nombre de threads de téléchargement.",
-    "Exception_DownloadTimeout3": "**ATTENTION** Modifier le nombre de threads de téléchargement aura pour conséquence de recommencer le téléchargement depuis le début, et vous devrez supprimer manuellement les anciens morceaux téléchargés !"
+    "Exception_DownloadTimeout3": "**ATTENTION** Modifier le nombre de threads de téléchargement aura pour conséquence de recommencer le téléchargement depuis le début, et vous devrez supprimer manuellement les anciens morceaux téléchargés !",
+
+    "GameStateInvalid_Title": "Certaines données de jeu présentent des problèmes !",
+    "GameStateInvalid_Subtitle1": "Collapse a détecté que les propriétés des fichiers de jeu sont invalides pour la région :\r\n",
+    "GameStateInvalid_Subtitle2": "Il est recommandé d'effectuer une réparation afin que le launcher puisse détecter le jeu correctement",
+    "GameStateInvalid_Subtitle3": "Cliquez sur « ",
+    "GameStateInvalid_Subtitle4": " » pour corriger les propriétés du jeu ou sur « ",
+    "GameStateInvalid_Subtitle5": " » pour annuler l'opération.",
+
+    "GameStateInvalidFixed_Title": "Propriétés des fichiers de jeu corrigées avec succès !",
+    "GameStateInvalidFixed_Subtitle1": "Les propriétés des fichiers du jeu ont été corrigées pour la région :",
+    "GameStateInvalidFixed_Subtitle2": "Veuillez effectuer une « ",
+    "GameStateInvalidFixed_Subtitle3": " » dans le menu « ",
+    "GameStateInvalidFixed_Subtitle4": " » afin de s'assurer que les fichiers sont valides."
   },
 
   "_GameRepairPage": {
@@ -202,15 +215,15 @@
     "Status10": "Réparation du bloc : {0} | Décalage : 0x{1} - Taille : 0x{2}",
     "Status11": "En attente du lancement du processus de réparation…",
     "Status12": "Mise à jour de l'audio : {0}",
-    "Status13": "Mise à jour du bloc (Blk): {0}",
-    "Status14": "Tentative de détermination de la disponibilité des actifs CG : {0}",
-    "Status15": "Tentative de détermination de la disponibilité des actifs audios : {0}",
+    "Status13": "Mise à jour du bloc : {0}",
+    "Status14": "Tentative de détermination de la disponibilité de l'actif CG : {0}",
+    "Status15": "Tentative de détermination de la disponibilité de l'actif audio : {0}",
     "StatusNone": "Aucun",
     "PerProgressTitle1": "Progression par fichier",
     "PerProgressSubtitle1": "En attente…",
-    "PerProgressSubtitle2": "Traitement : {0} / {1}",
+    "PerProgressSubtitle2": "Traitement : {0} / {1}",
     "PerProgressSubtitle3": "Récupération : {0}/s",
-    "PerProgressSubtitle4": "Acquisition du correctif : {0} / {1}",
+    "PerProgressSubtitle4": "Acquisition du correctif : {0} / {1}",
     "PerProgressSubtitle5": "Application du correctif : {0}/s",
     "TotalProgressTitle1": "État d'avancement",
     "RepairBtn1": "Réparer les fichiers",
@@ -243,7 +256,7 @@
     "CachesStatusUpToDate": "Les caches sont à jour !",
     "CachesStatusChecking": "Vérification de {0} : {1}",
     "CachesTotalStatusNone": "Aucun",
-    "CachesTotalStatusChecking": "Traitement : {0} / {1}",
+    "CachesTotalStatusChecking": "Traitement : {0} / {1}",
     "CachesBtn1": "Mettre à jour les caches",
     "CachesBtn2": "Vérification rapide",
     "CachesBtn2Full": "Vérification complète",
@@ -279,7 +292,7 @@
 
     "Graphics_VSync": "VSync",
 
-    "Graphics_FPS": "Taux d'IPS",
+    "Graphics_FPS": "FPS",
     "Graphics_FPSUnlimited": "Illimité",
     "Graphics_FPSPanel": "Taux d'IPS maximum",
     "Graphics_FPSInCombat": "En combat",
@@ -344,11 +357,11 @@
     "ApplyBtn": "Appliquer les paramètres",
     "SettingsApplied": "Les modifications ont été enregistrées !",
     "SettingsRegExported": "Le registre a été exporté !",
-    "SettingsRegExportTitle": "Enregistrer le fichier de registre de Collapse dans…",
+    "SettingsRegExportTitle": "Enregistrer le fichier de registre Collapse vers…",
     "SettingsRegImported": "Le registre a été importé ! (Un redémarrage du launcher est nécessaire pour appliquer les changements importés)",
-    "SettingsRegImportTitle": "Choisissez le fichier de registre de Collapse…",
+    "SettingsRegImportTitle": "Sélectionnez le fichier de registre Collapse…",
     "SettingsRegErr1": "Le fichier n'a pas été choisi.",
-    "SettingsRegErr2": "L'en-tête du fichier du registre de Collapse n'est pas valide !",
+    "SettingsRegErr2": "L'en-tête du fichier du registre Collapse n'est pas valide !",
 
     "RegImportExport": "Importation/exportation du registre",
     "RegExportTitle": "Exporter",
@@ -427,21 +440,21 @@
     "AppThreads_Help3": "Plage de valeurs :",
     "AppThreads_Help4": "0 (Détection automatique)",
     "AppThreads_Help5": "Ce thread s'occupera du processus d'extraction/vérification lors de l'installation/réparation du jeu.",
-    "AppThreads_Help6": "Note: Ce réglage n'est plus effectif lorsque Honkai Impact 3rd est en cours d'installation.",
+    "AppThreads_Help6": "Note : Ce réglage ne s'applique pas lorsque Honkai Impact 3rd est en cours d'installation.",
 
-    "SophonSettingsTitle": "Sophon Mode Settings",
-    "SophonHelp_Title": "What is Sophon Downloader Mode?",
-    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
-    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
-    "SophonHelp_IndicatorTitle": "Indicator Icons",
-    "SophonHelp_Indicator1": "File Size to Write on Disk",
-    "SophonHelp_Indicator2": "File Size to Download",
-    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
-    "SophonHelp_Indicator4": "Network I/O Speed on Write",
-    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
-    "SophonHttpNumberBox": "Maximum HTTP Connections",
-    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
-    "SophonToggle": "Enable Sophon on Supported Regions",
+    "SophonSettingsTitle": "Paramètres du mode Sophon",
+    "SophonHelp_Title": "Qu'est-ce que le téléchargement en mode Sophon ?",
+    "SophonHelp_1": "« Sophon » est un nouveau mécanisme de téléchargement récemment introduit par HoYoverse qui permet aux fichiers d'être téléchargés sous forme de « fragments » au lieu de télécharger une énorme archive ZIP. Les principaux avantages sont un prérequis d'espace disque moindre et une efficacité accrue pour les téléchargements et mises à jour.",
+    "SophonHelp_2": "Cette méthode peut être plus lente chez ceux qui utilisent un disque dur pour stocker leur jeu.",
+    "SophonHelp_IndicatorTitle": "Icônes indicatrices",
+    "SophonHelp_Indicator1": "Taille du fichier à écrire sur le disque",
+    "SophonHelp_Indicator2": "Taille du fichier à télécharger",
+    "SophonHelp_Indicator3": "Vitesse d'E/S du disque en écriture",
+    "SophonHelp_Indicator4": "Vitesse d'E/S du réseau en écriture",
+    "SophonHelp_Thread": "Ce paramètre contrôle le nombre de téléchargements de fragments que Collapse peut effectuer simultanément. Réduisez cette valeur si l'un des téléchargements se bloque durant le téléchargement du jeu.",
+    "SophonHttpNumberBox": "Nombre de connexions HTTP maximum",
+    "SophonHelp_Http": "Cette option contrôle le nombre maximium de connexions réseau que Collapse peut établir vers les serveurs de mise à jour de HoYoverse afin de télécharger les fragments.",
+    "SophonToggle": "Activer le mode Sophon sur les régions supportées",
 
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Avant de modifier la valeur «",
@@ -467,6 +480,8 @@
     "Update_NewVer1": "Une mise à jour (",
     "Update_NewVer2": ") est disponible !",
     "Update_LatestVer": "Collapse est à jour !",
+    "Update_SeeChangelog": "Voir les derniers changements (en anglais)",
+    "Update_ChangelogTitle": "Changements récents",
 
     "AppFiles": "Gestion des fichiers d'application",
     "AppFiles_OpenDataFolderBtn": "Accéder aux données de l'application",
@@ -528,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "AVERTISSEMENT : Aucun GPU compatible Vulkan disponible n'a été trouvé et le mode CPU sera utilisé. Cela augmentera considérablement le temps de traitement de l’image.",
     "Waifu2X_Warning_D3DMappingLayers": "AVERTISSEMENT : Votre système a le « Pack de compatibilité OpenCL™, OpenGL® et Vulkan® » d'installé. Il a été rapporté que ce package est incompatible avec le chargeur Vulkan et entraînera un plantage sur certains GPUs. Veuillez supprimer ce package afin d'activer le mode GPU.",
     "Waifu2X_Error_Loader": "ERREUR : Échec de l'initialisation de Vulkan Loader. Assurez-vous d'avoir un GPU compatible Vulkan avec des pilotes GPU appropriés installé.",
-    "Waifu2X_Error_Output": "ERREUR : Échec de l'auto-test Waifu2X, l'image en sortie est vide."
+    "Waifu2X_Error_Output": "ERREUR : Échec de l'auto-test Waifu2X, l'image en sortie est vide.",
+
+    "NetworkSettings_Title": "Paramètres réseau",
+    "NetworkSettings_Proxy_Title": "Paramètres de serveur mandataire (proxy)",
+
+    "NetworkSettings_Proxy_Hostname": "Nom d'hôte du serveur mandataire",
+    "NetworkSettings_Proxy_HostnameHelp1": "Représente l'URL du serveur mandataire à utiliser.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse ne supporte actuellement que les serveurs mandataires de type",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS et SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": ".",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "L'URL saisie n'est pas valide !",
+    "NetworkSettings_ProxyWarn_NotSupported": "Le schéma de serveur mandataire n'est pas supporté ! Collapse ne supporte que les types « http:// », « https:// », « socks4:// », « socks4a:// » et « socks5:// »",
+
+    "NetworkSettings_Proxy_Username": "Nom d'utilisateur",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Nom d'utilisateur",
+    "NetworkSettings_Proxy_UsernameHelp1": "Valeur par défaut :",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Vide]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Laissez ce champ vide si votre serveur mandataire ne requiert pas d'authentification.",
+
+    "NetworkSettings_Proxy_Password": "Mot de passe",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Mot de passe",
+    "NetworkSettings_Proxy_PasswordHelp1": "Valeur par défaut :",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Vide]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Laissez ce champ vide si votre serveur mandataire ne requiert pas d'authentification",
+
+    "NetworkSettings_ProxyTest_Button": "Tester la connectivité du serveur mandataire",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Vérification de la connectivité…",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Le test de connectivité du serveur mandataire a réussi !",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Le test a échoué ! Le serveur mandataire est injoignable.",
+
+    "NetworkSettings_Http_Title": "Paramètres du client HTTP .NET",
+    "NetworkSettings_Http_Redirect": "Autoriser la redirection HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Autoriser la simulation de cookies HTTP",
+    "NetworkSettings_Http_UntrustedHttps": "Autoriser l'utilisation de certificats HTTPS « non fiables »",
+    "NetworkSettings_Http_Timeout": "Délai d'attente du client HTTP (en secondes)"
   },
 
   "_Misc": {
@@ -545,8 +595,8 @@
     "SpeedTextOnly": "Vitesse",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Vitesse : - /s",
-    "PerFromTo": "{0} / {1}",
-    "PerFromToPlaceholder": "- / -",
+    "PerFromTo": "{0} / {1}",
+    "PerFromToPlaceholder": "- / -",
 
     "Cancel": "Annuler",
     "Close": "Fermer",
@@ -587,14 +637,14 @@
     "IAcceptAgreement": "J'accepte",
     "IDoNotAcceptAgreement": "Je refuse",
 
-    "LangNameENUS": "Anglais",
+    "LangNameENUS": "Anglais (États-Unis)",
     "LangNameJP": "Japonais",
-    "LangNameCN": "Chinois",
+    "LangNameCN": "Chinois (simplifié)",
     "LangNameKR": "Coréen",
 
     "Downloading": "Téléchargement",
     "Updating": "Mise à jour",
-    "UpdatingAndApplying": "MàJ & Application",
+    "UpdatingAndApplying": "MàJ & Appl.",
     "Applying": "Application",
     "Merging": "Fusion",
     "Idle": "Inactif",
@@ -685,7 +735,7 @@
     "DeltaPatchPreReqSubtitle6": " » pour utiliser une mise à jour normale ou « ",
     "DeltaPatchPreReqSubtitle7": " » pour annuler la mise à jour)",
     "GameConversionPrevFailedTitle": "Conversion du jeu",
-    "GameConversionPrevFailedSubtitle": "La conversion du jeu précédent a échoué. Voulez-vous restaurer votre jeu pour éviter qu'il ne soit intégralement re-téléchargé ?",
+    "GameConversionPrevFailedSubtitle": "La précédente conversion du jeu a échoué. Voulez-vous restaurer votre jeu afin d'éviter de tout re-télécharger ?",
     "PreloadVerifiedTitle": "Paquet de préchargement vérifié !",
     "PreloadVerifiedSubtitle": "Le paquet de préchargement a été vérifié et est prêt à être installé !",
     "LocateInstallTitle": "Localisation du dossier d'installation",
@@ -727,7 +777,7 @@
     "InstallCorruptDataAnywaySubtitle2": "{0} - {1} ({2} octets)",
     "InstallCorruptDataAnywaySubtitle3": ". Veuillez noter que l'extraction de ces données peut échouer ou mettre le jeu dans un état qui peut l'empêcher de fonctionner.\r\n\r\nÊtes-vous sûr de vouloir extraire ces données malgré tout ?",
     "InstallDataDownloadResumeTitle": "Continuer le téléchargement ?",
-    "InstallDataDownloadResumeSubtitle": "Vous avez téléchargé {0} / {1} du jeu précédemment.\r\n\r\nVoulez-vous reprendre le téléchargement ?",
+    "InstallDataDownloadResumeSubtitle": "Vous avez téléchargé {0} / {1} du jeu précédemment.\r\n\r\nVoulez-vous reprendre le téléchargement ?",
     "InsufficientDiskTitle": "Espace disque insuffisant",
     "InsufficientDiskSubtitle": "Vous n'avez pas assez d'espace libre pour installer ce jeu sur votre disque {2} !\r\n\r\nEspace libre : {0}\r\nEspace requis : {1}\r\n\r\nVeuillez vous assurer que vous disposez de suffisamment d'espace disque avant de procéder à l'installation.",
     "RelocateFolderTitle": "Déplacer le dossier des données de l'application",
@@ -791,7 +841,7 @@
     "ResetKbShortcutsTitle": "Réinitialiser les raccourcis ?",
     "ResetKbShortcutsSubtitle": "Cela signifie que chaque raccourci sera remplacé par sa combinaison de touches par défaut.\r\n\r\nVoulez-vous poursuivre ?\r\n\r\nNote : Ceci n'a aucun effet sur le fonctionnement de Collapse, et vous pouvez toujours changer la combinaison de raccourcis en accédant au menu Raccourcis clavier.",
 
-    "OperationErrorDiskSpaceInsufficientTitle": "Espace disque insuffisant pour le disque {0} !",
+    "OperationErrorDiskSpaceInsufficientTitle": "Espace disque insuffisant pour le lecteur {0} !",
     "OperationErrorDiskSpaceInsufficientMsg": "Vous n'avez pas assez d'espace libre pour effectuer l'opération sur votre disque {2} !\r\n\r\nEspace libre : {0}\r\nEspace requis : {1}\r\n\r\nVeuillez vous assurer d'avoir assez d'espace disque avant de procéder.",
 
     "OperationWarningNotCancellableTitle": "Attention : Cette opération N'EST PAS ANNULABLE !",
@@ -831,8 +881,11 @@
     "SteamShortcutCreationFailureTitle": "Dossier de données Steam invalide",
     "SteamShortcutCreationFailureSubtitle": "Il n'a pas été possible de trouver un dossier de données utilisateur valide.\r\n\r\nVeuillez vous assurer de vous être connecté au moins une fois à votre client Steam avant d'essayer d'utiliser cette fonctionnalité.",
 
-    "DownloadSettingsTitle": "Télécharger les paramètres",
-    "DownloadSettingsOption1": "Démarrer le jeu après l'installation"
+    "DownloadSettingsTitle": "Paramètres de téléchargement",
+    "DownloadSettingsOption1": "Démarrer le jeu après l'installation",
+    
+    "OpenInExternalBrowser": "Ouvrir dans un navigateur externe",
+    "CloseOverlay": "Fermer l'overlay"
   },
 
   "_FileMigrationProcess": {
@@ -843,7 +896,7 @@
     "ChoosePathTextBoxPlaceholder": "Choisir le chemin cible…",
     "ChoosePathButton": "Choisir la cible",
     "ChoosePathErrorTitle": "Une erreur est survenue !",
-    "ChoosePathErrorPathIdentical": "Le chemin de sortie choisi est situé à l’intérieur ou identique à l’emplacement actuel !\r\nVeuillez choisir un autre emplacement !",
+    "ChoosePathErrorPathIdentical": "Le chemin de sortie choisi est situé à l’intérieur ou identique à l’emplacement actuel !\r\nVeuillez choisir un autre emplacement !",
     "ChoosePathErrorPathUnselected": "Veuillez choisir la destination avant de continuer !",
     "ChoosePathErrorPathNotExist": "Le chemin n'existe pas !",
     "ChoosePathErrorPathNoPermission": "Vous n'avez pas la permission d'accéder à cet emplacement ! Veuillez choisir un autre emplacement !"
@@ -852,7 +905,7 @@
   "_InstallMgmt": {
     "IntegrityCheckTitle": "Vérification de l'intégrité",
     "PreparePatchTitle": "Préparation du correctif",
-    "AddtDownloadTitle": "Téléch. additionnel : {0} / {1}",
+    "AddtDownloadTitle": "Téléch. additionnel : {0} / {1}",
     "RepairFilesRequiredShowFilesBtn": "Afficher la liste des fichiers endommagés",
     "RepairFilesRequiredTitle": "{0} fichiers doivent être réparés !",
     "RepairFilesRequiredSubtitle": "Vous avez au moins {0} fichiers ({1}) qui doivent être réparés avant la mise à jour !\r\n\r\nNote : Ce processus peut prendre plus de temps que prévu (car cela dépendra de la stabilité et de la vitesse de votre connexion). Envisagez d'utiliser un VPN si vous avez des vitesses de téléchargement lentes :)"
@@ -954,17 +1007,17 @@
     "UpdateHeader2": "Temps restant :",
     "UpdateHeader3": "Taille du téléchargement :",
     "UpdateHeader4": "Vitesse :",
-    "UpdateHeader5PlaceHolder": "Téléchargement de la mise à jour  [- / -] :",
+    "UpdateHeader5PlaceHolder": "Téléchargement de la mise à jour  [- / -] :",
 
     "UpdateForcedHeader": "Le launcher va se mettre à jour de force en raison de changements urgents afin de garantir son bon fonctionnement.",
 
     "UpdateStatus1": "Obtention de la mise à jour",
     "UpdateMessage1": "Connexion au dépôt de mise à jour…",
     "UpdateStatus2": "Vérification :",
-    "UpdateStatus3": "Téléchargement de la mise à jour [{0} / {1}] :",
+    "UpdateStatus3": "Téléchargement de la mise à jour [{0} / {1}] :",
     "UpdateStatus4": "Vous utilisez désormais la dernière version ({0}) !",
     "UpdateMessage4": "Retour au launcher…",
-    "UpdateStatus5": "La version a été mise à jour vers {0} !",
+    "UpdateStatus5": "Collapse a été mis à jour vers la v{0} !",
     "UpdateMessage5": "Votre launcher va redémarrer sous peu…",
 
     "UpdateCountdownMessage1": "Votre launcher sera mis à jour dans {0}…",
@@ -991,7 +1044,7 @@
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ERREUR :\r\nLe fichier « release » ne contient pas de chaîne « stable » ou « preview »",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Veuillez vérifier votre fichier « release » et réessayez.",
 
-    "ApplyUpdateDownloadSizePlaceholder": "- o / - o",
+    "ApplyUpdateDownloadSizePlaceholder": "- o / - o",
     "ApplyUpdateDownloadSpeed": "{0}/s",
     "ApplyUpdateDownloadSpeedPlaceholder": "- o/s",
     "ApplyUpdateDownloadTimeEst": "{0:%h} h {0:%m} min {0:%s} sec restantes",
@@ -1125,7 +1178,7 @@
     "Graphics_ResCustomH": "H",
 
     "Graphics_Gamma": "Gamma",
-    "Graphics_FPS": "IPS",
+    "Graphics_FPS": "FPS",
     "Graphics_RenderScale": "Échelle de rendu",
     "Graphics_ShadowQuality": "Qualité des ombres",
     "Graphics_VisualFX": "Effets visuels",
@@ -1243,7 +1296,7 @@
     "GameManagement_Title": "Gestion du jeu",
     "GameManagement_Subtitle": "Note : Ces raccourcis clavier ne fonctionnent que si les fonctions sont prises en charge dans la région.",
     "GameManagement_ForceCloseGame": "Forcer la fermeture du jeu",
-    "GameManagement_ForceCloseGame_Desc": "ATTENTION : En utilisant ce raccourci, le jeu sera fermé sans aucun type de confirmation.",
+    "GameManagement_ForceCloseGame_Desc": "ATTENTION : En utilisant ce raccourci, le jeu sera fermé sans demander de confirmation.",
     "GameManagement_GoRepair": "Accéder à la page de réparation du jeu",
     "GameManagement_GoSettings": "Accéder à la page des paramètres du jeu",
     "GameManagement_GoCaches": "Accéder à la page de réparation des caches",
@@ -1283,29 +1336,29 @@
   },
 
   "_FileCleanupPage": {
-    "Title": "Files Clean-up",
-    "TopButtonRescan": "Re-Scan",
-    "NoFilesToBeDeletedText": "No files need to be deleted!",
-    "ListViewFieldFileName": "File Name",
-    "ListViewFieldFileSize": "File Size",
-    "LoadingTitle": "Processing",
-    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
-    "LoadingSubtitle2": "Checking pkg_version's availability...",
-    "BottomButtonDeleteAllFiles": "Delete All Files",
-    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
-    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
-    "BottomCheckboxNoFileSelected": "No File Selected",
-    "DialogDeletingFileTitle": "Deleting Files",
-    "DialogDeletingFileSubtitle1": "You're about to",
-    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
-    "DialogDeletingFileSubtitle3": "which contains",
-    "DialogDeletingFileSubtitle4": "{0} in size.",
-    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
-    "DialogDeleteSuccessTitle": "Files Deleted!",
-    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
-    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
-    "DialogMoveToRecycleBin": "Move to Recycle Bin",
-    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
+    "Title": "Nettoyage des fichiers",
+    "TopButtonRescan": "Rescanner",
+    "NoFilesToBeDeletedText": "Aucun fichier à supprimer !",
+    "ListViewFieldFileName": "Nom du fichier",
+    "ListViewFieldFileSize": "Taille",
+    "LoadingTitle": "Traitement",
+    "LoadingSubtitle1": "Calcul des fichiers existants ({0} fichier(s) trouvé(s) - {1} au total)…",
+    "LoadingSubtitle2": "Vérification de la disponibilité de « pkg_version »…",
+    "BottomButtonDeleteAllFiles": "Tout supprimer",
+    "BottomButtonDeleteSelectedFiles": "Supprimer {0} fichier(s) sélectionné(s)",
+    "BottomCheckboxFilesSelected": "{0} fichier(s) sélectionné(s) ({1} / {2} au total)",
+    "BottomCheckboxNoFileSelected": "Aucun fichier sélectionné",
+    "DialogDeletingFileTitle": "Suppression des fichiers",
+    "DialogDeletingFileSubtitle1": "Vous êtes sur le point de",
+    "DialogDeletingFileSubtitle2": "supprimer {0} fichier(s)",
+    "DialogDeletingFileSubtitle3": "correspondant à",
+    "DialogDeletingFileSubtitle4": "{0} de données.",
+    "DialogDeletingFileSubtitle5": "Êtes-vous sûr de supprimer des fichiers ?",
+    "DialogDeleteSuccessTitle": "Fichiers supprimés !",
+    "DialogDeleteSuccessSubtitle1": "{0} fichier(s) a/ont été supprimé(s) avec succès",
+    "DialogDeleteSuccessSubtitle2": "et {0} suppression(s) échouée(s)",
+    "DialogMoveToRecycleBin": "Déplacer vers la Corbeille",
+    "DialogTitleMovedToRecycleBin": "Fichiers déplacés vers la Corbeille !"
   },
 
   "_OOBEStartUpMenu": {
@@ -1318,7 +1371,7 @@
 
     "CustomizationTitle": "Personnaliser votre launcher",
     "CustomizationSettingsLanguageHeader": "Langue",
-    "CustomizationSettingsLanguageDescription": "La langue dans laquelle l'interface et autres informations seront affichés.",
+    "CustomizationSettingsLanguageDescription": "La langue dans laquelle l'interface et autres informations seront affichées.",
     "CustomizationSettingsWindowSizeHeader": "Taille de la fenêtre",
     "CustomizationSettingsWindowSizeDescription": "Modifier la taille du launcher.",
     "CustomizationSettingsCDNHeader": "Réseau de diffusion de contenu (RDC)",
@@ -1331,7 +1384,7 @@
     "CustomizationSettingsStyleCustomBackgroundDescription": "Utiliser une image d'arrière-plan personnalisée à la place de celle par défaut.",
 
     "VideoBackgroundPreviewUnavailableHeader": "Aperçu de l'arrière-plan vidéo indisponible",
-    "VideoBackgroundPreviewUnavailableDescription": "Vous ne pouvez prévisualiser votre arrière-plan vidéo durant l'OOBE mais ne vous inquiétez pas ! Votre arrière-plan vidéo sera appliqué une fois l'OOBE terminé.",
+    "VideoBackgroundPreviewUnavailableDescription": "Vous ne pouvez prévisualiser votre arrière-plan vidéo durant l'OOBE mais ne vous inquiétez pas ! Votre arrière-plan vidéo sera appliqué une fois l'OOBE terminé.",
 
     "LoadingInitializationTitle": "Initialisation du premier démarrage du launcher",
     "LoadingCDNCheckboxCheckLatency": "(Vérification des latences…)",
@@ -1339,7 +1392,7 @@
     "LoadingCDNCheckingSubitle": "Recherche du réseau de diffusion de contenu (RDC) le plus proche pour vous…",
     "LoadingCDNCheckingSkipButton": "Passer la vérification du RDC",
     "LoadingBackgroundImageTitle": "Chargement de l'image",
-    "LoadingBackgroundImageSubtitle": "Cette image peut prendre du temps a être traitée.",
+    "LoadingBackgroundImageSubtitle": "Cette image peut prendre du temps à être traitée.",
 
     "CDNCheckboxItemLatencyFormat": " ({0} ms)",
     "CDNCheckboxItemLatencyUnknownFormat": " (inconnu)",
@@ -1348,7 +1401,7 @@
 
   "_ZenlessGameSettingsPage": {
     "Graphics_ColorFilter": "Intensité du filtre de couleurs",
-    "Graphics_RenderRes": "Résolution du rendu",
+    "Graphics_RenderRes": "Résolution de rendu",
     "Graphics_EffectsQ": "Qualité des effets",
     "Graphics_ShadingQ": "Qualité des ombres",
     "Graphics_Distortion": "Distorsion",

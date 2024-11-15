@@ -123,7 +123,7 @@ public enum AudioPlaybackDevice
 {
     Headphones,
     Speakers,
-    TV
+    TV = 3
 }
 
 public static class ServerName

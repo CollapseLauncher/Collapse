@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Genshin;
+using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameSettings.Zenless;
@@ -25,52 +26,59 @@ namespace CollapseLauncher.Statics
 {
     internal class GamePresetProperty : IDisposable
     {
-        internal GamePresetProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
+        internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
-            if (LauncherMetadataHelper.LauncherMetadataConfig != null)
+            if (LauncherMetadataHelper.LauncherMetadataConfig == null)
             {
-                PresetConfig GamePreset = LauncherMetadataHelper.LauncherMetadataConfig[GameName][GameRegion];
-
-                _APIResouceProp = APIResouceProp!.Copy();
-                switch (GamePreset!.GameType)
-                {
-                    case GameNameType.Honkai:
-                        _GameVersion  = new GameTypeHonkaiVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new HonkaiSettings(_GameVersion);
-                        _GameCache    = new HonkaiCache(UIElementParent, _GameVersion);
-                        _GameRepair   = new HonkaiRepair(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                        _GameInstall  = new HonkaiInstall(UIElementParent, _GameVersion, _GameCache, _GameSettings);
-                        break;
-                    case GameNameType.StarRail:
-                        _GameVersion  = new GameTypeStarRailVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new StarRailSettings(_GameVersion);
-                        _GameCache    = new StarRailCache(UIElementParent, _GameVersion);
-                        _GameRepair   = new StarRailRepair(UIElementParent, _GameVersion);
-                        _GameInstall  = new StarRailInstall(UIElementParent, _GameVersion);
-                        break;
-                    case GameNameType.Genshin:
-                        _GameVersion  = new GameTypeGenshinVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new GenshinSettings(_GameVersion);
-                        _GameCache    = null;
-                        _GameRepair   = new GenshinRepair(UIElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
-                        _GameInstall  = new GenshinInstall(UIElementParent, _GameVersion);
-                        break;
-                    case GameNameType.Zenless:
-                        _GameVersion  = new GameTypeZenlessVersion(UIElementParent, _APIResouceProp, GameName, GameRegion);
-                        _GameSettings = new ZenlessSettings(_GameVersion);
-                        _GameCache    = null;
-                        _GameRepair   = null;
-                        _GameInstall  = new ZenlessInstall(UIElementParent, _GameVersion);
-                        break;
-                    default:
-                        throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {GamePreset.GameType} ({GamePreset.ProfileName} - {GamePreset.ZoneName}) is not supported!");
-                }
+                return;
             }
+
+            PresetConfig gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
+
+            _APIResouceProp = apiResourceProp!.Copy();
+            switch (gamePreset!.GameType)
+            {
+                case GameNameType.Honkai:
+                    _GameVersion  = new GameTypeHonkaiVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameSettings = new HonkaiSettings(_GameVersion);
+                    _GameCache    = new HonkaiCache(uiElementParent, _GameVersion);
+                    _GameRepair   = new HonkaiRepair(uiElementParent, _GameVersion, _GameCache, _GameSettings);
+                    _GameInstall  = new HonkaiInstall(uiElementParent, _GameVersion, _GameCache, _GameSettings);
+                    break;
+                case GameNameType.StarRail:
+                    _GameVersion  = new GameTypeStarRailVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameSettings = new StarRailSettings(_GameVersion);
+                    _GameCache    = new StarRailCache(uiElementParent, _GameVersion);
+                    _GameRepair   = new StarRailRepair(uiElementParent, _GameVersion);
+                    _GameInstall  = new StarRailInstall(uiElementParent, _GameVersion);
+                    break;
+                case GameNameType.Genshin:
+                    _GameVersion  = new GameTypeGenshinVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameSettings = new GenshinSettings(_GameVersion);
+                    _GameCache    = null;
+                    _GameRepair   = new GenshinRepair(uiElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
+                    _GameInstall  = new GenshinInstall(uiElementParent, _GameVersion);
+                    break;
+                case GameNameType.Zenless:
+                    _GameVersion  = new GameTypeZenlessVersion(uiElementParent, _APIResouceProp, gamePreset, gameName, gameRegion);
+                    ZenlessSettings gameSettings = new ZenlessSettings(_GameVersion);
+                    _GameSettings = gameSettings;
+                    _GameCache    = new ZenlessCache(uiElementParent, _GameVersion, gameSettings);
+                    _GameRepair   = new ZenlessRepair(uiElementParent, _GameVersion, gameSettings);
+                    _GameInstall  = new ZenlessInstall(uiElementParent, _GameVersion, gameSettings);
+                    break;
+                case GameNameType.Unknown:
+                default:
+                    throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {gamePreset.GameType} ({gamePreset.ProfileName} - {gamePreset.ZoneName}) is not supported!");
+            }
+
+            _GamePlaytime = new Playtime(_GameVersion, _GameSettings);
         }
 
         internal RegionResourceProp _APIResouceProp { get; set; }
         internal PresetConfig _GamePreset { get => _GameVersion.GamePreset; }
         internal IGameSettings _GameSettings { get; set; }
+        internal IGamePlaytime _GamePlaytime { get; set; }
         internal IRepair _GameRepair { get; set; }
         internal ICache _GameCache { get; set; }
         internal IGameVersionCheck _GameVersion { get; set; }
@@ -87,6 +95,7 @@ namespace CollapseLauncher.Statics
                 return _gameExecutableName;
             }
         }
+
         internal string _GameExecutableNameWithoutExtension
         {
             get
@@ -96,9 +105,10 @@ namespace CollapseLauncher.Statics
                 return _gameExecutableNameWithoutExtension;
             }
         }
+
         internal bool IsGameRunning
         {
-            get => InvokeProp.IsProcessExist(_GameExecutableName);
+            get => InvokeProp.IsProcessExist(_GameExecutableName, Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName));
         }
 
 #nullable enable
@@ -106,10 +116,38 @@ namespace CollapseLauncher.Statics
         // The Process.GetProcessesByName(procName) will get an array of the process list. The output is piped into null-break operator "?" which will
         // returns a null if something goes wrong. If not, then pass it to .Where(x) method which will select the given value with the certain logic.
         // (in this case, we need to ensure that the MainWindowHandle is not a non-zero pointer) and then piped into null-break operator.
-        internal Process? GetGameProcessWithActiveWindow() =>
-            Process
-               .GetProcessesByName(Path.GetFileNameWithoutExtension(_GamePreset!.GameExecutableName))
-               .FirstOrDefault(x => x.MainWindowHandle != IntPtr.Zero);
+        internal Process? GetGameProcessWithActiveWindow()
+        {
+            Process[] processArr = Process.GetProcessesByName(_GameExecutableNameWithoutExtension);
+            int selectedIndex = -1;
+            try
+            {
+                for (int i = 0; i < processArr.Length; i++)
+                {
+                    Process process = processArr[i];
+                    int processId = process.Id;
+
+                    string? processPath = InvokeProp.GetProcessPathByProcessId(processId);
+                    string expectedProcessPath = Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName);
+                    if (string.IsNullOrEmpty(processPath) || !expectedProcessPath.Equals(processPath, StringComparison.OrdinalIgnoreCase)
+                     || process.MainWindowHandle == IntPtr.Zero)
+                        continue;
+
+                    selectedIndex = i;
+                    return process;
+                }
+            }
+            finally
+            {
+                for (int i = 0; i < processArr.Length; i++)
+                {
+                    if (i == selectedIndex)
+                        continue;
+                    processArr[i].Dispose();
+                }
+            }
+            return null;
+        }
 #nullable disable
 
         /*
@@ -131,13 +169,15 @@ namespace CollapseLauncher.Statics
             _GameRepair?.Dispose();
             _GameCache?.Dispose();
             _GameInstall?.Dispose();
+            _GamePlaytime?.Dispose();
 
             _APIResouceProp = null;
-            _GameSettings = null;
-            _GameRepair = null;
-            _GameCache = null;
-            _GameVersion = null;
-            _GameInstall = null;
+            _GameSettings   = null;
+            _GameRepair     = null;
+            _GameCache      = null;
+            _GameVersion    = null;
+            _GameInstall    = null;
+            _GamePlaytime   = null;
         }
     }
 

@@ -38,7 +38,8 @@ namespace CollapseLauncher
             InvokerMoveSteam,
             Hi3CacheUpdater,
             OOBEState,
-            StartOnTray
+            StartOnTray,
+            GenerateVelopackMetadata
         }
 
         public static AppMode              m_appMode;
@@ -232,7 +233,7 @@ namespace CollapseLauncher
                 RegionPushIgnoreMsgIds = NotificationData?.RegionPushIgnoreMsgIds
             };
             File.WriteAllText(AppNotifIgnoreFile,
-                              localNotificationData.Serialize(InternalAppJSONContext.Default));
+                              localNotificationData.Serialize(InternalAppJSONContext.Default.NotificationPush));
         }
 
         public static void LoadLocalNotificationData()
@@ -241,12 +242,12 @@ namespace CollapseLauncher
             {
                 File.WriteAllText(AppNotifIgnoreFile,
                                   new NotificationPush()
-                                     .Serialize(InternalAppJSONContext.Default));
+                                     .Serialize(InternalAppJSONContext.Default.NotificationPush));
             }
 
             string data = File.ReadAllText(AppNotifIgnoreFile);
             NotificationPush? localNotificationData =
-                data.Deserialize<NotificationPush>(InternalAppJSONContext.Default);
+                data.Deserialize(InternalAppJSONContext.Default.NotificationPush);
             if (NotificationData == null)
             {
                 return;

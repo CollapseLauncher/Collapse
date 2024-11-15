@@ -76,11 +76,9 @@
 
         private async void LoadPage()
         {
-            BackgroundImgChanger.ToggleBackground(true);
             Settings.ReloadSettings();
 
             this.InitializeComponent();
-            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
@@ -88,12 +86,24 @@
             InheritApplyTextColor = ApplyText.Foreground!;
 #nullable enable
             // A/B Testing as of 2023-12-26 (HSR v1.6.0)
+            if (CheckAbTest())
+            {
+                await SimpleDialogs.Dialog_GenericWarning(Content!);
+            }
+        }
+
+        /// <summary>
+        /// Returns true if A/B test registry identifier is found.
+        /// </summary>
+        public static bool CheckAbTest()
+        {
             object? abValue = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Cognosphere\Star Rail", _AbValueName, null);
             if (abValue != null)
             {
-                await SimpleDialogs.Dialog_GenericWarning(Content!);
                 LogWriteLine($"A/B Value Found. Settings will not apply to the game.", LogType.Warning, true);
+                return true;
             }
+            return false;
         }
 #nullable disable
         private void RegistryExportClick(object sender, RoutedEventArgs e)
@@ -152,6 +162,7 @@
         {
             try
             {
+                BackgroundImgChanger.ToggleBackground(true);
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
 
                 if (CurrentGameProperty.IsGameRunning)

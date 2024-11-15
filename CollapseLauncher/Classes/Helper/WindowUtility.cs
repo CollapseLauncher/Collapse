@@ -1,12 +1,14 @@
 ﻿#nullable enable
     using CollapseLauncher.Extension;
     using CollapseLauncher.FileDialogCOM;
+    using H.NotifyIcon.Core;
     using Hi3Helper;
     using Hi3Helper.Screen;
     using Hi3Helper.Shared.Region;
     using Microsoft.Graphics.Display;
     using Microsoft.UI;
     using Microsoft.UI.Composition.SystemBackdrops;
+    using Microsoft.UI.Dispatching;
     using Microsoft.UI.Input;
     using Microsoft.UI.Windowing;
     using Microsoft.UI.Xaml;
@@ -58,9 +60,38 @@
                 }
             }
 
-            internal static DisplayInformation? CurrentWindowDisplayInformation => CurrentWindowId.HasValue
-                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
-                : null;
+            internal static DisplayInformation? CurrentWindowDisplayInformation
+            {
+                get
+                {
+                    try
+                    {
+                        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                        if (dispatcherQueue.HasThreadAccess)
+                        {
+                            return CurrentWindowId.HasValue
+                                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                                : null;
+                        }
+                        else
+                        {
+                            DisplayInformation? displayInfoInit = null;
+                            dispatcherQueue.TryEnqueue(() =>
+                            {
+                                displayInfoInit = CurrentWindowId.HasValue
+                                    ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                                    : null;
+                            });
+                            return displayInfoInit;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
+                    }
+                    return null;
+                }
+            }
 
             internal static DisplayAdvancedColorInfo? CurrentWindowDisplayColorInfo
             {
@@ -143,6 +174,8 @@
             }
 
             internal static double CurrentWindowMonitorScaleFactor
+                // Deliberate loss of precision
+                // ReSharper disable once PossibleLossOfFraction
                 => (CurrentWindowMonitorDpi * 100 + (96 >> 1)) / 96 / 100.0;
 
             internal static Rect CurrentWindowPosition
@@ -361,6 +394,7 @@
                                     {
                                         mainWindow._TrayIcon.ToggleAllVisibility();
                                     }
+                                    else TrayNullHandler("WindowUtility.MainWndProc");
 
                                     return 0;
                                 }
@@ -536,11 +570,11 @@
                                 | InvokeProp.SetWindowPosFlags.SWP_NOZORDER
                                 | InvokeProp.SetWindowPosFlags.SWP_FRAMECHANGED;
                     InvokeProp.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
-
-                    var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
-                    OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
                 }
-            }
+
+                var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+                OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
+        }
 
             private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
             {
@@ -551,17 +585,14 @@
                     case WM_WINDOWPOSCHANGING:
                     {
                         // Fix the weird 1px offset
-                        if (!InnerLauncherConfig.m_isWindows11)
+                        var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
+                        if (windowPos.x == 0 && windowPos.y == 1 &&
+                            windowPos.cx == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width * CurrentWindowMonitorScaleFactor) &&
+                            windowPos.cy == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height * CurrentWindowMonitorScaleFactor) - 1)
                         {
-                            var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
-                            if (windowPos.x == 0 && windowPos.y == 1 &&
-                                windowPos.cx == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width &&
-                                windowPos.cy == WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height - 1)
-                            {
-                                windowPos.y  =  0;
-                                windowPos.cy += 1;
-                                Marshal.StructureToPtr(windowPos, lParam, false);
-                            }
+                            windowPos.y  =  0;
+                            windowPos.cy += 1;
+                            Marshal.StructureToPtr(windowPos, lParam, false);
                         }
 
                         break;
@@ -655,16 +686,15 @@
             #endregion
 
             #region Tray Icon Invoker
-
             /// <summary>
             ///     <inheritdoc cref="TrayIcon.ToggleMainVisibility" />
             /// </summary>
             public static void ToggleToTray_MainWindow()
             {
-                if (CurrentWindow is MainWindow window)
-                {
-                    window._TrayIcon.ToggleMainVisibility();
-                }
+                if (CurrentWindow is not MainWindow window) return;
+
+                if (window._TrayIcon != null) window._TrayIcon.ToggleMainVisibility();
+                else TrayNullHandler(nameof(Tray_ShowNotification));
             }
 
             /// <summary>
@@ -672,10 +702,67 @@
             /// </summary>
             public static void ToggleToTray_AllWindow()
             {
-                if (CurrentWindow is MainWindow window)
-                {
-                    window._TrayIcon.ToggleAllVisibility();
-                }
+                if (CurrentWindow is not MainWindow window) return;
+
+                if (window._TrayIcon != null) window._TrayIcon.ToggleAllVisibility();
+                else TrayNullHandler(nameof(Tray_ShowNotification));
+            }
+
+            /// <summary>
+            ///  <inheritdoc cref="CollapseLauncher.TrayIcon.ShowNotification"/>
+            /// </summary>
+        /// <param name="title">The title to display on the balloon tip.</param>
+        /// <param name="message">The text to display on the balloon tip.</param>
+        /// <param name="icon">A symbol that indicates the severity.</param>
+        /// <param name="customIconHandle">A custom icon.</param>
+        /// <param name="largeIcon">True to allow large icons (Windows Vista and later).</param>
+        /// <param name="sound">If false do not play the associated sound.</param>
+        /// <param name="respectQuietTime">
+        /// Do not display the balloon notification if the current user is in "quiet time", 
+        /// which is the first hour after a new user logs into his or her account for the first time. 
+        /// During this time, most notifications should not be sent or shown. 
+        /// This lets a user become accustomed to a new computer system without those distractions. 
+        /// Quiet time also occurs for each user after an operating system upgrade or clean installation. 
+        /// A notification sent with this flag during quiet time is not queued; 
+        /// it is simply dismissed unshown. The application can resend the notification later 
+        /// if it is still valid at that time. <br/>
+        /// Because an application cannot predict when it might encounter quiet time, 
+        /// we recommended that this flag always be set on all appropriate notifications 
+        /// by any application that means to honor quiet time. <br/>
+        /// During quiet time, certain notifications should still be sent because 
+        /// they are expected by the user as feedback in response to a user action, 
+        /// for instance when he or she plugs in a USB device or prints a document.<br/>
+        /// If the current user is not in quiet time, this flag has no effect.
+        /// </param>
+        /// <param name="realtime">
+        /// Windows Vista and later. <br/>
+        /// If the balloon notification cannot be displayed immediately, discard it. 
+        /// Use this flag for notifications that represent real-time information 
+        /// which would be meaningless or misleading if displayed at a later time.  <br/>
+        /// For example, a message that states "Your telephone is ringing."
+        /// </param>
+        // Taken from H.NotifyIcon.TrayIcon.ShowNotification docs
+        // https://github.com/HavenDV/H.NotifyIcon/blob/89356c52bedae45b1fd451531e8ac8cfe8b13086/src/libs/H.NotifyIcon.Shared/TaskbarIcon.Notifications.cs#L14
+            public static void Tray_ShowNotification(string           title,
+                                                     string           message,
+                                                     NotificationIcon icon             = NotificationIcon.None,
+                                                     IntPtr?          customIconHandle = null,
+                                                     bool             largeIcon        = false,
+                                                     bool             sound            = true,
+                                                     bool             respectQuietTime = true,
+                                                     bool             realtime         = false)
+            {
+                if (CurrentWindow is not MainWindow window) return;
+
+                if (window._TrayIcon != null)
+                    window._TrayIcon.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound,
+                                                      respectQuietTime, realtime);
+                else TrayNullHandler(nameof(Tray_ShowNotification));
+            }
+
+            private static void TrayNullHandler(string caller)
+            {
+                Logger.LogWriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
             }
 
             #endregion

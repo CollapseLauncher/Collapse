@@ -7,11 +7,13 @@ using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.Http.Legacy;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -37,6 +39,7 @@ namespace CollapseLauncher.Dialogs
         IniFile SourceIniFile;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         private GamePresetProperty CurrentGameProperty { get; set; }
+        private Stopwatch CurrentStopwatch = Stopwatch.StartNew();
 
         public InstallationConvert()
         {
@@ -156,7 +159,8 @@ namespace CollapseLauncher.Dialogs
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            Http _Http = new Http(client);
+            // Use the new DownloadClient instance
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
             Dictionary<string, string> _RepoList;
 
             try
@@ -165,9 +169,9 @@ namespace CollapseLauncher.Dialogs
                 using (MemoryStream s = new MemoryStream())
                 {
                     string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(_Http, s, repoListURL, tokenSource.Token);
+                    await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, s, repoListURL, tokenSource.Token);
                     s.Position = 0;
-                    _RepoList = await s.DeserializeAsync<Dictionary<string, string>>(CoreLibraryJSONContext.Default, tokenSource.Token);
+                    _RepoList = await s.DeserializeAsync(CoreLibraryJSONContext.Default.DictionaryStringString, tokenSource.Token);
                 }
             }
             finally
@@ -177,14 +181,8 @@ namespace CollapseLauncher.Dialogs
 
             RegionResourceProp _Entry;
 
-            using (MemoryStream s = new MemoryStream())
-            {
-                await _Http.Download(Profile.LauncherResourceURL, s, null, null, tokenSource.Token);
-                s.Position = 0;
-                _Entry = await s.DeserializeAsync<RegionResourceProp>(InternalAppJSONContext.Default, tokenSource.Token);
-            }
-
-            GameVersion = _Entry.data.game.latest.version;
+            _Entry = await FallbackCDNUtil.DownloadAsJSONType(Profile.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, tokenSource.Token);
+            GameVersion = _Entry.data?.game?.latest?.version;
 
             return _RepoList[GameVersion ?? throw new InvalidOperationException()];
         }
@@ -332,10 +330,22 @@ namespace CollapseLauncher.Dialogs
 
         private void Step2ProgressEvents(object sender, DownloadEvent e)
         {
+            double speed = e.SizeDownloaded / CurrentStopwatch.Elapsed.TotalSeconds;
             DispatcherQueue?.TryEnqueue(() =>
             {
-                Step2ProgressStatus.Text = $"{e.ProgressPercentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(e.Speed))}";
+                Step2ProgressStatus.Text = $"{e.ProgressPercentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(speed))}";
                 Step2ProgressRing.Value = e.ProgressPercentage;
+            });
+        }
+
+        private void Step2ProgressEvents(int read, DownloadProgress downloadProgress)
+        {
+            double speed = downloadProgress.BytesDownloaded / CurrentStopwatch.Elapsed.TotalSeconds;
+            double percentage = GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
+            DispatcherQueue?.TryEnqueue(() =>
+            {
+                Step2ProgressStatus.Text = $"{percentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(speed))}";
+                Step2ProgressRing.Value = percentage;
             });
         }
 

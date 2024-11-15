@@ -14,13 +14,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorThief", "ColorThief\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.EncTool.Test", "Hi3Helper.EncTool.Test\Hi3Helper.EncTool.Test.csproj", "{1BAB5CE4-640E-41A7-B529-4842D378BD4C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "Hi3Helper.Core\Classes\Data\Tools\SevenZipTool\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj", "{D145686A-C0AA-4164-9854-A8942CB1DFDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SevenZipExtractor", "SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj", "{D145686A-C0AA-4164-9854-A8942CB1DFDE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoSetupHelper", "InnoSetupHelper\InnoSetupHelper.csproj", "{21691306-8D30-4993-98A2-A5AE0712D81A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordRPC", "Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj", "{2004AA88-FFC3-4186-B11A-3E4C577A3D25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hi3Helper.Sophon", "Hi3Helper.Sophon\Hi3Helper.Sophon.csproj", "{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageEx", "ImageEx\ImageEx\ImageEx.csproj", "{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.TaskScheduler", "Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj", "{C9CBAF52-49C7-4B72-A03B-130F596E24CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper", "Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj", "{558A1D17-BEB4-49DF-A200-15ABE283BDED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls", "Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj", "{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon.WinUI", "H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj", "{141083CC-A924-4E19-904C-AF91361405A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon", "H.NotifyIcon\src\libs\H.NotifyIcon\H.NotifyIcon.csproj", "{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.GeneratedIcons.System.Drawing", "H.NotifyIcon\src\libs\H.GeneratedIcons.System.Drawing\H.GeneratedIcons.System.Drawing.csproj", "{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +102,46 @@ Global
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Publish|x64.Build.0 = Release|x64
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.ActiveCfg = Release|x64
 		{3F87DCD0-39B7-4F8C-8F34-A0FC7C6E65A0}.Release|x64.Build.0 = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Debug|x64.ActiveCfg = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Debug|x64.Build.0 = Debug|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.ActiveCfg = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Publish|x64.Build.0 = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Release|x64.ActiveCfg = Release|x64
+		{A6AF9DE9-1A18-4C2D-B106-B68A0A7CD07D}.Release|x64.Build.0 = Release|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Debug|x64.ActiveCfg = Debug|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Debug|x64.Build.0 = Debug|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Publish|x64.ActiveCfg = Release|x64
+		{C9CBAF52-49C7-4B72-A03B-130F596E24CB}.Release|x64.ActiveCfg = Release|x64
+		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Debug|x64.ActiveCfg = Debug|x64
+		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Debug|x64.Build.0 = Debug|x64
+		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Publish|x64.ActiveCfg = Release|x64
+		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Publish|x64.Build.0 = Release|x64
+		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Release|x64.ActiveCfg = Release|x64
+		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Release|x64.Build.0 = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Debug|x64.ActiveCfg = Debug|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Debug|x64.Build.0 = Debug|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Publish|x64.ActiveCfg = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Publish|x64.Build.0 = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Release|x64.ActiveCfg = Release|x64
+		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Release|x64.Build.0 = Release|x64
+		{141083CC-A924-4E19-904C-AF91361405A5}.Debug|x64.ActiveCfg = Debug|x64
+		{141083CC-A924-4E19-904C-AF91361405A5}.Debug|x64.Build.0 = Debug|x64
+		{141083CC-A924-4E19-904C-AF91361405A5}.Publish|x64.ActiveCfg = Release|x64
+		{141083CC-A924-4E19-904C-AF91361405A5}.Publish|x64.Build.0 = Release|x64
+		{141083CC-A924-4E19-904C-AF91361405A5}.Release|x64.ActiveCfg = Release|x64
+		{141083CC-A924-4E19-904C-AF91361405A5}.Release|x64.Build.0 = Release|x64
+		{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}.Debug|x64.ActiveCfg = Debug|x64
+		{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}.Debug|x64.Build.0 = Debug|x64
+		{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}.Publish|x64.ActiveCfg = Release|x64
+		{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}.Publish|x64.Build.0 = Release|x64
+		{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}.Release|x64.ActiveCfg = Release|x64
+		{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}.Release|x64.Build.0 = Release|x64
+		{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}.Debug|x64.ActiveCfg = Debug|x64
+		{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}.Debug|x64.Build.0 = Debug|x64
+		{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}.Publish|x64.ActiveCfg = Release|x64
+		{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}.Publish|x64.Build.0 = Release|x64
+		{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}.Release|x64.ActiveCfg = Release|x64
+		{911C98FD-C64D-4BAC-8EF5-0616F8EFF7B9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "ゲームは以下のエラーのためにクラッシュしました:",
     "UnhandledTitle4": "警告",
     "UnhandledSubtitle4": "バグが起きてるってわけじゃありませんが、一応お知らせしておきます：\r\nmiHoYoのA/Bテスト検知を避けるため、CollapseはレジストリキーApp_Settings_h2319593470の読み取りをサポートしていません。\r\nご不便をお掛けしますが、ご了承ください。",
+    "UnhandledTitleDiskCrc": "ディスクの破損を検出しました！",
+    "UnhandledSubDiskCrc": "ファイルへのアクセス中にディスクの破損を検出しました。chkdskを使用してディスクをチェックしてください。",
     "CopyClipboardBtn1": "すべてをクリップボードにコピー",
     "CopyClipboardBtn2": "クリップボードにコピーしました！",
     "GoBackPageBtn1": "前のページに戻る"
@@ -146,12 +148,16 @@
     "GameSettings_Panel2UninstallGame": "アンインストール",
     "GameSettings_Panel2ConvertVersion": "リージョンを変更",
     "GameSettings_Panel2MoveGameLocationGame": "ゲームの位置を移動",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "ゲームをドライブのルートフォルダーに移動させることはできません！\r\nフォルダーを作成してから再度お試しください。",
     "GameSettings_Panel2StopGame": "ゲームを強制終了",
     "GameSettings_Panel3": "カスタム起動引数",
+    "GameSettings_Panel3CustomBGRegion": "カスタム背景を選択",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "カスタム背景をゲームごとに変更",
     "GameSettings_Panel4": "その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "プレイ時間をデータベースと同期させる",
     "GameSettings_Panel4CreateShortcutBtn": "ショートカットアイコン作成",
     "GameSettings_Panel4AddToSteamBtn": "Steamライブラリに追加",
 
@@ -160,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "分",
     "GamePlaytime_Idle_ResetBtn": "リセット",
     "GamePlaytime_Idle_ChangeBtn": "変更",
+    "GamePlaytime_Idle_SyncDb": "同期",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
-    "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断される（閉じた瞬間までのプレイ時間が記録されます）ことと、Collapseから起動したプレイ時間のみが加算されることに注意してください。",
+    "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断されます。（閉じた瞬間までのプレイ時間が記録されます）",
     "GamePlaytime_Display": "{0}時間 {1}分",
-    "GamePlaytime_ToolTipDisplay": "前回の起動は{2:0000}年{1:00}月{0:00}日 {3:00}時{4:00}分",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "プレイ時間の統計",
+    "GamePlaytime_Stats_NeverPlayed": "未プレイ",
+    "GamePlaytime_Stats_LastSession": "前回の起動",
+    "GamePlaytime_Stats_LastSession_StartTime": "開始時刻",
+    "GamePlaytime_Stats_LastSession_Duration": "プレイ時間",
+    "GamePlaytime_Stats_Daily": "今日",
+    "GamePlaytime_Stats_Weekly": "今週",
+    "GamePlaytime_Stats_Monthly": "今月",
 
     "PostPanel_Events": "イベント",
     "PostPanel_Notices": "お知らせ",
@@ -179,7 +194,23 @@
 
     "Exception_DownloadTimeout1": "{0}のインストール中にタイムアウトが発生しました",
     "Exception_DownloadTimeout2": "インターネット接続の安定性を確認してみてください！回線速度が遅い場合は、ダウンロードスレッドの値を小さくしてください。",
-    "Exception_DownloadTimeout3": "**警告** ダウンロードスレッドの値を変更すると、ダウンロードの進行度が0からになります。さらに、既存のダウンロードチャンクは手動で削除する必要があります！"
+    "Exception_DownloadTimeout3": "**警告** ダウンロードスレッドの値を変更すると、ダウンロードの進行度が0からになります。さらに、既存のダウンロードチャンクは手動で削除する必要があります！",
+
+    "GameStateInvalid_Title": "ゲームデータのディレクトリ/実行ファイル名/Config.ini/App.Info が無効です！",
+    "GameStateInvalid_Subtitle1": "Collapse Launcherは以下のサーバーの無効なゲームファイルのプロパティを検出しました:\r\n",
+    "GameStateInvalid_Subtitle2": "ランチャーがゲームと適切に紐づけできるように、プロパティの修復を行うことをお勧めします。",
+    "GameStateInvalid_Subtitle3": "\"",
+    "GameStateInvalid_Subtitle4": "\"を押してプロパティを修復するか、\"",
+    "GameStateInvalid_Subtitle5": "\"を押してキャンセルします。",
+
+    "GameStateInvalidFixed_Title": "ゲームファイルのプロパティが修復されました！",
+    "GameStateInvalidFixed_Subtitle1": "以下のサーバーのゲームファイルのプロパティが修復されました:",
+    "GameStateInvalidFixed_Subtitle2": "全てのファイルの整合性を確認するために、\"",
+    "GameStateInvalidFixed_Subtitle3": "\"を\"",
+    "GameStateInvalidFixed_Subtitle4": "\"メニューから実行してください。",
+
+    "InstallFolderRootTitle": "ドライブのルートフォルダーが選択されています！",
+    "InstallFolderRootSubtitle": "ゲームをドライブのルートフォルダーにインストールすることはできません！新しいフォルダーを作成してから再度お試しください。"
   },
 
   "_GameRepairPage": {
@@ -418,6 +449,7 @@
     "AppBG": "背景",
     "AppBG_Checkbox": "カスタム背景を使用する",
     "AppBG_Note": "使用可能なフォーマット:\r\n画像: {0}\r\n動画: {1}",
+    "AppBG_Note_Regional": "カスタム背景をゲームごとに変える機能は、ランチャーのホーム画面の\"クイック設定\"ボタンに含まれています。 ",
 
     "AppThreads": "アプリケーションスレッド",
     "AppThreads_Download": "ダウンロードスレッド",
@@ -442,6 +474,8 @@
     "SophonHttpNumberBox": "最大HTTP接続数",
     "SophonHelp_Http": "CollapseがチャンクをダウンロードするためにHoYoVerseのサーバーに対して確立するネットワーク接続の最大数を設定します。",
     "SophonToggle": "サポート済みのゲームでSophonモードを使用する",
+    "SophonPredownPerfMode_Toggle": "[実験的な機能] 事前ダウンロードの適用時に全てのCPUコアを使用する",
+    "SophonPredownPerfMode_Tooltip": "有効にするとCPUスレッドがシステムで利用可能な最大値に設定されます。問題が発生した場合はこの設定を無効にしてください。",
 
     "AppThreads_Attention": "注意",
     "AppThreads_Attention1": "既にダウンロード済みのパッケージがある場合は、",
@@ -450,14 +484,18 @@
     "AppThreads_Attention4": "。ダウンロードセッションの数が一致しなくなるため、",
     "AppThreads_Attention5": "全部最初からダウンロードし直すはめになる",
     "AppThreads_Attention6": "可能性があります。",
+    "AppThreads_AttentionTop1": "以下の問題は",
+    "AppThreads_AttentionTop2": "を有効化することで回避できます。",
 
     "DiscordRPC": "Discordアクティビティステータス",
     "DiscordRPC_Toggle": "ランチャーをDiscordのステータスに表示",
     "DiscordRPC_GameStatusToggle": "今遊んでいるゲームをステータスに表示",
     "DiscordRPC_IdleStatusToggle": "待機中もステータスに表示",
 
+    "ImageBackground": "画像背景の設定",
     "VideoBackground": "カスタム動画背景の設定",
     "VideoBackground_IsEnableAudio": "音を出す",
+    "VideoBackground_IsEnableAcrylicBackground": "動画背景を使用中もUIに透明効果を付ける",
     "VideoBackground_AudioVolume": "音量",
 
     "Update": "アップデートの確認",
@@ -467,6 +505,8 @@
     "Update_NewVer1": "バージョン",
     "Update_NewVer2": "に更新できます！",
     "Update_LatestVer": "最新バージョンです。",
+    "Update_SeeChangelog": "最新の更新履歴（英語）",
+    "Update_ChangelogTitle": "更新履歴",
 
     "AppFiles": "ランチャーのファイル管理",
     "AppFiles_OpenDataFolderBtn": "ランチャーのデータフォルダーを開く",
@@ -504,6 +544,7 @@
 
     "EnableAcrylicEffect": "ランチャーUIに透明効果を付ける",
     "EnableDownloadChunksMerging": "分割されたダウンロードパッケージを結合",
+    "Enforce7ZipExtract": "ゲームのインストール/更新で常に7-zipを使用する",
     "UseExternalBrowser": "リンクを常に外部ブラウザで開く",
 
     "LowerCollapsePrioOnGameLaunch": "ゲーム起動中のランチャーの使用リソースを削減",
@@ -528,7 +569,93 @@
     "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",
     "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
-    "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。"
+    "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。",
+
+    "NetworkSettings_Title": "ネットワークの設定",
+    "NetworkSettings_Proxy_Title": "プロキシの設定",
+
+    "NetworkSettings_Proxy_Hostname": "プロキシのホスト名",
+    "NetworkSettings_Proxy_HostnameHelp1": "使用するプロキシのURLを指定します。",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapseは現在、",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS と SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "タイプのプロキシのみをサポートしています。",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "無効なURLが入力されています！",
+    "NetworkSettings_ProxyWarn_NotSupported": "Collapseはプロキシスキームに対応していません！http://、https://、socks4://、socks4a://、socks5://のみ対応しています。",
+
+    "NetworkSettings_Proxy_Username": "プロキシのユーザー名",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "プロキシのユーザー名を入力",
+    "NetworkSettings_Proxy_UsernameHelp1": "デフォルト:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[空欄]",
+    "NetworkSettings_Proxy_UsernameHelp3": "プロキシの認証が不要な場合は、空欄のままにしてください。",
+
+    "NetworkSettings_Proxy_Password": "プロキシのパスワード",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "プロキシのパスワードを入力",
+    "NetworkSettings_Proxy_PasswordHelp1": "デフォルト:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[空欄]",
+    "NetworkSettings_Proxy_PasswordHelp3": "プロキシの認証が不要な場合は、空欄のままにしてください。",
+
+    "NetworkSettings_ProxyTest_Button": "プロキシの接続テスト",
+    "NetworkSettings_ProxyTest_ButtonChecking": "接続をテストしています…",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "プロキシの接続テストに成功しました！",
+    "NetworkSettings_ProxyTest_ButtonFailed": "テストに失敗しました！プロキシにアクセスできません",
+
+    "NetworkSettings_Http_Title": ".NET HTTPクライアントの設定",
+    "NetworkSettings_Http_Redirect": "HTTPリダイレクトを許可",
+    "NetworkSettings_Http_SimulateCookies": "HTTP Cookieのシミュレートを許可",
+    "NetworkSettings_Http_UntrustedHttps": "信頼されていないHTTP証明書を許可",
+    "NetworkSettings_Http_Timeout": "HTTPクライアントのタイムアウト（秒単位）",
+
+    "FileDownloadSettings_Title": "ダウンロードの設定",
+    "FileDownloadSettings_SpeedLimit_Title": "ダウンロード速度を制限",
+    "FileDownloadSettings_SpeedLimit_NumBox": "制限速度（MiB単位）",
+    "FileDownloadSettings_SpeedLimitHelp1": "デフォルト:",
+    "FileDownloadSettings_SpeedLimitHelp2": "速度制限の値の範囲:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/秒",
+    "FileDownloadSettings_SpeedLimitHelp4": "ダウンロードに使用できる最大帯域幅を制限します。この設定は",
+    "FileDownloadSettings_SpeedLimitHelp5": "と併用できません。",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "新型事前割り当てダウンローダー",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "ゲームのインストール、修復、キャッシュ更新にのみ適用されます。",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "チャンクサイズ（MiB単位）",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "デフォルト:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "チャンクサイズの値の範囲:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "この機能を有効化すると、ダウンローダーがファイルのダウンロード中にファイルサイズの動的な自動割り当てを行います。",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "これにより、ダウンローダーがデータチャンクを個別のファイルに分割せずに、直接ファイルに書き込むことができるようになります。",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "機能を無効化すると、ランチャーは従来の割り当て方式を使用し、データチャンクを個別のファイルへ書き込みます。また、",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "と",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "も同時に無効化されます。",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "注:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "この機能はゲームのインストール（初回インストール・更新・事前ダウンロードなど）、ゲームの修復、キャッシュ更新の処理にのみ適用されます。",
+
+    "FileDownloadSettings_BurstDownload_Title": "バーストダウンロードモード",
+    "FileDownloadSettings_BurstDownload_Subtitle": "ゲームの修復とキャッシュ更新にのみ適用されます。",
+    "FileDownloadSettings_BurstDownloadHelp1": "デフォルト:",
+    "FileDownloadSettings_BurstDownloadHelp2": "機能を有効化すると、",
+    "FileDownloadSettings_BurstDownloadHelp3": "と",
+    "FileDownloadSettings_BurstDownloadHelp4": "のダウンロードプロセスが並行して行われるようになり、より効率的になります。",
+    "FileDownloadSettings_BurstDownloadHelp5": "機能を無効化すると、",
+    "FileDownloadSettings_BurstDownloadHelp6": "と",
+    "FileDownloadSettings_BurstDownloadHelp7": "のダウンロードプロセスは順番に行われます。",
+
+    "Database_Title": "ユーザーデータベースと同期",
+    "Database_ConnectionOk": "データベースとの接続に成功しました！",
+    "Database_ConnectFail": "データベースに接続できませんでした。エラーを参照してください:",
+    "Database_Toggle": "オンラインデータベースを使用する",
+    "Database_Url": "データベースのURL",
+    "Database_Url_Example": "サンプル: https://db-collapse.turso.io",
+    "Database_Token": "トークン",
+    "Database_UserId": "ユーザーID",
+    "Database_GenerateGuid": "UID生成",
+    "Database_Validate": "設定を検証＆保存",
+    "Database_Error_EmptyUri": "データベースのURLが空です！",
+    "Database_Error_EmptyToken": "データベースのトークンが空です！",
+    "Database_Error_InvalidGuid": "ユーザーIDが有効なGUIDではありません！",
+    "Database_Warning_PropertyChanged": "データベースの設定が変更されました",
+    "Database_ValidationChecking": "設定を検証しています…",
+    "Database_Placeholder_DbUserIdTextBox": "GUIDサンプル: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください"
   },
 
   "_Misc": {
@@ -548,6 +675,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "これでヨシ！",
     "Cancel": "キャンセル",
     "Close": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
@@ -656,7 +784,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "（ランチャー不明）",
 
-    "ImageCropperTitle": "画像の表示範囲を選択"
+    "ImageCropperTitle": "画像の表示範囲を選択",
+
+    "IsBytesMoreThanBytes": "= {0} バイト (-/+ {1})",
+    "IsBytesUnlimited": "= 無制限",
+    "IsBytesNotANumber": "= 不正な数値"
   },
 
   "_BackgroundNotification": {
@@ -703,7 +835,7 @@
     "RepairCompletedSubtitle": "{0}個のファイルが修復されました。",
     "RepairCompletedSubtitleNoBroken": "壊れたファイルは見つかりませんでした。",
     "ExtremeGraphicsSettingsWarnTitle": "超すごい設定のプリセットが選択されました！",
-    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはデフォルトでMSAA有効・レンダリングスケール2倍で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
+    "ExtremeGraphicsSettingsWarnSubtitle": "超すごい設定プリセットを使用しようとしています！\n超すごい設定プリセットはMSAA有効・レンダリング精度1.6で全く最適化されていません！\n\n本当にこの設定を使用しますか？",
     "MigrateExistingMoveDirectoryTitle": "現在のインストールを移動させる：{0}",
     "MigrateExistingInstallChoiceTitle": "{0}の既存のインストールを検出しました！",
     "MigrateExistingInstallChoiceSubtitle1": "ゲームは既に{0}と紐づけされた状態で以下のディレクトリにインストールされています：",
@@ -768,7 +900,7 @@
     "ChangePlaytimeTitle": "本当にプレイ時間を編集しますか？",
     "ChangePlaytimeSubtitle": "プレイ時間を編集すると、現在の値が入力した値で上書きされます。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "ResetPlaytimeTitle": "本当にプレイ時間をリセットしますか？",
-    "ResetPlaytimeSubtitle": "プレイ時間をリセットすると、記録されたプレイ時間が0になります。これは",
+    "ResetPlaytimeSubtitle": "プレイ時間をリセットすると、プレイ時間の記録と統計が削除されます。これは",
     "ResetPlaytimeSubtitle2": "元に戻せない",
     "ResetPlaytimeSubtitle3": "変更です。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "InvalidPlaytimeTitle": "プレイ時間の保存中に問題が発生しました",
@@ -781,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "無効なフォルダーです！",
     "CannotUseAppLocationForGameDirSubtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+    "InvalidGameDirNewTitleFormat": "無効なパスです: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "選択したパス:",
+    "InvalidGameDirNewSubtitleSelectOther": "別のフォルダー/場所を選択してください！",
+    "InvalidGameDirNew1Title": "無効なフォルダーです！",
+    "InvalidGameDirNew1Subtitle": "選択したフォルダーはシステムフォルダーまたはランチャーの実行ファイルを含むフォルダーのため、使用できません。別のフォルダーを選択してください。",
+    "InvalidGameDirNew2Title": "選択したフォルダーにアクセスできません",
+    "InvalidGameDirNew2Subtitle": "ランチャーにこのフォルダーへアクセスする権限がありません！",
+    "InvalidGameDirNew3Title": "ルートディレクトリは選択できません",
+    "InvalidGameDirNew3Subtitle": "選択したパスはルートディレクトリ上のパスであるため、使用できません！",
+    "InvalidGameDirNew4Title": "Windowsフォルダーは選択できません",
+    "InvalidGameDirNew4Subtitle": "無用なトラブルを避けるため、Windowsフォルダーをゲームのインストール先に選ぶことはできません。",
+    "InvalidGameDirNew5Title": "Program Dataフォルダーは選択できません",
+    "InvalidGameDirNew5Subtitle": "無用なトラブルを避けるため、Program Dataフォルダーをゲームのインストール先に選ぶことはできません。",
+    "InvalidGameDirNew6Title": "Program FilesおよびProgram Files (x86)フォルダーは選択できません",
+    "InvalidGameDirNew6Subtitle": "無用なトラブルを避けるため、Program FilesおよびProgram Files (x86)フォルダーをゲームのインストール先に選ぶことはできません。",
+    "FolderDialogTitle1": "ゲームのインストール位置を選択",
 
     "StopGameTitle": "ゲームを強制終了します",
     "StopGameSubtitle": "本当に起動中のゲームを強制終了しますか？\nゲーム内の進捗の一部が失われる可能性があります。",
@@ -832,7 +980,13 @@
     "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。",
 
     "DownloadSettingsTitle": "ダウンロード設定",
-    "DownloadSettingsOption1": "インストール完了後にゲームを起動"
+    "DownloadSettingsOption1": "インストール完了後にゲームを起動",
+
+    "OpenInExternalBrowser": "外部ブラウザで開く",
+    "CloseOverlay": "閉じる",
+
+    "DbGenerateUid_Title": "本当にユーザーIDを変更しますか？",
+    "DbGenerateUid_Content": "現在のユーザーIDを変更すると、ユーザーIDを紛失した場合にその関連データも失われます。"
   },
 
   "_FileMigrationProcess": {
@@ -1288,7 +1442,7 @@
     "NoFilesToBeDeletedText": "不要なファイルはありません！",
     "ListViewFieldFileName": "ファイル名",
     "ListViewFieldFileSize": "サイズ",
-    "LoadingTitle": "進行中",
+    "LoadingTitle": "読み込み中",
     "LoadingSubtitle1": "既存のファイルを計算しています({0}個のファイルを検出 - 合計{1})…",
     "LoadingSubtitle2": "pkg_versionの可用性をチェックしています…",
     "BottomButtonDeleteAllFiles": "全てのファイルを削除",
@@ -1352,9 +1506,39 @@
     "Graphics_EffectsQ": "SFX品質",
     "Graphics_ShadingQ": "シェーディング",
     "Graphics_Distortion": "ディストーション",
+    "Graphics_HighPrecisionCharacterAnimation": "キャラクター動的解像度",
     "Audio_PlaybackDev": "再生デバイス",
     "Audio_PlaybackDev_Headphones": "ヘッドホン",
     "Audio_PlaybackDev_Speakers": "スピーカー",
     "Audio_PlaybackDev_TV": "TV"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcherはトレイに最小化されました",
+    "WindowHiddenToTray_Subtitle": "ランチャーはバックグラウンドで動作中です。\r\nこの通知またはタスクトレイのアイコンをクリックすると元のウィンドウに戻ります。",
+
+    "GameInstallCompleted_Title": "{0}をプレイする準備ができました",
+    "GameInstallCompleted_Subtitle": "{0}のインストールに成功しました！",
+
+    "GameUpdateCompleted_Title": "{0}がアップデートされました",
+    "GameUpdateCompleted_Subtitle": "{0}がバージョン{1}にアップデートされました！",
+
+    "GamePreloadCompleted_Title": "{0}の事前ダウンロードが完了しました",
+
+    "GameRepairCheckCompleted_Title": "ゲームの修復チェックが完了しました",
+    "GameRepairCheckCompletedFound_Subtitle": "{0}個のファイルをアップデート/修復する必要があります。この通知をクリックするとランチャーに戻ります。",
+    "GameRepairCheckCompletedNotFound_Subtitle": "アップデート/修復が必要なファイルはありません。",
+
+    "GameRepairDownloadCompleted_Title": "ゲームの修復ダウンロードが完了しました",
+    "GameRepairDownloadCompleted_Subtitle": "{0}個のファイルがアップデート/修復されました。",
+
+    "CacheUpdateCheckCompleted_Title": "キャッシュ更新チェックが完了しました",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0}個のキャッシュをアップデートする必要があります。この通知をクリックするとランチャーに戻ります。",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "アップデートが必要なキャッシュはありません。",
+
+    "CacheUpdateDownloadCompleted_Title": "キャッシュ更新ダウンロードが完了しました",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0}個のキャッシュがアップデートされました。",
+
+    "GenericClickNotifToGoBack_Subtitle": "この通知をクリックするとランチャーに戻ります。"
   }
 }

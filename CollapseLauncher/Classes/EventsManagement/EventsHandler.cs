@@ -124,7 +124,7 @@ namespace CollapseLauncher
     }
     #endregion
     #region ErrorSenderRegion
-    public enum ErrorType { Unhandled, GameError, Connection, Warning }
+    public enum ErrorType { Unhandled, GameError, Connection, Warning, DiskCrc }
 
     internal static class ErrorSender
     {
@@ -163,6 +163,10 @@ namespace CollapseLauncher
                 case ErrorType.Warning:
                     ExceptionTitle    = _locUnhandledException.UnhandledTitle4;
                     ExceptionSubtitle = _locUnhandledException.UnhandledSubtitle4;
+                    break;
+                case ErrorType.DiskCrc:
+                    ExceptionTitle    = _locUnhandledException.UnhandledTitleDiskCrc;
+                    ExceptionSubtitle = _locUnhandledException.UnhandledSubDiskCrc;
                     break;
             }
         }

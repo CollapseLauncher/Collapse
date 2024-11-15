@@ -32,9 +32,26 @@ namespace CollapseLauncher.Pages
         public Visibility IsPostInfoPanelEmpty => (GameNewsData?.NewsPostTypeInfo?.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility IsPostInfoPanelAllEmpty =>
             IsPostEventPanelVisible == Visibility.Collapsed
-            && IsPostEventPanelVisible == Visibility.Collapsed
-            && IsPostEventPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
+            && IsPostNoticePanelVisible == Visibility.Collapsed
+            && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
         public int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
+
+        public int DefaultPostPanelIndex
+        {
+            get
+            {
+                if (IsPostEventPanelVisible != Visibility.Collapsed)
+                    return 0;
+
+                if (IsPostNoticePanelVisible != Visibility.Collapsed)
+                    return 1;
+
+                if (IsPostInfoPanelVisible != Visibility.Collapsed)
+                    return 2;
+
+                return 0;
+            }
+        }
 #nullable restore
 
         public bool IsEventsPanelShow
@@ -78,6 +95,20 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("ShowGamePlaytime", value);
                 TogglePlaytimeBtn(value);
+            }
+        }
+
+        public bool IsPlaytimeSyncDb
+        {
+            get => CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase;
+            set
+            {
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
+                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
+                SyncDbPlaytimeBtn.IsEnabled = value;
+                
+                // Run DbSync if toggle is changed to enable
+                if (value) CurrentGameProperty?._GamePlaytime.CheckDb();
             }
         }
 
@@ -157,7 +188,7 @@ namespace CollapseLauncher.Pages
         public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
     }
 
-    public class NullVisibilityConverter : IValueConverter
+    public partial class NullVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();

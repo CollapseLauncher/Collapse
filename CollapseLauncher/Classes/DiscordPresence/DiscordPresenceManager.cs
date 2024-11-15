@@ -34,10 +34,10 @@
 
             private RichPresence                _presence;
             private ActivityType                _activityType;
-            private ActivityType                _lastAttemptedActivityType;
+            //private ActivityType                _lastAttemptedActivityType;
             private DateTime?                   _lastPlayTime;
             private bool                        _firstTimeConnect = true;
-            private ActionBlock<RichPresence>   _presenceUpdateQueue = null;
+            private ActionBlock<RichPresence>   _presenceUpdateQueue;
 
             private bool _cachedIsIdleEnabled = true;
 
@@ -95,13 +95,14 @@
                 // Initialize Discord RPC client
                 _client = new DiscordRpcClient(applicationId.ToString());
                 _presenceUpdateQueue = new ActionBlock<RichPresence>(
-                    presence => _client?.SetPresence(_presence),
-                    new ExecutionDataflowBlockOptions
-                    {
-                        MaxMessagesPerTask      = 1,
-                        MaxDegreeOfParallelism  = 1,
-                        EnsureOrdered           = true
-                    });
+                                            // ReSharper disable once UnusedParameter.Local
+                                            presence => _client?.SetPresence(_presence),
+                                                        new ExecutionDataflowBlockOptions
+                                                        {
+                                                            MaxMessagesPerTask      = 1,
+                                                            MaxDegreeOfParallelism  = 1,
+                                                            EnsureOrdered           = true
+                                                        });
 
                 _client.OnReady += (_, msg) =>
                                    {
@@ -185,11 +186,11 @@
                 EnablePresence(AppDiscordApplicationID);
             }
 
-            public void SetActivity(ActivityType activity)
+            public void SetActivity(ActivityType activity, DateTime? activityOffset = null)
             {
                 if (GetAppConfigValue("EnableDiscordRPC").ToBool())
                 {
-                    _lastAttemptedActivityType = activity;
+                    //_lastAttemptedActivityType = activity;
                     _activityType              = activity;
 
                     switch (activity)
@@ -198,7 +199,7 @@
                         {
                             bool isGameStatusEnabled = GetAppConfigValue("EnableDiscordGameStatus").ToBool();
                             BuildActivityGameStatus(isGameStatusEnabled ? Lang._Misc.DiscordRP_InGame : Lang._Misc.DiscordRP_Play,
-                                                    isGameStatusEnabled);
+                                                    isGameStatusEnabled, activityOffset);
                             break;
                         }
                         case ActivityType.Update:
@@ -249,7 +250,7 @@
                 }
             }
 
-            private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled)
+            private void BuildActivityGameStatus(string activityName, bool isGameStatusEnabled, DateTime? activityOffset = null)
             {
                 var curGameName   = LauncherMetadataHelper.CurrentMetadataConfigGameName;
                 var curGameRegion = LauncherMetadataHelper.CurrentMetadataConfigGameRegion;
@@ -278,14 +279,14 @@
                     },
                     Timestamps = new Timestamps
                     {
-                        Start = GetCachedStartPlayTime()
+                        Start = GetCachedStartPlayTime(activityOffset)
                     }
                 };
             }
 
-            private DateTime GetCachedStartPlayTime()
+            private DateTime GetCachedStartPlayTime(DateTime? activityOffset)
             {
-                _lastPlayTime ??= DateTime.UtcNow;
+                _lastPlayTime ??= activityOffset ??= DateTime.UtcNow;
                 return _lastPlayTime.Value;
             }
 

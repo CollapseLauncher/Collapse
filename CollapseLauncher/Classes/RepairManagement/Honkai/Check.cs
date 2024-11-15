@@ -21,11 +21,14 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
-            _status.IsProgressPerFileIndetermined = false;
+            if (_status != null)
+            {
+                _status.IsProgressAllIndetermined     = false;
+                _status.IsProgressPerFileIndetermined = false;
 
-            // Show the asset entry panel
-            _status.IsAssetEntryPanelShow = true;
+                // Show the asset entry panel
+                _status.IsAssetEntryPanelShow = true;
+            }
 
             // Find unused assets
             CheckUnusedAsset(assetIndex, brokenAssetIndex);
@@ -51,7 +54,7 @@ namespace CollapseLauncher
                     // Assign a task depends on the asset type
                     switch (asset.FT)
                     {
-                        case FileType.Blocks:
+                        case FileType.Block:
                             await CheckAssetTypeBlocks(asset, brokenAssetIndex, threadToken);
                             break;
                         case FileType.Audio:
@@ -60,6 +63,8 @@ namespace CollapseLauncher
                         case FileType.Video:
                             CheckAssetTypeVideo(asset, brokenAssetIndex);
                             break;
+                        case FileType.Generic:
+                        case FileType.Unused:
                         default:
                             await CheckAssetTypeGeneric(asset, brokenAssetIndex, threadToken);
                             break;
@@ -69,10 +74,6 @@ namespace CollapseLauncher
             catch (AggregateException ex)
             {
                 throw ex.Flatten().InnerExceptions.First();
-            }
-            catch (Exception)
-            {
-                throw;
             }
 
             // Re-add the asset index with a broken asset index
@@ -123,7 +124,10 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -160,13 +164,15 @@ namespace CollapseLauncher
 
                 // Add asset for missing/unmatched size file
                 targetAssetIndex.Add(asset);
-                if (!file.Exists)
+                switch (file.Exists)
                 {
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found locally", LogType.Warning, true);
-                } else if (file.Exists && file.Length != asset.S && !asset.AudioPatchInfo.HasValue)
-                {
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true);
-                } // length mismatch
+                    case false:
+                        LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found locally", LogType.Warning, true);
+                        break;
+                    case true when file.Length != asset.S && !asset.AudioPatchInfo.HasValue:
+                        LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true); // length mismatch
+                        break;
+                }
 
                 // Increment current Total Size
                 _progressAllSizeCurrent += asset.S;
@@ -187,47 +193,55 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // If pass the check above, then do MD5 Hash calculation
+            localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+
+            // Get size difference for summarize the _progressAllSizeCurrent
+            long sizeDifference = asset.S - file.Length;
+
+            // If the asset has patch info and the hash is matching with the old hash,
+            // then flag it as Patch Applicable
+            if (asset.AudioPatchInfo.HasValue && IsArrayMatch(localCRC, asset.AudioPatchInfo.Value.OldAudioMD5Array))
             {
-                // If pass the check above, then do MD5 Hash calculation
-                localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+                asset.IsPatchApplicable = true;
+            }
 
-                // Get size difference for summarize the _progressAllSizeCurrent
-                long sizeDifference = asset.S - file.Length;
-
-                // If the asset has patch info and the hash is matching with the old hash,
-                // then flag it as Patch Applicable
-                if (asset.AudioPatchInfo.HasValue && IsArrayMatch(localCRC, asset.AudioPatchInfo.Value.OldAudioMD5Array))
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
+            {
+                // Increment/decrement the size of the file based on size differences
+                _progressAllSizeCurrent += sizeDifference;
+                // Increment progress count and size
+                if (asset.AudioPatchInfo != null)
                 {
-                    asset.IsPatchApplicable = true;
-                }
-
-                // If local and asset CRC doesn't match, then add the asset
-                if (!IsArrayMatch(localCRC, asset.CRCArray))
-                {
-                    // Increment/decrement the size of the file based on size differences
-                    _progressAllSizeCurrent += sizeDifference;
-                    // Increment progress count and size
-                    _progressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
+                    _progressAllSizeFound +=
+                        asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
                     _progressAllCountFound++;
 
                     // Add asset to Display
                     Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            asset.IsPatchApplicable ? RepairAssetType.AudioUpdate : RepairAssetType.Audio,
-                            Path.GetDirectoryName(asset.N),
-                            asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S,
-                            localCRC,
-                            asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.NewAudioMD5Array : asset.CRCArray
-                        )
-                    ));
-
-                    // Add asset into targetAssetIndex
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} " + (asset.IsPatchApplicable ? "has an update and patch applicable" : $"is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}"), LogType.Warning, true);
+                                                  new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(asset.N),
+                                                       asset.IsPatchApplicable
+                                                           ? RepairAssetType.AudioUpdate
+                                                           : RepairAssetType.Audio,
+                                                       Path.GetDirectoryName(asset.N),
+                                                       asset.IsPatchApplicable
+                                                           ? asset.AudioPatchInfo.Value.PatchFileSize
+                                                           : asset.S,
+                                                       localCRC,
+                                                       asset.IsPatchApplicable
+                                                           ? asset.AudioPatchInfo.Value.NewAudioMD5Array
+                                                           : asset.CRCArray
+                                                      )
+                                                 ));
                 }
+
+                // Add asset into targetAssetIndex
+                targetAssetIndex.Add(asset);
+
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} " + (asset.IsPatchApplicable ? "has an update and patch applicable" : $"is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}"), LogType.Warning, true);
             }
         }
         #endregion
@@ -236,7 +250,10 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -261,7 +278,7 @@ namespace CollapseLauncher
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
                         Path.GetFileName(asset.N),
-                        RepairAssetType.General,
+                        RepairAssetType.Generic,
                         Path.GetDirectoryName(asset.N),
                         asset.S,
                         null,
@@ -303,7 +320,7 @@ namespace CollapseLauncher
                     Dispatch(() => AssetEntry.Add(
                         new AssetProperty<RepairAssetType>(
                             Path.GetFileName(asset.N),
-                            asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.General,
+                            asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.Generic,
                             Path.GetDirectoryName(asset.N),
                             asset.S,
                             localCRC,
@@ -384,7 +401,10 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -497,37 +517,35 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // If pass the check above, then do CRC calculation
+            // Additional: the total file size progress is disabled and will be incremented after this
+            byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
             {
-                // If pass the check above, then do CRC calculation
-                // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
-                // If local and asset CRC doesn't match, then add the asset
-                if (!IsArrayMatch(localCRC, asset.CRCArray))
-                {
-                    _progressAllSizeFound += asset.S;
-                    _progressAllCountFound++;
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(asset.N),
+                                                   RepairAssetType.Block,
+                                                   Path.GetDirectoryName(asset.N),
+                                                   asset.S,
+                                                   localCRC,
+                                                   asset.CRCArray
+                                                  )
+                                             ));
 
-                    Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            RepairAssetType.Block,
-                            Path.GetDirectoryName(asset.N),
-                            asset.S,
-                            localCRC,
-                            asset.CRCArray
-                        )
-                    ));
+                // Mark the main block as "need to be repaired"
+                asset.IsBlockNeedRepair = true;
 
-                    // Mark the main block as "need to be repaired"
-                    asset.IsBlockNeedRepair = true;
+                // Add asset for unmatched CRC
+                targetAssetIndex.Add(asset);
 
-                    // Add asset for unmatched CRC
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
-                }
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
         }
         #endregion
@@ -559,7 +577,7 @@ namespace CollapseLauncher
                 // Determine the type of the asset
                 switch (asset.FT)
                 {
-                    case FileType.Blocks:
+                    case FileType.Block:
                         catalog.Add(path);
                         if (asset.BlockPatchInfo.HasValue)
                         {

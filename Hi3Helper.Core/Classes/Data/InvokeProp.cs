@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -263,40 +264,76 @@ namespace Hi3Helper
             internal void* Buffer;
         }
 
-        [DllImport("ntdll.dll", ExactSpelling = true)]
+        [DllImport("ntdll.dll", ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         private unsafe static extern uint NtQuerySystemInformation(int SystemInformationClass, byte* SystemInformation, uint SystemInformationLength, out uint ReturnLength);
-        public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName)
+
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        private static extern nint OpenProcess(int dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+        
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode, EntryPoint = "QueryFullProcessImageNameW")]
+        public static unsafe extern bool QueryFullProcessImageName(nint hProcess, int dwFlags, char* lpExeName, ref int lpdwSize);
+
+        private const int DefaultNtQueryChangedLen = 4 << 17;
+        private static int DynamicNtQueryChangedBufferLen = DefaultNtQueryChangedLen;
+
+        public unsafe static bool IsProcessExist(ReadOnlySpan<char> processName, string checkForOriginPath = "")
         {
+            // If the buffer length is more than 2 MiB, then reset the length to default
+            if (DynamicNtQueryChangedBufferLen > (2 << 20))
+            {
+                DynamicNtQueryChangedBufferLen = DefaultNtQueryChangedLen;
+            }
+
+            // Initialize the first buffer to 512 KiB
             ArrayPool<byte> arrayPool = ArrayPool<byte>.Shared;
-            byte[] NtQueryCachedBuffer = arrayPool.Rent(4 << 17);
+            byte[] NtQueryCachedBuffer = arrayPool.Rent(DynamicNtQueryChangedBufferLen);
             bool isReallocate = false;
             uint length = 0;
+
+            // Get size of UNICODE_STRING struct
+            int sizeOfUnicodeString = Marshal.SizeOf<UNICODE_STRING>();
 
         StartOver:
             try
             {
-                if (length > (2 << 20))
+                // If the buffer request is more than 2 MiB, then return false
+                if (DynamicNtQueryChangedBufferLen > (2 << 20))
                     return false;
 
+                // If buffer reallocation is requested, then re-rent the buffer
+                // from ArrayPool<T>.Shared
                 if (isReallocate)
-                    NtQueryCachedBuffer = arrayPool.Rent((int)length);
+                    NtQueryCachedBuffer = arrayPool.Rent(DynamicNtQueryChangedBufferLen);
 
                 // Get the pointer of the buffer
                 fixed (byte* dataBufferPtr = &NtQueryCachedBuffer[0])
                 {
                     // Get the query of the current running process and store it to the buffer
-                    NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out length);
+                    uint hNtQuerySystemInformationResult = NtQuerySystemInformation(SystemProcessInformation, dataBufferPtr, (uint)NtQueryCachedBuffer.Length, out length);
 
-                    // If the required length of the data is exceeded, return false
-                    if (length > NtQueryCachedBuffer.Length)
+                    // If the required length of the data is exceeded than the current buffer,
+                    // then try to reallocate and start over to the top.
+                    const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+                    if (hNtQuerySystemInformationResult == STATUS_INFO_LENGTH_MISMATCH || length > NtQueryCachedBuffer.Length)
                     {
+                        // Round up length
+                        DynamicNtQueryChangedBufferLen = (int)BitOperations.RoundUpToPowerOf2(length);
+                        LogWriteLine($"Buffer requested is insufficient! Requested: {length} > Capacity: {NtQueryCachedBuffer.Length}, Resizing the buffer...", LogType.Warning, true);
                         isReallocate = true;
                         goto StartOver;
                     }
 
+                    // If other error has occurred, then return false as failed.
+                    if (hNtQuerySystemInformationResult != 0)
+                    {
+                        LogWriteLine($"Error happened while operating NtQuerySystemInformation(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                        return false;
+                    }
+
                     // Start reading data from the buffer
                     int currentOffset = 0;
+                    bool isCommandPathEqual = false;
                 ReadQueryData:
                     // Get the current position of the pointer based on its offset
                     byte* curPosPtr = dataBufferPtr + currentOffset;
@@ -310,8 +347,73 @@ namespace Hi3Helper
                     // Use the struct buffer into the ReadOnlySpan<char> to be compared with
                     // the input from "processName" argument.
                     ReadOnlySpan<char> imageNameSpan = new ReadOnlySpan<char>(unicodeString->Buffer, unicodeString->Length / 2);
-                    if (imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase))
-                        return true; // If equals, then return true
+                    bool isMatchedExecutable = imageNameSpan.Equals(processName, StringComparison.OrdinalIgnoreCase);
+                    if (isMatchedExecutable)
+                    {
+                        // If the origin path argument is null, then return as true.
+                        if (string.IsNullOrEmpty(checkForOriginPath))
+                            return true;
+
+                        // If the string is not null, then check if the file path is exactly the same.
+                        // START!!
+
+                        // Move the offset of the current pointer and get the processId value
+                        uint processId = *(uint*)(curPosPtr + 56 + sizeOfUnicodeString + 8);
+
+                        // Try open the process and get the handle
+                        const int QueryLimitedInformation = 0x1000;
+                        nint processHandle = OpenProcess(QueryLimitedInformation, false, processId);
+
+                        // If failed, then log the Win32 error and return false.
+                        if (processHandle == nint.Zero)
+                        {
+                            LogWriteLine($"Error happened while operating OpenProcess(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                            return false;
+                        }
+
+                        // Try rent the new buffer to get the command line
+                        int bufferProcessCmdLen = 1 << 10;
+                        int bufferProcessCmdLenReturn = bufferProcessCmdLen;
+                        char[] bufferProcessCmd = ArrayPool<char>.Shared.Rent(bufferProcessCmdLen);
+                        try
+                        {
+                            // Cast processCmd buffer as pointer
+                            fixed (char* bufferProcessCmdPtr = &bufferProcessCmd[0])
+                            {
+                                // Get the command line query of the process
+                                bool hQueryFullProcessImageNameResult = QueryFullProcessImageName(processHandle, 0, bufferProcessCmdPtr, ref bufferProcessCmdLenReturn);
+                                // If the query is unsuccessful, then log the Win32 error and return false.
+                                if (!hQueryFullProcessImageNameResult)
+                                {
+                                    LogWriteLine($"Error happened while operating QueryFullProcessImageName(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                                    return false;
+                                }
+
+                                // If the requested return length is more than capacity (-2 for null terminator), then return false.
+                                if (bufferProcessCmdLenReturn > bufferProcessCmdLen - 2)
+                                {
+                                    LogWriteLine($"The process command line length is more than requested length: {bufferProcessCmdLen - 2} < return {bufferProcessCmdLenReturn}", LogType.Error, true);
+                                    return false;
+                                }
+
+                                // Get the command line query
+                                ReadOnlySpan<char> processCmdLineSpan = new ReadOnlySpan<char>(bufferProcessCmdPtr, bufferProcessCmdLenReturn);
+
+                                // Get the span of origin path to compare
+                                ReadOnlySpan<char> checkForOriginPathDir = checkForOriginPath;
+
+                                // Compare and return if any of result is equal
+                                isCommandPathEqual = processCmdLineSpan.Equals(checkForOriginPathDir, StringComparison.OrdinalIgnoreCase);
+                                if (isCommandPathEqual)
+                                    return true;
+                            }
+                        }
+                        finally
+                        {
+                            // Return the buffer
+                            ArrayPool<char>.Shared.Return(bufferProcessCmd);
+                        }
+                    }
 
                     // Otherwise, if the next entry offset is not 0 (not ended), then read
                     // the next data and move forward based on the given offset.
@@ -322,13 +424,65 @@ namespace Hi3Helper
             }
             finally
             {
+                // Return the buffer to the ArrayPool<T>.Shared
                 arrayPool.Return(NtQueryCachedBuffer);
             }
 
             return false;
         }
+
+#nullable enable
+        public static unsafe string? GetProcessPathByProcessId(int processId)
+        {
+            // Try open the process and get the handle
+            const int QueryLimitedInformation = 0x1000;
+            nint processHandle = OpenProcess(QueryLimitedInformation, false, (uint)processId);
+
+            // If failed, then log the Win32 error and return null.
+            if (processHandle == nint.Zero)
+            {
+                LogWriteLine($"Error happened while operating OpenProcess(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                return null;
+            }
+
+            // Try rent the new buffer to get the command line
+            int bufferProcessCmdLen = 1 << 10;
+            int bufferProcessCmdLenReturn = bufferProcessCmdLen;
+            char[] bufferProcessCmd = ArrayPool<char>.Shared.Rent(bufferProcessCmdLen);
+
+            try
+            {
+                // Cast processCmd buffer as pointer
+                fixed (char* bufferProcessCmdPtr = &bufferProcessCmd[0])
+                {
+                    // Get the command line query of the process
+                    bool hQueryFullProcessImageNameResult = QueryFullProcessImageName(processHandle, 0, bufferProcessCmdPtr, ref bufferProcessCmdLenReturn);
+                    // If the query is unsuccessful, then log the Win32 error and return false.
+                    if (!hQueryFullProcessImageNameResult)
+                    {
+                        LogWriteLine($"Error happened while operating QueryFullProcessImageName(): {Marshal.GetLastWin32Error()}", LogType.Error, true);
+                        return null;
+                    }
+
+                    // If the requested return length is more than capacity (-2 for null terminator), then return false.
+                    if (bufferProcessCmdLenReturn > bufferProcessCmdLen - 2)
+                    {
+                        LogWriteLine($"The process command line length is more than requested length: {bufferProcessCmdLen - 2} < return {bufferProcessCmdLenReturn}", LogType.Error, true);
+                        return null;
+                    }
+
+                    // Return string
+                    return new string(bufferProcessCmdPtr, 0, bufferProcessCmdLenReturn);
+                }
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(bufferProcessCmd);
+            }
+        }
+#nullable restore
         #endregion
-        
+
         #region shell32
         [DllImport("shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
@@ -348,10 +502,7 @@ namespace Hi3Helper
         #endregion
         
         public static void MoveFileToRecycleBin(IList<string> filePaths)
-        {
-            int successCount;
-            int failedCount;
-            
+        { 
             uint   FO_DELETE          = 0x0003;
             ushort FOF_ALLOWUNDO      = 0x0040;
             ushort FOF_NOCONFIRMATION = 0x0010;

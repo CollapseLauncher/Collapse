@@ -9,7 +9,9 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.StarRail"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>

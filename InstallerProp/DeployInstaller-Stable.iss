@@ -6,12 +6,12 @@
 
 AppName=Collapse
 AppVersion={#AppVersion}
-AppCopyright=2023 - neon-nyan
+AppCopyright=2022 - 2024 Collapse Launcher Team
 AppPublisher=neon-nyan
 VersionInfoVersion={#AppVersion}
 VersionInfoCompany=neon-nyan
 VersionInfoDescription=Collapse - An advanced launcher for miHoYo Games
-VersionInfoCopyright=2023 - neon-nyan
+VersionInfoCopyright=2022 - 2024 Collapse Launcher Team
 VersionInfoProductName=Collapse
 VersionInfoProductVersion={#AppVersion}
 VersionInfoProductTextVersion={#AppVersion}
@@ -22,7 +22,7 @@ MinVersion=0,10.0.17763
 DefaultDirName={autopf64}\Collapse Launcher\
 DefaultGroupName=Collapse
 UninstallDisplayName=Collapse
-UninstallDisplayIcon={app}\app-{#AppVersion}\CollapseLauncher.exe
+UninstallDisplayIcon={app}\current\CollapseLauncher.exe
 WizardStyle=modern
 WizardImageFile=..\InstallerProp\WizardBannerDesign.bmp
 WizardSmallImageFile=..\InstallerProp\WizardBannerDesignSmall.bmp
@@ -41,19 +41,18 @@ OutputDir=..\build\build-stable
 OutputBaseFilename=CL-{#AppVersion}_Installer
 
 [Icons]
-Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
-Name: "{userdesktop}\Collapse"; Filename: "{app}\CollapseLauncher.exe"; WorkingDir: "{app}"; IconFilename: "{app}\CollapseLauncher.exe"; IconIndex: 0
+Name: "{group}\Collapse Launcher\Collapse"; Filename: "{app}\current\CollapseLauncher.exe"; WorkingDir: "{app}\current"; IconFilename: "{app}\current\CollapseLauncher.exe"; IconIndex: 0
+Name: "{userdesktop}\Collapse"; Filename: "{app}\current\CollapseLauncher.exe"; WorkingDir: "{app}\current"; IconFilename: "{app}\current\CollapseLauncher.exe"; IconIndex: 0
 
 [Files]
-Source: "..\..\CollapseLauncher-ReleaseRepo\stable-build\*"; DestDir: "{app}\app-{#AppVersion}"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\..\CollapseLauncher-ReleaseRepo\Update.exe"; DestDir: "{app}"
-Source: "..\..\CollapseLauncher-ReleaseRepo\CollapseLauncher.exe"; DestDir: "{app}"      
+Source: "..\..\CollapseLauncher-ReleaseRepo\stable-build\*"; DestDir: "{app}\current"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\..\CollapseLauncher-ReleaseRepo\Update.exe"; DestDir: "{app}\current"
 
 [Tasks]
 Name: StartAfterInstall; Description: Run application after install
 
 [Run]
-Filename: "{app}\CollapseLauncher.exe"; Description: "Launch Collapse"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser;
+Filename: "{app}\current\CollapseLauncher.exe"; Description: "Launch Collapse"; Tasks: StartAfterInstall; Flags: postinstall nowait skipifsilent runascurrentuser;
 
 [Registry]
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\Collapse"; ValueType: string; ValueName: "AppUserModelId"; ValueData: "Collapse.CollapseLauncher"; Flags: uninsdeletekeyifempty uninsdeletevalue;

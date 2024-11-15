@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "El juego se detuvo por un error. Detalles a continuación:",
     "UnhandledTitle4": "Advertencia:",
     "UnhandledSubtitle4": "Esto no es un problema grave, pero creemos que deberíamos infórmate:\r\nDebido al A/B testing realizado por miHoYo , Collapse no soporta la lectura de la siguiente clave: App_Settings_h2319593470.\r\nLamentamos las molestias y agradecemos su comprensión.",
+    "UnhandledTitleDiskCrc": "¡Corrupción de Disco Detectado!",
+    "UnhandledSubDiskCrc": "Se ha detectado corrupción en el disco al intentar acceder a un archivo. Por favor comprueba el disco usando chkdsk.",
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior"
@@ -146,12 +148,16 @@
     "GameSettings_Panel2UninstallGame": "Desinstalar Juego",
     "GameSettings_Panel2ConvertVersion": "Convertir Versión",
     "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "¡No se puede mover el juego a la carpeta raíz de tu disco!\r\nPor favor, crea una carpeta e inténtalo de nuevo.",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
     "GameSettings_Panel3": "Argumentos Personalizados de Arranque",
+    "GameSettings_Panel3CustomBGRegion": "Cambiar Fondo de región",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Fondo Personalizado por Región",
     "GameSettings_Panel4": "Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Sincronizar Tiempo de Juego con Base de Datos",
     "GameSettings_Panel4CreateShortcutBtn": "Crear Acceso Directo",
     "GameSettings_Panel4AddToSteamBtn": "Agregar a Steam",
 
@@ -160,10 +166,19 @@
     "GamePlaytime_Idle_Panel1Minutes": "Minutos",
     "GamePlaytime_Idle_ResetBtn": "Restablecer",
     "GamePlaytime_Idle_ChangeBtn": "Cambiar",
+    "GamePlaytime_Idle_SyncDb": "Sincronizar",
     "GamePlaytime_Running_Info1": "El juego se está ejecutando, por lo tanto no se puede editar el tiempo de juego.",
-    "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar Collapse se detendra el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto) y solo los juegos iniciados usando Collapse tendran seguimiento.",
+    "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar completamente Collapse se detendrá el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto)",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Última Sesión: {0:00}/{1:00}/{2:0000} a las {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Estadísticas de Juego",
+    "GamePlaytime_Stats_NeverPlayed": "Sin jugar",
+    "GamePlaytime_Stats_LastSession": "Sesión más reciente",
+    "GamePlaytime_Stats_LastSession_StartTime": "Hora de inicio",
+    "GamePlaytime_Stats_LastSession_Duration": "Duración",
+    "GamePlaytime_Stats_Daily": "Hoy",
+    "GamePlaytime_Stats_Weekly": "Semana",
+    "GamePlaytime_Stats_Monthly": "Mes",
 
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Anuncios",
@@ -179,7 +194,23 @@
 
     "Exception_DownloadTimeout1": "Se supero el tiempo de espera al intentar instalar {0}",
     "Exception_DownloadTimeout2": "¡Verifica la estabilidad de tu conexión! Si la velocidad de tu internet es lenta, disminuye el numero de Hilos de Descarga.",
-    "Exception_DownloadTimeout3": "**ADVERTENCIA** ¡Cambiar el numero de hilos reiniciaran la descarga desde 0 y tendrás que eliminar manualmente las partes de archivos ya descargados!"
+    "Exception_DownloadTimeout3": "**ADVERTENCIA** ¡Cambiar el numero de hilos reiniciaran la descarga desde 0 y tendrás que eliminar manualmente las partes de archivos ya descargados!",
+
+    "GameStateInvalid_Title": "¡Directorio de Datos de Juego/Nombre del Ejecutable/Config.ini/App.Info es inválido!",
+    "GameStateInvalid_Subtitle1": "Collapse detectó que las propiedades de archivo del juego son inválidas para la región:\r\n",
+    "GameStateInvalid_Subtitle2": "Es recomendado hacer una reparación para que el launcher detecte el juego correctamente",
+    "GameStateInvalid_Subtitle3": "Haz clic en \"",
+    "GameStateInvalid_Subtitle4": "\" para reparar las propiedades o clic en \"",
+    "GameStateInvalid_Subtitle5": "\" para cancelar la operación.",
+
+    "GameStateInvalidFixed_Title": "¡Se han corregido con éxito los archivos de juego!",
+    "GameStateInvalidFixed_Subtitle1": "Se han corregido las propiedades para la región:",
+    "GameStateInvalidFixed_Subtitle2": "Por Favor, realiza un \"",
+    "GameStateInvalidFixed_Subtitle3": "\" en el menú de \"",
+    "GameStateInvalidFixed_Subtitle4": "\" para asegurar que todos los archivos están verificados.",
+
+    "InstallFolderRootTitle": "¡Directorio Raíz Seleccionado!",
+    "InstallFolderRootSubtitle": "¡No se puede instalar el juego en carpeta raíz de tu disco! Por favor, crea una nueva carpeta e inténtalo de nuevo."
   },
 
   "_GameRepairPage": {
@@ -418,6 +449,7 @@
     "AppBG": "Fondo de la Aplicación",
     "AppBG_Checkbox": "Usar Fondo Personalizado",
     "AppBG_Note": "Formatos admitidos:\r\nImagen: {0}\r\nVideo: {1}",
+    "AppBG_Note_Regional": "Los ajustes de fondo personalizados específicos por región se encuentran en el botón «Ajustes Rápidos» en la página de inicio.",
 
     "AppThreads": "Hilos de Aplicación",
     "AppThreads_Download": "Hilos de Descarga",
@@ -442,6 +474,8 @@
     "SophonHttpNumberBox": "Conexiones HTTP máximas",
     "SophonHelp_Http": "Controla el número máximo de conexiones de red que Collapse establece para descargar las partes.",
     "SophonToggle": "Habilitar Sophon en Regiones Soportadas",
+    "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Usar todos los núcleos del CPU al aplicar la predescarga ",
+    "SophonPredownPerfMode_Tooltip": "Habilitar esto establecerá al máximo los hilos de la CPU disponibles en tu sistema. Desactiva la opción si causa cualquier problema.",
 
     "AppThreads_Attention": "Precaución",
     "AppThreads_Attention1": "Antes de cambiar el valor de los",
@@ -450,14 +484,18 @@
     "AppThreads_Attention4": "el valor si tienes una descarga existente, ya que podría ",
     "AppThreads_Attention5": "REINICIAR LA DESCARGA COMPLETA",
     "AppThreads_Attention6": "debido a que generaran diferencias durante el conteo de la sesión.",
+    "AppThreads_AttentionTop1": "Los problemas a continuación ya no se producirán si tiene la configuración",
+    "AppThreads_AttentionTop2": "habilitada.",
 
     "DiscordRPC": "Estado de actividad en Discord (Rich Presence)",
     "DiscordRPC_Toggle": "Mostrar Presencia de Discord",
     "DiscordRPC_GameStatusToggle": "Mostrar el juego actual en el estado de Discord",
     "DiscordRPC_IdleStatusToggle": "Mostrar Presencia durante inactividad",
 
+    "ImageBackground": "Ajustes Imagen de Fondo",
     "VideoBackground": "Ajustes Video de Fondo",
     "VideoBackground_IsEnableAudio": "Permitir Audio",
+    "VideoBackground_IsEnableAcrylicBackground": "Usar Efecto de Desenfoque al usar un Video de Fondo",
     "VideoBackground_AudioVolume": "Volumen de Audio",
 
     "Update": "Buscar Actualizaciones",
@@ -468,6 +506,7 @@
     "Update_NewVer2": "Actualización disponible!",
     "Update_LatestVer": "Estás usando la última versión.",
     "Update_SeeChangelog": "Ver los Últimos Cambios (Ingles)",
+    "Update_ChangelogTitle": "Últimos Cambios",
 
     "AppFiles": "Gestión de Archivos",
     "AppFiles_OpenDataFolderBtn": "Abrir Carpeta de Datos de la Aplicación",
@@ -505,6 +544,7 @@
 
     "EnableAcrylicEffect": "Usar Efecto de Desenfoque",
     "EnableDownloadChunksMerging": "Combinar Paquetes Descargados",
+    "Enforce7ZipExtract": "Usar siempre 7-zip para Instalación/Actualización del Juego",
     "UseExternalBrowser": "Usar Navegador Web Externo ",
 
     "LowerCollapsePrioOnGameLaunch": "Reducir el uso de recursos de Collapse cuando se inicia un juego",
@@ -529,7 +569,93 @@
     "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
     "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
-    "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida."
+    "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida.",
+
+    "NetworkSettings_Title": "Ajustes de Red",
+    "NetworkSettings_Proxy_Title": "Ajustes de Proxy",
+
+    "NetworkSettings_Proxy_Hostname": "Hostname de Proxy",
+    "NetworkSettings_Proxy_HostnameHelp1": "Representa la URL del Proxy a utilizar.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse solo soporta proxy de tipo ",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS y SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "por el momento.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "¡La URL ingresada no es valida!",
+    "NetworkSettings_ProxyWarn_NotSupported": "¡El formato de Proxy no es soportado! Collapse solo soporta http://, https://, socks4://, socks4a:// y socks5://",
+
+    "NetworkSettings_Proxy_Username": "Nombre de Usuario de Proxy",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Ingresar Nombre de Usuario",
+    "NetworkSettings_Proxy_UsernameHelp1": "Por Defecto:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Vacío]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
+
+    "NetworkSettings_Proxy_Password": "Contraseña de Proxy",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Ingresar Contraseña de Proxy",
+    "NetworkSettings_Proxy_PasswordHelp1": "Por Defecto:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Vacío]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Si tu proxy no requiere autenticación, deja el campo vacío.",
+
+    "NetworkSettings_ProxyTest_Button": "Probar Conectividad del Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Comprobando Conectividad...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "¡Prueba de Conectividad fue exitosa!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "¡Prueba fallida! No se puede alcanzar el proxy",
+
+    "NetworkSettings_Http_Title": "Ajustes Cliente .NET HTTP",
+    "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Permitir Simular HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Permitir Certificados HTTPS que no son de confianza",
+    "NetworkSettings_Http_Timeout": "Tiempo de espera del cliente HTTP (en segundos)",
+
+    "FileDownloadSettings_Title": "Ajuste de Descarga de Archivos",
+    "FileDownloadSettings_SpeedLimit_Title": "Limitar Velocidad de Descarga",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Limite de Velocidad (en MiB)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Por Defecto:",
+    "FileDownloadSettings_SpeedLimitHelp2": "Rango límite de velocidad:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limita el ancho de banda máximo permitido para la descarga. Esta opción no puede utilizarse junto con la opción",
+    "FileDownloadSettings_SpeedLimitHelp5": ".",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Nuevo Descargador Pre-asignado",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Solo para la Instalación, Reparación y actualización de Caché del juego.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Tamaño de Partes (en MiB)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Por Defecto:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Rango del tamaño de trozo:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Cuando esta habilitado, el descargador reasignará dinámicamente el tamaño del archivo durante su descarga.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Esto permite al descargador escribir directamente trozos de datos en el archivo sin dividirlo en archivos separados.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Cuando se deshabilita, el launcher utilizará el antiguo método de asignación, en el que los trozos de datos se escribirán en archivos separados. También desactivará los ajustes",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "y ",
+    "FileDownloadSettings_NewPreallocChunkHelp8": ".",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Aviso:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Esta función esta disponible solo para la instalación del juego (como la primera instalación, actualización y pre-descarga), reparación del juego y actualización de caché.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Modo de Descarga en Ráfagas",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Solo para Reparación del juego y Actualización de Caché.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Por Defecto:",
+    "FileDownloadSettings_BurstDownloadHelp2": "Al habilitarlo, esta función permite al proceso de descarga en ",
+    "FileDownloadSettings_BurstDownloadHelp3": "y",
+    "FileDownloadSettings_BurstDownloadHelp4": "se ejecuten en paralelo para que el proceso de descarga sea más eficiente.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Al deshabilitarlo, el proceso de descarga para",
+    "FileDownloadSettings_BurstDownloadHelp6": "y",
+    "FileDownloadSettings_BurstDownloadHelp7": "utilizarán un proceso de descarga secuencial.",
+
+    "Database_Title": "Base de datos sincronizable",
+    "Database_ConnectionOk": "¡Base de datos conectada exitosamente!",
+    "Database_ConnectFail": "Falla al conectar a la base de datos, mira los errores a continuación:",
+    "Database_Toggle": "Habilitar Base de datos en línea",
+    "Database_Url": "URL Base de datos",
+    "Database_Url_Example": "Ejemplo: https://db-collapse.turso.io",
+    "Database_Token": "Token",
+    "Database_UserId": "ID Usuario",
+    "Database_GenerateGuid": "Generar UID",
+    "Database_Validate": "Validar y Guardar Ajustes",
+    "Database_Error_EmptyUri": "¡URL no puede estar vacía!",
+    "Database_Error_EmptyToken": "¡Token no puede estar vacío!",
+    "Database_Error_InvalidGuid": "¡El ID de Usuario no es un GUID valido!",
+    "Database_Warning_PropertyChanged": "Ajustes de Base de datos han cambiado",
+    "Database_ValidationChecking": "Validando Configuración...",
+    "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí"
   },
 
   "_Misc": {
@@ -549,6 +675,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "¡Todo Bien!",
     "Cancel": "Cancelar",
     "Close": "Cerrar",
     "UseCurrentDir": "Usar directorio actual",
@@ -657,7 +784,11 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nombre desconocido de Launcher)",
 
-    "ImageCropperTitle": "Recortar Imagen"
+    "ImageCropperTitle": "Recortar Imagen",
+
+    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
+    "IsBytesUnlimited": "= Sin Límite",
+    "IsBytesNotANumber": "= NaN"
   },
 
   "_BackgroundNotification": {
@@ -704,7 +835,7 @@
     "RepairCompletedSubtitle": "Se repararon {0} archivo(s).",
     "RepairCompletedSubtitleNoBroken": "No se encontraron archivos rotos.",
     "ExtremeGraphicsSettingsWarnTitle": "¡Preajuste Muy Alto Seleccionado!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Estas por seleccionar la opción grafica \"Muy Alto\" \nEsta configuración prestablecida es básicamente 2x Escalado de renderizado con MSAA activado y NO ESTA OPTIMIZADO!\n\n¿Estas seguro que quieres usar esta configuración?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Estas por seleccionar la opción grafica \"Muy Alto\" \nEsta configuración prestablecida es básicamente 1.6x Escalado de renderizado con MSAA activado y NO ESTA OPTIMIZADO!\n\n¿Estas seguro que quieres usar esta configuración?",
     "MigrateExistingMoveDirectoryTitle": "Moviendo la instalación existente para: {0}",
     "MigrateExistingInstallChoiceTitle": "¡Se a detectado una instalación existente de {0} !",
     "MigrateExistingInstallChoiceSubtitle1": "Tienes una instalación del juego usando {0} en esta ubicación:",
@@ -769,7 +900,7 @@
     "ChangePlaytimeTitle": "¿Estás seguro de que quieres cambiar tu tiempo de juego?",
     "ChangePlaytimeSubtitle": "Cambiar el tiempo de juego significa reemplazar los valores actuales con los que acabas de ingresar.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "ResetPlaytimeTitle": "¿Estás seguro de que quieres restablecer tu tiempo de juego?",
-    "ResetPlaytimeSubtitle": "Restablecer el tiempo de juego significa volver a 0 el contador. Esta es una acción ",
+    "ResetPlaytimeSubtitle": "Restablecer el tiempo de juego significa volver a poner a 0 el contador de tiempo de juego y todas las estadísticas relacionadas. Esta es una acción ",
     "ResetPlaytimeSubtitle2": "destructiva",
     "ResetPlaytimeSubtitle3": ", lo que significa que no puedes deshacer esto una vez confirmado.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "InvalidPlaytimeTitle": "Hubo un problema al guardar el tiempo de esta sesión ",
@@ -782,6 +913,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "¡La carpeta no es válida!",
     "CannotUseAppLocationForGameDirSubtitle": "No puede utilizar esta carpeta ya que está siendo usada como una carpeta del sistema o usada para el ejecutable principal de la aplicación. ¡Por favor, elige otra carpeta!",
+    "InvalidGameDirNewTitleFormat": "Ubicación Invalida: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Ubicación Seleccionada:",
+    "InvalidGameDirNewSubtitleSelectOther": "¡Por favor, selecciona otra carpeta/ubicación!",
+    "InvalidGameDirNew1Title": "¡Carpeta Invalida!",
+    "InvalidGameDirNew1Subtitle": "No puedes utilizar esta carpeta, ya que se utiliza como carpeta del sistema o como ejecutable principal de la aplicación. ¡Por favor, selecciona otra carpeta!",
+    "InvalidGameDirNew2Title": "No se puede acceder a la carpeta seleccionada",
+    "InvalidGameDirNew2Subtitle": "¡El Launcher no tiene permisos para acceder a esta carpeta!",
+    "InvalidGameDirNew3Title": "No puedes seleccionar el directorio raíz",
+    "InvalidGameDirNew3Subtitle": "Has seleccionado una ubicación en el directorio raíz de tu disco, lo cual está prohibido! ",
+    "InvalidGameDirNew4Title": "No puedes seleccionar la carpeta de Windows",
+    "InvalidGameDirNew4Subtitle": "No puedes usar la carpeta de Windows como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
+    "InvalidGameDirNew5Title": "No puedes seleccionar la carpeta ProgramData",
+    "InvalidGameDirNew5Subtitle": "No puedes usar la carpeta ProgramData como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
+    "InvalidGameDirNew6Title": "No puedes seleccionar la carpeta Archivos de Programa o Archivos de Programa (x86)",
+    "InvalidGameDirNew6Subtitle": "No puedes usar la carpeta Archivos de Programa o Archivos de Programa (x86) como ubicación para el Juego. Esto es para evitar cualquier cosa innecesaria que pueda ocurrir.",
+    "FolderDialogTitle1": "Seleccionar Ubicación Instalación del Juego",
 
     "StopGameTitle": "Forzar el cierre del juego",
     "StopGameSubtitle": "¿Estás seguro de que quieres forzar el cierre del juego en ejecución?\nEs posible que pierdas algún progreso en el juego.",
@@ -833,7 +980,13 @@
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
 
     "DownloadSettingsTitle": "Descargando Configuración",
-    "DownloadSettingsOption1": "Iniciar el juego después de instalar "
+    "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
+
+    "OpenInExternalBrowser": "Abrir en Navegador Web Externo",
+    "CloseOverlay": "Cerrar Superposición (Overlay)",
+
+    "DbGenerateUid_Title": "¿Estas seguro que quieres cambiar tu ID de Usuario?",
+    "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes."
   },
 
   "_FileMigrationProcess": {
@@ -1353,9 +1506,39 @@
     "Graphics_EffectsQ": "Calidad del Efectos",
     "Graphics_ShadingQ": "Calidad Sombreado",
     "Graphics_Distortion": "Distorción",
+    "Graphics_HighPrecisionCharacterAnimation": "Animación de Alta Precisión de Personajes",
     "Audio_PlaybackDev": "Dispositivo de Audio",
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
     "Audio_PlaybackDev_TV": "TV"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse esta Minimizado en la Bandeja",
+    "WindowHiddenToTray_Subtitle": "El Launcher esta funcionando en Segundo Plano.\r\nHaz clic en esta notificación o el icono de la bandeja para restaura la ventana.",
+
+    "GameInstallCompleted_Title": "{0} está Listo para Jugar",
+    "GameInstallCompleted_Subtitle": "¡{0} fue Instalado Exitosamente!",
+
+    "GameUpdateCompleted_Title": "{0} fue Actualizado",
+    "GameUpdateCompleted_Subtitle": "¡{0} fue actualizado exitosamente a v{1}!",
+
+    "GamePreloadCompleted_Title": "¡Precarga para {0} fue Descargado!",
+
+    "GameRepairCheckCompleted_Title": "Reparar Juego - Verificación Completada",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} archivo(s) necesitan ser actualizados/reparados. Haz clic aquí para ir al Launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Ningún archivo debe ser actualizado/reparado.",
+
+    "GameRepairDownloadCompleted_Title": "Reparar Juego - Descarga Completada",
+    "GameRepairDownloadCompleted_Subtitle": "{0} archivo(s) fueron actualizados/reparados exitosamente.",
+
+    "CacheUpdateCheckCompleted_Title": "Actualizar Cachés - Verificación Completada",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} archivo(s) de caché necesitan ser actualizados. Haz clic aquí para ir al Launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Ningún archivo de caché debe ser actualizado.",
+
+    "CacheUpdateDownloadCompleted_Title": "Actualizar Cachés - Descarga Completada",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} archivo(s) de caché fueron actualizados exitosamente.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Haz clic en esta notificación para ir al Launcher "
   }
 }

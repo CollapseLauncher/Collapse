@@ -169,7 +169,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // Initialize new proxy-aware HttpClient
                     using HttpClient httpClient = new HttpClientBuilder()
-                        .UseLauncherConfig()
+                        .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                         .SetAllowedDecompression(DecompressionMethods.None)
                         .Create();
 
@@ -178,7 +178,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                     Locale.Lang._FileCleanupPage.LoadingTitle,
                                                     Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
-                    using Http client = new Http(httpClient);
+                    DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
                     RegionResourceVersion? packageLatestBase = _gameVersionManager
                                                               .GetGameLatestZip(gameStateEnum).FirstOrDefault();
                     string? packageExtractBasePath = packageLatestBase?.decompressed_path;
@@ -190,8 +190,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Check Fail-safe: Download main pkg_version file
                         string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
                             "pkg_version");
-                        await client.Download(mainPkgVersionUrl, pkgVersionPath, _downloadThreadCount, true);
-                        await client.Merge(default);
+                        await downloadClient.DownloadAsync(mainPkgVersionUrl, pkgVersionPath, true);
 
                         // Check Fail-safe: Download audio pkg_version files
                         if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) &&
@@ -206,7 +205,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                             await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
                                                                packageExtractBasePath,
-                                                               client);
+                                                               downloadClient);
                         }
                     }
 
@@ -239,7 +238,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 
                 // Add pre-download zips into the ignored list 
-                var packagePreDownloadList = _gameVersionManager.GetGamePreloadZip().FirstOrDefault();
+                RegionResourceVersion? packagePreDownloadList = _gameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
                 if (packagePreDownloadList != null)
                 {
                     var preDownloadZips = new List<string>();
@@ -301,7 +300,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual async ValueTask DownloadOtherAudioPkgVersion(string audioListFilePath, string baseExtractUrl,
-                                                                       Http   client)
+                                                                       DownloadClient downloadClient)
         {
             // Initialize reader
             using StreamReader reader = new StreamReader(audioListFilePath);
@@ -327,8 +326,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Download the file
-                await client.Download(pkgUrl, pkgPath, _downloadThreadCount, true);
-                await client.Merge(default);
+                await downloadClient.DownloadAsync(pkgUrl, pkgPath, true);
             }
         }
 
@@ -359,7 +357,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Read line and deserialize
                 string?        line          = await reader.ReadLineAsync(token);
-                LocalFileInfo? localFileInfo = line?.Deserialize<LocalFileInfo>(InternalAppJSONContext.Default);
+                LocalFileInfo? localFileInfo = line?.Deserialize(InternalAppJSONContext.Default.LocalFileInfo);
 
                 // Assign the values
                 if (localFileInfo == null)

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 
@@ -34,6 +35,7 @@ namespace CollapseLauncher.GameVersioning
 
         private int gameChannelID    => GamePreset.ChannelID ?? 0;
         private int gameSubChannelID => GamePreset.SubChannelID ?? 0;
+        private string gameCps => GamePreset.LauncherCPSType;
 
         private IniSection _defaultIniProfile =>
             new()
@@ -81,7 +83,7 @@ namespace CollapseLauncher.GameVersioning
                     }
                 }
             };
-            string uapcValue = uapc.Serialize(InternalAppJSONContext.Default, false);
+            string uapcValue = uapc.Serialize(InternalAppJSONContext.Default.DictionaryStringDictionaryStringString, false);
             return new IniValue(uapcValue);
         }
 
@@ -395,31 +397,33 @@ namespace CollapseLauncher.GameVersioning
             return returnList;
         }
 
-        public virtual List<RegionResourceVersion> GetGamePreloadZip()
+#nullable enable
+        public virtual List<RegionResourceVersion>? GetGamePreloadZip()
         {
             // Initialize the return list
             List<RegionResourceVersion> returnList = new();
 
             // If the preload is not exist, then return null
-            if (GameAPIProp.data?.pre_download_game == null)
+            if (GameAPIProp.data?.pre_download_game == null
+           || ((GameAPIProp.data?.pre_download_game?.diffs?.Count ?? 0) == 0
+             && GameAPIProp.data?.pre_download_game?.latest == null))
             {
                 return null;
             }
 
             // Try get the diff file  by the first or default (null)
-            RegionResourceVersion diff = GameAPIProp.data.pre_download_game?.diffs?
+            RegionResourceVersion? diff = GameAPIProp.data?.pre_download_game?.diffs?
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
             // If the single entry of the diff is null, then return null
             // If the diff is null, then get the latest.
             // If diff is found, then add the diff one.
-            returnList.Add(diff ?? GameAPIProp.data.pre_download_game?.latest);
+            returnList.Add(diff ?? GameAPIProp.data?.pre_download_game?.latest ?? throw new NullReferenceException($"Preload neither have diff or latest package!"));
 
             // Return the list
             return returnList;
         }
 
-#nullable enable
         public virtual List<RegionResourcePlugin>? GetGamePluginZip()
         {
             // Check if the plugin is not empty, then add it
@@ -576,7 +580,7 @@ namespace CollapseLauncher.GameVersioning
                         if (string.IsNullOrEmpty(line))
                             continue;
 
-                        PkgVersionProperties pkgVersion = line.Deserialize<PkgVersionProperties>(CoreLibraryJSONContext.Default);
+                        PkgVersionProperties pkgVersion = line.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
 
                         if (pkgVersion != null)
                         {
@@ -723,11 +727,11 @@ namespace CollapseLauncher.GameVersioning
                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle1, true)
                 .AddTextBlockLine(gameNameTranslated, FontWeights.Bold).AddTextBlockNewLine(2)
                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle2).AddTextBlockNewLine(2)
-                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle3, null, 10)
-                .AddTextBlockLine(Locale.Lang._Misc.YesContinue, FontWeights.SemiBold, 10)
-                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle4, null, 10)
-                .AddTextBlockLine(Locale.Lang._Misc.NoCancel, FontWeights.SemiBold, 10)
-                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle5, null, 10);
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle3)
+                .AddTextBlockLine(Locale.Lang._Misc.YesContinue, FontWeights.SemiBold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle4)
+                .AddTextBlockLine(Locale.Lang._Misc.NoCancel, FontWeights.SemiBold)
+                .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalid_Subtitle5);
 
                 ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
                     Locale.Lang._HomePage.GameStateInvalid_Title,
@@ -815,9 +819,12 @@ namespace CollapseLauncher.GameVersioning
             || GamePreset.SubChannelID == null)
                 return true;
 
-            if (!GameIniVersion[_defaultIniVersionSection].ContainsKey(ChannelIdKeyName)
-             || !GameIniVersion[_defaultIniVersionSection].ContainsKey(SubChannelIdKeyName)
-             || !GameIniVersion[_defaultIniVersionSection].ContainsKey(CpsKeyName))
+            bool isContainsChannelId = GameIniVersion[_defaultIniVersionSection].ContainsKey(ChannelIdKeyName);
+            bool isContainsSubChannelId = GameIniVersion[_defaultIniVersionSection].ContainsKey(SubChannelIdKeyName);
+            bool isCps = GameIniVersion[_defaultIniVersionSection].ContainsKey(CpsKeyName);
+            if (!isContainsChannelId
+             || !isContainsSubChannelId
+             || !isCps)
                 return false;
 
             string? channelIdCurrent = GameIniVersion[_defaultIniVersionSection][ChannelIdKeyName].ToString();
@@ -840,9 +847,9 @@ namespace CollapseLauncher.GameVersioning
         }
 
         protected virtual bool IsGameHasBilibiliStatus(string? executableName)
-        {
+            {
             bool isBilibili = GamePreset.LauncherCPSType?
-                .Equals("bilibili", StringComparison.OrdinalIgnoreCase) ?? false;
+                .IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0;
 
             if (isBilibili)
                 return true;
@@ -862,12 +869,9 @@ namespace CollapseLauncher.GameVersioning
             if (!string.IsNullOrEmpty(appInfoFileDir) && !Directory.Exists(appInfoFileDir))
                 Directory.CreateDirectory(appInfoFileDir);
 
-            string[] strings = [
-                GamePreset.VendorType.ToString(),
-                GamePreset.InternalGameNameInConfig!
-                ];
-
-            File.WriteAllLines(appInfoFilePath, strings, System.Text.Encoding.UTF8);
+            string appInfoString = $"{GamePreset.VendorType.ToString()}\n{GamePreset.InternalGameNameInConfig!}";
+            byte[] buffer = Encoding.UTF8.GetBytes(appInfoString);
+            File.WriteAllBytes(appInfoFilePath, buffer);
         }
 
         protected virtual void FixInvalidGameExecDataDir(string? executableName)
@@ -893,7 +897,7 @@ namespace CollapseLauncher.GameVersioning
         protected virtual void FixInvalidGameBilibiliStatus(string? executableName)
         {
             bool isBilibili = GamePreset.LauncherCPSType?
-                .Equals("bilibili", StringComparison.OrdinalIgnoreCase) ?? false;
+               .IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0;
 
             executableName = Path.GetFileNameWithoutExtension(executableName);
             string sdkDllPath = Path.Combine(GameDirPath, $"{executableName}_Data", "Plugins", "PCGameSDK.dll");
@@ -991,22 +995,24 @@ namespace CollapseLauncher.GameVersioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
-            bool isBilibili = GamePreset.ZoneName == "Bilibili";
             GameIniVersion[_defaultIniVersionSection]["channel"]     = gameChannelID;
             GameIniVersion[_defaultIniVersionSection]["sub_channel"] = gameSubChannelID;
+            GameIniVersion[_defaultIniVersionSection]["cps"]         = gameCps;
 
-            if (isBilibili)
-            {
-                GameIniVersion[_defaultIniVersionSection]["cps"] = "bilibili";
-            }
+            /* Disable these lines as these will trigger some bugs (like Endless "Broken config.ini" dialog)
+             * and causes the cps field to be missing for other non-Bilibili games
+             * 
             // Remove the contains section if the client is not Bilibili and it does have the value.
             // This to avoid an issue with HSR config.ini detection
-            else if (GameIniVersion.ContainsSection(_defaultIniVersionSection)
-                          && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
-                          && GameIniVersion[_defaultIniVersionSection]["cps"].ToString() == "bilibili")
+            bool isBilibili = GamePreset.ZoneName == "Bilibili";
+            if ( !isBilibili
+                && GameIniVersion.ContainsSection(_defaultIniVersionSection)
+                && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
+                && GameIniVersion[_defaultIniVersionSection]["cps"].ToString().IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 GameIniVersion[_defaultIniVersionSection].Remove("cps");
             }
+            */
 
             if (saveValue)
             {

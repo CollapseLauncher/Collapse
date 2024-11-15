@@ -1,0 +1,77 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Publish" />
+    <BuildType Name="Release" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="CollapseLauncher\CollapseLauncher.csproj" Id="b71c36f7-f4f7-4d7d-8ba4-cfeb0fc8bd92">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ColorThief\ColorThief\ColorThief.csproj" Id="2ed0d451-cbaf-4919-9026-e7add7ca8e2d">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="H.NotifyIcon\src\libs\H.GeneratedIcons.System.Drawing\H.GeneratedIcons.System.Drawing.csproj" Id="1f5ca675-4adf-4664-99b7-c27cce07e498">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" Id="89b8ef27-0207-4f5e-8321-171e210df786">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="H.NotifyIcon\src\libs\H.NotifyIcon\H.NotifyIcon.csproj" Id="ee54b1d4-6fe3-422b-8b42-6af9fddfee2a">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj" Id="8e437186-9d61-4fd3-b9da-4871a0a32ef4">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj" Id="5bcd6877-0385-4f3e-b490-f619fe9f880c">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.Core\Hi3Helper.Core.csproj" Id="0ad5f84e-a3c1-4984-837f-6046e8c219de">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.EncTool.Test\Hi3Helper.EncTool.Test.csproj" Id="02f12e87-7423-420f-a3b6-07f32b4f5b9e">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+    <Build Solution="Publish|*" Project="false" />
+    <Build Solution="Release|*" Project="false" />
+  </Project>
+  <Project Path="Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" Id="5ba95b31-a352-4477-ae5a-640a7c0e4b35">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.Http\Hi3Helper.Http.csproj" Id="9b438d88-6f1e-4eaa-aaa4-499aebb04de8">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.SharpDiscordRPC\DiscordRPC\DiscordRPC.csproj" Id="3708cd62-4b90-4498-b61a-43bca7a4a144">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.Sophon\Hi3Helper.Sophon.csproj" Id="17e6d3cd-1d68-4254-85b3-6286a7992a4e">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.TaskScheduler\Hi3Helper.TaskScheduler.csproj" Id="561b6ad6-2bc3-4a88-8401-ab5e7f0bd517">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="ImageEx\ImageEx\ImageEx.csproj" Id="9c7abc1d-504e-45c4-ae76-98a9f6e28c80">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="InnoSetupHelper\InnoSetupHelper.csproj" Id="505d0af2-3df6-4a1e-a593-e7bcf390948b">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" Id="3a870233-747f-495d-b08d-770141bd715e">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+</Solution>

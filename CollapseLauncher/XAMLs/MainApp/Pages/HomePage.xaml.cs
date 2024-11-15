@@ -2,12 +2,15 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
+using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
@@ -39,22 +42,23 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
+using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
+using Point = Windows.Foundation.Point;
 using Size = System.Drawing.Size;
-using Timer = System.Timers.Timer;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Pages
@@ -69,8 +73,8 @@ namespace CollapseLauncher.Pages
         private int barWidth;
         private int consoleWidth;
 
-        public static int RefreshRateDefault { get; } = 500;
-        public static int RefreshRateSlow { get; } = 1000;
+        public static int RefreshRateDefault => 500;
+        public static int RefreshRateSlow    => 1000;
 
         private static int _refreshRate;
 
@@ -156,8 +160,7 @@ namespace CollapseLauncher.Pages
 
                 if (!GetAppConfigValue("ShowEventsPanel").ToBool())
                 {
-                    ImageCarouselAndPostPanel.Visibility = Visibility.Collapsed;
-                    ImageEventImgGrid.Visibility = Visibility.Collapsed;
+                    SidePanel.Visibility = Visibility.Collapsed;
                 }
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
@@ -165,6 +168,15 @@ namespace CollapseLauncher.Pages
 
                 if (!GetAppConfigValue("ShowGamePlaytime").ToBool())
                     PlaytimeBtn.Visibility = Visibility.Collapsed;
+
+                if (!DbConfig.DbEnabled)
+                {
+                    PlaytimeDbSyncToggle.IsEnabled = false;
+                }
+                
+                if (!DbConfig.DbEnabled || !CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+                    SyncDbPlaytimeBtn.IsEnabled = false;
+                   
 
                 TryLoadEventPanelImage();
 
@@ -183,11 +195,19 @@ namespace CollapseLauncher.Pages
                     PostPanel.Translation += Shadow48;
                 }
 
+                InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+                SophonProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+                ProgressStatusGrid.SetAllControlsCursorRecursive(cursor);
+                RightBottomButtons.SetAllControlsCursorRecursive(cursor);
+                LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
+                GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
+
                 if (await CurrentGameProperty._GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty._GameInstall.TryShowFailedGameConversionState()) return;
 
-                UpdatePlaytime();
-                UpdateLastPlayed();
+                CurrentGameProperty._GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
+                UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
+
                 StartCarouselAutoScroll();
 
 #if !DISABLEDISCORD
@@ -267,8 +287,9 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload = true;
-            if (!PageToken.IsCancelled) PageToken.Cancel();
-            if (!CarouselToken.IsCancelled) CarouselToken.Cancel();
+            CurrentGameProperty._GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
+            if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
+            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
         #endregion
 
@@ -301,46 +322,53 @@ namespace CollapseLauncher.Pages
             // Determine if the cache icon exist and the file is completed (more than 1kB in size)
             bool isCacheIconExist = cachedIconFileInfo.Exists && cachedIconFileInfo.Length > 1 << 10;
 
-            // Using the original icon file and cached icon file streams
-            if (!isCacheIconExist)
-                await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
-                {
-                    await using (Stream copyIconFileStream = new MemoryStream())
+            try
+            {
+                // Using the original icon file and cached icon file streams
+                if (!isCacheIconExist)
+                    await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
                     {
-                        await using (Stream iconFileStream =
-                                     await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
-                                         PageToken.Token))
+                        await using (Stream copyIconFileStream = new MemoryStream())
                         {
-                            var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                            // Copy remote stream to memory stream
-                            await iconFileStream.CopyToAsync(copyIconFileStream);
-                            copyIconFileStream.Position = 0;
-                            // Get the icon image information and set the resized frame size
-                            var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                            var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                            var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                            await using (Stream iconFileStream =
+                                         await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
+                                             PageToken.Token))
+                            {
+                                var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                                // Copy remote stream to memory stream
+                                await iconFileStream.CopyToAsync(copyIconFileStream);
+                                copyIconFileStream.Position = 0;
+                                // Get the icon image information and set the resized frame size
+                                var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                                var width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                                var height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                            copyIconFileStream.Position = 0; // Reset the original icon stream position
-                            await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
-                                                                      (uint)width, (uint)height); // Start resizing
-                            cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                                copyIconFileStream.Position = 0; // Reset the original icon stream position
+                                await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
+                                                                          (uint)width, (uint)height); // Start resizing
+                                cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                            // Set the source from cached icon stream
-                            source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                                // Set the source from cached icon stream
+                                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                            }
                         }
                     }
+                else
+                {
+                    await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
                 }
-            else
-            {
-                await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
-                // Set the source from cached icon stream
-                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-            }
 
-            // Set event icon props
-            ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-            ImageEventImg.Source = source;
-            ImageEventImg.Tag = featuredEventArticleUrl;
+                // Set event icon props
+                ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
+                ImageEventImg.Source = source;
+                ImageEventImg.Tag = featuredEventArticleUrl;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
+            }
         }
         #endregion
 
@@ -374,7 +402,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private       void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null)  => CarouselRestartScroll(5);
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll(5);
         private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
         public async void CarouselRestartScroll(int delaySeconds = 5)
@@ -403,10 +431,10 @@ namespace CollapseLauncher.Pages
 
             HideImageEventImg(hide);
 
-            Storyboard      storyboard       = new Storyboard();
+            Storyboard storyboard = new Storyboard();
             DoubleAnimation OpacityAnimation = new DoubleAnimation();
-            OpacityAnimation.From     = hide ? 1 : 0;
-            OpacityAnimation.To       = hide ? 0 : 1;
+            OpacityAnimation.From = hide ? 1 : 0;
+            OpacityAnimation.To = hide ? 0 : 1;
             OpacityAnimation.Duration = new Duration(TimeSpan.FromSeconds(0.10));
 
             Storyboard.SetTarget(OpacityAnimation, SidePanel);
@@ -427,9 +455,9 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = Shadow16;
 
-            Grid  iconGrid   = btn.FindDescendant<Grid>();
-            Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
-            Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+            Grid             iconGrid   = btn.FindDescendant<Grid>();
+            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
+            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
 
             ElementScaleOutHoveredPointerEnteredInner(iconGrid, 0, -2);
 
@@ -443,16 +471,16 @@ namespace CollapseLauncher.Pages
             Button btn = (Button)sender;
             btn.Translation = new Vector3(0);
 
-            Flyout flyout = btn.Resources["SocMedFlyout"] as Flyout;
+            FlyoutBase flyout = btn.Flyout;
             Point pos = e.GetCurrentPoint(btn).Position;
             if (pos.Y <= 0 || pos.Y >= btn.Height || pos.X <= -8 || pos.X >= btn.Width)
             {
-                flyout!.Hide();
+                flyout?.Hide();
             }
 
-            Grid  iconGrid   = btn.FindDescendant<Grid>();
-            Image iconFirst  = iconGrid!.FindDescendant("Icon") as Image;
-            Image iconSecond = iconGrid!.FindDescendant("IconHover") as Image;
+            Grid             iconGrid   = btn.FindDescendant<Grid>();
+            FrameworkElement iconFirst  = iconGrid!.FindDescendant("Icon");
+            FrameworkElement iconSecond = iconGrid!.FindDescendant("IconHover");
 
             ElementScaleInHoveredPointerExitedInner(iconGrid, 0, -2);
 
@@ -508,7 +536,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenSocMedLink(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(((Button)sender).Tag.ToString())) return;
+            if (string.IsNullOrEmpty((sender as Button)?.Tag as string)) return;
 
             new Process
             {
@@ -523,28 +551,56 @@ namespace CollapseLauncher.Pages
         private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
         {
             ToolTip tooltip = sender as ToolTip;
-            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+            if (tooltip?.Tag is Button button)
+            {
+                Flyout flyout = button.Flyout as Flyout;
+                if (flyout != null)
+                {
+                    Panel contextPanel = flyout.Content as Panel;
+                    if (contextPanel != null && contextPanel.Tag is LauncherGameNewsSocialMedia socMedData)
+                    {
+                        if (!socMedData.IsHasDescription && !socMedData.IsHasLinks && !socMedData.IsHasQr)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
+
+            FlyoutBase.ShowAttachedFlyout(tooltip?.Tag as FrameworkElement);
         }
 
         private void HideSocMedFlyout(object sender, RoutedEventArgs e)
         {
-            Flyout flyout = ((StackPanel)sender).Tag as Flyout;
-            flyout!.Hide();
+            Grid dummyGrid = (sender as Panel ?? throw new InvalidOperationException()).FindChild<Grid>();
+            if (dummyGrid != null)
+            {
+                Flyout flyout = dummyGrid.Tag as Flyout;
+                flyout?.Hide();
+            }
         }
 
         private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
         {
             // Prevent the flyout showing when there is no content visible
             StackPanel stackPanel = sender as StackPanel;
-            bool visible = false;
-            foreach (var child in stackPanel!.Children)
+
+            if (stackPanel != null)
             {
-                if (child.Visibility == Visibility.Visible)
-                    visible = true;
-            }
-            if (!visible)
-            {
-                HideSocMedFlyout(sender, e);
+                ApplySocialMediaBinding(stackPanel);
+
+                bool visible = false;
+                foreach (var child in stackPanel!.Children)
+                {
+                    if (child.Visibility == Visibility.Visible)
+                        visible = true;
+                }
+
+                if (!visible)
+                {
+                    HideSocMedFlyout(sender, e);
+                }
             }
         }
         #endregion
@@ -926,12 +982,12 @@ namespace CollapseLauncher.Pages
 
         private async void CheckRunningGameInstance(CancellationToken Token)
         {
-            TextBlock               StartGameBtnText              = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon                StartGameBtnIcon              = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            Grid                    StartGameBtnAnimatedIconGrid  = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon StartGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+            Grid StartGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
             // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
-            string                  StartGameBtnIconGlyph         = StartGameBtnIcon!.Glyph;
-            string                  StartGameBtnRunningIconGlyph  = "";
+            string StartGameBtnIconGlyph = StartGameBtnIcon!.Glyph;
+            string StartGameBtnRunningIconGlyph = "";
 
             StartGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
             StartGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -957,22 +1013,36 @@ namespace CollapseLauncher.Pages
                         ConvertVersionButton.IsEnabled   = false;
                         CustomArgsTextBox.IsEnabled      = false;
                         MoveGameLocationButton.IsEnabled = false;
-                        StopGameButton.IsEnabled         = true;
+                        StopGameButton.IsEnabled = true;
 
-                        PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
+                        PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                    #if !DISABLEDISCORD
-                        AppDiscordPresence?.SetActivity(ActivityType.Play);
-                    #endif
-
                         Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
-                        if (currentGameProcess != null
-                            && StartGameBtnText.Text == Lang._HomePage.StartBtnRunning
+                        if (currentGameProcess != null)
+                        {
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
-                           )
-                        {
+                            StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                            DateTime fromActivityOffset = currentGameProcess.StartTime;
+#if !DISABLEDISCORD
+                            AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+#endif
+
+                            IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
+                            PresetConfig gamePreset = CurrentGameProperty._GamePreset;
+
+                            CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess);
+
+                            int? height = gameSettings.SettingsScreen.height;
+                            int? width = gameSettings.SettingsScreen.width;
+
+                            // Start the resizable window payload
+                            StartResizableWindowPayload(
+                                gamePreset.GameExecutableName,
+                                gameSettings,
+                                gamePreset.GameType, height, width);
+
                             await currentGameProcess.WaitForExitAsync(Token);
                         }
                     }
@@ -1164,10 +1234,21 @@ namespace CollapseLauncher.Pages
 
                 // Set the notification trigger to "Completed" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+
+                    WindowUtility.Tray_ShowNotification(
+                                                        string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
+                                                        Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
+                                                       );
+                }
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Pre-Download paused!", LogType.Warning);
+                LogWriteLine("Pre-Download paused!", LogType.Warning);
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             }
@@ -1232,24 +1313,24 @@ namespace CollapseLauncher.Pages
 
                 HideImageCarousel(true);
 
-                progressRing.Value            = 0;
-                progressRing.IsIndeterminate  = true;
-                InstallGameBtn.Visibility     = Visibility.Collapsed;
-                CancelDownloadBtn.Visibility  = Visibility.Visible;
-                ProgressTimeLeft.Visibility   = Visibility.Visible;
+                progressRing.Value           = 0;
+                progressRing.IsIndeterminate = true;
+                InstallGameBtn.Visibility    = Visibility.Collapsed;
+                CancelDownloadBtn.Visibility = Visibility.Visible;
+                ProgressTimeLeft.Visibility  = Visibility.Visible;
 
                 if (isUseSophon)
                 {
-                    SophonProgressStatusGrid.Visibility = Visibility.Visible;
-                    SophonProgressStatusSizeDownloadedGrid.Visibility = Visibility.Collapsed;
-                    CurrentGameProperty._GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
-                    CurrentGameProperty._GameInstall.StatusChanged += GameInstallSophon_StatusChanged;
+                    SophonProgressStatusGrid.Visibility               =  Visibility.Visible;
+                    SophonProgressStatusSizeDownloadedGrid.Visibility =  Visibility.Collapsed;
+                    CurrentGameProperty._GameInstall.ProgressChanged  += GameInstallSophon_ProgressChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged    += GameInstallSophon_StatusChanged;
                 }
                 else
                 {
-                    ProgressStatusGrid.Visibility = Visibility.Visible;
+                    ProgressStatusGrid.Visibility                    =  Visibility.Visible;
                     CurrentGameProperty._GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                    CurrentGameProperty._GameInstall.StatusChanged += GameInstall_StatusChanged;
+                    CurrentGameProperty._GameInstall.StatusChanged   += GameInstall_StatusChanged;
                 }
 
                 int dialogResult = await CurrentGameProperty._GameInstall.GetInstallationPath();
@@ -1292,6 +1373,19 @@ namespace CollapseLauncher.Pages
 
                 // Set the notification trigger to "Completed" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+                    WindowUtility.Tray_ShowNotification(
+                                                        string.Format(Lang._NotificationToast.GameInstallCompleted_Title,
+                                                                      gameNameLocale),
+                                                        string
+                                                           .Format(Lang._NotificationToast.GameInstallCompleted_Subtitle,
+                                                                   gameNameLocale)
+                                                       );
+                }
             }
             catch (TaskCanceledException)
             {
@@ -1304,6 +1398,21 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"Installation cancelled for game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}");
                 // Set the notification trigger
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            }
+            catch (NotSupportedException ex)
+            {
+                // Set the notification trigger
+                CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+
+                IsPageUnload = true;
+                LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}\r\n{ex}",
+                              LogType.Error, true);
+                
+                await SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
+                            Lang._HomePage.InstallFolderRootSubtitle,
+                            Content,
+                            Lang._Misc.Close,
+                            null, null, ContentDialogButton.Close, ContentDialogTheme.Error);
             }
             catch (NullReferenceException ex)
             {
@@ -1512,6 +1621,9 @@ namespace CollapseLauncher.Pages
                     if (delay > 0)
                         await Task.Delay(delay);
                 }
+                
+                int? height = _Settings.SettingsScreen.height;
+                int? width  = _Settings.SettingsScreen.width;
 
                 Process proc = new Process();
                 proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
@@ -1533,6 +1645,17 @@ namespace CollapseLauncher.Pages
                 proc.StartInfo.Verb = "runas";
                 proc.Start();
 
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    WatchOutputLog = new CancellationTokenSource();
+                    ReadOutputLog();
+                }
+                
+                if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
+                {
+                    SetBackScreenSettings(_Settings, (int)height, (int)width, CurrentGameProperty);
+                }
+
                 // Stop update check
                 IsSkippingUpdateCheck = true;
 
@@ -1540,15 +1663,9 @@ namespace CollapseLauncher.Pages
                 StartResizableWindowPayload(
                     _gamePreset.GameExecutableName,
                     _Settings,
-                    _gamePreset.GameType);
+                    _gamePreset.GameType, height, width);
                 GameRunningWatcher(_Settings);
-
-                if (GetAppConfigValue("EnableConsole").ToBool())
-                {
-                    WatchOutputLog = new CancellationTokenSource();
-                    ReadOutputLog();
-                }
-
+                
                 switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
                 {
                     case "Minimize":
@@ -1564,7 +1681,8 @@ namespace CollapseLauncher.Pages
                         break;
                 }
 
-                StartPlaytimeCounter(proc, _gamePreset);
+                CurrentGameProperty._GamePlaytime.StartSession(proc);
+
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
@@ -1654,7 +1772,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Resizable Window Payload
-        internal async void StartResizableWindowPayload(string executableName, IGameSettingsUniversal settings, GameNameType gameType)
+        internal async void StartResizableWindowPayload(string       executableName, IGameSettingsUniversal settings,
+                                                        GameNameType gameType,       int? height, int? width)
         {
             try
             {
@@ -1670,7 +1789,8 @@ namespace CollapseLauncher.Pages
                 // it impossible to use custom resolution (but since you are using Collapse, it's now
                 // possible :teriStare:)
                 bool isNeedToResetPos = gameType == GameNameType.StarRail;
-                await resizableWindowHook.StartHook(executableName, ResizableWindowHookToken.Token, isNeedToResetPos);
+                await resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+                                                    isNeedToResetPos);
             }
             catch (Exception ex)
             {
@@ -1678,11 +1798,50 @@ namespace CollapseLauncher.Pages
                 ErrorSender.SendException(ex, ErrorType.GameError);
             }
         }
+
+        private async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width,
+                                                 GamePresetProperty     gameProp)
+        {
+            // Wait for the game to fully initialize
+            await Task.Delay(20000);
+            try
+            {
+                settingsUniversal.SettingsScreen.height = height;
+                settingsUniversal.SettingsScreen.width  = width;
+                settingsUniversal.SettingsScreen.Save();
+
+                // For those stubborn game
+                // Kinda unneeded but :FRICK:
+                switch (gameProp._GamePreset.GameType)
+                {
+                    case GameNameType.Zenless:
+                        var screenManagerZ = GameSettings.Zenless.ScreenManager.Load();
+                        screenManagerZ.width  = width;
+                        screenManagerZ.height = height;
+                        screenManagerZ.Save();
+                        break;
+                    
+                    case GameNameType.Honkai:
+                        var screenManagerH = GameSettings.Honkai.ScreenSettingData.Load();
+                        screenManagerH.width  = width;
+                        screenManagerH.height = height;
+                        screenManagerH.Save();
+                        break;
+                }
+                
+                LogWriteLine($"[SetBackScreenSettings] Completed task! {width}x{height}", LogType.Scheme, true);
+            }
+            catch(Exception ex)
+            {
+                LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
+            }
+
+        }
         #endregion
 
         #region Game Launch Argument Builder
         bool RequireWindowExclusivePayload;
-        
+
         internal string GetLaunchArguments(IGameSettingsUniversal _Settings)
         {
             StringBuilder parameter = new StringBuilder();
@@ -1737,12 +1896,12 @@ namespace CollapseLauncher.Pages
                     parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
                 }
-                
+
                 // Enable mobile mode
                 if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                 {
-                    const string regLoc  = GameSettings.StarRail.Model._ValueName;
-                    var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
+                    const string regLoc = GameSettings.StarRail.Model._ValueName;
+                    var regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
 
                     if (regRoot != null || !string.IsNullOrEmpty(regLoc))
                     {
@@ -1788,7 +1947,7 @@ namespace CollapseLauncher.Pages
                     RequireWindowExclusivePayload = true;
                     LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
-                
+
                 // Enable mobile mode
                 if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                     parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
@@ -1838,14 +1997,57 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
-            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+            get => CurrentGameProperty?._GameSettings?.SettingsCustomArgument.CustomArgumentValue;
+            set => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
         }
 
         public bool UseCustomArgs
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
-            set => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+            get => CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.UseCustomArguments ?? false;
+            set
+            {
+                if (CustomStartupArgsSwitch.IsOn)
+                {
+                    CustomArgsTextBox.IsEnabled = true;   
+                }
+                else
+                {
+                    CustomArgsTextBox.IsEnabled = false;
+                }
+
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
+            } 
+            
+        }
+        
+        public bool UseCustomBGRegion
+        {
+            get
+            {
+                bool value = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                ChangeGameBGButton.IsEnabled = value;
+                string path = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                BGPathDisplay.Text = Path.GetFileName(path);
+                return value;
+            }
+            set
+            {
+                ChangeGameBGButton.IsEnabled = value;
+
+                var regionBgPath = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath;
+                if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
+                {
+                    regionBgPath = Path.GetFileName(GetAppConfigValue("CustomBGPath").ToString());
+                    CurrentGameProperty._GameSettings.SettingsCollapseMisc
+                        .CustomRegionBGPath = regionBgPath;
+                }
+
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
+                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
+                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+                BGPathDisplay.Text = Path.GetFileName(regionBgPath);
+            } 
         }
         #endregion
 
@@ -1886,9 +2088,9 @@ namespace CollapseLauncher.Pages
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName        = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
+                        FileName = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
                         UseShellExecute = true,
-                        Verb            = "runas"
+                        Verb = "runas"
                     }
                 };
 
@@ -1921,20 +2123,51 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Game Log Method
-        public async void ReadOutputLog()
+        private async void ReadOutputLog()
         {
+            var saveGameLog = GetAppConfigValue("IncludeGameLogs").ToBool();
             InitializeConsoleValues();
-
-            LogWriteLine($"Are Game logs getting saved to Collapse logs: {GetAppConfigValue("IncludeGameLogs").ToBool()}", LogType.Scheme, true);
-            LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
+            
+            LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning,
+                         true);
+            LogWriteLine($"Are Game logs getting saved to Collapse logs: {saveGameLog}", LogType.Scheme, true);
+            
             try
             {
-                string logPath = Path.Combine(CurrentGameProperty._GameVersion.GameDirAppDataPath, CurrentGameProperty._GameVersion.GameOutputLogName);
-
+                string logPath = Path.Combine(CurrentGameProperty._GameVersion.GameDirAppDataPath,
+                                              CurrentGameProperty._GameVersion.GameOutputLogName);
                 if (!Directory.Exists(Path.GetDirectoryName(logPath)))
                     Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
+                
+                if (CurrentGameProperty._GamePreset.GameType == GameNameType.Zenless)
+                {
+                    var logDir = Path.Combine(CurrentGameProperty._GameVersion.GameDirPath,
+                                              "ZenlessZoneZero_Data\\Persistent\\LogDir\\");
+                    var newLog = await FileUtility.WaitForNewFileAsync(logDir, 20000);
+                    if (!newLog)
+                    {
+                        LogWriteLine("Cannot get Zenless' log file due to timeout! Your computer too fast XD",
+                                     LogType.Warning, saveGameLog);
+                        return;
+                    }
 
-                await using (FileStream fs = new FileStream(logPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    var logPat = FileUtility.GetLatestFile(logDir, "NAP_*.log");
+
+                    if (!string.IsNullOrEmpty(logPat)) logPath = logPat;
+                }
+                else
+                {
+                    // If the log file exist beforehand, move it and make a new one
+                    if (File.Exists(logPath))
+                    {
+                        FileUtility.RenameFileWithPrefix(logPath, "-old", true);
+                    } 
+                }
+                
+                LogWriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
+
+                await using (FileStream fs =
+                             new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite))
                     using (StreamReader reader = new StreamReader(fs))
                     {
                         while (true)
@@ -1947,13 +2180,17 @@ namespace CollapseLauncher.Pages
                                     StartExclusiveWindowPayload();
                                     RequireWindowExclusivePayload = false;
                                 }
-                                LogWriteLine(line!, LogType.Game, GetAppConfigValue("IncludeGameLogs").ToBool());
+
+                                LogWriteLine(line!, LogType.Game, saveGameLog);
                             }
+
                             await Task.Delay(100, WatchOutputLog.Token);
                         }
                     }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+            }
             catch (Exception ex)
             {
                 LogWriteLine($"There were a problem in Game Log Reader\r\n{ex}", LogType.Error);
@@ -1962,37 +2199,56 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Open Button Method
-        private void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = NormalizePath(GameDirPath);
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                string gameFolder = NormalizePath(GameDirPath);
+                LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
+
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = gameFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
-        private void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            string cacheFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+            LogWriteLine($"Opening Game Folder:\r\n\t{cacheFolder}");
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = cacheFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
-        private void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
             string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
             {
@@ -2005,15 +2261,24 @@ namespace CollapseLauncher.Pages
             if (!Directory.Exists(ScreenshotFolder))
                 Directory.CreateDirectory(ScreenshotFolder);
 
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = ScreenshotFolder
-                }
-            }.Start();
+                await Task.Run(() => 
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = ScreenshotFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game screenshot folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private async void CleanupFilesButton_Click(object sender, RoutedEventArgs e)
@@ -2056,6 +2321,31 @@ namespace CollapseLauncher.Pages
             StopGame(CurrentGameProperty._GameVersion.GamePreset);
         }
 
+        private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
+        {
+            var file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            if (string.IsNullOrEmpty(file)) return;
+
+            var currentMediaType = GetMediaType(file);
+            
+            if (currentMediaType == MediaType.StillImage)
+            {
+                FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            
+                if (croppedImage == null) return;
+                SetAlternativeFileStream(croppedImage);
+            }
+
+            if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+            {
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
+                CurrentGameProperty._GameSettings.SaveBaseSettings();
+            }
+            m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+
+            BGPathDisplay.Text = Path.GetFileName(file);
+        }
+
         private async void MoveGameLocationButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2066,6 +2356,12 @@ namespace CollapseLauncher.Pages
                     ReturnToHomePage();
                 }
             }
+            catch (NotSupportedException ex)
+            {
+                LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
+                ex = new NotSupportedException(Lang._HomePage.GameSettings_Panel2MoveGameLocationGame_SamePath, ex);
+                ErrorSender.SendException(ex, ErrorType.Warning);
+            }
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
@@ -2074,32 +2370,25 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
-        #region Playtime Buttons
+        #region Playtime
         private void ForceUpdatePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_cachedIsGameRunning)
-                return;
+            if (_cachedIsGameRunning) return;
 
-            UpdatePlaytime();
+            UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
             if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
 
-            int playtimeMins = int.Parse("0" + MinutePlaytimeTextBox.Text);
-            int playtimeHours = int.Parse("0" + HourPlaytimeTextBox.Text);
-            int finalPlaytimeMinutes = playtimeMins % 60;
-            int finalPlaytimeHours = playtimeHours + playtimeMins / 60;
-            if (finalPlaytimeHours > 99999) { finalPlaytimeHours = 99999; finalPlaytimeMinutes = 59; }
-            MinutePlaytimeTextBox.Text = finalPlaytimeMinutes.ToString();
-            HourPlaytimeTextBox.Text = finalPlaytimeHours.ToString();
+            int mins = int.Parse("0" + MinutePlaytimeTextBox.Text);
+            int hours = int.Parse("0" + HourPlaytimeTextBox.Text);
 
-            int finalPlaytime = finalPlaytimeHours * 3600 + finalPlaytimeMinutes * 60;
+            TimeSpan time = TimeSpan.FromMinutes(hours * 60 + mins);
+            if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
 
-            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, finalPlaytime);
-            LogWriteLine($"Playtime counter changed to {HourPlaytimeTextBox.Text + "h " + MinutePlaytimeTextBox.Text + "m"}. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, finalPlaytime);
+            CurrentGameProperty._GamePlaytime.Update(time, true);
             PlaytimeFlyout.Hide();
         }
 
@@ -2107,10 +2396,13 @@ namespace CollapseLauncher.Pages
         {
             if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
 
-            SavePlaytimeToRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation, 0);
-            LogWriteLine($"Playtime counter changed to 0h 0m. (Previous value: {PlaytimeMainBtn.Text})");
-            UpdatePlaytime(false, 0);
+            CurrentGameProperty._GamePlaytime.Reset();
             PlaytimeFlyout.Hide();
+        }
+
+        private void SyncDbPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentGameProperty._GamePlaytime.CheckDb();
         }
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
@@ -2118,130 +2410,63 @@ namespace CollapseLauncher.Pages
             sender.MaxLength = sender == HourPlaytimeTextBox ? 5 : 3;
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
-        #endregion
 
-        #region Playtime Tracker Method
-        private void UpdatePlaytime(bool readRegistry = true, int value = 0)
+        private void UpdatePlaytime(object sender, CollapsePlaytime playtime)
         {
-            if (readRegistry)
-                value = ReadPlaytimeFromRegistry(true, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                PlaytimeMainBtn.Text = FormatTimeStamp(playtime.TotalPlaytime);
+                HourPlaytimeTextBox.Text = (playtime.TotalPlaytime.Days * 24 + playtime.TotalPlaytime.Hours).ToString();
+                MinutePlaytimeTextBox.Text = playtime.TotalPlaytime.Minutes.ToString();
 
-            HourPlaytimeTextBox.Text = (value / 3600).ToString();
-            MinutePlaytimeTextBox.Text = (value % 3600 / 60).ToString();
-            PlaytimeMainBtn.Text = string.Format(Lang._HomePage.GamePlaytime_Display, (value / 3600), (value % 3600 / 60));
+                string lastPlayed = Lang._HomePage.GamePlaytime_Stats_NeverPlayed;
+                if (playtime.LastPlayed != null)
+                {
+                    DateTime? last = playtime.LastPlayed?.ToLocalTime();
+                    lastPlayed = string.Format(Lang._HomePage.GamePlaytime_DateDisplay, last?.Day,
+                                                      last?.Month, last?.Year, last?.Hour, last?.Minute);
+                }
+
+                PlaytimeStatsDaily.Text       = FormatTimeStamp(playtime.DailyPlaytime);
+                PlaytimeStatsWeekly.Text      = FormatTimeStamp(playtime.WeeklyPlaytime);
+                PlaytimeStatsMonthly.Text     = FormatTimeStamp(playtime.MonthlyPlaytime);
+                PlaytimeStatsLastSession.Text = FormatTimeStamp(playtime.LastSession);
+                PlaytimeStatsLastPlayed.Text  = lastPlayed;
+            });
+            return;
+
+            static string FormatTimeStamp(TimeSpan time) => string.Format(Lang._HomePage.GamePlaytime_Display, time.Days * 24 + time.Hours, time.Minutes);
         }
 
-        private DateTime Hoyoception => new(2012, 2, 13, 0, 0, 0, DateTimeKind.Utc);
-        private void UpdateLastPlayed(bool readRegistry = true, int value = 0)
+        private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)
         {
-            if (readRegistry)
-                value = ReadPlaytimeFromRegistry(false, CurrentGameProperty._GameVersion.GamePreset.ConfigRegistryLocation);
+            ToolTip tooltip = sender as ToolTip;
+            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+        }
 
-            DateTime last = Hoyoception.AddSeconds(value).ToLocalTime();
+        private void HidePlaytimeStatsFlyout(object sender, PointerRoutedEventArgs e)
+        {
+            FrameworkElement senderAsFrameworkElement = sender as FrameworkElement;
 
-            if (value == 0)
+            /* This fix an issue where the flyout spawns right on top of the button
+             * instead of on top of the button in its 1st frame.
+             * 
+             * If this method is called even within its button's range, then just
+             * ignore the call and do not hide the flyout.
+             */
+            PointerPoint pointerPoint = e.GetCurrentPoint(senderAsFrameworkElement);
+            Point currentCursorPosition = pointerPoint.Position;
+            if (currentCursorPosition.X > 0
+              && currentCursorPosition.Y > 0
+              && currentCursorPosition.X <= senderAsFrameworkElement!.ActualWidth
+              && currentCursorPosition.Y <= senderAsFrameworkElement!.ActualHeight)
             {
-                PlaytimeLastOpen.Visibility = Visibility.Collapsed;
                 return;
             }
 
-            PlaytimeLastOpen.Visibility = Visibility.Visible;
-            string formattedText = string.Format(Lang._HomePage.GamePlaytime_ToolTipDisplay, last.Day,
-                last.Month, last.Year, last.Hour, last.Minute);
-            ToolTipService.SetToolTip(PlaytimeBtn, formattedText);
-        }
-
-        private async void StartPlaytimeCounter(Process proc, PresetConfig gamePreset)
-        {
-            int currentPlaytime = ReadPlaytimeFromRegistry(true, gamePreset.ConfigRegistryLocation);
-
-            DateTime begin = DateTime.Now;
-            int lastPlayed = (int)(begin.ToUniversalTime() - Hoyoception).TotalSeconds;
-            SavePlaytimeToRegistry(false, gamePreset.ConfigRegistryLocation, lastPlayed);
-            UpdateLastPlayed(false, lastPlayed);
-            int numOfLoops = 0;
-
-#if DEBUG
-            LogWriteLine($"{gamePreset.ProfileName} - Started session at {begin.ToLongTimeString()}.");
-#endif
-
-            using (var inGameTimer = new Timer())
-            {
-                inGameTimer.Interval = 60000;
-                inGameTimer.Elapsed += (_, _) =>
-                {
-                    numOfLoops++;
-
-                    DateTime now = DateTime.Now;
-                    int elapsedSeconds = (int)(now - begin).TotalSeconds;
-                    if (elapsedSeconds < 0)
-                        elapsedSeconds = numOfLoops * 60;
-
-                    if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                        m_homePage?.DispatcherQueue?.TryEnqueue(() =>
-                        {
-                            m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
-                        });
-#if DEBUG
-                    LogWriteLine($"{gamePreset.ProfileName} - {elapsedSeconds}s elapsed. ({now.ToLongTimeString()})");
-#endif
-                    SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
-                };
-
-                inGameTimer.Start();
-                await proc.WaitForExitAsync();
-                inGameTimer.Stop();
-            }
-
-            DateTime end = DateTime.Now;
-            int elapsedSeconds = (int)(end - begin).TotalSeconds;
-            if (elapsedSeconds < 0)
-            {
-                LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({elapsedSeconds}s)", LogType.Error);
-                elapsedSeconds = numOfLoops * 60;
-                Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
-            }
-
-            SavePlaytimeToRegistry(true, gamePreset.ConfigRegistryLocation, currentPlaytime + elapsedSeconds);
-            LogWriteLine($"Added {elapsedSeconds}s [{elapsedSeconds / 3600}h {elapsedSeconds % 3600 / 60}m {elapsedSeconds % 3600 % 60}s] " +
-                         $"to {gamePreset.ProfileName} playtime.", LogType.Default, true);
-            if (GamePropertyVault.GetCurrentGameProperty()._GamePreset.ProfileName == gamePreset.ProfileName)
-                m_homePage?.DispatcherQueue?.TryEnqueue(() =>
-                {
-                    m_homePage.UpdatePlaytime(false, currentPlaytime + elapsedSeconds);
-                });
-        }
-
-        private const string _playtimeRegName = "CollapseLauncher_Playtime";
-        private const string _playtimeLastPlayedRegName = "CollapseLauncher_LastPlayed";
-#nullable enable
-        private static int ReadPlaytimeFromRegistry(bool isPlaytime, string regionRegistryKey)
-        {
-            try
-            {
-                object subKeyObj = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true)?
-                                   .GetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, 0) ?? 0;
-
-                return (int)subKeyObj;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error reading from the registry. \n {ex}");
-                return 0;
-            }
-        }
-
-        private static void SavePlaytimeToRegistry(bool isPlaytime, string regionRegistryKey, int value)
-        {
-            try
-            {
-                RegistryKey? subKey = Registry.CurrentUser.OpenSubKey(regionRegistryKey, true);
-                subKey?.SetValue(isPlaytime ? _playtimeRegName : _playtimeLastPlayedRegName, value, RegistryValueKind.DWord);
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Playtime - There was an error writing to registry. \n {ex}");
-            }
+            // Otherwise, hide the flyout
+            Flyout flyout = senderAsFrameworkElement!.Tag as Flyout;
+            flyout!.Hide();
         }
 #nullable restore
         #endregion
@@ -2297,6 +2522,18 @@ namespace CollapseLauncher.Pages
 
                 // Set the notification trigger to "Completed" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+                    string gameVersionString = CurrentGameProperty._GameVersion.GetGameVersionAPI()?.VersionString;
+
+                    WindowUtility.Tray_ShowNotification(
+                                                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Title, gameNameLocale),
+                                                        string.Format(Lang._NotificationToast.GameUpdateCompleted_Subtitle, gameNameLocale, gameVersionString)
+                                                       );
+                }
             }
             catch (TaskCanceledException)
             {
@@ -2352,15 +2589,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Set Hand Cursor
-        private static void ChangeCursor(UIElement element, InputCursor cursor)
-        {
-            typeof(UIElement).InvokeMember("ProtectedCursor", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance, null, element, new object[] { cursor });
-        }
-
-        private void SetHandCursor(object sender, RoutedEventArgs e = null)
-        {
-            ChangeCursor((UIElement)sender, InputSystemCursor.Create(InputSystemCursorShape.Hand));
-        }
+        private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
+            (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
         #endregion
 
         #region Hyper Link Color
@@ -2411,7 +2641,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = false;
-                    collapseProcess.PriorityClass        = ProcessPriorityClass.BelowNormal;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.BelowNormal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Below Normal, " +
                                  $"PriorityBoost is off, carousel is temporarily stopped", LogType.Default, true);
                 }
@@ -2422,7 +2652,7 @@ namespace CollapseLauncher.Pages
                 using (Process collapseProcess = Process.GetCurrentProcess())
                 {
                     collapseProcess.PriorityBoostEnabled = true;
-                    collapseProcess.PriorityClass        = ProcessPriorityClass.Normal;
+                    collapseProcess.PriorityClass = ProcessPriorityClass.Normal;
                     LogWriteLine($"Collapse process [PID {collapseProcess.Id}] priority is set to Normal, " +
                                  $"PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
@@ -2453,7 +2683,7 @@ namespace CollapseLauncher.Pages
 
         private async void GameBoost_Invoke(GamePresetProperty gameProp)
         {
-        #nullable enable
+#nullable enable
             // Init new target process
             Process? toTargetProc = null;
             try
@@ -2489,22 +2719,23 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }
-        #nullable restore
+#nullable restore
         }
         #endregion
 
         #region Pre/Post Game Launch Command
         private Process _procPreGLC;
 
-        private async void PreLaunchCommand(IGameSettingsUniversal _settings)
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private async void PreLaunchCommand(IGameSettingsUniversal settings)
         {
             try
             {
-                string preGameLaunchCommand = _settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
+                var preGameLaunchCommand = settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
                 if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
                 LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
-                             $"Game launch is delayed by {_settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
+                             $"Game launch is delayed by {settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
                              $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
                              LogType.Warning, true);
 
@@ -2517,16 +2748,8 @@ namespace CollapseLauncher.Pages
                 _procPreGLC.StartInfo.RedirectStandardOutput = true;
                 _procPreGLC.StartInfo.RedirectStandardError = true;
 
-                _procPreGLC.OutputDataReceived += (_, e) =>
-                                                  {
-                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
-                                                  };
-
-                _procPreGLC.ErrorDataReceived += (_, e) =>
-                                                 {
-                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" +
-                                                              $"{e.Data}", LogType.GLC, true);
-                                                 };
+                _procPreGLC.OutputDataReceived += GLC_OutputHandler;
+                _procPreGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
                 _procPreGLC.Start();
 
@@ -2534,6 +2757,9 @@ namespace CollapseLauncher.Pages
                 _procPreGLC.BeginErrorReadLine();
 
                 await _procPreGLC.WaitForExitAsync();
+                
+                _procPreGLC.OutputDataReceived -= GLC_OutputHandler;
+                _procPreGLC.ErrorDataReceived  -= GLC_ErrorHandler;
             }
             catch (Win32Exception ex)
             {
@@ -2543,36 +2769,45 @@ namespace CollapseLauncher.Pages
             }
             finally
             {
-                if (_procPreGLC != null) _procPreGLC.Dispose();
+                _procPreGLC?.Dispose();
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
         private void PreLaunchCommand_ForceClose()
         {
             try
             {
-                if (_procPreGLC != null && !_procPreGLC.HasExited)
-                {
-                    // Kill main and child processes
-                    Process taskKill = new Process();
-                    taskKill.StartInfo.FileName = "taskkill";
-                    taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
-                    taskKill.Start();
-                    taskKill.WaitForExit();
+                if (_procPreGLC is not { HasExited: false }) return;
 
-                    LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
-                }
+                // Kill main and child processes
+                var taskKill = new Process();
+                taskKill.StartInfo.FileName  = "taskkill";
+                taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
+                taskKill.Start();
+                taskKill.WaitForExit();
+
+                LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
             }
             // Ignore external errors
-            catch (InvalidOperationException) { }
-            catch (Win32Exception) { }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (Win32Exception)
+            {
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
+            }
         }
 
-        private async void PostExitCommand(IGameSettingsUniversal _settings)
+        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+        private static async void PostExitCommand(IGameSettingsUniversal settings)
         {
             try
             {
-                string postGameExitCommand = _settings?.SettingsCollapseMisc?.GamePostExitCommand;
+                var postGameExitCommand = settings?.SettingsCollapseMisc?.GamePostExitCommand;
                 if (string.IsNullOrEmpty(postGameExitCommand)) return;
 
                 LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
@@ -2588,29 +2823,35 @@ namespace CollapseLauncher.Pages
                 procPostGLC.StartInfo.RedirectStandardOutput = true;
                 procPostGLC.StartInfo.RedirectStandardError = true;
 
-                procPostGLC.OutputDataReceived += (_, e) =>
-                                                  {
-                                                      if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
-                                                  };
-
-                procPostGLC.ErrorDataReceived += (_, e) =>
-                                                 {
-                                                     if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" +
-                                                              $"{e.Data}", LogType.GLC, true);
-                                                 };
+                procPostGLC.OutputDataReceived += GLC_OutputHandler;
+                procPostGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
                 procPostGLC.Start();
                 procPostGLC.BeginOutputReadLine();
                 procPostGLC.BeginErrorReadLine();
 
                 await procPostGLC.WaitForExitAsync();
+
+                procPostGLC.OutputDataReceived -= GLC_OutputHandler;
+                procPostGLC.ErrorDataReceived  -= GLC_ErrorHandler;
             }
             catch (Win32Exception ex)
             {
-                LogWriteLine($"There is a problem while trying to launch Post-Game Command with Region: " +
-                             $"{CurrentGameProperty._GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
+                             $"{settings?.SettingsCollapseMisc?.GamePostExitCommand}\r\n" +
+                             $"Traceback: {ex}", LogType.Error, true);
                 ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
             }
+        }
+
+        private static void GLC_OutputHandler(object _, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+        }
+
+        private static void GLC_ErrorHandler(object _, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
         }
         #endregion
 
@@ -2676,12 +2917,28 @@ namespace CollapseLauncher.Pages
                         isStart = false;
                     }
                 }
+
+                foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
+                {
+                    imageElement.ApplyDropShadow(opacity: 0.5f);
+                    if (isStart)
+                    {
+                        imageElement.Opacity = 0.0f;
+                        imageElement.Loaded += (_, _) =>
+                        {
+                            Compositor compositor = imageElement.GetElementCompositor();
+                            imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
+                                compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+                        };
+                        isStart = false;
+                    }
+                }
             }
         }
 
         private bool IsPointerInsideSidePanel;
         private bool IsSidePanelCurrentlyScaledOut;
-        
+
         private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
             IsPointerInsideSidePanel = true;
@@ -2691,9 +2948,9 @@ namespace CollapseLauncher.Pages
                 if (IsSidePanelCurrentlyScaledOut) return;
                 if (!IsPointerInsideSidePanel) return;
 
-                var toScale    = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
+                var toScale = WindowSize.WindowSize.CurrentWindowSize.PostEventPanelScaleFactor;
                 var storyboard = new Storyboard();
-                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
                 var cubicEaseOut = new CubicEase()
                 {
@@ -2702,9 +2959,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleXAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleX,
-                    To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
+                    From = transform.ScaleX,
+                    To = toScale,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -2713,9 +2970,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleYAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleY,
-                    To             = toScale,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.2)),
+                    From = transform.ScaleY,
+                    To = toScale,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.2)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);
@@ -2741,7 +2998,7 @@ namespace CollapseLauncher.Pages
                 HideImageEventImg(false);
 
                 var storyboard = new Storyboard();
-                var transform  = (CompositeTransform)elementPanel.RenderTransform;
+                var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
                 var cubicEaseOut = new CubicEase()
                 {
@@ -2750,9 +3007,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleXAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleX,
-                    To             = 1,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    From = transform.ScaleX,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.25)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleXAnim, transform);
@@ -2761,9 +3018,9 @@ namespace CollapseLauncher.Pages
 
                 var scaleYAnim = new DoubleAnimation
                 {
-                    From           = transform.ScaleY,
-                    To             = 1,
-                    Duration       = new Duration(TimeSpan.FromSeconds(0.25)),
+                    From = transform.ScaleY,
+                    To = 1,
+                    Duration = new Duration(TimeSpan.FromSeconds(0.25)),
                     EasingFunction = cubicEaseOut
                 };
                 Storyboard.SetTarget(scaleYAnim, transform);

@@ -163,7 +163,7 @@
     "GamePlaytime_Running_Info1": "此遊戲的一個實例正在執行中，因此無法更改遊玩時數。",
     "GamePlaytime_Running_Info2": "請注意，完全關閉 Collapse 將停止遊玩時數追蹤（先前的時數將會儲存），且只有由 Collapse 啟動的遊戲實例會被追蹤。",
     "GamePlaytime_Display": "{0}時 {1}分",
-    "GamePlaytime_ToolTipDisplay": "最後打開於 {2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00}-{3:00}:{4:00}",
 
     "PostPanel_Events": "活動",
     "PostPanel_Notices": "公告",
@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
     "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
-    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -467,6 +480,8 @@
     "Update_NewVer1": "更新至",
     "Update_NewVer2": "可用！",
     "Update_LatestVer": "你正在使用最新版本。",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "應用程式檔案管理",
     "AppFiles_OpenDataFolderBtn": "打開 AppData 資料夾",
@@ -528,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的Vulkan GPU設備，將使用CPU模式。 這將極大新增圖像處理時間。",
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系統安裝了“OpenCL ™、 OpenGL®和Vulkan ® 相容包”。 該套裝軟體被報告與Vulkan Loader不相容，並且會在某些GPU上崩潰。 請移除此套裝軟體以啟用GPU模式。",
     "Waifu2X_Error_Loader": "錯誤：初始化Vulkan Loader失敗。 請確保您擁有相容Vulkan的GPU並安裝了正確的GPU驅動程序。",
-    "Waifu2X_Error_Output": "錯誤：未能通過Waifu2X自檢，輸出影像為空。"
+    "Waifu2X_Error_Output": "錯誤：未能通過Waifu2X自檢，輸出影像為空。",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -832,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {

@@ -152,13 +152,13 @@ namespace CollapseLauncher.Interfaces
         /// <param name="gameState">The state of the game</param>
         List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState);
 
+        #nullable enable
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Pre-load Zip.
         /// If the Pre-load doesn't exist, then it will return a null.
         /// </summary>
-        List<RegionResourceVersion> GetGamePreloadZip();
-
-#nullable enable
+        List<RegionResourceVersion>? GetGamePreloadZip();
+        
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Plugins
         /// </summary>
@@ -179,7 +179,7 @@ namespace CollapseLauncher.Interfaces
         ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement);
 
         /// <summary>
-        /// Try find game installation path from the given path.
+        /// Try to find game installation path from the given path.
         /// If it returns null, then there's no game installation found.
         /// </summary>
         string? FindGameInstallationPath(string path);

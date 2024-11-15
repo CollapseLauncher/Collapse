@@ -2,7 +2,9 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 #pragma warning disable IL2050
 namespace CollapseLauncher
@@ -135,18 +137,40 @@ namespace CollapseLauncher
 
     internal static partial class PInvoke
     {
-        internal static unsafe HRESULT CoCreateInstance<T>(Guid rclsid, object pUnkOuter, CLSCTX dwClsContext, out T ppv)
-            where T : class
+#nullable enable
+        internal static unsafe HRESULT CoCreateInstance<T>(Guid rclsid, nint pUnkOuter, CLSCTX dwClsContext, out T? ppv)
         {
-            Guid refTGuid = typeof(T).GUID; 
-            HRESULT hr = CoCreateInstanceInvoke(ref rclsid, pUnkOuter, dwClsContext, ref refTGuid, out object o);
-            ppv = (T)o;
+            Guid refTGuid = typeof(T).GUID;
+            HRESULT hr = CoCreateInstance(in rclsid, pUnkOuter, dwClsContext, in refTGuid, out void* o);
+            ppv = ComInterfaceMarshaller<T>.ConvertToManaged(o);
             return hr;
         }
 
         [DllImport("OLE32.dll", EntryPoint = "CoCreateInstance", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        private static unsafe extern HRESULT CoCreateInstanceInvoke(ref Guid rclsid, [MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter, CLSCTX dwClsContext, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppObj);
+        public static unsafe extern HRESULT CoCreateInstance(in Guid rclsid, IntPtr pUnkOuter, CLSCTX dwClsContext, in Guid riid, out void* ppObj);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe TInterfaceTo? CastComInterfaceAs<TInterfaceFrom, TInterfaceTo>(this TInterfaceFrom interfaceFrom, in Guid interfaceToGuid)
+            where TInterfaceFrom : class
+            where TInterfaceTo : class
+        {
+            void* interfaceFromPtr = ComInterfaceMarshaller<TInterfaceFrom>.ConvertToUnmanaged(interfaceFrom);
+
+            Marshal.QueryInterface((nint)interfaceFromPtr, in interfaceToGuid, out nint ppv);
+            void* interfaceToPtr = (void*)ppv;
+
+            TInterfaceTo? interfaceTo = ComInterfaceMarshaller<TInterfaceTo>.ConvertToManaged(interfaceToPtr);
+            return interfaceTo;
+        }
+
+        internal static unsafe void Free<T>(T? obj)
+            where T : class
+        {
+            void* objPtr = ComInterfaceMarshaller<T>.ConvertToUnmanaged(obj);
+            ComInterfaceMarshaller<T>.Free(objPtr);
+        }
+#nullable restore
     }
 }
 #pragma warning restore IL2050

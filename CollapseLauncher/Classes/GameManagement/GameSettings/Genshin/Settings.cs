@@ -32,14 +32,15 @@ namespace CollapseLauncher.GameSettings.Genshin
             InitializeSettings();
         } 
 
+        #nullable enable
         public override void SaveSettings()
         {
             // Save Settings
             base.SaveSettings();
-            SettingsScreen.Save();
-            SettingsGeneralData.Save();
-            SettingVisibleBackground.Save();
-            SettingsWindowsHDR.Save();
+            SettingsScreen?.Save();
+            SettingsGeneralData?.Save();
+            SettingVisibleBackground?.Save();
+            SettingsWindowsHDR?.Save();
         }
 
         public override IGameSettingsUniversal AsIGameSettingsUniversal() => this;

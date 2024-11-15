@@ -1,27 +1,12 @@
 {
   "version": 1,
   "dependencies": {
-    "net8.0": {
-      "Google.Protobuf": {
-        "type": "Transitive",
-        "resolved": "3.27.2",
-        "contentHash": "0wdgA3LO9mBS477jieBFs4pU1sWhVtwv/P+i9nAEiFDQyUA7PPHDBbJL1CeqYtV18jLiq9og4n7wSVCO171OBg=="
-      },
-      "System.IO.Hashing": {
-        "type": "Transitive",
-        "resolved": "8.0.0",
-        "contentHash": "ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA=="
-      },
-      "hi3helper.enctool": {
-        "type": "Project",
-        "dependencies": {
-          "Google.Protobuf": "[3.27.2, )",
-          "Hi3Helper.Http": "[1.5.0, )",
-          "System.IO.Hashing": "[8.0.0, )"
-        }
-      },
-      "hi3helper.http": {
-        "type": "Project"
+    "net9.0": {
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[9.0.0-rc.2.24473.5, )",
+        "resolved": "9.0.0-rc.2.24473.5",
+        "contentHash": "mXyCgKqBIo/KOpY09FqjOU8d+LME2qowzzvBd1/viYmSpAKYfQ2w1WDOlh0FniY4xnrB/wmDiAo4frJvfCqT0w=="
       }
     }
   }

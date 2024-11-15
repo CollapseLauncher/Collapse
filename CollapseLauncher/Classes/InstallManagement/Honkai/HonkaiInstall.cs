@@ -62,12 +62,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             {
                 // If the confirm is 1 (verified) or -1 (cancelled), then return the code
                 int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                      _gameRepairManager =
-                                                                          new HonkaiRepair(_parentUI,
-                                                                              _gameVersionManager,
-                                                                              _gameCacheManager, _gameSettings,
-                                                                              true,
-                                                                              _gameDeltaPatchProperty.SourceVer));
+                                                                      _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as HonkaiRepair);
                 if (deltaPatchConfirm == -1 || deltaPatchConfirm == 1)
                 {
                     return deltaPatchConfirm;
@@ -77,6 +72,15 @@ namespace CollapseLauncher.InstallManager.Honkai
             // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
             return await base.StartPackageVerification(gamePackage);
         }
+
+#nullable enable
+        protected override IRepair GetGameRepairInstance(string? versionString) =>
+            new HonkaiRepair(_parentUI,
+                        _gameVersionManager,
+                        _gameCacheManager, _gameSettings,
+                        true,
+                        versionString);
+#nullable restore
 
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null,
                                                                     bool isOnlyInstallPackage = false,
@@ -261,6 +265,14 @@ namespace CollapseLauncher.InstallManager.Honkai
             // if game state is installed.
             if (gameState == GameInstallStateEnum.Installed
                 && localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            
+            // 9th check: If ACE-BASE.sys is detected
+            // AND game state is installed.
+            if (gameState == GameInstallStateEnum.Installed &&
+                localFileInfo.RelativePath.EndsWith("ACE-BASE.sys", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

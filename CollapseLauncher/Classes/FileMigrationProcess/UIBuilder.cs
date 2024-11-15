@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.Classes.FileDialogCOM;
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -71,7 +72,7 @@ namespace CollapseLauncher
             choosePathButton.Click += async (_, _) =>
             {
                 string pathResult = isFileTransfer ? await FileDialogNative.GetFileSavePicker(null, dialogTitle) :
-                                                       await FileDialogNative.GetFolderPicker(dialogTitle);
+                                                       await FileDialogHelper.GetRestrictedFolderPathDialog(dialogTitle);
 
                 choosePathTextBox!.Text = string.IsNullOrEmpty(pathResult) ? null : pathResult;
             };

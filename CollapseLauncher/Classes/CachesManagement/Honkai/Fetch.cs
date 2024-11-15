@@ -25,66 +25,56 @@ namespace CollapseLauncher
         private async Task<List<CacheAsset>> Fetch(CancellationToken token)
         {
             // Initialize asset index for the return
-            List<CacheAsset> returnAsset = new();
+            List<CacheAsset> returnAsset = [];
 
             // Initialize new proxy-aware HttpClient
             using HttpClient httpClientNew = new HttpClientBuilder()
-                .UseLauncherConfig()
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            // Use HttpClient instance on fetching
-            using Http httpClient = new Http(true, 5, 1000, _userAgent, httpClientNew);
-            try
+            // Use a new DownloadClient for fetching
+            DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
+
+            // Build _gameRepoURL from loading Dispatcher and Gateway
+            await BuildGameRepoURL(downloadClient, token);
+
+            // Iterate type and do fetch
+            foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
             {
-                // Subscribe the event listener
-                httpClient.DownloadProgress += _httpClient_FetchAssetProgress;
-
-                // Build _gameRepoURL from loading Dispatcher and Gateway
-                await BuildGameRepoURL(token);
-
-                // Iterate type and do fetch
-                foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
+                // Skip for unused type
+                switch (type)
                 {
-                    // Skip for unused type
-                    switch (type)
-                    {
-                        case CacheAssetType.Unused:
-                        case CacheAssetType.Dispatcher:
-                        case CacheAssetType.Gateway:
-                        case CacheAssetType.General:
-                        case CacheAssetType.IFix:
-                        case CacheAssetType.DesignData:
-                        case CacheAssetType.Lua:
-                            continue;
-                    }
-
-                    // uint = Count of the assets available
-                    // long = Total size of the assets available
-                    (int, long) count = await FetchByType(type, httpClient, returnAsset, token);
-
-                    // Write a log about the metadata
-                    LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
-                    LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
-                    LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
-
-                    // Increment the Total Size and Count
-                    _progressAllCountTotal += count.Item1;
-                    _progressAllSizeTotal += count.Item2;
+                    case CacheAssetType.Unused:
+                    case CacheAssetType.Dispatcher:
+                    case CacheAssetType.Gateway:
+                    case CacheAssetType.General:
+                    case CacheAssetType.IFix:
+                    case CacheAssetType.DesignData:
+                    case CacheAssetType.Lua:
+                        continue;
                 }
-            }
-            finally
-            {
-                // Unsubscribe the event listener and dispose Http client
-                httpClient.DownloadProgress -= _httpClient_FetchAssetProgress;
+
+                // uint = Count of the assets available
+                // long = Total size of the assets available
+                (int, long) count = await FetchByType(type, downloadClient, returnAsset, token);
+
+                // Write a log about the metadata
+                LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
+                LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
+                LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
+
+                // Increment the Total Size and Count
+                _progressAllCountTotal += count.Item1;
+                _progressAllSizeTotal += count.Item2;
             }
 
             // Return asset index
             return returnAsset;
         }
 
-        private async Task BuildGameRepoURL(CancellationToken token)
+        private async Task BuildGameRepoURL(DownloadClient downloadClient, CancellationToken token)
         {
             KianaDispatch dispatch = null;
             Exception lastException = null;
@@ -93,7 +83,7 @@ namespace CollapseLauncher
             {
                 try
                 {
-                    // Init the key and decrypt it if exist.
+                    // Init the key and decrypt it if existed.
                     if (string.IsNullOrEmpty(_gameVersionManager.GamePreset.DispatcherKey))
                     {
                         throw new NullReferenceException("Dispatcher key is null or empty!");
@@ -102,7 +92,7 @@ namespace CollapseLauncher
                     string key = _gameVersionManager.GamePreset.DispatcherKey;
 
                     // Try assign dispatcher
-                    dispatch = await KianaDispatch.GetDispatch(baseURL,
+                    dispatch = await KianaDispatch.GetDispatch(downloadClient, baseURL,
                                                                _gameVersionManager.GamePreset.GameDispatchURLTemplate,
                                                                _gameVersionManager.GamePreset.GameDispatchChannelName,
                                                                key, _gameVersion.VersionArray, token);
@@ -120,13 +110,13 @@ namespace CollapseLauncher
 
             // Get gatewayURl and fetch the gateway
             _gameGateway =
-                await KianaDispatch.GetGameserver(dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
+                await KianaDispatch.GetGameserver(downloadClient, dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
             _gameRepoURL = BuildAssetBundleURL(_gameGateway);
         }
 
-        private string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
+        private static string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
 
-        private async Task<(int, long)> FetchByType(CacheAssetType type, Http httpClient, List<CacheAsset> assetIndex, CancellationToken token)
+        private async Task<(int, long)> FetchByType(CacheAssetType type, DownloadClient downloadClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
             _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
@@ -145,9 +135,9 @@ namespace CollapseLauncher
 
             // Get a direct HTTP Stream
             await using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(
-                httpClient.GetHttpClient(), assetIndexURL, null, null, token);
+                downloadClient.GetHttpClient(), assetIndexURL, null, null, null, null, null, token);
 
-            using XORStream stream = new XORStream(remoteStream);
+            await using XORStream stream = new XORStream(remoteStream);
 
             // Build the asset index and return the count and size of each type
             (int, long) returnValue = await BuildAssetIndex(type, baseURL, stream, assetIndex, token);
@@ -189,7 +179,7 @@ namespace CollapseLauncher
                 // If isFirst flag set to true, then get the _gameSalt.
                 if (isFirst)
                 {
-                    _gameSalt = GetAssetIndexSalt(line.ToString());
+                    _gameSalt = GetAssetIndexSalt(line);
                     isFirst = false;
                     continue;
                 }
@@ -210,11 +200,11 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                CacheAsset content = null;
+                CacheAsset content;
                 try
                 {
                     // Deserialize the line and set the type
-                    content = line.Deserialize<CacheAsset>(InternalAppJSONContext.Default);
+                    content = line.Deserialize(InternalAppJSONContext.Default.CacheAsset);
                 }
                 catch (Exception ex)
                 {
@@ -248,19 +238,25 @@ namespace CollapseLauncher
 
             // Set isFirst flag as true if type is Data and
             // also convert type as lowered string.
-            bool isFirst = type == CacheAssetType.Data;
-            bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
+            
+            // Unused as of Aug 4th 2024, bonk @bagusnl if not true
+            // bool isFirst = type == CacheAssetType.Data;
+            // bool isNeedReadLuckyNumber = type == CacheAssetType.Data;
 
             // Parse asset index file from UABT
             BundleFile bundleFile = new BundleFile(stream);
             SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
 
-            // Try get the asset index file as byte[] and load it as TextAsset
+            // Try to get the asset index file as byte[] and load it as TextAsset
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");
             TextAsset dataTextAsset = new TextAsset(dataRaw);
 
             // Initialize local HTTP client
-            using HttpClient client = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = _threadCount });
+            using HttpClient client = new HttpClientBuilder()
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
+                .SetUserAgent(_userAgent)
+                .SetAllowedDecompression(DecompressionMethods.None)
+                .Create();
 
             // Iterate lines of the TextAsset in parallel
             await Parallel.ForEachAsync(EnumerateCacheTextAsset(type, dataTextAsset.GetStringList(), baseURL),
@@ -333,16 +329,16 @@ namespace CollapseLauncher
         public KianaDispatch GetCurrentGateway() => _gameGateway;
 
         public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(
-            Http httpClient, CacheAssetType type, CancellationToken token)
+            DownloadClient downloadClient, CacheAssetType type, CancellationToken token)
         {
             // Initialize asset index for the return
             List<CacheAsset> returnAsset = new();
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
-            await BuildGameRepoURL(token);
+            await BuildGameRepoURL(downloadClient, token);
 
             // Fetch the progress
-            _ = await FetchByType(type, httpClient, returnAsset, token);
+            _ = await FetchByType(type, downloadClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
             return (returnAsset, _gameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(_gameGateway),

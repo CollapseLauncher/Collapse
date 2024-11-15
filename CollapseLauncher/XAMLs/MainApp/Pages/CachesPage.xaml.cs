@@ -1,6 +1,7 @@
 ﻿#if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
+    using CollapseLauncher.Helper;
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
@@ -22,10 +23,9 @@
 
         public CachesPage()
         {
-            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-
-            this.InitializeComponent();
             BackgroundImgChanger.ToggleBackground(true);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+            this.InitializeComponent();
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -68,6 +68,17 @@
 
                 UpdateCachesBtn.Visibility = IsNeedUpdate ? Visibility.Visible : Visibility.Collapsed;
                 CheckUpdateBtn.Visibility = IsNeedUpdate ? Visibility.Collapsed : Visibility.Visible;
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    WindowUtility.Tray_ShowNotification(
+                        Lang._NotificationToast.CacheUpdateCheckCompleted_Title,
+                        IsNeedUpdate ?
+                            string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty._GameCache.AssetEntry.Count) :
+                            Lang._NotificationToast.CacheUpdateCheckCompletedNotFound_Subtitle
+                        );
+                }
             }
             catch (TaskCanceledException)
             {
@@ -99,6 +110,8 @@
                 InvokeProp.PreventSleep();
                 AddEvent();
 
+                int assetCount = CurrentGameProperty._GameCache.AssetEntry.Count;
+
                 await CurrentGameProperty._GameCache.StartUpdateRoutine();
 
                 UpdateCachesBtn.IsEnabled = false;
@@ -107,6 +120,15 @@
 
                 UpdateCachesBtn.Visibility = Visibility.Collapsed;
                 CheckUpdateBtn.Visibility = Visibility.Visible;
+
+                // If the current window is not in focus, then spawn the notification toast
+                if (!WindowUtility.IsCurrentWindowInFocus())
+                {
+                    WindowUtility.Tray_ShowNotification(
+                                                        Lang._NotificationToast.CacheUpdateDownloadCompleted_Title,
+                                                        string.Format(Lang._NotificationToast.CacheUpdateDownloadCompleted_Subtitle, assetCount)
+                                                       );
+                }
             }
             catch (TaskCanceledException)
             {
@@ -130,11 +152,11 @@
 
         private void SetMainCheckUpdateBtnProperty(object sender)
         {
-            string btnText = ((TextBlock)((StackPanel)((Button)sender).Content).Children[1]).Text;
+            string btnText = ((TextBlock)((Panel)((Button)sender).Content).Children[1]).Text;
             string btnTag = (string)((Button)sender).Tag;
             string btnToolTip = (string)ToolTipService.GetToolTip((Button)sender);
 
-            ((TextBlock)((StackPanel)CheckUpdateBtn.Content).Children[1]).Text = btnText;
+            ((TextBlock)((Panel)CheckUpdateBtn.Content).Children[1]).Text = btnText;
             CheckUpdateBtn.Tag = btnTag;
             ToolTipService.SetToolTip(CheckUpdateBtn, btnToolTip);
         }
@@ -192,6 +214,7 @@
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
+            BackgroundImgChanger.ToggleBackground(true);
             if (m_appMode == AppMode.Hi3CacheUpdater) return;
 
             if (GameInstallationState == GameInstallStateEnum.NotInstalled
@@ -222,6 +245,7 @@
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             CurrentGameProperty._GameCache?.CancelRoutine();
+            CurrentGameProperty._GameCache?.AssetEntry.Clear();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Microsoft.Win32;
@@ -164,7 +165,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Options: true, false <br/>
         /// Default: false
         /// </summary>
-        public bool EnableVSync { get; set; } = false;
+        public bool EnableVSync { get; set; }
 
         /// <summary>
         /// This defines "<c>Render Scale</c>" combobox In-game settings. <br/>
@@ -306,7 +307,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
 
-                    return byteStr.Deserialize<Model>(StarRailSettingsJSONContext.Default) ?? new Model();
+                    return byteStr.Deserialize(StarRailSettingsJSONContext.Default.Model) ?? new Model();
                 }
             }
             catch (Exception ex)
@@ -329,10 +330,17 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                
+                if (StarRailGameSettingsPage.CheckAbTest())
+                {
+                    LogWriteLine("[StarRailGameSettings::Model] Graphics settings could not be saved due to A/B test flag is found!",
+                                 LogType.Error, true);
+                    return;
+                }
 
                 RegistryRoot.SetValue(_GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
 
-                string data = this.Serialize(StarRailSettingsJSONContext.Default);
+                string data = this.Serialize(StarRailSettingsJSONContext.Default.Model);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG

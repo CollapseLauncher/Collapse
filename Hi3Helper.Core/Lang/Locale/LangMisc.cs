@@ -1,3 +1,5 @@
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -6,7 +8,9 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams
         {
             public LangMisc _Misc { get; set; } = LangFallback?._Misc;
-            public sealed class LangMisc
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangMisc
             {
                 public string SizePrefixes1000U              { get; set; } = LangFallback?._Misc.SizePrefixes1000U;
                 public string UpdateCompleteTitle            { get; set; } = LangFallback?._Misc.UpdateCompleteTitle;
@@ -30,6 +34,7 @@ namespace Hi3Helper
                 public string UseCurrentDir        { get; set; } = LangFallback?._Misc.UseCurrentDir;
                 public string UseDefaultDir        { get; set; } = LangFallback?._Misc.UseDefaultDir;
                 public string LocateDir            { get; set; } = LangFallback?._Misc.LocateDir;
+                public string EverythingIsOkay     { get; set; } = LangFallback?._Misc.EverythingIsOkay;
                 public string Okay                 { get; set; } = LangFallback?._Misc.Okay;
                 public string OkaySad              { get; set; } = LangFallback?._Misc.OkaySad;
                 public string OkayHappy            { get; set; } = LangFallback?._Misc.OkayHappy;
@@ -127,7 +132,11 @@ namespace Hi3Helper
                 public string IAcceptAgreement      { get; set; } = LangFallback?._Misc.IAcceptAgreement;
                 public string IDoNotAcceptAgreement { get; set; } = LangFallback?._Misc.IDoNotAcceptAgreement;
 
-                public string ImageCropperTitle { get; set; } = LangFallback?._Misc.ImageCropperTitle;
+                public string ImageCropperTitle     { get; set; } = LangFallback?._Misc.ImageCropperTitle;
+
+                public string IsBytesMoreThanBytes  { get; set; } = LangFallback?._Misc.IsBytesMoreThanBytes;
+                public string IsBytesUnlimited      { get; set; } = LangFallback?._Misc.IsBytesUnlimited;
+                public string IsBytesNotANumber     { get; set; } = LangFallback?._Misc.IsBytesNotANumber;
             }
         }
         #endregion

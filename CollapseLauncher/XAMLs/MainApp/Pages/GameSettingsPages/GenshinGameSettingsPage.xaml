@@ -12,7 +12,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.Genshin"
       xmlns:xaml="using:Microsoft.Graphics.Canvas.UI.Xaml"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -91,7 +93,6 @@
                                                         Height="24"
                                                         Margin="16,0,8,0"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -260,32 +261,28 @@
                                                                 </TextBlock>
                                                             </StackPanel>
                                                             <StackPanel Visibility="{x:Bind IsHDREnabled, Converter={StaticResource BooleanVisibilityConverter}}">
-                                                                <RichTextBlock IsTextSelectionEnabled="False"
-                                                                               Style="{ThemeResource BodyRichTextBlockStyle}"
-                                                                               TextAlignment="Left">
-                                                                    <Paragraph FontWeight="SemiBold">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" />
-                                                                    </Paragraph>
-                                                                    <Paragraph FontSize="13">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}" />
-                                                                        <LineBreak />
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}" />
-                                                                    </Paragraph>
-                                                                    <Paragraph FontSize="2" />
-                                                                    <Paragraph FontWeight="SemiBold">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" />
-                                                                    </Paragraph>
-                                                                    <Paragraph FontSize="13">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}" />
-                                                                    </Paragraph>
-                                                                    <Paragraph FontSize="2" />
-                                                                    <Paragraph FontWeight="SemiBold">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" />
-                                                                    </Paragraph>
-                                                                    <Paragraph FontSize="13">
-                                                                        <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help}" />
-                                                                    </Paragraph>
-                                                                </RichTextBlock>
+                                                                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity}" />
+                                                                </TextBlock>
+                                                                <TextBlock Margin="0,8,0,0">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_MaxLuminosity_Help}" />
+                                                                    <LineBreak />
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_Calibration_Help}" />
+                                                                </TextBlock>
+                                                                <TextBlock Margin="0,16,0,0"
+                                                                           Style="{ThemeResource SubtitleTextBlockStyle}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness}" />
+                                                                </TextBlock>
+                                                                <TextBlock Margin="0,8,0,0">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_UiBrightness_Help}" />
+                                                                </TextBlock>
+                                                                <TextBlock Margin="0,16,0,0"
+                                                                           Style="{ThemeResource SubtitleTextBlockStyle}">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness}" />
+                                                                </TextBlock>
+                                                                <TextBlock Margin="0,8,0,0">
+                                                                    <Run Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_HDR_SceneBrightness_Help}" />
+                                                                </TextBlock>
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </Flyout>
@@ -318,15 +315,13 @@
                                                     MaxWidth="514"
                                                     Margin="0,8"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="2000.0"
                                                     Minimum="300.0"
                                                     StepFrequency="50"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="100"
                                                     TickPlacement="Outside"
-                                                    ValueChanged="MaxLuminositySlider_ValueChanged"
-                                                    Value="{x:Bind MaxLuminosity, Mode=TwoWay}" />
+                                                    ValueChanged="MaxLuminositySlider_ValueChanged" />
                                             <xaml:CanvasSwapChainPanel x:Name="HDRCalibrationPanel2"
                                                                        Width="360"
                                                                        Height="203"
@@ -349,15 +344,13 @@
                                                     MinWidth="350"
                                                     Margin="0,8"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="500.0"
                                                     Minimum="100.0"
                                                     StepFrequency="5"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="25"
                                                     TickPlacement="Outside"
-                                                    ValueChanged="ScenePaperWhiteSlider_ValueChanged"
-                                                    Value="{x:Bind ScenePaperWhite, Mode=TwoWay}" />
+                                                    ValueChanged="ScenePaperWhiteSlider_ValueChanged" />
                                             <Grid>
                                                 <TextBlock VerticalAlignment="Center"
                                                            Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -377,15 +370,13 @@
                                                     MinWidth="350"
                                                     Margin="0,8,0,0"
                                                     HorizontalAlignment="Center"
-                                                    IsThumbToolTipEnabled="False"
                                                     Maximum="550.0"
                                                     Minimum="150.0"
                                                     StepFrequency="5"
                                                     Style="{ThemeResource FatSliderStyle}"
                                                     TickFrequency="25"
                                                     TickPlacement="Outside"
-                                                    ValueChanged="UiPaperWhiteSlider_ValueChanged"
-                                                    Value="{x:Bind UiPaperWhite, Mode=TwoWay}" />
+                                                    ValueChanged="UiPaperWhiteSlider_ValueChanged" />
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>
@@ -415,7 +406,6 @@
                                     </Grid>
                                     <Slider x:Name="GammaSlider"
                                             Margin="0,8,8,8"
-                                            IsThumbToolTipEnabled="False"
                                             Maximum="3.0"
                                             Minimum="1.4"
                                             StepFrequency="0.000001"

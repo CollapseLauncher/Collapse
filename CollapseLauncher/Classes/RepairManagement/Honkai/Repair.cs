@@ -5,10 +5,10 @@ using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -21,9 +21,12 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            _status.ActivityStatus = Lang._GameRepairPage.Status11;
-            _status.IsProgressAllIndetermined = true;
-            _status.IsProgressPerFileIndetermined = true;
+            if (_status != null)
+            {
+                _status.ActivityStatus                = Lang._GameRepairPage.Status11;
+                _status.IsProgressAllIndetermined     = true;
+                _status.IsProgressPerFileIndetermined = true;
+            }
 
             // Update status
             UpdateStatus();
@@ -32,128 +35,151 @@ namespace CollapseLauncher
             RestartStopwatch();
 
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig()
+            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
+                .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
                 .SetUserAgent(_userAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            // Use HttpClient instance on fetching
-            using Http _httpClient = new Http(true, 5, 1000, _userAgent, client);
+            // Initialize the new DownloadClient instance
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-            // Try running instance
-            try
+            // Iterate repair asset and check it using different method for each type
+            ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            if (_isBurstDownloadEnabled)
             {
-                // Assign downloader event
-                _httpClient.DownloadProgress += _httpClient_RepairAssetProgress;
-
-                // Iterate repair asset and check it using different method for each type
-                foreach (FilePropertiesRemote asset in
+                await Parallel.ForEachAsync(
+                    PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
                     EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
 #else
                     repairAssetIndex
 #endif
-                    )
+                    , assetProperty),
+                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
+                    async (asset, innerToken) =>
+                    {
+                        // Assign a task depends on the asset type
+                        Task assetTask = asset.AssetIndex.FT switch
+                        {
+                            FileType.Block => RepairAssetTypeBlocks(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Audio => RepairOrPatchTypeAudio(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            FileType.Video => RepairAssetTypeVideo(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
+                            _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken)
+                        };
+
+                        // Await the task
+                        await assetTask;
+                    });
+            }
+            else
+            {
+                foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
+                    PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                    EnforceHTTPSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                    , assetProperty))
                 {
                     // Assign a task depends on the asset type
-                    Task assetTask = (asset.FT switch
+                    Task assetTask = asset.AssetIndex.FT switch
                     {
-                        FileType.Blocks => RepairAssetTypeBlocks(asset, _httpClient, token),
-                        FileType.Audio => RepairOrPatchTypeAudio(asset, _httpClient, token),
-                        FileType.Video => RepairAssetTypeVideo(asset, _httpClient, token),
-                        _ => RepairAssetTypeGeneric(asset, _httpClient, token)
-                    });
+                        FileType.Block => RepairAssetTypeBlocks(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        FileType.Audio => RepairOrPatchTypeAudio(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        FileType.Video => RepairAssetTypeVideo(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                        _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
+                    };
 
                     // Await the task
                     await assetTask;
                 }
+            }
 
-                return true;
-            }
-            finally
-            {
-                // Unassign downloader event
-                _httpClient.DownloadProgress -= _httpClient_RepairAssetProgress;
-            }
+            return true;
         }
 
         #region VideoRepair
-        private async Task RepairAssetTypeVideo(FilePropertiesRemote asset, Http _httpClient, CancellationToken token) => await RepairAssetTypeGeneric(asset, _httpClient, token, asset.RN);
+        private async Task RepairAssetTypeVideo((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token) =>
+            await RepairAssetTypeGeneric(asset, downloadClient, downloadProgress, token, asset.AssetIndex.RN);
         #endregion
 
         #region AudioRepairOrPatch
-        private async Task RepairOrPatchTypeAudio(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
+        private async Task RepairOrPatchTypeAudio((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
-            if (asset.IsPatchApplicable)
+            if (asset.AssetIndex.IsPatchApplicable)
             {
-                await RepairTypeAudioActionPatching(asset, _httpClient, token);
+                await RepairTypeAudioActionPatching(asset, downloadClient, downloadProgress, token);
             }
             else
             {
-                string audioURL = ConverterTool.CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.RN);
-                await RepairAssetTypeGeneric(asset, _httpClient, token, audioURL);
+                string audioURL = ConverterTool.CombineURLFromString(string.Format(_audioBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AssetIndex.RN);
+                await RepairAssetTypeGeneric(asset, downloadClient, downloadProgress, token, audioURL);
             }
         }
 
-        private async Task RepairTypeAudioActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
+        private async Task RepairTypeAudioActionPatching((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
             // Increment total count current
             _progressAllCountCurrent++;
 
             // Declare variables for patch file and URL and new file path
-            string patchURL = ConverterTool.CombineURLFromString(string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AudioPatchInfo.Value.PatchFilename);
-            string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_audioPatchBaseLocalPath), asset.AudioPatchInfo.Value.PatchFilename);
-            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
-            string outputFilePath = inputFilePath + "_tmp";
+            if (asset.AssetIndex.AudioPatchInfo != null)
+            {
+                string patchURL       = ConverterTool.CombineURLFromString(string.Format(_audioPatchBaseRemotePath, $"{_gameVersion.Major}_{_gameVersion.Minor}", _gameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AssetIndex.AudioPatchInfo.Value.PatchFilename);
+                string patchPath      = Path.Combine(_gamePath, ConverterTool.NormalizePath(_audioPatchBaseLocalPath), asset.AssetIndex.AudioPatchInfo.Value.PatchFilename);
+                string inputFilePath  = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
+                string outputFilePath = inputFilePath + "_tmp";
 
-            // Set downloading patch status
-            UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status12, asset.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
-                true);
+                // Set downloading patch status
+                UpdateRepairStatus(
+                                   string.Format(Lang._GameRepairPage.Status12,             asset.AssetIndex.N),
+                                   string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                                   true);
 
-            // Run patching task
-            await RunPatchTask(_httpClient, token, asset.AudioPatchInfo.Value.PatchFileSize, asset.AudioPatchInfo.Value.PatchMD5Array,
-                patchURL, patchPath, inputFilePath, outputFilePath, true);
+                // Run patching task
+                await RunPatchTask(downloadClient, downloadProgress, token,         asset.AssetIndex.AudioPatchInfo.Value.PatchFileSize, asset.AssetIndex.AudioPatchInfo.Value.PatchMD5Array,
+                                   patchURL,       patchPath,        inputFilePath, outputFilePath,                                      true);
+            }
 
-            LogWriteLine($"File [T: {asset.FT}] {asset.N} has been updated!", LogType.Default, true);
+            LogWriteLine($"File [T: {asset.AssetIndex.FT}] {asset.AssetIndex.N} has been updated!", LogType.Default, true);
 
             // Pop repair asset display entry
-            PopRepairAssetEntry();
+            PopRepairAssetEntry(asset.AssetProperty);
         }
         #endregion
 
         #region GenericRepair
-        private async Task RepairAssetTypeGeneric(FilePropertiesRemote asset, Http _httpClient, CancellationToken token, string customURL = null)
+        private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, string customURL = null)
         {
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
             UpdateRepairStatus(
-                string.Format(asset.FT == FileType.Blocks ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.FT == FileType.Blocks ? asset.CRC : asset.N),
+                string.Format(asset.AssetIndex.FT == FileType.Block ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N),
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             // Set URL of the asset
-            string assetURL = customURL != null ? customURL : asset.RN;
-            string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+            string assetURL  = customURL ?? asset.AssetIndex.RN;
+            string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
 
-            if (asset.FT == FileType.Unused && !_isOnlyRecoverMain)
+            if (asset.AssetIndex.FT == FileType.Unused && !_isOnlyRecoverMain)
             {
                 // Remove unused asset
                 RemoveUnusedAssetTypeGeneric(assetPath);
-                LogWriteLine($"Unused {asset.N} has been deleted!", LogType.Default, true);
+                LogWriteLine($"Unused {asset.AssetIndex.N} has been deleted!", LogType.Default, true);
             }
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.S, assetPath, assetURL, _httpClient, token);
-                LogWriteLine($"File [T: {asset.FT}] {(asset.FT == FileType.Blocks ? asset.CRC : asset.N)} has been downloaded!", LogType.Default, true);
+                await RunDownloadTask(asset.AssetIndex.S, assetPath, assetURL, downloadClient, downloadProgress, token);
+                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
-            PopRepairAssetEntry();
+            PopRepairAssetEntry(asset.AssetProperty);
         }
 
         private void RemoveUnusedAssetTypeGeneric(string filePath)
@@ -176,47 +202,54 @@ namespace CollapseLauncher
         #endregion
 
         #region BlocksRepair
-        private async Task RepairAssetTypeBlocks(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
+        private async Task RepairAssetTypeBlocks((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
             // If patching is applicable, do patching
-            if (asset.IsPatchApplicable)
+            if (asset.AssetIndex.IsPatchApplicable)
             {
                 // Increment total count current and update the status
                 _progressAllCountCurrent++;
 
                 // Do patching
-                await RepairTypeBlocksActionPatching(asset, _httpClient, token);
+                await RepairTypeBlocksActionPatching(asset, downloadClient, downloadProgress, token);
 
                 return;
             }
 
             // Initialize URL of the block, then run repair generic task
-            string blockURL = asset.RN;
-            await RepairAssetTypeGeneric(asset, _httpClient, token, blockURL);
+            string blockURL = asset.AssetIndex.RN;
+            await RepairAssetTypeGeneric(asset, downloadClient, downloadProgress, token, blockURL);
         }
 
-        private async Task RepairTypeBlocksActionPatching(FilePropertiesRemote asset, Http _httpClient, CancellationToken token)
+        private async Task RepairTypeBlocksActionPatching((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
             // Declare variables for patch file and URL and new file path
-            string patchURL = ConverterTool.CombineURLFromString(string.Format(_blockPatchDiffBaseURL, asset.BlockPatchInfo.Value.PatchPairs[0].OldVersionDir), asset.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
-            string patchPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
-            string inputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath), asset.BlockPatchInfo.Value.PatchPairs[0].OldHashStr + ".wmv");
-            string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.N));
+            if (asset.AssetIndex.BlockPatchInfo != null)
+            {
+                string patchURL       = ConverterTool.CombineURLFromString(string.Format(_blockPatchDiffBaseURL, asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].OldVersionDir), asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
+                string patchPath      = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockPatchDiffPath), asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
+                string inputFilePath  = Path.Combine(_gamePath, ConverterTool.NormalizePath(_blockBasePath),      asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].OldHashStr + ".wmv");
+                string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
 
-            // Set downloading patch status
-            UpdateRepairStatus(
-                string.Format(Lang._GameRepairPage.Status13, asset.CRC),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
-                true);
+                // Set downloading patch status
+                UpdateRepairStatus(
+                                   string.Format(Lang._GameRepairPage.Status13,             asset.AssetIndex.CRC),
+                                   string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                                   true);
 
-            // Run patching task
-            await RunPatchTask(_httpClient, token, asset.BlockPatchInfo.Value.PatchPairs[0].PatchSize, asset.BlockPatchInfo.Value.PatchPairs[0].PatchHash,
-                patchURL, patchPath, inputFilePath, outputFilePath);
+                // Run patching task
+                await RunPatchTask(downloadClient, downloadProgress, token,         asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchSize, asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchHash,
+                                   patchURL,       patchPath,        inputFilePath, outputFilePath);
+            }
 
-            LogWriteLine($"File [T: {asset.FT}] {asset.BlockPatchInfo.Value.PatchPairs[0].OldHashStr} has been updated with new block {asset.BlockPatchInfo.Value.NewBlockName}!", LogType.Default, true);
+            if (asset.AssetIndex.BlockPatchInfo != null)
+            {
+                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].OldHashStr} has been updated with new block {asset.AssetIndex.BlockPatchInfo.Value.NewBlockName}!",
+                             LogType.Default, true);
+            }
 
             // Pop repair asset display entry
-            PopRepairAssetEntry();
+            PopRepairAssetEntry(asset.AssetProperty);
         }
         #endregion
     }

@@ -151,7 +151,7 @@
     "GameSettings_Panel4": "Outros",
     "GameSettings_Panel4ShowEventsPanel": "Exibir Painel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Exibir Painel de Redes Sociais",
-    "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
+    "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tempo de jogo",
     "GameSettings_Panel4CreateShortcutBtn": "Criar atalho",
     "GameSettings_Panel4AddToSteamBtn": "Adicionar à Steam",
 
@@ -163,7 +163,7 @@
     "GamePlaytime_Running_Info1": "Uma instância desse jogo está em execução, portanto o tempo de jogo não pode ser editado.",
     "GamePlaytime_Running_Info2": "Por favor, esteja ciente que fechar completamente o Collapse irá parar a contagem de tempo de jogo (com exceção do que foi jogado até o fechamento) e apenas as sessões iniciadas usando o Collapse serão contadas.",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_ToolTipDisplay": "Aberto pela última vez em {0:00}/{1:00}/{2:0000} às {3:00}:{4:00}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
 
     "PostPanel_Events": "Eventos",
     "PostPanel_Notices": "Notícias",
@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "Tempo limite excedido ao tentar instalar {0}",
     "Exception_DownloadTimeout2": "Verifique a estabilidade de sua internet! Se a velocidade de sua internet for lenta, por favor diminua o valor de processadores lógicos de download.",
-    "Exception_DownloadTimeout3": "**AVISO** Alterar o valor de processadores lógicos de download IRÁ fazer seu download começar do zero, e você terá que deletar os blocos de download existentes manualmente!"
+    "Exception_DownloadTimeout3": "**AVISO** Alterar o valor de processadores lógicos de download IRÁ fazer seu download começar do zero, e você terá que deletar os blocos de download existentes manualmente!",
+
+    "GameStateInvalid_Title": "Arquivo Diretório do jogo/Nome do Executável/Config.ini/App.Info é inválido.",
+    "GameStateInvalid_Subtitle1": "O Collapse Launcher detectou que as configurações do jogo são inválidas para a região:\n",
+    "GameStateInvalid_Subtitle2": "Recomenda-se executar um reparo para que o launcher detecte o jogo corretamente.",
+    "GameStateInvalid_Subtitle3": "Clique \"",
+    "GameStateInvalid_Subtitle4": "\" para reparar as propriedades do jogo ou clique \"",
+    "GameStateInvalid_Subtitle5": "\" para cancelar a operação.",
+
+    "GameStateInvalidFixed_Title": "As propriedades dos arquivos do jogo foram reparadas com sucesso.",
+    "GameStateInvalidFixed_Subtitle1": "As propriedades dos arquivos do jogo foram reparadas para a regiao:",
+    "GameStateInvalidFixed_Subtitle2": "Por favor, execute um \"",
+    "GameStateInvalidFixed_Subtitle3": "\" no \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu para ter certeza de que todos os arquivos foram verificados."
   },
 
   "_GameRepairPage": {
@@ -429,19 +442,19 @@
     "AppThreads_Help5": "Esse processador lógico controlará o processo de extração/verificação durante a instalação/reparação do jogo.",
     "AppThreads_Help6": "Observação: Essa configuração não funciona mais durante a instalação de Honkai Impact 3rd.",
 
-    "SophonSettingsTitle": "Sophon Mode Settings",
-    "SophonHelp_Title": "What is Sophon Downloader Mode?",
-    "SophonHelp_1": "\"Sophon\" is a new download mechanism introduced by HoYoVerse recently and allows files to be downloaded into \"chunks\" rather than downloading a big ZIP archive. The benefits are mainly a lower drive space requirement and increased efficiency for downloads and updates.",
-    "SophonHelp_2": "This method might be slower for those who uses Hard Drives for their game.",
-    "SophonHelp_IndicatorTitle": "Indicator Icons",
-    "SophonHelp_Indicator1": "File Size to Write on Disk",
-    "SophonHelp_Indicator2": "File Size to Download",
-    "SophonHelp_Indicator3": "Disk I/O Speed on Write",
-    "SophonHelp_Indicator4": "Network I/O Speed on Write",
-    "SophonHelp_Thread": "This controls number of simultaneous chunks download Collapse is doing. Lower this value if you get sudden stuck when downloading.",
-    "SophonHttpNumberBox": "Maximum HTTP Connections",
-    "SophonHelp_Http": "This controls maximum number of network connection being established by Collapse to download the chunks.",
-    "SophonToggle": "Enable Sophon on Supported Regions",
+    "SophonSettingsTitle": "Configurações do download em Modo Sophon",
+    "SophonHelp_Title": "O que é o Modo de Download Sophon?",
+    "SophonHelp_1": "\"Sophon\" é um novo mecanismo de download criado recentemente pela HoYoVerse e permite que arquivos sejam baixados em \"pedaços\" ao invés de baixar apenas um arquivo ZIP grande. Os principais benefícios envolvem requerer menos espaço de disco e maior eficiência para downloads e atualizações.",
+    "SophonHelp_2": "Este método pode ser mais devagar para aqueles que instalaram o jogo em um HD ao invés de um SSD.",
+    "SophonHelp_IndicatorTitle": "Ícones de indicador",
+    "SophonHelp_Indicator1": "Tamanho do arquivo a ser escrito no disco",
+    "SophonHelp_Indicator2": "Tamanho do arquivo para download",
+    "SophonHelp_Indicator3": "Velocidade de E/S do disco na gravação",
+    "SophonHelp_Indicator4": "Velocidade de E/S de rede na gravação",
+    "SophonHelp_Thread": "Controla o número de \"pedaços\" que o Collapse está baixando simultaneamente. Diminua esse valor caso seu download fique travado.",
+    "SophonHttpNumberBox": "Máximo de conexões HTTP",
+    "SophonHelp_Http": "Controla o número de conexões estabelecidas pelo Collapse para baixar os \"pedaços\".",
+    "SophonToggle": "Habilita o Modo de Download Sophon nas regiões suportadas",
 
     "AppThreads_Attention": "Aviso",
     "AppThreads_Attention1": "Antes de alterar o",
@@ -467,6 +480,8 @@
     "Update_NewVer1": "A atualização",
     "Update_NewVer2": "está disponível!",
     "Update_LatestVer": "O seu cliente está atualizado.",
+    "Update_SeeChangelog": "Veja as últimas mudanças (Inglês)",
+    "Update_ChangelogTitle": "Últimas mudanças",
 
     "AppFiles": "Gerenciamento de Arquivos do Cliente",
     "AppFiles_OpenDataFolderBtn": "Abrir Pasta de Dados do Cliente",
@@ -528,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "AVISO: Nenhuma Placa de Vídeo com suporte à Vulkan foi encontrada e o modo CPU será usado. Isso aumentará muito o tempo de processamento da imagem.",
     "Waifu2X_Warning_D3DMappingLayers": "AVISO: Seu sistema tem o \"Pacote de Compatibilidade OpenCL™, OpenGL® e Vulkan®\" instalado. Foi informado que ele é incompatível com o Vulkan Loader e pode travar em algumas Placas de Vídeo. Por favor, remova esse pacote para ativar o modo Placa de Vídeo.",
     "Waifu2X_Error_Loader": "ERRO: Falha ao iniciar Vulkan Loader. Verifique se você tem uma Placa de Vídeo compatível com Vulkan e com o driver da Placa de Vídeo adequado instalado.",
-    "Waifu2X_Error_Output": "ERRO: Falha ao passar no autoteste do Waifu2X, obteve uma imagem gerada vazia."
+    "Waifu2X_Error_Output": "ERRO: Falha ao passar no autoteste do Waifu2X, obteve uma imagem gerada vazia.",
+
+    "NetworkSettings_Title": "Configurações de Conexão",
+    "NetworkSettings_Proxy_Title": "Configurações de Proxy",
+
+    "NetworkSettings_Proxy_Hostname": "Hostname do Proxy",
+    "NetworkSettings_Proxy_HostnameHelp1": "Representa a URL do Proxy a ser utilizado.",
+    "NetworkSettings_Proxy_HostnameHelp2": "O Collapse suporta apenas proxys do tipo",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS e SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "no momento.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "A URL inserida é inválida!",
+    "NetworkSettings_ProxyWarn_NotSupported": "O esquema de proxy não é suportado! O Collapse suporta apenas http://, https://, socks4://, socks4a:// e socks5://",
+
+    "NetworkSettings_Proxy_Username": "Nome de usuário do Proxy",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Insira o Nome de usuário do Proxy",
+    "NetworkSettings_Proxy_UsernameHelp1": "Padrão:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Vazio]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Deixe este campo vazio caso seu proxy não necessite de autenticação.",
+
+    "NetworkSettings_Proxy_Password": "Senha do Proxy",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Insira a Senha do Proxy",
+    "NetworkSettings_Proxy_PasswordHelp1": "Padrão:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Vazio]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Deixe este campo vazio caso seu proxy não necessite de autenticação.",
+
+    "NetworkSettings_ProxyTest_Button": "Teste a conexão do Proxy",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Verificando conexão...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "O teste de conexão do Proxy foi bem-sucedido!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "O teste falhou! O Proxy não é comunicável",
+
+    "NetworkSettings_Http_Title": "Configurações do cliente .NET HTTP",
+    "NetworkSettings_Http_Redirect": "Permitir redirecionamento HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Permitir cookies HTTP simulados",
+    "NetworkSettings_Http_UntrustedHttps": "Permitir certificado HTTPS não confiável",
+    "NetworkSettings_Http_Timeout": "Tempo limite do Cliente HTTP (em segundos)"
   },
 
   "_Misc": {
@@ -542,7 +592,7 @@
     "TimeRemainHMSFormat": "{0:%h}h{0:%m}m{0:%s}s restante(s)",
     "TimeRemainHMSFormatPlaceholder": "--h--m--s restante(s)",
     "Speed": "Velocidade: {0}/s",
-    "SpeedTextOnly": "Speed",
+    "SpeedTextOnly": "Velocidade",
     "SpeedPerSec": "{0}/s",
     "SpeedPlaceholder": "Velocidade: - /s",
     "PerFromTo": "{0} / {1}",
@@ -593,9 +643,9 @@
     "LangNameKR": "Coreano",
 
     "Downloading": "Baixando",
-    "Updating": "Updating",
-    "UpdatingAndApplying": "Update + Applying",
-    "Applying": "Applying",
+    "Updating": "Atualizando",
+    "UpdatingAndApplying": "Atualizar + Aplicar",
+    "Applying": "Aplicando",
     "Merging": "Mesclando",
     "Idle": "Em Espera",
     "Change": "Mudar",
@@ -832,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "Não foi possível encontrar uma pasta userdata válida.\n\nPor favor, certifique-se de fazer o login pelo menos uma vez no cliente da Steam antes de tentar usar essa funcionalidade.",
 
     "DownloadSettingsTitle": "Configurações de Download",
-    "DownloadSettingsOption1": "Iniciar jogo após instalação"
+    "DownloadSettingsOption1": "Iniciar jogo após instalação",
+    
+    "OpenInExternalBrowser": "Abrir no navegador externo",
+    "CloseOverlay": "Fechar a overlay"
   },
 
   "_FileMigrationProcess": {
@@ -1283,29 +1336,29 @@
   },
 
   "_FileCleanupPage": {
-    "Title": "Files Clean-up",
-    "TopButtonRescan": "Re-Scan",
-    "NoFilesToBeDeletedText": "No files need to be deleted!",
-    "ListViewFieldFileName": "File Name",
-    "ListViewFieldFileSize": "File Size",
-    "LoadingTitle": "Processing",
-    "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
-    "LoadingSubtitle2": "Checking pkg_version's availability...",
-    "BottomButtonDeleteAllFiles": "Delete All Files",
-    "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
-    "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
-    "BottomCheckboxNoFileSelected": "No File Selected",
-    "DialogDeletingFileTitle": "Deleting Files",
-    "DialogDeletingFileSubtitle1": "You're about to",
-    "DialogDeletingFileSubtitle2": "delete {0} file(s)",
-    "DialogDeletingFileSubtitle3": "which contains",
-    "DialogDeletingFileSubtitle4": "{0} in size.",
-    "DialogDeletingFileSubtitle5": "Are you sure to delete the files?",
-    "DialogDeleteSuccessTitle": "Files Deleted!",
-    "DialogDeleteSuccessSubtitle1": "{0} file(s) have been successfully deleted",
-    "DialogDeleteSuccessSubtitle2": "with {0} failed to delete",
-    "DialogMoveToRecycleBin": "Move to Recycle Bin",
-    "DialogTitleMovedToRecycleBin": "Files moved to Recycle Bin!"
+    "Title": "Limpeza de arquivos",
+    "TopButtonRescan": "Re-examinar",
+    "NoFilesToBeDeletedText": "Nenhum arquivo precisa ser deletado!",
+    "ListViewFieldFileName": "Nome do arquivo",
+    "ListViewFieldFileSize": "Tamanho do arquivo",
+    "LoadingTitle": "Processando",
+    "LoadingSubtitle1": "Calculando arquivos existentes ({0} arquivo(s) encontrado(s) - {1} no total)...",
+    "LoadingSubtitle2": "Chegando a disponibilidade do pkg_version",
+    "BottomButtonDeleteAllFiles": "Deletar todos os arquivos",
+    "BottomButtonDeleteSelectedFiles": "Deletar {0} arquivo(s) selecionado(s).",
+    "BottomCheckboxFilesSelected": "{0} arquivo(s) selecionado(s) ({1} / {2} Total)",
+    "BottomCheckboxNoFileSelected": "Nenhum arquivo selecionado",
+    "DialogDeletingFileTitle": "Deletando arquivos",
+    "DialogDeletingFileSubtitle1": "Você está prestes a",
+    "DialogDeletingFileSubtitle2": "deletar {0} arquivo(s)",
+    "DialogDeletingFileSubtitle3": "que contém",
+    "DialogDeletingFileSubtitle4": "{0} de tamanho.",
+    "DialogDeletingFileSubtitle5": "Tem certeza que quer deletar os arquivos?",
+    "DialogDeleteSuccessTitle": "Arquivos deletados!",
+    "DialogDeleteSuccessSubtitle1": "{0} arquivos(s) deletado(s) com sucesso.",
+    "DialogDeleteSuccessSubtitle2": "com {0} que falharam na exclusão.",
+    "DialogMoveToRecycleBin": "Mover para a Lixeira",
+    "DialogTitleMovedToRecycleBin": "Arquivos movidos para a Lixeira!"
   },
 
   "_OOBEStartUpMenu": {

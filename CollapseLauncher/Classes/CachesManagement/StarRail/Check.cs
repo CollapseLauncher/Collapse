@@ -66,10 +66,6 @@ namespace CollapseLauncher
             {
                 throw ex.Flatten().InnerExceptions.First();
             }
-            catch (Exception)
-            {
-                throw;
-            }
 
             // Return the asset index
             return returnAsset;
@@ -108,16 +104,15 @@ namespace CollapseLauncher
             }
 
             // If above passes, then run the CRC check
-            using (FileStream fs = new FileStream(asset.LocalName, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength))
-            {
-                // Calculate the asset CRC (MD5)
-                byte[] hashArray = await CheckHashAsync(fs, MD5.Create(), token);
+            await using FileStream fs = await NaivelyOpenFileStreamAsync(UsePersistent ? fileInfoPersistent : fileInfoStreaming,
+                                                                         FileMode.Open, FileAccess.Read, FileShare.Read);
+            // Calculate the asset CRC (MD5)
+            byte[] hashArray = await CheckHashAsync(fs, MD5.Create(), token);
 
-                // If the asset CRC doesn't match, then add the file to asset index.
-                if (!IsArrayMatch(asset.Hash, hashArray))
-                {
-                    AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.Hash);
-                }
+            // If the asset CRC doesn't match, then add the file to asset index.
+            if (!IsArrayMatch(asset.Hash, hashArray))
+            {
+                AddGenericCheckAsset(asset, CacheAssetStatus.Obsolete, returnAsset, hashArray, asset.Hash);
             }
         }
 

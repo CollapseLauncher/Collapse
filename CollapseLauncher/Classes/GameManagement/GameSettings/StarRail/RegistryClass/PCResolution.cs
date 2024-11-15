@@ -8,8 +8,6 @@ using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
@@ -117,13 +115,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    JsonSerializerOptions options = new JsonSerializerOptions()
-                    {
-                        TypeInfoResolver = StarRailSettingsJSONContext.Default,
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                    };
-
-                    return byteStr.Deserialize<PCResolution>(StarRailSettingsJSONContext.Default) ?? new PCResolution();
+                    return byteStr.Deserialize(StarRailSettingsJSONContext.Default.PCResolution) ?? new PCResolution();
                 }
             }
             catch (Exception ex)
@@ -147,7 +139,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(StarRailSettingsJSONContext.Default);
+                string data = this.Serialize(StarRailSettingsJSONContext.Default.PCResolution);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);

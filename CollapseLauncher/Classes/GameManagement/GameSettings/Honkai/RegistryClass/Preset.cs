@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -16,12 +16,12 @@ namespace CollapseLauncher.GameSettings
         public const string DefaultPresetName = "Custom";
     }
 
-    internal class Preset<T1, TObjectType> where T1 : IGameSettingsValue<T1> where TObjectType : JsonSerializerContext
+    internal class Preset<T1, TObjectType> where T1 : IGameSettingsValue<T1>
     {
 #nullable enable
         #region Fields
         private string CurrentPresetName = PresetConst.DefaultPresetName;
-        private Dictionary<string, T1>? _Presets = null;
+        private Dictionary<string, T1>? _Presets;
         #endregion
 
         #region Properties
@@ -51,11 +51,11 @@ namespace CollapseLauncher.GameSettings
         #endregion
 
         #region Methods
-        public Preset(string presetJSONPath, TObjectType jsonContext)
+        public Preset(string presetJSONPath, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
             using (FileStream fs = new FileStream(presetJSONPath, FileMode.Open, FileAccess.Read))
             {
-                Presets = fs.Deserialize<Dictionary<string, T1>>(jsonContext);
+                Presets = fs.Deserialize(jsonType);
                 PresetKeys = GetPresetKeys();
             }
         }
@@ -66,10 +66,10 @@ namespace CollapseLauncher.GameSettings
         /// <param name="gameType">The type of the game</param>
         /// <param name="jsonContext">JSON source generation context</param>
         /// <returns>The instance of preset</returns>
-        public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, TObjectType jsonContext)
+        public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
             string presetPath = Path.Combine(AppFolder, $"Assets\\Presets\\{gameType}\\", $"{typeof(T1).Name}.json");
-            return new Preset<T1, TObjectType>(presetPath, jsonContext);
+            return new Preset<T1, TObjectType>(presetPath, jsonType);
         }
 
         /// <param name="key">The key of the preset</param>
@@ -92,7 +92,7 @@ namespace CollapseLauncher.GameSettings
             return result;
         }
 
-        /// <returns>Returns a <c>List<string></c> of the preset</returns>
+        /// <returns>Returns a <c>List-string</c> of the preset</returns>
         /// <exception cref="NullReferenceException"></exception>
         private List<string> GetPresetKeys()
         {
@@ -103,29 +103,24 @@ namespace CollapseLauncher.GameSettings
 
             return Presets.Keys.ToList();
         }
-
+        
         /// <summary>
         /// Set the preset name based on equality of the given value with the preset. If doesn't match, it will be set to <c>DefaultPresetName</c>
         /// </summary>
         /// <param name="value">The value to be compared with the preset</param>
         /// <exception cref="NullReferenceException">If <code>RegistryRoot</code> is null</exception>
-        public void SetPresetKey(T1 value)
+        public void SetPresetKey(T1? value)
         {
-            string presetKey = PresetConst.DefaultPresetName;
-            string presetRegistryName = $"Preset_{typeof(T1).Name}";
-
             if (value != null)
             {
                 KeyValuePair<string, T1>? foundPreset = Presets?.Where(x => x.Value.Equals(value)).FirstOrDefault();
 
                 if (foundPreset.HasValue)
                 {
-                    presetKey = CurrentPresetName = foundPreset.Value.Key;
+                    CurrentPresetName = foundPreset.Value.Key;
                 }
-
                 return;
             }
-
             CurrentPresetName = PresetConst.DefaultPresetName;
         }
 
@@ -163,6 +158,5 @@ namespace CollapseLauncher.GameSettings
             RegistryRoot.SetValue(presetRegistryName, CurrentPresetName, RegistryValueKind.String);
         }
         #endregion
-#nullable disable
     }
 }

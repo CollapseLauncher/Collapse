@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Classes.FileDialogCOM;
+using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using System;
@@ -51,6 +52,11 @@ namespace CollapseLauncher
             {
                 if (!await IsOutputPathSpaceSufficient(this.inputPath, this.outputPath))
                     throw new OperationCanceledException($"Disk space is not sufficient. Cancelling!");
+
+                if (FileDialogHelper.IsRootPath(outputPath))
+                {
+                    throw new NotSupportedException("Cannot move game to the root of the drive!");
+                }
 
                 uiRef = BuildMainMigrationUI();
                 string _outputPath = await StartRoutineInner(uiRef.Value);

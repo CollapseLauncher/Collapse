@@ -5,7 +5,7 @@ using System.IO;
 
 namespace CollapseLauncher.GameSettings.Base
 {
-    internal class SettingsBase : ImportExportBase, IGameSettings, IGameSettingsUniversal
+    internal class SettingsBase : ImportExportBase, IGameSettings
     {
         #region Base Properties
         public virtual CustomArgs SettingsCustomArgument { get; set; }
@@ -15,13 +15,11 @@ namespace CollapseLauncher.GameSettings.Base
         #endregion
 
 #nullable enable
-        private static string? _registryPath = null;
-        private static RegistryKey? _registryRoot = null;
+        private static RegistryKey? _registryRoot;
 
         internal static string? RegistryPath
         {
-            get => _registryPath = string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ?
-                null :
+            get => string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ? null :
                 Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
         }
 
@@ -42,7 +40,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
-        public SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
+        protected SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
 
         public virtual void InitializeSettings()
         {
@@ -52,11 +50,13 @@ namespace CollapseLauncher.GameSettings.Base
         }
 
 #nullable disable
-        protected static IGameVersionCheck _gameVersionManager { get; set; }
+        public static IGameVersionCheck _gameVersionManager { get; set; }
 
         public virtual void ReloadSettings() => InitializeSettings();
 
-        public virtual void SaveSettings()
+        public virtual void SaveSettings() => SaveBaseSettings();
+
+        public void SaveBaseSettings()
         {
             SettingsCustomArgument.Save();
             SettingsCollapseScreen.Save();

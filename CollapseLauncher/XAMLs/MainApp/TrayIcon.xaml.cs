@@ -1,11 +1,13 @@
 using CollapseLauncher.Helper;
 using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
+using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.InvokeProp;
@@ -16,15 +18,17 @@ namespace CollapseLauncher
 {
     public sealed partial class TrayIcon
     {
-        #region Locales
-        private readonly string _popupHelp1 = Lang._Misc.Taskbar_PopupHelp1;
-        private readonly string _popupHelp2 = Lang._Misc.Taskbar_PopupHelp2;
+        internal static TrayIcon Current { get; private set; }
 
-        private readonly string _showApp     = Lang._Misc.Taskbar_ShowApp;
-        private readonly string _hideApp     = Lang._Misc.Taskbar_HideApp;
-        private readonly string _showConsole = Lang._Misc.Taskbar_ShowConsole;
-        private readonly string _hideConsole = Lang._Misc.Taskbar_HideConsole;
-        private readonly string _exitApp     = Lang._Misc.Taskbar_ExitApp;
+        #region Locales
+        private string _popupHelp1 => Lang._Misc.Taskbar_PopupHelp1;
+        private string _popupHelp2 => Lang._Misc.Taskbar_PopupHelp2;
+
+        private string _showApp     => Lang._Misc.Taskbar_ShowApp;
+        private string _hideApp     => Lang._Misc.Taskbar_HideApp;
+        private string _showConsole => Lang._Misc.Taskbar_ShowConsole;
+        private string _hideConsole => Lang._Misc.Taskbar_HideConsole;
+        private string _exitApp     => Lang._Misc.Taskbar_ExitApp;
 
         // ReSharper disable UnusedMember.Local
         private readonly string _preview = Lang._Misc.BuildChannelPreview;
@@ -67,17 +71,43 @@ namespace CollapseLauncher
 #endif
             CloseButton.Text = _exitApp;
 
-            // Switch toggle text to see if its started with Start
+            // Switch toggle text to see if it's started with Start
             MainTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showApp : _hideApp;
             ConsoleTaskbarToggle.Text = (m_appMode == AppMode.StartOnTray) ? _showConsole : _hideConsole;
 
             CollapseTaskbar.Icon = Icon.FromHandle(LauncherConfig.AppIconSmall);
             CollapseTaskbar.Visibility = Visibility.Visible;
+            
+            CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
+
+            Current = this;
         }
 
         public void Dispose()
         {
             CollapseTaskbar.Dispose();
+        }
+
+        private void BalloonChangedEvent(object o, MessageWindow.BalloonToolTipChangedEventArgs args)
+        {
+            // Subscribe to the event when the Balloon is visible, and unsub when it's not.
+            // Due to bug, this MouseEvent is not available when the notification already went to the tray.
+            if (args.IsVisible)
+                CollapseTaskbar.TrayIcon.MessageWindow.MouseEventReceived += NotificationOnMouseEventReceived;
+            else
+                CollapseTaskbar.TrayIcon.MessageWindow.MouseEventReceived -= NotificationOnMouseEventReceived;
+        }
+
+        private bool _mouseEventProcessing;
+        private async void NotificationOnMouseEventReceived(object o, MessageWindow.MouseEventReceivedEventArgs args)
+        {
+            if (_mouseEventProcessing) return;
+            if (args.MouseEvent != MouseEvent.BalloonToolTipClicked) return;
+            
+            _mouseEventProcessing = true;
+            BringToForeground();
+            await Task.Delay(250);
+            _mouseEventProcessing = false;
         }
         #endregion
 
@@ -95,7 +125,7 @@ namespace CollapseLauncher
         private void ToggleConsoleVisibilityButton() => ToggleConsoleVisibility();
 
         /// <summary>
-        /// Toggle both main and console visibility while avoiding flip flop condition
+        /// Toggle both main and console visibility while avoiding flip-flop condition
         /// </summary>
         [RelayCommand]
         private void ToggleAllVisibilityInvoke() => ToggleAllVisibility();
@@ -123,6 +153,7 @@ namespace CollapseLauncher
         /// <summary>
         /// Toggle console window visibility
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void ToggleConsoleVisibility(bool forceShow = false)
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
@@ -155,15 +186,24 @@ namespace CollapseLauncher
 
             if (isVisible && !forceShow)
             {
-                WindowUtility.CurrentWindow?.Hide();
+                WindowUtility.CurrentWindow?.Hide(false);
+                EfficiencyModeWrapper(true);
                 MainTaskbarToggle.Text     = _showApp;
                 // Increase refresh rate to 1000ms when main window is hidden
                 RefreshRate = RefreshRateSlow;
                 LogWriteLine("Main window is hidden!");
+
+                // Spawn the hidden to tray toast notification
+                ShowNotification(
+                    Lang._NotificationToast.WindowHiddenToTray_Title,
+                    Lang._NotificationToast.WindowHiddenToTray_Subtitle, NotificationIcon.None,
+                    null, false, false
+                    );
             }
             else
             {
-                WindowUtility.CurrentWindow?.Show();
+                WindowUtility.CurrentWindow?.Show(false);
+                EfficiencyModeWrapper(false);
                 SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
                 // Revert refresh rate to its default
@@ -201,6 +241,7 @@ namespace CollapseLauncher
         /// <summary>
         /// Bring all windows into foreground, also brought all windows if they were hidden in taskbar.
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void BringToForeground()
         {
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
@@ -230,6 +271,7 @@ namespace CollapseLauncher
         /// <summary>
         /// Update tray context menu
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public void UpdateContextMenu()
         {
             // Enable visibility toggle for console if the console is enabled
@@ -250,12 +292,82 @@ namespace CollapseLauncher
             bool isMainWindowVisible = IsWindowVisible(mainWindowHandle);
             bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && IsWindowVisible(consoleWindowHandle);
 
-            if (isConsoleVisible) ConsoleTaskbarToggle.Text = _hideConsole;
-            else ConsoleTaskbarToggle.Text                  = _showConsole;
-
-            if (isMainWindowVisible) MainTaskbarToggle.Text = _hideApp;
-            else MainTaskbarToggle.Text                     = _showApp;
+            ConsoleTaskbarToggle.Text = isConsoleVisible ? _hideConsole : _showConsole;
+            MainTaskbarToggle.Text    = isMainWindowVisible ? _hideApp : _showApp;
         }
+
+        /// <summary>
+        /// Displays a balloon notification with the specified title,
+        /// text, and predefined icon or custom icon in the taskbar for the specified time period.
+        /// <remarks>This method currently does not support callback. Clicking notification will not do anything.</remarks>
+        /// </summary>
+        /// <param name="title">The title to display on the balloon tip.</param>
+        /// <param name="message">The text to display on the balloon tip.</param>
+        /// <param name="icon">A symbol that indicates the severity.</param>
+        /// <param name="customIconHandle">A custom icon.</param>
+        /// <param name="largeIcon">True to allow large icons (Windows Vista and later).</param>
+        /// <param name="sound">If false do not play the associated sound.</param>
+        /// <param name="respectQuietTime">
+        /// Do not display the balloon notification if the current user is in "quiet time", 
+        /// which is the first hour after a new user logs into his or her account for the first time. 
+        /// During this time, most notifications should not be sent or shown. 
+        /// This lets a user become accustomed to a new computer system without those distractions. 
+        /// Quiet time also occurs for each user after an operating system upgrade or clean installation. 
+        /// A notification sent with this flag during quiet time is not queued; 
+        /// it is simply dismissed unshown. The application can resend the notification later 
+        /// if it is still valid at that time. <br/>
+        /// Because an application cannot predict when it might encounter quiet time, 
+        /// we recommended that this flag always be set on all appropriate notifications 
+        /// by any application that means to honor quiet time. <br/>
+        /// During quiet time, certain notifications should still be sent because 
+        /// they are expected by the user as feedback in response to a user action, 
+        /// for instance when he or she plugs in a USB device or prints a document.<br/>
+        /// If the current user is not in quiet time, this flag has no effect.
+        /// </param>
+        /// <param name="realtime">
+        /// Windows Vista and later. <br/>
+        /// If the balloon notification cannot be displayed immediately, discard it. 
+        /// Use this flag for notifications that represent real-time information 
+        /// which would be meaningless or misleading if displayed at a later time.  <br/>
+        /// For example, a message that states "Your telephone is ringing."
+        /// </param>
+        // Taken from H.NotifyIcon.TrayIcon.ShowNotification docs
+        // https://github.com/HavenDV/H.NotifyIcon/blob/89356c52bedae45b1fd451531e8ac8cfe8b13086/src/libs/H.NotifyIcon.Shared/TaskbarIcon.Notifications.cs#L14
+        public void ShowNotification(string           title,
+                                     string           message,
+                                     NotificationIcon icon             = NotificationIcon.None,
+                                     IntPtr?          customIconHandle = null,
+                                     bool             largeIcon        = false,
+                                     bool             sound            = true,
+                                     bool             respectQuietTime = true,
+                                     bool             realtime         = false)
+        {
+            try
+            {
+                CollapseTaskbar.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
+            }
+            catch (Exception e) //Just write a log if it throws an error, not that important anyway o((⊙﹏⊙))o.
+            {
+                LogWriteLine($"Failed when trying to send notification!\r\n\tTitle: {title}\r\n\t{message}\r\n{e}",
+                             LogType.Error, true);
+            }
+        }
+        
+        #endregion
+
+        #region Static Methods
+        private static void EfficiencyModeWrapper(bool enableEfficiency)
+        {
+            try
+            {
+                H.NotifyIcon.EfficiencyMode.EfficiencyModeUtilities.SetEfficiencyMode(enableEfficiency);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to toggle Efficiency Mode!\r\n{ex}", LogType.Error, true);
+            }
+        }
+
         #endregion
     }
 }

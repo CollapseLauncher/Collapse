@@ -11,7 +11,9 @@
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:static="using:CollapseLauncher.GameSettings.Zenless"
+      CacheMode="BitmapCache"
       Loaded="InitializeSettings"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>
@@ -465,8 +467,35 @@
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock MaxWidth="128"
+                                               Margin="0,0,0,8"
+                                               HorizontalAlignment="Left"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
+                                               TextWrapping="WrapWholeWords" />
+                                    <ComboBox x:Name="GlobalIlluminationSelector"
+                                              Margin="0,0,16,8"
+                                              HorizontalAlignment="Stretch"
+                                              CornerRadius="14"
+                                              SelectedIndex="{x:Bind Graphics_GlobalIllumination, Mode=TwoWay}"
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}"
+                                                      Visibility="Collapsed" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
                             <Grid Margin="2,8,0,0">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -492,6 +521,31 @@
                                               IsChecked="{x:Bind Graphics_Distortion, Mode=TwoWay}"
                                               Unchecked="EnforceCustomPreset_Checkbox">
                                         <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_Distortion}"
+                                                   TextWrapping="Wrap" />
+                                    </CheckBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2"
+                                            VerticalAlignment="Center">
+                                    <CheckBox x:Name="MotionBlurToggle"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Checked="EnforceCustomPreset_Checkbox"
+                                              IsChecked="{x:Bind Graphics_MotionBlur, Mode=TwoWay}"
+                                              Unchecked="EnforceCustomPreset_Checkbox">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_MotionBlur}"
+                                                   TextWrapping="Wrap" />
+                                    </CheckBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="3"
+                                            VerticalAlignment="Center">
+                                    <!-- ReSharper disable once InconsistentNaming -->
+                                    <CheckBox x:Name="HPCAToggle"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Checked="EnforceCustomPreset_Checkbox"
+                                              IsChecked="{x:Bind Graphics_HiPreCharaAnim, Mode=TwoWay}"
+                                              Unchecked="EnforceCustomPreset_Checkbox">
+                                        <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation}"
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
                                 </StackPanel>
@@ -600,6 +654,9 @@
                                           SelectedIndex="{x:Bind Audio_PlaybackDevice, Mode=TwoWay}">
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Headphones}" />
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_Speakers}" />
+                                    <ComboBoxItem Content="Placeholder, please report to @bagusnl if you see this message"
+                                                  IsEnabled="False"
+                                                  Visibility="Collapsed" />
                                     <ComboBoxItem Content="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_PlaybackDev_TV}" />
                                 </ComboBox>
                             </StackPanel>

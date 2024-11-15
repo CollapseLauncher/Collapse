@@ -163,7 +163,7 @@
     "GamePlaytime_Running_Info1": "게임이 실행 중이므로 플레이 시간을 수정할 수 없어요.",
     "GamePlaytime_Running_Info2": "Collapse를 완전히 닫으면 플레이 시간 추적이 중지되고 (그 시점까지 플레이된 시간을 저장), Collapse를 통해 시작한 세션만 추적돼요.",
     "GamePlaytime_Display": "{0}시간 {1}분",
-    "GamePlaytime_ToolTipDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}에 마지막으로 열림",
+    "GamePlaytime_DateDisplay": "{2:0000}/{1:00}/{0:00} {3:00}:{4:00}",
 
     "PostPanel_Events": "이벤트",
     "PostPanel_Notices": "공지사항",
@@ -179,7 +179,20 @@
 
     "Exception_DownloadTimeout1": "Timeout occurred when trying to install {0}",
     "Exception_DownloadTimeout2": "Check stability of your internet! If your internet speed is slow, please lower the download thread count.",
-    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!"
+    "Exception_DownloadTimeout3": "**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!",
+
+    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
+    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
+    "GameStateInvalid_Subtitle3": "Click \"",
+    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
+    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+
+    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
+    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
+    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
+    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
+    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
   },
 
   "_GameRepairPage": {
@@ -467,6 +480,8 @@
     "Update_NewVer1": "버전",
     "Update_NewVer2": "(으)로 업데이트 할 수 있어요!",
     "Update_LatestVer": "최신 버전을 사용하고 있어요.",
+    "Update_SeeChangelog": "See Latest Changes (EN)",
+    "Update_ChangelogTitle": "Latest Changes",
 
     "AppFiles": "앱 파일 관리",
     "AppFiles_OpenDataFolderBtn": "앱 데이터 폴더 열기",
@@ -528,7 +543,42 @@
     "Waifu2X_Warning_CpuMode": "경고: 사용 가능한 Vulkan GPU 장치를 찾을 수 없어 CPU 모드를 사용할 거예요. 이렇게 되면 이미지 처리 시간이 크게 늘어날 거예요.",
     "Waifu2X_Warning_D3DMappingLayers": "경고: 시스템에 \"OpenCL™, OpenGL®, Vulkan® 호환 팩\"이 설치되어 있어요. Vulkan 로더와 호환되지 않아서 일부 GPU에서 충돌이 발생할 수 있다고 해요. GPU 모드를 사용하려면 이 팩을 제거해 주세요.",
     "Waifu2X_Error_Loader": "에러: Vulkan 로더 설정에 실패했어요. 적절한 GPU 드라이버가 설치된 Vulkan 호환 GPU를 사용하고 있는지 확인해 주세요.",
-    "Waifu2X_Error_Output": "에러: Waifu2X 자체 테스트를 통과하지 못했어요. 비어있는 출력 이미지를 받았어요."
+    "Waifu2X_Error_Output": "에러: Waifu2X 자체 테스트를 통과하지 못했어요. 비어있는 출력 이미지를 받았어요.",
+
+    "NetworkSettings_Title": "Network Settings",
+    "NetworkSettings_Proxy_Title": "Proxy Settings",
+
+    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
+    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+
+    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
+    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+
+    "NetworkSettings_Proxy_Username": "Proxy Username",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
+    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_Proxy_Password": "Proxy Password",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
+    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+
+    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+
+    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
+    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
+    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
   },
 
   "_Misc": {
@@ -832,7 +882,10 @@
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
 
     "DownloadSettingsTitle": "Download Settings",
-    "DownloadSettingsOption1": "Start game after install"
+    "DownloadSettingsOption1": "Start game after install",
+    
+    "OpenInExternalBrowser": "Open in External Browser",
+    "CloseOverlay": "Close Overlay"
   },
 
   "_FileMigrationProcess": {

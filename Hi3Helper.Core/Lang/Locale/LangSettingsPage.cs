@@ -1,4 +1,6 @@
-﻿namespace Hi3Helper
+﻿using WinRT;
+
+namespace Hi3Helper
 {
     public sealed partial class Locale
     {
@@ -6,7 +8,9 @@
         public sealed partial class LocalizationParams
         {
             public LangSettingsPage _SettingsPage { get; set; } = LangFallback?._SettingsPage;
-            public sealed class LangSettingsPage
+
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangSettingsPage
             {
                 public string PageTitle                                 { get; set; } = LangFallback?._SettingsPage.PageTitle;
                 public string Debug                                     { get; set; } = LangFallback?._SettingsPage.Debug;
@@ -31,6 +35,7 @@
                 public string AppBG                                     { get; set; } = LangFallback?._SettingsPage.AppBG;
                 public string AppBG_Checkbox                            { get; set; } = LangFallback?._SettingsPage.AppBG_Checkbox;
                 public string AppBG_Note                                { get; set; } = LangFallback?._SettingsPage.AppBG_Note;
+                public string AppBG_Note_Regional                       { get; set; } = LangFallback?._SettingsPage.AppBG_Note_Regional;
                 public string AppLang_ApplyNeedRestart                  { get; set; } = LangFallback?._SettingsPage.AppLang_ApplyNeedRestart;
                 public string AppThreads                                { get; set; } = LangFallback?._SettingsPage.AppThreads;
                 public string AppThreads_Download                       { get; set; } = LangFallback?._SettingsPage.AppThreads_Download;
@@ -48,11 +53,16 @@
                 public string AppThreads_Attention4                     { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention4;
                 public string AppThreads_Attention5                     { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention5;
                 public string AppThreads_Attention6                     { get; set; } = LangFallback?._SettingsPage.AppThreads_Attention6;
+                public string AppThreads_AttentionTop1                  { get; set; } = LangFallback?._SettingsPage.AppThreads_AttentionTop1;
+                public string AppThreads_AttentionTop2                  { get; set; } = LangFallback?._SettingsPage.AppThreads_AttentionTop2;
                 public string DiscordRPC                                { get; set; } = LangFallback?._SettingsPage.DiscordRPC;
                 public string DiscordRPC_Toggle                         { get; set; } = LangFallback?._SettingsPage.DiscordRPC_Toggle;
                 public string DiscordRPC_GameStatusToggle               { get; set; } = LangFallback?._SettingsPage.DiscordRPC_GameStatusToggle;
                 public string DiscordRPC_IdleStatusToggle               { get; set; } = LangFallback?._SettingsPage.DiscordRPC_IdleStatusToggle;
+                public string ImageBackground                           { get; set; } = LangFallback?._SettingsPage.ImageBackground;
+                public string VideoBackground                           { get; set; } = LangFallback?._SettingsPage.VideoBackground;
                 public string VideoBackground_IsEnableAudio             { get; set; } = LangFallback?._SettingsPage.VideoBackground_IsEnableAudio;
+                public string VideoBackground_IsEnableAcrylicBackground { get; set; } = LangFallback?._SettingsPage.VideoBackground_IsEnableAcrylicBackground;
                 public string VideoBackground_AudioVolume               { get; set; } = LangFallback?._SettingsPage.VideoBackground_AudioVolume;
                 public string Update                                    { get; set; } = LangFallback?._SettingsPage.Update;
                 public string Update_CurVer                             { get; set; } = LangFallback?._SettingsPage.Update_CurVer;
@@ -91,10 +101,11 @@
                 public string AppChangeReleaseChannel                   { get; set; } = LangFallback?._SettingsPage.AppChangeReleaseChannel;
                 public string EnableAcrylicEffect                       { get; set; } = LangFallback?._SettingsPage.EnableAcrylicEffect;
                 public string EnableDownloadChunksMerging               { get; set; } = LangFallback?._SettingsPage.EnableDownloadChunksMerging;
+                public string Enforce7ZipExtract                        { get; set; } = LangFallback?._SettingsPage.Enforce7ZipExtract;
                 public string LowerCollapsePrioOnGameLaunch             { get; set; } = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch;
                 public string LowerCollapsePrioOnGameLaunch_Tooltip     { get; set; }  = LangFallback?._SettingsPage.LowerCollapsePrioOnGameLaunch_Tooltip;
                 public string UseExternalBrowser                        { get; set; } = LangFallback?._SettingsPage.UseExternalBrowser;
-				public string KbShortcuts_Title                         { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
+                public string KbShortcuts_Title                         { get; set; } = LangFallback?._SettingsPage.KbShortcuts_Title;
                 public string KbShortcuts_ShowBtn                       { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ShowBtn;
                 public string KbShortcuts_ResetBtn                      { get; set; } = LangFallback?._SettingsPage.KbShortcuts_ResetBtn;
                 public string AppBehavior_Title                         { get; set; } = LangFallback?._SettingsPage.AppBehavior_Title;
@@ -125,6 +136,8 @@
                 public string SophonHttpNumberBox                       { get; set; } = LangFallback?._SettingsPage.SophonHttpNumberBox;
                 public string SophonHelp_Http                           { get; set; } = LangFallback?._SettingsPage.SophonHelp_Http;
                 public string SophonToggle                              { get; set; } = LangFallback?._SettingsPage.SophonToggle;
+                public string SophonPredownPerfMode_Toggle              { get; set; } = LangFallback?._SettingsPage.SophonPredownPerfMode_Toggle;
+                public string SophonPredownPerfMode_Tooltip             { get; set; } = LangFallback?._SettingsPage.SophonPredownPerfMode_Tooltip;
                 public string NetworkSettings_Title                     { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Title;
                 public string NetworkSettings_Proxy_Title               { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_Title;
                 public string NetworkSettings_Proxy_Hostname            { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Proxy_Hostname;
@@ -153,6 +166,57 @@
                 public string NetworkSettings_ProxyTest_ButtonChecking  { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_ButtonChecking;
                 public string NetworkSettings_ProxyTest_ButtonSuccess   { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_ButtonSuccess;
                 public string NetworkSettings_ProxyTest_ButtonFailed    { get; set; } = LangFallback?._SettingsPage.NetworkSettings_ProxyTest_ButtonFailed;
+
+                public string FileDownloadSettings_Title                { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_Title;
+                public string FileDownloadSettings_SpeedLimit_Title     { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimit_Title;
+                public string FileDownloadSettings_SpeedLimit_NumBox    { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimit_NumBox;
+                public string FileDownloadSettings_SpeedLimitHelp1      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimitHelp1;
+                public string FileDownloadSettings_SpeedLimitHelp2      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimitHelp2;
+                public string FileDownloadSettings_SpeedLimitHelp3      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimitHelp3;
+                public string FileDownloadSettings_SpeedLimitHelp4      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimitHelp4;
+                public string FileDownloadSettings_SpeedLimitHelp5      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_SpeedLimitHelp5;
+
+                public string FileDownloadSettings_NewPreallocChunk_Title       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunk_Title;
+                public string FileDownloadSettings_NewPreallocChunk_Subtitle    { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunk_Subtitle;
+                public string FileDownloadSettings_NewPreallocChunk_NumBox      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunk_NumBox;
+                public string FileDownloadSettings_NewPreallocChunkHelp1        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp1;
+                public string FileDownloadSettings_NewPreallocChunkHelp2        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp2;
+                public string FileDownloadSettings_NewPreallocChunkHelp3        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp3;
+                public string FileDownloadSettings_NewPreallocChunkHelp4        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp4;
+                public string FileDownloadSettings_NewPreallocChunkHelp5        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp5;
+                public string FileDownloadSettings_NewPreallocChunkHelp6        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp6;
+                public string FileDownloadSettings_NewPreallocChunkHelp7        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp7;
+                public string FileDownloadSettings_NewPreallocChunkHelp8        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp8;
+                public string FileDownloadSettings_NewPreallocChunkHelp9        { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp9;
+                public string FileDownloadSettings_NewPreallocChunkHelp10       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_NewPreallocChunkHelp10;
+
+                public string FileDownloadSettings_BurstDownload_Title      { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownload_Title;
+                public string FileDownloadSettings_BurstDownload_Subtitle   { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownload_Subtitle;
+                public string FileDownloadSettings_BurstDownloadHelp1       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp1;
+                public string FileDownloadSettings_BurstDownloadHelp2       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp2;
+                public string FileDownloadSettings_BurstDownloadHelp3       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp3;
+                public string FileDownloadSettings_BurstDownloadHelp4       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp4;
+                public string FileDownloadSettings_BurstDownloadHelp5       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp5;
+                public string FileDownloadSettings_BurstDownloadHelp6       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp6;
+                public string FileDownloadSettings_BurstDownloadHelp7       { get; set; } = LangFallback?._SettingsPage.FileDownloadSettings_BurstDownloadHelp7;
+
+                public string Database_Title                            { get; set; } = LangFallback?._SettingsPage.Database_Title;
+                public string Database_ConnectionOk                     { get; set; } = LangFallback?._SettingsPage.Database_ConnectionOk;
+                public string Database_ConnectFail                      { get; set; } = LangFallback?._SettingsPage.Database_ConnectFail;
+                public string Database_Toggle                           { get; set; } = LangFallback?._SettingsPage.Database_Toggle;
+                public string Database_Url                              { get; set; } = LangFallback?._SettingsPage.Database_Url;
+                public string Database_Url_Example                      { get; set; } = LangFallback?._SettingsPage.Database_Url_Example;
+                public string Database_Token                            { get; set; } = LangFallback?._SettingsPage.Database_Token;
+                public string Database_UserId                           { get; set; } = LangFallback?._SettingsPage.Database_UserId;
+                public string Database_GenerateGuid                     { get; set; } = LangFallback?._SettingsPage.Database_GenerateGuid;
+                public string Database_Validate                         { get; set; } = LangFallback?._SettingsPage.Database_Validate;
+                public string Database_Error_EmptyUri                   { get; set; } = LangFallback?._SettingsPage.Database_Error_EmptyUri;
+                public string Database_Error_EmptyToken                 { get; set; } = LangFallback?._SettingsPage.Database_Error_EmptyToken;
+                public string Database_Error_InvalidGuid                { get; set; } = LangFallback?._SettingsPage.Database_Error_InvalidGuid;
+                public string Database_Warning_PropertyChanged          { get; set; } = LangFallback?._SettingsPage.Database_Warning_PropertyChanged;
+                public string Database_ValidationChecking               { get; set; } = LangFallback?._SettingsPage.Database_ValidationChecking;
+                public string Database_Placeholder_DbUserIdTextBox      { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbUserIdTextBox;
+                public string Database_Placeholder_DbTokenPasswordBox   { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbTokenPasswordBox;
             }
         }
         #endregion

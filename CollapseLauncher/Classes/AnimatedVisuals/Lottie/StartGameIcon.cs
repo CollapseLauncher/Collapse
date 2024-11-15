@@ -55,7 +55,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
     // Frame rate:  60 fps
     // Frame count: 40
     // Duration:    666.7 mS
-    sealed class StartGameIcon
+    sealed partial class StartGameIcon
         : Microsoft.UI.Xaml.Controls.IAnimatedVisualSource
         , Microsoft.UI.Xaml.Controls.IAnimatedVisualSource2
     {
@@ -128,7 +128,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
         {
         }
 
-        sealed class StartGameIcon_AnimatedVisual
+        sealed partial class StartGameIcon_AnimatedVisual
             : Microsoft.UI.Xaml.Controls.IAnimatedVisual
             , Microsoft.UI.Xaml.Controls.IAnimatedVisual2
         {

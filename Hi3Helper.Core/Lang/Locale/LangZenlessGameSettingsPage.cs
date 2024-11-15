@@ -1,4 +1,6 @@
 // ReSharper disable InconsistentNaming
+using WinRT;
+
 namespace Hi3Helper
 {
     public sealed partial class Locale
@@ -8,7 +10,8 @@ namespace Hi3Helper
             public LangZenlessGameSettingsPage _ZenlessGameSettingsPage { get; set; } =
                 LangFallback?._ZenlessGameSettingsPage;
 
-            public sealed class LangZenlessGameSettingsPage
+            [GeneratedBindableCustomProperty]
+            public sealed partial class LangZenlessGameSettingsPage
             {
                 public string Graphics_ColorFilter { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Graphics_ColorFilter;
@@ -24,6 +27,9 @@ namespace Hi3Helper
 
                 public string Graphics_Distortion { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Graphics_Distortion;
+
+                public string Graphics_HighPrecisionCharacterAnimation { get; set; } =
+                    LangFallback?._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation;
 
                 public string Audio_PlaybackDev { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Audio_PlaybackDev;

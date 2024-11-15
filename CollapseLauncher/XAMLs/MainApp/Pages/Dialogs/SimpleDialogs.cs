@@ -1,11 +1,15 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
+using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -19,7 +23,6 @@ using Windows.Foundation;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 
 namespace CollapseLauncher.Dialogs
@@ -147,6 +150,7 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
+            InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             for (int i = 0; i < langlist.Count; i++)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
@@ -166,7 +170,7 @@ namespace CollapseLauncher.Dialogs
                     HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.25,
+                    Opacity = 0.5,
                     Name = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -176,7 +180,7 @@ namespace CollapseLauncher.Dialogs
                     iconSize: 14,
                     textSize: 14,
                     iconFontFamily: "FontAwesomeSolid")
-                    .WithOpacity(0.25);
+                    .WithOpacity(0.5);
                 iconTextGrid.Name = "IconText";
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
@@ -191,7 +195,8 @@ namespace CollapseLauncher.Dialogs
                     Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
                 }
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Center);
+                .WithVerticalAlignment(VerticalAlignment.Center)
+                .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
@@ -214,7 +219,35 @@ namespace CollapseLauncher.Dialogs
                     RadioButton radioButtonLocal = sender as RadioButton;
                     TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 0.25;
+                        textBlockLocal.Opacity = 0.5;
+                };
+
+                radioButton.PointerEntered += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 1;
+                        thisIconText.Opacity = 1;
+                    }
+                };
+
+                radioButton.PointerExited += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 0.5;
+                        thisIconText.Opacity = 0.5;
+                    }
                 };
 
                 if (i == defaultIndex)
@@ -250,7 +283,7 @@ namespace CollapseLauncher.Dialogs
 
                     Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
                     if (thisIconText != null)
-                        thisIconText.Opacity = 0.25;
+                        thisIconText.Opacity = 0.5;
 
                     bool isHasAnyChoices = choices.Any(x => x);
                     dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
@@ -318,6 +351,7 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
             };
 
+            InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             for (int i = 0; i < langlist.Count; i++)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
@@ -337,7 +371,7 @@ namespace CollapseLauncher.Dialogs
                     HorizontalAlignment = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.25,
+                    Opacity = 0.5,
                     Name = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
@@ -347,7 +381,7 @@ namespace CollapseLauncher.Dialogs
                     iconSize: 14,
                     textSize: 14,
                     iconFontFamily: "FontAwesomeSolid")
-                    .WithOpacity(0.25);
+                    .WithOpacity(0.5);
                 iconTextGrid.Name = "IconText";
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
@@ -362,7 +396,8 @@ namespace CollapseLauncher.Dialogs
                     Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
                 }
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Center);
+                .WithVerticalAlignment(VerticalAlignment.Center)
+                .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
@@ -385,7 +420,35 @@ namespace CollapseLauncher.Dialogs
                     RadioButton radioButtonLocal = sender as RadioButton;
                     TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 0.25;
+                        textBlockLocal.Opacity = 0.5;
+                };
+
+                radioButton.PointerEntered += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 1;
+                        thisIconText.Opacity = 1;
+                    }
+                };
+
+                radioButton.PointerExited += (sender, _) =>
+                {
+                    RadioButton radioButtonLocal = sender as RadioButton;
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+
+                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    {
+                        textBlockLocal.Opacity = 0.5;
+                        thisIconText.Opacity = 0.5;
+                    }
                 };
 
                 if (i == defaultIndex)
@@ -421,7 +484,7 @@ namespace CollapseLauncher.Dialogs
 
                     Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
                     if (thisIconText != null)
-                        thisIconText.Opacity = 0.25;
+                        thisIconText.Opacity = 0.5;
 
                     bool isHasAnyChoices = choices.Any(x => x);
                     dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
@@ -617,10 +680,10 @@ namespace CollapseLauncher.Dialogs
                         ContentDialogTheme.Informational
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content, string gamePath) =>
             await SpawnDialog(
                         Lang._Dialogs.ExistingInstallSteamTitle,
-                        string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, GamePathOnSteam),
+                        string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, gamePath),
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
@@ -630,8 +693,22 @@ namespace CollapseLauncher.Dialogs
             );
 
 
-        public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName)
+        public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName,
+            MigrateFromLauncherType migrateFromLauncherType)
         {
+            if (migrateFromLauncherType != MigrateFromLauncherType.Official)
+            {
+                switch (migrateFromLauncherType)
+                {
+                    case MigrateFromLauncherType.BetterHi3Launcher:
+                        return await Dialog_ExistingInstallationBetterLauncher(Content, existingGamePath);
+                    case MigrateFromLauncherType.Steam:
+                        return await Dialog_ExistingInstallationSteam(Content, existingGamePath);
+                    default:
+                        throw new InvalidOperationException($"Dialog is not supported for unknown migration!");
+                }
+            }
+
             string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
 
             TextBlock contentTextBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
@@ -972,6 +1049,19 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
+        public static async Task<ContentDialogResult> Dialog_DbGenerateUid(UIElement Content)
+        {
+            return await SpawnDialog(
+                Lang._Dialogs.DbGenerateUid_Title,
+                Lang._Dialogs.DbGenerateUid_Content,
+                Content,
+                Lang._Misc.NoCancel,
+                Lang._Misc.Yes,
+                null,
+                ContentDialogButton.Close,
+                ContentDialogTheme.Warning);
+        }
+
         public static async Task<ContentDialogResult> Dialog_GenericWarning(UIElement Content)
         {
             return await SpawnDialog(
@@ -989,29 +1079,6 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement Content)
         {
-            async void CopyTextToClipboard(object sender, RoutedEventArgs e)
-            {
-                InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
-                if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
-                {
-                    FontIcon fontIcon = panel.Children[0] as FontIcon;
-                    TextBlock textBlock = panel.Children[1] as TextBlock;
-
-                    string lastGlyph = fontIcon.Glyph;
-                    string lastText = textBlock.Text;
-
-                    fontIcon.Glyph = "";
-                    textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
-                    btn.IsEnabled = false;
-
-                    await Task.Delay(1000);
-
-                    fontIcon.Glyph = lastGlyph;
-                    textBlock.Text = lastText;
-                    btn.IsEnabled = true;
-                }
-            }
-
             Button copyButton = null;
 
             try
@@ -1020,7 +1087,8 @@ namespace CollapseLauncher.Dialogs
                 string title = ErrorSender.ExceptionTitle;
                 string subtitle = ErrorSender.ExceptionSubtitle;
 
-                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) && (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
+                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) &&
+                                        (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
 
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
@@ -1069,6 +1137,29 @@ namespace CollapseLauncher.Dialogs
             {
                 if (copyButton != null)
                     copyButton.Click -= CopyTextToClipboard;
+            }
+        }
+
+        private static async void CopyTextToClipboard(object sender, RoutedEventArgs e)
+        {
+            InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
+            if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
+            {
+                FontIcon  fontIcon  = panel.Children[0] as FontIcon;
+                TextBlock textBlock = panel.Children[1] as TextBlock;
+
+                string lastGlyph = fontIcon!.Glyph;
+                string lastText  = textBlock!.Text;
+
+                fontIcon.Glyph = "";
+                textBlock.Text = Lang._UnhandledExceptionPage.CopyClipboardBtn2;
+                btn.IsEnabled  = false;
+
+                await Task.Delay(1000);
+
+                fontIcon.Glyph = lastGlyph;
+                textBlock.Text = lastText;
+                btn.IsEnabled  = true;
             }
         }
 

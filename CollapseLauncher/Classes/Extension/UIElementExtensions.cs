@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.WinUI;
-using CommunityToolkit.WinUI.Controls;
 using Hi3Helper;
+using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Microsoft.UI;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
@@ -19,8 +21,200 @@ using Windows.UI.Text;
 namespace CollapseLauncher.Extension
 {
     internal enum CornerRadiusKind { Normal, Rounded }
+    internal class NavigationViewItemLocaleTextProperty
+    {
+        public string LocaleSetName { get; set; }
+        public string LocalePropertyName { get; set; }
+    }
+
     internal static class UIElementExtensions
     {
+        /// <summary>
+        /// Set the cursor for the element.
+        /// </summary>
+        /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
+        /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "set_ProtectedCursor")]
+        internal static extern void SetCursor(this UIElement element, InputCursor inputCursor);
+
+        /// <summary>
+        /// Set the cursor for the element.
+        /// </summary>
+        /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
+        /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
+        internal static ref T WithCursor<T>(this T element, InputCursor inputCursor) where T : UIElement
+        {
+            element.SetCursor(inputCursor);
+            return ref Unsafe.AsRef(ref element);
+        }
+
+#nullable enable
+        /// <summary>
+        /// Set the initial navigation view item's locale binding before getting set with <seealso cref="ApplyNavigationViewItemLocaleTextBindings"/>
+        /// </summary>
+        /// <typeparam name="T">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</typeparam>
+        /// <param name="element">The <seealso cref="NavigationViewItemBase"/> instance to set the initial text binding to.</param>
+        /// <param name="localeSetName">The instance name of a <seealso cref="Hi3Helper.Locale"/> members.</param>
+        /// <param name="localePropertyName">Name of the locale property</param>
+        /// <returns>A reference of the <typeparamref name="T"/></returns>
+        internal static ref T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
+            where T : NavigationViewItemBase
+        {
+            NavigationViewItemLocaleTextProperty property = new NavigationViewItemLocaleTextProperty
+            {
+                LocaleSetName = localeSetName,
+                LocalePropertyName = localePropertyName
+            };
+
+            if (element is NavigationViewItemHeader elementAsHeader)
+            {
+                elementAsHeader.Tag = property;
+            }
+            else
+            {
+                TextBlock textBlock = new TextBlock().WithTag(property);
+                element.Content = textBlock;
+            }
+            return ref Unsafe.AsRef(ref element);
+        }
+
+        internal static void SetAllControlsCursorRecursive(this UIElement element, InputSystemCursor toCursor)
+        {
+            if (element == null)
+            {
+                return;
+            }
+
+            if (element is Panel panelKind)
+            {
+                foreach (UIElement panelElements in panelKind.Children)
+                {
+                    SetAllControlsCursorRecursive(panelElements, toCursor);
+                }
+            }
+
+            if (element is RadioButtons radioButtonsKind)
+            {
+                foreach (UIElement radioButtonContent in radioButtonsKind.Items.OfType<UIElement>())
+                {
+                    radioButtonContent.SetCursor(toCursor);
+                }
+            }
+
+            if (element is Border borderKind)
+            {
+                SetAllControlsCursorRecursive(borderKind.Child, toCursor);
+            }
+
+            if (element is ComboBox comboBoxKind)
+            {
+                comboBoxKind.SetCursor(toCursor);
+            }
+
+            if (element is UserControl userControlKind)
+            {
+                SetAllControlsCursorRecursive(userControlKind.Content, toCursor);
+            }
+
+            if (element is ContentControl contentControlKind
+             && contentControlKind.Content is UIElement contentControlKindInner)
+            {
+                SetAllControlsCursorRecursive(contentControlKindInner, toCursor);
+            }
+
+            if (element is NavigationView navigationViewKind)
+            {
+                foreach (UIElement navigationViewElements in navigationViewKind.FindDescendants())
+                {
+                    if (navigationViewElements is NavigationViewItem)
+                    {
+                        navigationViewElements.SetCursor(toCursor);
+                        continue;
+                    }
+                    SetAllControlsCursorRecursive(navigationViewElements, toCursor);
+                }
+            }
+
+            if (element is ButtonBase buttonBaseKind)
+            {
+                buttonBaseKind.SetCursor(toCursor);
+                if (buttonBaseKind is Button buttonKind && buttonKind.Flyout != null && buttonKind.Flyout is Flyout buttonKindFlyout)
+                {
+                    SetAllControlsCursorRecursive(buttonKindFlyout.Content, toCursor);
+                }
+            }
+
+            if (element is ToggleSwitch)
+            {
+                element.SetCursor(toCursor);
+            }
+
+            if (element.ContextFlyout != null && element.ContextFlyout is Flyout elementFlyoutKind)
+            {
+                SetAllControlsCursorRecursive(elementFlyoutKind.Content, toCursor);
+            }
+        }
+
+        internal static void ApplyNavigationViewItemLocaleTextBindings(this NavigationView navViewControl)
+        {
+            foreach (NavigationViewItemBase navItem in navViewControl
+                .FindDescendants()
+                .OfType<NavigationViewItemBase>())
+            {
+                string? localeValue = null;
+                if (navItem.Content is TextBlock navItemTextBlock
+                 && navItemTextBlock.Tag is NavigationViewItemLocaleTextProperty localeProperty)
+                {
+                    navItemTextBlock.BindProperty(
+                        TextBlock.TextProperty,
+                        Locale.Lang,
+                        $"{localeProperty.LocaleSetName}.{localeProperty.LocalePropertyName}");
+                    localeValue = navItemTextBlock.GetValue(TextBlock.TextProperty) as string;
+                }
+                else if (navItem is NavigationViewItemHeader navItemAsHeader
+                      && navItemAsHeader.Tag is NavigationViewItemLocaleTextProperty localePropertyOnHeader)
+                {
+                    navItemAsHeader.BindProperty(
+                        ContentControl.ContentProperty,
+                        Locale.Lang,
+                        $"{localePropertyOnHeader.LocaleSetName}.{localePropertyOnHeader.LocalePropertyName}");
+                    localeValue = navItemAsHeader.GetValue(ContentControl.ContentProperty) as string;
+                }
+
+                if (!string.IsNullOrEmpty(localeValue))
+                {
+                    ToolTipService.SetToolTip(navItem, localeValue);
+                }
+            }
+
+            navViewControl.UpdateLayout();
+        }
+
+        internal static ref T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
+            where T : FrameworkElement
+        {
+            // Create a new binding instance
+            Binding binding = new Binding
+            {
+                Source = objectToBind,
+                Mode = bindingMode,
+                Path = new PropertyPath(propertyName),
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+
+            // If the converter is assigned, then add the converter
+            if (converter != null)
+            {
+                binding.Converter = converter;
+            }
+
+            // Set binding to the element
+            element.SetBinding(dependencyProperty, binding);
+
+            return ref Unsafe.AsRef(ref element);
+        }
+#nullable restore
+
         internal static TButtonBase CreateButtonWithIcon<TButtonBase>(string text = null, string iconGlyph = null, string iconFontFamily = "FontAwesome",
             string buttonStyle = "DefaultButtonStyle", double iconSize = 16d, double? textSize = null, CornerRadius? cornerRadius = null, FontWeight? textWeight = null)
             where TButtonBase : ButtonBase, new()
@@ -101,10 +295,11 @@ namespace CollapseLauncher.Extension
             if (columnWidths.Length == 0)
                 throw new IndexOutOfRangeException($"\"columnWidth\" cannot be empty!");
 
-            for (int i = 0; i < columnWidths.Length; i++) grid.ColumnDefinitions.Add(new ColumnDefinition()
-            {
-                Width = columnWidths[i]
-            });
+            for (int i = 0; i < columnWidths.Length; i++) 
+                grid.ColumnDefinitions.Add(new ColumnDefinition()
+                {
+                    Width = columnWidths[i]
+                });
         }
 
         internal static void AddGridColumns(this Grid grid, int count, GridLength? columnWidth = null)
@@ -221,11 +416,15 @@ namespace CollapseLauncher.Extension
         internal static CornerRadius AttachRoundedKindCornerRadius(FrameworkElement element)
         {
             CornerRadius initialRadius = GetElementCornerRadius(element, CornerRadiusKind.Rounded);
-            element.SizeChanged += (sender, _) => InnerSetCornerRadius(element, GetElementCornerRadius(element, CornerRadiusKind.Rounded));
+            element.SizeChanged += (_, _) => InnerSetCornerRadius(element, GetElementCornerRadius(element, CornerRadiusKind.Rounded));
             return initialRadius;
         }
 
-        internal static void FindAndSetTextBlockWrapping(this UIElement element, TextWrapping wrap = TextWrapping.Wrap, HorizontalAlignment posAlign = HorizontalAlignment.Center, TextAlignment textAlign = TextAlignment.Center, bool recursiveAssignment = false, bool isParentAButton = false)
+        internal static void FindAndSetTextBlockWrapping(this UIElement element,
+                                                         TextWrapping wrap = TextWrapping.Wrap,
+                                                         HorizontalAlignment posAlign = HorizontalAlignment.Center,
+                                                         TextAlignment textAlign = TextAlignment.Center,
+                                                         bool recursiveAssignment = false, bool isParentAButton = false)
         {
             if (element is not null && element is TextBlock textBlock)
             {
@@ -242,28 +441,28 @@ namespace CollapseLauncher.Extension
             if (element is ButtonBase button)
             {
                 if (button.Content is UIElement buttonContent)
-                    buttonContent.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, true);
+                    buttonContent.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, true);
                 else if (button.Content is string buttonString)
                     button.Content = new TextBlock { Text = buttonString, TextWrapping = wrap, HorizontalAlignment = HorizontalAlignment.Center };
             }
 
             if (element is Panel panel)
                 foreach (UIElement childrenElement in panel.Children!)
-                    childrenElement.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                    childrenElement.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
 
             if (element is ScrollViewer scrollViewer && scrollViewer.Content is UIElement elementInner)
-                elementInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                elementInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
 
             if (element is ContentControl contentControl && (element is SettingsCard || element is Expander) && contentControl.Content is UIElement contentControlInner)
             {
-                contentControlInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                contentControlInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
 
                 if (contentControl is Expander expander && expander.Header is UIElement expanderHeader)
-                    expanderHeader.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                    expanderHeader.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
             }
 
             if (element is InfoBar infoBar && infoBar.Content is UIElement infoBarInner)
-                infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, recursiveAssignment, isParentAButton);
+                infoBarInner.FindAndSetTextBlockWrapping(wrap, posAlign, textAlign, true, isParentAButton);
         }
 
         internal static ref TElement WithWidthAndHeight<TElement>(this TElement element, double uniform)
@@ -657,9 +856,7 @@ namespace CollapseLauncher.Extension
         internal static void ApplyDropShadow(this FrameworkElement element, Color? shadowColor = null,
             double blurRadius = 10, double opacity = 0.25, bool isMasked = true, Vector3? offset = null)
         {
-            FrameworkElement shadowPanel = null;
-
-            shadowPanel = element.FindDescendant("ShadowGrid");
+            var shadowPanel = element.FindDescendant("ShadowGrid");
             if (shadowPanel == null)
             {
                 shadowPanel = CreateGrid()
@@ -692,13 +889,16 @@ namespace CollapseLauncher.Extension
                     case Image imageElement:
                         AttachShadow(imageElement, true, offset);
                         break;
+                    case ImageEx.ImageEx imageExElement:
+                        AttachShadow(imageExElement, true, offset);
+                        break;
                     default:
                         AttachShadow(element, innerMasked, offset);
                         break;
                 }
             }
 
-            void AttachShadow(FrameworkElement thisElement, bool innerMask, Vector3? offset)
+            void AttachShadow(FrameworkElement thisElement, bool innerMask, Vector3? _offset)
             {
                 FrameworkElement xamlRoot = (thisElement.Parent as FrameworkElement) ?? thisElement.FindDescendant<Grid>();
 
@@ -717,7 +917,7 @@ namespace CollapseLauncher.Extension
                         if (xamlRoot == null || xamlRoot is not Panel)
                             throw new NullReferenceException("The element must be inside of a Grid or StackPanel or any \"Panel\" elements");
 
-                        thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, offset);
+                        thisElement.ApplyDropShadow(shadowPanel, shadowColor, blurRadius, opacity, innerMask, _offset);
                     }
                     catch (Exception ex)
                     {
@@ -731,7 +931,9 @@ namespace CollapseLauncher.Extension
             double blurRadius = 10, double opacity = 0.25, bool isMasked = false, Vector3? offset = null)
         {
             offset ??= Vector3.Zero;
-            string passedValue = $"{offset?.X ?? 0},{offset?.Y ?? 0},{offset?.Z ?? 0}";
+            // ReSharper disable ConstantConditionalAccessQualifier
+            string passedValue = $"{offset?.X},{offset?.Y},{offset?.Z}";
+            // ReSharper restore ConstantConditionalAccessQualifier
 
             AttachedDropShadow shadow = new AttachedDropShadow()
             {

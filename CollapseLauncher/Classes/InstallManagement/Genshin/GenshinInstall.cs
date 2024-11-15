@@ -70,10 +70,11 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #region Public Methods
 
+#nullable enable
         public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
         {
             // Get the primary file first check
-            List<RegionResourceVersion> resource = _gameVersionManager.GetGamePreloadZip();
+            List<RegionResourceVersion>? resource = _gameVersionManager.GetGamePreloadZip();
 
             // Sanity Check: throw if resource returns null
             if (resource == null)
@@ -84,8 +85,8 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             bool primaryAsset = resource.All(x =>
                                              {
-                                                 string name = Path.GetFileName(x.path);
-                                                 if (name == null)
+                                                 string? name = Path.GetFileName(x.path);
+                                                 if (string.IsNullOrEmpty(name))
                                                      return false;
 
                                                  string path = Path.Combine(_gamePath, name);
@@ -104,7 +105,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted(token);
         }
-
+#nullable restore
         #endregion
 
         #region Override Methods - StartPackageInstallationInner
@@ -124,7 +125,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            ApplyDeleteFileAction();
+            await ApplyDeleteFileActionAsync(_token.Token);
         }
 
         protected void EnsureMoveOldToNewAudioDirectory()
@@ -140,13 +141,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             foreach (string oldPath in Directory.EnumerateFiles(_gameAudioOldPath, "*", SearchOption.AllDirectories))
             {
                 string basePath  = oldPath.AsSpan()[offset..].ToString();
-                string newPath   = Path.Combine(_gameAudioNewPath, basePath);
-                string newFolder = Path.GetDirectoryName(newPath);
-
-                if (!Directory.Exists(newFolder) && newFolder != null)
-                {
-                    Directory.CreateDirectory(newFolder);
-                }
+                string newPath   = EnsureCreationOfDirectory(Path.Combine(_gameAudioNewPath, basePath));
 
                 FileInfo oldFileInfo = new FileInfo(oldPath)
                 {

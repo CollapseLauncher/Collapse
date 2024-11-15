@@ -37,7 +37,7 @@ namespace CollapseLauncher.Helper.Background
         internal static readonly string[] SupportedMediaPlayerExt =
             [".mp4", ".mov", ".mkv", ".webm", ".avi", ".gif"];
 
-        private FrameworkElement?   _parentUI;
+        private static FrameworkElement?   _parentUI;
         private ImageUI?            _bgImageBackground;
         private ImageUI?            _bgImageBackgroundLast;
         private MediaPlayerElement? _bgMediaPlayerBackground;
@@ -48,7 +48,8 @@ namespace CollapseLauncher.Helper.Background
         private Grid? _parentBgImageBackgroundGrid;
         private Grid? _parentBgMediaPlayerBackgroundGrid;
 
-        internal MediaType CurrentAppliedMediaType = MediaType.Unknown;
+        internal static string?   CurrentAppliedMediaPath;
+        internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
         private IBackgroundMediaLoader?         _loaderStillImage;
@@ -60,16 +61,45 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) => {
-            await action;
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) =>
+        {
+            try
+            {
+                await action;
+            }
+            catch (Exception ex)
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                    ErrorSender.SendException(ex));
+            }
         },
         new ExecutionDataflowBlockOptions
         {
             EnsureOrdered = true,
             MaxMessagesPerTask = 1,
             MaxDegreeOfParallelism = 1,
-            TaskScheduler = TaskScheduler.Default
+            BoundedCapacity = 1,
+            TaskScheduler = TaskScheduler.Current
         });
+        internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
+        {
+            try
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
+            }
+            catch (Exception ex)
+            {
+                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                    ErrorSender.SendException(ex));
+            }
+        },
+            new ExecutionDataflowBlockOptions
+            {
+                EnsureOrdered = true,
+                MaxMessagesPerTask = 1,
+                MaxDegreeOfParallelism = 1,
+                BoundedCapacity = 1
+            });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -84,6 +114,14 @@ namespace CollapseLauncher.Helper.Background
                                                                                Grid              bgOverlayTitleBar, Grid bgImageGridBackground,
                                                                                Grid              bgMediaPlayerGrid)
         {
+            CurrentAppliedMediaPath = null;
+            CurrentAppliedMediaType = MediaType.Unknown;
+            if (_alternativeFileStream != null)
+            {
+                await _alternativeFileStream.DisposeAsync();
+                _alternativeFileStream = null;
+            }
+
             // Set the parent UI
             FrameworkElement? ui = parentUI;
 
@@ -149,8 +187,6 @@ namespace CollapseLauncher.Helper.Background
 
             _alternativeFileStream?.Dispose();
             _alternativeFileStream = null;
-
-            CurrentAppliedMediaType = MediaType.Unknown;
 
             _isCurrentRegistered = false;
             GC.SuppressFinalize(this);
@@ -287,19 +323,31 @@ namespace CollapseLauncher.Helper.Background
         /// <param name="mediaPath">Path of the background file</param>
         /// <param name="isRequestInit">Request an initialization before processing the background file</param>
         /// <param name="isForceRecreateCache">Request a cache recreation if the background file properties have been cached</param>
+        /// <param name="throwAction">Action to do after exception occurred</param>
+        /// <param name="actionAfterLoaded">Action to do after background is loaded</param>
         /// <exception cref="FormatException">Throws if the background file is not supported</exception>
         /// <exception cref="NullReferenceException">Throws if some instances aren't yet initialized</exception>
-        internal void LoadBackground(string mediaPath,                  bool                  isRequestInit = false,
-                                     bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
-                                     Action? actionAfterLoaded = null)
+        internal async void LoadBackground(string                mediaPath,
+                                           bool                  isRequestInit        = false,
+                                           bool                  isForceRecreateCache = false,
+                                           ThrowExceptionAction? throwAction          = null,
+                                           Action?               actionAfterLoaded    = null)
         {
-            SharedActionBlockQueue?.Post(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded));
+            while (!await SharedActionBlockQueue?.SendAsync(LoadBackgroundInner(mediaPath, isRequestInit, isForceRecreateCache, throwAction, actionAfterLoaded))!)
+            {
+                // Delay the invoke 1/4 second and wait until the action can
+                // be sent again.
+                await Task.Delay(250);
+            }
         }
 
         private async Task LoadBackgroundInner(string mediaPath,                  bool                  isRequestInit = false,
-                                                bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
-                                                Action? actionAfterLoaded = null)
+                                               bool isForceRecreateCache = false, ThrowExceptionAction? throwAction = null,
+                                               Action? actionAfterLoaded = null)
         {
+            if (mediaPath.Equals(CurrentAppliedMediaPath, StringComparison.OrdinalIgnoreCase))
+                return;
+
             try
             {
                 while (!_isCurrentRegistered)
@@ -349,7 +397,8 @@ namespace CollapseLauncher.Helper.Background
                         _loaderMediaPlayer?.Show();
                         break;
                     case MediaType.StillImage:
-                        _loaderStillImage?.Show();
+                        _loaderStillImage?.Show(CurrentAppliedMediaType == MediaType.Media
+                            || InnerLauncherConfig.m_appCurrentFrameName != "HomePage");
                         _loaderMediaPlayer?.Hide();
                         break;
                 }
@@ -362,6 +411,8 @@ namespace CollapseLauncher.Helper.Background
 
                 CurrentAppliedMediaType = mediaType;
                 actionAfterLoaded?.Invoke();
+
+                CurrentAppliedMediaPath = mediaPath;
             }
             catch (Exception ex)
             {
