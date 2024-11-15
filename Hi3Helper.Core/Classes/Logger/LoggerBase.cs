@@ -228,7 +228,8 @@ namespace Hi3Helper
             fallbackString += LauncherConfig.AppCurrentVersionString;
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
-            _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}.log");
+            _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}-{GetCurrentTime("HH-mm-ss")}.log");
+            Console.WriteLine("\u001b[37;44m[LOGGER]\u001b[0m Log will be written to: " + _logPath);
             LogPath = _logPath;
 
             // Initialize _logWriter to the given _logPath.
