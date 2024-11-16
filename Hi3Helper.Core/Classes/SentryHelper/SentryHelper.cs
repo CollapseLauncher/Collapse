@@ -224,27 +224,14 @@ namespace Hi3Helper.SentryHelper
         public static void ExceptionHandler(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
-            ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
-            if (exT == ExceptionType.UnhandledXaml) 
-                ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
-            else if (exT == ExceptionType.UnhandledOther)
-                ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-            if (SentryUploadLog) // Upload log file if enabled
-        #pragma warning disable CS0162 // Unreachable code detected
+            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
+            if (ex is TaskCanceledException or OperationCanceledException)
             {
-                if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
-                    SentrySdk.CaptureException(ex);
-                else
-                    SentrySdk.CaptureException(ex, s =>
-                                                   {
-                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                                                   });
+                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                    LogType.Sentry);
+                return;
             }
-            else
-            {
-                SentrySdk.CaptureException(ex);
-            }
-        #pragma warning restore CS0162 // Unreachable code detected
+            ExceptionHandlerInner(ex, exT);
         }
 
         /// <summary>
@@ -255,28 +242,14 @@ namespace Hi3Helper.SentryHelper
         public static async Task ExceptionHandlerAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
-            ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
-            if (exT == ExceptionType.UnhandledXaml) 
-                ex.Data[Mechanism.MechanismKey] = "Application.XamlUnhandledException";
-            else if (exT == ExceptionType.UnhandledOther)
-                ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
-            if (SentryUploadLog) // Upload log file if enabled
-            #pragma warning disable CS0162 // Unreachable code detected
-                // ReSharper disable once HeuristicUnreachableCode
+            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
+            if (ex is TaskCanceledException or OperationCanceledException)
             {
-                if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
-                    SentrySdk.CaptureException(ex);
-                else
-                    SentrySdk.CaptureException(ex, s =>
-                                                   {
-                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                                                   });
+                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                    LogType.Sentry);
+                return;
             }
-            else
-            {
-                SentrySdk.CaptureException(ex);
-            }
-        #pragma warning restore CS0162 // Unreachable code detected
+            ExceptionHandlerInner(ex, exT);
 
             await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));
         }
@@ -325,16 +298,34 @@ namespace Hi3Helper.SentryHelper
         public static async Task ExceptionHandler_ForLoopAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
+            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
+            if (ex is TaskCanceledException or OperationCanceledException)
+            {
+                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                    LogType.Sentry);
+                return;
+            }
             if (ex == _exHLoopLastEx) return; // If exception pointer is the same as the last one, ignore it.
             await _loopToken.CancelAsync(); // Cancel the previous loop
             _loopToken.Dispose(); 
             _loopToken     = new CancellationTokenSource(); // Create new token
             _exHLoopLastEx = ex;
             ExHLoopLastEx_AutoClean(); // Start auto clean loop
+            ExceptionHandlerInner(ex, exT);
+        }
+
+        private static void ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        {
+            ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
+            ex.Data[Mechanism.MechanismKey] = exT switch
+                                              {
+                                                  ExceptionType.UnhandledXaml => "Application.XamlUnhandledException",
+                                                  ExceptionType.UnhandledOther => "Application.UnhandledException",
+                                                  _ => ex.Data[Mechanism.MechanismKey]
+                                              };
             
-            ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
+        #pragma warning disable CS0162 // Unreachable code detected
             if (SentryUploadLog) // Upload log file if enabled
-            #pragma warning disable CS0162 // Unreachable code detected
                 // ReSharper disable once HeuristicUnreachableCode
             {
                 if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
