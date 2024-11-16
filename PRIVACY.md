@@ -1,6 +1,6 @@
 # Privacy Policy for Collapse Launcher
 
-_Last Updated: November 11th, 2024_
+_Last Updated: November 16th, 2024_
 
 Thank you for using Collapse Launcher! This Privacy Policy outlines the information practices of Collapse Launcher and how any third-party services utilized may collect, use, and disclose data.
 
@@ -9,7 +9,7 @@ Please read this Privacy Policy carefully to understand how we may use and proce
 ## 1. Information We Do Not Collect
 
 Collapse Launcher is committed to preserving your privacy and does not collect any personally identifiable information (PII). We do not track your usage, access, or any personal data related to your interaction with the program.
-However, we do collect error data to aid in development. This data is stored on our self-hosted, Sentry-compatible dashboard server, which is accessible only to our core development team. We try our best to strip any PII data from being collected. You can disable this anytime by going to the application settings.
+However, we do collect error data to aid in development. This data is stored on either self-hosted or SaaS, Sentry-compatible dashboard server, which is accessible only to our core development team. We try our best to strip any PII data from being collected. You can disable this anytime by going to the application settings.
 
 ## 2. Third-Party Services
 
@@ -20,6 +20,7 @@ While Collapse itself does not collect the information outlined above, we utiliz
 - Information collected: IP address, device information, session information, date and time of request, cookies, geolocation information.
 - Privacy policies:
   https://docs.github.com/en/site-policy/privacy-policies
+- Opt-out: You can change the CDN provider by going to the application settings.
 
 #### Service Provider: Cloudflare, Inc.
 - Purpose: Main Content Delivery Network (CDN) Provider
@@ -32,6 +33,15 @@ While Collapse itself does not collect the information outlined above, we utiliz
 - Information collected: Monitoring Log (URL access path, IP address, user agent of the browser (OS type and version, CPU type, browser type and version, browser rendering engine, browser language and plug-in))
 - Privacy policies:
   https://www.tencentcloud.com/document/product/1133/45791
+- Opt-out: You can change the CDN provider by going to the application settings.
+
+#### Service Provider: Sentry (Functional Software, Inc.)
+- Purpose: Error Tracking and Monitoring
+- Information collected: Error data, Collapse log file, session information, environment information (device information, OS version, application version, etc.)
+- Privacy policies:
+  https://sentry.io/privacy/
+- Opt-out: You can disable this feature by going to the application settings or setting system environment variable "DISABLE_SENTRY" to true.
+
 
 ## 3. Cookies
 

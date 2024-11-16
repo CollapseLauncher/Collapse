@@ -574,7 +574,15 @@ namespace CollapseLauncher.Pages
 
         private bool IsSendRemoteCrashData
         {
-            get => SentryHelper.IsEnabled;
+            get
+            {
+                if (SentryHelper.IsDisableEnvVarDetected)
+                {
+                    ToggleSendRemoteCrashData.IsEnabled = false;
+                    ToolTipService.SetToolTip(ToggleSendRemoteCrashData, Lang._SettingsPage.Debug_SendRemoteCrashData_EnvVarDisablement);
+                }
+                return SentryHelper.IsEnabled;
+            }
             set => SentryHelper.IsEnabled = value;
         }
 

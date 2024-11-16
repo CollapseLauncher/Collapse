@@ -1,10 +1,10 @@
 using Sentry;
-using Sentry.Infrastructure;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Sentry.Protocol;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode
 // ReSharper disable RedundantIfElseBlock
@@ -13,10 +13,12 @@ namespace Hi3Helper.SentryHelper
 {
     public static class SentryHelper
     {
+        #region Sentry Configuration
+
         /// <summary>
         /// DSN (Data Source Name a.k.a. upstream server) to be used for error reporting.
         /// </summary>
-        private const string SentryDsn = "https://38ac2201fe414e719a5b8297cc5f1aa0@glitchtip.bagelnl.my.id/1";
+        private const string SentryDsn = "https://38df0c6a1a779a4d663def402084187f@o4508297437839360.ingest.de.sentry.io/4508302961410128";
         
         /// <summary>
         /// <inheritdoc cref="SentryOptions.MaxAttachmentSize"/>
@@ -26,9 +28,13 @@ namespace Hi3Helper.SentryHelper
         /// <summary>
         /// Whether to upload log file when exception is caught.
         /// </summary>
-        private const bool SentryUploadLog = false;
-        
-        
+        private const bool SentryUploadLog = true;
+
+        #endregion
+
+
+        #region Enums
+
         /// <summary>
         /// Defines Exception Types to be used in Sentry's data reporting.
         /// </summary>
@@ -48,10 +54,24 @@ namespace Hi3Helper.SentryHelper
             Handled
         }
 
+        #endregion
+
+        #region Enable/Disable Sentry
+
+        public static bool IsDisableEnvVarDetected => Convert.ToBoolean(Environment.GetEnvironmentVariable("DISABLE_SENTRY"));
         private static bool? _isEnabled;
         public static bool IsEnabled
         {
-            get => _isEnabled ??= LauncherConfig.GetAppConfigValue("SendRemoteCrashData").ToBool();
+            get
+            {
+                if (IsDisableEnvVarDetected)
+                {
+                    Logger.LogWriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
+                    LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", false);
+                    return false;
+                }
+                return _isEnabled ??= LauncherConfig.GetAppConfigValue("SendRemoteCrashData").ToBool();
+            }
             set
             {
                 if (value == _isEnabled) return;
@@ -70,38 +90,72 @@ namespace Hi3Helper.SentryHelper
                 LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", value);
             }
         }
+        
+        #endregion
 
-        public static bool IsPreview { get; set; }
+
+        #region Initializer/Releaser
+
+        public static bool   IsPreview { get; set; }
 
         private static IDisposable? _sentryInstance;
         public static void InitializeSentrySdk()
         {
-            _sentryInstance = SentrySdk.Init(o =>
-            {
-                o.Dsn = SentryDsn;
-                o.AddEventProcessor(new SentryEventProcessor());
-                o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-#if DEBUG
-                o.Debug = true;
-                o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
-                o.DiagnosticLevel = SentryLevel.Debug;
-                o.Distribution = "Debug";
-#else
-                o.Debug = false;
-                o.DiagnosticLevel = SentryLevel.Error;
-                o.Distribution = IsPreview ? "Preview" : "Stable";
-#endif
-                o.AutoSessionTracking = true;
-                o.StackTraceMode = StackTraceMode.Enhanced;
-                o.DisableSystemDiagnosticsMetricsIntegration();
-                o.TracesSampleRate = 1.0;
-                o.IsGlobalModeEnabled = true;
-                o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
-                o.StackTraceMode = StackTraceMode.Enhanced;
-                o.SendDefaultPii = false;
-                o.MaxAttachmentSize = SentryMaxAttachmentSize;
-                o.DeduplicateMode = DeduplicateMode.All;
-            });
+            _sentryInstance = 
+                SentrySdk.Init(o =>
+                             {
+                                o.Dsn = SentryDsn;
+                                o.AddEventProcessor(new SentryEventProcessor());
+                                o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
+                             #if DEBUG
+                                o.Debug = true;
+                                o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
+                                o.DiagnosticLevel = SentryLevel.Debug;
+                                o.Distribution = "Debug";
+                             #else
+                                o.Debug = false;
+                                o.DiagnosticLevel = SentryLevel.Error;
+                                o.Distribution = IsPreview ? "Preview" : "Stable";
+                             #endif
+                                o.AutoSessionTracking = true;
+                                o.StackTraceMode      = StackTraceMode.Enhanced;
+                                o.DisableSystemDiagnosticsMetricsIntegration();
+                             #if DEBUG
+                                // Set TracesSampleRate to 1.0 to capture 100%
+                                // of transactions for tracing.
+                                // We recommend adjusting this value in production.
+                                o.TracesSampleRate = 1.0;
+
+                                // Sample rate for profiling, applied on top of other TracesSampleRate,
+                                // e.g. 0.2 means we want to profile 20 % of the captured transactions.
+                                // We recommend adjusting this value in production.
+                                o.ProfilesSampleRate = 1.0;
+                             #else
+                                // Set TracesSampleRate to 1.0 to capture 100%
+                                // of transactions for tracing.
+                                // We recommend adjusting this value in production.
+                                o.TracesSampleRate = 0.4;
+
+                                // Sample rate for profiling, applied on top of other TracesSampleRate,
+                                // e.g. 0.2 means we want to profile 20 % of the captured transactions.
+                                // We recommend adjusting this value in production.
+                                o.ProfilesSampleRate = 0.2;
+                             #endif
+                                o.IsGlobalModeEnabled      = true;
+                                o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
+                                o.StackTraceMode    = StackTraceMode.Enhanced;
+                                o.SendDefaultPii    = false;
+                                o.MaxAttachmentSize = SentryMaxAttachmentSize;
+                                o.DeduplicateMode   = DeduplicateMode.All;
+                                o.Release           = LauncherConfig.AppCurrentVersionString;
+                             });
+            SentrySdk.ConfigureScope(s =>
+                                     {
+                                         s.User = new SentryUser
+                                         {
+                                             IpAddress = null // Do not send user IP address.
+                                         };
+                                     });
         }
 
         /// <summary>
@@ -118,7 +172,7 @@ namespace Hi3Helper.SentryHelper
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Failed when preparing to stop SentryInstance, Dispose will still be invoked!\r\n{ex}"
-                    , LogType.Error, true);
+                                  , LogType.Error, true);
             }
             finally
             {
@@ -129,14 +183,19 @@ namespace Hi3Helper.SentryHelper
         public static void InitializeExceptionRedirect()
         {
             AppDomain.CurrentDomain.UnhandledException += AppDomain_UnhandledExceptionEvent;
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            TaskScheduler.UnobservedTaskException      += TaskScheduler_UnobservedTaskException;
         }
 
         private static void ReleaseExceptionRedirect()
         {
             AppDomain.CurrentDomain.UnhandledException -= AppDomain_UnhandledExceptionEvent;
-            TaskScheduler.UnobservedTaskException -= TaskScheduler_UnobservedTaskException;
+            TaskScheduler.UnobservedTaskException      -= TaskScheduler_UnobservedTaskException;
         }
+
+        #endregion
+
+
+        #region Exception Handlers
 
         private static void AppDomain_UnhandledExceptionEvent(object sender, UnhandledExceptionEventArgs a)
         {
@@ -144,7 +203,7 @@ namespace Hi3Helper.SentryHelper
             // https://learn.microsoft.com/en-us/dotnet/api/system.appdomain?view=net-9.0
             var ex = a.ExceptionObject as Exception;
             if (ex == null) return;
-            ex.Data[Mechanism.HandledKey] = false;
+            ex.Data[Mechanism.HandledKey]   = false;
             ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             ExceptionHandler(ex, ExceptionType.UnhandledOther);
 
@@ -181,11 +240,11 @@ namespace Hi3Helper.SentryHelper
                                                        s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
                                                    });
             }
-        #pragma warning restore CS0162 // Unreachable code detected
             else
             {
                 SentrySdk.CaptureException(ex);
             }
+        #pragma warning restore CS0162 // Unreachable code detected
         }
 
         /// <summary>
@@ -202,7 +261,7 @@ namespace Hi3Helper.SentryHelper
             else if (exT == ExceptionType.UnhandledOther)
                 ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             if (SentryUploadLog) // Upload log file if enabled
-        #pragma warning disable CS0162 // Unreachable code detected
+            #pragma warning disable CS0162 // Unreachable code detected
                 // ReSharper disable once HeuristicUnreachableCode
             {
                 if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
@@ -213,16 +272,16 @@ namespace Hi3Helper.SentryHelper
                                                        s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
                                                    });
             }
-        #pragma warning restore CS0162 // Unreachable code detected
             else
             {
                 SentrySdk.CaptureException(ex);
             }
+        #pragma warning restore CS0162 // Unreachable code detected
 
             await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));
         }
         
-        private static Exception? _exHLoopLastEx;
+        private static Exception?              _exHLoopLastEx;
         private static CancellationTokenSource _loopToken = new();
 
         // ReSharper disable once AsyncVoidMethod
@@ -269,13 +328,13 @@ namespace Hi3Helper.SentryHelper
             if (ex == _exHLoopLastEx) return; // If exception pointer is the same as the last one, ignore it.
             await _loopToken.CancelAsync(); // Cancel the previous loop
             _loopToken.Dispose(); 
-            _loopToken = new CancellationTokenSource(); // Create new token
+            _loopToken     = new CancellationTokenSource(); // Create new token
             _exHLoopLastEx = ex;
             ExHLoopLastEx_AutoClean(); // Start auto clean loop
             
             ex.Data[Mechanism.HandledKey] = exT == ExceptionType.Handled;
             if (SentryUploadLog) // Upload log file if enabled
-        #pragma warning disable CS0162 // Unreachable code detected
+            #pragma warning disable CS0162 // Unreachable code detected
                 // ReSharper disable once HeuristicUnreachableCode
             {
                 if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
@@ -286,11 +345,13 @@ namespace Hi3Helper.SentryHelper
                                                        s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
                                                    });
             }
-        #pragma warning restore CS0162 // Unreachable code detected
             else
             {
                 SentrySdk.CaptureException(ex);
             }
+        #pragma warning restore CS0162 // Unreachable code detected
         }
     }
+
+    #endregion
 }

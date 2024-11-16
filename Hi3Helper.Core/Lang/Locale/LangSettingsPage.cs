@@ -17,6 +17,7 @@ namespace Hi3Helper
                 public string Debug_Console                             { get; set; } = LangFallback?._SettingsPage.Debug_Console;
                 public string Debug_IncludeGameLogs                     { get; set; } = LangFallback?._SettingsPage.Debug_IncludeGameLogs;
                 public string Debug_SendRemoteCrashData                 { get; set; } = LangFallback?._SettingsPage.Debug_SendRemoteCrashData;
+                public string Debug_SendRemoteCrashData_EnvVarDisablement { get; set; } = LangFallback?._SettingsPage.Debug_SendRemoteCrashData_EnvVarDisablement;
                 public string Debug_MultipleInstance                    { get; set; } = LangFallback?._SettingsPage.Debug_MultipleInstance;
                 public string ChangeRegionWarning_Toggle                { get; set; } = LangFallback?._SettingsPage.ChangeRegionWarning_Toggle;
                 public string ChangeRegionInstant_Toggle                { get; set; } = LangFallback?._SettingsPage.ChangeRegionInstant_Toggle;
