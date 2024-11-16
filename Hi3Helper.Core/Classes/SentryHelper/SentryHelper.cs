@@ -3,6 +3,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
+#if DEBUG
+using Sentry.Infrastructure;
+#endif
 using Sentry.Protocol;
 using System.Diagnostics;
 
