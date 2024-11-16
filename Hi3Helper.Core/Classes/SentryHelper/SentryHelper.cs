@@ -242,14 +242,7 @@ namespace Hi3Helper.SentryHelper
         public static async Task ExceptionHandlerAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
-            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
-            if (ex is TaskCanceledException or OperationCanceledException)
-            {
-                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
-                                    LogType.Sentry);
-                return;
-            }
-            ExceptionHandlerInner(ex, exT);
+            ExceptionHandler(ex, exT);
 
             await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));
         }
