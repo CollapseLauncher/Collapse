@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Sentry.Protocol;
+using System.Diagnostics;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode
@@ -104,23 +105,14 @@ namespace Hi3Helper.SentryHelper
             _sentryInstance = 
                 SentrySdk.Init(o =>
                              {
-                                o.Dsn = SentryDsn;
-                                o.AddEventProcessor(new SentryEventProcessor());
-                                o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
+                                 o.Dsn = SentryDsn;
+                                 o.AddEventProcessor(new SentryEventProcessor());
+                                 o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
                              #if DEBUG
                                 o.Debug = true;
                                 o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
                                 o.DiagnosticLevel = SentryLevel.Debug;
                                 o.Distribution = "Debug";
-                             #else
-                                o.Debug = false;
-                                o.DiagnosticLevel = SentryLevel.Error;
-                                o.Distribution = IsPreview ? "Preview" : "Stable";
-                             #endif
-                                o.AutoSessionTracking = true;
-                                o.StackTraceMode      = StackTraceMode.Enhanced;
-                                o.DisableSystemDiagnosticsMetricsIntegration();
-                             #if DEBUG
                                 // Set TracesSampleRate to 1.0 to capture 100%
                                 // of transactions for tracing.
                                 // We recommend adjusting this value in production.
@@ -131,29 +123,31 @@ namespace Hi3Helper.SentryHelper
                                 // We recommend adjusting this value in production.
                                 o.ProfilesSampleRate = 1.0;
                              #else
-                                // Set TracesSampleRate to 1.0 to capture 100%
-                                // of transactions for tracing.
-                                // We recommend adjusting this value in production.
-                                o.TracesSampleRate = 0.4;
-
-                                // Sample rate for profiling, applied on top of other TracesSampleRate,
-                                // e.g. 0.2 means we want to profile 20 % of the captured transactions.
-                                // We recommend adjusting this value in production.
-                                o.ProfilesSampleRate = 0.2;
+                                 o.Debug              = false;
+                                 o.DiagnosticLevel    = SentryLevel.Error;
+                                 o.Distribution       = IsPreview ? "Preview" : "Stable";
+                                 o.TracesSampleRate   = 0.4;
+                                 o.ProfilesSampleRate = 0.2;
                              #endif
-                                o.IsGlobalModeEnabled      = true;
-                                o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
-                                o.StackTraceMode    = StackTraceMode.Enhanced;
-                                o.SendDefaultPii    = false;
-                                o.MaxAttachmentSize = SentryMaxAttachmentSize;
-                                o.DeduplicateMode   = DeduplicateMode.All;
-                                o.Release           = LauncherConfig.AppCurrentVersionString;
+                                 o.AutoSessionTracking = true;
+                                 o.StackTraceMode      = StackTraceMode.Enhanced;
+                                 o.DisableSystemDiagnosticsMetricsIntegration();
+                                 o.IsGlobalModeEnabled      = true;
+                                 o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
+                                 o.StackTraceMode    = StackTraceMode.Enhanced;
+                                 o.SendDefaultPii    = false;
+                                 o.MaxAttachmentSize = SentryMaxAttachmentSize;
+                                 o.DeduplicateMode   = DeduplicateMode.All;
+                                 o.Release           = LauncherConfig.AppCurrentVersionString;
+                                 o.Environment       = Debugger.IsAttached ? "debug" : "non-debug";
                              });
             SentrySdk.ConfigureScope(s =>
                                      {
                                          s.User = new SentryUser
                                          {
-                                             IpAddress = null // Do not send user IP address.
+                                             // Do not send user IP address.
+                                             // Geolocation should not be uploaded for new users that has not sent any data.
+                                             IpAddress = null 
                                          };
                                      });
         }
