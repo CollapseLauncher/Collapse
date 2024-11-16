@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher
 {
@@ -71,6 +72,7 @@ namespace CollapseLauncher
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     Console.WriteLine($"{ex}");
                 }
             }

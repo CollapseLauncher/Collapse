@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -103,7 +104,9 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
-                throw ex.Flatten().InnerExceptions.First();
+                var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
+                SentryHelper.ExceptionHandler(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                throw innerExceptionsFirst;
             }
 
             // Re-add the asset index with a broken asset index
@@ -220,7 +223,9 @@ namespace CollapseLauncher
 
             // Check if the file exist on both persistent and streaming path for non-patch file, then mark the
             // persistent path as redundant (unused)
-            if (IsPersistentExist && IsStreamingExist && !asset.IsPatchApplicable)
+            bool isNonPatchHasRedundantPersistent = !asset.IsPatchApplicable && IsPersistentExist && IsStreamingExist && fileInfoStreaming.Length == asset.S;
+
+            if (isNonPatchHasRedundantPersistent)
             {
                 // Add the count and asset. Mark the type as "RepairAssetType.Unused"
                 _progressAllCountFound++;
@@ -236,14 +241,18 @@ namespace CollapseLauncher
                     )
                 ));
 
-                // Fix the asset detected as a used file even though it's actually unused
-                asset.FT = FileType.Unused;
-                targetAssetIndex.Add(asset);
+                // Create a new instance as unused one
+                FilePropertiesRemote unusedAsset = new FilePropertiesRemote
+                {
+                    N = fileInfoPersistent.FullName,
+                    FT = FileType.Unused,
+                    RN = asset.RN,
+                    CRC = asset.CRC,
+                    S = asset.S
+                };
+                targetAssetIndex.Add(unusedAsset);
 
-                // Set the file to be used from Persistent one
-                UsePersistent = true;
-
-                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.FT}]: {unusedAsset.N} is redundant (exist both on persistent and streaming)", LogType.Warning, true);
             }
 
             // If the file has Hash Mark or is persistent, then create the hash mark file
@@ -291,8 +300,9 @@ namespace CollapseLauncher
             {
                 await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"File {fileNameToOpen} is not found while UsePersistent is {UsePersistent}. " +
                              $"Creating hard link and retrying...", LogType.Warning, true);
 

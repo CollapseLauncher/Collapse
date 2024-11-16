@@ -1,6 +1,9 @@
-﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
+using CollapseLauncher.ShellLinkCOM;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
@@ -17,6 +20,7 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -79,12 +83,34 @@ public static class MainEntryPoint
                     Directory.SetCurrentDirectory(AppFolder);
                 }
 
+
+                SentryHelper.IsPreview = IsPreview;
+                if (SentryHelper.IsEnabled)
+                {
+                    try
+                    {
+                        // Sentry SDK Entry
+                        LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
+                        SentryHelper.InitializeSentrySdk();
+                        LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
+                        SentryHelper.InitializeExceptionRedirect();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                    }
+                }
+
                 StartUpdaterHook();
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                     LauncherUpdateHelper.LauncherCurrentVersionString,
                     GetVersionString(),
+                    #if DEBUG
                     Environment.UserName,
+                    #else
+                    "[REDACTED]",
+                    #endif
                     IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
                 var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
@@ -161,13 +187,15 @@ public static class MainEntryPoint
             #if !DEBUG
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 SpawnFatalErrorConsole(ex);
             }
             #else
             // ReSharper disable once RedundantCatchClause
             // Reason: warning shaddap-er
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
             #endif
@@ -293,13 +321,17 @@ public static class MainEntryPoint
     public static void TryCleanupFallbackUpdate(SemanticVersion newVersion)
     {
         string currentExecutedAppFolder = AppFolder.TrimEnd('\\');
+        string currentExecutedPath = AppExecutablePath;
+        string currentExecutedFilename = Path.GetFileName(currentExecutedPath);
 
         // If the path is not actually running under "current" velopack folder, then return
+#if !DEBUG
         if (!currentExecutedAppFolder.EndsWith("current", StringComparison.OrdinalIgnoreCase)) // Expecting "current"
         {
             Logger.LogWriteLine("[TryCleanupFallbackUpdate] The launcher does not run from \"current\" folder");
             return;
         }
+#endif
 
         try
         {
@@ -349,11 +381,39 @@ public static class MainEntryPoint
                 }
             }
 
+            // Try to delete all possible shortcuts on any users (since the shortcut used will be the global one)
+            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive, "Users");
+            foreach (string userDirInfoPath in Directory
+                .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
+                .Where(ConverterTool.IsUserHasPermission))
+            {
+                // Get the shortcut file
+                string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath, @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
+                if (File.Exists(thisUserStartMenuShortcut))
+                {
+                    // Try open the shortcut and check whether this shortcut is actually pointing to
+                    // CollapseLauncher.exe file
+                    using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
+                    {
+                        // Try get the target path and its filename
+                        string shortcutTargetPath = shellLink.Target;
+                        string shortcutTargetFilename = Path.GetFileName(shortcutTargetPath);
+
+                        // Compare if the filename is equal, then delete it.
+                        if (shortcutTargetFilename.Equals(currentExecutedFilename, StringComparison.OrdinalIgnoreCase))
+                            File.Delete(thisUserStartMenuShortcut);
+
+                        LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: {thisUserStartMenuShortcut} -> {shortcutTargetPath}", LogType.Default, true);
+                    }
+                }
+            }
+
             // Try to recreate shortcuts
-            TaskSchedulerHelper.RecreateIconShortcuts().GetAwaiter().GetResult();
+            TaskSchedulerHelper.RecreateIconShortcuts();
         }
         catch (Exception ex)
         {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
         }
 
@@ -370,27 +430,27 @@ public static class MainEntryPoint
 
     public static string FindCollapseStubPath()
     {
-        var collapseExecName = "CollapseLauncher.exe";
         var collapseMainPath = Process.GetCurrentProcess().MainModule!.FileName;
-        var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
-                                            collapseExecName);
-        if (File.Exists(collapseStubPath))
-        {
-            LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
-            return collapseStubPath;
-        }
+        // var collapseExecName = "CollapseLauncher.exe";
+        // var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
+        //                                     collapseExecName);
+        // if (File.Exists(collapseStubPath))
+        // {
+        //     LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
+        //     return collapseStubPath;
+        // }
 
-        LogWriteLine($"Collapse stub does not exist, returning current executable path!\r\n\t{collapseStubPath}",
+        LogWriteLine($"Collapse stub is not used anymore, returning current executable path!\r\n\t{collapseMainPath}",
                      LogType.Default, true);
         return collapseMainPath;
     }
-    
+
     private static async Task CheckRuntimeFeatures()
     {
         try
         {
             await Task.Run(() =>
-                { 
+                {
                     // RuntimeFeature docs https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimefeature?view=net-9.0
                     LogWriteLine($"Available Runtime Features:\r\n\t" +
                                  $"PortablePdb: {RuntimeFeature.IsSupported(RuntimeFeature.PortablePdb)}\r\n\t" +
@@ -403,6 +463,7 @@ public static class MainEntryPoint
         }
         catch (Exception ex)
         {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}", LogType.Error, true);
         }
     }
@@ -479,7 +540,7 @@ public static class MainEntryPoint
             return $"Windows 11 (build: {version.Build}.{version.Revision})";
         return $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
     }
-    
+
     public static string MD5Hash(string path)
     {
         if (!File.Exists(path))

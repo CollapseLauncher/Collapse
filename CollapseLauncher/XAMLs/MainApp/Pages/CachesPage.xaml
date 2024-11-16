@@ -11,7 +11,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       CacheMode="BitmapCache"
       Loaded="InitializeLoaded"
-      NavigationCacheMode="Enabled"
+      NavigationCacheMode="Disabled"
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Grid>

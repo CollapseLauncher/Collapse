@@ -48,6 +48,7 @@ namespace CollapseLauncher.Pages
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
+                    HPCAToggle.IsChecked                     = true;
                     break;
                 case GraphicsPresetOption.Medium:
                     VSyncToggle.IsChecked                    = true;
@@ -64,6 +65,7 @@ namespace CollapseLauncher.Pages
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
+                    HPCAToggle.IsChecked                     = false;
                     break;
                 case GraphicsPresetOption.Low:
                     VSyncToggle.IsChecked                    = true;
@@ -80,6 +82,7 @@ namespace CollapseLauncher.Pages
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
+                    HPCAToggle.IsChecked                     = false;
                     break;
             }
 
@@ -545,6 +548,13 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.GeneralData.Fps;
             set => Settings.GeneralData.Fps = (FpsOption)value;
+        }
+
+        /// <inheritdoc cref="CollapseLauncher.GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
+        public bool Graphics_HiPreCharaAnim
+        {
+            get => Settings.GeneralData.HiPrecisionCharaAnim;
+            set => Settings.GeneralData.HiPrecisionCharaAnim = value;
         }
         #endregion
 

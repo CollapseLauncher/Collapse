@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 
 namespace CollapseLauncher.Helper.Image
@@ -152,15 +153,17 @@ namespace CollapseLauncher.Helper.Image
                 _context = Waifu2XPInvoke.waifu2x_create(gpuId, false, 0);
                 Logger.LogWriteLine($"Waifu2X initialized successfully with device: {Ncnn.GetGpuName(gpuId)}", LogType.Default, true);
             }
-            catch ( DllNotFoundException )
+            catch ( DllNotFoundException ex )
             {
                 _status = Waifu2XStatus.NotAvailable;
                 Logger.LogWriteLine("Dll file \"waifu2x-ncnn-vulkan.dll\" can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
             catch ( Exception ex )
             {
                 _status = Waifu2XStatus.Error;
                 Logger.LogWriteLine($"There was an error when loading Waifu2X!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 
@@ -195,10 +198,11 @@ namespace CollapseLauncher.Helper.Image
 
                 return Load(paramBuffer, modelBuffer);
             }
-            catch (IOException)
+            catch (IOException ex)
             {
                 _status = Waifu2XStatus.TestNotPassed;
                 Logger.LogWriteLine("Waifu2X model file can not be found. Waifu2X feature will be disabled.", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 return false;
             }
         }
@@ -277,6 +281,7 @@ namespace CollapseLauncher.Helper.Image
                 where T : Exception
             {
                 Logger.LogWriteLine($"Cannot load Waifu2X as the library failed to load!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 return Waifu2XStatus.Error;
             }
         }

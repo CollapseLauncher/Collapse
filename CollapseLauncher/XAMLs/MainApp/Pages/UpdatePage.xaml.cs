@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 #if !USEVELOPACK
@@ -170,6 +171,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 ReleaseNotesBox.Text = string.Format(Lang._UpdatePage.LoadingReleaseFailed, ex);
             }
         }

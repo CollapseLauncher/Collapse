@@ -6,6 +6,7 @@ using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
@@ -165,6 +166,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to save Zenless ScreenManager Values!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 

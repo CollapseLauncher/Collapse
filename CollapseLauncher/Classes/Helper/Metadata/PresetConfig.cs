@@ -5,6 +5,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Buffers;
@@ -520,12 +521,14 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (JsonException ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"System.Text.Json cannot deserialize language ID registry in this path: {regPath}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}",
                              LogType.Warning, true);
                 return 2;
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Launcher cannot evaluate an existing language ID registry on {regPath}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}",
                              LogType.Warning, true);
                 return 2;
@@ -554,12 +557,14 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (JsonException ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"System.Text.Json cannot deserialize language ID registry in this path: {regPath}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}",
                              LogType.Warning, true);
                 return 2;
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Launcher cannot evaluate an existing language ID registry on {regPath}\r\nFallback value will be used (2 / ja-jp).\r\n{ex}",
                              LogType.Warning, true);
                 return 2;
@@ -645,6 +650,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Cannot save voice language ID: {langID} to the registry!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -661,6 +667,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Cannot save voice language ID: {langID} to the registry!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -741,6 +748,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}! Returning value 0 as fallback!\r\nValue: {regValue}\r\n{ex}",
                              LogType.Warning, true);
                 return 0;
@@ -764,9 +772,10 @@ namespace CollapseLauncher.Helper.Metadata
                     return TryCheckGameLocation(value);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogWriteLine($"{e}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+                LogWriteLine($"{ex}", LogType.Error, true);
                 return false;
             }
         }

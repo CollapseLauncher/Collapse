@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.InvokeProp;
@@ -364,6 +365,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed when trying to toggle Efficiency Mode!\r\n{ex}", LogType.Error, true);
             }
         }

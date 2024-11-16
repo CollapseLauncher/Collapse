@@ -13,6 +13,7 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
 using Microsoft.UI;
@@ -423,6 +424,7 @@ namespace CollapseLauncher
                         }
                         catch (Exception ex)
                         {
+                            await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                             LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
                         }
                         break;
@@ -658,6 +660,7 @@ namespace CollapseLauncher
             }
             catch (JsonException ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
@@ -706,6 +709,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
             }
         }
@@ -839,6 +843,7 @@ namespace CollapseLauncher
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
                     }
                 }
@@ -1699,6 +1704,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Error while initialize EdgeWebView2. Opening browser instead!\r\n{ex}", LogType.Error, true);
                 new Process
                 {
@@ -1802,7 +1808,7 @@ namespace CollapseLauncher
                     { "CacheFolder", OpenGameCacheFolder_Invoked },
                     { "ForceCloseGame", ForceCloseGame_Invoked },
 
-                    { "RepairPage", GoGameRepir_Invoked },
+                    { "RepairPage", GoGameRepair_Invoked },
                     { "GameSettingsPage", GoGameSettings_Invoked },
                     { "CachesPage", GoGameCaches_Invoked },
 
@@ -1825,6 +1831,7 @@ namespace CollapseLauncher
             }
             catch (Exception error)
             {
+                SentryHelper.ExceptionHandler(error);
                 LogWriteLine(error.ToString());
                 KbShortcutList = null;
                 CreateKeyboardShortcutHandlers();
@@ -2000,38 +2007,56 @@ namespace CollapseLauncher
             }.Start();
         }
 
-        private void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private async void OpenGameFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsGameInstalled()) return;
-
-            string GameFolder = NormalizePath(GameDirPath);
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                if (!IsGameInstalled()) return;
+
+                string GameFolder = NormalizePath(GameDirPath);
+                LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = GameFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
-        private void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private async void OpenGameCacheFolder_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!IsGameInstalled()) return;
-
-            string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
-            LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
-            new Process()
+            try
             {
-                StartInfo = new ProcessStartInfo()
-                {
-                    UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = GameFolder
-                }
-            }.Start();
+                if (!IsGameInstalled()) return;
+
+                string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+                LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+                await Task.Run(() =>
+                    new Process
+                    {
+                        StartInfo = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            FileName = "explorer.exe",
+                            Arguments = GameFolder
+                        }
+                    }.Start());
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to open game cache folder!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+            }
         }
 
         private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
@@ -2050,10 +2075,11 @@ namespace CollapseLauncher
             }
             catch (Win32Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
-        private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private void GoGameRepair_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
 

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 // ReSharper disable BaseMethodCallWithDefaultParameter
@@ -160,6 +161,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while deleting old audio folder: {_gameAudioOldPath}\r\n{ex}", LogType.Error,
                              true);
             }

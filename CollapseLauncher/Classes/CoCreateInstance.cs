@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
@@ -148,6 +149,20 @@ namespace CollapseLauncher
         [DllImport("OLE32.dll", EntryPoint = "CoCreateInstance", ExactSpelling = true)]
         [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static unsafe extern HRESULT CoCreateInstance(in Guid rclsid, IntPtr pUnkOuter, CLSCTX dwClsContext, in Guid riid, out void* ppObj);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe TInterfaceTo? CastComInterfaceAs<TInterfaceFrom, TInterfaceTo>(this TInterfaceFrom interfaceFrom, in Guid interfaceToGuid)
+            where TInterfaceFrom : class
+            where TInterfaceTo : class
+        {
+            void* interfaceFromPtr = ComInterfaceMarshaller<TInterfaceFrom>.ConvertToUnmanaged(interfaceFrom);
+
+            Marshal.QueryInterface((nint)interfaceFromPtr, in interfaceToGuid, out nint ppv);
+            void* interfaceToPtr = (void*)ppv;
+
+            TInterfaceTo? interfaceTo = ComInterfaceMarshaller<TInterfaceTo>.ConvertToManaged(interfaceToPtr);
+            return interfaceTo;
+        }
 
         internal static unsafe void Free<T>(T? obj)
             where T : class

@@ -14,6 +14,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 using WColor = Windows.UI.Color;
 
@@ -227,6 +228,7 @@ namespace CollapseLauncher.Helper.Background
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Warning, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
 
             WColor defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, defVal, defVal, defVal), 1));

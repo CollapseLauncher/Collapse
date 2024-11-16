@@ -6,11 +6,53 @@ using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading.Tasks;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless;
-internal class GeneralData : MagicNodeBaseValues<GeneralData>
+
+internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
 {
+    #region Disposer
+
+    ~GeneralData()
+    {
+        _systemSettingDataMap = null;
+        _keyboardBindingMap = null;
+        _mouseBindingMap = null;
+        _gamepadBindingMap = null;
+        _graphicsPresData = null;
+        _resolutionIndexData = null;
+        _vSyncData = null;
+        _renderResolutionData = null;
+        _shadowQualityData = null;
+        _antiAliasingData = null;
+        _volFogQualityData = null;
+        _bloomData = null;
+        _reflQualityData = null;
+        _fxQualityData = null;
+        _colorFilterData = null;
+        _charQualityData = null;
+        _distortionData = null;
+        _shadingQualityData = null;
+        _envQualityData = null;
+        _envGlobalIllumination = null;
+        _vMotionBlur = null;
+        _fpsData = null;
+        _hpcaData = null;
+        _mainVolData = null;
+        _musicVolData = null;
+        _dialogVolData = null;
+        _sfxVolData = null;
+        _playDevData = null;
+        _muteAudOnMinimizeData = null;
+
+        GC.Collect();
+    }
+
+    public void Dispose() => GC.SuppressFinalize(this);
+
+    #endregion
     #region Node Based Properties
     private JsonNode? _systemSettingDataMap;
     private JsonNode? _keyboardBindingMap;
@@ -474,6 +516,20 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>
         get => (_fpsData ??= SystemSettingDataMap
            .AsSystemSettingLocalData("110", FpsOption.Hi60)).GetDataEnum<FpsOption>();
         set => _fpsData?.SetDataEnum(value);
+    }
+    
+    // Key 13162 High-Precision Character Animation
+    private SystemSettingLocalData<bool>? _hpcaData;
+
+    /// <summary>
+    /// Sets in-game settings for High-Precision Character Animation. <br/>
+    /// Whatever that is ¯\_(ツ)_/¯
+    /// </summary>
+    [JsonIgnore]
+    public bool HiPrecisionCharaAnim
+    {
+        get => (_hpcaData ??= SystemSettingDataMap.AsSystemSettingLocalData("13162", true)).GetData();
+        set => _hpcaData?.SetData(value);
     }
 
     #endregion

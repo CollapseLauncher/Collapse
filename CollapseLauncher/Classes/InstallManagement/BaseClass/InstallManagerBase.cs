@@ -16,7 +16,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
@@ -63,6 +62,8 @@ using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 using SophonManifest = Hi3Helper.Sophon.SophonManifest;
 using CollapseLauncher.Classes.FileDialogCOM;
+using CollapseLauncher.DiscordPresence;
+using Hi3Helper.SentryHelper;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -169,6 +170,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"Error while deleting/creating sophon preload completion file! {ex}", LogType.Warning,
                                  true);
                 }
@@ -336,8 +338,10 @@ namespace CollapseLauncher.InstallManager.Base
                         await _gameRepairTool!.StartRepairRoutine(true)!;
                     }
                 }
-                catch
+                catch (Exception ex)
+
                 {
+                    await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                     IsRunning = false;
                     throw;
                 }
@@ -423,6 +427,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error has occurred while performing delta-patch!\r\n{ex}", LogType.Error, true);
                 throw;
             }
@@ -1100,7 +1105,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get the remote chunk size
-                _progressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize();
+                _progressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
                 _progressPerFileSizeCurrent = 0;
 
                 // Get the remote total size and current total size
@@ -1560,38 +1565,54 @@ namespace CollapseLauncher.InstallManager.Base
 
                     try
                     {
-                        string argument = "";
+                        string arguments = "";
                         string executableName;
-                        int indexOfArgument = asset.RunCommand.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase) + 5;
-                        if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
-                        {
-                            indexOfArgument = asset.RunCommand.IndexOf(' ');
-                        }
-                        else
-                        {
-                            indexOfArgument = -1;
-                        }
+                        // int indexOfArgument = asset.RunCommand.IndexOf(".exe ", StringComparison.OrdinalIgnoreCase) + 5;
+                        // if (indexOfArgument < 5 && !asset.RunCommand.EndsWith(".exe"))
+                        // {
+                        //     indexOfArgument = asset.RunCommand.IndexOf(' ');
+                        // }
+                        // else
+                        // {
+                        //     indexOfArgument = -1;
+                        // }
+                        //
+                        // if (indexOfArgument >= 0)
+                        // {
+                        //     argument = asset.RunCommand.Substring(indexOfArgument);
+                        //     executableName =
+                        //         ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument)
+                        //                                          .TrimEnd(' '));
+                        // }
+                        // else
+                        // {
+                        //     executableName = asset.RunCommand;
+                        // }
 
-                        if (indexOfArgument >= 0)
+                        var firstSpaceIndex = asset.RunCommand.IndexOf(' ');
+                        if (firstSpaceIndex != -1)
                         {
-                            argument = asset.RunCommand.Substring(indexOfArgument);
-                            executableName =
-                                ConverterTool.NormalizePath(asset.RunCommand.Substring(0, indexOfArgument)
-                                                                 .TrimEnd(' '));
+                            // Split into executable and arguments
+                            executableName = asset.RunCommand.Substring(0, firstSpaceIndex);
+                            arguments = asset.RunCommand.Substring(firstSpaceIndex + 1);
                         }
                         else
                         {
+                            // No arguments, only executable
                             executableName = asset.RunCommand;
+                            arguments = string.Empty;
                         }
-
-                        string executablePath = Path.Combine(_gamePath, executableName);
+                        
+                        
+                        string executablePath = ConverterTool.NormalizePath(Path.Combine(_gamePath, executableName));
                         Process commandProcess = new Process
                         {
                             StartInfo = new ProcessStartInfo
                             {
                                 FileName        = executablePath,
-                                Arguments       = argument,
-                                UseShellExecute = true
+                                Arguments       = arguments,
+                                UseShellExecute = true,
+                                WorkingDirectory = Path.GetDirectoryName(executablePath)
                             }
                         };
 
@@ -1602,11 +1623,13 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         else
                         {
+                            LogWriteLine($"Starting plugin process {executablePath} with argument {arguments}");
                             await commandProcess.WaitForExitAsync();
                         }
                     }
                     catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Error has occurred while trying to run the plugin with id: {asset.PluginId} and command: {asset.RunCommand}\r\n{ex}",
                                      LogType.Error, true);
                     }
@@ -1976,6 +1999,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"An error occurred while deleting object {folderGameData}\r\n{ex}", LogType.Error,
                                      true);
                     }
@@ -2001,6 +2025,7 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         catch (Exception ex)
                         {
+                            await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                             LogWriteLine($"An error occurred while deleting folder {folderNames}\r\n{ex}",
                                          LogType.Error, true);
                         }
@@ -2034,6 +2059,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
+                    await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"An error occurred while deleting game AppData folder: {_gameVersionManager.GameDirAppDataPath}\r\n{ex}",
                                  LogType.Error, true);
                 }
@@ -2048,6 +2074,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"An error occurred while deleting empty game folder: {GameFolder}\r\n{ex}",
                                      LogType.Error, true);
                     }
@@ -2060,6 +2087,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while uninstalling game: {_gameVersionManager.GameType} - Region: {_gameVersionManager.GamePreset.ZoneName}\r\n{ex}",
                              LogType.Error, true);
             }
@@ -2154,6 +2182,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.ExceptionHandler_ForLoop(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Failed deleting old file: {fileInfo.FullName}\r\n{ex}", LogType.Warning, true);
                     }
                 }, innerToken));
@@ -2198,7 +2227,7 @@ namespace CollapseLauncher.InstallManager.Base
                     patcher.Patch(sourceBasePath, destPath, true, token, false, true);
                     File.Move(destPath, sourceBasePath, true);
                 }
-                catch (InvalidDataException) when (!token.IsCancellationRequested)
+                catch (InvalidDataException ex) when (!token.IsCancellationRequested)
                 {
                     // ignored
                     // Get the base and new target file size
@@ -2211,6 +2240,7 @@ namespace CollapseLauncher.InstallManager.Base
                         throw;
 
                     // Otherwise, log the error
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {sourceBasePath}", LogType.Warning, true);
                 }
             }, token);
@@ -2270,6 +2300,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
+                    await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
                     LogWriteLine($"Error while patching file: {entry.remoteName}. Skipping!\r\n{ex}", LogType.Warning,
                                  true);
 
@@ -2297,6 +2328,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandler_ForLoopAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Failed while trying to delete temporary file: {destPath}, skipping!\r\n{ex}",
                                      LogType.Warning, true);
                     }
@@ -2318,7 +2350,9 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (AggregateException ex)
             {
-                throw ex.Flatten().InnerExceptions.First();
+                var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
+                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                throw innerExceptionsFirst;
             }
             finally
             {
@@ -2416,6 +2450,7 @@ namespace CollapseLauncher.InstallManager.Base
                         }
                         catch (Exception ex)
                         {
+                            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                             LogWriteLine($"Error while parsing the size of the new file inside of diff: {filePath}\r\n{ex}",
                                          LogType.Warning, true);
                         }
@@ -2423,6 +2458,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"Failed while trying to read hdiff file list: {listFile}\r\n{ex}", LogType.Warning,
                                  true);
                 }
@@ -2838,8 +2874,9 @@ namespace CollapseLauncher.InstallManager.Base
                 await gameRepairInstance.StartRepairRoutine(false);
                 contentDialog.Hide();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 contentDialog.Hide();
                 throw;
             }
@@ -3073,6 +3110,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Registry Value {_gameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg}:\r\n{value}\r\n\r\nException:\r\n{ex}",
                              LogType.Error, true);
                 return false;
@@ -3507,6 +3545,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"Be careful that the installation process might have some problem since the launcher can't remove HDiff list file: {name}!\r\n{ex}",
                                  LogType.Warning, true);
                 }
@@ -3858,12 +3897,18 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning   = true;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
+                    #endif
                     break;
                 case CompletenessStatus.Completed:
                     IsRunning           = false;
                     _status.IsRunning   = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     // HACK: Fix the progress not achieving 100% while completed
                     _progress.ProgressAllPercentage     = 100f;
                     _progress.ProgressPerFilePercentage = 100f;
@@ -3873,12 +3918,18 @@ namespace CollapseLauncher.InstallManager.Base
                     _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = true;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     break;
                 case CompletenessStatus.Idle:
                     IsRunning           = false;
                     _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
+                    #if !DISABLEDISCORD
+                    InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
+                    #endif
                     break;
             }
 

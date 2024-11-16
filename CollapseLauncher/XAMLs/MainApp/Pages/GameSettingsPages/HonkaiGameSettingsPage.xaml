@@ -10,7 +10,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       CacheMode="BitmapCache"
       Loaded="InitializeSettings"
-      NavigationCacheMode="Enabled"
+      NavigationCacheMode="Disabled"
       Unloaded="OnUnload"
       mc:Ignorable="d">
     <Page.Resources>

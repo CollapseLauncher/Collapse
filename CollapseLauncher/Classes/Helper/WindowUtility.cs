@@ -8,6 +8,7 @@
     using Microsoft.Graphics.Display;
     using Microsoft.UI;
     using Microsoft.UI.Composition.SystemBackdrops;
+    using Microsoft.UI.Dispatching;
     using Microsoft.UI.Input;
     using Microsoft.UI.Windowing;
     using Microsoft.UI.Xaml;
@@ -17,6 +18,7 @@
     using Windows.Foundation;
     using Windows.Graphics;
     using Windows.UI;
+    using Hi3Helper.SentryHelper;
     using WinRT.Interop;
     using Size = System.Drawing.Size;
     using WindowId = Microsoft.UI.WindowId;
@@ -59,9 +61,39 @@
                 }
             }
 
-            internal static DisplayInformation? CurrentWindowDisplayInformation => CurrentWindowId.HasValue
-                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
-                : null;
+            internal static DisplayInformation? CurrentWindowDisplayInformation
+            {
+                get
+                {
+                    try
+                    {
+                        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                        if (dispatcherQueue.HasThreadAccess)
+                        {
+                            return CurrentWindowId.HasValue
+                                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                                : null;
+                        }
+                        else
+                        {
+                            DisplayInformation? displayInfoInit = null;
+                            dispatcherQueue.TryEnqueue(() =>
+                            {
+                                displayInfoInit = CurrentWindowId.HasValue
+                                    ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                                    : null;
+                            });
+                            return displayInfoInit;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                        Logger.LogWriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
+                    }
+                    return null;
+                }
+            }
 
             internal static DisplayAdvancedColorInfo? CurrentWindowDisplayColorInfo
             {

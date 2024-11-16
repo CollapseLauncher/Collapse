@@ -10,11 +10,11 @@
     using CollapseLauncher.Helper.Image;
     using CollapseLauncher.Helper.Metadata;
     using CollapseLauncher.Helper.Update;
-    using CollapseLauncher.Interfaces;
     using CollapseLauncher.Pages.OOBE;
     using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
+    using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Input;
@@ -161,8 +161,9 @@ namespace CollapseLauncher.Pages
                         File.Delete(AppNotifIgnoreFile);
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         // Pipe error
                     }
                     MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
@@ -287,8 +288,9 @@ namespace CollapseLauncher.Pages
                 }.Start();
                 (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
             }
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Pipe error
             }
         }
@@ -305,14 +307,15 @@ namespace CollapseLauncher.Pages
 
                 LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
                 bool isUpdateAvailable = await LauncherUpdateHelper.IsUpdateAvailable(true);
-                if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+                LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
                 {
-                    LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
-                    {
-                        IsUpdateAvailable = isUpdateAvailable,
-                        NewVersionName    = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
-                    });
-                }
+                    IsUpdateAvailable = isUpdateAvailable, 
+                    // ReSharper disable PossibleInvalidOperationException
+                    NewVersionName = (GameVersion)(isUpdateAvailable
+                        ? LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
+                        : LauncherUpdateHelper.LauncherCurrentVersion)
+                    // ReSharper restore PossibleInvalidOperationException
+                });
             }
             catch (Exception ex)
             {
@@ -425,14 +428,14 @@ namespace CollapseLauncher.Pages
                 BGPathDisplay.Text = file;
                 
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBG = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool isUseRegionCustomBG = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!isUseRegionCustomBG)
                 {
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
                 }
-                else if (!string.IsNullOrEmpty(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath))
+                else if (!string.IsNullOrEmpty(currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath))
                 {
-                    currentMediaType = BackgroundMediaUtility.GetMediaType(((IGameSettingsUniversal)currentGameProperty._GameSettings)?.SettingsCollapseMisc?.CustomRegionBGPath);
+                    _ = BackgroundMediaUtility.GetMediaType(currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath);
                 }
             }
         }
@@ -457,7 +460,7 @@ namespace CollapseLauncher.Pages
             {
                 bool isEnabled = GetAppConfigValue("UseCustomBG").ToBool();
                 string BGPath = GetAppConfigValue("CustomBGPath").ToString();
-                LogWriteLine("Read " + isEnabled + " BG Path: " + BGPath + " from config", LogType.Debug, false);
+                LogWriteLine("Read " + isEnabled + " BG Path: " + BGPath + " from config", LogType.Scheme, true);
                 if (!string.IsNullOrEmpty(BGPath))
                     BGPathDisplay.Text = BGPath;
                 else
@@ -481,7 +484,7 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("UseCustomBG", value);
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBG = ((IGameSettingsUniversal)currentGameProperty?._GameSettings)?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool isUseRegionCustomBG = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!value)
                 {
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
@@ -491,7 +494,7 @@ namespace CollapseLauncher.Pages
                 }
                 else if (isUseRegionCustomBG)
                 {
-                    string currentRegionCustomBg = ((IGameSettingsUniversal)currentGameProperty._GameSettings).SettingsCollapseMisc.CustomRegionBGPath;
+                    string currentRegionCustomBg = currentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
@@ -567,6 +570,20 @@ namespace CollapseLauncher.Pages
                 }
                 SetAndSaveConfigValue("EnableConsole", value);
             }
+        }
+
+        private bool IsSendRemoteCrashData
+        {
+            get
+            {
+                if (SentryHelper.IsDisableEnvVarDetected)
+                {
+                    ToggleSendRemoteCrashData.IsEnabled = false;
+                    ToolTipService.SetToolTip(ToggleSendRemoteCrashData, Lang._SettingsPage.Debug_SendRemoteCrashData_EnvVarDisablement);
+                }
+                return SentryHelper.IsEnabled;
+            }
+            set => SentryHelper.IsEnabled = value;
         }
 
         private bool IsIntroEnabled
@@ -1161,8 +1178,9 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    await SentryHelper.ExceptionHandlerAsync(ex);
                     InvokeError();
                     return;
                 }

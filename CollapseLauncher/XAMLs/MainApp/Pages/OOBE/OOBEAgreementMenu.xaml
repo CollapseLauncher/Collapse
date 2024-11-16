@@ -54,9 +54,9 @@
                             <ScrollViewer>
                                 <Grid>
                                     <markdown:MarkdownTextBlock Margin="24"
-                                                                Config="{x:Bind markdownConfig, Mode=OneWay}"
+                                                                Config="{x:Bind markdownConfig}"
                                                                 TabNavigation="Once"
-                                                                Text="{x:Bind text, Mode=OneWay}" />
+                                                                Text="{x:Bind text}" />
                                 </Grid>
                             </ScrollViewer>
                         </Grid>

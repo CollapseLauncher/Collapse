@@ -18,6 +18,7 @@ namespace Hi3Helper
         private string _logFolder { get; set; }
 #if !APPLYUPDATE
         private string _logPath { get; set; }
+        public static string LogPath { get; set; }
 #endif
         private StringBuilder _stringBuilder { get; set; }
         #endregion
@@ -59,8 +60,9 @@ namespace Hi3Helper
                     // Initialize writer and the path of the log file.
                     InitializeWriter(false, logEncoding);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex);
                     // If the initialization above fails, then use fallback.
                     InitializeWriter(true, logEncoding);
                 }
@@ -102,6 +104,7 @@ namespace Hi3Helper
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
                 }
             }
@@ -142,12 +145,14 @@ namespace Hi3Helper
                     }
                     catch (Exception retryEx)
                     {
+                        SentryHelper.SentryHelper.ExceptionHandler(retryEx, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                         Console.WriteLine($"Error while writing log file after reset!\r\n{retryEx}");
                     }
                 #nullable restore
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                     Console.WriteLine($"Error while writing log file!\r\n{ex}");
                 }
             }
@@ -223,7 +228,9 @@ namespace Hi3Helper
             fallbackString += LauncherConfig.AppCurrentVersionString;
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
-            _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}.log");
+            _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}-{GetCurrentTime("HH-mm-ss")}.log");
+            Console.WriteLine("\u001b[37;44m[LOGGER]\u001b[0m Log will be written to: " + _logPath);
+            LogPath = _logPath;
 
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
@@ -240,7 +247,7 @@ namespace Hi3Helper
         private int GetTotalInstance() => InvokeProp.EnumerateInstances();
 #endif
 
-        private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, NoTag or Empty!");
+        private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, Debug, GLC, Remote or Empty!");
 
         /// <summary>
         /// Get the ASCII color in string form.
@@ -256,6 +263,7 @@ namespace Hi3Helper
             LogType.Game => "\u001b[35;1m",
             LogType.Debug => "\u001b[36;1m",
             LogType.GLC => "\u001b[91;1m",
+            LogType.Sentry => "\u001b[42;1m",
             _ => string.Empty
         };
 
@@ -274,6 +282,7 @@ namespace Hi3Helper
             LogType.Game    => "[Game]  ",
             LogType.Debug   => "[DBG]   ",
             LogType.GLC     => "[GLC]   ",
+            LogType.Sentry   => "[Sentry]  ",
             LogType.NoTag   => "      ",
             _ => throw ThrowInvalidType()
         };

@@ -5,9 +5,11 @@ using System;
 
 namespace CollapseLauncher.Helper
 {
+#nullable enable
     internal static class ILoggerHelper
     {
-        internal static ILogger CreateCollapseILogger() => new CollapseILoggerWrapper();
+        private static ILogger? Logger;
+        internal static ILogger CreateCollapseILogger() => Logger ??= new CollapseILoggerWrapper();
     }
 
     public class CollapseILoggerWrapper : ILogger
@@ -15,11 +17,11 @@ namespace CollapseLauncher.Helper
         internal CollapseILoggerWrapper() { }
 
         public IDisposable BeginScope<TState>(TState state)
-            where TState : notnull => default;
+            where TState : notnull => default!;
 
         public bool IsEnabled(LogLevel logLevel) => true;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             LogType logType = logLevel switch
             {

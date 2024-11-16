@@ -16,6 +16,9 @@ for:
       - preview
     configuration: Release
     platform: x64
+    environment:
+      SENTRY_AUTH_TOKEN:
+        secure: 0+V+hKjxzGHSx/feeS7l9UFqD989glkg69Z2a/XW1PAPOrSu4NXB25k1X42bAbIH4mHrZtdQgV+qYPi2IrMfJVgd+I5VBI/befw4T7utkhFEvxN9AEvJLQesSacXRY23YV27L5OUzkUtbubg1sM+Dbt/LVJw9y3QYN4gIhQku+x9K0kuAQwUYmYbaQFNbrPj9n2E24up+NlmCBaT9Xc6f4Js6I7KRiE5hLgqR6ENpydKR6HVF0+HCEOB4+xIiW9A
     clone_script:
     - cmd: >-
         git clone -q --branch=preview https://github.com/CollapseLauncher/Collapse.git C:\projects\collapse
@@ -24,28 +27,28 @@ for:
     install:
     - cmd: >-
         echo Init submodules
-
+        
         git submodule update --init --force --depth=1 --recursive
-
+        
         echo.
-
+        
         echo Install InnoSetup
-
+        
         set innoinstall=%temp%\innosetup.exe
-
+        
         curl "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" --output %innoinstall%
-
-
+        
+        
         cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
-
+        
         echo.
-
+        
         echo Install dotnet sdk
-
-        choco install dotnet-sdk
-
+        
+        choco install dotnet-sdk --pre
+        
         dotnet --version
-
+        
         echo.
 
 
@@ -53,70 +56,73 @@ for:
     build_script:
     - cmd: >-
         @echo on
-
-        setlocal enabledelayedexpansion
-
-        echo Setting environments...
-
-        set name=Collapse
-
-        set channel=preview
-
-        set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-
-        echo.
-
-
-        echo Build app...
-
-        dotnet restore
-
-        dotnet publish CollapseLauncher -c Release -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\"
-
-
-        echo Getting app version...
-
-        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\preview-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
-
-        set "version=%version_untrim:~0,-2%"
-
-        echo Got version %version%
-
-        echo.
-
-
-        echo Setting up Deployable Resources...
-
-        mkdir DeployResource
-
-        mkdir DeployResource\app-%version%
-
-        xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
-
-
-        echo Making innosetup file...
-
-        mkdir InnoTarget
-
-        %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
-
-        echo.
-
-
-        echo Moving all the files into artifact to be pushed to SignPath
-
-        mkdir SignArtifact
-
-        mkdir SignArtifact\BuildArtifact-%version%
-
-        mkdir SignArtifact\InnoInstaller
-
-        xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
-
-        xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
-
-
         
+        setlocal enabledelayedexpansion
+        
+        echo Setting environments...
+        
+        set name=Collapse
+        
+        set channel=preview
+        
+        set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+        
+        echo.
+        
+        echo Build app...
+        
+        dotnet restore
+        
+        dotnet publish CollapseLauncher -c Release -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\"
+        
+        
+        echo Getting app version...
+        
+        for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\preview-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
+        
+        set "version=%version_untrim:~0,-2%"
+        
+        echo Got version %version%
+        
+        echo.
+        
+        
+        echo Setting up Deployable Resources...
+        
+        mkdir DeployResource
+        
+        mkdir DeployResource\current
+        
+        CollapseLauncher\%channel%-build\CollapseLauncher.exe generatevelopackmetadata
+        
+        xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\current\" /E /K /Y /I
+        
+        curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
+        
+        
+        echo Making innosetup file...
+        
+        mkdir InnoTarget
+        
+        %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
+        
+        echo.
+        
+        
+        echo Moving all the files into artifact to be pushed to SignPath
+        
+        mkdir SignArtifact
+        
+        mkdir SignArtifact\BuildArtifact-%version%
+        
+        mkdir SignArtifact\InnoInstaller
+        
+        xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
+        
+        xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
+    
+    
+    
     test: off
     artifacts:
     - path: SignArtifact\
@@ -143,6 +149,9 @@ for:
       - stable
     configuration: Publish
     platform: x64
+    environment:
+      SENTRY_AUTH_TOKEN:
+        secure: 0+V+hKjxzGHSx/feeS7l9UFqD989glkg69Z2a/XW1PAPOrSu4NXB25k1X42bAbIH4mHrZtdQgV+qYPi2IrMfJVgd+I5VBI/befw4T7utkhFEvxN9AEvJLQesSacXRY23YV27L5OUzkUtbubg1sM+Dbt/LVJw9y3QYN4gIhQku+x9K0kuAQwUYmYbaQFNbrPj9n2E24up+NlmCBaT9Xc6f4Js6I7KRiE5hLgqR6ENpydKR6HVF0+HCEOB4+xIiW9A
     clone_script:
     - cmd: >-
         git clone -q --branch=stable https://github.com/CollapseLauncher/Collapse.git C:\projects\collapse
@@ -169,7 +178,7 @@ for:
 
         echo Install dotnet sdk
 
-        choco install dotnet-sdk
+        choco install dotnet-sdk --pre
 
         dotnet --version
 
@@ -193,12 +202,11 @@ for:
 
         echo.
 
-
         echo Build app...
 
         dotnet restore
 
-        dotnet publish CollapseLauncher -c Publish -p:PublishProfile=Publish-StableRelease -p:PublishDir=".\stable-build\"
+        dotnet publish CollapseLauncher -c Publish -p:PublishProfile=Publish-StableReleaseAOT -p:PublishDir=".\stable-build\"
 
 
         echo Getting app version...
@@ -216,9 +224,13 @@ for:
 
         mkdir DeployResource
 
-        mkdir DeployResource\app-%version%
+        mkdir DeployResource\current
 
-        xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\app-%version%\" /E /K /Y /I
+        CollapseLauncher\%channel%-build\CollapseLauncher.exe generatevelopackmetadata
+
+        xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\current\" /E /K /Y /I
+
+        curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
 
 
         echo Making innosetup file...
@@ -236,7 +248,6 @@ for:
 
         mkdir SignArtifact\BuildArtifact-%version%
 
-
         mkdir SignArtifact\InnoInstaller
 
         xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
@@ -251,7 +262,7 @@ for:
 
     deploy:
     - provider: Webhook
-      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=initial
+      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=aot-release
       authorization:
         secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
       on:

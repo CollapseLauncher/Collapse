@@ -4,6 +4,7 @@ using Hi3Helper.EncTool;
 using Microsoft.Win32;
 using System;
 using System.Text;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
@@ -141,6 +142,7 @@ namespace CollapseLauncher.GameSettings.Universal
             catch ( Exception ex )
             {
                 LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to read {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
             finally
             {
@@ -166,6 +168,7 @@ namespace CollapseLauncher.GameSettings.Universal
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 

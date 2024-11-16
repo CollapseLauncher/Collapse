@@ -2,6 +2,7 @@ using CollapseLauncher.GameVersioning;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,7 +52,9 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
-                throw ex.Flatten().InnerExceptions.First();
+                var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
+                SentryHelper.ExceptionHandler(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                throw innerExceptionsFirst;
             }
 
             // Re-add the asset index with a broken asset index

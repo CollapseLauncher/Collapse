@@ -23,6 +23,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
@@ -524,6 +525,7 @@ namespace CollapseLauncher.Interfaces
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
                 } // Suppress errors
             }
@@ -533,6 +535,7 @@ namespace CollapseLauncher.Interfaces
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while deleting parent dir: {dirPath}\r\n{ex}", LogType.Warning, true);
             } // Suppress errors
         }
@@ -550,6 +553,7 @@ namespace CollapseLauncher.Interfaces
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed to delete file: {path}\r\n{ex}", LogType.Error, true);
             }
         }
@@ -590,6 +594,7 @@ namespace CollapseLauncher.Interfaces
                 }
                 catch (Exception ex)
                 {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     // If failed, flag ErrorOccured as true and skip to the next file 
                     LogWriteLine($"Error while moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"\r\nException: {ex}", LogType.Error, true);
                     errorOccured = true;
