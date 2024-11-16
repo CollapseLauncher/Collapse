@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Threading.Tasks;
@@ -50,6 +51,7 @@ namespace CollapseLauncher.Helper.Update
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}", LogType.Warning, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
 
