@@ -53,6 +53,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
+                // Gets caught by the calling method
                 return ex;
             }
 
@@ -190,6 +191,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
+                // Gets caught by calling method
                 return ex;
             }
 

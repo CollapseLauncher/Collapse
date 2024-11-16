@@ -14,6 +14,7 @@
     using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
+    using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
     using Microsoft.UI.Input;
@@ -160,8 +161,9 @@ namespace CollapseLauncher.Pages
                         File.Delete(AppNotifIgnoreFile);
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         // Pipe error
                     }
                     MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
@@ -286,8 +288,9 @@ namespace CollapseLauncher.Pages
                 }.Start();
                 (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
             }
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Pipe error
             }
         }
@@ -567,6 +570,20 @@ namespace CollapseLauncher.Pages
                 }
                 SetAndSaveConfigValue("EnableConsole", value);
             }
+        }
+
+        private bool IsSendRemoteCrashData
+        {
+            get
+            {
+                if (SentryHelper.IsDisableEnvVarDetected)
+                {
+                    ToggleSendRemoteCrashData.IsEnabled = false;
+                    ToolTipService.SetToolTip(ToggleSendRemoteCrashData, Lang._SettingsPage.Debug_SendRemoteCrashData_EnvVarDisablement);
+                }
+                return SentryHelper.IsEnabled;
+            }
+            set => SentryHelper.IsEnabled = value;
         }
 
         private bool IsIntroEnabled
@@ -1161,8 +1178,9 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    await SentryHelper.ExceptionHandlerAsync(ex);
                     InvokeError();
                     return;
                 }

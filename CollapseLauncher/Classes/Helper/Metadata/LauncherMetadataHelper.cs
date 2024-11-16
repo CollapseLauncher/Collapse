@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -267,6 +268,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Throw if it's allowed
                 if (throwAfterRetry)
                 {
@@ -477,6 +479,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Throw if it's allowed
                 if (throwAfterRetry)
                 {
@@ -585,6 +588,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"An error has occurred while checking MetadataV3 update!\r\n{ex}", LogType.Error,
                                     true);
                 return false;
@@ -646,6 +650,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"An error has occurred while updating MetadataV3!\r\n{ex}", LogType.Error, true);
             }
             finally
@@ -705,6 +710,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"An error has occurred while updating stamp file content. Removing the stamp file instead!\r\n{ex}", LogType.Error, true);
             }
 

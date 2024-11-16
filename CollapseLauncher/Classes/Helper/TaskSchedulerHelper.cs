@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher.Helper
 {
@@ -265,6 +266,7 @@ namespace CollapseLauncher.Helper
             catch (Exception ex)
             {
                 // If error happened, then return.
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"An error has occurred while invoking Task Scheduler applet!\r\n{ex}", LogType.Error, true);
                 return short.MaxValue;
             }

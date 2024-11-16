@@ -33,9 +33,10 @@ namespace Hi3Helper
                 _ = LoadLang(filePath);
                 LogWriteLine($"Locale file: {langRelativePath} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                LogWriteLine($"Failed while parsing locale file: {langRelativePath}. Ignoring!\r\n{e}", LogType.Warning, true);
+                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed while parsing locale file: {langRelativePath}. Ignoring!\r\n{ex}", LogType.Warning, true);
             }
         }
 
@@ -53,6 +54,7 @@ namespace Hi3Helper
             }
             catch (Exception e)
             {
+                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while parsing locale file: {fileUri.AbsoluteUri}. Ignoring!\r\n{e}", LogType.Warning, true);
             }
         }
@@ -179,9 +181,10 @@ namespace Hi3Helper
                 Lang = LanguageNames[langID].LoadLang();
                 TryLoadSizePrefix(Lang);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new LocalizationInnerException($"Failed while loading locale with ID {langID}!", e);
+                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+                throw new LocalizationInnerException($"Failed while loading locale with ID {langID}!", ex);
             }
             finally
             {
@@ -216,6 +219,7 @@ namespace Hi3Helper
             }
             catch (Exception ex)
             {
+                SentryHelper.SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"An error has occurred while parsing size prefix value for locale file with ID: {langData.LanguageID}!\r\n{ex}", LogType.Warning, true);
                 return;
             }

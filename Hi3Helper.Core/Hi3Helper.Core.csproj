@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
@@ -43,6 +43,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+	  <PackageReference Include="Sentry" Version="4.13.0" />
 	</ItemGroup>
 
 	<ItemGroup>

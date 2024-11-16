@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -73,7 +74,9 @@ namespace CollapseLauncher
             }
             catch (AggregateException ex)
             {
-                throw ex.Flatten().InnerExceptions.First();
+                var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
+                SentryHelper.ExceptionHandler(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                throw innerExceptionsFirst;
             }
 
             // Re-add the asset index with a broken asset index
@@ -650,6 +653,7 @@ namespace CollapseLauncher
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.ExceptionHandler(ex);
                         LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
                     }
                 }

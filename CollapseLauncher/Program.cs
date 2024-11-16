@@ -1,7 +1,8 @@
-﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.ShellLinkCOM;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
@@ -82,12 +83,34 @@ public static class MainEntryPoint
                     Directory.SetCurrentDirectory(AppFolder);
                 }
 
+
+                SentryHelper.IsPreview = IsPreview;
+                if (SentryHelper.IsEnabled)
+                {
+                    try
+                    {
+                        // Sentry SDK Entry
+                        LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
+                        SentryHelper.InitializeSentrySdk();
+                        LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
+                        SentryHelper.InitializeExceptionRedirect();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                    }
+                }
+
                 StartUpdaterHook();
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                     LauncherUpdateHelper.LauncherCurrentVersionString,
                     GetVersionString(),
+                    #if DEBUG
                     Environment.UserName,
+                    #else
+                    "[REDACTED]",
+                    #endif
                     IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
                 var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
@@ -164,13 +187,15 @@ public static class MainEntryPoint
             #if !DEBUG
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 SpawnFatalErrorConsole(ex);
             }
             #else
             // ReSharper disable once RedundantCatchClause
             // Reason: warning shaddap-er
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
             #endif
@@ -388,6 +413,7 @@ public static class MainEntryPoint
         }
         catch (Exception ex)
         {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
         }
 
@@ -437,6 +463,7 @@ public static class MainEntryPoint
         }
         catch (Exception ex)
         {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}", LogType.Error, true);
         }
     }

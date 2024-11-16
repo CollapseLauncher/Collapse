@@ -1,6 +1,7 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Image;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -51,9 +52,14 @@ namespace CollapseLauncher
                 UnhandledException += static (sender, e) =>
                 {
                     LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true);
-                #if !DEBUG
+                    var ex = e.Exception;
+                    if (ex != null)
+                    {
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledXaml);
+                    }
+#if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(e!.Exception);
-                #endif
+#endif
                 };
             }
 
@@ -133,6 +139,7 @@ namespace CollapseLauncher
             {
                 LogWriteLine($"FATAL ERROR ON APP INITIALIZER LEVEL!!!\r\n{ex}", LogType.Error, true);
                 LogWriteLine("\r\nIf this is not intended, please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\nPress any key to exit...");
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 //Console.ReadLine();
                 throw;
             }

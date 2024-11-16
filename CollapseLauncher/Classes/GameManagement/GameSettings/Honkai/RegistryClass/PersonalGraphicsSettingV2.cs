@@ -3,6 +3,7 @@ using CollapseLauncher.GameSettings.Honkai.Enums;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
@@ -224,6 +225,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }

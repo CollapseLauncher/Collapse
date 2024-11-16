@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Diagnostics;
@@ -47,15 +48,20 @@ namespace CollapseLauncher
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
-                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread, GetRelativePathOnly(url),
-#if !USEVELOPACK
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread,
+                                                                 GetRelativePathOnly(url),
+                                                             #if !USEVELOPACK
                     default
-#else
-                    cancelToken
-#endif
-                    );
+                                                             #else
+                                                                 cancelToken
+                                                             #endif
+                                                                );
             }
-            catch { throw; }
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+                throw;
+            }
             finally
             {
                 FallbackCDNUtil.DownloadProgress -= progressEvent;
@@ -276,6 +282,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return null;
             }
@@ -304,6 +311,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
@@ -355,6 +363,7 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
@@ -418,6 +427,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}", LogType.Error, true);
                 return CDNUtilHTTPStatus.CreateInitializationError();
             }

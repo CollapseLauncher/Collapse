@@ -153,6 +153,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to save Genshin Impact ScreenManager Values!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(new Exception("Failed to save Genshin Impact ScreenManager Values!", ex));
             }
         }
 

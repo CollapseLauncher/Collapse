@@ -10,6 +10,7 @@ using System.Collections.Generic;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -64,6 +65,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 errorLoadRoutine?.Invoke(ex);
                 return false;
             }

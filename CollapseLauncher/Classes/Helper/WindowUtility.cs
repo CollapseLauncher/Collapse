@@ -18,6 +18,7 @@
     using Windows.Foundation;
     using Windows.Graphics;
     using Windows.UI;
+    using Hi3Helper.SentryHelper;
     using WinRT.Interop;
     using Size = System.Drawing.Size;
     using WindowId = Microsoft.UI.WindowId;
@@ -87,6 +88,7 @@
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                         Logger.LogWriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
                     }
                     return null;

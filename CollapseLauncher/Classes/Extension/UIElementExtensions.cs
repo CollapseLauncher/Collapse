@@ -17,6 +17,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Text;
+using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher.Extension
 {
@@ -921,6 +922,7 @@ namespace CollapseLauncher.Extension
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledXaml);
                         Logger.LogWriteLine($"Failed while attaching shadow to an element\r\n{ex}", LogType.Warning, true);
                     }
                 }
