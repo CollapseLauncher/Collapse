@@ -36,6 +36,12 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher;
 
+public static partial class MainEntryPointExtension
+{
+    [LibraryImport("Microsoft.ui.xaml.dll", EntryPoint = "XamlCheckProcessRequirements")]
+    public static partial void XamlCheckProcessRequirements();
+}
+
 public static class MainEntryPoint
 {
 #nullable enable
@@ -43,9 +49,6 @@ public static class MainEntryPoint
     public static App? CurrentAppInstance;
     public static string[]? LastArgs = null;
 #nullable restore
-
-    [DllImport("Microsoft.ui.xaml.dll")]
-    private static extern void XamlCheckProcessRequirements();
 
     [STAThread]
     public static void Main(params string[] args)
@@ -180,7 +183,7 @@ public static class MainEntryPoint
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())
                 {
-                    XamlCheckProcessRequirements();
+                    MainEntryPointExtension.XamlCheckProcessRequirements();
                     ComWrappersSupport.InitializeComWrappers();
 
                     StartMainApplication();
