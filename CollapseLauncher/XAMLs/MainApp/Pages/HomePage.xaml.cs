@@ -1793,6 +1793,7 @@ namespace CollapseLauncher.Pages
                 ResizableWindowHookToken = new CancellationTokenSource();
 
                 executableName = Path.GetFileNameWithoutExtension(executableName);
+                string gameExecutableDirectory = CurrentGameProperty._GameVersion.GameDirPath;
                 ResizableWindowHook resizableWindowHook = new ResizableWindowHook();
 
                 // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
@@ -1801,7 +1802,7 @@ namespace CollapseLauncher.Pages
                 // possible :teriStare:)
                 bool isNeedToResetPos = gameType == GameNameType.StarRail;
                 await Task.Run(() => resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
-                                                    isNeedToResetPos, ILoggerHelper.GetILogger()));
+                                                    isNeedToResetPos, ILoggerHelper.GetILogger(), gameExecutableDirectory));
             }
             catch (Exception ex)
             {

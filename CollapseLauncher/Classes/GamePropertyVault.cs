@@ -110,7 +110,7 @@ namespace CollapseLauncher.Statics
 
         internal bool IsGameRunning
         {
-            get => Hi3Helper.Win32.Native.PInvoke.IsProcessExist(_GameExecutableName, Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName), ILoggerHelper.GetILogger());
+            get => PInvoke.IsProcessExist(_GameExecutableName, out _, out _, Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName), ILoggerHelper.GetILogger());
         }
 
 #nullable enable
