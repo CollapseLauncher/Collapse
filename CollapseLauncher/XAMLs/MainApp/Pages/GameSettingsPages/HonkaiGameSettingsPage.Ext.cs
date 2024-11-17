@@ -3,7 +3,6 @@ using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.Honkai.Enums;
 using CollapseLauncher.Helper;
-using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;

@@ -1800,8 +1800,8 @@ namespace CollapseLauncher.Pages
                 // it impossible to use custom resolution (but since you are using Collapse, it's now
                 // possible :teriStare:)
                 bool isNeedToResetPos = gameType == GameNameType.StarRail;
-                await resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
-                                                    isNeedToResetPos);
+                await Task.Run(() => resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+                                                    isNeedToResetPos, ILoggerHelper.GetILogger()));
             }
             catch (Exception ex)
             {

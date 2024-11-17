@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.Helper;
-using Hi3Helper.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
