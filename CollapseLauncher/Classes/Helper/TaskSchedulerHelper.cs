@@ -175,15 +175,13 @@ namespace CollapseLauncher.Helper
             string currentExecDescription = currentExecVersionInfo.FileDescription ?? "";
 
             // Create shell link instance and save the shortcut under Desktop and User's Start menu
-            using ShellLink shellLink = new ShellLink()
-            {
-                IconIndex = 0,
-                IconPath = currentExecPath,
-                DisplayMode = LinkDisplayMode.edmNormal,
-                WorkingDirectory = workingDirPath,
-                Target = currentExecPath,
-                Description = currentExecDescription
-            };
+            using ShellLink shellLink = new ShellLink();
+            shellLink.IconIndex        = 0;
+            shellLink.IconPath         = currentExecPath;
+            shellLink.DisplayMode      = LinkDisplayMode.edmNormal;
+            shellLink.WorkingDirectory = workingDirPath ?? "";
+            shellLink.Target           = currentExecPath;
+            shellLink.Description      = currentExecDescription;
 
             // Get paths
             string shortcutFilename = currentExecVersionInfo.ProductName + ".lnk";
@@ -192,7 +190,7 @@ namespace CollapseLauncher.Helper
             string iconLocationStartMenu = Path.Combine(
                 startMenuLocation,
                 "Programs",
-                currentExecVersionInfo.CompanyName,
+                currentExecVersionInfo.CompanyName ?? "",
                 shortcutFilename);
             string iconLocationDesktop = Path.Combine(
                 desktopLocation,
@@ -203,8 +201,8 @@ namespace CollapseLauncher.Helper
             string iconLocationDesktopDir = Path.GetDirectoryName(iconLocationDesktop);
 
             // Try create directory
-            Directory.CreateDirectory(iconLocationStartMenuDir);
-            Directory.CreateDirectory(iconLocationDesktopDir);
+            Directory.CreateDirectory(iconLocationStartMenuDir!);
+            Directory.CreateDirectory(iconLocationDesktopDir!);
 
             // Save the icons
             shellLink.Save(iconLocationStartMenu);

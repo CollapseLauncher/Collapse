@@ -5,7 +5,6 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
@@ -406,7 +405,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll(5);
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll();
         private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
         public async void CarouselRestartScroll(int delaySeconds = 5)
@@ -1463,7 +1462,7 @@ namespace CollapseLauncher.Pages
 
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
             }
             finally
             {
@@ -1523,9 +1522,9 @@ namespace CollapseLauncher.Pages
         private void GameInstallSophon_StatusChanged(object sender, TotalPerfileStatus e)
         {
             if (DispatcherQueue.HasThreadAccess)
-                GameInstallSophon_StatusChanged_Inner(sender, e);
+                GameInstallSophon_StatusChanged_Inner(e);
             else
-                DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(sender, e));
+                DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(e));
         }
 
         private void GameInstallSophon_ProgressChanged(object sender, TotalPerfileProgress e)
@@ -1536,7 +1535,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstallSophon_ProgressChanged_Inner(e));
         }
 
-        private void GameInstallSophon_StatusChanged_Inner(object sender, TotalPerfileStatus e)
+        private void GameInstallSophon_StatusChanged_Inner(TotalPerfileStatus e)
         {
             SophonProgressStatusTitleText.Text = e.ActivityStatus;
             SophonProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
@@ -1875,7 +1874,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp.GetScreenSize().Width, WindowUtility.CurrentScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1945,7 +1944,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp.GetScreenSize().Width, WindowUtility.CurrentScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1973,7 +1972,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp.GetScreenSize().Width, WindowUtility.CurrentScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -2039,7 +2038,7 @@ namespace CollapseLauncher.Pages
             {
                 bool value = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 ChangeGameBGButton.IsEnabled = value;
-                string path = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                string path = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath ?? "";
                 BGPathDisplay.Text = Path.GetFileName(path);
                 return value;
             }
@@ -2047,7 +2046,10 @@ namespace CollapseLauncher.Pages
             {
                 ChangeGameBGButton.IsEnabled = value;
 
-                var regionBgPath = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath;
+                if (CurrentGameProperty?._GameSettings == null)
+                    return;
+
+                var regionBgPath = CurrentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
                 if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
                 {
                     regionBgPath = Path.GetFileName(GetAppConfigValue("CustomBGPath").ToString());
@@ -2056,7 +2058,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
-                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
+                CurrentGameProperty._GameSettings.SaveBaseSettings();
                 m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                 BGPathDisplay.Text = Path.GetFileName(regionBgPath);
@@ -2127,7 +2129,7 @@ namespace CollapseLauncher.Pages
         #region Exclusive Window Payload
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+            IntPtr _windowPtr = PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName ?? "");
             await Task.Delay(1000);
             PInvoke.HideWindow(_windowPtr);
             await Task.Delay(1000);
@@ -2302,7 +2304,7 @@ namespace CollapseLauncher.Pages
             {
                 GameStartupSetting.Flyout.Hide();
                 if (CurrentGameProperty?._GameInstall != null)
-                    await CurrentGameProperty._GameInstall.CleanUpGameFiles(true);
+                    await CurrentGameProperty._GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)
             {
@@ -2351,7 +2353,7 @@ namespace CollapseLauncher.Pages
                 SetAlternativeFileStream(croppedImage);
             }
 
-            if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+            if (CurrentGameProperty?._GameSettings?.SettingsCollapseMisc != null)
             {
                 CurrentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
                 CurrentGameProperty._GameSettings.SaveBaseSettings();
@@ -2380,7 +2382,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
             }
         }
         #endregion

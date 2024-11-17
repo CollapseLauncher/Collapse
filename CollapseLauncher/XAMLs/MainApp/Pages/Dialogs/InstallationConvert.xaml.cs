@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
@@ -26,6 +25,7 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Dialogs
 {
@@ -33,7 +33,7 @@ namespace CollapseLauncher.Dialogs
     {
         string SourceDataIntegrityURL;
         string GameVersion;
-        bool IsAlreadyConverted = false;
+        bool IsAlreadyConverted;
         PresetConfig SourceProfile;
         PresetConfig TargetProfile;
         GameConversionManagement Converter;
@@ -138,8 +138,7 @@ namespace CollapseLauncher.Dialogs
         private void DoSetProfileDataLocation()
         {
             SourceProfile.ActualGameDataLocation = NormalizePath(SourceIniFile["launcher"]["game_install_path"].ToString());
-            TargetProfile.ActualGameDataLocation = Path.Combine(Path.GetDirectoryName(SourceProfile.ActualGameDataLocation), $"{TargetProfile.GameDirectoryName}_ConvertedTo-{TargetProfile.ProfileName}");
-            string TargetINIPath = Path.Combine(AppGameFolder, TargetProfile.ProfileName, "config.ini");
+            TargetProfile.ActualGameDataLocation = Path.Combine(Path.GetDirectoryName(SourceProfile.ActualGameDataLocation) ?? "", $"{TargetProfile.GameDirectoryName}_ConvertedTo-{TargetProfile.ProfileName}");
 
             DispatcherQueue?.TryEnqueue(() =>
             {
@@ -190,7 +189,7 @@ namespace CollapseLauncher.Dialogs
 
         internal bool IsSourceGameExist(PresetConfig Profile)
         {
-            string INIPath = Path.Combine(AppGameFolder, Profile.ProfileName, "config.ini");
+            string INIPath = Path.Combine(AppGameFolder, Profile.ProfileName ?? "", "config.ini");
             string GamePath;
             string ExecPath;
             if (!File.Exists(INIPath))
@@ -230,7 +229,7 @@ namespace CollapseLauncher.Dialogs
                 GameVersion? remoteVersion = CurrentGameProperty._GameVersion.GetGameVersionAPI();
                 if (!localVersion.IsMatch(remoteVersion)) return false;
 
-                ExecPath = Path.Combine(GamePath, Profile.GameExecutableName);
+                ExecPath = Path.Combine(GamePath, Profile.GameExecutableName ?? "");
                 if (!File.Exists(ExecPath))
                     return false;
             }
@@ -244,45 +243,60 @@ namespace CollapseLauncher.Dialogs
 
         internal async Task<(PresetConfig, PresetConfig)> AskConvertionDestination()
         {
-            (ContentDialogResult Result, ComboBox SourceGame, ComboBox TargetGame) = await Dialog_SelectGameConvertRecipe(Content);
-            PresetConfig SourceRet = null;
-            PresetConfig TargetRet = null;
+            (ContentDialogResult result, ComboBox sourceGame, ComboBox targetGame) = await Dialog_SelectGameConvertRecipe(Content);
+            PresetConfig sourceRet = null;
+            PresetConfig targetRet = null;
 
-            if (SourceGame.SelectedItem == null || TargetGame.SelectedItem == null)
+            if (sourceGame.SelectedItem == null || targetGame.SelectedItem == null)
                 throw new OperationCanceledException();
 
-            string sourceGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(SourceGame.SelectedItem);
-            string targetGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(TargetGame.SelectedItem);
+            string sourceGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(sourceGame.SelectedItem);
+            string targetGameRegionString = InnerLauncherConfig.GetComboBoxGameRegionValue(targetGame.SelectedItem);
 
-            switch (Result)
+            switch (result)
             {
                 case ContentDialogResult.Secondary:
-                    SourceRet = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].
-                        Values.Where(x => x.ZoneName == sourceGameRegionString).First();
-                    TargetRet = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].
-                        Values.Where(x => x.ZoneName == targetGameRegionString).First();
+                    if (LauncherMetadataHelper.CurrentMetadataConfigGameName != null)
+                    {
+                        sourceRet = LauncherMetadataHelper
+                                   .LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
+                                   .Where(x => x.ZoneName == sourceGameRegionString)!.First();
+                        targetRet = LauncherMetadataHelper
+                                   .LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
+                                   .Where(x => x.ZoneName == targetGameRegionString)!.First();
+                    }
+
                     break;
                 case ContentDialogResult.Primary:
                     throw new OperationCanceledException();
+                case ContentDialogResult.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            return (SourceRet, TargetRet);
+            return (sourceRet, targetRet);
         }
 
-        public static List<string> GetConvertibleNameList(string ZoneName)
+        public static List<string> GetConvertibleNameList(string zoneName)
         {
-            List<string> _out = new List<string>();
-            List<string> GameTargetProfileName = LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
-                .Where(x => x.ZoneName == ZoneName)
-                .Select(x => x.ConvertibleTo)
-                .First();
+            List<string> outList = new List<string>();
+            if (LauncherMetadataHelper.CurrentMetadataConfigGameName == null)
+            {
+                return outList;
+            }
 
-            foreach (string Entry in GameTargetProfileName)
-                _out.Add(LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
-                    .Where(x => x.ZoneName == Entry)
-                    .Select(x => x.ZoneName)
-                    .First());
+            List<string> gameTargetProfileName = LauncherMetadataHelper.LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
+                                                                       .Where(x => x.ZoneName == zoneName)
+                                                                       .Select(x => x.ConvertibleTo)
+                                                                       .First()!;
 
-            return _out;
+            foreach (string entry in gameTargetProfileName)
+                outList.Add(LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName].Values
+                                                  .Where(x => x.ZoneName == entry)
+                                                  .Select(x => x.ZoneName)
+                                                  .First());
+
+            return outList;
         }
 
         private async Task DoDownloadRecipe()
@@ -336,17 +350,6 @@ namespace CollapseLauncher.Dialogs
             {
                 Step2ProgressStatus.Text = $"{e.ProgressPercentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(speed))}";
                 Step2ProgressRing.Value = e.ProgressPercentage;
-            });
-        }
-
-        private void Step2ProgressEvents(int read, DownloadProgress downloadProgress)
-        {
-            double speed = downloadProgress.BytesDownloaded / CurrentStopwatch.Elapsed.TotalSeconds;
-            double percentage = GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
-            DispatcherQueue?.TryEnqueue(() =>
-            {
-                Step2ProgressStatus.Text = $"{percentage}% - {string.Format(Lang._Misc.SpeedPerSec, SummarizeSizeSimple(speed))}";
-                Step2ProgressRing.Value = percentage;
             });
         }
 
@@ -508,7 +511,6 @@ namespace CollapseLauncher.Dialogs
             if (await Dialog.QueueAndSpawnDialog() == ContentDialogResult.Primary)
             {
                 tokenSource.Cancel();
-                return;
             }
         }
 
@@ -533,11 +535,11 @@ namespace CollapseLauncher.Dialogs
             foreach (string filePath in Directory.EnumerateFiles(IngrPath, "*", SearchOption.AllDirectories))
             {
                 ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(DirLength);
-                destFilePath = Path.Combine(OrigPath, relativePath.ToString());
+                destFilePath = Path.Combine(OrigPath ?? "", relativePath.ToString());
                 destFolderPath = Path.GetDirectoryName(destFilePath);
 
                 if (!Directory.Exists(destFolderPath))
-                    Directory.CreateDirectory(destFolderPath);
+                    Directory.CreateDirectory(destFolderPath ?? "");
 
                 try
                 {

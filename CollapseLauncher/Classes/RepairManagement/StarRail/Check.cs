@@ -34,8 +34,8 @@ namespace CollapseLauncher
                 _ => string.Empty
             }, execName);
 
-            int indexOfStart = inputPath.IndexOf(parentStreamingRelativePath);
-            int indexOfEnd = indexOfStart + parentStreamingRelativePath.Length;
+            int indexOfStart = inputPath.IndexOf(parentStreamingRelativePath, StringComparison.Ordinal);
+            int indexOfEnd   = indexOfStart + parentStreamingRelativePath.Length;
 
             if (indexOfStart == -1) return inputPath;
 
@@ -70,11 +70,14 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
-            _status.IsProgressPerFileIndetermined = false;
+            if (_status != null)
+            {
+                _status.IsProgressAllIndetermined     = false;
+                _status.IsProgressPerFileIndetermined = false;
 
-            // Show the asset entry panel
-            _status.IsAssetEntryPanelShow = true;
+                // Show the asset entry panel
+                _status.IsAssetEntryPanelShow = true;
+            }
 
             // Await the task for parallel processing
             try
@@ -119,7 +122,11 @@ namespace CollapseLauncher
         private async ValueTask CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
+                                                       StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -201,7 +208,11 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
+            if (_status != null)
+            {
+                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
+                                                       StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
+            }
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -362,10 +373,11 @@ namespace CollapseLauncher
             RemoveHashMarkFile(filePath, out basePath, out baseName);
 
             // Create base path if not exist
-            if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+            if (!string.IsNullOrEmpty(basePath) && !Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
 
             // Re-create the hash file
-            string toName = Path.Combine(basePath, $"{baseName}_{hash}.hash");
+            string toName = Path.Combine(basePath ?? "", $"{baseName}_{hash}.hash");
             if (File.Exists(toName)) return;
             File.Create(toName).Dispose();
         }
@@ -377,7 +389,7 @@ namespace CollapseLauncher
             baseName = Path.GetFileNameWithoutExtension(filePath);
 
             // Enumerate any possible existing hash path and delete it
-            foreach (string existingPath in Directory.EnumerateFiles(basePath, $"{baseName}_*.hash"))
+            foreach (string existingPath in Directory.EnumerateFiles(basePath!, $"{baseName}_*.hash"))
             {
                 File.Delete(existingPath);
             }

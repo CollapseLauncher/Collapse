@@ -16,6 +16,7 @@ using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 #nullable enable
 namespace CollapseLauncher
@@ -81,7 +82,7 @@ namespace CollapseLauncher
         {
             int? index = LauncherMetadataHelper.GetPreviousGameRegion(category);
 
-            return index == -1 || index == null ? 0 : index ?? 0;
+            return index == -1 || index == null ? 0 : (int)index;
         }
 
         public static List<StackPanel> BuildGameTitleListUI()

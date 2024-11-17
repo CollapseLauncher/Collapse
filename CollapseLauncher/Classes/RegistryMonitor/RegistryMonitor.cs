@@ -46,8 +46,7 @@ namespace RegistryUtils
         protected virtual void OnRegChanged()
         {
             EventHandler handler = RegChanged;
-            if (handler != null)
-                handler(this, null);
+            handler?.Invoke(this, null!);
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace RegistryUtils
         private string _registrySubName;
         private object _threadLock = new object();
         private Thread _thread;
-        private bool _disposed = false;
+        private bool _disposed;
         private ManualResetEvent _eventTerminate = new ManualResetEvent(false);
 
         private RegChangeNotifyFilter _regFilter = RegChangeNotifyFilter.Key | RegChangeNotifyFilter.Attribute |
@@ -143,7 +142,7 @@ namespace RegistryUtils
             {
                 LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
+                throw new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
             }
             _disposed = true;
 #if DEBUG
@@ -236,7 +235,7 @@ namespace RegistryUtils
 
                 default:
                     _registryHive = HKEYCLASS.None;
-                    throw new ArgumentException("The registry hive '" + nameParts[0] + "' is not supported", "value");
+                    throw new ArgumentException("The registry hive '" + nameParts[0] + "' is not supported", nameof(name));
             }
 
             _registrySubName = string.Join("\\", nameParts, 1, nameParts.Length - 1);
@@ -266,7 +265,7 @@ namespace RegistryUtils
                 if (!IsMonitoring)
                 {
                     _eventTerminate.Reset();
-                    _thread = new Thread(new ThreadStart(MonitorThread));
+                    _thread = new Thread(MonitorThread);
                     _thread.IsBackground = true;
                     _thread.Start();
                 }
@@ -339,7 +338,6 @@ namespace RegistryUtils
                     }
                 }
             }
-            catch { throw; }
             finally
             {
                 if (registryKey != IntPtr.Zero)
@@ -347,7 +345,7 @@ namespace RegistryUtils
                     PInvoke.RegCloseKey(registryKey);
                 }
 
-                for (int i = 0; i < waitHandles?.Length; i++) waitHandles?[i]?.Dispose();
+                for (int i = 0; i < waitHandles?.Length; i++) waitHandles[i]?.Dispose();
             }
         }
     }

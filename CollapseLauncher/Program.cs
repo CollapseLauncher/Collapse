@@ -47,7 +47,7 @@ public static class MainEntryPoint
 #nullable enable
     public static int InstanceCount;
     public static App? CurrentAppInstance;
-    public static string[]? LastArgs = null;
+    public static string[]? LastArgs;
 #nullable restore
 
     [STAThread]
@@ -63,7 +63,7 @@ public static class MainEntryPoint
                 AppCurrentArgument = args;
 
                 // Extract icons from the executable file
-                var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
+                string mainModulePath = Process.GetCurrentProcess().MainModule?.FileName ?? "";
                 var iconCount = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
                 if (iconCount > 0)
                 {
@@ -376,7 +376,7 @@ public static class MainEntryPoint
 
             // Try to remove legacy shortcuts
             string currentWindowsPathDrive = Path.GetPathRoot(Environment.SystemDirectory);
-            if (currentWindowsPathDrive != null)
+            if (!string.IsNullOrEmpty(currentWindowsPathDrive))
             {
                 string squirrelLegacyStartMenuGlobal       = Path.Combine(currentWindowsPathDrive, @"ProgramData\Microsoft\Windows\Start Menu\Programs\Collapse\Collapse Launcher");
                 string squirrelLegacyStartMenuGlobalParent = Path.GetDirectoryName(squirrelLegacyStartMenuGlobal);
@@ -387,7 +387,7 @@ public static class MainEntryPoint
             }
 
             // Try to delete all possible shortcuts on any users (since the shortcut used will be the global one)
-            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive, "Users");
+            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive!, "Users");
             foreach (string userDirInfoPath in Directory
                 .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
                 .Where(ConverterTool.IsUserHasPermission))

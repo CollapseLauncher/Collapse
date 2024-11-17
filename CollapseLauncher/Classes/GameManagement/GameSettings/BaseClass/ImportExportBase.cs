@@ -68,10 +68,10 @@ namespace CollapseLauncher.GameSettings.Base
             {
                 case 1:
                     using (XORStream xorS = new XORStream(fs, xorKey, true))
-                    using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
-                    {
-                        ReadLegacyValues(comp);
-                    }
+                        using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
+                        {
+                            ReadLegacyValues(comp);
+                        }
                     break;
                 case 2:
                     ReadV2Values(fs);

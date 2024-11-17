@@ -9,7 +9,6 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 #nullable enable
@@ -95,7 +94,7 @@ namespace CollapseLauncher.FileDialogCOM
             return dirPath;
 
 
-            async Task SpawnInvalidDialog(string title, string message, string selectedPath, bool isUseLegacyFormatting = false)
+            async Task SpawnInvalidDialog(string dialogTitle, string message, string selectedPath, bool isUseLegacyFormatting = false)
             {
                 TextBlock textBlock = new TextBlock()
                 {
@@ -113,7 +112,7 @@ namespace CollapseLauncher.FileDialogCOM
                 }
 
                 await SimpleDialogs.SpawnDialog(
-                    isUseLegacyFormatting ? title : string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat, title),
+                    isUseLegacyFormatting ? dialogTitle : string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat, dialogTitle),
                     textBlock,
                     (WindowUtility.CurrentWindow as MainWindow)?.Content,
                     Locale.Lang._Misc.Okay,

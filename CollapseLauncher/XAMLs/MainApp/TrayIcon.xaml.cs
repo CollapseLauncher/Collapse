@@ -15,6 +15,8 @@ using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
+// Resharper disable all
+
 namespace CollapseLauncher
 {
     public sealed partial class TrayIcon

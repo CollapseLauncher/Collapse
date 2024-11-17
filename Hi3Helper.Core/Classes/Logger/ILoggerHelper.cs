@@ -1,5 +1,4 @@
-﻿using Hi3Helper;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 
 namespace Hi3Helper
@@ -13,8 +12,6 @@ namespace Hi3Helper
 
     internal class ILoggerWrapper : ILogger
     {
-        internal ILoggerWrapper() { }
-
         public IDisposable BeginScope<TState>(TState state)
             where TState : notnull => default!;
 

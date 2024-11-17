@@ -4,7 +4,6 @@ using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.GameVersioning;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
