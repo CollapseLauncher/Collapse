@@ -18,6 +18,7 @@ exclude:
   - name: Xaml.StaticResourceNotResolved
   - name: RedundantExtendsListEntry
   - name: PartialTypeWithSinglePart
+  - name: InvalidXmlDocComment
 include:
   - name: CheckDependencyLicenses
 licenseRules:
