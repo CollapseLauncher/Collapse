@@ -45,7 +45,7 @@
 
         private async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
-            InvokeProp.PreventSleep();
+            Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
             
             CheckFilesBtn.Flyout.Hide();
             CheckFilesBtn.IsEnabled = false;
@@ -96,13 +96,13 @@
             finally
             {
                 RemoveEvent();
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
             }
         }
 
         private async void StartGameRepair(object sender, RoutedEventArgs e)
         {
-            InvokeProp.PreventSleep();
+            Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
             RepairFilesBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
 
@@ -146,7 +146,7 @@
             finally
             {
                 RemoveEvent();
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
             }
         }
 

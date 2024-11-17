@@ -22,9 +22,10 @@ using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
-using Hi3Helper.Screen;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.Native;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
@@ -51,7 +52,6 @@ using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
-using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -808,7 +808,7 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             // Try to get the file path
-                            file = await GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
+                            file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
                             // If the file returns null because of getting cancelled, then back to loop again.
                             if (string.IsNullOrEmpty(file)) continue;
                             // Otherwise, assign the value to applicationPath variable and save it to the app config
@@ -1191,7 +1191,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                InvokeProp.PreventSleep();
+                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1223,10 +1223,10 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
 
                     verifResult = await CurrentGameProperty._GameInstall.StartPackageVerification();
-                    
+
                     // Restore sleep before the dialog
                     // so system won't be stuck when download is finished because of the download verified dialog
-                    InvokeProp.RestoreSleep();
+                    Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
 
                     if (verifResult == -1)
                     {
@@ -1276,7 +1276,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.Flush();
 
                 // Turn the sleep back on
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
             }
         }
 
@@ -1314,7 +1314,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                InvokeProp.PreventSleep();
+                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1482,7 +1482,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
             }
         }
 
@@ -1874,7 +1874,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp.GetScreenSize().Width, WindowUtility.CurrentScreenProp.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1944,7 +1944,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp.GetScreenSize().Width, WindowUtility.CurrentScreenProp.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1972,7 +1972,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp.GetScreenSize().Width, WindowUtility.CurrentScreenProp.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -2126,11 +2126,11 @@ namespace CollapseLauncher.Pages
         #region Exclusive Window Payload
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = InvokeProp.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+            IntPtr _windowPtr = Hi3Helper.Win32.Native.PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
             await Task.Delay(1000);
-            new InvokeProp.InvokePresence(_windowPtr).HideWindow();
+            Hi3Helper.Win32.Native.PInvoke.HideWindow(_windowPtr);
             await Task.Delay(1000);
-            new InvokeProp.InvokePresence(_windowPtr).ShowWindow();
+            Hi3Helper.Win32.Native.PInvoke.ShowWindow(_windowPtr);
         }
         #endregion
 
@@ -2337,7 +2337,7 @@ namespace CollapseLauncher.Pages
 
         private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
         {
-            var file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            var file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (string.IsNullOrEmpty(file)) return;
 
             var currentMediaType = GetMediaType(file);
@@ -2495,7 +2495,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                InvokeProp.PreventSleep();
+                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -2598,7 +2598,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
             }
         }
         #endregion

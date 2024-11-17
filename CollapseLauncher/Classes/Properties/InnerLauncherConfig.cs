@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,7 +15,6 @@ using System.IO;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 #nullable enable
@@ -42,21 +42,21 @@ namespace CollapseLauncher
             GenerateVelopackMetadata
         }
 
-        public static AppMode              m_appMode;
-        public static Arguments            m_arguments = new();
-        public static bool                 m_isWindows11;
-        public static IntPtr               m_oldWndProc;
-        public static Delegate?            m_newWndProcDelegate;
-        public static HandlerRoutine?      m_consoleCtrlHandler;
-        public static MainPage?            m_mainPage;
-        public static HomePage?            m_homePage;
-        public static bool                 m_windowSupportCustomTitle = false;
-        public static Size                 m_actualMainFrameSize;
-        public static string?              m_appCurrentFrameName;
-        public static NotificationPush?    NotificationData;
-        public static bool                 IsCustomBG            = false;
-        public static bool                 IsSkippingUpdateCheck = false;
-        public static AppThemeMode         CurrentAppTheme;
+        public static AppMode                   m_appMode;
+        public static Arguments                 m_arguments = new();
+        public static bool                      m_isWindows11;
+        public static IntPtr                    m_oldWndProc;
+        public static Delegate?                 m_newWndProcDelegate;
+        public static ConsoleControlHandler?    m_consoleCtrlHandler;
+        public static MainPage?                 m_mainPage;
+        public static HomePage?                 m_homePage;
+        public static bool                      m_windowSupportCustomTitle = false;
+        public static Size                      m_actualMainFrameSize;
+        public static string?                   m_appCurrentFrameName;
+        public static NotificationPush?         NotificationData;
+        public static bool                      IsCustomBG            = false;
+        public static bool                      IsSkippingUpdateCheck = false;
+        public static AppThemeMode              CurrentAppTheme;
     #if !DISABLEDISCORD
     #pragma warning disable CA2211
         public static DiscordPresenceManager? AppDiscordPresence;
@@ -67,7 +67,7 @@ namespace CollapseLauncher
             {
                 AppThemeMode.Dark => false,
                 AppThemeMode.Light => true,
-                _ => !ShouldAppsUseDarkMode()
+                _ => !Hi3Helper.Win32.Native.PInvoke.ShouldAppsUseDarkMode()
             };
 
         public static string? GetComboBoxGameRegionValue(object obj)

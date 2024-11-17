@@ -1,8 +1,8 @@
 using CollapseLauncher.GameSettings.Base;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
-using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
@@ -18,7 +18,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         private const  string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
         private const  string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
         private const  string _ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
-        private static Size   currentRes                        = ScreenProp.currentResolution;
+        private static Size   currentRes                        = WindowUtility.CurrentScreenProp.CurrentResolution;
         #endregion
 
         #region Enums

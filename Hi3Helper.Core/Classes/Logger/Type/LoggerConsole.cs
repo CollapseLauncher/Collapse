@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Hi3Helper.Win32.Native;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Hi3Helper.InvokeProp;
 #if !APPLYUPDATE
 using static Hi3Helper.Shared.Region.LauncherConfig;
 #endif
@@ -87,8 +87,8 @@ namespace Hi3Helper
         {
             if (ConsoleHandle != IntPtr.Zero)
             {
-                IntPtr consoleWindow = GetConsoleWindow();
-                ShowWindow(consoleWindow, 0);
+                IntPtr consoleWindow = PInvoke.GetConsoleWindow();
+                PInvoke.ShowWindow(consoleWindow, 0);
             }
         }
 
@@ -96,12 +96,12 @@ namespace Hi3Helper
         {
             if (ConsoleHandle != IntPtr.Zero)
             {
-                IntPtr consoleWindow = GetConsoleWindow();
-                ShowWindow(consoleWindow, 5);
+                IntPtr consoleWindow = PInvoke.GetConsoleWindow();
+                PInvoke.ShowWindow(consoleWindow, 5);
                 return;
             }
 
-            if (!AllocConsole())
+            if (!PInvoke.AllocConsole())
             {
                 throw new ContextMarshalException($"Failed to allocate console with error code: {Marshal.GetLastPInvokeError()}");
             }
@@ -110,33 +110,33 @@ namespace Hi3Helper
             const uint GENERIC_WRITE = 0x40000000;
             const uint FILE_SHARE_WRITE = 2;
             const uint OPEN_EXISTING = 3;
-            ConsoleHandle = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+            ConsoleHandle = PInvoke.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 
             const int STD_OUTPUT_HANDLE = -11;
-            SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
+            PInvoke.SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
 
             Console.OutputEncoding = Encoding.UTF8;
 
             var instanceIndicator = "";
-            var instanceCount = EnumerateInstances();
+            var instanceCount = PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
 
             if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
             Console.Title = $"Collapse Console{instanceIndicator}";
 
-            if (GetConsoleMode(ConsoleHandle, out uint mode))
+            if (PInvoke.GetConsoleMode(ConsoleHandle, out uint mode))
             {
                 const uint ENABLE_PROCESSED_OUTPUT            = 1;
                 const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
                 const uint DISABLE_NEWLINE_AUTO_RETURN        = 8;
                 mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-                if (SetConsoleMode(ConsoleHandle, mode))
+                if (PInvoke.SetConsoleMode(ConsoleHandle, mode))
                 {
                     _virtualTerminal = true;
                 }
             }
 
 #if !APPLYUPDATE
-            SetWindowIcon(GetConsoleWindow(), AppIconLarge, AppIconSmall);
+            PInvoke.SetWindowIcon(PInvoke.GetConsoleWindow(), AppIconLarge, AppIconSmall);
 #endif
         }
 #endregion

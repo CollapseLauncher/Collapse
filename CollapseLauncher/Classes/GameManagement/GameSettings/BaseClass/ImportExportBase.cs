@@ -1,8 +1,8 @@
-﻿using CollapseLauncher.FileDialogCOM;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.UABT;
 using Hi3Helper.UABT.Binary;
+using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.Win32;
 using System;
 using System.Buffers;
@@ -68,10 +68,10 @@ namespace CollapseLauncher.GameSettings.Base
             {
                 case 1:
                     using (XORStream xorS = new XORStream(fs, xorKey, true))
-                        using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
-                        {
-                            ReadLegacyValues(comp);
-                        }
+                    using (BrotliStream comp = new BrotliStream(xorS, CompressionMode.Decompress, true))
+                    {
+                        ReadLegacyValues(comp);
+                    }
                     break;
                 case 2:
                     ReadV2Values(fs);
@@ -399,7 +399,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             if (string.IsNullOrEmpty(path)) return;
             string ext = Path.GetExtension(path);
-            
+
             if (string.IsNullOrEmpty(ext))
             {
                 path += exte;

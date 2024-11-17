@@ -1,11 +1,11 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
-using CollapseLauncher.ShellLinkCOM;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.ShellLinkCOM;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -60,17 +60,18 @@ public static class MainEntryPoint
 
                 // Extract icons from the executable file
                 var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
-                var iconCount = InvokeProp.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                var iconCount = Hi3Helper.Win32.Native.PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
                 if (iconCount > 0)
                 {
                     var largeIcons = new IntPtr[1];
                     var smallIcons = new IntPtr[1];
-                    InvokeProp.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    Hi3Helper.Win32.Native.PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
                     AppIconLarge = largeIcons[0];
                     AppIconSmall = smallIcons[0];
                 }
 
-                InitAppPreset();
+                WindowUtility.CurrentScreenProp = new Hi3Helper.Win32.Screen.ScreenProp();
+                InitAppPreset(WindowUtility.CurrentScreenProp);
                 var logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled
                     ? new LoggerConsole(logPath, Encoding.UTF8)
@@ -173,7 +174,7 @@ public static class MainEntryPoint
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
-                InstanceCount = InvokeProp.EnumerateInstances();
+                InstanceCount = Hi3Helper.Win32.Native.PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
 
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())
@@ -313,7 +314,7 @@ public static class MainEntryPoint
             .WithRestarted(TryCleanupFallbackUpdate)
             .WithAfterUpdateFastCallback(TryCleanupFallbackUpdate)
             .WithFirstRun(TryCleanupFallbackUpdate)
-            .Run(ILoggerHelper.CreateCollapseILogger());
+            .Run(ILoggerHelper.GetILogger());
 #endif
     }
 

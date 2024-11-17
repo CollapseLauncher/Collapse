@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Classes.FileDialogCOM;
+﻿using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;

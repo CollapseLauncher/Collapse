@@ -1,5 +1,4 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
-using CollapseLauncher.Classes.FileDialogCOM;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
@@ -14,6 +13,7 @@ using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -442,7 +442,7 @@ namespace CollapseLauncher.Pages.OOBE
             string themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme)) return (int)CurrentAppTheme;
 
-            CurrentAppTheme = !InvokeProp.ShouldAppsUseDarkMode() ? AppThemeMode.Light : AppThemeMode.Dark;
+            CurrentAppTheme = !Hi3Helper.Win32.Native.PInvoke.ShouldAppsUseDarkMode() ? AppThemeMode.Light : AppThemeMode.Dark;
             LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
                          LogType.Warning, true);
 

@@ -216,7 +216,7 @@ namespace CollapseLauncher.Pages
                     }
                 }
 
-                await Task.Run(() => InvokeProp.MoveFileToRecycleBin(toBeDeleted));
+                await Task.Run(() => Hi3Helper.Win32.Native.PInvoke.MoveFileToRecycleBin(toBeDeleted));
                 DispatcherQueue.TryEnqueue(() =>
                                            {
                                                for (int i = FileInfoSource.Count - 1; i >= 0; i--)

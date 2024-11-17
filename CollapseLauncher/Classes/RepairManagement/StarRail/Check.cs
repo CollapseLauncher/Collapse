@@ -312,7 +312,7 @@ namespace CollapseLauncher
                 
                 string targetLink     = fileNameToOpen;
 
-                InvokeProp.CreateHardLink(targetLink, targetFile, IntPtr.Zero);
+                Hi3Helper.Win32.Native.PInvoke.CreateHardLink(targetLink, targetFile, IntPtr.Zero);
                 await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
             }
         }

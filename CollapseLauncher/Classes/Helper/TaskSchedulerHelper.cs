@@ -1,13 +1,12 @@
-﻿using CollapseLauncher.ShellLinkCOM;
-using Hi3Helper;
-using Hi3Helper.Data;
+﻿using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ShellLinkCOM;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher.Helper
 {

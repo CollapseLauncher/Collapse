@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Hi3Helper.SentryHelper;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
@@ -176,10 +175,10 @@ namespace CollapseLauncher
                 }
 
                 // Hide system menu
-                var controlsHwnd = FindWindowEx(WindowUtility.CurrentWindowPtr, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
+                var controlsHwnd = Hi3Helper.Win32.Native.PInvoke.FindWindowEx(WindowUtility.CurrentWindowPtr, 0, "ReunionWindowingCaptionControls", "ReunionCaptionControlsWindow");
                 if (controlsHwnd != IntPtr.Zero)
                 {
-                    DestroyWindow(controlsHwnd);
+                    Hi3Helper.Win32.Native.PInvoke.DestroyWindow(controlsHwnd);
                 }
             }
             else
@@ -201,7 +200,7 @@ namespace CollapseLauncher
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
 
             m_consoleCtrlHandler += ConsoleCtrlHandler;
-            SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
+            Hi3Helper.Win32.Native.PInvoke.SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
         }
 
         private bool ConsoleCtrlHandler(uint dwCtrlType)

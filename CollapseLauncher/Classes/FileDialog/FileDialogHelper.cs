@@ -1,10 +1,10 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 #nullable enable
-namespace CollapseLauncher.Classes.FileDialogCOM
+namespace CollapseLauncher.FileDialogCOM
 {
     internal static class FileDialogHelper
     {

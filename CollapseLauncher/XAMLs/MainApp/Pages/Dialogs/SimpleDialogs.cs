@@ -1147,7 +1147,7 @@ namespace CollapseLauncher.Dialogs
 
         private static async void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {
-            InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
+            Hi3Helper.Win32.Native.PInvoke.CopyStringToClipboard(ErrorSender.ExceptionContent, ILoggerHelper.GetILogger());
             if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
             {
                 FontIcon  fontIcon  = panel.Children[0] as FontIcon;

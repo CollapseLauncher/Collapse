@@ -57,7 +57,7 @@
 
             try
             {
-                InvokeProp.PreventSleep();
+                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
                 bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
@@ -96,7 +96,7 @@
             finally
             {
                 RemoveEvent();
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
             }
         }
 
@@ -107,7 +107,7 @@
 
             try
             {
-                InvokeProp.PreventSleep();
+                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
                 int assetCount = CurrentGameProperty._GameCache.AssetEntry.Count;
@@ -145,7 +145,7 @@
             }
             finally
             {
-                InvokeProp.RestoreSleep();
+                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
                 RemoveEvent();
             }
         }
