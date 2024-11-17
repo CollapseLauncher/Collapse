@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Image;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.Native;
 using Hi3Helper.Win32.Native.Enums;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -64,7 +65,7 @@ namespace CollapseLauncher
             }
 
             RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
-            Hi3Helper.Win32.Native.PInvoke.SetPreferredAppMode(Hi3Helper.Win32.Native.PInvoke.ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+            PInvoke.SetPreferredAppMode(PInvoke.ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
 
             this.InitializeComponent();
         }

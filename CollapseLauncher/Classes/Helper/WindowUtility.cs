@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.Native;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
@@ -166,7 +167,7 @@ namespace CollapseLauncher.Helper
                     return DefaultDpiValue;
                 }
 
-                if (Hi3Helper.Win32.Native.PInvoke.GetDpiForMonitor(monitorPtr, Monitor_DPI_Type.MDT_Default, out uint dpi,
+                if (PInvoke.GetDpiForMonitor(monitorPtr, Monitor_DPI_Type.MDT_Default, out uint dpi,
                                                 out uint _) == 0)
                 {
                     return dpi;
@@ -196,9 +197,9 @@ namespace CollapseLauncher.Helper
                 if (InnerLauncherConfig.m_isWindows11)
                 {
                     // We have no title bar
-                    var titleBarHeight = Hi3Helper.Win32.Native.PInvoke.GetSystemMetrics(SystemMetric.SM_CYSIZEFRAME) +
-                                         Hi3Helper.Win32.Native.PInvoke.GetSystemMetrics(SystemMetric.SM_CYCAPTION) +
-                                         Hi3Helper.Win32.Native.PInvoke.GetSystemMetrics(SystemMetric.SM_CXPADDEDBORDER);
+                    var titleBarHeight = PInvoke.GetSystemMetrics(SystemMetric.SM_CYSIZEFRAME) +
+                                         PInvoke.GetSystemMetrics(SystemMetric.SM_CYCAPTION) +
+                                         PInvoke.GetSystemMetrics(SystemMetric.SM_CXPADDEDBORDER);
                     value.Height -= titleBarHeight;
 
                     CurrentAppWindow.ResizeClient(new SizeInt32
@@ -344,7 +345,7 @@ namespace CollapseLauncher.Helper
             const int GWLP_WNDPROC = -4;
             WndProcDelegate mNewWndProcDelegate = wndProc;
             IntPtr pWndProc = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
-            return Hi3Helper.Win32.Native.PInvoke.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
+            return PInvoke.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
         }
 
         private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
@@ -439,7 +440,7 @@ namespace CollapseLauncher.Helper
                         const int HTTOP = 12;
                         const int HTTOPRIGHT = 14;
 
-                        var result = Hi3Helper.Win32.Native.PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
+                        var result = PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                         {
                             // Fix "Ghost Minimize Button" issue
@@ -465,7 +466,7 @@ namespace CollapseLauncher.Helper
                         var setting = Marshal.PtrToStringAnsi(lParam);
                         if (setting == "ImmersiveColorSet")
                         {
-                            Hi3Helper.Win32.Native.PInvoke.SetPreferredAppMode(Hi3Helper.Win32.Native.PInvoke.ShouldAppsUseDarkMode()
+                            PInvoke.SetPreferredAppMode(PInvoke.ShouldAppsUseDarkMode()
                                                                ? PreferredAppMode.AllowDark
                                                                : PreferredAppMode.Default);
                         }
@@ -474,7 +475,7 @@ namespace CollapseLauncher.Helper
                     }
             }
 
-            return Hi3Helper.Win32.Native.PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
+            return PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
         }
 
         #endregion
@@ -552,7 +553,7 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            Hi3Helper.Win32.Native.PInvoke.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
+            PInvoke.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
         }
 
         #endregion
@@ -568,16 +569,16 @@ namespace CollapseLauncher.Helper
                 {
                     cyBottomHeight = 1
                 };
-                Hi3Helper.Win32.Native.PInvoke.DwmExtendFrameIntoClientArea(CurrentWindowPtr, ref margin);
+                PInvoke.DwmExtendFrameIntoClientArea(CurrentWindowPtr, ref margin);
 
                 var flags = SetWindowPosFlags.SWP_NOSIZE
                             | SetWindowPosFlags.SWP_NOMOVE
                             | SetWindowPosFlags.SWP_NOZORDER
                             | SetWindowPosFlags.SWP_FRAMECHANGED;
-                Hi3Helper.Win32.Native.PInvoke.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
+                PInvoke.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
             }
 
-            var desktopSiteBridgeHwnd = Hi3Helper.Win32.Native.PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+            var desktopSiteBridgeHwnd = PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
             OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
         }
 
@@ -604,7 +605,7 @@ namespace CollapseLauncher.Helper
                     }
             }
 
-            return Hi3Helper.Win32.Native.PInvoke.CallWindowProc(OldDesktopSiteBridgeWndProcPtr, hwnd, msg, wParam, lParam);
+            return PInvoke.CallWindowProc(OldDesktopSiteBridgeWndProcPtr, hwnd, msg, wParam, lParam);
         }
 
         internal static void SetWindowSize(int width, int height)
@@ -635,7 +636,7 @@ namespace CollapseLauncher.Helper
 
             const uint WM_SYSCOMMAND = 0x0112;
             const uint SC_MINIMIZE = 0xF020;
-            Hi3Helper.Win32.Native.PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+            PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_MINIMIZE, 0);
         }
 
         internal static void WindowRestore()
@@ -647,7 +648,7 @@ namespace CollapseLauncher.Helper
 
             const uint WM_SYSCOMMAND = 0x0112;
             const uint SC_RESTORE = 0xF120;
-            Hi3Helper.Win32.Native.PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_RESTORE, 0);
+            PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_RESTORE, 0);
         }
 
         internal static void EnableWindowNonClientArea()
@@ -682,7 +683,7 @@ namespace CollapseLauncher.Helper
 
         internal static bool IsCurrentWindowInFocus()
         {
-            IntPtr currentForegroundWindow = Hi3Helper.Win32.Native.PInvoke.GetForegroundWindow();
+            IntPtr currentForegroundWindow = PInvoke.GetForegroundWindow();
             return CurrentWindowPtr == currentForegroundWindow;
         }
 

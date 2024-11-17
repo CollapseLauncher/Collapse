@@ -4,6 +4,7 @@ using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.Native;
 using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
@@ -158,9 +159,9 @@ namespace CollapseLauncher
         {
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
-                IntPtr consoleWindowHandle = Hi3Helper.Win32.Native.PInvoke.GetConsoleWindow();
+                IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
                 if (LoggerConsole.ConsoleHandle == IntPtr.Zero) return;
-                if (Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(consoleWindowHandle) && !forceShow)
+                if (PInvoke.IsWindowVisible(consoleWindowHandle) && !forceShow)
                 {
                     LoggerConsole.DisposeConsole();
                     ConsoleTaskbarToggle.Text = _showConsole;
@@ -169,7 +170,7 @@ namespace CollapseLauncher
                 else
                 {
                     LoggerConsole.AllocateConsole();
-                    Hi3Helper.Win32.Native.PInvoke.SetForegroundWindow(Hi3Helper.Win32.Native.PInvoke.GetConsoleWindow());
+                    PInvoke.SetForegroundWindow(PInvoke.GetConsoleWindow());
                     ConsoleTaskbarToggle.Text = _hideConsole;
                     LogWriteLine("Console is visible!");
                 }
@@ -182,7 +183,7 @@ namespace CollapseLauncher
         public void ToggleMainVisibility(bool forceShow = false)
         {
             IntPtr mainWindowHandle = WindowUtility.CurrentWindowPtr;
-            var    isVisible        = Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(mainWindowHandle);
+            var    isVisible        = PInvoke.IsWindowVisible(mainWindowHandle);
 
             if (isVisible && !forceShow)
             {
@@ -204,7 +205,7 @@ namespace CollapseLauncher
             {
                 WindowUtility.CurrentWindow?.Show(false);
                 EfficiencyModeWrapper(false);
-                Hi3Helper.Win32.Native.PInvoke.SetForegroundWindow(mainWindowHandle);
+                PInvoke.SetForegroundWindow(mainWindowHandle);
                 MainTaskbarToggle.Text = _hideApp;
                 // Revert refresh rate to its default
                 RefreshRate = RefreshRateDefault;
@@ -217,11 +218,11 @@ namespace CollapseLauncher
         /// </summary>
         public void ToggleAllVisibility()
         {
-            IntPtr consoleWindowHandle = Hi3Helper.Win32.Native.PInvoke.GetConsoleWindow();
+            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
-            bool   isMainWindowVisible = Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(mainWindowHandle);
+            bool   isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
 
-            bool isConsoleVisible = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(consoleWindowHandle);
+            bool isConsoleVisible = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && PInvoke.IsWindowVisible(consoleWindowHandle);
 
             if (isMainWindowVisible && !isConsoleVisible)
             {
@@ -245,27 +246,27 @@ namespace CollapseLauncher
         public void BringToForeground()
         {
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
-            IntPtr consoleWindowHandle = Hi3Helper.Win32.Native.PInvoke.GetConsoleWindow();
+            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
 
-            bool isMainWindowVisible = Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(mainWindowHandle);
+            bool isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
 
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
-                if (!Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(consoleWindowHandle))
+                if (!PInvoke.IsWindowVisible(consoleWindowHandle))
                 {
                     ToggleConsoleVisibility(true);
                 }
                 //Stupid workaround for console window not showing up using SetForegroundWindow
                 //Basically do minimize then maximize action using ShowWindow 6->9 (nice)
-                Hi3Helper.Win32.Native.PInvoke.ShowWindow(consoleWindowHandle, 6);
-                Hi3Helper.Win32.Native.PInvoke.ShowWindow(consoleWindowHandle, 9);
+                PInvoke.ShowWindow(consoleWindowHandle, 6);
+                PInvoke.ShowWindow(consoleWindowHandle, 9);
                 //SetForegroundWindow(consoleWindowHandle);
             }
 
             if (!isMainWindowVisible)
                 ToggleMainVisibility(true);
-            Hi3Helper.Win32.Native.PInvoke.ShowWindow(mainWindowHandle, 9);
-            Hi3Helper.Win32.Native.PInvoke.SetForegroundWindow(mainWindowHandle);
+            PInvoke.ShowWindow(mainWindowHandle, 9);
+            PInvoke.SetForegroundWindow(mainWindowHandle);
         }
 
         /// <summary>
@@ -286,11 +287,11 @@ namespace CollapseLauncher
             }
             
             // Force refresh all text based on their respective window state
-            IntPtr consoleWindowHandle = Hi3Helper.Win32.Native.PInvoke.GetConsoleWindow();
+            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
             IntPtr mainWindowHandle    = WindowUtility.CurrentWindowPtr;
             
-            bool isMainWindowVisible = Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(mainWindowHandle);
-            bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && Hi3Helper.Win32.Native.PInvoke.IsWindowVisible(consoleWindowHandle);
+            bool isMainWindowVisible = PInvoke.IsWindowVisible(mainWindowHandle);
+            bool isConsoleVisible    = LauncherConfig.GetAppConfigValue("EnableConsole").ToBool() && PInvoke.IsWindowVisible(consoleWindowHandle);
 
             ConsoleTaskbarToggle.Text = isConsoleVisible ? _hideConsole : _showConsole;
             MainTaskbarToggle.Text    = isMainWindowVisible ? _hideApp : _showApp;

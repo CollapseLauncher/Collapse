@@ -67,7 +67,7 @@ namespace CollapseLauncher
             {
                 AppThemeMode.Dark => false,
                 AppThemeMode.Light => true,
-                _ => !Hi3Helper.Win32.Native.PInvoke.ShouldAppsUseDarkMode()
+                _ => !PInvoke.ShouldAppsUseDarkMode()
             };
 
         public static string? GetComboBoxGameRegionValue(object obj)

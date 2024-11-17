@@ -2,6 +2,7 @@
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -312,7 +313,7 @@ namespace CollapseLauncher
                 
                 string targetLink     = fileNameToOpen;
 
-                Hi3Helper.Win32.Native.PInvoke.CreateHardLink(targetLink, targetFile, IntPtr.Zero);
+                PInvoke.CreateHardLink(targetLink, targetFile, IntPtr.Zero);
                 await CheckFile(fileNameToOpen, asset, targetAssetIndex, token);
             }
         }

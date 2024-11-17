@@ -5,6 +5,7 @@
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
+    using Hi3Helper.Win32.Native;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Controls.Primitives;
@@ -57,7 +58,7 @@
 
             try
             {
-                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
                 bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
@@ -96,7 +97,7 @@
             finally
             {
                 RemoveEvent();
-                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 
@@ -107,7 +108,7 @@
 
             try
             {
-                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
                 int assetCount = CurrentGameProperty._GameCache.AssetEntry.Count;
@@ -145,7 +146,7 @@
             }
             finally
             {
-                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
+                PInvoke.RestoreSleep();
                 RemoveEvent();
             }
         }

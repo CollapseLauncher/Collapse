@@ -5,6 +5,7 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native;
 using Hi3Helper.Win32.ShellLinkCOM;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
@@ -60,12 +61,12 @@ public static class MainEntryPoint
 
                 // Extract icons from the executable file
                 var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
-                var iconCount = Hi3Helper.Win32.Native.PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                var iconCount = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
                 if (iconCount > 0)
                 {
                     var largeIcons = new IntPtr[1];
                     var smallIcons = new IntPtr[1];
-                    Hi3Helper.Win32.Native.PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
                     AppIconLarge = largeIcons[0];
                     AppIconSmall = smallIcons[0];
                 }
@@ -174,7 +175,7 @@ public static class MainEntryPoint
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
-                InstanceCount = Hi3Helper.Win32.Native.PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
+                InstanceCount = PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
 
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())

@@ -129,7 +129,7 @@ namespace CollapseLauncher.Statics
                     Process process = processArr[i];
                     int processId = process.Id;
 
-                    string? processPath = Hi3Helper.Win32.Native.PInvoke.GetProcessPathByProcessId(processId, ILoggerHelper.GetILogger());
+                    string? processPath = PInvoke.GetProcessPathByProcessId(processId, ILoggerHelper.GetILogger());
                     string expectedProcessPath = Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName);
                     if (string.IsNullOrEmpty(processPath) || !expectedProcessPath.Equals(processPath, StringComparison.OrdinalIgnoreCase)
                      || process.MainWindowHandle == IntPtr.Zero)

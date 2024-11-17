@@ -1191,7 +1191,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1226,7 +1226,7 @@ namespace CollapseLauncher.Pages
 
                     // Restore sleep before the dialog
                     // so system won't be stuck when download is finished because of the download verified dialog
-                    Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
+                    PInvoke.RestoreSleep();
 
                     if (verifResult == -1)
                     {
@@ -1276,7 +1276,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.Flush();
 
                 // Turn the sleep back on
-                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 
@@ -1314,7 +1314,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1482,7 +1482,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 
@@ -2127,11 +2127,11 @@ namespace CollapseLauncher.Pages
         #region Exclusive Window Payload
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = Hi3Helper.Win32.Native.PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+            IntPtr _windowPtr = PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
             await Task.Delay(1000);
-            Hi3Helper.Win32.Native.PInvoke.HideWindow(_windowPtr);
+            PInvoke.HideWindow(_windowPtr);
             await Task.Delay(1000);
-            Hi3Helper.Win32.Native.PInvoke.ShowWindow(_windowPtr);
+            PInvoke.ShowWindow(_windowPtr);
         }
         #endregion
 
@@ -2496,7 +2496,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                Hi3Helper.Win32.Native.PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -2599,7 +2599,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                Hi3Helper.Win32.Native.PInvoke.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
         #endregion
