@@ -422,6 +422,8 @@
     "Debug": "Configuraciones adicionales",
     "Debug_Console": "Mostrar Consola",
     "Debug_IncludeGameLogs": "Guardar registros de juego en Collapse (podría contener datos sensibles)",
+    "Debug_SendRemoteCrashData": "Enviar anónimamente informes de errores a los desarrolladores",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "Esta configuración está desactivada debido a que la variable 'DISABLE_SENTRY' está establecida como true.",
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
 
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
