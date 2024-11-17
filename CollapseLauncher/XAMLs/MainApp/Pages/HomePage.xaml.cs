@@ -275,7 +275,7 @@ namespace CollapseLauncher.Pages
             }
             catch (ArgumentNullException ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
@@ -368,7 +368,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
             }
         }
@@ -400,7 +400,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -847,8 +847,8 @@ namespace CollapseLauncher.Pages
             {
                 // If error happened while running the app, then log and return true as successful
                 // Thoughts @Cry0? Should we mark it as successful (true) or failed (false)?
-                // Mark is as true, since the app still ran but it's an error outside our scope.
-                SentryHelper.ExceptionHandler(ex);
+                // Mark is as true, since the app still ran, but it's an error outside our scope.
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 LogWriteLine($"Unable to start app {applicationName}! {ex}", LogType.Error, true);
                 return true;
             }
@@ -1090,7 +1090,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -1174,7 +1174,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
             }
         }
@@ -1844,7 +1844,7 @@ namespace CollapseLauncher.Pages
             }
             catch(Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
             }
 
@@ -2679,7 +2679,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -2736,7 +2736,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }

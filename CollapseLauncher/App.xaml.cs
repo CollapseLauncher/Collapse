@@ -38,6 +38,7 @@ namespace CollapseLauncher
                 DebugSettings.XamlResourceReferenceFailed += static (sender, args) =>
                 {
                     LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
                 #endif
@@ -46,6 +47,7 @@ namespace CollapseLauncher
                 DebugSettings.BindingFailed += static (sender, args) =>
                 {
                     LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
                 #endif
