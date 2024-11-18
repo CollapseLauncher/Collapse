@@ -28,7 +28,7 @@ for:
     - cmd: >-
         echo Init submodules
         
-        git submodule update --init --force --depth=1 --recursive
+        git submodule update --init --force --depth=20 --recursive
         
         echo.
         
@@ -161,7 +161,7 @@ for:
     - cmd: >-
         echo Init submodules
 
-        git submodule update --init --force --depth=1 --recursive
+        git submodule update --init --force --depth=20 --recursive
 
         echo.
 
@@ -291,7 +291,7 @@ for:
       - cmd: >-
           echo Init submodules
           
-          git submodule update --init --force --depth=1 --recursive
+          git submodule update --init --force --depth=20 --recursive
           
           echo.
           
