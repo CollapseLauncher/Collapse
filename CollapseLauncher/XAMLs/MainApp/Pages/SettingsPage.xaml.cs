@@ -1539,12 +1539,10 @@ namespace CollapseLauncher.Pages
                 {
                     await Task.Run(() =>
                                    {
-                                       var uri =
-                                           "https://github.com/abbodi1406/vcredist/releases/latest/download/VisualCppRedist_AIO_x86_x64.exe";
                                        ProcessStartInfo psi = new ProcessStartInfo
                                        {
                                            FileName        = "explorer.exe",
-                                           Arguments       = uri,
+                                           Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
                                            UseShellExecute = true,
                                            Verb            = "runas"
                                        };
