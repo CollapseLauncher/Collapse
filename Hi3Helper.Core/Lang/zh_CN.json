@@ -790,7 +790,10 @@
 
     "IsBytesMoreThanBytes": "= {0} 字节 (-/+ {1})",
     "IsBytesUnlimited": "= 无限制",
-    "IsBytesNotANumber": "= NaN"
+    "IsBytesNotANumber": "= NaN",
+    
+    "MissingVcRedist": "缺少 Visual C/C++ 可再发行程序包",
+    "MissingVcRedistSubtitle": "您需要安装 Visual C/C++ 可再发行程序包才能运行此功能。您现在要下载吗？\n注意：这将打开一个浏览器窗口，并从微软下载一个文件。请下载后运行安装程序，然后重新启动 Collapse 并重试。\n如果您已经安装过了但仍然报错，请在 GitHub 上给我们提交一个 issue。"
   },
 
   "_BackgroundNotification": {
