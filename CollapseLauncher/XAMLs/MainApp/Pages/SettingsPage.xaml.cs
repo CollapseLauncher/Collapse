@@ -1,6 +1,7 @@
 #if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
+    using CollapseLauncher.CustomControls;
     using CollapseLauncher.Dialogs;
     using CollapseLauncher.Extension;
     using CollapseLauncher.Helper;
@@ -1493,18 +1494,20 @@ namespace CollapseLauncher.Pages
             {
                 // Show checking bar status
                 ShowChecking();
-
+                
                 // Set the value from prop
                 DbHandler.Uri    = _dbUrl;
                 DbHandler.Token  = _dbToken;
                 DbHandler.UserId = _dbUserId;
-                
+
                 var r = Random.Shared.Next(100); // Generate random int for data verification
 
                 await DbHandler.Init(true, true); // Initialize database
                 await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
-                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
-                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) !=
+                    r) // Query key and check if value is correct
+                    throw
+                        new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
 
                 // Show success bar status
                 ShowSuccess();
@@ -1516,8 +1519,39 @@ namespace CollapseLauncher.Pages
                                   null,
                                   null,
                                   ContentDialogButton.Close,
-                                  CustomControls.ContentDialogTheme.Success
+                                  ContentDialogTheme.Success
                                  ); // Show success dialog
+            }
+            catch (DllNotFoundException ex)
+            {
+                // No need to revert the value if fail, user is asked to restart the app
+                ShowFailed(ex);
+                var res = await SpawnDialog(
+                                  Lang._Misc.MissingVcRedist,
+                                  Lang._Misc.MissingVcRedistSubtitle,
+                                  sender as UIElement,
+                                  Lang._Misc.Close,
+                                  Lang._Misc.Yes,
+                                  null,
+                                  ContentDialogButton.Primary,
+                                  ContentDialogTheme.Error);
+                if (res == ContentDialogResult.Primary)
+                {
+                    await Task.Run(() =>
+                                   {
+                                       var uri =
+                                           "https://github.com/abbodi1406/vcredist/releases/latest/download/VisualCppRedist_AIO_x86_x64.exe";
+                                       ProcessStartInfo psi = new ProcessStartInfo
+                                       {
+                                           FileName        = "explorer.exe",
+                                           Arguments       = uri,
+                                           UseShellExecute = true,
+                                           Verb            = "runas"
+                                       };
+                                       Process.Start(psi);
+                                   });
+                }
+                else { await SentryHelper.ExceptionHandlerAsync(ex); }
             }
             catch (Exception ex)
             {
