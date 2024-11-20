@@ -2416,17 +2416,29 @@ namespace CollapseLauncher.Pages
 
         private async void SyncDbPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
-            SyncDbPlaytimeBtnGlyph.Glyph = "\uf110"; // Loading
-            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDbSyncing;
-            CurrentGameProperty._GamePlaytime.CheckDb();
-            await Task.Delay(500);
+            try
+            {
+                SyncDbPlaytimeBtnGlyph.Glyph = "\uf110"; // Loading
+                SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDbSyncing;
+                await CurrentGameProperty._GamePlaytime.CheckDb(true);
+                
+                await Task.Delay(500);
             
-            SyncDbPlaytimeBtnGlyph.Glyph = "\uf00c"; // Completed (check)
-            SyncDbPlaytimeBtnText.Text   = Lang._Misc.Completed + "!";
-            await Task.Delay(1000);
+                SyncDbPlaytimeBtnGlyph.Glyph = "\uf00c"; // Completed (check)
+                SyncDbPlaytimeBtnText.Text   = Lang._Misc.Completed + "!";
+                await Task.Delay(1000);
             
-            SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
-            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
+                SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
+                SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed when trying to sync playtime to database!\r\n{ex}", LogType.Error, true);
+                ErrorSender.SendException(ex);
+                
+                SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
+                SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
+            }
         }
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Timers;
 using static Hi3Helper.Logger;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -49,9 +50,9 @@ namespace CollapseLauncher.GamePlaytime
         }
 #nullable disable
 
-        public async void CheckDb()
+        public async Task CheckDb(bool redirectThrow = false)
         {
-            var needUpdate = await _playtime.DbSync();
+            var needUpdate = await _playtime.DbSync(redirectThrow);
             if (needUpdate is not { IsUpdated: true, PlaytimeData: not null }) return;
 
             _playtime = needUpdate.PlaytimeData;
