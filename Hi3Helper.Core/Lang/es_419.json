@@ -793,7 +793,7 @@
     "IsBytesNotANumber": "= NaN",
     
     "MissingVcRedist": "Falta el Visual C/C++ Redistributable",
-    "MissingVcRedistSubtitle": "Necesita instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo del repositorio GitHub de abbodi1406. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema."
+    "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema."
   },
 
   "_BackgroundNotification": {
