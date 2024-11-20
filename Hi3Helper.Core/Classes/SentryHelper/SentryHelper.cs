@@ -203,8 +203,6 @@ namespace Hi3Helper.SentryHelper
             ex.Data[Mechanism.HandledKey]   = false;
             ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             ExceptionHandler(ex, ExceptionType.UnhandledOther);
-
-            throw ex;
         }
         
         private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
