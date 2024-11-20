@@ -167,6 +167,7 @@
     "GamePlaytime_Idle_ResetBtn": "Reset",
     "GamePlaytime_Idle_ChangeBtn": "Change",
     "GamePlaytime_Idle_SyncDb": "Sync",
+    "GamePlaytime_Idle_SyncDbSyncing": "Syncing...",
     "GamePlaytime_Running_Info1": "An instance of this game is currently running, therefore playtime can't be edited.",
     "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point).",
     "GamePlaytime_Display": "{0}h {1}m",

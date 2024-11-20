@@ -2414,9 +2414,19 @@ namespace CollapseLauncher.Pages
             PlaytimeFlyout.Hide();
         }
 
-        private void SyncDbPlaytimeButton_Click(object sender, RoutedEventArgs e)
+        private async void SyncDbPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
+            SyncDbPlaytimeBtnGlyph.Glyph = "\uf110"; // Loading
+            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDbSyncing;
             CurrentGameProperty._GamePlaytime.CheckDb();
+            await Task.Delay(500);
+            
+            SyncDbPlaytimeBtnGlyph.Glyph = "\uf00c"; // Completed (check)
+            SyncDbPlaytimeBtnText.Text   = Lang._Misc.Completed + "!";
+            await Task.Delay(1000);
+            
+            SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
+            SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
         }
 
         private void NumberValidationTextBox(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
