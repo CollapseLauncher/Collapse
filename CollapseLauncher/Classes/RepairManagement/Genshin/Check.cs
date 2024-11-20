@@ -155,9 +155,10 @@ namespace CollapseLauncher
             bool UsePersistent = (asset.isForceStoreInPersistent && !asset.isForceStoreInStreaming && fileInfoPersistent != null && !fileInfoPersistent.Exists) || asset.isPatch || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
             bool IsPersistentExist = fileInfoPersistent != null && fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.fileSize;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.fileSize;
-
+           
             // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
-            asset.remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
+            if (asset.remoteNamePersistent != null)
+                asset.remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
 
             // Check if the file exist on both persistent and streaming path, then mark the
             // streaming path as redundant (unused)
@@ -184,6 +185,10 @@ namespace CollapseLauncher
                 LogWriteLine($"File [T: {asset.type}]: {fileInfoStreaming.FullName} is redundant (exist both in persistent and streaming)", LogType.Warning, true);
             }
 
+            // Prevent assigning remoteNamePersistent when its null
+            string repairFile = !string.IsNullOrEmpty(asset.remoteNamePersistent) 
+                && UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
+
             // Check if the persistent or streaming file doesn't exist
             if ((UsePersistent && !IsPersistentExist) || (!IsStreamingExist && !IsPersistentExist))
             {
@@ -199,9 +204,9 @@ namespace CollapseLauncher
 
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(UsePersistent ? asset.remoteNamePersistent : asset.remoteName),
+                        Path.GetFileName(repairFile),
                         RepairAssetType.Generic,
-                        Path.GetDirectoryName(UsePersistent ? asset.remoteNamePersistent : asset.remoteName),
+                        Path.GetDirectoryName(repairFile),
                         asset.fileSize,
                         null,
                         HexTool.HexToBytesUnsafe(asset.md5)
@@ -209,8 +214,7 @@ namespace CollapseLauncher
                 ));
                 targetAssetIndex.Add(asset);
 
-                string remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
-                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {(string.IsNullOrEmpty(remoteName) ? asset.localName : remoteName)} is not found or has unmatched size", LogType.Warning, true);
+                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {(string.IsNullOrEmpty(repairFile) ? asset.localName : repairFile)} is not found or has unmatched size", LogType.Warning, true);
                 return;
             }
 
