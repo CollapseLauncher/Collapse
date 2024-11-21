@@ -148,11 +148,19 @@ namespace CollapseLauncher
             // Get file path
             string filePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
 
+            var forceStreamingAssets = false;
+            if (asset.remoteName.Contains("StreamingAssets") && asset.isPatch)
+            {
+                asset.isForceStoreInPersistent = false;
+                asset.isForceStoreInStreaming  = true;
+                forceStreamingAssets           = true;
+            }
             // Get persistent and streaming paths
             FileInfo fileInfoPersistent = asset.remoteNamePersistent == null ? null : new FileInfo(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent)));
             FileInfo fileInfoStreaming = new FileInfo(filePath);
 
-            bool UsePersistent = (asset.isForceStoreInPersistent && !asset.isForceStoreInStreaming && fileInfoPersistent != null && !fileInfoPersistent.Exists) || asset.isPatch || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
+            bool UsePersistent = (asset.isForceStoreInPersistent && !asset.isForceStoreInStreaming && fileInfoPersistent != null && !fileInfoPersistent.Exists) ||
+                                 (asset.isPatch && !forceStreamingAssets) || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
             bool IsPersistentExist = fileInfoPersistent != null && fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.fileSize;
             bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.fileSize;
            
