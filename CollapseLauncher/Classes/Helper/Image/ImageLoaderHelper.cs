@@ -479,14 +479,25 @@ namespace CollapseLauncher.Helper.Image
         }
 #nullable restore
 
+        private static HashSet<FileInfo> _processingFiles = new();
+        private static HashSet<string> _processingUrls = new();
+    
         public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
             => await TryDownloadToCompleteness(url, fileInfo, token);
 
         public static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
         {
+            if (_processingFiles.Contains(fileInfo) || _processingUrls.Contains(url))
+            {
+                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                                    $"URL : {url}", LogType.Warning, true);
+                return;
+            }
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
+                _processingFiles.Add(fileInfo);
+                _processingUrls.Add(url);
                 // Initialize file temporary name
                 FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp");
                 long fileLength = 0;
@@ -499,23 +510,27 @@ namespace CollapseLauncher.Helper.Image
                 // Try to get the remote stream and download the file
                 await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token))
                 {
-                    await using (Stream outStream = fileInfoTemp.Create())
+                    await using (FileStream outStream = new FileStream(fileInfoTemp.FullName, FileMode.Create, 
+                                                                       FileAccess.ReadWrite, FileShare.ReadWrite))
                     {
                         // Get the file length
                         fileLength = netStream.Length;
 
                         // Create the prop file for download completeness checking
                         string outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
-                        string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                        string outputFilename   = Path.GetFileName(fileInfoTemp.FullName);
                         if (outputParentPath != null)
                         {
                             string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                            await File.Create(propFilePath).DisposeAsync();
+                            await using (FileStream _ = new FileStream(propFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Delete))
+                            {
+                                // Just create the file
+                            }
                         }
 
                         // Copy (and download) the remote streams to local
                         int read;
-                        while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                        while ((read = await netStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
                             await outStream.WriteAsync(buffer, 0, read, token);
                     }
                 }
@@ -539,6 +554,8 @@ namespace CollapseLauncher.Helper.Image
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
+                _processingFiles.Remove(fileInfo);
+                _processingUrls.Remove(url);
             }
         }
 
