@@ -46,7 +46,7 @@ namespace CollapseLauncher.GamePlaytime
             
             
             if (DbHandler.IsEnabled && gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
-                CheckDb();
+                CheckDb().GetAwaiter().GetResult();
         }
 #nullable disable
 
