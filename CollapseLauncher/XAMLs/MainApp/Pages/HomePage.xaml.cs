@@ -421,7 +421,7 @@ namespace CollapseLauncher.Pages
 
         public async ValueTask CarouselStopScroll()
         {
-            if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled)
+            if (!CarouselToken.IsCancellationRequested && !CarouselToken.IsDisposed && !CarouselToken.IsCancelled)
             {
                 await CarouselToken.CancelAsync();
                 CarouselToken.Dispose();
