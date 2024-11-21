@@ -422,6 +422,8 @@
     "Debug": "Pengaturan Tambahan",
     "Debug_Console": "Perlihatkan Konsol",
     "Debug_IncludeGameLogs": "Simpan catatan game ke Collapse (kemungkinan berisi data sensitif)",
+    "Debug_SendRemoteCrashData": "Memperbolehkan laporan crash dikirimkan kepada developer secara anonymous",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "Pengaturan ini dimatikan dikarenakan variable environment 'DISABLE_SENTRY' diset ke true.",
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
 
     "ChangeRegionWarning_Toggle": "Tampilkan Peringatan Penggantian Region",

@@ -289,7 +289,7 @@ namespace CollapseLauncher.GamePlaytime
         /// Sync from/to DB at init
         /// </summary>
         /// <returns>true if require refresh, false if dont.</returns>
-        public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync()
+        public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync(bool redirectThrow = false)
         {
             LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
             try
@@ -354,6 +354,11 @@ namespace CollapseLauncher.GamePlaytime
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[CollapsePlaytime::DbSync] Failed when trying to do sync operation\r\n{ex}",
                              LogType.Error, true);
+                if (redirectThrow)
+                {
+                    throw;
+                }
+
                 return (false, null);
             }
         }

@@ -422,6 +422,8 @@
     "Debug": "その他の設定",
     "Debug_Console": "コンソールを表示",
     "Debug_IncludeGameLogs": "コンソールログにゲームのログも保存（アカウント情報も含まれる可能性有り）",
+    "Debug_SendRemoteCrashData": "匿名で開発者にクラッシュレポートを送る",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "環境変数'DISABLE_SENTRY'の値がtrueであるため、この設定は無効になっています。",
     "Debug_MultipleInstance": "Collapseの多重起動を許可する",
 
     "ChangeRegionWarning_Toggle": "ゲームの変更時に確認ダイアログを表示",
@@ -788,7 +790,10 @@
 
     "IsBytesMoreThanBytes": "= {0} バイト (-/+ {1})",
     "IsBytesUnlimited": "= 無制限",
-    "IsBytesNotANumber": "= 不正な数値"
+    "IsBytesNotANumber": "= 不正な数値",
+    
+    "MissingVcRedist": "Visual C/C++ 再頒布可能パッケージが見つかりません",
+    "MissingVcRedistSubtitle": "この関数を実行するには、Visual C/C++ 再頒布可能パッケージをインストールする必要があります。今すぐダウンロードしますか?\r\n注：ブラウザを起動してMicrosoftからパッケージをダウンロードします。ダウンロード後にインストーラーを実行し、Collapseを再起動してから再度お試しください。\nインストール済みなのにエラーが解決しない場合は、Githubでissueを送信してください。"
   },
 
   "_BackgroundNotification": {

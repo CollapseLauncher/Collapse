@@ -1,6 +1,6 @@
 # Privacy Policy for Collapse Launcher
 
-_Last Updated: November 16th, 2024_
+_Last Updated: November 19th, 2024_
 
 Thank you for using Collapse Launcher! This Privacy Policy outlines the information practices of Collapse Launcher and how any third-party services utilized may collect, use, and disclose data.
 
@@ -42,6 +42,13 @@ While Collapse itself does not collect the information outlined above, we utiliz
   https://sentry.io/privacy/
 - Opt-out: You can disable this feature by going to the application settings or setting system environment variable "DISABLE_SENTRY" to true.
 
+#### Service Provider: Turso 
+- Purpose: Storing User Synchronization Data in user provided database account.
+- Information collected: IP address, Geo-location data.
+- Privacy policies:
+  https://turso.tech/privacy-policy
+- Opt-out: Disabled by default, you can enable this feature by making an account in the website and providing your own database account to the app. Collapse developer has no access to the data stored in the database.
+
 
 ## 3. Cookies
 
@@ -57,6 +64,6 @@ Collapse Launcher reserves the right to update or modify this Privacy Policy at 
 
 ## 6. Contact
 
-Should you have any questions, concerns, or requests regarding this Privacy Policy, please contact us at collapse+bagusnl@protonmail.com.
+Should you have any questions, concerns, or requests regarding this Privacy Policy, please contact us at bagusnl+collapse@protonmail.com.
 
 By using Collapse Launcher, you agree to the terms outlined in this Privacy Policy.

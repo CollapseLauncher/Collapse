@@ -160,6 +160,12 @@ namespace CollapseLauncher.Helper.Database
                 }
                 else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
             }
+            catch (DllNotFoundException e)
+            {
+                LogWriteLine("[DbHandler::Init] Error when connecting to database system! Probably missing Visual C/C++ redist!\r\n" + e,
+                             LogType.Error, true);
+                if (redirectThrow) throw;
+            }
             // No need to handle all these error catcher with sentry
             // The error should be handled in the method caller instead
             catch (LibsqlException e) when (e.Message.Contains("`api error: `{\"error\":\"Unauthorized: `The JWT is invalid`\"}``",

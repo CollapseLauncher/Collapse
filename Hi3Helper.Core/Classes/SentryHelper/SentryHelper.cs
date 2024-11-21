@@ -203,8 +203,6 @@ namespace Hi3Helper.SentryHelper
             ex.Data[Mechanism.HandledKey]   = false;
             ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             ExceptionHandler(ex, ExceptionType.UnhandledOther);
-
-            throw ex;
         }
         
         private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
@@ -239,6 +237,13 @@ namespace Hi3Helper.SentryHelper
         public static async Task ExceptionHandlerAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return;
+            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
+            if (ex is TaskCanceledException or OperationCanceledException)
+            {
+                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                    LogType.Sentry);
+                return;
+            }
             ExceptionHandler(ex, exT);
 
             await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));

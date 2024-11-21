@@ -2468,12 +2468,14 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <FontIcon Grid.Column="1"
+                                                  x:Name="SyncDbPlaytimeBtnGlyph"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                                   FontSize="12"
                                                   Glyph="" />
                                         <TextBlock Grid.Column="0"
+                                                   x:Name="SyncDbPlaytimeBtnText"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"
