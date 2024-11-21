@@ -5,6 +5,7 @@
     <TargetFramework>netframework462</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
     <Nullable>enable</Nullable>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <DebugType>portable</DebugType>
