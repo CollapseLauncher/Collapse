@@ -1,6 +1,6 @@
 using Hi3Helper.Data;
-using Hi3Helper.Screen;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Screen;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,10 +28,10 @@ namespace Hi3Helper.Shared.Region
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
-        public static void InitAppPreset()
+        public static void InitAppPreset(ScreenProp screenProp)
         {
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
-            InitScreenResSettings();
+            InitScreenResSettings(screenProp);
             appIni.ProfilePath = AppConfigFile;
 
             // Set user permission check to its default and check for the existence of config file.
@@ -113,9 +113,9 @@ namespace Hi3Helper.Shared.Region
         #region Misc Methods
         public static void LoadGamePreset() => AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString()!);
 
-        public static void GetScreenResolutionString()
+        public static void GetScreenResolutionString(ScreenProp screenProp)
         {
-            foreach (var res in ScreenProp.screenResolutions!)
+            foreach (var res in screenProp.ScreenResolutions!)
                 ScreenResolutionsList!.Add($"{res.Width}x{res.Height}");
         }
 
@@ -124,10 +124,9 @@ namespace Hi3Helper.Shared.Region
             return new DriveInfo(Path.GetPathRoot(path)!).IsReady;
         }
 
-        private static void InitScreenResSettings()
+        private static void InitScreenResSettings(ScreenProp screenProp)
         {
-            ScreenProp.InitScreenResolution();
-            GetScreenResolutionString();
+            GetScreenResolutionString(screenProp);
         }
         #endregion
 

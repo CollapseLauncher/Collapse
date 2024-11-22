@@ -3,6 +3,8 @@ using CollapseLauncher.Helper.Image;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.Enums;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
@@ -12,7 +14,6 @@ using System;
 using System.Linq;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
-using static Hi3Helper.InvokeProp;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
@@ -37,6 +38,7 @@ namespace CollapseLauncher
                 DebugSettings.XamlResourceReferenceFailed += static (sender, args) =>
                 {
                     LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
                 #endif
@@ -45,6 +47,7 @@ namespace CollapseLauncher
                 DebugSettings.BindingFailed += static (sender, args) =>
                 {
                     LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
                 #endif
@@ -64,7 +67,7 @@ namespace CollapseLauncher
             }
 
             RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
-            SetPreferredAppMode(ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
+            PInvoke.SetPreferredAppMode(PInvoke.ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
 
             this.InitializeComponent();
         }

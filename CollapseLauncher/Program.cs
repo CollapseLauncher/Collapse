@@ -1,11 +1,12 @@
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
-using CollapseLauncher.ShellLinkCOM;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.ShellLinkCOM;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -35,16 +36,19 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher;
 
+public static partial class MainEntryPointExtension
+{
+    [LibraryImport("Microsoft.ui.xaml.dll", EntryPoint = "XamlCheckProcessRequirements")]
+    public static partial void XamlCheckProcessRequirements();
+}
+
 public static class MainEntryPoint
 {
 #nullable enable
     public static int InstanceCount;
     public static App? CurrentAppInstance;
-    public static string[]? LastArgs = null;
+    public static string[]? LastArgs;
 #nullable restore
-
-    [DllImport("Microsoft.ui.xaml.dll")]
-    private static extern void XamlCheckProcessRequirements();
 
     [STAThread]
     public static void Main(params string[] args)
@@ -59,18 +63,19 @@ public static class MainEntryPoint
                 AppCurrentArgument = args;
 
                 // Extract icons from the executable file
-                var mainModulePath = Process.GetCurrentProcess().MainModule?.FileName;
-                var iconCount = InvokeProp.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                string mainModulePath = Process.GetCurrentProcess().MainModule?.FileName ?? "";
+                var iconCount = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
                 if (iconCount > 0)
                 {
                     var largeIcons = new IntPtr[1];
                     var smallIcons = new IntPtr[1];
-                    InvokeProp.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
                     AppIconLarge = largeIcons[0];
                     AppIconSmall = smallIcons[0];
                 }
 
-                InitAppPreset();
+                WindowUtility.CurrentScreenProp = new Hi3Helper.Win32.Screen.ScreenProp();
+                InitAppPreset(WindowUtility.CurrentScreenProp);
                 var logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled
                     ? new LoggerConsole(logPath, Encoding.UTF8)
@@ -173,12 +178,12 @@ public static class MainEntryPoint
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
-                InstanceCount = InvokeProp.EnumerateInstances();
+                InstanceCount = PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
 
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())
                 {
-                    XamlCheckProcessRequirements();
+                    MainEntryPointExtension.XamlCheckProcessRequirements();
                     ComWrappersSupport.InitializeComWrappers();
 
                     StartMainApplication();
@@ -313,7 +318,7 @@ public static class MainEntryPoint
             .WithRestarted(TryCleanupFallbackUpdate)
             .WithAfterUpdateFastCallback(TryCleanupFallbackUpdate)
             .WithFirstRun(TryCleanupFallbackUpdate)
-            .Run(ILoggerHelper.CreateCollapseILogger());
+            .Run(ILoggerHelper.GetILogger());
 #endif
     }
 
@@ -371,7 +376,7 @@ public static class MainEntryPoint
 
             // Try to remove legacy shortcuts
             string currentWindowsPathDrive = Path.GetPathRoot(Environment.SystemDirectory);
-            if (currentWindowsPathDrive != null)
+            if (!string.IsNullOrEmpty(currentWindowsPathDrive))
             {
                 string squirrelLegacyStartMenuGlobal       = Path.Combine(currentWindowsPathDrive, @"ProgramData\Microsoft\Windows\Start Menu\Programs\Collapse\Collapse Launcher");
                 string squirrelLegacyStartMenuGlobalParent = Path.GetDirectoryName(squirrelLegacyStartMenuGlobal);
@@ -382,7 +387,7 @@ public static class MainEntryPoint
             }
 
             // Try to delete all possible shortcuts on any users (since the shortcut used will be the global one)
-            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive, "Users");
+            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive!, "Users");
             foreach (string userDirInfoPath in Directory
                 .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
                 .Where(ConverterTool.IsUserHasPermission))

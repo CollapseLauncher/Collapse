@@ -1,361 +1,365 @@
 ﻿#nullable enable
-    using CollapseLauncher.Extension;
-    using CollapseLauncher.FileDialogCOM;
-    using H.NotifyIcon.Core;
-    using Hi3Helper;
-    using Hi3Helper.Screen;
-    using Hi3Helper.Shared.Region;
-    using Microsoft.Graphics.Display;
-    using Microsoft.UI;
-    using Microsoft.UI.Composition.SystemBackdrops;
-    using Microsoft.UI.Dispatching;
-    using Microsoft.UI.Input;
-    using Microsoft.UI.Windowing;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Media;
-    using System;
-    using System.Runtime.InteropServices;
-    using Windows.Foundation;
-    using Windows.Graphics;
-    using Windows.UI;
-    using Hi3Helper.SentryHelper;
-    using WinRT.Interop;
-    using Size = System.Drawing.Size;
-    using WindowId = Microsoft.UI.WindowId;
+using CollapseLauncher.Extension;
+using H.NotifyIcon.Core;
+using Hi3Helper;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.Enums;
+using Hi3Helper.Win32.Native.Structs;
+using Hi3Helper.Win32.Screen;
+using Microsoft.Graphics.Display;
+using Microsoft.UI;
+using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Input;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using System;
+using System.Runtime.InteropServices;
+using Windows.Foundation;
+using Windows.Graphics;
+using Windows.UI;
+using WinRT.Interop;
+using Size = System.Drawing.Size;
+using WindowId = Microsoft.UI.WindowId;
 
-    namespace CollapseLauncher.Helper
+namespace CollapseLauncher.Helper
+{
+    internal enum WindowBackdropKind
     {
-        internal enum WindowBackdropKind
+        Acrylic,
+        Mica,
+        MicaAlt,
+        None
+    }
+
+    internal static class WindowUtility
+    {
+        private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
+
+        private static nint OldMainWndProcPtr;
+        private static nint OldDesktopSiteBridgeWndProcPtr;
+
+        private delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
+
+        internal static nint CurrentWindowPtr = nint.Zero;
+        internal static Window? CurrentWindow;
+        internal static AppWindow? CurrentAppWindow;
+        internal static WindowId? CurrentWindowId;
+        internal static OverlappedPresenter? CurrentOverlappedPresenter;
+        internal static ScreenProp? CurrentScreenProp;
+
+        internal static DisplayArea? CurrentWindowDisplayArea
         {
-            Acrylic,
-            Mica,
-            MicaAlt,
-            None
-        }
-
-        internal static class WindowUtility
-        {
-            private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
-
-            private static nint OldMainWndProcPtr;
-            private static nint OldDesktopSiteBridgeWndProcPtr;
-
-            private delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
-
-            internal static nint                 CurrentWindowPtr = nint.Zero;
-            internal static Window?              CurrentWindow;
-            internal static AppWindow?           CurrentAppWindow;
-            internal static WindowId?            CurrentWindowId;
-            internal static OverlappedPresenter? CurrentOverlappedPresenter;
-
-            internal static DisplayArea? CurrentWindowDisplayArea
+            get
             {
-                get
+                if (!CurrentWindowId.HasValue)
                 {
-                    if (!CurrentWindowId.HasValue)
-                    {
-                        return null;
-                    }
-
-                    return DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
-                }
-            }
-
-            internal static DisplayInformation? CurrentWindowDisplayInformation
-            {
-                get
-                {
-                    try
-                    {
-                        DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-                        if (dispatcherQueue.HasThreadAccess)
-                        {
-                            return CurrentWindowId.HasValue
-                                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
-                                : null;
-                        }
-                        else
-                        {
-                            DisplayInformation? displayInfoInit = null;
-                            dispatcherQueue.TryEnqueue(() =>
-                            {
-                                displayInfoInit = CurrentWindowId.HasValue
-                                    ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
-                                    : null;
-                            });
-                            return displayInfoInit;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                        Logger.LogWriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
-                    }
                     return null;
                 }
+
+                return DisplayArea.GetFromWindowId(CurrentWindowId.Value, DisplayAreaFallback.Primary);
             }
+        }
 
-            internal static DisplayAdvancedColorInfo? CurrentWindowDisplayColorInfo
+        internal static DisplayInformation? CurrentWindowDisplayInformation
+        {
+            get
             {
-                get
+                try
                 {
-                    DisplayInformation? displayInfo = CurrentWindowDisplayInformation;
-                    if (displayInfo == null)
+                    DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+                    if (dispatcherQueue.HasThreadAccess)
                     {
-                        return null;
-                    }
-
-                    return displayInfo.GetAdvancedColorInfo();
-                }
-            }
-
-            internal static bool CurrentWindowIsMaximizable
-            {
-                get => CurrentOverlappedPresenter != null && CurrentOverlappedPresenter.IsMaximizable;
-                set
-                {
-                    if (CurrentOverlappedPresenter == null)
-                    {
-                        return;
-                    }
-
-                    CurrentOverlappedPresenter.IsMaximizable = value;
-                }
-            }
-
-            internal static bool CurrentWindowIsResizable
-            {
-                get => CurrentOverlappedPresenter != null && CurrentOverlappedPresenter.IsResizable;
-                set
-                {
-                    if (CurrentOverlappedPresenter == null)
-                    {
-                        return;
-                    }
-
-                    CurrentOverlappedPresenter.IsResizable = value;
-                }
-            }
-
-            internal static nint CurrentWindowMonitorPtr
-            {
-                get
-                {
-                    DisplayArea? displayArea = CurrentWindowDisplayArea;
-                    if (displayArea == null)
-                    {
-                        return nint.Zero;
-                    }
-
-                    nint monitorPtr = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
-                    return monitorPtr;
-                }
-            }
-
-            internal static uint CurrentWindowMonitorDpi
-            {
-                get
-                {
-                    const uint DefaultDpiValue = 96;
-                    nint       monitorPtr      = CurrentWindowMonitorPtr;
-                    if (monitorPtr == nint.Zero)
-                    {
-                        return DefaultDpiValue;
-                    }
-
-                    if (InvokeProp.GetDpiForMonitor(monitorPtr, InvokeProp.Monitor_DPI_Type.MDT_Default, out uint dpi,
-                                                    out uint _) == 0)
-                    {
-                        return dpi;
-                    }
-
-                    Logger.LogWriteLine($"[WindowUtility::CurrentWindowMonitorDpi] Could not get DPI for the current monitor at 0x{monitorPtr:x8}");
-                    return DefaultDpiValue;
-
-                }
-            }
-
-            internal static double CurrentWindowMonitorScaleFactor
-                // Deliberate loss of precision
-                // ReSharper disable once PossibleLossOfFraction
-                => (CurrentWindowMonitorDpi * 100 + (96 >> 1)) / 96 / 100.0;
-
-            internal static Rect CurrentWindowPosition
-            {
-                get => CurrentWindow?.Bounds ?? default;
-                set
-                {
-                    if (CurrentWindowPtr == nint.Zero || CurrentAppWindow == null)
-                    {
-                        return;
-                    }
-
-                    if (InnerLauncherConfig.m_isWindows11)
-                    {
-                        // We have no title bar
-                        var titleBarHeight = InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CYSIZEFRAME) +
-                                             InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CYCAPTION) +
-                                             InvokeProp.GetSystemMetrics(InvokeProp.SystemMetric.SM_CXPADDEDBORDER);
-                        value.Height -= titleBarHeight;
-
-                        CurrentAppWindow.ResizeClient(new SizeInt32
-                        {
-                            Width  = (int) value.Width,
-                            Height = (int) value.Height
-                        });
-                        CurrentAppWindow.Move(new PointInt32
-                        {
-                            X = (int) value.X,
-                            Y = (int) value.Y
-                        });
+                        return CurrentWindowId.HasValue
+                            ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                            : null;
                     }
                     else
                     {
-                        CurrentAppWindow.MoveAndResize(new RectInt32()
+                        DisplayInformation? displayInfoInit = null;
+                        dispatcherQueue.TryEnqueue(() =>
                         {
-                            Width  = (int) value.Width,
-                            Height = (int) value.Height,
-                            X      = (int) value.X,
-                            Y      = (int) value.Y
+                            displayInfoInit = CurrentWindowId.HasValue
+                                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                                : null;
                         });
+                        return displayInfoInit;
                     }
                 }
-            }
-
-            internal static string? CurrentWindowTitle
-            {
-                get => CurrentAppWindow?.Title;
-                set
+                catch (Exception ex)
                 {
-                    if (CurrentAppWindow == null)
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                    Logger.LogWriteLine($"An error has occured while getting display information\r\n{ex}", LogType.Error, true);
+                }
+                return null;
+            }
+        }
+
+        internal static DisplayAdvancedColorInfo? CurrentWindowDisplayColorInfo
+        {
+            get
+            {
+                DisplayInformation? displayInfo = CurrentWindowDisplayInformation;
+                if (displayInfo == null)
+                {
+                    return null;
+                }
+
+                return displayInfo.GetAdvancedColorInfo();
+            }
+        }
+
+        internal static bool CurrentWindowIsMaximizable
+        {
+            get => CurrentOverlappedPresenter != null && CurrentOverlappedPresenter.IsMaximizable;
+            set
+            {
+                if (CurrentOverlappedPresenter == null)
+                {
+                    return;
+                }
+
+                CurrentOverlappedPresenter.IsMaximizable = value;
+            }
+        }
+
+        internal static bool CurrentWindowIsResizable
+        {
+            get => CurrentOverlappedPresenter != null && CurrentOverlappedPresenter.IsResizable;
+            set
+            {
+                if (CurrentOverlappedPresenter == null)
+                {
+                    return;
+                }
+
+                CurrentOverlappedPresenter.IsResizable = value;
+            }
+        }
+
+        internal static nint CurrentWindowMonitorPtr
+        {
+            get
+            {
+                DisplayArea? displayArea = CurrentWindowDisplayArea;
+                if (displayArea == null)
+                {
+                    return nint.Zero;
+                }
+
+                nint monitorPtr = Win32Interop.GetMonitorFromDisplayId(displayArea.DisplayId);
+                return monitorPtr;
+            }
+        }
+
+        internal static uint CurrentWindowMonitorDpi
+        {
+            get
+            {
+                const uint DefaultDpiValue = 96;
+                nint monitorPtr = CurrentWindowMonitorPtr;
+                if (monitorPtr == nint.Zero)
+                {
+                    return DefaultDpiValue;
+                }
+
+                if (PInvoke.GetDpiForMonitor(monitorPtr, Monitor_DPI_Type.MDT_Default, out uint dpi,
+                                                out uint _) == 0)
+                {
+                    return dpi;
+                }
+
+                Logger.LogWriteLine($"[WindowUtility::CurrentWindowMonitorDpi] Could not get DPI for the current monitor at 0x{monitorPtr:x8}");
+                return DefaultDpiValue;
+
+            }
+        }
+
+        internal static double CurrentWindowMonitorScaleFactor
+            // Deliberate loss of precision
+            // ReSharper disable once PossibleLossOfFraction
+            => (CurrentWindowMonitorDpi * 100 + (96 >> 1)) / 96 / 100.0;
+
+        internal static Rect CurrentWindowPosition
+        {
+            get => CurrentWindow?.Bounds ?? default;
+            set
+            {
+                if (CurrentWindowPtr == nint.Zero || CurrentAppWindow == null)
+                {
+                    return;
+                }
+
+                if (InnerLauncherConfig.m_isWindows11)
+                {
+                    // We have no title bar
+                    var titleBarHeight = PInvoke.GetSystemMetrics(SystemMetric.SM_CYSIZEFRAME) +
+                                         PInvoke.GetSystemMetrics(SystemMetric.SM_CYCAPTION) +
+                                         PInvoke.GetSystemMetrics(SystemMetric.SM_CXPADDEDBORDER);
+                    value.Height -= titleBarHeight;
+
+                    CurrentAppWindow.ResizeClient(new SizeInt32
                     {
-                        return;
-                    }
-
-                    CurrentAppWindow.Title = value;
-                }
-            }
-
-            internal static bool CurrentWindowTitlebarExtendContent
-            {
-                get => CurrentWindow?.ExtendsContentIntoTitleBar ?? false;
-                set
-                {
-                    if (CurrentWindow == null)
+                        Width = (int)value.Width,
+                        Height = (int)value.Height
+                    });
+                    CurrentAppWindow.Move(new PointInt32
                     {
-                        return;
-                    }
-
-                    CurrentWindow.ExtendsContentIntoTitleBar = value;
+                        X = (int)value.X,
+                        Y = (int)value.Y
+                    });
                 }
-            }
-
-            internal static TitleBarHeightOption CurrentWindowTitlebarHeightOption
-            {
-                get => CurrentAppWindow?.TitleBar.PreferredHeightOption ?? TitleBarHeightOption.Standard;
-                set
+                else
                 {
-                    if (CurrentAppWindow == null)
+                    CurrentAppWindow.MoveAndResize(new RectInt32()
                     {
-                        return;
-                    }
-
-                    CurrentAppWindow.TitleBar.PreferredHeightOption = value;
+                        Width = (int)value.Width,
+                        Height = (int)value.Height,
+                        X = (int)value.X,
+                        Y = (int)value.Y
+                    });
                 }
             }
+        }
 
-            internal static IconShowOptions CurrentWindowTitlebarIconShowOption
+        internal static string? CurrentWindowTitle
+        {
+            get => CurrentAppWindow?.Title;
+            set
             {
-                get => CurrentAppWindow?.TitleBar.IconShowOptions ?? IconShowOptions.ShowIconAndSystemMenu;
-                set
+                if (CurrentAppWindow == null)
                 {
-                    if (CurrentAppWindow == null)
-                    {
-                        return;
-                    }
-
-                    CurrentAppWindow.TitleBar.IconShowOptions = value;
-                }
-            }
-
-            internal static void RegisterWindow(this Window window)
-            {
-                // Uninstall existing drag area change
-                UninstallDragAreaChangeMonitor();
-
-                CurrentWindow    = window;
-                CurrentWindowPtr = WindowNative.GetWindowHandle(window);
-                CurrentWindowId  = Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
-
-                if (!CurrentWindowId.HasValue)
-                {
-                    throw new NullReferenceException($"Window ID cannot be retrieved from pointer: 0x{CurrentWindowPtr:x8}");
+                    return;
                 }
 
-                CurrentAppWindow           = AppWindow.GetFromWindowId(CurrentWindowId.Value);
-                CurrentOverlappedPresenter = CurrentAppWindow.Presenter as OverlappedPresenter;
-
-                // Install WndProc callback
-                OldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
-
-                // Install Drag Area Change monitor
-                InstallDragAreaChangeMonitor();
-
-                // Apply fix for mouse event
-                ApplyWindowTitlebarContextFix();
-
-                // Apply fix for Window border on Windows 10
-                ApplyWindowBorderFix();
-
-                // Initialize FileDialogHandler
-                FileDialogNative.InitHandlerPointer(CurrentWindowPtr);
+                CurrentAppWindow.Title = value;
             }
+        }
 
-            #region Drag Area Handler
-
-            private static void InstallDragAreaChangeMonitor()
+        internal static bool CurrentWindowTitlebarExtendContent
+        {
+            get => CurrentWindow?.ExtendsContentIntoTitleBar ?? false;
+            set
             {
-                DragAreaChangeEvent += WindowDragAreaChangeEventHandler;
-            }
-
-            private static void UninstallDragAreaChangeMonitor()
-            {
-                DragAreaChangeEvent -= WindowDragAreaChangeEventHandler;
-            }
-
-            private static void WindowDragAreaChangeEventHandler(object? sender, RectInt32[] dragArea)
-            {
-                if (sender is AppWindow appWindow)
+                if (CurrentWindow == null)
                 {
-                    appWindow.TitleBar.SetDragRectangles(dragArea);
+                    return;
                 }
+
+                CurrentWindow.ExtendsContentIntoTitleBar = value;
             }
+        }
 
-            #endregion
-
-            #region WndProc Handler
-
-            private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
+        internal static TitleBarHeightOption CurrentWindowTitlebarHeightOption
+        {
+            get => CurrentAppWindow?.TitleBar.PreferredHeightOption ?? TitleBarHeightOption.Standard;
+            set
             {
-                // Install WndProc hook
-                const int       GWLP_WNDPROC        = -4;
-                WndProcDelegate mNewWndProcDelegate = wndProc;
-                IntPtr          pWndProc            = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
-                return InvokeProp.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
-            }
-
-            private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
-            {
-                const uint WM_SYSCOMMAND    = 0x0112;
-                const uint WM_SHOWWINDOW    = 0x0018;
-                const uint WM_NCHITTEST     = 0x0084;
-                const uint WM_NCCALCSIZE    = 0x0083;
-                const uint WM_SETTINGCHANGE = 0x001A;
-                const uint WM_ACTIVATE      = 0x0006;
-
-                switch (msg)
+                if (CurrentAppWindow == null)
                 {
-                    case WM_ACTIVATE:
+                    return;
+                }
+
+                CurrentAppWindow.TitleBar.PreferredHeightOption = value;
+            }
+        }
+
+        internal static IconShowOptions CurrentWindowTitlebarIconShowOption
+        {
+            get => CurrentAppWindow?.TitleBar.IconShowOptions ?? IconShowOptions.ShowIconAndSystemMenu;
+            set
+            {
+                if (CurrentAppWindow == null)
+                {
+                    return;
+                }
+
+                CurrentAppWindow.TitleBar.IconShowOptions = value;
+            }
+        }
+
+        internal static void RegisterWindow(this Window window)
+        {
+            // Uninstall existing drag area change
+            UninstallDragAreaChangeMonitor();
+
+            CurrentWindow = window;
+            CurrentWindowPtr = WindowNative.GetWindowHandle(window);
+            CurrentWindowId = Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
+
+            if (!CurrentWindowId.HasValue)
+            {
+                throw new NullReferenceException($"Window ID cannot be retrieved from pointer: 0x{CurrentWindowPtr:x8}");
+            }
+
+            CurrentAppWindow = AppWindow.GetFromWindowId(CurrentWindowId.Value);
+            CurrentOverlappedPresenter = CurrentAppWindow.Presenter as OverlappedPresenter;
+
+            // Install WndProc callback
+            OldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
+
+            // Install Drag Area Change monitor
+            InstallDragAreaChangeMonitor();
+
+            // Apply fix for mouse event
+            ApplyWindowTitlebarContextFix();
+
+            // Apply fix for Window border on Windows 10
+            ApplyWindowBorderFix();
+
+            // Initialize FileDialogHandler
+            FileDialogNative.InitHandlerPointer(CurrentWindowPtr);
+        }
+
+        #region Drag Area Handler
+
+        private static void InstallDragAreaChangeMonitor()
+        {
+            DragAreaChangeEvent += WindowDragAreaChangeEventHandler;
+        }
+
+        private static void UninstallDragAreaChangeMonitor()
+        {
+            DragAreaChangeEvent -= WindowDragAreaChangeEventHandler;
+        }
+
+        private static void WindowDragAreaChangeEventHandler(object? sender, RectInt32[] dragArea)
+        {
+            if (sender is AppWindow appWindow)
+            {
+                appWindow.TitleBar.SetDragRectangles(dragArea);
+            }
+        }
+
+        #endregion
+
+        #region WndProc Handler
+
+        private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
+        {
+            // Install WndProc hook
+            const int GWLP_WNDPROC = -4;
+            WndProcDelegate mNewWndProcDelegate = wndProc;
+            IntPtr pWndProc = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
+            return PInvoke.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
+        }
+
+        private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+        {
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint WM_SHOWWINDOW = 0x0018;
+            const uint WM_NCHITTEST = 0x0084;
+            const uint WM_NCCALCSIZE = 0x0083;
+            const uint WM_SETTINGCHANGE = 0x001A;
+            const uint WM_ACTIVATE = 0x0006;
+
+            switch (msg)
+            {
+                case WM_ACTIVATE:
                     {
                         if (wParam == 1 && lParam == 0)
                             MainPage.CurrentBackgroundHandler?.WindowFocused();
@@ -365,56 +369,56 @@
 
                         break;
                     }
-                    case WM_SYSCOMMAND:
+                case WM_SYSCOMMAND:
                     {
                         const uint SC_MAXIMIZE = 0xF030;
                         const uint SC_MINIMIZE = 0xF020;
-                        const uint SC_RESTORE  = 0xF120;
+                        const uint SC_RESTORE = 0xF120;
                         switch (wParam)
                         {
                             case SC_MAXIMIZE:
-                            {
-                                // TODO: Apply to force disable the "double-click to maximize" feature.
-                                //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
-                                //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
-                                //
-                                //       Issues have been described here:
-                                //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
-                                //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
-
-                                // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
-                                // Thank you Microsoft :)
-                                return 0;
-                            }
-                            case SC_MINIMIZE:
-                            {
-                                MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                                if (LauncherConfig.GetAppConfigValue("MinimizeToTray").ToBool())
                                 {
-                                    // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
-                                    if (CurrentWindow is MainWindow mainWindow && mainWindow._TrayIcon != null)
-                                    {
-                                        mainWindow._TrayIcon.ToggleAllVisibility();
-                                    }
-                                    else TrayNullHandler("WindowUtility.MainWndProc");
+                                    // TODO: Apply to force disable the "double-click to maximize" feature.
+                                    //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
+                                    //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
+                                    //
+                                    //       Issues have been described here:
+                                    //       https://github.com/microsoft/microsoft-ui-xaml/issues/8666
+                                    //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
 
+                                    // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
+                                    // Thank you Microsoft :)
                                     return 0;
                                 }
+                            case SC_MINIMIZE:
+                                {
+                                    MainPage.CurrentBackgroundHandler?.WindowUnfocused();
+                                    if (LauncherConfig.GetAppConfigValue("MinimizeToTray").ToBool())
+                                    {
+                                        // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
+                                        if (CurrentWindow is MainWindow mainWindow && mainWindow._TrayIcon != null)
+                                        {
+                                            mainWindow._TrayIcon.ToggleAllVisibility();
+                                        }
+                                        else TrayNullHandler("WindowUtility.MainWndProc");
 
-                                InnerLauncherConfig.m_homePage?.CarouselStopScroll();
-                                break;
-                            }
+                                        return 0;
+                                    }
+
+                                    InnerLauncherConfig.m_homePage?.CarouselStopScroll();
+                                    break;
+                                }
                             case SC_RESTORE:
-                            {
-                                MainPage.CurrentBackgroundHandler?.WindowFocused();
-                                InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
-                                break;
-                            }
+                                {
+                                    MainPage.CurrentBackgroundHandler?.WindowFocused();
+                                    InnerLauncherConfig.m_homePage?.CarouselRestartScroll();
+                                    break;
+                                }
                         }
 
                         break;
                     }
-                    case WM_SHOWWINDOW:
+                case WM_SHOWWINDOW:
                     {
                         if (wParam == 0)
                         {
@@ -427,28 +431,28 @@
                         }
                         break;
                     }
-                    case WM_NCHITTEST:
+                case WM_NCHITTEST:
                     {
-                        const int HTCLIENT    = 1;
-                        const int HTCAPTION   = 2;
+                        const int HTCLIENT = 1;
+                        const int HTCAPTION = 2;
                         const int HTMINBUTTON = 8;
-                        const int HTRIGHT     = 11;
-                        const int HTTOP       = 12;
-                        const int HTTOPRIGHT  = 14;
+                        const int HTRIGHT = 11;
+                        const int HTTOP = 12;
+                        const int HTTOPRIGHT = 14;
 
-                        var result = InvokeProp.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
+                        var result = PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
-                               {
-                                   // Fix "Ghost Minimize Button" issue
-                                   HTMINBUTTON => HTCLIENT,
-                                   // Fix "Caption Resize" issue
-                                   HTRIGHT => HTCAPTION,
-                                   HTTOP => HTCAPTION,
-                                   HTTOPRIGHT => HTCAPTION,
-                                   _ => result
-                               };
+                        {
+                            // Fix "Ghost Minimize Button" issue
+                            HTMINBUTTON => HTCLIENT,
+                            // Fix "Caption Resize" issue
+                            HTRIGHT => HTCAPTION,
+                            HTTOP => HTCAPTION,
+                            HTTOPRIGHT => HTCAPTION,
+                            _ => result
+                        };
                     }
-                    case WM_NCCALCSIZE:
+                case WM_NCCALCSIZE:
                     {
                         if (!InnerLauncherConfig.m_isWindows11 && wParam != 0)
                         {
@@ -457,262 +461,260 @@
 
                         break;
                     }
-                    case WM_SETTINGCHANGE:
+                case WM_SETTINGCHANGE:
                     {
                         var setting = Marshal.PtrToStringAnsi(lParam);
                         if (setting == "ImmersiveColorSet")
                         {
-                            InvokeProp.SetPreferredAppMode(InvokeProp.ShouldAppsUseDarkMode()
-                                                               ? InvokeProp.PreferredAppMode.AllowDark
-                                                               : InvokeProp.PreferredAppMode.Default);
+                            PInvoke.SetPreferredAppMode(PInvoke.ShouldAppsUseDarkMode()
+                                                               ? PreferredAppMode.AllowDark
+                                                               : PreferredAppMode.Default);
                         }
 
                         break;
                     }
-                }
-
-                return InvokeProp.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
             }
 
-            #endregion
-
-            #region Titlebar Methods
-
-            private static void ApplyWindowTitlebarContextFix()
-            {
-                if (!CurrentWindowId.HasValue)
-                {
-                    return;
-                }
-
-                InputNonClientPointerSource incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-                incps.SetRegionRects(NonClientRegionKind.Close,    null);
-                incps.SetRegionRects(NonClientRegionKind.Minimize, null);
-                EnableWindowNonClientArea();
-            }
-
-            internal static void ApplyWindowTitlebarLegacyColor()
-            {
-                UIElementExtensions.SetApplicationResource("WindowCaptionForeground",
-                                                           InnerLauncherConfig.IsAppThemeLight
-                                                               ? new Color { A = 255, B = 0, G   = 0, R   = 0 }
-                                                               : new Color { A = 255, B = 255, G = 255, R = 255 });
-                UIElementExtensions.SetApplicationResource("WindowCaptionBackground",
-                                                           new SolidColorBrush(new Color { A = 0, B = 0, G = 0, R = 0 }));
-                UIElementExtensions.SetApplicationResource("WindowCaptionBackgroundDisabled",
-                                                           new SolidColorBrush(new Color { A = 0, B = 0, G = 0, R = 0 }));
-            }
-
-            internal static void SetWindowBackdrop(WindowBackdropKind kind)
-            {
-                if (CurrentWindow == null)
-                {
-                    return;
-                }
-
-                CurrentWindow.SystemBackdrop = kind switch
-                                               {
-                                                   WindowBackdropKind.Acrylic => new DesktopAcrylicBackdrop(),
-                                                   WindowBackdropKind.Mica => !InnerLauncherConfig.m_isWindows11
-                                                       ? new DesktopAcrylicBackdrop()
-                                                       : new MicaBackdrop(),
-                                                   WindowBackdropKind.MicaAlt => !InnerLauncherConfig.m_isWindows11
-                                                       ? new DesktopAcrylicBackdrop()
-                                                       : new MicaBackdrop { Kind = MicaKind.BaseAlt },
-                                                   _ => null
-                                               };
-            }
-
-            internal static void SetWindowTitlebarDefaultDragArea()
-            {
-                if (CurrentWindow == null)
-                {
-                    return;
-                }
-
-                double scaleFactor = CurrentWindowMonitorScaleFactor;
-                RectInt32[] dragRects =
-                    [new(0, 0, (int)(CurrentWindow.Bounds.Width * scaleFactor), (int)(48 * scaleFactor))];
-
-                DragAreaChangeEvent?.Invoke(CurrentAppWindow, dragRects);
-            }
-
-            internal static void SetWindowTitlebarDragArea(RectInt32[] dragAreas)
-            {
-                DragAreaChangeEvent?.Invoke(CurrentAppWindow, dragAreas);
-            }
-
-            internal static void SetWindowTitlebarIcon(nint smallIconPtr, nint largeIconPtr)
-            {
-                if (smallIconPtr == nint.Zero || largeIconPtr == nint.Zero)
-                {
-                    return;
-                }
-
-                InvokeProp.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
-            }
-
-            #endregion
-
-            #region Window state methods
-
-            private static void ApplyWindowBorderFix()
-            {
-                // Hide window border but keep drop shadow
-                if (!InnerLauncherConfig.m_isWindows11)
-                {
-                    var margin = new InvokeProp.MARGINS
-                    {
-                        cyBottomHeight = 1
-                    };
-                    InvokeProp.DwmExtendFrameIntoClientArea(CurrentWindowPtr, ref margin);
-
-                    var flags = InvokeProp.SetWindowPosFlags.SWP_NOSIZE
-                                | InvokeProp.SetWindowPosFlags.SWP_NOMOVE
-                                | InvokeProp.SetWindowPosFlags.SWP_NOZORDER
-                                | InvokeProp.SetWindowPosFlags.SWP_FRAMECHANGED;
-                    InvokeProp.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
-                }
-
-                var desktopSiteBridgeHwnd = InvokeProp.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
-                OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
+            return PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
         }
 
-            private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
-            {
-                const uint WM_WINDOWPOSCHANGING = 0x0046;
+        #endregion
 
-                switch (msg)
+        #region Titlebar Methods
+
+        private static void ApplyWindowTitlebarContextFix()
+        {
+            if (!CurrentWindowId.HasValue)
+            {
+                return;
+            }
+
+            InputNonClientPointerSource incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
+            incps.SetRegionRects(NonClientRegionKind.Close, null);
+            incps.SetRegionRects(NonClientRegionKind.Minimize, null);
+            EnableWindowNonClientArea();
+        }
+
+        internal static void ApplyWindowTitlebarLegacyColor()
+        {
+            UIElementExtensions.SetApplicationResource("WindowCaptionForeground",
+                                                       InnerLauncherConfig.IsAppThemeLight
+                                                           ? new Color { A = 255, B = 0, G = 0, R = 0 }
+                                                           : new Color { A = 255, B = 255, G = 255, R = 255 });
+            UIElementExtensions.SetApplicationResource("WindowCaptionBackground",
+                                                       new SolidColorBrush(new Color { A = 0, B = 0, G = 0, R = 0 }));
+            UIElementExtensions.SetApplicationResource("WindowCaptionBackgroundDisabled",
+                                                       new SolidColorBrush(new Color { A = 0, B = 0, G = 0, R = 0 }));
+        }
+
+        internal static void SetWindowBackdrop(WindowBackdropKind kind)
+        {
+            if (CurrentWindow == null)
+            {
+                return;
+            }
+
+            CurrentWindow.SystemBackdrop = kind switch
+            {
+                WindowBackdropKind.Acrylic => new DesktopAcrylicBackdrop(),
+                WindowBackdropKind.Mica => !InnerLauncherConfig.m_isWindows11
+                    ? new DesktopAcrylicBackdrop()
+                    : new MicaBackdrop(),
+                WindowBackdropKind.MicaAlt => !InnerLauncherConfig.m_isWindows11
+                    ? new DesktopAcrylicBackdrop()
+                    : new MicaBackdrop { Kind = MicaKind.BaseAlt },
+                _ => null
+            };
+        }
+
+        internal static void SetWindowTitlebarDefaultDragArea()
+        {
+            if (CurrentWindow == null)
+            {
+                return;
+            }
+
+            double scaleFactor = CurrentWindowMonitorScaleFactor;
+            RectInt32[] dragRects =
+                [new(0, 0, (int)(CurrentWindow.Bounds.Width * scaleFactor), (int)(48 * scaleFactor))];
+
+            DragAreaChangeEvent?.Invoke(CurrentAppWindow, dragRects);
+        }
+
+        internal static void SetWindowTitlebarDragArea(RectInt32[] dragAreas)
+        {
+            DragAreaChangeEvent?.Invoke(CurrentAppWindow, dragAreas);
+        }
+
+        internal static void SetWindowTitlebarIcon(nint smallIconPtr, nint largeIconPtr)
+        {
+            if (smallIconPtr == nint.Zero || largeIconPtr == nint.Zero)
+            {
+                return;
+            }
+
+            PInvoke.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
+        }
+
+        #endregion
+
+        #region Window state methods
+
+        private static void ApplyWindowBorderFix()
+        {
+            // Hide window border but keep drop shadow
+            if (!InnerLauncherConfig.m_isWindows11)
+            {
+                var margin = new MARGINS
                 {
-                    case WM_WINDOWPOSCHANGING:
+                    cyBottomHeight = 1
+                };
+                PInvoke.DwmExtendFrameIntoClientArea(CurrentWindowPtr, ref margin);
+
+                var flags = SetWindowPosFlags.SWP_NOSIZE
+                            | SetWindowPosFlags.SWP_NOMOVE
+                            | SetWindowPosFlags.SWP_NOZORDER
+                            | SetWindowPosFlags.SWP_FRAMECHANGED;
+                PInvoke.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
+            }
+
+            var desktopSiteBridgeHwnd = PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+            OldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
+        }
+
+        private static IntPtr DesktopSiteBridgeWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+        {
+            const uint WM_WINDOWPOSCHANGING = 0x0046;
+
+            switch (msg)
+            {
+                case WM_WINDOWPOSCHANGING:
                     {
                         // Fix the weird 1px offset
-                        var windowPos = Marshal.PtrToStructure<InvokeProp.WINDOWPOS>(lParam);
+                        var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
                         if (windowPos.x == 0 && windowPos.y == 1 &&
                             windowPos.cx == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width * CurrentWindowMonitorScaleFactor) &&
                             windowPos.cy == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height * CurrentWindowMonitorScaleFactor) - 1)
                         {
-                            windowPos.y  =  0;
+                            windowPos.y = 0;
                             windowPos.cy += 1;
                             Marshal.StructureToPtr(windowPos, lParam, false);
                         }
 
                         break;
                     }
-                }
-
-                return InvokeProp.CallWindowProc(OldDesktopSiteBridgeWndProcPtr, hwnd, msg, wParam, lParam);
             }
 
-            internal static void SetWindowSize(int width, int height)
+            return PInvoke.CallWindowProc(OldDesktopSiteBridgeWndProcPtr, hwnd, msg, wParam, lParam);
+        }
+
+        internal static void SetWindowSize(int width, int height)
+        {
+            if (CurrentScreenProp == null || CurrentWindowPtr == nint.Zero)
+                return;
+
+            // Get the scale factor and calculate the size and offset
+            double scaleFactor = CurrentWindowMonitorScaleFactor;
+            int lastWindowWidth = (int)(width * scaleFactor);
+            int lastWindowHeight = (int)(height * scaleFactor);
+
+            Size desktopSize = CurrentScreenProp.GetScreenSize();
+            int xOff = desktopSize.Width / 2 - lastWindowWidth / 2;
+            int yOff = desktopSize.Height / 2 - lastWindowHeight / 2;
+
+            // Use CurrentWindowPosition to change the size and position
+            CurrentWindowPosition = new Rect
+            { Height = lastWindowHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
+        }
+
+        internal static void WindowMinimize()
+        {
+            if (CurrentWindowPtr == nint.Zero)
             {
-                if (CurrentWindowPtr == nint.Zero)
-                {
-                    return;
-                }
-
-                // Get the scale factor and calculate the size and offset
-                double scaleFactor      = CurrentWindowMonitorScaleFactor;
-                int    lastWindowWidth  = (int)(width * scaleFactor);
-                int    lastWindowHeight = (int)(height * scaleFactor);
-
-                Size desktopSize = ScreenProp.GetScreenSize();
-                int  xOff        = desktopSize.Width / 2 - lastWindowWidth / 2;
-                int  yOff        = desktopSize.Height / 2 - lastWindowHeight / 2;
-
-                // Use CurrentWindowPosition to change the size and position
-                CurrentWindowPosition = new Rect
-                    { Height = lastWindowHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
+                return;
             }
 
-            internal static void WindowMinimize()
-            {
-                if (CurrentWindowPtr == nint.Zero)
-                {
-                    return;
-                }
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint SC_MINIMIZE = 0xF020;
+            PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+        }
 
-                const uint WM_SYSCOMMAND = 0x0112;
-                const uint SC_MINIMIZE   = 0xF020;
-                InvokeProp.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+        internal static void WindowRestore()
+        {
+            if (CurrentWindowPtr == nint.Zero)
+            {
+                return;
             }
 
-            internal static void WindowRestore()
-            {
-                if (CurrentWindowPtr == nint.Zero)
-                {
-                    return;
-                }
+            const uint WM_SYSCOMMAND = 0x0112;
+            const uint SC_RESTORE = 0xF120;
+            PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_RESTORE, 0);
+        }
 
-                const uint WM_SYSCOMMAND = 0x0112;
-                const uint SC_RESTORE    = 0xF120;
-                InvokeProp.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_RESTORE, 0);
+        internal static void EnableWindowNonClientArea()
+        {
+            if (!CurrentWindowId.HasValue || CurrentAppWindow == null)
+            {
+                return;
             }
 
-            internal static void EnableWindowNonClientArea()
+            double scaleFactor = CurrentWindowMonitorScaleFactor;
+            var incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
+            var safeArea = new RectInt32[]
             {
-                if (!CurrentWindowId.HasValue || CurrentAppWindow == null)
-                {
-                    return;
-                }
-
-                double scaleFactor = CurrentWindowMonitorScaleFactor;
-                var    incps       = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-                var safeArea = new RectInt32[]
-                {
                     new(CurrentAppWindow.Size.Width - (int)((144 + 12) * scaleFactor), 0, (int)((144 + 12) * scaleFactor),
                         (int)(48 * scaleFactor))
-                };
-                incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
-            }
+            };
+            incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
+        }
 
-            internal static void DisableWindowNonClientArea()
+        internal static void DisableWindowNonClientArea()
+        {
+            if (!CurrentWindowId.HasValue || CurrentAppWindow == null)
             {
-                if (!CurrentWindowId.HasValue || CurrentAppWindow == null)
-                {
-                    return;
-                }
-
-                double scaleFactor = CurrentWindowMonitorScaleFactor;
-                var    incps       = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-                var    safeArea    = new RectInt32[] { new(0, 0, CurrentAppWindow.Size.Width, (int)(48 * scaleFactor)) };
-                incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
+                return;
             }
 
-            internal static bool IsCurrentWindowInFocus()
-            {
-                IntPtr currentForegroundWindow = InvokeProp.GetForegroundWindow();
-                return CurrentWindowPtr == currentForegroundWindow;
-            }
+            double scaleFactor = CurrentWindowMonitorScaleFactor;
+            var incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
+            var safeArea = new RectInt32[] { new(0, 0, CurrentAppWindow.Size.Width, (int)(48 * scaleFactor)) };
+            incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
+        }
 
-            #endregion
+        internal static bool IsCurrentWindowInFocus()
+        {
+            IntPtr currentForegroundWindow = PInvoke.GetForegroundWindow();
+            return CurrentWindowPtr == currentForegroundWindow;
+        }
 
-            #region Tray Icon Invoker
-            /// <summary>
-            ///     <inheritdoc cref="TrayIcon.ToggleMainVisibility" />
-            /// </summary>
-            public static void ToggleToTray_MainWindow()
-            {
-                if (CurrentWindow is not MainWindow window) return;
+        #endregion
 
-                if (window._TrayIcon != null) window._TrayIcon.ToggleMainVisibility();
-                else TrayNullHandler(nameof(Tray_ShowNotification));
-            }
+        #region Tray Icon Invoker
+        /// <summary>
+        ///     <inheritdoc cref="TrayIcon.ToggleMainVisibility" />
+        /// </summary>
+        public static void ToggleToTray_MainWindow()
+        {
+            if (CurrentWindow is not MainWindow window) return;
 
-            /// <summary>
-            ///     <inheritdoc cref="TrayIcon.ToggleAllVisibility" />
-            /// </summary>
-            public static void ToggleToTray_AllWindow()
-            {
-                if (CurrentWindow is not MainWindow window) return;
+            if (window._TrayIcon != null) window._TrayIcon.ToggleMainVisibility();
+            else TrayNullHandler(nameof(Tray_ShowNotification));
+        }
 
-                if (window._TrayIcon != null) window._TrayIcon.ToggleAllVisibility();
-                else TrayNullHandler(nameof(Tray_ShowNotification));
-            }
+        /// <summary>
+        ///     <inheritdoc cref="TrayIcon.ToggleAllVisibility" />
+        /// </summary>
+        public static void ToggleToTray_AllWindow()
+        {
+            if (CurrentWindow is not MainWindow window) return;
 
-            /// <summary>
-            ///  <inheritdoc cref="CollapseLauncher.TrayIcon.ShowNotification"/>
-            /// </summary>
+            if (window._TrayIcon != null) window._TrayIcon.ToggleAllVisibility();
+            else TrayNullHandler(nameof(Tray_ShowNotification));
+        }
+
+        /// <summary>
+        ///  <inheritdoc cref="CollapseLauncher.TrayIcon.ShowNotification"/>
+        /// </summary>
         /// <param name="title">The title to display on the balloon tip.</param>
         /// <param name="message">The text to display on the balloon tip.</param>
         /// <param name="icon">A symbol that indicates the severity.</param>
@@ -745,28 +747,28 @@
         /// </param>
         // Taken from H.NotifyIcon.TrayIcon.ShowNotification docs
         // https://github.com/HavenDV/H.NotifyIcon/blob/89356c52bedae45b1fd451531e8ac8cfe8b13086/src/libs/H.NotifyIcon.Shared/TaskbarIcon.Notifications.cs#L14
-            public static void Tray_ShowNotification(string           title,
-                                                     string           message,
-                                                     NotificationIcon icon             = NotificationIcon.None,
-                                                     IntPtr?          customIconHandle = null,
-                                                     bool             largeIcon        = false,
-                                                     bool             sound            = true,
-                                                     bool             respectQuietTime = true,
-                                                     bool             realtime         = false)
-            {
-                if (CurrentWindow is not MainWindow window) return;
+        public static void Tray_ShowNotification(string title,
+                                                 string message,
+                                                 NotificationIcon icon = NotificationIcon.None,
+                                                 IntPtr? customIconHandle = null,
+                                                 bool largeIcon = false,
+                                                 bool sound = true,
+                                                 bool respectQuietTime = true,
+                                                 bool realtime = false)
+        {
+            if (CurrentWindow is not MainWindow window) return;
 
-                if (window._TrayIcon != null)
-                    window._TrayIcon.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound,
-                                                      respectQuietTime, realtime);
-                else TrayNullHandler(nameof(Tray_ShowNotification));
-            }
-
-            private static void TrayNullHandler(string caller)
-            {
-                Logger.LogWriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
-            }
-
-            #endregion
+            if (window._TrayIcon != null)
+                window._TrayIcon.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound,
+                                                  respectQuietTime, realtime);
+            else TrayNullHandler(nameof(Tray_ShowNotification));
         }
+
+        private static void TrayNullHandler(string caller)
+        {
+            Logger.LogWriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
+        }
+
+        #endregion
     }
+}

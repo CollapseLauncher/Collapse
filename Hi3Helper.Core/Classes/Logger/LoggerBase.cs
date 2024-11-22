@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 #if !APPLYUPDATE
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.Native;
 // ReSharper disable CheckNamespace
 #endif
 
@@ -244,7 +245,7 @@ namespace Hi3Helper
             _isWriterOnDispose = false;
         }
 
-        private int GetTotalInstance() => InvokeProp.EnumerateInstances();
+        private int GetTotalInstance() => PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
 #endif
 
         private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, Debug, GLC, Remote or Empty!");

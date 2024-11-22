@@ -1,19 +1,18 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 #nullable enable
-namespace CollapseLauncher.Classes.FileDialogCOM
+namespace CollapseLauncher.FileDialogCOM
 {
     internal static class FileDialogHelper
     {
@@ -95,7 +94,7 @@ namespace CollapseLauncher.Classes.FileDialogCOM
             return dirPath;
 
 
-            async Task SpawnInvalidDialog(string title, string message, string selectedPath, bool isUseLegacyFormatting = false)
+            async Task SpawnInvalidDialog(string dialogTitle, string message, string selectedPath, bool isUseLegacyFormatting = false)
             {
                 TextBlock textBlock = new TextBlock()
                 {
@@ -113,7 +112,7 @@ namespace CollapseLauncher.Classes.FileDialogCOM
                 }
 
                 await SimpleDialogs.SpawnDialog(
-                    isUseLegacyFormatting ? title : string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat, title),
+                    isUseLegacyFormatting ? dialogTitle : string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat, dialogTitle),
                     textBlock,
                     (WindowUtility.CurrentWindow as MainWindow)?.Content,
                     Locale.Lang._Misc.Okay,

@@ -1,11 +1,10 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper;
 using Hi3Helper;
-using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
-using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -457,10 +456,17 @@ namespace CollapseLauncher
         private async Task<QueryProperty> GetDispatcherQuery(HttpClient client, CancellationToken token)
         {
             // Initialize dispatch helper
-            GenshinDispatchHelper dispatchHelper = new GenshinDispatchHelper(client, _dispatcherRegionID, _gameVersionManager.GamePreset.ProtoDispatchKey!, _dispatcherURL, _gameVersion.VersionString, token);
+            DispatchHelper dispatchHelper = new DispatchHelper(
+                client,
+                _dispatcherRegionID,
+                _gameVersionManager.GamePreset.ProtoDispatchKey!,
+                _dispatcherURL,
+                _gameVersion.VersionString,
+                ILoggerHelper.GetILogger(),
+                token);
             {
                 // Get the dispatcher info
-                YSDispatchInfo dispatchInfo = await dispatchHelper.LoadDispatchInfo();
+                DispatchInfo dispatchInfo = await dispatchHelper.LoadDispatchInfo();
 
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
                 string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.content}";
@@ -475,7 +481,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task<QueryProperty> TryDecryptAndParseDispatcher(YSDispatchInfo dispatchInfo, GenshinDispatchHelper dispatchHelper)
+        private async Task<QueryProperty> TryDecryptAndParseDispatcher(DispatchInfo dispatchInfo, DispatchHelper dispatchHelper)
         {
             YSDispatchDec dispatchDecryptor = new YSDispatchDec();
 

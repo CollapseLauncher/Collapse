@@ -71,7 +71,7 @@ public class Updater : IDisposable
                 );
         UpdateDownloader = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
-        UpdateManagerLogger = ILoggerHelper.CreateCollapseILogger();
+        UpdateManagerLogger = ILoggerHelper.GetILogger();
         VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(UpdateManagerLogger);
         UpdateOptions updateManagerOptions = new UpdateOptions
         {

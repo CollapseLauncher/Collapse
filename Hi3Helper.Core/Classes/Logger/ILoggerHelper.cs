@@ -1,21 +1,17 @@
-﻿#if USEVELOPACK
-using Hi3Helper;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace CollapseLauncher.Helper
+namespace Hi3Helper
 {
 #nullable enable
-    internal static class ILoggerHelper
+    public static class ILoggerHelper
     {
         private static ILogger? Logger;
-        internal static ILogger CreateCollapseILogger() => Logger ??= new CollapseILoggerWrapper();
+        public static ILogger GetILogger() => Logger ??= new ILoggerWrapper();
     }
 
-    public class CollapseILoggerWrapper : ILogger
+    internal class ILoggerWrapper : ILogger
     {
-        internal CollapseILoggerWrapper() { }
-
         public IDisposable BeginScope<TState>(TState state)
             where TState : notnull => default!;
 
@@ -48,4 +44,3 @@ namespace CollapseLauncher.Helper
         }
     }
 }
-#endif

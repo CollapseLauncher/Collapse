@@ -62,6 +62,10 @@
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
+  <Project Path="Hi3Helper.Win32/Hi3Helper.Win32.csproj">
+    <BuildType Solution="Publish|*" Project="Debug" />
+    <Platform Project="x64" />
+  </Project>
   <Project Path="ImageEx\ImageEx\ImageEx.csproj" Id="9c7abc1d-504e-45c4-ae76-98a9f6e28c80">
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />

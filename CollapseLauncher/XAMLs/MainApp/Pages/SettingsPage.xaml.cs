@@ -18,6 +18,7 @@
     using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
+    using Hi3Helper.Win32.FileDialogCOM;
     using Microsoft.UI.Input;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
@@ -36,7 +37,6 @@
     using static CollapseLauncher.Helper.Image.Waifu2X;
     using static CollapseLauncher.InnerLauncherConfig;
     using static CollapseLauncher.WindowSize.WindowSize;
-    using static CollapseLauncher.FileDialogCOM.FileDialogNative;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -411,7 +411,7 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
                 var currentMediaType = BackgroundMediaUtility.GetMediaType(file);
