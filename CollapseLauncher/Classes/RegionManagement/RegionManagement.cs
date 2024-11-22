@@ -182,9 +182,24 @@ namespace CollapseLauncher
                 return;
             }
             
+        #nullable enable
+            string? tempImage = null;
+            var lastBgCfg = "lastBg-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameName +
+                               "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
+            
+            // Check if the last background image exist, then use that temporarily instead
+            var lastGameBackground = GetAppConfigValue(lastBgCfg).ToString();
+            if (!string.IsNullOrEmpty(lastGameBackground))
+            {
+                if (File.Exists(lastGameBackground))
+                {
+                    tempImage = lastGameBackground;
+                }
+            }
+            
             // If the file is not downloaded, use template image first, then download the image
             var currentGameType = GamePropertyVault.GetCurrentGameProperty()._GameVersion.GameType;
-            var tempImage = currentGameType switch
+            tempImage ??= currentGameType switch
             {
                 GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GamePoster\poster_honkai.png"),
                 GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_genshin.png"),
@@ -206,6 +221,8 @@ namespace CollapseLauncher
                                                                             IsFirstStartup = false;
                                                                             ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
                                                                         }, false, true, true);
+            SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
+        #nullable disable
         }
 
         private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)
