@@ -16,7 +16,6 @@ using PhotoSauce.MagicScaler;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -438,7 +437,7 @@ namespace CollapseLauncher.Helper.Image
         }
 
 #nullable enable
-        private static bool TryGetMd5HashFromFilename([NotNull] string fileName, out byte[]? hash)
+        private static bool TryGetMd5HashFromFilename(string fileName, out byte[]? hash)
         {
             // Set default value for out
             hash = null;
@@ -499,7 +498,7 @@ namespace CollapseLauncher.Helper.Image
                 _processingUrls.Add(url);
                 // Initialize file temporary name
                 FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp");
-                long fileLength = 0;
+                long fileLength;
 
                 Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
