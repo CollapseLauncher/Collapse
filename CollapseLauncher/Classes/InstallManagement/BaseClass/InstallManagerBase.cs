@@ -31,6 +31,7 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
+using Hi3Helper.Sophon.Infos;
 using Hi3Helper.Sophon.Structs;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -40,6 +41,7 @@ using SevenZipExtractor;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -1006,13 +1008,21 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
+                    var processingInfoPair = new ConcurrentDictionary<SophonChunksInfo, byte>();
                     foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
                     {
+                        if (!processingInfoPair.TryAdd(sophonDownloadInfoPair.ChunksInfo, 0))
+                        {
+                            LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ChunksInfo.ChunksBaseUrl}! Skipping...",
+                                         LogType.Warning, true);
+                            continue;
+                        }
                         // Enumerate in parallel and process the assets
                         await Parallel.ForEachAsync(SophonManifest.EnumerateAsync(client, sophonDownloadInfoPair,
                                                                                   downloadSpeedLimiter),
                                                     parallelOptions,
                                                     actionDelegate);
+                        processingInfoPair.Remove(sophonDownloadInfoPair.ChunksInfo, out _);
                     }
                 }
                 finally
@@ -1172,9 +1182,16 @@ namespace CollapseLauncher.InstallManager.Base
                     };
                 }
 
+                var processingAsset = new ConcurrentDictionary<SophonAsset, byte>();
                 // Set the delegate function for the download action
-                async ValueTask Action(SophonAsset asset, CancellationToken _)
+                async ValueTask Action(SophonAsset asset, CancellationToken ctx)
                 {
+                    if (!processingAsset.TryAdd(asset, 0))
+                    {
+                        LogWriteLine($"Found duplicate operation for {asset.AssetName}! Skipping...",
+                                     LogType.Warning, true);
+                        return;
+                    }
                     if (isPreloadMode)
                     {
                         // If preload mode, then only download the chunks
@@ -1192,6 +1209,7 @@ namespace CollapseLauncher.InstallManager.Base
                     await asset.WriteUpdateAsync(httpClient, gamePath, gamePath, chunkPath, canDeleteChunks,
                                                  parallelChunksOptions, UpdateSophonFileTotalProgress,
                                                  UpdateSophonFileDownloadProgress, UpdateSophonDownloadStatus);
+                    processingAsset.Remove(asset, out _);
                 }
 
                 // Enumerate in parallel and process the assets
