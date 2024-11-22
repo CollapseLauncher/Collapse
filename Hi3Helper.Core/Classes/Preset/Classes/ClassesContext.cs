@@ -8,7 +8,6 @@ namespace Hi3Helper
 {
     [JsonSourceGenerationOptions(IncludeFields = true, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = false)]
     [JsonSerializable(typeof(DataProperties))]
-    [JsonSerializable(typeof(YSDispatchInfo))]
     [JsonSerializable(typeof(PkgVersionProperties))]
     [JsonSerializable(typeof(DataPropertiesContent))]
     [JsonSerializable(typeof(FilePropertiesRemote[]))]
