@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -44,6 +45,7 @@ namespace CollapseLauncher
             ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
             if (_isBurstDownloadEnabled)
             {
+                var processingAsset = new ConcurrentDictionary<(PkgVersionProperties, IAssetProperty), byte>();
                 await Parallel.ForEachAsync(
                     PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
@@ -55,11 +57,19 @@ namespace CollapseLauncher
                     new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
                     async (asset, innerToken) =>
                     {
+                        if (!processingAsset.TryAdd(asset, 0))
+                        {
+                            LogWriteLine($"Asset {asset.AssetIndex.localName} is already being processed, skipping...",
+                                         LogType.Warning, true);
+                            return;
+                        }
                         await RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken);
+                        processingAsset.TryRemove(asset, out _);
                     });
             }
             else
             {
+                var processingAsset = new ConcurrentDictionary<(PkgVersionProperties, IAssetProperty), byte>();
                 foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset in
                     PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
@@ -69,7 +79,14 @@ namespace CollapseLauncher
 #endif
                     , assetProperty))
                 {
+                    if (!processingAsset.TryAdd(asset, 0))
+                    {
+                        LogWriteLine($"Asset {asset.AssetIndex.localName} is already being processed, skipping...",
+                                     LogType.Warning, true);
+                        continue;
+                    }
                     await RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token);
+                    processingAsset.TryRemove(asset, out _);
                 }
             }
 
