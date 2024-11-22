@@ -1,6 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Genshin.Enums;
-using Hi3Helper.Screen;
+using CollapseLauncher.Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -127,7 +127,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = ScreenProp.GetScreenSize();
+                Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -212,7 +212,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = ScreenProp.GetScreenSize();
+                    Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;

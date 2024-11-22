@@ -25,3 +25,6 @@
 [submodule "H.NotifyIcon"]
 	path = H.NotifyIcon
 	url = https://github.com/CollapseLauncher/H.NotifyIcon
+[submodule "Hi3Helper.Win32"]
+	path = Hi3Helper.Win32
+	url = https://github.com/CollapseLauncher/Hi3Helper.Win32

@@ -74,7 +74,7 @@ namespace CollapseLauncher.Helper.Update
             IFileDownloader updateManagerHttpAdapter = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
             // Initialize update manager logger, locator and options
-            ILogger velopackLogger = ILoggerHelper.CreateCollapseILogger();
+            ILogger velopackLogger = ILoggerHelper.GetILogger();
             VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(velopackLogger);
             UpdateOptions updateManagerOptions = new UpdateOptions
             {

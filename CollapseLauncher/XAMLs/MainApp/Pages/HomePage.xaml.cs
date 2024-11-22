@@ -5,7 +5,6 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper;
@@ -22,9 +21,10 @@ using CommunityToolkit.WinUI.Animations;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
-using Hi3Helper.Screen;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.Native;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
@@ -51,7 +51,6 @@ using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
-using static CollapseLauncher.FileDialogCOM.FileDialogNative;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -276,7 +275,7 @@ namespace CollapseLauncher.Pages
             }
             catch (ArgumentNullException ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"The necessary section of Launcher Scope's config.ini is broken.\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
@@ -369,7 +368,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
             }
         }
@@ -401,12 +400,12 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
             }
         }
 
-        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll(5);
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll();
         private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
 
         public async void CarouselRestartScroll(int delaySeconds = 5)
@@ -808,7 +807,7 @@ namespace CollapseLauncher.Pages
                     {
                         case ContentDialogResult.Primary:
                             // Try to get the file path
-                            file = await GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
+                            file = await FileDialogNative.GetFilePicker(new Dictionary<string, string> { { applicationName, applicationExecName } }, string.Format(Lang._HomePage.CommunityToolsBtn_OpenExecutableAppDialogTitle, applicationName));
                             // If the file returns null because of getting cancelled, then back to loop again.
                             if (string.IsNullOrEmpty(file)) continue;
                             // Otherwise, assign the value to applicationPath variable and save it to the app config
@@ -848,8 +847,8 @@ namespace CollapseLauncher.Pages
             {
                 // If error happened while running the app, then log and return true as successful
                 // Thoughts @Cry0? Should we mark it as successful (true) or failed (false)?
-                // Mark is as true, since the app still ran but it's an error outside our scope.
-                SentryHelper.ExceptionHandler(ex);
+                // Mark is as true, since the app still ran, but it's an error outside our scope.
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 LogWriteLine($"Unable to start app {applicationName}! {ex}", LogType.Error, true);
                 return true;
             }
@@ -1091,7 +1090,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -1175,7 +1174,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"An error occured while trying to determine delta-patch availability\r\n{ex}", LogType.Error, true);
             }
         }
@@ -1191,7 +1190,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                InvokeProp.PreventSleep();
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1223,10 +1222,10 @@ namespace CollapseLauncher.Pages
                     PreloadDialogBox.Title = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
 
                     verifResult = await CurrentGameProperty._GameInstall.StartPackageVerification();
-                    
+
                     // Restore sleep before the dialog
                     // so system won't be stuck when download is finished because of the download verified dialog
-                    InvokeProp.RestoreSleep();
+                    PInvoke.RestoreSleep();
 
                     if (verifResult == -1)
                     {
@@ -1276,7 +1275,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.Flush();
 
                 // Turn the sleep back on
-                InvokeProp.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 
@@ -1314,7 +1313,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                InvokeProp.PreventSleep();
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1463,7 +1462,7 @@ namespace CollapseLauncher.Pages
 
                 IsPageUnload = true;
                 LogWriteLine($"Error while installing game {CurrentGameProperty._GameVersion.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
             }
             finally
             {
@@ -1482,7 +1481,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                InvokeProp.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 
@@ -1523,9 +1522,9 @@ namespace CollapseLauncher.Pages
         private void GameInstallSophon_StatusChanged(object sender, TotalPerfileStatus e)
         {
             if (DispatcherQueue.HasThreadAccess)
-                GameInstallSophon_StatusChanged_Inner(sender, e);
+                GameInstallSophon_StatusChanged_Inner(e);
             else
-                DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(sender, e));
+                DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(e));
         }
 
         private void GameInstallSophon_ProgressChanged(object sender, TotalPerfileProgress e)
@@ -1536,7 +1535,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstallSophon_ProgressChanged_Inner(e));
         }
 
-        private void GameInstallSophon_StatusChanged_Inner(object sender, TotalPerfileStatus e)
+        private void GameInstallSophon_StatusChanged_Inner(TotalPerfileStatus e)
         {
             SophonProgressStatusTitleText.Text = e.ActivityStatus;
             SophonProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
@@ -1793,6 +1792,7 @@ namespace CollapseLauncher.Pages
                 ResizableWindowHookToken = new CancellationTokenSource();
 
                 executableName = Path.GetFileNameWithoutExtension(executableName);
+                string gameExecutableDirectory = CurrentGameProperty._GameVersion.GameDirPath;
                 ResizableWindowHook resizableWindowHook = new ResizableWindowHook();
 
                 // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
@@ -1800,8 +1800,8 @@ namespace CollapseLauncher.Pages
                 // it impossible to use custom resolution (but since you are using Collapse, it's now
                 // possible :teriStare:)
                 bool isNeedToResetPos = gameType == GameNameType.StarRail;
-                await resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
-                                                    isNeedToResetPos);
+                await Task.Run(() => resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+                                                    isNeedToResetPos, ILoggerHelper.GetILogger(), gameExecutableDirectory));
             }
             catch (Exception ex)
             {
@@ -1844,7 +1844,7 @@ namespace CollapseLauncher.Pages
             }
             catch(Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[SetBackScreenSettings] Failed to set Screen Settings!\r\n{ex}", LogType.Error, true);
             }
 
@@ -1874,7 +1874,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1944,7 +1944,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1972,7 +1972,7 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", ScreenProp.GetScreenSize().Width, ScreenProp.GetScreenSize().Height);
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -2038,7 +2038,7 @@ namespace CollapseLauncher.Pages
             {
                 bool value = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 ChangeGameBGButton.IsEnabled = value;
-                string path = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath ?? "";
+                string path = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath ?? "";
                 BGPathDisplay.Text = Path.GetFileName(path);
                 return value;
             }
@@ -2046,7 +2046,10 @@ namespace CollapseLauncher.Pages
             {
                 ChangeGameBGButton.IsEnabled = value;
 
-                var regionBgPath = CurrentGameProperty?._GameSettings?.SettingsCollapseMisc.CustomRegionBGPath;
+                if (CurrentGameProperty?._GameSettings == null)
+                    return;
+
+                var regionBgPath = CurrentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
                 if (string.IsNullOrEmpty(regionBgPath) || !File.Exists(regionBgPath))
                 {
                     regionBgPath = Path.GetFileName(GetAppConfigValue("CustomBGPath").ToString());
@@ -2055,7 +2058,7 @@ namespace CollapseLauncher.Pages
                 }
 
                 CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
-                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
+                CurrentGameProperty._GameSettings.SaveBaseSettings();
                 m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                 BGPathDisplay.Text = Path.GetFileName(regionBgPath);
@@ -2126,11 +2129,11 @@ namespace CollapseLauncher.Pages
         #region Exclusive Window Payload
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = InvokeProp.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName);
+            IntPtr _windowPtr = PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName ?? "");
             await Task.Delay(1000);
-            new InvokeProp.InvokePresence(_windowPtr).HideWindow();
+            PInvoke.HideWindow(_windowPtr);
             await Task.Delay(1000);
-            new InvokeProp.InvokePresence(_windowPtr).ShowWindow();
+            PInvoke.ShowWindow(_windowPtr);
         }
         #endregion
 
@@ -2301,7 +2304,7 @@ namespace CollapseLauncher.Pages
             {
                 GameStartupSetting.Flyout.Hide();
                 if (CurrentGameProperty?._GameInstall != null)
-                    await CurrentGameProperty._GameInstall.CleanUpGameFiles(true);
+                    await CurrentGameProperty._GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)
             {
@@ -2337,7 +2340,7 @@ namespace CollapseLauncher.Pages
 
         private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
         {
-            var file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            var file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (string.IsNullOrEmpty(file)) return;
 
             var currentMediaType = GetMediaType(file);
@@ -2350,7 +2353,7 @@ namespace CollapseLauncher.Pages
                 SetAlternativeFileStream(croppedImage);
             }
 
-            if (((IGameSettingsUniversal)CurrentGameProperty?._GameSettings)?.SettingsCollapseMisc != null)
+            if (CurrentGameProperty?._GameSettings?.SettingsCollapseMisc != null)
             {
                 CurrentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
                 CurrentGameProperty._GameSettings.SaveBaseSettings();
@@ -2379,7 +2382,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"Error has occurred while running Move Game Location tool!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
             }
         }
         #endregion
@@ -2517,7 +2520,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                InvokeProp.PreventSleep();
+                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -2620,7 +2623,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                InvokeProp.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
         #endregion
@@ -2698,7 +2701,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Error in Collapse Priority Control module!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -2755,7 +2758,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
             }

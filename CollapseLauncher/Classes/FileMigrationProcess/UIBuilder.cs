@@ -1,10 +1,10 @@
-﻿using CollapseLauncher.Classes.FileDialogCOM;
-using CollapseLauncher.CustomControls;
+﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

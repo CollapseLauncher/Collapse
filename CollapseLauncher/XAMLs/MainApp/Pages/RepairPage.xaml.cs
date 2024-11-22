@@ -5,6 +5,7 @@
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
+    using Hi3Helper.Win32.Native;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
     using Microsoft.UI.Xaml.Controls.Primitives;
@@ -45,7 +46,7 @@
 
         private async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
-            InvokeProp.PreventSleep();
+            PInvoke.PreventSleep(ILoggerHelper.GetILogger());
             
             CheckFilesBtn.Flyout.Hide();
             CheckFilesBtn.IsEnabled = false;
@@ -96,13 +97,13 @@
             finally
             {
                 RemoveEvent();
-                InvokeProp.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 
         private async void StartGameRepair(object sender, RoutedEventArgs e)
         {
-            InvokeProp.PreventSleep();
+            PInvoke.PreventSleep(ILoggerHelper.GetILogger());
             RepairFilesBtn.IsEnabled = false;
             CancelBtn.IsEnabled = true;
 
@@ -146,7 +147,7 @@
             finally
             {
                 RemoveEvent();
-                InvokeProp.RestoreSleep();
+                PInvoke.RestoreSleep();
             }
         }
 

@@ -7,11 +7,9 @@
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Data;
-    using Hi3Helper.Screen;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Media;
-    using Microsoft.UI.Xaml.Navigation;
     using Microsoft.Win32;
     using RegistryUtils;
     using System;
@@ -25,6 +23,7 @@
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using static CollapseLauncher.Statics.GamePropertyVault;
+using CollapseLauncher.Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -209,11 +208,11 @@ namespace CollapseLauncher.Pages
         
         private List<string> GetResPairs_Fullscreen()
         {
-            var displayProp    = ScreenProp.GetScreenSize();
+            var displayProp    = WindowUtility.CurrentScreenProp.GetScreenSize();
             var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
             var acH            = acceptableHeight;
             
-            acH.RemoveAll(h => h > ScreenProp.GetMaxHeight());
+            acH.RemoveAll(h => h > WindowUtility.CurrentScreenProp.GetMaxHeight());
             
             List<string> resPairs = new List<string>();
 
@@ -228,13 +227,13 @@ namespace CollapseLauncher.Pages
 
         private List<string> GetResPairs_Windowed()
         {
-            var displayProp    = ScreenProp.GetScreenSize();
+            var displayProp    = WindowUtility.CurrentScreenProp.GetScreenSize();
             var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
             var wideRatio      = (double)16 / 9;
             var ulWideRatio    = (double)21 / 9;
             var acH            = acceptableHeight;
             
-            acH.RemoveAll(h => h > ScreenProp.GetMaxHeight());
+            acH.RemoveAll(h => h > WindowUtility.CurrentScreenProp.GetMaxHeight());
             
             List<string> resPairs = new List<string>();
 
