@@ -922,40 +922,14 @@ namespace CollapseLauncher.Interfaces
             {
                 // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
                 await downloadClient.DownloadAsync(
-                                                   assetURL,
-                                                   EnsureCreationOfDirectory(assetPath),
-                                                   isOverwrite,
-                                                   sessionChunkSize: LauncherConfig.DownloadChunkSize,
-                                                   progressDelegateAsync: downloadProgress,
-                                                   cancelToken: token,
-                                                   downloadSpeedLimiter: downloadSpeedLimiter
-                                                  );
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                // Give full permission to the folder then try again
-                var message          = ex.Message;
-                var unauthorizedPath = assetPath;
-                int commaIndex       = message.IndexOf(',');
-                if (commaIndex != -1 && commaIndex + 1 < message.Length)
-                {
-                    unauthorizedPath = message.Substring(commaIndex + 1).Trim();
-                }
-                var attr = File.GetAttributes(unauthorizedPath);
-                if (attr.HasFlag(FileAttributes.Directory))
-                {
-                    TryUnassignReadOnlyFiles(unauthorizedPath);
-                }
-                else TryUnassignReadOnlyFileSingle(unauthorizedPath);
-                await downloadClient.DownloadAsync(
-                                                   assetURL,
-                                                   EnsureCreationOfDirectory(assetPath),
-                                                   isOverwrite,
-                                                   sessionChunkSize: LauncherConfig.DownloadChunkSize,
-                                                   progressDelegateAsync: downloadProgress,
-                                                   cancelToken: token,
-                                                   downloadSpeedLimiter: downloadSpeedLimiter
-                                                  );
+                    assetURL,
+                    EnsureCreationOfDirectory(assetPath),
+                    isOverwrite,
+                    sessionChunkSize: LauncherConfig.DownloadChunkSize,
+                    progressDelegateAsync: downloadProgress,
+                    cancelToken: token,
+                    downloadSpeedLimiter: downloadSpeedLimiter
+                    );
             }
             finally
             {
