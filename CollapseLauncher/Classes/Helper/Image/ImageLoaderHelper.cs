@@ -276,7 +276,7 @@ namespace CollapseLauncher.Helper.Image
 
             dialogOverlay!.IsPrimaryButtonEnabled = true;
         }
-
+        
         private static async Task<FileStream> GenerateCachedStream(FileInfo InputFileInfo,
                                                                    uint ToWidth, uint ToHeight,
                                                                    bool isFromCropProcess = false)
@@ -288,8 +288,8 @@ namespace CollapseLauncher.Helper.Image
                 {
                     InputFileInfo.MoveTo(InputFileInfo.FullName + "_old", true);
                     FileInfo newCachedFileInfo = new FileInfo(InputFileName);
-                    await using (FileStream newCachedFileStream = newCachedFileInfo.Open(StreamUtility.FileStreamCreateWriteOpt))
-                        await using (FileStream oldInputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                    await using (FileStream newCachedFileStream = newCachedFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                        await using (FileStream oldInputFileStream = InputFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
                             await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
 
                     InputFileInfo.Delete();
@@ -382,17 +382,16 @@ namespace CollapseLauncher.Helper.Image
             return new Bitmap(image.AsStream()!);
         }
 
-        public static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, bool checkIsHashable, CancellationToken token)
+        /// <summary>
+        /// Check if background image is downloaded
+        /// </summary>
+        /// <param name="fileInfo">FileInfo of the image to store</param>
+        /// <param name="checkIsHashable">Is it hashed?</param>
+        /// <returns>true if downloaded, false if not</returns>
+        public static ValueTask<bool> DownloadAndEnsureCompleteness(FileInfo fileInfo, bool checkIsHashable)
         {
-            // Initialize the FileInfo and check if the file exist
-            FileInfo fileInfo = new FileInfo(outputPath);
-            bool isFileExist = IsFileCompletelyDownloaded(fileInfo, checkIsHashable);
-
-            // If the file and the file assumed to exist, then return
-            if (isFileExist) return;
-
-            // If not, then try download the file
-            await TryDownloadToCompleteness(url, fileInfo, token);
+            // Check if the file exist
+            return ValueTask.FromResult(IsFileCompletelyDownloaded(fileInfo, checkIsHashable));
         }
 
         public static bool IsFileCompletelyDownloaded(FileInfo fileInfo, bool checkIsHashable)

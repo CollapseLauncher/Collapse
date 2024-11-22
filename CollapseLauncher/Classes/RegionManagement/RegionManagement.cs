@@ -1,4 +1,5 @@
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
@@ -165,8 +166,46 @@ namespace CollapseLauncher
             if (!Directory.Exists(backgroundFolder))
                 Directory.CreateDirectory(backgroundFolder);
 
+            var imgFileInfo =
+                new FileInfo(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
+
             // Start downloading the background image
-            await ImageLoaderHelper.DownloadAndEnsureCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg, LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, true, Token);
+            var isDownloaded = await ImageLoaderHelper.DownloadAndEnsureCompleteness(imgFileInfo, true);
+
+            if (isDownloaded)
+            {
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
+                                                                 {
+                                                                     IsFirstStartup = false;
+                                                                     ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                                 }, false, false, true);
+                return;
+            }
+            
+            // If the file is not downloaded, use template image first, then download the image
+            var currentGameType = GamePropertyVault.GetCurrentGameProperty()._GameVersion.GameType;
+            var tempImage = currentGameType switch
+            {
+                GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GamePoster\poster_honkai.png"),
+                GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_genshin.png"),
+                GameNameType.StarRail => Path.Combine(AppFolder, @"Assets\Images\GamePoster\poster_starrail.png"),
+                GameNameType.Zenless => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_zzz.png"),
+                _ => AppDefaultBG
+            };
+            BackgroundImgChanger.ChangeBackground(tempImage, () =>
+                                                             {
+                                                                 IsFirstStartup = false;
+                                                                 ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                             }, false, false, true);
+            await ImageLoaderHelper.TryDownloadToCompleteness(
+                                                              LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
+                                                              imgFileInfo,
+                                                              Token);
+            BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
+                                                                        {
+                                                                            IsFirstStartup = false;
+                                                                            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                                        }, false, true, true);
         }
 
         private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)
