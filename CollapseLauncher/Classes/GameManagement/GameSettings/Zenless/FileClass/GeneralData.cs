@@ -66,7 +66,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
         // Cache the SystemSettingDataMap inside the parent SettingsJsonNode
         // and ensure that the node for SystemSettingDataMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _systemSettingDataMap ??= SettingsJsonNode.EnsureCreatedObject("SystemSettingDataMap");
+        get => _systemSettingDataMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("SystemSettingDataMap");
     }
 
     [JsonPropertyName("KeyboardBindingMap")]
@@ -76,7 +76,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
         // Cache the KeyboardBindingMap inside the parent SettingsJsonNode
         // and ensure that the node for KeyboardBindingMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _keyboardBindingMap ??= SettingsJsonNode.EnsureCreatedObject("KeyboardBindingMap");
+        get => _keyboardBindingMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("KeyboardBindingMap");
     }
 
     [JsonPropertyName("MouseBindingMap")]
@@ -86,7 +86,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
         // Cache the MouseBindingMap inside the parent SettingsJsonNode
         // and ensure that the node for MouseBindingMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _mouseBindingMap ??= SettingsJsonNode.EnsureCreatedObject("MouseBindingMap");
+        get => _mouseBindingMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("MouseBindingMap");
     }
 
     [JsonPropertyName("GamepadBindingMap")]
@@ -96,7 +96,7 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
         // Cache the GamepadBindingMap inside the parent SettingsJsonNode
         // and ensure that the node for GamepadBindingMap exists. If not exist,
         // create a new one (via EnsureCreated<T>()).
-        get => _gamepadBindingMap ??= SettingsJsonNode.EnsureCreatedObject("GamepadBindingMap");
+        get => _gamepadBindingMap ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("GamepadBindingMap");
     }
     #endregion
 
@@ -151,24 +151,24 @@ internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
     }
     
     [JsonPropertyName("PlayerPrefs_StringContainer")]
-    public string? PlayerPrefsStringContainer
+    public JsonNode PlayerPrefsStringContainer
     {
-        get => SettingsJsonNode.GetNodeValue("PlayerPrefs_StringContainer", "");
-        set => SettingsJsonNode.SetNodeValue("DeviceLanguageVoiceType", value);
+        get => SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_StringContainer");
+        set => SettingsJsonNode.SetAsJsonNode("PlayerPrefs_StringContainer", value);
     }
 
     [JsonPropertyName("PlayerPrefs_IntContainer")]
-    public string? PlayerPrefsIntContainer
+    public JsonNode PlayerPrefsIntContainer
     {
-        get => SettingsJsonNode.GetNodeValue("PlayerPrefs_IntContainer", "");
-        set => SettingsJsonNode.SetNodeValue("PlayerPrefs_IntContainer", value);
+        get => SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_IntContainer");
+        set => SettingsJsonNode.SetAsJsonNode("PlayerPrefs_IntContainer", value);
     }
 
     [JsonPropertyName("PlayerPrefs_FloatContainer")]
-    public string? PlayerPrefsFloatContainer
+    public JsonNode PlayerPrefsFloatContainer
     {
-        get => SettingsJsonNode.GetNodeValue("PlayerPrefs_FloatContainer", "");
-        set => SettingsJsonNode.SetNodeValue("PlayerPrefs_FloatContainer", value);
+        get => SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_FloatContainer");
+        set => SettingsJsonNode.SetAsJsonNode("PlayerPrefs_FloatContainer", value);
     }
 
     [JsonPropertyName("LocalUILayoutPlatform ")]
