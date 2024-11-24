@@ -572,6 +572,7 @@ namespace CollapseLauncher
                     try
                     {
                         await DownloadBackgroundImage(default);
+                        return; // Return after successfully loading
                     }
                     catch (Exception ex)
                     {

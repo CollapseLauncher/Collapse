@@ -66,7 +66,7 @@ namespace CollapseLauncher.Helper.Background
         {
             try
             {
-                await action;
+                await action.ConfigureAwait(false);
             }
             catch (Exception ex)
             {
