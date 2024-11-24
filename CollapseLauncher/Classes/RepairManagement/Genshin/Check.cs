@@ -232,42 +232,82 @@ namespace CollapseLauncher
                 return;
             }
 
-            // Open and read fileInfo as FileStream 
-            await using FileStream filefs = await NaivelyOpenFileStreamAsync(UsePersistent ? fileInfoPersistent : fileInfoStreaming,
-                                                                             FileMode.Open,
-                                                                             FileAccess.Read,
-                                                                             FileShare.Read);
-            // If pass the check above, then do CRC calculation
-            // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
-
-            // If local and asset CRC doesn't match, then add the asset
-            byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
-            if (!IsArrayMatch(localCRC, remoteCRC))
+            var file = UsePersistent ? fileInfoPersistent : fileInfoStreaming;
+            if (!file.Exists)
             {
-                // Update the total progress and found counter
-                _progressAllSizeFound += asset.fileSize;
-                _progressAllCountFound++;
+                file = !UsePersistent ? fileInfoPersistent! : fileInfoStreaming;
+                if (file.Exists) throw new FileNotFoundException(file.FullName);
+            }
+            
+            try
+            {
+                // Open and read fileInfo as FileStream 
+                await using FileStream filefs =
+                    await NaivelyOpenFileStreamAsync(file,
+                                                     FileMode.Open,
+                                                     FileAccess.Read,
+                                                     FileShare.Read);
+                // If pass the check above, then do CRC calculation
+                // Additional: the total file size progress is disabled and will be incremented after this
+                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
 
-                // Set the per size progress
-                _progressPerFileSizeCurrent = asset.fileSize;
+                // If local and asset CRC doesn't match, then add the asset
+                byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
+                if (!IsArrayMatch(localCRC, remoteCRC))
+                {
+                    // Update the total progress and found counter
+                    _progressAllSizeFound += asset.fileSize;
+                    _progressAllCountFound++;
 
-                // Increment the total current progress
-                _progressAllSizeCurrent += asset.fileSize;
+                    // Set the per size progress
+                    _progressPerFileSizeCurrent = asset.fileSize;
 
+                    // Increment the total current progress
+                    _progressAllSizeCurrent += asset.fileSize;
+
+                    Dispatch(() => AssetEntry.Add(
+                                                  new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(asset.remoteName),
+                                                       RepairAssetType.Generic,
+                                                       Path.GetDirectoryName(asset.remoteName),
+                                                       asset.fileSize,
+                                                       localCRC,
+                                                       remoteCRC
+                                                      )
+                                                 ));
+                    targetAssetIndex.Add(asset);
+
+                    LogWriteLine($"File [T: {asset.type}]: {filefs.Name} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}",
+                                 LogType.Warning, true);
+                }
+            }
+            catch (FileNotFoundException) // If file for ANY reason does not exist after the first check, try to
+            {
+                try
+                {
+                    TryUnassignReadOnlyFileSingle(file.FullName);
+                    file.Delete();
+                }
+                catch (Exception e)
+                {
+                    LogWriteLine($"[CheckAssetAllType] Error while trying to delete file: {file.FullName}\n{e}",
+                                 LogType.Error, true);
+                    ErrorSender.SendException(e);
+                }
+                
+                
                 Dispatch(() => AssetEntry.Add(
                                               new AssetProperty<RepairAssetType>(
-                                                   Path.GetFileName(asset.remoteName),
+                                                   Path.GetFileName(file.FullName),
                                                    RepairAssetType.Generic,
-                                                   Path.GetDirectoryName(asset.remoteName),
+                                                   Path.GetDirectoryName(file.FullName),
                                                    asset.fileSize,
-                                                   localCRC,
-                                                   remoteCRC
+                                                   null,
+                                                   HexTool.HexToBytesUnsafe(asset.md5)
                                                   )
                                              ));
                 targetAssetIndex.Add(asset);
-
-                LogWriteLine($"File [T: {asset.type}]: {filefs.Name} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+                LogWriteLine($"File [T: {asset.type}]: {repairFile} is not found or has unmatched size", LogType.Warning, true);
             }
         }
 

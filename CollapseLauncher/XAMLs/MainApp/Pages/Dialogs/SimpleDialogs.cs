@@ -1134,7 +1134,7 @@ namespace CollapseLauncher.Dialogs
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
             finally
