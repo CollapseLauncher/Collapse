@@ -320,8 +320,15 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
+                if (ex is not FileNotFoundException)
+                {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                    Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
+                }
+                else
+                {
+                    Logger.LogWriteLine("Magic file is not found, returning default values!");
+                }
                 return DefaultValue(magic, versionManager, typeInfo);
             }
         }
