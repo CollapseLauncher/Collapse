@@ -550,7 +550,7 @@ namespace CollapseLauncher.Pages
             set => Settings.GeneralData.Fps = (FpsOption)value;
         }
 
-        /// <inheritdoc cref="CollapseLauncher.GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
+        /// <inheritdoc cref="GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
         public bool Graphics_HiPreCharaAnim
         {
             get => Settings.GeneralData.HiPrecisionCharaAnim;
