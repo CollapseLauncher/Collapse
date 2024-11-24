@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Helper
@@ -104,6 +105,7 @@ namespace CollapseLauncher.Helper
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[FileUtility::RenameFileWithPrefix] Failed to rename file {filePath}!\r\n{ex}",
                              LogType.Error, true);
             }

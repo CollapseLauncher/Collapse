@@ -10,6 +10,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -118,6 +119,7 @@ public sealed partial class UpdaterWindow
         catch (Exception ex)
         {
             LogWriteLine($"FATAL CRASH!!!\r\n{ex}", LogType.Error, true);
+            await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
         }
     }
 

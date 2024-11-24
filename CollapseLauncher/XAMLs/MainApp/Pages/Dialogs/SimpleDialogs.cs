@@ -1,14 +1,14 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
-using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
-using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.Native;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -1084,55 +1084,59 @@ namespace CollapseLauncher.Dialogs
             try
             {
                 string exceptionContent = ErrorSender.ExceptionContent;
-                string title = ErrorSender.ExceptionTitle;
-                string subtitle = ErrorSender.ExceptionSubtitle;
+                string title            = ErrorSender.ExceptionTitle;
+                string subtitle         = ErrorSender.ExceptionSubtitle;
 
                 bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) &&
                                         (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
 
                 Grid rootGrid = CollapseUIExt.CreateGrid()
-                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                    .WithVerticalAlignment(VerticalAlignment.Stretch)
-                    .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
+                                             .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                                             .WithVerticalAlignment(VerticalAlignment.Stretch)
+                                             .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
 
                 _ = rootGrid.AddElementToGridRow(new TextBlock
                 {
-                    Text = subtitle,
+                    Text         = subtitle,
                     TextWrapping = TextWrapping.Wrap,
-                    FontWeight = FontWeights.Medium
+                    FontWeight   = FontWeights.Medium
                 }, 0);
                 _ = rootGrid.AddElementToGridRow(new TextBox
-                {
-                    IsReadOnly = true,
-                    TextWrapping = TextWrapping.Wrap,
-                    MaxHeight = 300,
-                    AcceptsReturn = true,
-                    Text = exceptionContent
-                }, 1).WithMargin(0d, 8d)
-                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                     .WithVerticalAlignment(VerticalAlignment.Stretch);
+                             {
+                                 IsReadOnly    = true,
+                                 TextWrapping  = TextWrapping.Wrap,
+                                 MaxHeight     = 300,
+                                 AcceptsReturn = true,
+                                 Text          = exceptionContent
+                             }, 1).WithMargin(0d, 8d)
+                            .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                            .WithVerticalAlignment(VerticalAlignment.Stretch);
 
                 copyButton = rootGrid.AddElementToGridRow(
-                    CollapseUIExt.CreateButtonWithIcon<Button>(
-                        text:           Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
-                        iconGlyph:      "",
-                        iconFontFamily: "FontAwesomeSolid",
-                        buttonStyle:    "AccentButtonStyle"
-                    ), 2)
-                    .WithHorizontalAlignment(HorizontalAlignment.Center);
+                                                          CollapseUIExt.CreateButtonWithIcon<Button>(
+                                                               text: Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
+                                                               iconGlyph: "",
+                                                               iconFontFamily: "FontAwesomeSolid",
+                                                               buttonStyle: "AccentButtonStyle"
+                                                              ), 2)
+                                     .WithHorizontalAlignment(HorizontalAlignment.Center);
                 copyButton.Click += CopyTextToClipboard;
 
                 ContentDialogResult result = await SpawnDialog(
-                    title, rootGrid, Content,
-                    Lang._UnhandledExceptionPage.GoBackPageBtn1,
-                    null,
-                    null,
-                    ContentDialogButton.Close,
-                    ContentDialogTheme.Error);
+                                                               title, rootGrid, Content,
+                                                               Lang._UnhandledExceptionPage.GoBackPageBtn1,
+                                                               null,
+                                                               null,
+                                                               ContentDialogButton.Close,
+                                                               ContentDialogTheme.Error);
 
                 return result;
             }
-            catch { throw; }
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+                throw;
+            }
             finally
             {
                 if (copyButton != null)
@@ -1142,7 +1146,7 @@ namespace CollapseLauncher.Dialogs
 
         private static async void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {
-            InvokeProp.CopyStringToClipboard(ErrorSender.ExceptionContent);
+            PInvoke.CopyStringToClipboard(ErrorSender.ExceptionContent, ILoggerHelper.GetILogger());
             if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
             {
                 FontIcon  fontIcon  = panel.Children[0] as FontIcon;

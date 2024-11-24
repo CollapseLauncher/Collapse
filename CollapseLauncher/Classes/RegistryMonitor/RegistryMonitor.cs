@@ -10,11 +10,13 @@
  */
 
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using static Hi3Helper.Logger;
 
@@ -22,37 +24,6 @@ namespace RegistryUtils
 {
     public class RegistryMonitor : IDisposable
     {
-        #region P/Invoke
-
-        [DllImport("advapi32.dll", EntryPoint = "RegOpenKeyExW", CharSet = CharSet.Unicode, ExactSpelling = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        private static extern int RegOpenKeyEx(IntPtr hKey, string subKey, uint options, int samDesired,
-                                               out IntPtr phkResult);
-
-        [DllImport("advapi32.dll", ExactSpelling = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        private static extern int RegNotifyChangeKeyValue(IntPtr hKey, bool bWatchSubtree,
-                                                          RegChangeNotifyFilter dwNotifyFilter, IntPtr hEvent,
-                                                          bool fAsynchronous);
-
-        [DllImport("advapi32.dll", ExactSpelling = true)]
-        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
-        private static extern int RegCloseKey(IntPtr hKey);
-
-        private const int KEY_QUERY_VALUE = 0x0001;
-        private const int KEY_NOTIFY = 0x0010;
-        private const int STANDARD_RIGHTS_READ = 0x00020000;
-
-        private static readonly IntPtr HKEY_CLASSES_ROOT = new IntPtr(unchecked((int)0x80000000));
-        private static readonly IntPtr HKEY_CURRENT_USER = new IntPtr(unchecked((int)0x80000001));
-        private static readonly IntPtr HKEY_LOCAL_MACHINE = new IntPtr(unchecked((int)0x80000002));
-        private static readonly IntPtr HKEY_USERS = new IntPtr(unchecked((int)0x80000003));
-        private static readonly IntPtr HKEY_PERFORMANCE_DATA = new IntPtr(unchecked((int)0x80000004));
-        private static readonly IntPtr HKEY_CURRENT_CONFIG = new IntPtr(unchecked((int)0x80000005));
-        private static readonly IntPtr HKEY_DYN_DATA = new IntPtr(unchecked((int)0x80000006));
-
-        #endregion
-
         #region Event handling
 
         /// <summary>
@@ -75,8 +46,7 @@ namespace RegistryUtils
         protected virtual void OnRegChanged()
         {
             EventHandler handler = RegChanged;
-            if (handler != null)
-                handler(this, null);
+            handler?.Invoke(this, null!);
         }
 
         /// <summary>
@@ -99,6 +69,7 @@ namespace RegistryUtils
         /// </remarks>
         protected virtual void OnError(Exception e)
         {
+            SentryHelper.ExceptionHandler(e, SentryHelper.ExceptionType.UnhandledOther);
             ErrorEventHandler handler = Error;
             if (handler != null)
                 handler(this, new ErrorEventArgs(e));
@@ -108,11 +79,11 @@ namespace RegistryUtils
 
         #region Private member variables
 
-        private IntPtr _registryHive;
+        private HKEYCLASS _registryHive;
         private string _registrySubName;
         private object _threadLock = new object();
         private Thread _thread;
-        private bool _disposed = false;
+        private bool _disposed;
         private ManualResetEvent _eventTerminate = new ManualResetEvent(false);
 
         private RegChangeNotifyFilter _regFilter = RegChangeNotifyFilter.Key | RegChangeNotifyFilter.Attribute |
@@ -170,7 +141,8 @@ namespace RegistryUtils
             catch (Exception ex)
             {
                 LogWriteLine($"Error at stopping RegistryWatcher!\r\n{ex}", LogType.Error, true);
-                new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                throw new Exception($"Error in RegistryMonitor Dispose routine!\r\n{ex}");
             }
             _disposed = true;
 #if DEBUG
@@ -203,27 +175,27 @@ namespace RegistryUtils
             switch (hive)
             {
                 case RegistryHive.ClassesRoot:
-                    _registryHive = HKEY_CLASSES_ROOT;
+                    _registryHive = HKEYCLASS.HKEY_CLASSES_ROOT;
                     break;
 
                 case RegistryHive.CurrentConfig:
-                    _registryHive = HKEY_CURRENT_CONFIG;
+                    _registryHive = HKEYCLASS.HKEY_CURRENT_CONFIG;
                     break;
 
                 case RegistryHive.CurrentUser:
-                    _registryHive = HKEY_CURRENT_USER;
+                    _registryHive = HKEYCLASS.HKEY_CURRENT_USER;
                     break;
 
                 case RegistryHive.LocalMachine:
-                    _registryHive = HKEY_LOCAL_MACHINE;
+                    _registryHive = HKEYCLASS.HKEY_LOCAL_MACHINE;
                     break;
 
                 case RegistryHive.PerformanceData:
-                    _registryHive = HKEY_PERFORMANCE_DATA;
+                    _registryHive = HKEYCLASS.HKEY_PERFORMANCE_DATA;
                     break;
 
                 case RegistryHive.Users:
-                    _registryHive = HKEY_USERS;
+                    _registryHive = HKEYCLASS.HKEY_USERS;
                     break;
 
                 default:
@@ -240,30 +212,30 @@ namespace RegistryUtils
             {
                 case "HKEY_CLASSES_ROOT":
                 case "HKCR":
-                    _registryHive = HKEY_CLASSES_ROOT;
+                    _registryHive = HKEYCLASS.HKEY_CLASSES_ROOT;
                     break;
 
                 case "HKEY_CURRENT_USER":
                 case "HKCU":
-                    _registryHive = HKEY_CURRENT_USER;
+                    _registryHive = HKEYCLASS.HKEY_CURRENT_USER;
                     break;
 
                 case "HKEY_LOCAL_MACHINE":
                 case "HKLM":
-                    _registryHive = HKEY_LOCAL_MACHINE;
+                    _registryHive = HKEYCLASS.HKEY_LOCAL_MACHINE;
                     break;
 
                 case "HKEY_USERS":
-                    _registryHive = HKEY_USERS;
+                    _registryHive = HKEYCLASS.HKEY_USERS;
                     break;
 
                 case "HKEY_CURRENT_CONFIG":
-                    _registryHive = HKEY_CURRENT_CONFIG;
+                    _registryHive = HKEYCLASS.HKEY_CURRENT_CONFIG;
                     break;
 
                 default:
-                    _registryHive = IntPtr.Zero;
-                    throw new ArgumentException("The registry hive '" + nameParts[0] + "' is not supported", "value");
+                    _registryHive = HKEYCLASS.None;
+                    throw new ArgumentException("The registry hive '" + nameParts[0] + "' is not supported", nameof(name));
             }
 
             _registrySubName = string.Join("\\", nameParts, 1, nameParts.Length - 1);
@@ -293,7 +265,7 @@ namespace RegistryUtils
                 if (!IsMonitoring)
                 {
                     _eventTerminate.Reset();
-                    _thread = new Thread(new ThreadStart(MonitorThread));
+                    _thread = new Thread(MonitorThread);
                     _thread.IsBackground = true;
                     _thread.Start();
                 }
@@ -334,7 +306,8 @@ namespace RegistryUtils
         private void ThreadLoop()
         {
             IntPtr registryKey;
-            int result = RegOpenKeyEx(_registryHive, _registrySubName, 0, STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_NOTIFY,
+            int result = PInvoke.RegOpenKeyEx(_registryHive, _registrySubName, 0,
+                (uint)ACCESS_MASK.STANDARD_RIGHTS_READ | (uint)RegKeyAccess.KEY_QUERY_VALUE | (uint)RegKeyAccess.KEY_NOTIFY,
                                       out registryKey);
             if (result != 0)
                 throw new Win32Exception(result);
@@ -348,7 +321,7 @@ namespace RegistryUtils
                 {
                     if (_disposed) break;
 #pragma warning disable CS0618 // Type or member is obsolete
-                    result = RegNotifyChangeKeyValue(registryKey, true, _regFilter, _eventNotify.Handle, true);
+                    result = PInvoke.RegNotifyChangeKeyValue(registryKey, true, _regFilter, _eventNotify.Handle, true);
 #pragma warning restore CS0618 // Type or member is obsolete
                     if (result != 0)
                         throw new Win32Exception(result);
@@ -365,35 +338,15 @@ namespace RegistryUtils
                     }
                 }
             }
-            catch { throw; }
             finally
             {
                 if (registryKey != IntPtr.Zero)
                 {
-                    RegCloseKey(registryKey);
+                    PInvoke.RegCloseKey(registryKey);
                 }
 
-                for (int i = 0; i < waitHandles?.Length; i++) waitHandles?[i]?.Dispose();
+                for (int i = 0; i < waitHandles?.Length; i++) waitHandles[i]?.Dispose();
             }
         }
-    }
-
-    /// <summary>
-    /// Filter for notifications reported by <see cref="RegistryMonitor"/>.
-    /// </summary>
-    [Flags]
-    public enum RegChangeNotifyFilter
-    {
-        /// <summary>Notify the caller if a subkey is added or deleted.</summary>
-        Key = 1,
-        /// <summary>Notify the caller of changes to the attributes of the key,
-        /// such as the security descriptor information.</summary>
-        Attribute = 2,
-        /// <summary>Notify the caller of changes to a value of the key. This can
-        /// include adding or deleting a value, or changing an existing value.</summary>
-        Value = 4,
-        /// <summary>Notify the caller of changes to the security descriptor
-        /// of the key.</summary>
-        Security = 8,
     }
 }

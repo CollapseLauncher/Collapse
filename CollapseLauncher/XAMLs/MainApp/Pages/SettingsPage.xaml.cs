@@ -1,6 +1,7 @@
 #if !DISABLEDISCORD
     using CollapseLauncher.DiscordPresence;
 #endif
+    using CollapseLauncher.CustomControls;
     using CollapseLauncher.Dialogs;
     using CollapseLauncher.Extension;
     using CollapseLauncher.Helper;
@@ -14,8 +15,10 @@
     using CollapseLauncher.Statics;
     using CommunityToolkit.WinUI;
     using Hi3Helper;
+    using Hi3Helper.SentryHelper;
     using Hi3Helper.Shared.ClassStruct;
     using Hi3Helper.Shared.Region;
+    using Hi3Helper.Win32.FileDialogCOM;
     using Microsoft.UI.Input;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Controls;
@@ -34,7 +37,6 @@
     using static CollapseLauncher.Helper.Image.Waifu2X;
     using static CollapseLauncher.InnerLauncherConfig;
     using static CollapseLauncher.WindowSize.WindowSize;
-    using static CollapseLauncher.FileDialogCOM.FileDialogNative;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -160,8 +162,9 @@ namespace CollapseLauncher.Pages
                         File.Delete(AppNotifIgnoreFile);
                         Directory.Delete(AppGameConfigMetadataFolder, true);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         // Pipe error
                     }
                     MainFrameChanger.ChangeWindowFrame(typeof(OOBEStartUpMenu));
@@ -286,8 +289,9 @@ namespace CollapseLauncher.Pages
                 }.Start();
                 (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
             }
-            catch
+            catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Pipe error
             }
         }
@@ -407,7 +411,7 @@ namespace CollapseLauncher.Pages
 
         private async void SelectBackgroundImg(object sender, RoutedEventArgs e)
         {
-            string file = await GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
+            string file = await FileDialogNative.GetFilePicker(ImageLoaderHelper.SupportedImageFormats);
             if (!string.IsNullOrEmpty(file))
             {
                 var currentMediaType = BackgroundMediaUtility.GetMediaType(file);
@@ -567,6 +571,20 @@ namespace CollapseLauncher.Pages
                 }
                 SetAndSaveConfigValue("EnableConsole", value);
             }
+        }
+
+        private bool IsSendRemoteCrashData
+        {
+            get
+            {
+                if (SentryHelper.IsDisableEnvVarDetected)
+                {
+                    ToggleSendRemoteCrashData.IsEnabled = false;
+                    ToolTipService.SetToolTip(ToggleSendRemoteCrashData, Lang._SettingsPage.Debug_SendRemoteCrashData_EnvVarDisablement);
+                }
+                return SentryHelper.IsEnabled;
+            }
+            set => SentryHelper.IsEnabled = value;
         }
 
         private bool IsIntroEnabled
@@ -1161,8 +1179,9 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    await SentryHelper.ExceptionHandlerAsync(ex);
                     InvokeError();
                     return;
                 }
@@ -1475,18 +1494,20 @@ namespace CollapseLauncher.Pages
             {
                 // Show checking bar status
                 ShowChecking();
-
+                
                 // Set the value from prop
                 DbHandler.Uri    = _dbUrl;
                 DbHandler.Token  = _dbToken;
                 DbHandler.UserId = _dbUserId;
-                
+
                 var r = Random.Shared.Next(100); // Generate random int for data verification
 
                 await DbHandler.Init(true, true); // Initialize database
                 await DbHandler.StoreKeyValue("TestKey", r.ToString(), true); // Store random number in TestKey
-                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) != r) // Query key and check if value is correct
-                    throw new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
+                if (Convert.ToInt32(await DbHandler.QueryKey("TestKey", true)) !=
+                    r) // Query key and check if value is correct
+                    throw
+                        new InvalidDataException("Data validation failed!"); // Throw if value does not match (then catch), unlikely but maybe for really unstable db server
 
                 // Show success bar status
                 ShowSuccess();
@@ -1498,8 +1519,37 @@ namespace CollapseLauncher.Pages
                                   null,
                                   null,
                                   ContentDialogButton.Close,
-                                  CustomControls.ContentDialogTheme.Success
+                                  ContentDialogTheme.Success
                                  ); // Show success dialog
+            }
+            catch (DllNotFoundException ex)
+            {
+                // No need to revert the value if fail, user is asked to restart the app
+                ShowFailed(ex);
+                var res = await SpawnDialog(
+                                  Lang._Misc.MissingVcRedist,
+                                  Lang._Misc.MissingVcRedistSubtitle,
+                                  sender as UIElement,
+                                  Lang._Misc.Close,
+                                  Lang._Misc.Yes,
+                                  null,
+                                  ContentDialogButton.Primary,
+                                  ContentDialogTheme.Error);
+                if (res == ContentDialogResult.Primary)
+                {
+                    await Task.Run(() =>
+                                   {
+                                       ProcessStartInfo psi = new ProcessStartInfo
+                                       {
+                                           FileName        = "explorer.exe",
+                                           Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
+                                           UseShellExecute = true,
+                                           Verb            = "runas"
+                                       };
+                                       Process.Start(psi);
+                                   });
+                }
+                else { await SentryHelper.ExceptionHandlerAsync(ex); }
             }
             catch (Exception ex)
             {

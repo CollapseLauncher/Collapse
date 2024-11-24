@@ -1,8 +1,8 @@
-﻿using CollapseLauncher.FileDialogCOM;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.UABT;
 using Hi3Helper.UABT.Binary;
+using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.Win32;
 using System;
 using System.Buffers;
@@ -53,6 +53,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
+                // Gets caught by the calling method
                 return ex;
             }
 
@@ -190,6 +191,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
+                // Gets caught by calling method
                 return ex;
             }
 
@@ -397,7 +399,7 @@ namespace CollapseLauncher.GameSettings.Base
         {
             if (string.IsNullOrEmpty(path)) return;
             string ext = Path.GetExtension(path);
-            
+
             if (string.IsNullOrEmpty(ext))
             {
                 path += exte;

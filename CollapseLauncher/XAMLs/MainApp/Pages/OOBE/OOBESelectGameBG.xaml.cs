@@ -14,6 +14,7 @@ using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -90,9 +91,18 @@ namespace CollapseLauncher.Pages.OOBE
 
                 _gameHomepageLink = config.ZoneURL;
                 _gameDescription = config.ZoneDescription;
+                
+                _gamePosterPath = config.GameType switch
+                                {
+                                    GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GamePoster\poster_honkai.png"),
+                                    GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_genshin.png"),
+                                    GameNameType.StarRail => Path.Combine(AppFolder, @"Assets\Images\GamePoster\poster_starrail.png"),
+                                    GameNameType.Zenless => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_zzz.png"),
+                                    _ => AppDefaultBG
+                                };
 
                 // TODO: Use FallbackCDNUtil to get the sprites
-                _gamePosterPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
+                //_gamePosterPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
                 _gameLogoPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), default);
 
                 using (IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream())

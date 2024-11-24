@@ -1,5 +1,7 @@
 ﻿using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ShellLinkCOM;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -139,8 +141,11 @@ namespace CollapseLauncher.Helper
             argumentBuilder.Append('"');
         }
 
-        internal static async Task RecreateIconShortcuts()
+        internal static void RecreateIconShortcuts()
         {
+            /* Invocation from Hi3Helper.TaskScheduler is no longer being user.
+             * Moving to Main App's ShellLink implementation instead!
+            
             // Build the argument and get the current executable path
             StringBuilder argumentBuilder = new StringBuilder();
             argumentBuilder.Append("RecreateIcons");
@@ -159,6 +164,49 @@ namespace CollapseLauncher.Helper
 
             // Print init determination
             CheckInitDetermination(returnCode);
+            */
+
+            // Get current executable path as its target.
+            string currentExecPath = LauncherConfig.AppExecutablePath;
+            string workingDirPath = Path.GetDirectoryName(currentExecPath);
+
+            // Get exe's description
+            FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(currentExecPath);
+            string currentExecDescription = currentExecVersionInfo.FileDescription ?? "";
+
+            // Create shell link instance and save the shortcut under Desktop and User's Start menu
+            using ShellLink shellLink = new ShellLink();
+            shellLink.IconIndex        = 0;
+            shellLink.IconPath         = currentExecPath;
+            shellLink.DisplayMode      = LinkDisplayMode.edmNormal;
+            shellLink.WorkingDirectory = workingDirPath ?? "";
+            shellLink.Target           = currentExecPath;
+            shellLink.Description      = currentExecDescription;
+
+            // Get paths
+            string shortcutFilename = currentExecVersionInfo.ProductName + ".lnk";
+            string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
+            string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
+            string iconLocationStartMenu = Path.Combine(
+                startMenuLocation,
+                "Programs",
+                currentExecVersionInfo.CompanyName ?? "",
+                shortcutFilename);
+            string iconLocationDesktop = Path.Combine(
+                desktopLocation,
+                shortcutFilename);
+
+            // Get icon location directory
+            string iconLocationStartMenuDir = Path.GetDirectoryName(iconLocationStartMenu);
+            string iconLocationDesktopDir = Path.GetDirectoryName(iconLocationDesktop);
+
+            // Try create directory
+            Directory.CreateDirectory(iconLocationStartMenuDir!);
+            Directory.CreateDirectory(iconLocationDesktopDir!);
+
+            // Save the icons
+            shellLink.Save(iconLocationStartMenu);
+            shellLink.Save(iconLocationDesktop);
         }
 
         private static async Task<int> GetInvokeCommandReturnCode(string argument)
@@ -183,6 +231,11 @@ namespace CollapseLauncher.Helper
                 RedirectStandardOutput = true,
                 CreateNoWindow         = true
             };
+
+#if DEBUG
+            Logger.LogWriteLine("[TaskSchedulerHelper] Running TaskSchedulerHelper with command:\r\n" + appletPath + " " + argument, LogType.Debug, true);
+#endif
+
             int lastErrCode = short.MaxValue;
             try
             {
@@ -210,6 +263,7 @@ namespace CollapseLauncher.Helper
             catch (Exception ex)
             {
                 // If error happened, then return.
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"An error has occurred while invoking Task Scheduler applet!\r\n{ex}", LogType.Error, true);
                 return short.MaxValue;
             }

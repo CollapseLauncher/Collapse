@@ -422,6 +422,8 @@
     "Debug": "Pengaturan Tambahan",
     "Debug_Console": "Perlihatkan Konsol",
     "Debug_IncludeGameLogs": "Simpan catatan game ke Collapse (kemungkinan berisi data sensitif)",
+    "Debug_SendRemoteCrashData": "Memperbolehkan laporan crash dikirimkan kepada developer secara anonymous",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "Pengaturan ini dimatikan dikarenakan variable environment 'DISABLE_SENTRY' diset ke true.",
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
 
     "ChangeRegionWarning_Toggle": "Tampilkan Peringatan Penggantian Region",
@@ -548,7 +550,7 @@
     "UseExternalBrowser": "Selalu Gunakan Browser Eksternal",
 
     "LowerCollapsePrioOnGameLaunch": "Turunkan Prioritas Collapse saat Game Berjalan",
-    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan tayangan slide gambar di halaman utama dan menurunkan prioritas Collapse ke Dibawah Normal ",
+    "LowerCollapsePrioOnGameLaunch_Tooltip": "Hentikan carousel gambar pada Home Page dan turunkan prioritas Collapse menjadi \"dibawah normal\"",
 
     "KbShortcuts_Title": "Pintasan Keyboard",
     "KbShortcuts_ShowBtn": "Tunjukkan Pintasan",

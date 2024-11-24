@@ -16,7 +16,6 @@ using PhotoSauce.MagicScaler;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -25,6 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
@@ -223,6 +223,7 @@ namespace CollapseLauncher.Helper.Image
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Exception caught at [ImageLoaderHelper::SpawnImageCropperDialog]\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
 
             FileInfo cachedFileInfo = new FileInfo(cachedFilePath);
@@ -286,8 +287,8 @@ namespace CollapseLauncher.Helper.Image
                 {
                     InputFileInfo.MoveTo(InputFileInfo.FullName + "_old", true);
                     FileInfo newCachedFileInfo = new FileInfo(InputFileName);
-                    await using (FileStream newCachedFileStream = newCachedFileInfo.Open(StreamUtility.FileStreamCreateWriteOpt))
-                        await using (FileStream oldInputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                    await using (FileStream newCachedFileStream = newCachedFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                        await using (FileStream oldInputFileStream = InputFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
                             await ResizeImageStream(oldInputFileStream, newCachedFileStream, ToWidth, ToHeight);
 
                     InputFileInfo.Delete();
@@ -297,6 +298,7 @@ namespace CollapseLauncher.Helper.Image
                 catch (IOException ex)
                 {
                     Logger.LogWriteLine($"[ImageLoaderHelper::GenerateCachedStream] IOException Caught! Opening InputFile instead...\r\n{ex}", LogType.Error, true);
+                    await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                     return InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
                 }
             }
@@ -379,17 +381,16 @@ namespace CollapseLauncher.Helper.Image
             return new Bitmap(image.AsStream()!);
         }
 
-        public static async ValueTask DownloadAndEnsureCompleteness(string url, string outputPath, bool checkIsHashable, CancellationToken token)
+        /// <summary>
+        /// Check if background image is downloaded
+        /// </summary>
+        /// <param name="fileInfo">FileInfo of the image to store</param>
+        /// <param name="checkIsHashable">Is it hashed?</param>
+        /// <returns>true if downloaded, false if not</returns>
+        public static ValueTask<bool> DownloadAndEnsureCompleteness(FileInfo fileInfo, bool checkIsHashable)
         {
-            // Initialize the FileInfo and check if the file exist
-            FileInfo fileInfo = new FileInfo(outputPath);
-            bool isFileExist = IsFileCompletelyDownloaded(fileInfo, checkIsHashable);
-
-            // If the file and the file assumed to exist, then return
-            if (isFileExist) return;
-
-            // If not, then try download the file
-            await TryDownloadToCompleteness(url, fileInfo, token);
+            // Check if the file exist
+            return ValueTask.FromResult(IsFileCompletelyDownloaded(fileInfo, checkIsHashable));
         }
 
         public static bool IsFileCompletelyDownloaded(FileInfo fileInfo, bool checkIsHashable)
@@ -436,7 +437,7 @@ namespace CollapseLauncher.Helper.Image
         }
 
 #nullable enable
-        private static bool TryGetMd5HashFromFilename([NotNull] string fileName, out byte[]? hash)
+        private static bool TryGetMd5HashFromFilename(string fileName, out byte[]? hash)
         {
             // Set default value for out
             hash = null;
@@ -476,17 +477,28 @@ namespace CollapseLauncher.Helper.Image
         }
 #nullable restore
 
+        private static HashSet<FileInfo> _processingFiles = new();
+        private static HashSet<string> _processingUrls = new();
+    
         public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
             => await TryDownloadToCompleteness(url, fileInfo, token);
 
         public static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
         {
+            if (_processingFiles.Contains(fileInfo) || _processingUrls.Contains(url))
+            {
+                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                                    $"URL : {url}", LogType.Warning, true);
+                return;
+            }
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
+                _processingFiles.Add(fileInfo);
+                _processingUrls.Add(url);
                 // Initialize file temporary name
                 FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp");
-                long fileLength = 0;
+                long fileLength;
 
                 Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
@@ -496,23 +508,27 @@ namespace CollapseLauncher.Helper.Image
                 // Try to get the remote stream and download the file
                 await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token))
                 {
-                    await using (Stream outStream = fileInfoTemp.Create())
+                    await using (FileStream outStream = new FileStream(fileInfoTemp.FullName, FileMode.Create, 
+                                                                       FileAccess.ReadWrite, FileShare.ReadWrite))
                     {
                         // Get the file length
                         fileLength = netStream.Length;
 
                         // Create the prop file for download completeness checking
                         string outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
-                        string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                        string outputFilename   = Path.GetFileName(fileInfoTemp.FullName);
                         if (outputParentPath != null)
                         {
                             string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                            await File.Create(propFilePath).DisposeAsync();
+                            await using (FileStream _ = new FileStream(propFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Delete))
+                            {
+                                // Just create the file
+                            }
                         }
 
                         // Copy (and download) the remote streams to local
                         int read;
-                        while ((read = await netStream.ReadAsync(buffer, token)) > 0)
+                        while ((read = await netStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
                             await outStream.WriteAsync(buffer, 0, read, token);
                     }
                 }
@@ -527,16 +543,17 @@ namespace CollapseLauncher.Helper.Image
             // Ignore cancellation exceptions
             catch (TaskCanceledException) { }
             catch (OperationCanceledException) { }
-#if !DEBUG
             catch (Exception ex)
             {
                 // ErrorSender.SendException(ex, ErrorType.Connection);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
             }
-#endif
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
+                _processingFiles.Remove(fileInfo);
+                _processingUrls.Remove(url);
             }
         }
 

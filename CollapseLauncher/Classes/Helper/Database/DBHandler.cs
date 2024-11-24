@@ -160,6 +160,14 @@ namespace CollapseLauncher.Helper.Database
                 }
                 else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
             }
+            catch (DllNotFoundException e)
+            {
+                LogWriteLine("[DbHandler::Init] Error when connecting to database system! Probably missing Visual C/C++ redist!\r\n" + e,
+                             LogType.Error, true);
+                if (redirectThrow) throw;
+            }
+            // No need to handle all these error catcher with sentry
+            // The error should be handled in the method caller instead
             catch (LibsqlException e) when (e.Message.Contains("`api error: `{\"error\":\"Unauthorized: `The JWT is invalid`\"}``",
                                                                StringComparison.InvariantCultureIgnoreCase) && !redirectThrow)
             {
@@ -226,6 +234,8 @@ namespace CollapseLauncher.Helper.Database
                         return str;
                     }
                 }
+                // No need to handle all these error catcher with sentry
+                // The error should be handled in the method caller instead
                 catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED") ||
                                                   ex.Message.Contains("Received an invalid baton")) &&
                                                  i < retryCount - 1)
@@ -299,6 +309,8 @@ namespace CollapseLauncher.Helper.Database
 
                     await Init();
                 }
+                // No need to handle all these error catcher with sentry
+                // The error should be handled in the method caller instead
                 catch (Exception ex) when (i < retryCount - 1)
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! Retrying...\r\n{ex}",

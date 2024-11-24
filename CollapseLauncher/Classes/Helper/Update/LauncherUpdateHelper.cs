@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Threading.Tasks;
@@ -50,6 +51,7 @@ namespace CollapseLauncher.Helper.Update
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}", LogType.Warning, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
 
@@ -72,7 +74,7 @@ namespace CollapseLauncher.Helper.Update
             IFileDownloader updateManagerHttpAdapter = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
             // Initialize update manager logger, locator and options
-            ILogger velopackLogger = ILoggerHelper.CreateCollapseILogger();
+            ILogger velopackLogger = ILoggerHelper.GetILogger();
             VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(velopackLogger);
             UpdateOptions updateManagerOptions = new UpdateOptions
             {

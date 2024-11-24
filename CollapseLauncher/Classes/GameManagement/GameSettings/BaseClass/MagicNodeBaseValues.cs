@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using Hi3Helper.SentryHelper;
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
@@ -23,13 +24,13 @@ namespace CollapseLauncher.GameSettings.Base
 
     internal static class MagicNodeBaseValuesExt
     {
-        private static JsonSerializerOptions JsonSerializerOpts = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions JsonSerializerOpts = new JsonSerializerOptions
         {
             AllowTrailingCommas = true,
             ReadCommentHandling = JsonCommentHandling.Skip
         };
 
-        internal static JsonObject EnsureCreatedObject(this JsonNode? node, string keyName)
+        private static JsonObject EnsureCreatedObject(this JsonNode? node, string keyName)
         {
             // If the node is empty, then create a new instance of it
             if (node == null)
@@ -39,7 +40,7 @@ namespace CollapseLauncher.GameSettings.Base
             return node.EnsureCreatedInner<JsonObject>(keyName);
         }
 
-        internal static JsonArray EnsureCreatedArray(this JsonNode? node, string keyName)
+        private static JsonArray EnsureCreatedArray(this JsonNode? node, string keyName)
         {
             // If the node is empty, then create a new instance of it
             if (node == null)
@@ -63,7 +64,7 @@ namespace CollapseLauncher.GameSettings.Base
             JsonObject? parentNodeObj = node?.AsObject();
 
             // If the value node does not exist, then create and add a new one
-            if (!(parentNodeObj?.TryGetPropertyValue(keyName, out var valueNode) ?? false))
+            if (!(parentNodeObj?.TryGetPropertyValue(keyName, out JsonNode? valueNode) ?? false))
             {
                 // Otherwise, create a new empty one.
                 JsonNodeOptions options = new JsonNodeOptions
@@ -107,17 +108,43 @@ namespace CollapseLauncher.GameSettings.Base
             return defaultValue;
         }
 
+        public static TJsonNodeType GetAsJsonNode<TJsonNodeType>(this JsonNode? node, string keyName)
+            where TJsonNodeType : JsonNode
+        {
+            // Get node as object
+            JsonObject? jsonObject = node?.AsObject();
+
+            // Try get the JsonNode from the parent and if not null, return.
+            if (jsonObject != null &&
+                jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNode) &&
+                jsonNode != null)
+                return (TJsonNodeType)jsonNode;
+
+            // Try get the JsonNode member type to create
+            Type jsonNodeType = typeof(TJsonNodeType);
+            JsonNode jsonReturn;
+
+            // If the type to get is an array, then return
+            if (jsonNodeType == typeof(JsonArray))
+                jsonReturn = node.EnsureCreatedArray(keyName);
+            // Otherwise, ensure that an empty object is created in the parent node
+            else
+                jsonReturn = node.EnsureCreatedObject(keyName);
+
+            // and then return it.
+            return (TJsonNodeType)jsonReturn;
+        }
+
         public static TValue GetNodeValue<TValue>(this JsonNode? node, string keyName, TValue defaultValue)
             where TValue : struct
         {
             // Get node as object
             JsonObject? jsonObject = node?.AsObject();
 
-            // If node is null, return the default value
-            if (jsonObject == null) return defaultValue;
-
             // Try get node as struct value
-            if (jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) && jsonNodeValue != null)
+            if (jsonObject != null &&
+                jsonObject.TryGetPropertyValue(keyName, out JsonNode? jsonNodeValue) &&
+                jsonNodeValue != null)
             {
                 if (typeof(TValue) == typeof(bool) && jsonNodeValue.GetValueKind() == JsonValueKind.Number)
                 {
@@ -132,6 +159,7 @@ namespace CollapseLauncher.GameSettings.Base
                 }
             }
 
+            // Otherwise, get the default value
             return defaultValue;
         }
 
@@ -178,6 +206,18 @@ namespace CollapseLauncher.GameSettings.Base
             return defaultValue;
         }
 
+        public static void SetAsJsonNode(this JsonNode? node, string keyName, JsonNode? jsonNode)
+        {
+            // If node is null, return and ignore
+            if (node == null) return;
+
+            // Get node as object
+            JsonObject jsonObject = node.AsObject();
+
+            // Set the value of the JsonNode
+            SetValueOfJsonNode(node, keyName, jsonNode, jsonObject);
+        }
+
         public static void SetNodeValue<TValue>(this JsonNode? node, string keyName, TValue value, JsonSerializerContext? context = null)
         {
             // If node is null, return and ignore
@@ -189,12 +229,18 @@ namespace CollapseLauncher.GameSettings.Base
             // Create an instance of the JSON node value
             JsonValue? jsonValue = CreateJsonValue(value, context);
 
+            // Set the value of the JsonNode
+            SetValueOfJsonNode(node, keyName, jsonValue, jsonObject);
+        }
+
+        private static void SetValueOfJsonNode(JsonNode node, string keyName, JsonNode? jsonNode, JsonObject jsonObject)
+        {
             // If the node has object, then assign the new value
             if (jsonObject.ContainsKey(keyName))
-                node[keyName] = jsonValue;
+                node[keyName] = jsonNode;
             // Otherwise, add it
             else
-                jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValue));
+                jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonNode));
         }
 
         public static void SetNodeValueEnum<TEnum>(this JsonNode? node, string keyName, TEnum value, JsonEnumStoreType enumStoreType = JsonEnumStoreType.AsNumber)
@@ -319,7 +365,15 @@ namespace CollapseLauncher.GameSettings.Base
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
+                if (ex is not FileNotFoundException)
+                {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                    Logger.LogWriteLine($"Failed to parse MagicNodeBaseValues settings\r\n{ex}", LogType.Error, true);
+                }
+                else
+                {
+                    Logger.LogWriteLine("Magic file is not found, returning default values!");
+                }
                 return DefaultValue(magic, versionManager, typeInfo);
             }
         }

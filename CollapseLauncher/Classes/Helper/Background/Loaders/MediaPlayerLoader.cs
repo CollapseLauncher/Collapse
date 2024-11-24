@@ -23,6 +23,7 @@ using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI;
+using Hi3Helper.SentryHelper;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 using static Hi3Helper.Logger;
 
@@ -100,6 +101,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             catch (Exception ex)
             {
                 LogWriteLine($"Error disposing Media Modules: {ex.Message}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
 
             GC.SuppressFinalize(this);

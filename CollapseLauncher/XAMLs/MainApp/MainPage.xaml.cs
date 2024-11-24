@@ -13,6 +13,7 @@ using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using InnoSetupHelper;
 using Microsoft.UI;
@@ -423,6 +424,7 @@ namespace CollapseLauncher
                         }
                         catch (Exception ex)
                         {
+                            await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                             LogWriteLine($"Restarting the launcher can't be completed! {ex}", LogType.Error, true);
                         }
                         break;
@@ -461,15 +463,23 @@ namespace CollapseLauncher
             else CurrentBackgroundHandler?.Undimm();
         }
 
+        private HashSet<string> _processingBackground = new();
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
+            if (_processingBackground.Contains(e.ImgPath))
+            {
+                LogWriteLine($"Background {e.ImgPath} is already being processed!", LogType.Warning, true);
+                return;
+            }
+
             try
             {
+                _processingBackground.Add(e.ImgPath);
                 var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
                 if (gameLauncherApi != null)
                 {
                     gameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
-                    IsCustomBG = e.IsCustom;
+                    IsCustomBG                             = e.IsCustom;
 
                     // if (e.IsCustom)
                     //     SetAndSaveConfigValue("CustomBGPath",
@@ -486,13 +496,14 @@ namespace CollapseLauncher
                     {
                         case BackgroundMediaUtility.MediaType.Media:
                             BackgroundNewMediaPlayerGrid.Visibility = Visibility.Visible;
-                            BackgroundNewBackGrid.Visibility = Visibility.Collapsed;
+                            BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
                             break;
                         case BackgroundMediaUtility.MediaType.StillImage:
-                            FileStream imgStream = await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
+                            FileStream imgStream =
+                                await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
                             BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
                             BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
-                            BackgroundNewBackGrid.Visibility = Visibility.Visible;
+                            BackgroundNewBackGrid.Visibility        = Visibility.Visible;
                             break;
                         case BackgroundMediaUtility.MediaType.Unknown:
                         default:
@@ -503,7 +514,8 @@ namespace CollapseLauncher
                     CurrentBackgroundHandler?.LoadBackground(gameLauncherApi.GameBackgroundImgLocal, e.IsRequestInit,
                                                              e.IsForceRecreateCache, ex =>
                                                              {
-                                                                 gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                                                                 gameLauncherApi.GameBackgroundImgLocal =
+                                                                     AppDefaultBG;
                                                                  LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
                                                                               LogType.Error, true);
                                                                  ErrorSender.SendException(ex);
@@ -515,6 +527,10 @@ namespace CollapseLauncher
                 LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
                              LogType.Error, true);
                 ErrorSender.SendException(new Exception($"An error occured while loading background {e.ImgPath}", ex));
+            }
+            finally
+            {
+                _processingBackground.Remove(e.ImgPath);
             }
         }
 
@@ -556,6 +572,7 @@ namespace CollapseLauncher
                     try
                     {
                         await DownloadBackgroundImage(default);
+                        return; // Return after successfully loading
                     }
                     catch (Exception ex)
                     {
@@ -658,6 +675,7 @@ namespace CollapseLauncher
             }
             catch (JsonException ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 LogWriteLine($"Error while trying to get Notification Feed or Metadata Update\r\n{ex}", LogType.Error, true);
             }
             catch (Exception ex)
@@ -706,6 +724,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed to load notification push!\r\n{ex}", LogType.Warning, true);
             }
         }
@@ -839,6 +858,7 @@ namespace CollapseLauncher
                     }
                     catch (Exception ex)
                     {
+                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
                     }
                 }
@@ -1699,6 +1719,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Error while initialize EdgeWebView2. Opening browser instead!\r\n{ex}", LogType.Error, true);
                 new Process
                 {
@@ -1802,7 +1823,7 @@ namespace CollapseLauncher
                     { "CacheFolder", OpenGameCacheFolder_Invoked },
                     { "ForceCloseGame", ForceCloseGame_Invoked },
 
-                    { "RepairPage", GoGameRepir_Invoked },
+                    { "RepairPage", GoGameRepair_Invoked },
                     { "GameSettingsPage", GoGameSettings_Invoked },
                     { "CachesPage", GoGameCaches_Invoked },
 
@@ -1825,6 +1846,7 @@ namespace CollapseLauncher
             }
             catch (Exception error)
             {
+                SentryHelper.ExceptionHandler(error);
                 LogWriteLine(error.ToString());
                 KbShortcutList = null;
                 CreateKeyboardShortcutHandlers();
@@ -2068,10 +2090,11 @@ namespace CollapseLauncher
             }
             catch (Win32Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
-        private void GoGameRepir_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private void GoGameRepair_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
 

@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GamePlaytime
@@ -125,6 +126,7 @@ namespace CollapseLauncher.GamePlaytime
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while reading playtime.\r\n{ex}", LogType.Error, true);
             }
             finally
@@ -170,6 +172,7 @@ namespace CollapseLauncher.GamePlaytime
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed to save playtime!\r\n{ex}", LogType.Error, true);
             }
         }
@@ -286,7 +289,7 @@ namespace CollapseLauncher.GamePlaytime
         /// Sync from/to DB at init
         /// </summary>
         /// <returns>true if require refresh, false if dont.</returns>
-        public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync()
+        public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync(bool redirectThrow = false)
         {
             LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
             try
@@ -348,8 +351,14 @@ namespace CollapseLauncher.GamePlaytime
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[CollapsePlaytime::DbSync] Failed when trying to do sync operation\r\n{ex}",
                              LogType.Error, true);
+                if (redirectThrow)
+                {
+                    throw;
+                }
+
                 return (false, null);
             }
         }
@@ -364,16 +373,18 @@ namespace CollapseLauncher.GamePlaytime
             try
             {
                 var unixStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                await DbHandler.StoreKeyValue(KeyPlaytimeJson, jsonData);
-                await DbHandler.StoreKeyValue(KeyTotalTime,    totalTime.ToString(CultureInfo.InvariantCulture));
-                await DbHandler.StoreKeyValue(KeyLastPlayed,   lastPlayed != null ? lastPlayed.Value.ToString(CultureInfo.InvariantCulture) : "null");
-                await DbHandler.StoreKeyValue(KeyLastUpdated,  unixStamp.ToString());
+                await DbHandler.StoreKeyValue(KeyPlaytimeJson, jsonData, true);
+                await DbHandler.StoreKeyValue(KeyTotalTime,    totalTime.ToString(CultureInfo.InvariantCulture), true);
+                await DbHandler.StoreKeyValue(KeyLastPlayed,   lastPlayed != null ? lastPlayed.Value.ToString(CultureInfo.InvariantCulture) : "null", true);
+                await DbHandler.StoreKeyValue(KeyLastUpdated,  unixStamp.ToString(), true);
                 DbConfig.SetAndSaveValue(KeyLastUpdated, unixStamp);
                 _unixStampDb = Convert.ToInt32(unixStamp);
                 LastDbUpdate = curDateTime;
+                LogWriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Push()] Successfully uploaded playtime data to database!", LogType.Scheme, true);
             }
             catch (Exception e)
             {
+                await SentryHelper.ExceptionHandlerAsync(e, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
             }
             finally
@@ -390,18 +401,20 @@ namespace CollapseLauncher.GamePlaytime
             {
                 _isDbPulling = true;
 
-                _jsonDataDb   = await DbHandler.QueryKey(KeyPlaytimeJson);
+                _jsonDataDb   = await DbHandler.QueryKey(KeyPlaytimeJson, true);
                 
-                var totalTimeDbStr = await DbHandler.QueryKey(KeyTotalTime);
+                var totalTimeDbStr = await DbHandler.QueryKey(KeyTotalTime, true);
                 _totalTimeDb  = string.IsNullOrEmpty(totalTimeDbStr) ? null : Convert.ToDouble(totalTimeDbStr, CultureInfo.InvariantCulture);
                 
-                var lpDb = await DbHandler.QueryKey(KeyLastPlayed);
+                var lpDb = await DbHandler.QueryKey(KeyLastPlayed, true);
                 _lastPlayedDb    = !string.IsNullOrEmpty(lpDb) && !lpDb.Contains("null") ? Convert.ToDouble(lpDb, CultureInfo.InvariantCulture) : null; // if Db data is null, return null
                 
                 _isDbPullSuccess = true;
+                LogWriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Pull()] Successfully pulled data from database!", LogType.Scheme, true);
             }
             catch (Exception e)
             {
+                await SentryHelper.ExceptionHandlerAsync(e, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed when syncing Playtime to DB!\r\n{e}", LogType.Error, true);
             }
             finally

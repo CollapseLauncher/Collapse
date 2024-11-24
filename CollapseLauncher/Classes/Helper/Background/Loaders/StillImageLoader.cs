@@ -84,13 +84,13 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 BitmapImage bitmapImage =
                     await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
 
-                await Task.WhenAll(
-                                   ColorPaletteUtility.ApplyAccentColor(ParentUI,
-                                                                        imageStream.AsRandomAccessStream(),
-                                                                        filePath,
-                                                                        isImageLoadForFirstTime, false),
-                                   ApplyAndSwitchImage(AnimationDuration, bitmapImage)
-                                  );
+                await Task.WhenAll([
+                    ApplyAndSwitchImage(AnimationDuration, bitmapImage),
+                    ColorPaletteUtility.ApplyAccentColor(ParentUI,
+                                                         imageStream.AsRandomAccessStream(),
+                                                         filePath,
+                                                         isImageLoadForFirstTime, false)
+                    ]);
 
             }
             finally
@@ -118,7 +118,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                                ImageBackLast.StartAnimation(timeSpan,
                                                             CurrentCompositor
                                                                .CreateScalarKeyFrameAnimation("Opacity",
-                                                                0, 1, timeSpan * 0.8))
+                                                                0, 1, timeSpan * 0.5))
                               );
         }
 

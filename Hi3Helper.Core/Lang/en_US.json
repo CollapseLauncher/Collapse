@@ -167,6 +167,7 @@
     "GamePlaytime_Idle_ResetBtn": "Reset",
     "GamePlaytime_Idle_ChangeBtn": "Change",
     "GamePlaytime_Idle_SyncDb": "Sync",
+    "GamePlaytime_Idle_SyncDbSyncing": "Syncing...",
     "GamePlaytime_Running_Info1": "An instance of this game is currently running, therefore playtime can't be edited.",
     "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point).",
     "GamePlaytime_Display": "{0}h {1}m",
@@ -422,6 +423,8 @@
     "Debug": "Additional Settings",
     "Debug_Console": "Show Console",
     "Debug_IncludeGameLogs": "Save Game logs to Collapse's (might contain sensitive data)",
+    "Debug_SendRemoteCrashData": "Send anonymous crash reports to developers",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "This setting is disabled due to 'DISABLE_SENTRY' environment variable being set to true.",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
@@ -788,7 +791,10 @@
 
     "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= Unlimited",
-    "IsBytesNotANumber": "= NaN"
+    "IsBytesNotANumber": "= NaN",
+    
+    "MissingVcRedist": "Missing Visual C/C++ Redistributable",
+    "MissingVcRedistSubtitle": "You need to install the Visual C/C++ Redistributable to run this function. Do you want to download it now?\r\nNote: This will open a browser window and download a file from Microsoft. Please run the installer after downloading it then restart Collapse and try again.\r\nIf you have already installed it but the error remains, please send a issue ticket to us."
   },
 
   "_BackgroundNotification": {

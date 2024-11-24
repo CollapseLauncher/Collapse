@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -65,7 +66,7 @@ namespace CollapseLauncher.Helper.Background
         {
             try
             {
-                await action;
+                await action.ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -416,6 +417,7 @@ namespace CollapseLauncher.Helper.Background
             }
             catch (Exception ex)
             {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 if (throwAction != null)
                     throwAction(ex);
             }

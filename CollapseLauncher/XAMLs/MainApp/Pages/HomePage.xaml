@@ -519,7 +519,7 @@
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
                                                                         Shadow="{ThemeResource SharedShadow}"
                                                                         Style="{ThemeResource AcrylicSemiButtonStyle}"
-                                                                        Tag="{x:Bind Url, Mode=OneWay}"
+                                                                        Tag="{x:Bind Url}"
                                                                         Translation="0,0,8">
                                                                     <Grid Margin="0,0,0,0"
                                                                           HorizontalAlignment="Stretch">
@@ -532,7 +532,7 @@
                                                                                        VerticalAlignment="Center"
                                                                                        FontWeight="Medium"
                                                                                        HorizontalTextAlignment="Left"
-                                                                                       Text="{x:Bind Title, Mode=OneWay}" />
+                                                                                       Text="{x:Bind Title}" />
                                                                         </Grid>
                                                                         <Grid Grid.Column="1"
                                                                               Margin="4,0,0,0"
@@ -579,10 +579,10 @@
                                     </Button.Flyout>
                                     <Grid>
                                         <imageex:ImageEx x:Name="Icon"
-                                                         Source="{x:Bind IconImg, Mode=OneWay}" />
+                                                         Source="{x:Bind IconImg}" />
                                         <imageex:ImageEx x:Name="IconHover"
                                                          Opacity="0"
-                                                         Source="{x:Bind IconImgHover, Mode=OneWay}" />
+                                                         Source="{x:Bind IconImgHover}" />
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -707,7 +707,7 @@
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostEventPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
+                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -782,7 +782,7 @@
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostNoticePanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
+                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -857,7 +857,7 @@
                                             HorizontalAlignment="Right"
                                             Visibility="{x:Bind IsPostInfoPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth, Mode=OneWay}"
+                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -2468,12 +2468,14 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <FontIcon Grid.Column="1"
+                                                  x:Name="SyncDbPlaytimeBtnGlyph"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                                   FontSize="12"
                                                   Glyph="" />
                                         <TextBlock Grid.Column="0"
+                                                   x:Name="SyncDbPlaytimeBtnText"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"

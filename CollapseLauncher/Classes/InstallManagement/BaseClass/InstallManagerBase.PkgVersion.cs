@@ -19,6 +19,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 // ReSharper disable GrammarMistakeInComment
@@ -232,6 +233,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     catch (Exception ex)
                     {
+                        await SentryHelper.ExceptionHandlerAsync(ex);
                         LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error,
                                      true);
                     }

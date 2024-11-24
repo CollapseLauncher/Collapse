@@ -42,11 +42,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.6" />
+	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+	  <PackageReference Include="Sentry" Version="4.13.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
+		<ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">

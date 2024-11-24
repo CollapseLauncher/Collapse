@@ -1,14 +1,15 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Honkai.Context;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
-using Hi3Helper.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
 using System.Text;
 using System.Text.Json.Serialization;
+using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
@@ -21,7 +22,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         private const string _ValueNameScreenManagerFullscreen = "Screenmanager Is Fullscreen mode_h3981298716";
         private const string _ValueNameScreenManagerWidth = "Screenmanager Resolution Width_h182942802";
         private const string _ValueNameScreenManagerHeight = "Screenmanager Resolution Height_h2627697771";
-        private static Size currentRes = ScreenProp.currentResolution;
+        private static Size currentRes = WindowUtility.CurrentScreenProp.CurrentResolution;
         #endregion
 
         #region Properties
@@ -141,6 +142,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 

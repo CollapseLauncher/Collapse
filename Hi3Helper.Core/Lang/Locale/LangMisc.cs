@@ -134,9 +134,11 @@ namespace Hi3Helper
 
                 public string ImageCropperTitle     { get; set; } = LangFallback?._Misc.ImageCropperTitle;
 
-                public string IsBytesMoreThanBytes  { get; set; } = LangFallback?._Misc.IsBytesMoreThanBytes;
-                public string IsBytesUnlimited      { get; set; } = LangFallback?._Misc.IsBytesUnlimited;
-                public string IsBytesNotANumber     { get; set; } = LangFallback?._Misc.IsBytesNotANumber;
+                public string IsBytesMoreThanBytes { get; set; } = LangFallback?._Misc.IsBytesMoreThanBytes;
+                public string IsBytesUnlimited     { get; set; } = LangFallback?._Misc.IsBytesUnlimited;
+                public string IsBytesNotANumber    { get; set; } = LangFallback?._Misc.IsBytesNotANumber;
+                public string MissingVcRedist      { get; set; } = LangFallback?._Misc.MissingVcRedist;
+                public string MissingVcRedistSubtitle { get; set; } = LangFallback?._Misc.MissingVcRedistSubtitle;
             }
         }
         #endregion

@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Zenless.Enums;
-using Hi3Helper.Screen;
+using CollapseLauncher.Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
@@ -185,7 +185,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = ScreenProp.GetScreenSize();
+                Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -272,7 +272,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = ScreenProp.GetScreenSize();
+                    Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;
@@ -550,7 +550,7 @@ namespace CollapseLauncher.Pages
             set => Settings.GeneralData.Fps = (FpsOption)value;
         }
 
-        /// <inheritdoc cref="CollapseLauncher.GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
+        /// <inheritdoc cref="GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
         public bool Graphics_HiPreCharaAnim
         {
             get => Settings.GeneralData.HiPrecisionCharaAnim;

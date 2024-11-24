@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Preset;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -264,6 +265,7 @@ namespace CollapseLauncher.InstallManager
             }
             catch (Exception ex)
             {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Failed while deleting file: {lastFile}. Skipping!\r\n{ex}", LogType.Warning, true);
             }
         }
