@@ -48,6 +48,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Media;
+using System.Collections.Concurrent;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
@@ -295,6 +296,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region EventPanel
+        private ConcurrentDictionary<string, byte> _eventPanelProcessing = new();
         private async void TryLoadEventPanelImage()
         {
             // Get the url and article image path
@@ -302,6 +304,14 @@ namespace CollapseLauncher.Pages
                 .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
             string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
                 .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
+
+            if (!_eventPanelProcessing.TryAdd(featuredEventArticleUrl, 0) ||
+                !_eventPanelProcessing.TryAdd(featuredEventIconImg, 0))
+            {
+                LogWriteLine($"[TryLoadEventPanelImage] Stopped processing {featuredEventIconImg} and {featuredEventArticleUrl} due to double processing",
+                             LogType.Warning, true);
+                return;
+            }
 
             // If the region event panel property is null, then return
             if (string.IsNullOrEmpty(featuredEventIconImg)) return;
@@ -327,13 +337,14 @@ namespace CollapseLauncher.Pages
             {
                 // Using the original icon file and cached icon file streams
                 if (!isCacheIconExist)
-                    await using (Stream cachedIconFileStream = cachedIconFileInfo.Create())
+                    await using (FileStream cachedIconFileStream = new FileStream(cachedIconFileInfo.FullName,
+                                          FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
                     {
                         await using (Stream copyIconFileStream = new MemoryStream())
                         {
                             await using (Stream iconFileStream =
                                          await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
-                                             PageToken.Token))
+                                                  PageToken.Token))
                             {
                                 var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
                                 // Copy remote stream to memory stream
@@ -341,8 +352,8 @@ namespace CollapseLauncher.Pages
                                 copyIconFileStream.Position = 0;
                                 // Get the icon image information and set the resized frame size
                                 var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                                var width = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                                var height = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                                var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                                var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
                                 copyIconFileStream.Position = 0; // Reset the original icon stream position
                                 await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
@@ -363,13 +374,18 @@ namespace CollapseLauncher.Pages
 
                 // Set event icon props
                 ImageEventImgGrid.Visibility = !NeedShowEventIcon ? Visibility.Collapsed : Visibility.Visible;
-                ImageEventImg.Source = source;
-                ImageEventImg.Tag = featuredEventArticleUrl;
+                ImageEventImg.Source         = source;
+                ImageEventImg.Tag            = featuredEventArticleUrl;
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while loading EventPanel image icon\r\n{ex}", LogType.Error, true);
+            }
+            finally
+            {
+                _eventPanelProcessing.Remove(featuredEventIconImg,    out _);
+                _eventPanelProcessing.Remove(featuredEventArticleUrl, out _);
             }
         }
         #endregion
