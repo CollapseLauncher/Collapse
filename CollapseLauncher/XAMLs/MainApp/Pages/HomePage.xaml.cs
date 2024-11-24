@@ -305,6 +305,10 @@ namespace CollapseLauncher.Pages
             string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
                 .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
 
+            // If the region event panel property is null, then return
+            if (string.IsNullOrEmpty(featuredEventIconImg)
+             || string.IsNullOrEmpty(featuredEventArticleUrl)) return;
+
             if (!_eventPanelProcessing.TryAdd(featuredEventArticleUrl, 0) ||
                 !_eventPanelProcessing.TryAdd(featuredEventIconImg, 0))
             {
@@ -312,9 +316,6 @@ namespace CollapseLauncher.Pages
                              LogType.Warning, true);
                 return;
             }
-
-            // If the region event panel property is null, then return
-            if (string.IsNullOrEmpty(featuredEventIconImg)) return;
 
             // Get the cached filename and path
             string cachedFileHash = BytesToCRC32Simple(featuredEventIconImg);
