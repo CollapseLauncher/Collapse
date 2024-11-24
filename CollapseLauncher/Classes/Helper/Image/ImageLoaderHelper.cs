@@ -275,7 +275,7 @@ namespace CollapseLauncher.Helper.Image
 
             dialogOverlay!.IsPrimaryButtonEnabled = true;
         }
-        
+
         private static async Task<FileStream> GenerateCachedStream(FileInfo InputFileInfo,
                                                                    uint ToWidth, uint ToHeight,
                                                                    bool isFromCropProcess = false)
