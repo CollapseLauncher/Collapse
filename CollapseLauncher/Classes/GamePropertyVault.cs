@@ -11,6 +11,7 @@ using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Native;
 using Microsoft.UI.Xaml;
@@ -74,6 +75,13 @@ namespace CollapseLauncher.Statics
             }
 
             _GamePlaytime = new Playtime(_GameVersion, _GameSettings);
+
+            SentryHelper.CurrentGameCategory   = _GameVersion.GameName;
+            SentryHelper.CurrentGameRegion     = _GameVersion.GameRegion;
+            SentryHelper.CurrentGameInstalled  = _GameVersion.IsGameInstalled();
+            SentryHelper.CurrentGameUpdated    = _GameVersion.IsGameVersionMatch();
+            SentryHelper.CurrentGameHasPreload = _GameVersion.IsGameHasPreload();
+            SentryHelper.CurrentGameHasDelta   = _GameVersion.IsGameHasDeltaPatch();
         }
 
         internal RegionResourceProp _APIResouceProp { get; set; }

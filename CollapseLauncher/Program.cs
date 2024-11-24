@@ -89,7 +89,10 @@ public static class MainEntryPoint
                 }
 
 
-                SentryHelper.IsPreview = IsPreview;
+                SentryHelper.IsPreview      = IsPreview;
+                SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
+                SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
+                SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
                 if (SentryHelper.IsEnabled)
                 {
                     try

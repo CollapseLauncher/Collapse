@@ -7,6 +7,7 @@ using Hi3Helper.Shared.Region;
 using Sentry.Infrastructure;
 #endif
 using Sentry.Protocol;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -35,8 +36,7 @@ namespace Hi3Helper.SentryHelper
         private const bool SentryUploadLog = true;
 
         #endregion
-
-
+        
         #region Enums
 
         /// <summary>
@@ -96,13 +96,12 @@ namespace Hi3Helper.SentryHelper
         }
         
         #endregion
-
-
+        
         #region Initializer/Releaser
 
-        public static bool   IsPreview { get; set; }
-
+        public static  bool         IsPreview { get; set; }
         private static IDisposable? _sentryInstance;
+        
         public static void InitializeSentrySdk()
         {
             _sentryInstance = 
@@ -190,7 +189,6 @@ namespace Hi3Helper.SentryHelper
         }
 
         #endregion
-
 
         #region Exception Handlers
 
@@ -309,8 +307,40 @@ namespace Hi3Helper.SentryHelper
             ExceptionHandlerInner(ex, exT);
         }
 
+        
+        public static string AppBuildCommit        { get; set; } = "";
+        public static string AppBuildBranch        { get; set; } = "";
+        public static string AppBuildRepo          { get; set; } = "";
+        public static string CurrentGameCategory   { get; set; } = "";
+        public static string CurrentGameRegion     { get; set; } = "";
+        public static bool   CurrentGameInstalled  { get; set; }
+        public static bool   CurrentGameUpdated    { get; set; }
+        public static bool   CurrentGameHasPreload { get; set; }
+        public static bool   CurrentGameHasDelta   { get; set; }
+        
         private static void ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
+            // Breadcrumbs
+            var buildInfo = new Breadcrumb("Build Info", "commit", 
+                                         new Dictionary<string, string>
+                                         {
+                                                        { "Branch", AppBuildBranch },
+                                                        { "Commit", AppBuildCommit },
+                                                        { "Repository", AppBuildRepo }
+                                         }, "BuildInfo");
+            var gameInfo = new Breadcrumb("Current Loaded Game Info", "game",
+                                                   new Dictionary<string, string>
+                                                   {
+                                                        { "Category", CurrentGameCategory },
+                                                        { "Region", CurrentGameRegion },
+                                                        { "Installed", CurrentGameInstalled.ToString() },
+                                                        { "Updated", CurrentGameUpdated.ToString()},
+                                                        { "HasPreload", CurrentGameHasPreload.ToString()},
+                                                        { "HasDelta", CurrentGameHasDelta.ToString()}
+                                                   }, "GameInfo");
+            SentrySdk.AddBreadcrumb(buildInfo);
+            SentrySdk.AddBreadcrumb(gameInfo);
+            
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
             ex.Data[Mechanism.MechanismKey] = exT switch
                                               {
@@ -339,5 +369,5 @@ namespace Hi3Helper.SentryHelper
         }
     }
 
-    #endregion
+        #endregion
 }
