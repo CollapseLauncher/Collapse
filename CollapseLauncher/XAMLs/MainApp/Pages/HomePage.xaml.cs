@@ -2436,6 +2436,10 @@ namespace CollapseLauncher.Pages
 
         private async void SyncDbPlaytimeButton_Click(object sender, RoutedEventArgs e)
         {
+            Button button = sender as Button;
+            if (sender != null)
+                button.IsEnabled = false;
+
             try
             {
                 SyncDbPlaytimeBtnGlyph.Glyph = "\uf110"; // Loading
@@ -2458,6 +2462,11 @@ namespace CollapseLauncher.Pages
                 
                 SyncDbPlaytimeBtnGlyph.Glyph = "\uf021"; // Default
                 SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDb;
+            }
+            finally
+            {
+                if (sender != null)
+                    button.IsEnabled = true;
             }
         }
 
