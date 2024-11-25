@@ -115,25 +115,6 @@ public class Updater : IDisposable
 #endif
     }
 
-    public bool IsUpdateAvailable(UpdateInfo info)
-    {
-#if !USEVELOPACK
-        if (!info.ReleasesToApply.Any())
-#else
-        if (info.DeltasToTarget.Length != 0)
-#endif
-        {
-#if !USEVELOPACK
-            NewVersionTag = new GameVersion(info.FutureReleaseEntry.Version.Version);
-#else
-            NewVersionTag = new GameVersion(info.TargetFullRelease.Version.ToString());
-#endif
-            return DoesLatestVersionExist(NewVersionTag.VersionString);
-        }
-
-        return true;
-    }
-
     public async Task<bool> StartUpdate(UpdateInfo UpdateInfo, CancellationToken token = default)
     {
         if (token.IsCancellationRequested) return false;
@@ -147,15 +128,8 @@ public class Updater : IDisposable
         {
 #if !USEVELOPACK
             if (!UpdateInfo.ReleasesToApply.Any())
-#else
-            if (UpdateInfo.DeltasToTarget.Length != 0)
-#endif
             {
-#if !USEVELOPACK
                 NewVersionTag = new GameVersion(UpdateInfo.FutureReleaseEntry.Version.Version);
-#else
-                NewVersionTag = new GameVersion(UpdateInfo.TargetFullRelease.Version.ToString());
-#endif
                 if (DoesLatestVersionExist(NewVersionTag.VersionString))
                 {
                     Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
@@ -170,11 +144,18 @@ public class Updater : IDisposable
                 await Task.Delay(3000);
                 return false;
             }
-
-#if !USEVELOPACK
             NewVersionTag = new GameVersion(UpdateInfo.ReleasesToApply.FirstOrDefault()!.Version.Version);
 #else
             NewVersionTag = new GameVersion(UpdateInfo.TargetFullRelease.Version.ToString());
+            if (IsCurrentHasLatestVersion(NewVersionTag.VersionString))
+            {
+                Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, LauncherUpdateHelper.LauncherCurrentVersionString);
+                Status.message = Lang._UpdatePage.UpdateMessage4;
+                UpdateStatus();
+
+                await Task.Delay(3000);
+                return false;
+            }
 #endif
 
 #if !USEVELOPACK
@@ -184,6 +165,8 @@ public class Updater : IDisposable
 #else
             await UpdateManager.DownloadUpdatesAsync(UpdateInfo, InvokeDownloadUpdateProgress, false, token);
             VelopackVersionToUpdate = UpdateInfo.TargetFullRelease;
+
+            await EnsureVelopackUpdateExec(token);
 #endif
 
             void InvokeDownloadUpdateProgress(int progress)
@@ -213,6 +196,29 @@ public class Updater : IDisposable
         }
 
         return true;
+    }
+
+    private async Task EnsureVelopackUpdateExec(CancellationToken token)
+    {
+        string updateExecPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath) ?? "", "..\\", "update.exe");
+        FileInfo updateExecFileInfo = new FileInfo(updateExecPath);
+
+        if (!updateExecFileInfo.Exists
+         || (updateExecFileInfo.Exists && updateExecFileInfo.Length == 0))
+        {
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                                     .UseLauncherConfig()
+                                     .SetAllowedDecompression(DecompressionMethods.None)
+                                     .Create();
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
+            using (FileStream updateExecStream = updateExecFileInfo.Create())
+            {
+                CDNURLProperty cdnProperty = FallbackCDNUtil.GetPreferredCDN();
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, updateExecStream, "Update.exe", token);
+            }
+        }
     }
 
     private async Task StartLegacyUpdate()
@@ -256,17 +262,17 @@ public class Updater : IDisposable
         UpdateProgress();
     }
 
-    private bool DoesLatestVersionExist(string versionString)
+    private bool IsCurrentHasLatestVersion(string latestVersionString)
     {
         // Check legacy version first
-        var filePath = Path.Combine(AppFolder, $"..\\app-{versionString}\\{Path.GetFileName(AppExecutablePath)}");
+        var filePath = Path.Combine(AppFolder, $@"..\app-{latestVersionString}\{Path.GetFileName(AppExecutablePath)}");
         if (File.Exists(filePath)) return true;
 
         // If none does not exist, then check the latest version
-        filePath = Path.Combine(AppFolder, $"..\\current\\{Path.GetFileName(AppExecutablePath)}");
-        if (!Version.TryParse(versionString, out Version currentVersion))
+        filePath = Path.Combine(AppFolder, $@"..\current\{Path.GetFileName(AppExecutablePath)}");
+        if (!Version.TryParse(latestVersionString, out Version latestVersion))
         {
-            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] versionString is not valid! {versionString}", LogType.Error, true);
+            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] latestVersionString is not valid! {latestVersionString}", LogType.Error, true);
             return false;
         }
 
@@ -276,19 +282,19 @@ public class Updater : IDisposable
             return false;
         }
 
-        // Try get the version info and if the version info is null, return false
+        // Try to get the version info and if the version info is null, return false
         FileVersionInfo toCheckVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
 
         // Otherwise, try compare the version info.
-        if (!Version.TryParse(toCheckVersionInfo.ProductVersion, out Version latestVersion))
+        if (!Version.TryParse(toCheckVersionInfo.FileVersion, out Version currentVersion))
         {
-            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.ProductVersion is not valid! {versionString}", LogType.Error, true);
+            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.FileVersion is not valid! {toCheckVersionInfo.FileVersion}", LogType.Error, true);
             return false;
         }
 
-        // Try compare. If latestVersion is more or equal to current version, return true. 
+        // Try compare. If currentVersion is more or equal to latestVersion, return true. 
         // Otherwise, return false.
-        return latestVersion >= currentVersion;
+        return currentVersion >= latestVersion;
     }
 
     public async Task FinishUpdate(bool noSuicide = false)
