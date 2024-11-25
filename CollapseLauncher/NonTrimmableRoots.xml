@@ -14,11 +14,14 @@
 	<assembly fullname="CollapseLauncher">
 		<!-- Protect generated code from trimming -->
 		<namespace fullname="CollapseLauncher.CollapseLauncher_XamlTypeInfo" preserve="all" />
-		<!-- Preserve COM Interop used in project code when trimming -->
-		<type fullname="CollapseLauncher.PInvoke" preserve="all" />
-		<type fullname="CollapseLauncher.HRESULT" preserve="all" />
-		<type fullname="CollapseLauncher.CLSCTX" preserve="all" />
 	</assembly>
+    
+    <assembly fullname="Hi3Helper.Win32">
+        <!-- Preserve COM Interop used in project code when trimming -->
+        <type fullname="Hi3Helper.Win32.Native.PInvoke" preserve="all" />
+        <type fullname="Hi3Helper.Win32.Native.Structs.HResult" preserve="all" />
+        <type fullname="Hi3Helper.Win32.FileDialogCOM.FileDialogNative" preserve="all" />
+    </assembly>
 	
 	<!-- Protect built-in libs COM from trimming -->
 	<assembly fullname="System.Private.CoreLib">
