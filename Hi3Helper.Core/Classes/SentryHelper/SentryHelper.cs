@@ -168,21 +168,25 @@ namespace Hi3Helper.SentryHelper
         /// </summary>
         public static void StopSentrySdk()
         {
-            try
-            {
-                SentrySdk.Flush(TimeSpan.FromSeconds(5));
-                SentrySdk.EndSession();
-                ReleaseExceptionRedirect();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWriteLine($"Failed when preparing to stop SentryInstance, Dispose will still be invoked!\r\n{ex}"
-                                  , LogType.Error, true);
-            }
-            finally
-            {
-                _sentryInstance?.Dispose();
-            }
+            _ = Task.Run(async () =>
+                         {
+                             try
+                             {
+                                 await SentrySdk.FlushAsync(TimeSpan.FromSeconds(5));
+                                 SentrySdk.EndSession();
+                                 ReleaseExceptionRedirect();
+                             }
+                             catch (Exception ex)
+                             {
+                                 Logger
+                                    .LogWriteLine($"Failed when preparing to stop SentryInstance, Dispose will still be invoked!\r\n{ex}",
+                                                  LogType.Error, true);
+                             }
+                             finally
+                             {
+                                 _sentryInstance?.Dispose();
+                             }
+                         });
         }
 
         public static void InitializeExceptionRedirect()
