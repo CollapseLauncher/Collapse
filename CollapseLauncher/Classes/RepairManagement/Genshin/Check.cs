@@ -215,6 +215,7 @@ namespace CollapseLauncher
                 LogWriteLine($"[CheckAssetAllType] Moving files to their correct path\r\n\t" +
                              $"Current path: {file.FullName}\r\n\t" +
                              $"Target path :  {origFilePath}", LogType.Default, true);
+                file = new FileInfo(origFilePath);
             }
 
             // Skip CRC check if fast method is used
