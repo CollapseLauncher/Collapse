@@ -33,6 +33,7 @@
     using System.IO;
     using System.Linq;
     using System.Text;
+    using WinRT;
     using static CollapseLauncher.Dialogs.SimpleDialogs;
     using static CollapseLauncher.Helper.Image.Waifu2X;
     using static CollapseLauncher.InnerLauncherConfig;
@@ -1524,7 +1525,7 @@ namespace CollapseLauncher.Pages
             }
             catch (DllNotFoundException ex)
             {
-                // No need to revert the value if fail, user is asked to restart the app
+                // No need to revert the value if fails, user is asked to restart the app
                 ShowFailed(ex);
                 var res = await SpawnDialog(
                                   Lang._Misc.MissingVcRedist,
@@ -1562,7 +1563,7 @@ namespace CollapseLauncher.Pages
 
                 // Show exception
                 ShowFailed(ex);
-                ErrorSender.SendException(newEx); // Send error with dialog
+                ErrorSender.SendException(newEx, ErrorType.Unhandled, false); // Send error with dialog
             }
             finally
             {
@@ -1618,6 +1619,16 @@ namespace CollapseLauncher.Pages
 
                 ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
             }
+        }
+        
+        private void DbTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            ValidateDbButton.IsEnabled = !string.IsNullOrEmpty(sender.As<TextBox>().Text);
+        }
+
+        private void DbTokenPasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            ValidateDbButton.IsEnabled = !string.IsNullOrEmpty(sender.As<PasswordBox>().Password);
         }
         #endregion
         #endregion

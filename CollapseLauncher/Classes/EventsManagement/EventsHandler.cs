@@ -135,9 +135,11 @@ namespace CollapseLauncher
         public static string ExceptionTitle;
         public static string ExceptionSubtitle;
 
-        public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled)
+        public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled, bool isSendToSentry = true)
         {
-            SentryHelper.ExceptionHandler(e, eT == ErrorType.Unhandled ? SentryHelper.ExceptionType.UnhandledOther : SentryHelper.ExceptionType.Handled);
+            if (isSendToSentry)
+                SentryHelper.ExceptionHandler(e, eT == ErrorType.Unhandled ? 
+                                                  SentryHelper.ExceptionType.UnhandledOther : SentryHelper.ExceptionType.Handled);
             invoker!.SendException(e, eT);
         } 
         public static void SendWarning(Exception e, ErrorType eT = ErrorType.Warning) =>
