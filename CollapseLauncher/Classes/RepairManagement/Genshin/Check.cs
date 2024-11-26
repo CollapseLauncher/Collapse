@@ -200,43 +200,27 @@ namespace CollapseLauncher
             // Check if the persistent or streaming file doesn't exist
             if ((UsePersistent && !IsPersistentExist) || (!IsStreamingExist && !IsPersistentExist))
             {
-                // Update the total progress and found counter
-                _progressAllSizeFound += asset.fileSize;
-                _progressAllCountFound++;
-
-                // Set the per size progress
-                _progressPerFileSizeCurrent = asset.fileSize;
-
-                // Increment the total current progress
-                _progressAllSizeCurrent += asset.fileSize;
-
-                Dispatch(() => AssetEntry.Add(
-                    new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(repairFile),
-                        RepairAssetType.Generic,
-                        Path.GetDirectoryName(repairFile),
-                        asset.fileSize,
-                        null,
-                        HexTool.HexToBytesUnsafe(asset.md5)
-                    )
-                ));
-                targetAssetIndex.Add(asset);
-
-                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {(string.IsNullOrEmpty(repairFile) ? asset.localName : repairFile)} is not found or has unmatched size", LogType.Warning, true);
-                return;
+                AddNotFoundOrMismatchAsset(asset);
+            }
+            
+            // Iterate between Persistent and StreamingAssets folder if it sees the file is not exist
+            var file = UsePersistent ? fileInfoPersistent : fileInfoStreaming;
+            if (!file!.Exists)
+            {
+                file = !UsePersistent ? fileInfoPersistent! : fileInfoStreaming;
+                if (!file.Exists) AddNotFoundOrMismatchAsset(asset);
+                
+                var origFilePath = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+                file.MoveTo(origFilePath); // Move the file to the correct path
+                LogWriteLine($"[CheckAssetAllType] Moving files to their correct path\r\n\t" +
+                             $"Current path: {file.FullName}\r\n\t" +
+                             $"Target path :  {origFilePath}", LogType.Default, true);
             }
 
             // Skip CRC check if fast method is used
             if (_useFastMethod)
             {
                 return;
-            }
-
-            var file = UsePersistent ? fileInfoPersistent : fileInfoStreaming;
-            if (!file.Exists)
-            {
-                file = !UsePersistent ? fileInfoPersistent! : fileInfoStreaming;
-                if (file.Exists) throw new FileNotFoundException(file.FullName);
             }
             
             try
@@ -308,6 +292,34 @@ namespace CollapseLauncher
                                              ));
                 targetAssetIndex.Add(asset);
                 LogWriteLine($"File [T: {asset.type}]: {repairFile} is not found or has unmatched size", LogType.Warning, true);
+            }
+
+            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner)
+            {
+                // Update the total progress and found counter
+                _progressAllSizeFound += assetInner.fileSize;
+                _progressAllCountFound++;
+
+                // Set the per size progress
+                _progressPerFileSizeCurrent = assetInner.fileSize;
+
+                // Increment the total current progress
+                _progressAllSizeCurrent += assetInner.fileSize;
+
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(repairFile),
+                                                   RepairAssetType.Generic,
+                                                   Path.GetDirectoryName(repairFile),
+                                                   assetInner.fileSize,
+                                                   null,
+                                                   HexTool.HexToBytesUnsafe(assetInner.md5)
+                                                  )
+                                             ));
+                targetAssetIndex.Add(assetInner);
+
+                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {(string.IsNullOrEmpty(repairFile) ? assetInner.localName : repairFile)} is not found or has unmatched size",
+                             LogType.Warning, true);
             }
         }
 
