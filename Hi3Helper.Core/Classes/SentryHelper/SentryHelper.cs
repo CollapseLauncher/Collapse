@@ -92,8 +92,11 @@ namespace Hi3Helper.SentryHelper
 
                 if (value)
                 {
-                    InitializeSentrySdk();
-                    InitializeExceptionRedirect();
+                    Task.Run(() =>
+                             {
+                                 InitializeSentrySdk();
+                                 InitializeExceptionRedirect();
+                             });
                 }
                 else
                 {
