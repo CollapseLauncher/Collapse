@@ -389,10 +389,10 @@
       "h.notifyicon.winui": {
         "type": "Project",
         "dependencies": {
-          "H.NotifyIcon": "[1.0.0, )",
-          "Microsoft.Web.WebView2": "[1.0.2895-prerelease, )",
+          "H.NotifyIcon": "[0.0.0, )",
+          "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
-          "Microsoft.WindowsAppSDK": "[1.6.240923002, )"
+          "Microsoft.WindowsAppSDK": "[1.6.241114003, )"
         }
       },
       "hi3helper.core": {
@@ -446,8 +446,11 @@
       "imageex": {
         "type": "Project",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "[8.1.240916, )",
-          "Microsoft.WindowsAppSDK": "[1.6.240829007, )"
+          "CommunityToolkit.Common": "[8.4.0-preview2, )",
+          "CommunityToolkit.WinUI.Extensions": "[8.2.241112-preview1, )",
+          "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
+          "Microsoft.WindowsAppSDK": "[1.6.241114003, )"
         }
       },
       "innosetuphelper": {
