@@ -295,6 +295,8 @@ namespace CollapseLauncher
                 LogWriteLine($"File [T: {asset.type}]: {repairFile} is not found or has unmatched size", LogType.Warning, true);
             }
 
+            return;
+
             void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner)
             {
                 // Update the total progress and found counter
