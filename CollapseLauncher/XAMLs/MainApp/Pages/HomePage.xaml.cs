@@ -234,16 +234,6 @@ namespace CollapseLauncher.Pages
                 // Get game state
                 GameInstallStateEnum gameState = await CurrentGameProperty._GameVersion.GetGameState();
 
-                // Check if the game state returns NotInstalled, double-check by doing config.ini validation
-                if (!await CurrentGameProperty._GameVersion
-                          .EnsureGameConfigIniCorrectiveness(this))
-                {
-                    // If the EnsureGameConfigIniCorrectiveness() returns false,
-                    // means config.ini has been changed. Then reload and return to the HomePage
-                    ReturnToHomePage();
-                    return;
-                }
-
                 // Start automatic scan if the game is in NotInstalled state
                 // and if the return is 0 (yes), then save the config
                 if (gameState == GameInstallStateEnum.NotInstalled &&
@@ -254,6 +244,16 @@ namespace CollapseLauncher.Pages
                     CurrentGameProperty._GameInstall.ApplyGameConfig();
 
                     // Refresh the Home page.
+                    ReturnToHomePage();
+                    return;
+                }
+
+                // Check if the game state returns NotInstalled, double-check by doing config.ini validation
+                if (!await CurrentGameProperty._GameVersion
+                          .EnsureGameConfigIniCorrectiveness(this))
+                {
+                    // If the EnsureGameConfigIniCorrectiveness() returns false,
+                    // means config.ini has been changed. Then reload and return to the HomePage
                     ReturnToHomePage();
                     return;
                 }
