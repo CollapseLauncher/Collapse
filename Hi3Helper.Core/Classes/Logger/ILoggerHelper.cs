@@ -1,16 +1,37 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Hi3Helper
 {
 #nullable enable
+    /// <summary>
+    /// Provides helper methods for managing instances of <see cref="ILogger"/>.
+    /// </summary>
     public static class ILoggerHelper
     {
-        private static ILogger? Logger;
-        public static ILogger GetILogger() => Logger ??= new ILoggerWrapper();
+        private static readonly Dictionary<string, ILogger> ILoggerCache = new();
+        
+        /// <summary>
+        /// Retrieves an instance of <see cref="ILogger"/> from the cache based on the given prefix.
+        /// </summary>
+        /// <param name="prefix">The prefix to be used for the logger instance. If no prefix is provided, an empty string is used.</param>
+        /// <returns>An instance of <see cref="ILogger"/> associated with the specified prefix.</returns>
+        public static ILogger GetILogger(string prefix = "")
+        {
+            if (ILoggerCache.TryGetValue(prefix, out var logger))
+            {
+                return logger; // Return the cached logger instance if it exists
+            }
+
+            // Create a new logger instance and cache it
+            logger               = new ILoggerWrapper(prefix);
+            ILoggerCache[prefix] = logger;
+            return logger;
+        }
     }
 
-    internal class ILoggerWrapper : ILogger
+    internal class ILoggerWrapper(string prefix = "") : ILogger
     {
         public IDisposable BeginScope<TState>(TState state)
             where TState : notnull => default!;
@@ -40,7 +61,7 @@ namespace Hi3Helper
             };
 
             string message = formatter(state, exception);
-            Logger.LogWriteLine(message, logType, isWriteToLog);
+            Logger.LogWriteLine($"{(!string.IsNullOrEmpty(prefix) ? $"[{prefix}] " : "")}{message}", logType, isWriteToLog);
         }
     }
 }

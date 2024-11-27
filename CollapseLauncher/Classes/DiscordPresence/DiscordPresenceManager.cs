@@ -93,7 +93,7 @@
                 DisablePresence();
 
                 // Initialize Discord RPC client
-                _client = new DiscordRpcClient(applicationId.ToString(), ILoggerHelper.GetILogger());
+                _client = new DiscordRpcClient(applicationId.ToString(), ILoggerHelper.GetILogger("DiscordRPC"));
                 _presenceUpdateQueue = new ActionBlock<RichPresence>(
                                             // ReSharper disable once UnusedParameter.Local
                                             presence => _client?.SetPresence(_presence),
