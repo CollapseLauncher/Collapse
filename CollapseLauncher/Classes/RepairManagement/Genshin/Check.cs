@@ -1,9 +1,11 @@
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,7 +24,7 @@ namespace CollapseLauncher
             List<PkgVersionProperties> brokenAssetIndex = new List<PkgVersionProperties>();
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
+            _status!.IsProgressAllIndetermined = false;
             _status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
@@ -38,7 +40,7 @@ namespace CollapseLauncher
             if (_isParsePersistentManifestSuccess) TryMovePersistentToStreamingAssets(assetIndex);
 
             // Check for any redundant files
-            CheckRedundantFiles(brokenAssetIndex);
+            await CheckRedundantFiles(brokenAssetIndex, token);
 
             // Await the task for parallel processing
             try
@@ -136,7 +138,7 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
+            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -156,8 +158,11 @@ namespace CollapseLauncher
                 forceStreamingAssets           = true;
             }
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = asset.remoteNamePersistent == null ? null : new FileInfo(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent)));
-            FileInfo fileInfoStreaming = new FileInfo(filePath);
+            FileInfo fileInfoPersistent = asset.remoteNamePersistent == null ?
+                null :
+                new FileInfo(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent)))
+                .EnsureNoReadOnly();
+            FileInfo fileInfoStreaming = new FileInfo(filePath).EnsureNoReadOnly();
 
             bool UsePersistent = (asset.isForceStoreInPersistent && !asset.isForceStoreInStreaming && fileInfoPersistent != null && !fileInfoPersistent.Exists) ||
                                  (asset.isPatch && !forceStreamingAssets) || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
@@ -215,7 +220,7 @@ namespace CollapseLauncher
                 LogWriteLine($"[CheckAssetAllType] Moving files to their correct path\r\n\t" +
                              $"Current path: {file.FullName}\r\n\t" +
                              $"Target path :  {origFilePath}", LogType.Default, true);
-                file = new FileInfo(origFilePath);
+                file = new FileInfo(origFilePath).EnsureNoReadOnly();
             }
 
             // Skip CRC check if fast method is used
@@ -327,83 +332,82 @@ namespace CollapseLauncher
         }
 
         #region UnusedFiles
-        private void CheckRedundantFiles(List<PkgVersionProperties> targetAssetIndex)
+        private async Task CheckRedundantFiles(List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Initialize FilePath and FileInfo
             string FilePath;
             FileInfo fInfo;
 
             // Iterate the available deletefiles files
-            foreach (string listFile in Directory.EnumerateFiles(_gamePath, "*deletefiles*", SearchOption.TopDirectoryOnly))
+            DirectoryInfo directoryInfo = new DirectoryInfo(_gamePath);
+            foreach (FileInfo listFile in directoryInfo
+                .EnumerateFiles("*deletefiles*", SearchOption.TopDirectoryOnly)
+                .EnumerateNoReadOnly())
             {
                 LogWriteLine($"deletefiles file list path: {listFile}", LogType.Default, true);
 
                 // Use deletefiles files to get the list of the redundant file
-                using (Stream fs = new FileStream(listFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
-                using (StreamReader listReader = new StreamReader(fs))
+                await using Stream fs         = await listFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None, FileOptions.DeleteOnClose);
+                using StreamReader listReader = new StreamReader(fs);
+                while (!listReader.EndOfStream)
                 {
-                    while (!listReader.EndOfStream)
+                    // Get the File name and FileInfo
+                    FilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(await listReader.ReadLineAsync(token)));
+                    fInfo    = new FileInfo(FilePath).EnsureNoReadOnly();
+
+                    // If the file doesn't exist, then continue
+                    if (!fInfo.Exists)
+                        continue;
+
+                    // Update total found progress
+                    _progressAllCountFound++;
+
+                    // Get the stripped relative name
+                    string strippedName = fInfo.FullName.AsSpan()[(_gamePath.Length + 1)..].ToString();
+
+                    // Assign the asset before adding to targetAssetIndex
+                    PkgVersionProperties asset = new PkgVersionProperties
                     {
-                        // Get the File name and FileInfo
-                        FilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(listReader.ReadLine()));
-                        fInfo = new FileInfo(FilePath);
+                        localName = strippedName,
+                        fileSize  = fInfo.Length,
+                        type      = RepairAssetType.Unused.ToString()
+                    };
+                    Dispatch(() => AssetEntry.Add(
+                                                  new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(asset.localName),
+                                                       RepairAssetType.Unused,
+                                                       Path.GetDirectoryName(asset.localName),
+                                                       asset.fileSize,
+                                                       null,
+                                                       null
+                                                      )
+                                                 ));
 
-                        // If the file exist, then add to targetAssetIndex
-                        if (fInfo.Exists)
-                        {
-                            // Update total found progress
-                            _progressAllCountFound++;
-
-                            // Get the stripped relative name
-                            string strippedName = fInfo.FullName.AsSpan().Slice(_gamePath.Length + 1).ToString();
-
-                            // Assign the asset before adding to targetAssetIndex
-                            PkgVersionProperties asset = new PkgVersionProperties
-                            {
-                                localName = strippedName,
-                                fileSize = fInfo.Length,
-                                type = RepairAssetType.Unused.ToString()
-                            };
-                            Dispatch(() => AssetEntry.Add(
-                                new AssetProperty<RepairAssetType>(
-                                    Path.GetFileName(asset.localName),
-                                    RepairAssetType.Unused,
-                                    Path.GetDirectoryName(asset.localName),
-                                    asset.fileSize,
-                                    null,
-                                    null
-                                )
-                            ));
-
-                            // Add the asset into targetAssetIndex
-                            targetAssetIndex.Add(asset);
-                            LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
-                        }
-                    }
+                    // Add the asset into targetAssetIndex
+                    targetAssetIndex.Add(asset);
+                    LogWriteLine($"Redundant file has been found: {strippedName}", LogType.Default, true);
                 }
             }
 
             // Iterate redundant diff and temporary files
-            foreach (string _Entry in Directory.EnumerateFiles(_gamePath, "*.*", SearchOption.AllDirectories)
-                                               .Where(x => x.EndsWith(".diff", StringComparison.OrdinalIgnoreCase)
-                                                        || x.EndsWith("_tmp", StringComparison.OrdinalIgnoreCase)
-                                                        || x.EndsWith(".hdiff", StringComparison.OrdinalIgnoreCase)))
+            foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles("*.*", SearchOption.AllDirectories)
+                .EnumerateNoReadOnly()
+                .Where(x => x.Name.EndsWith(".diff",  StringComparison.OrdinalIgnoreCase)
+                                 || x.Name.EndsWith("_tmp",   StringComparison.OrdinalIgnoreCase)
+                                 || x.Name.EndsWith(".hdiff", StringComparison.OrdinalIgnoreCase)))
             {
-                // Assign the FileInfo
-                fInfo = new FileInfo(_Entry);
-
                 // Update total found progress
                 _progressAllCountFound++;
 
                 // Get the stripped relative name
-                string strippedName = fInfo.FullName.AsSpan().Slice(_gamePath.Length + 1).ToString();
+                string strippedName = fileInfo.FullName.AsSpan()[(_gamePath.Length + 1)..].ToString();
 
                 // Assign the asset before adding to targetAssetIndex
                 PkgVersionProperties asset = new PkgVersionProperties
                 {
                     localName = strippedName,
-                    fileSize = fInfo.Length,
-                    type = RepairAssetType.Unused.ToString()
+                    fileSize  = fileInfo.Length,
+                    type      = RepairAssetType.Unused.ToString()
                 };
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(

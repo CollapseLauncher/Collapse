@@ -109,15 +109,15 @@ namespace CollapseLauncher
             _status!.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
             UpdateAll();
 
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!)
+                               .EnsureCreationOfDirectory()
+                               .EnsureNoReadOnly();
+
             // This is a action for Unused asset.
             if (asset.AssetIndex.DataType == CacheAssetType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!);
                 if (fileInfo.Exists)
-                {
-                    fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
-                }
 
                 LogWriteLine($"Deleted unused file: {fileInfo.FullName}", LogType.Default, true);
             }
@@ -128,7 +128,7 @@ namespace CollapseLauncher
                 LogWriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
 #endif
 
-                await RunDownloadTask(asset.AssetIndex.CS, asset.AssetIndex.ConcatPath, asset.AssetIndex.ConcatURL, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.CS, fileInfo, asset.AssetIndex.ConcatURL, downloadClient, downloadProgress, token);
 
 #if !DEBUG
                 LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);

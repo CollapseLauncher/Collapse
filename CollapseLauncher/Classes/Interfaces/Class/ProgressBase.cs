@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -483,16 +484,10 @@ namespace CollapseLauncher.Interfaces
         }
 
         protected string EnsureCreationOfDirectory(string str)
-        {
-            if (string.IsNullOrEmpty(str))
-                ArgumentException.ThrowIfNullOrEmpty(str);
+            => StreamUtility.EnsureCreationOfDirectory(str).FullName;
 
-            string? dir = Path.GetDirectoryName(str);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            return str;
-        }
+        protected string EnsureCreationOfDirectory(FileInfo str)
+            => str.EnsureCreationOfDirectory().FullName;
 
         protected void TryUnassignReadOnlyFiles(string path)
         {
@@ -904,7 +899,7 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
 
-        protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL,
+        protected virtual async Task RunDownloadTask(long assetSize, FileInfo assetPath, string assetURL,
             DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true)
         {
             // For any instances that uses Burst Download and if the speed limiter is null when
@@ -923,7 +918,7 @@ namespace CollapseLauncher.Interfaces
                 // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
                 await downloadClient.DownloadAsync(
                     assetURL,
-                    EnsureCreationOfDirectory(assetPath),
+                    assetPath,
                     isOverwrite,
                     sessionChunkSize: LauncherConfig.DownloadChunkSize,
                     progressDelegateAsync: downloadProgress,
@@ -942,36 +937,10 @@ namespace CollapseLauncher.Interfaces
         }
 
         /// <summary>
-        /// IDK what Microsoft is smoking but for some reason, the file were throwing IO_SharingViolation_File error,
-        /// or sometimes "File is being used by another process" error even though the file HAS NEVER BEEN OPENED LIKE, WTFFF????!>!!!!!!
+        /// <inheritdoc cref="StreamUtility.NaivelyOpenFileStreamAsync(FileInfo, FileMode, FileAccess, FileShare)"/>
         /// </summary>
-        internal static async ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
-        {
-            const int maxTry = 10;
-            int currentTry = 1;
-            while (true)
-            {
-                try
-                {
-                    return info.Open(new FileStreamOptions
-                    {
-                        Mode = fileMode,
-                        Access = fileAccess,
-                        Share = fileShare
-                    });
-                }
-                catch
-                {
-                    if (currentTry > maxTry)
-                    {
-                        throw; // Throw this MFs
-                    }
-
-                    LogWriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {maxTry}", LogType.Warning, true);
-                    await Task.Delay(50); // Adding 50ms delay
-                }
-            }
-        }
+        internal static ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+            => info.NaivelyOpenFileStreamAsync(fileMode, fileAccess, fileShare);
         #endregion
 
         #region HashTools
@@ -1065,17 +1034,19 @@ namespace CollapseLauncher.Interfaces
 
         #region PatchTools
         protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, long patchSize, Memory<byte> patchHash,
-            string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false)
+                                                       string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false)
+            => await RunPatchTask(downloadClient, downloadProgress, token, patchSize,
+                patchHash, patchURL, new FileInfo(patchOutputFile).EnsureNoReadOnly(), new FileInfo(inputFile).EnsureNoReadOnly(), new FileInfo(outputFile).EnsureCreationOfDirectory().EnsureNoReadOnly(), isNeedRename);
+
+        protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, long patchSize, Memory<byte> patchHash,
+                                                       string patchURL, FileInfo patchOutputFile, FileInfo inputFile, FileInfo outputFile, bool isNeedRename = false)
         {
             ArgumentNullException.ThrowIfNull(patchOutputFile);
             ArgumentNullException.ThrowIfNull(inputFile);
             ArgumentNullException.ThrowIfNull(outputFile);
-            
-            // Get info about patch file
-            FileInfo patchInfo = new FileInfo(patchOutputFile);
 
             // If file doesn't exist, then download the patch first
-            if (!patchInfo.Exists || patchInfo.Length != patchSize)
+            if (!patchOutputFile.Exists || patchOutputFile.Length != patchSize)
             {
                 // Download patch File first
                 await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
@@ -1084,13 +1055,16 @@ namespace CollapseLauncher.Interfaces
             // Always do loop if patch doesn't get downloaded properly
             while (true)
             {
-                await using FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength);
-                // Verify the patch file and if it doesn't match, then redownload it
-                byte[] patchCrc = await CheckHashAsync(patchfs, MD5.Create(), token, false);
+                await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
+                // Verify the patch file and if it doesn't match, then re-download it
+                byte[] patchCrc = await CheckHashAsync(patchFileStream, MD5.Create(), token, false);
                 if (!IsArrayMatch(patchCrc, patchHash.Span))
                 {
                     // Revert back the total size
-                    _progressAllSizeCurrent -= patchSize;
+                    lock (this)
+                    {
+                        _progressAllSizeCurrent -= patchSize;
+                    }
 
                     // Redownload the patch file
                     await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
@@ -1107,26 +1081,27 @@ namespace CollapseLauncher.Interfaces
             {
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
-                patchUtil.Initialize(inputFile, patchOutputFile, outputFile);
+                patchUtil.Initialize(inputFile.FullName, patchOutputFile.FullName, outputFile.FullName);
                 await Task.Run(() => patchUtil.Apply(token), token);
 
                 // Delete old block
-                File.Delete(inputFile);
+                inputFile.Delete();
                 if (isNeedRename)
                 {
                     // Rename to the original filename
-                    File.Move(outputFile, inputFile, true);
+                    outputFile.MoveTo(inputFile.FullName, true);
                 }
+
+                inputFile.Refresh();
+                outputFile.Refresh();
             }
             finally
             {
                 // Delete the patch file and unsubscribe the patching progress
-                FileInfo fileInfo = new FileInfo(patchOutputFile);
-                if (fileInfo.Exists)
-                {
-                    fileInfo.IsReadOnly = false;
-                    fileInfo.Delete();
-                }
+                patchOutputFile.Refresh();
+                if (patchOutputFile.Exists)
+                    patchOutputFile.Delete();
+
                 patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
             }
         }
