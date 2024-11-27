@@ -694,7 +694,7 @@ namespace CollapseLauncher.Dialogs
 
 
         public static async Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement Content, string existingGamePath, string gameTitle, string gameRegion, string launcherName,
-            MigrateFromLauncherType migrateFromLauncherType)
+            MigrateFromLauncherType migrateFromLauncherType, bool isHasOnlyMigrateOption)
         {
             if (migrateFromLauncherType != MigrateFromLauncherType.Official)
             {
@@ -724,7 +724,7 @@ namespace CollapseLauncher.Dialogs
                 Content,
                 Lang._Misc.Cancel,
                 Lang._Misc.UseCurrentDir,
-                Lang._Misc.MoveToDifferentDir,
+                isHasOnlyMigrateOption ? null : Lang._Misc.MoveToDifferentDir,
                 ContentDialogButton.Primary,
                 ContentDialogTheme.Informational
             );

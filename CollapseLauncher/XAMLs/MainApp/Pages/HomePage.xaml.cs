@@ -177,7 +177,6 @@ namespace CollapseLauncher.Pages
                 
                 if (!DbConfig.DbEnabled || !CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                     SyncDbPlaytimeBtn.IsEnabled = false;
-                   
 
                 TryLoadEventPanelImage();
 
@@ -241,6 +240,20 @@ namespace CollapseLauncher.Pages
                 {
                     // If the EnsureGameConfigIniCorrectiveness() returns false,
                     // means config.ini has been changed. Then reload and return to the HomePage
+                    ReturnToHomePage();
+                    return;
+                }
+
+                // Start automatic scan if the game is in NotInstalled state
+                // and if the return is 0 (yes), then save the config
+                if (gameState == GameInstallStateEnum.NotInstalled &&
+                    await CurrentGameProperty._GameInstall.GetInstallationPath(true)
+                    == 0)
+                {
+                    // Save the config
+                    CurrentGameProperty._GameInstall.ApplyGameConfig();
+
+                    // Refresh the Home page.
                     ReturnToHomePage();
                     return;
                 }
