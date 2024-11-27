@@ -705,8 +705,6 @@ namespace CollapseLauncher.Interfaces
 
             // Initialize SDK DLL path variables
             string   sdkDllPath;
-            string?  sdkDllDir;
-            FileInfo sdkDllFile;
 
             // Set total activity string as "Loading Indexes..."
             _status!.ActivityStatus = Lang!._GameRepairPage!.Status2;
@@ -731,20 +729,17 @@ namespace CollapseLauncher.Interfaces
                     case "PCGameSDK":
                         // Set the SDK DLL path
                         sdkDllPath = Path.Combine(_gamePath!, $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data", "Plugins", "PCGameSDK.dll");
-                        sdkDllDir  = Path.GetDirectoryName(sdkDllPath);
-                        sdkDllFile = new FileInfo(sdkDllPath);
-
-                        // Create the folder of the SDK DLL if it doesn't exist
-                        if (!Directory.Exists(sdkDllDir)) Directory.CreateDirectory(sdkDllDir!);
                         break;
                     case "sdk_pkg_version":
                         // Set the SDK DLL path to be used for sdk_pkg_version
                         sdkDllPath = Path.Combine(_gamePath!, "sdk_pkg_version");
-                        sdkDllFile = new FileInfo(sdkDllPath);
                         break;
                     default:
                         continue;
                 }
+
+                // Assign FileInfo to sdkDllPath
+                FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
 
                 // Do check if sdkDllFile is not null
                 // Try to create the file if not exist or open an existing one
@@ -937,7 +932,7 @@ namespace CollapseLauncher.Interfaces
         }
 
         /// <summary>
-        /// <inheritdoc cref="StreamUtility.NaivelyOpenFileStreamAsync(FileInfo, FileMode, FileAccess, FileShare)"/>
+        /// <inheritdoc cref="StreamUtility.NaivelyOpenFileStreamAsync(FileInfo, FileMode, FileAccess, FileShare, FileOptions)"/>
         /// </summary>
         internal static ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
             => info.NaivelyOpenFileStreamAsync(fileMode, fileAccess, fileShare);
