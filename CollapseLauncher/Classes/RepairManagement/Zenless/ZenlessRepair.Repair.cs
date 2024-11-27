@@ -105,13 +105,13 @@ namespace CollapseLauncher
                 string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).EnsureNoReadOnly();
+
             // If asset type is unused, then delete it
             if (asset.AssetIndex.FT == FileType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!);
                 if (fileInfo.Exists)
                 {
-                    fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
                     Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
@@ -119,7 +119,7 @@ namespace CollapseLauncher
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N!, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
                 Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 

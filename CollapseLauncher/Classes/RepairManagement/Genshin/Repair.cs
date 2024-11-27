@@ -21,7 +21,7 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<PkgVersionProperties> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            _status.ActivityStatus = Lang._GameRepairPage.Status11;
+            _status!.ActivityStatus = Lang._GameRepairPage.Status11;
             _status.IsProgressAllIndetermined = true;
             _status.IsProgressPerFileIndetermined = true;
 
@@ -104,20 +104,19 @@ namespace CollapseLauncher
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressAllCountCurrent, _progressAllCountTotal),
                 true);
 
+            string   assetPath     = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.localName));
+            FileInfo assetFileInfo = new FileInfo(assetPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+
             // If file is unused, then delete
             if (asset.AssetIndex.type == "Unused")
             {
-                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.localName));
-
                 // Delete the file
-                TryDeleteReadOnlyFile(assetPath);
+                assetFileInfo.Delete();
             }
             else
             {
-                string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.remoteName));
-
                 // or start asset download task
-                await RunDownloadTask(asset.AssetIndex.fileSize, assetPath, asset.AssetIndex.remoteURL, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.fileSize, assetFileInfo, asset.AssetIndex.remoteURL, downloadClient, downloadProgress, token);
                 LogWriteLine($"File [T: {RepairAssetType.Generic}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
             }
 

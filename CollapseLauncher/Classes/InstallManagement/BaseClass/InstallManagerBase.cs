@@ -3642,7 +3642,9 @@ namespace CollapseLauncher.InstallManager.Base
                 || existingPackageFileSize != package.Size)
             {
                 // Get the file path
-                string filePath = EnsureCreationOfDirectory(package.PathOutput);
+                FileInfo fileInfo = new FileInfo(package.PathOutput)
+                    .EnsureCreationOfDirectory()
+                    .EnsureNoReadOnly();
 
                 bool isCanMultiSession = false;
                 // If a legacy downloader is used, then use the legacy Http downloader
@@ -3653,11 +3655,11 @@ namespace CollapseLauncher.InstallManager.Base
                     isCanMultiSession = package.Size >= 10 << 20;
                     if (isCanMultiSession)
                     {
-                        await httpClient.Download(package.URL, filePath, _downloadThreadCount, false, token);
+                        await httpClient.Download(package.URL, fileInfo.FullName, _downloadThreadCount, false, token);
                     }
                     else
                     {
-                        await httpClient.Download(package.URL, filePath, false, null, null, token);
+                        await httpClient.Download(package.URL, fileInfo.FullName, false, null, null, token);
                     }
                 }
                 // Otherwise, use the new downloder
@@ -3666,7 +3668,7 @@ namespace CollapseLauncher.InstallManager.Base
                     // Run the new downloader
                     await RunDownloadTask(
                         package.Size,
-                        filePath,
+                        fileInfo,
                         package.URL,
                         downloadClient,
                         HttpClientDownloadProgressAdapter,

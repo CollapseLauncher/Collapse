@@ -85,12 +85,13 @@ namespace CollapseLauncher
         {
             // Increment total count and update the status
             _progressAllCountCurrent++;
-            _status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetIndex.AssetType, Path.GetFileName(asset.AssetIndex.LocalName));
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.LocalName!).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            _status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetIndex.AssetType, Path.GetFileName(fileInfo.Name));
             UpdateAll();
 
             // Run download task
-            await RunDownloadTask(asset.AssetIndex.Size, asset.AssetIndex.LocalName!, asset.AssetIndex.RemoteURL, downloadClient, downloadProgress, token);
-            LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.AssetType}]: {Path.GetFileName(asset.AssetIndex.LocalName)}", LogType.Default, true);
+            await RunDownloadTask(asset.AssetIndex.Size, fileInfo, asset.AssetIndex.RemoteURL, downloadClient, downloadProgress, token);
+            LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.AssetType}]: {Path.GetFileName(fileInfo.Name)}", LogType.Default, true);
 
             // Remove Asset Entry display
             PopRepairAssetEntry(asset.AssetProperty);
