@@ -595,6 +595,13 @@ namespace CollapseLauncher.InstallManager.Base
                 return 0;
             }
 
+            // If the result is 1 (cannot detect existing game and proceed) while
+            // isHasOnlyMigrateOption is set, then cancel it.
+            if (isHasOnlyMigrateOption && result == 1)
+            {
+                return -1;
+            }
+
             if (result > 1)
             {
                 return await CheckExistingOrAskFolderDialog();
@@ -612,6 +619,13 @@ namespace CollapseLauncher.InstallManager.Base
                 return 0;
             }
 
+            // If the result is 1 (cannot detect existing game and proceed) while
+            // isHasOnlyMigrateOption is set, then cancel it.
+            if (isHasOnlyMigrateOption && result == 1)
+            {
+                return -1;
+            }
+
             if (result > 1)
             {
                 return await CheckExistingOrAskFolderDialog();
@@ -627,6 +641,13 @@ namespace CollapseLauncher.InstallManager.Base
             if (isHasOnlyMigrateOption && result == 0)
             {
                 return 0;
+            }
+
+            // If the result is 1 (cannot detect existing game and proceed) while
+            // isHasOnlyMigrateOption is set, then cancel it.
+            if (isHasOnlyMigrateOption && result == 1)
+            {
+                return -1;
             }
 
             if (result > 1)
