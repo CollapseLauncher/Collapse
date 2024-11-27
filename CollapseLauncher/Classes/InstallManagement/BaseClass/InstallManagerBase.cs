@@ -582,82 +582,46 @@ namespace CollapseLauncher.InstallManager.Base
 #nullable enable
         protected virtual IRepair? GetGameRepairInstance(string? sourceVer) => null;
 #nullable restore
+        private delegate ValueTask<int> CheckExistingInstallDelegate(bool isHasOnlyMigrateOption);
 
         // Bool:  0      -> Indicates that the action is completed and no need to step further
         //        1      -> Continue to the next step
         //       -1      -> Cancel the operation
         public virtual async ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false)
         {
-            // Try get the existing Steam path. If it return true, then continue to the next step
-            int result = await CheckExistingSteamInstallation(isHasOnlyMigrateOption);
-            if (isHasOnlyMigrateOption && result == 0)
+            // Assign check delegates
+            CheckExistingInstallDelegate[] checkExistingDelegates = [
+                CheckExistingSteamInstallation,
+                CheckExistingBHI3LInstallation,
+                CheckExistingOfficialInstallation
+                ];
+
+            int checkResult = 0;
+            foreach (CheckExistingInstallDelegate checkDelegate in checkExistingDelegates)
             {
-                return 0;
+                // Try get the existing path. If it return true, then continue to the next step
+                checkResult = await checkDelegate(isHasOnlyMigrateOption);
+                if (isHasOnlyMigrateOption && checkResult == 0)
+                {
+                    return 0;
+                }
+
+                // Decide the result and continue to ask folder dialog
+                // if the choice is to install a new game
+                switch (checkResult)
+                {
+                    case > 1:
+                        return await CheckExistingOrAskFolderDialog();
+                    case <= 0:
+                        return checkResult;
+                }
             }
 
-            // If the result is 1 (cannot detect existing game and proceed) while
+            // If all results returns 1 (cannot detect existing game and proceed) while
             // isHasOnlyMigrateOption is set, then cancel it.
-            if (isHasOnlyMigrateOption && result == 1)
+            if (isHasOnlyMigrateOption && checkResult == 1)
             {
                 return -1;
-            }
-
-            if (result > 1)
-            {
-                return await CheckExistingOrAskFolderDialog();
-            }
-
-            if (result <= 0)
-            {
-                return result;
-            }
-
-            // Try get the existing Better Hi3 Launcher path. If it return true, then continue to the next step
-            result = await CheckExistingBHI3LInstallation(isHasOnlyMigrateOption);
-            if (isHasOnlyMigrateOption && result == 0)
-            {
-                return 0;
-            }
-
-            // If the result is 1 (cannot detect existing game and proceed) while
-            // isHasOnlyMigrateOption is set, then cancel it.
-            if (isHasOnlyMigrateOption && result == 1)
-            {
-                return -1;
-            }
-
-            if (result > 1)
-            {
-                return await CheckExistingOrAskFolderDialog();
-            }
-
-            if (result <= 0)
-            {
-                return result;
-            }
-
-            // Try get the existing Official Launcher path. If it return true, then continue to the next step
-            result = await CheckExistingOfficialInstallation(isHasOnlyMigrateOption);
-            if (isHasOnlyMigrateOption && result == 0)
-            {
-                return 0;
-            }
-
-            // If the result is 1 (cannot detect existing game and proceed) while
-            // isHasOnlyMigrateOption is set, then cancel it.
-            if (isHasOnlyMigrateOption && result == 1)
-            {
-                return -1;
-            }
-
-            if (result > 1)
-            {
-                return await CheckExistingOrAskFolderDialog();
-            }
-
-            if (result <= 0)
-            {
-                return result;
             }
 
             return await CheckExistingOrAskFolderDialog();
