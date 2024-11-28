@@ -262,7 +262,7 @@ namespace Hi3Helper.SentryHelper
 
             ExceptionHandler(ex, exT);
 
-            await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10));
+            await Task.Run(async () => await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10)));
         }
 
         private static Exception?              _exHLoopLastEx;
