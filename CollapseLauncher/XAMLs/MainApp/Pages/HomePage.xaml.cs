@@ -2879,7 +2879,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (_procPreGLC is not { HasExited: false }) return;
+                if (_procPreGLC == null || _procPreGLC.HasExited || _procPreGLC.Id == 0) return;
 
                 // Kill main and child processes
                 var taskKill = new Process();
