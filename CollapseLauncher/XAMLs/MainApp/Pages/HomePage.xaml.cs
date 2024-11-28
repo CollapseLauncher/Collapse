@@ -1725,7 +1725,8 @@ namespace CollapseLauncher.Pages
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
-                if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
+                if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost)
+                    Task.Run(async () => await GameBoost_Invoke(CurrentGameProperty));
 
                 // Run game process watcher
                 CheckRunningGameInstance(PageToken.Token);
@@ -2762,7 +2763,8 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void GameBoost_Invoke(GamePresetProperty gameProp)
+        private int _gameBoostInvokeTryCount = 0;
+        private async Task GameBoost_Invoke(GamePresetProperty gameProp)
         {
 #nullable enable
             // Init new target process
@@ -2777,6 +2779,7 @@ namespace CollapseLauncher.Pages
                     // it will instead return a non-null value and assign it to "toTargetProc" variable,
                     // which it will break the loop and execute the next code below it.
                 }
+
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                              $"Target Process : {toTargetProc.ProcessName} [{toTargetProc.Id}]", LogType.Default, true);
 
@@ -2786,7 +2789,8 @@ namespace CollapseLauncher.Pages
                 // Check early exit
                 if (toTargetProc.HasExited)
                 {
-                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] has exited!", LogType.Warning, true);
+                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] has exited!",
+                                 LogType.Warning, true);
                     return;
                 }
 
@@ -2794,6 +2798,17 @@ namespace CollapseLauncher.Pages
                 toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
                              $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+            }
+            catch (Exception ex) when (_gameBoostInvokeTryCount < 3)
+            {
+                LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{_gameBoostInvokeTryCount})" +
+                             $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
+                _gameBoostInvokeTryCount++;
+                await Task.Run(async () =>
+                             {
+                                 await GameBoost_Invoke(gameProp);
+                             });
             }
             catch (Exception ex)
             {
