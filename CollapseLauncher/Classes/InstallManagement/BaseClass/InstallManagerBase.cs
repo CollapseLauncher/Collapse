@@ -320,7 +320,7 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     // Set the activity
-                    _status!.ActivityStatus            = string.Format(Lang!._GameRepairPage!.Status2!);
+                    _status!.ActivityStatus            = Lang!._GameRepairPage!.Status2!;
                     _status!.IsIncludePerFileIndicator = false;
                     _status!.IsProgressAllIndetermined = true;
                     UpdateStatus();
@@ -330,7 +330,7 @@ namespace CollapseLauncher.InstallManager.Base
                     bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                     if (isDownloadNeeded)
                     {
-                        _status!.ActivityStatus   = string.Format(Lang._GameRepairPage.Status8!, "").Replace(": ", "");
+                        _status!.ActivityStatus   = Lang._GameRepairPage.Status8!.Replace(": ", "");
                         _progressAllSizeCurrent   = 0;
                         _progressAllCountCurrent  = 1;
                         _progressAllIOReadCurrent = 0;
@@ -965,14 +965,16 @@ namespace CollapseLauncher.InstallManager.Base
 
                                            // Get the file path and start the write process
                                            var assetName = asset.AssetName;
-                                           var filePath =
+                                           var filePath = new FileInfo(
                                                EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
-                                               "_tempSophon";
-                                           var origFilePath = Path.Combine(_gamePath, assetName);
+                                               "_tempSophon").EnsureNoReadOnly();
+                                           var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly();
 
-                                           if (File.Exists(filePath))
+                                           if (filePath.Exists)
                                            {
-                                               File.Move(filePath, origFilePath, true);
+                                               filePath.MoveTo(origFilePath.FullName, true);
+                                               filePath.Refresh();
+                                               origFilePath.Refresh();
                                            }
                                        }, token);
                     }
@@ -1243,12 +1245,16 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual void CleanupTempSophonVerifiedFiles()
         {
-            string filePath = _gameSophonChunkDir;
+            DirectoryInfo dirPath = new (_gameSophonChunkDir);
             try
             {
-                foreach (string file in Directory.EnumerateFiles(filePath, "*.verified", SearchOption.TopDirectoryOnly))
+                if (!dirPath.Exists)
+                    return;
+
+                foreach (FileInfo file in dirPath.EnumerateFiles("*.verified", SearchOption.TopDirectoryOnly)
+                    .EnumerateNoReadOnly())
                 {
-                    File.Delete(file);
+                    file.Delete();
                 }
             }
             catch
@@ -1293,7 +1299,8 @@ namespace CollapseLauncher.InstallManager.Base
                                             sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
-            if (File.Exists(_gameAudioLangListPath))
+            FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).EnsureNoReadOnly();
+            if (fileInfo.Exists)
             {
                 // Use stream reader to read the list one-by-one
                 using StreamReader reader = new StreamReader(_gameAudioLangListPath);
