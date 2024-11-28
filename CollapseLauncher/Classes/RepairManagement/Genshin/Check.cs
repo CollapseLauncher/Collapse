@@ -164,8 +164,9 @@ namespace CollapseLauncher
             bool isStreamingExist  = fileInfoStreaming.Exists;
 
             // Try to get hash buffer
-            int hashBufferLen = asset.md5.Length / 2;
-            byte[] hashBuffer = ArrayPool<byte>.Shared.Rent(hashBufferLen);
+            bool   isUseXxh64Hash = !string.IsNullOrEmpty(asset.xxh64hash);
+            int    hashBufferLen  = (isUseXxh64Hash ? asset.xxh64hash.Length : asset.md5.Length) / 2;
+            byte[] hashBuffer     = ArrayPool<byte>.Shared.Rent(hashBufferLen);
 
             try
             {
@@ -307,7 +308,7 @@ namespace CollapseLauncher
                                                    Path.GetDirectoryName(assetInner.isForceStoreInPersistent ? assetInner.remoteNamePersistent : assetInner.remoteName),
                                                    assetInner.fileSize,
                                                    repairFile.Exists ? hashBuffer : null,
-                                                   HexTool.HexToBytesUnsafe(assetInner.md5)
+                                                   HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hash) ? assetInner.md5 : assetInner.xxh64hash)
                                                   )
                                              ));
                 targetAssetIndex.Add(assetInner);
