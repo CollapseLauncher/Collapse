@@ -4,9 +4,9 @@
     "net9.0-windows10.0.22621": {
       "CommunityToolkit.Common": {
         "type": "Direct",
-        "requested": "[8.4.0-preview2, )",
-        "resolved": "8.4.0-preview2",
-        "contentHash": "z+JeKDlXMA08pVA5gmwnSyEK2/CTMwmA5cIYzdOx6Y6k1xriBGnU9o0PLeOlCM+7vVFqWsUWonkvSLLriQShBQ=="
+        "requested": "[8.4.0-preview3, )",
+        "resolved": "8.4.0-preview3",
+        "contentHash": "eDbSa0VPr5p53oYptIychcRNBls/NVjlM9oKfARP9BGdu55hL7EDdCEbizpecIrBFKo3HUugxp+DacxJbDLQbQ=="
       },
       "CommunityToolkit.WinUI.Triggers": {
         "type": "Direct",
