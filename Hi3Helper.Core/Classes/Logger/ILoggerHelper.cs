@@ -56,7 +56,11 @@ namespace Hi3Helper
             {
                 LogType.Error => true,
                 LogType.Warning => true,
+            #if DEBUG
                 LogType.Debug => true,
+            #else
+                LogType.Debug => false,
+            #endif
                 _ => false
             };
 
