@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -95,8 +96,15 @@ namespace CollapseLauncher
         }
 
         #region GenericRepair
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
+        private ConcurrentDictionary<(FilePropertiesRemote, IAssetProperty), byte> _repairAssetEntry = new();
         private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
+            if (!_repairAssetEntry.TryAdd(asset, 0))
+            {
+                Logger.LogWriteLine($"[RepairAssetTypeGeneric] Skipping duplicate assignment for asset:\r\n\tN : {asset.AssetIndex.N}\r\n\tT : {asset.AssetIndex.FT}", LogType.Error, true);
+                return;
+            }
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
@@ -125,6 +133,7 @@ namespace CollapseLauncher
 
             // Pop repair asset display entry
             PopRepairAssetEntry(asset.AssetProperty);
+            _repairAssetEntry.Remove(asset, out _);
         }
         #endregion
     }
