@@ -412,6 +412,10 @@ namespace CollapseLauncher.Pages
             {
                 while (true)
                 {
+                    if (CarouselToken.IsCancellationRequested || CarouselToken.IsDisposed || CarouselToken.IsCancelled)
+                    {
+                        CarouselToken = new CancellationTokenSourceWrapper();
+                    }
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
                     if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1)
