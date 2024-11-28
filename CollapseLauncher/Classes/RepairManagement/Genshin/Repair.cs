@@ -104,7 +104,7 @@ namespace CollapseLauncher
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressAllCountCurrent, _progressAllCountTotal),
                 true);
 
-            string   assetPath     = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.localName));
+            string   assetPath     = ConverterTool.NormalizePath(asset.AssetIndex.localName);
             FileInfo assetFileInfo = new FileInfo(assetPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
 
             // If file is unused, then delete

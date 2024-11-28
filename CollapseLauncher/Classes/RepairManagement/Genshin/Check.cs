@@ -8,6 +8,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
@@ -135,6 +136,7 @@ namespace CollapseLauncher
             MoveFolderContent(videoPersistentPath, videoAsbPath);
         }
 
+#nullable enable
         private async ValueTask CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
@@ -148,161 +150,145 @@ namespace CollapseLauncher
             _progressPerFileSizeCurrent = 0;
 
             // Get file path
-            string filePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+            string filePathStreaming = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
+            string filePathPersistent = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent));
 
-            var forceStreamingAssets = false;
-            if (asset.remoteName.Contains("StreamingAssets") && asset.isPatch)
-            {
-                asset.isForceStoreInPersistent = false;
-                asset.isForceStoreInStreaming  = true;
-                forceStreamingAssets           = true;
-            }
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = asset.remoteNamePersistent == null ?
-                null :
-                new FileInfo(Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent)))
-                .EnsureNoReadOnly();
-            FileInfo fileInfoStreaming = new FileInfo(filePath).EnsureNoReadOnly();
+            FileInfo fileInfoStreaming  = new FileInfo(filePathStreaming).EnsureNoReadOnly();
+            FileInfo fileInfoPersistent = new FileInfo(filePathPersistent).EnsureNoReadOnly();
 
-            bool UsePersistent = (asset.isForceStoreInPersistent && !asset.isForceStoreInStreaming && fileInfoPersistent != null && !fileInfoPersistent.Exists) ||
-                                 (asset.isPatch && !forceStreamingAssets) || (!fileInfoStreaming.Exists && !asset.isForceStoreInStreaming);
-            bool IsPersistentExist = fileInfoPersistent != null && fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.fileSize;
-            bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.fileSize;
-           
-            // Update the local path to full persistent or streaming path and add asset for missing/unmatched size file
-            if (asset.remoteNamePersistent != null)
-                asset.remoteName = UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
+            // Decide file state
+            bool isUsePersistent   = asset.isForceStoreInPersistent;
+            bool isPatch           = asset.isPatch;
+            bool isPersistentExist = fileInfoPersistent.Exists;
+            bool isStreamingExist  = fileInfoStreaming.Exists;
 
-            // Check if the file exist on both persistent and streaming path, then mark the
-            // streaming path as redundant (unused)
-            if (IsPersistentExist && IsStreamingExist && !asset.isPatch)
-            {
-                // Add the count and asset. Mark the type as "RepairAssetType.Unused"
-                _progressAllCountFound++;
+            // Try to get hash buffer
+            int hashBufferLen = asset.md5.Length / 2;
+            byte[] hashBuffer = ArrayPool<byte>.Shared.Rent(hashBufferLen);
 
-                Dispatch(() => AssetEntry.Add(
-                    new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(fileInfoStreaming.FullName),
-                        RepairAssetType.Unused,
-                        Path.GetDirectoryName(fileInfoStreaming.FullName),
-                        asset.fileSize,
-                        null,
-                        null
-                    )
-                ));
-
-                asset.type = "Unused";
-                asset.localName = fileInfoStreaming.FullName;
-                targetAssetIndex.Add(asset);
-
-                LogWriteLine($"File [T: {asset.type}]: {fileInfoStreaming.FullName} is redundant (exist both in persistent and streaming)", LogType.Warning, true);
-            }
-
-            // Prevent assigning remoteNamePersistent when its null
-            string repairFile = !string.IsNullOrEmpty(asset.remoteNamePersistent) 
-                && UsePersistent ? asset.remoteNamePersistent : asset.remoteName;
-
-            // Check if the persistent or streaming file doesn't exist
-            if ((UsePersistent && !IsPersistentExist) || (!IsStreamingExist && !IsPersistentExist))
-            {
-                AddNotFoundOrMismatchAsset(asset);
-            }
-            
-            // Iterate between Persistent and StreamingAssets folder if it sees the file is not exist
-            var file = UsePersistent ? fileInfoPersistent : fileInfoStreaming;
-            if (!file!.Exists)
-            {
-                file = !UsePersistent ? fileInfoPersistent! : fileInfoStreaming;
-                if (!file.Exists) AddNotFoundOrMismatchAsset(asset);
-                
-                var origFilePath = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
-                file.MoveTo(origFilePath); // Move the file to the correct path
-                LogWriteLine($"[CheckAssetAllType] Moving files to their correct path\r\n\t" +
-                             $"Current path: {file.FullName}\r\n\t" +
-                             $"Target path :  {origFilePath}", LogType.Default, true);
-                file = new FileInfo(origFilePath).EnsureNoReadOnly();
-            }
-
-            // Skip CRC check if fast method is used
-            if (_useFastMethod)
-            {
-                return;
-            }
-            
             try
             {
-                // Open and read fileInfo as FileStream 
-                await using FileStream filefs =
-                    await NaivelyOpenFileStreamAsync(file,
-                                                     FileMode.Open,
-                                                     FileAccess.Read,
-                                                     FileShare.Read);
-                // If pass the check above, then do CRC calculation
-                // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
-
-                // If local and asset CRC doesn't match, then add the asset
-                byte[] remoteCRC = HexTool.HexToBytesUnsafe(asset.md5);
-                if (!IsArrayMatch(localCRC, remoteCRC))
+                if (!HexTool.TryHexToBytesUnsafe(asset.md5, hashBuffer))
                 {
-                    // Update the total progress and found counter
-                    _progressAllSizeFound += asset.fileSize;
-                    _progressAllCountFound++;
+#if DEBUG
+                    throw new InvalidOperationException();
+#endif
+                }
 
-                    // Set the per size progress
-                    _progressPerFileSizeCurrent = asset.fileSize;
+                // Get the file info to use
+                bool isUnmatchedFileFound = !await IsFileMatched(
+                                             a =>
+                                             {
+                                                 asset.isForceStoreInStreaming = a;
+                                                 if (a)
+                                                 {
+                                                     asset.localName = filePathStreaming;
+                                                 }
+                                             },
+                                             b =>
+                                             {
+                                                 asset.isForceStoreInPersistent = b;
+                                                 if (b)
+                                                 {
+                                                     asset.localName = filePathPersistent;
+                                                 }
+                                             },
+                                             (c, d) =>
+                                             {
+                                                 // Add the count and asset. Mark the type as "RepairAssetType.Unused"
+                                                 _progressAllCountFound++;
 
-                    // Increment the total current progress
-                    _progressAllSizeCurrent += asset.fileSize;
+                                                 Dispatch(() => AssetEntry.Add(
+                                                                               new AssetProperty<RepairAssetType>(
+                                                                                    Path.GetFileName(c),
+                                                                                    RepairAssetType.Unused,
+                                                                                    Path.GetDirectoryName(c),
+                                                                                    asset.fileSize,
+                                                                                    null,
+                                                                                    null
+                                                                                   )
+                                                                              ));
 
-                    Dispatch(() => AssetEntry.Add(
-                                                  new AssetProperty<RepairAssetType>(
-                                                       Path.GetFileName(asset.remoteName),
-                                                       RepairAssetType.Generic,
-                                                       Path.GetDirectoryName(asset.remoteName),
-                                                       asset.fileSize,
-                                                       localCRC,
-                                                       remoteCRC
-                                                      )
-                                                 ));
-                    targetAssetIndex.Add(asset);
+                                                 asset.type      = "Unused";
+                                                 asset.localName = d;
+                                                 targetAssetIndex.Add(asset);
 
-                    LogWriteLine($"File [T: {asset.type}]: {filefs.Name} is broken! Index CRC: {asset.md5} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}",
-                                 LogType.Warning, true);
+                                                 LogWriteLine($"File [T: {asset.type}]: {c} is redundant (exist both in persistent and streaming)", LogType.Warning, true);
+                                             }
+                                             );
+
+                FileInfo fileInfoToUse = asset.isForceStoreInPersistent ? fileInfoPersistent : fileInfoStreaming;
+
+                if (isUnmatchedFileFound)
+                {
+                    AddNotFoundOrMismatchAsset(asset, fileInfoToUse);
                 }
             }
-            catch (FileNotFoundException) // If file for ANY reason does not exist after the first check, try to
+            finally
             {
-                try
-                {
-                    TryUnassignReadOnlyFileSingle(file.FullName);
-                    file.Delete();
-                }
-                catch (Exception e)
-                {
-                    LogWriteLine($"[CheckAssetAllType] Error while trying to delete file: {file.FullName}\n{e}",
-                                 LogType.Error, true);
-                    ErrorSender.SendException(e);
-                }
-                
-                
-                Dispatch(() => AssetEntry.Add(
-                                              new AssetProperty<RepairAssetType>(
-                                                   Path.GetFileName(file.FullName),
-                                                   RepairAssetType.Generic,
-                                                   Path.GetDirectoryName(file.FullName),
-                                                   asset.fileSize,
-                                                   null,
-                                                   HexTool.HexToBytesUnsafe(asset.md5)
-                                                  )
-                                             ));
-                targetAssetIndex.Add(asset);
-                LogWriteLine($"File [T: {asset.type}]: {repairFile} is not found or has unmatched size", LogType.Warning, true);
+                ArrayPool<byte>.Shared.Return(hashBuffer);
             }
 
             return;
 
-            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner)
+            async ValueTask<bool> IsFileMatched(Action<bool> storeAsStreaming, Action<bool> storeAsPersistent, Action<string, string> storeAsUnused)
+            {
+                if (!isUsePersistent)
+                {
+                    if (!isStreamingExist || !await IsFileHashMatch(fileInfoStreaming, hashBuffer, token))
+                    {
+                        if (isPersistentExist)
+                        {
+                            storeAsUnused(asset.remoteNamePersistent, fileInfoPersistent.FullName);
+                        }
+
+                        storeAsStreaming(true);
+                        storeAsPersistent(false);
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                bool isStreamingMatch = isStreamingExist && await IsFileHashMatch(fileInfoStreaming, hashBuffer, token);
+                bool isPersistentMatch = isPersistentExist && await IsFileHashMatch(fileInfoPersistent, hashBuffer, token);
+
+                if (isStreamingMatch && isPersistentMatch && isPatch)
+                {
+                    storeAsUnused(asset.remoteName, fileInfoStreaming.FullName);
+                }
+
+                if (!isStreamingMatch && !isPersistentMatch)
+                {
+                    storeAsStreaming(false);
+                    storeAsPersistent(true);
+                    return false;
+                }
+
+                return true;
+            }
+
+            async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, ReadOnlyMemory<byte> hashToCompare, CancellationToken cancelToken)
+            {
+                // Refresh the fileInfo
+                fileInfo.Refresh();
+
+                // Try to get filestream
+                await using FileStream fileStream = await fileInfo.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+                // If pass the check above, then do hash calculation
+                // Additional: the total file size progress is disabled and will be incremented after this
+                byte[] localHash = hashToCompare.Length == 8 ?
+                    await CheckNonCryptoHashAsync(fileStream, new XxHash64(), cancelToken) :
+                    await CheckHashAsync(fileStream, MD5.Create(), token);
+
+                // Check if the hash is equal
+                bool isMatch = IsArrayMatch(hashToCompare.Span, localHash);
+                return isMatch;
+            }
+
+            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner, FileInfo repairFile)
             {
                 // Update the total progress and found counter
                 _progressAllSizeFound += assetInner.fileSize;
@@ -316,20 +302,21 @@ namespace CollapseLauncher
 
                 Dispatch(() => AssetEntry.Add(
                                               new AssetProperty<RepairAssetType>(
-                                                   Path.GetFileName(repairFile),
+                                                   repairFile.Name,
                                                    RepairAssetType.Generic,
-                                                   Path.GetDirectoryName(repairFile),
+                                                   Path.GetDirectoryName(assetInner.isForceStoreInPersistent ? assetInner.remoteNamePersistent : assetInner.remoteName),
                                                    assetInner.fileSize,
-                                                   null,
+                                                   repairFile.Exists ? hashBuffer : null,
                                                    HexTool.HexToBytesUnsafe(assetInner.md5)
                                                   )
                                              ));
                 targetAssetIndex.Add(assetInner);
 
-                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {(string.IsNullOrEmpty(repairFile) ? assetInner.localName : repairFile)} is not found or has unmatched size",
+                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {assetInner.localName} is not found or has unmatched size",
                              LogType.Warning, true);
             }
         }
+#nullable restore
 
         #region UnusedFiles
         private async Task CheckRedundantFiles(List<PkgVersionProperties> targetAssetIndex, CancellationToken token)

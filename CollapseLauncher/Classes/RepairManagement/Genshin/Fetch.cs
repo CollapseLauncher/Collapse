@@ -353,7 +353,7 @@ namespace CollapseLauncher
                                       };
 
                 string actualName              = string.IsNullOrEmpty(manifestEntry.localName) ? manifestEntry.remoteName : manifestEntry.localName;
-                string assetPersistentPath     = relativePath == "" ? null : CombineURLFromString(persistentPath, relativePath, actualName);
+                string assetPersistentPath     = CombineURLFromString(persistentPath, relativePath, actualName);
                 string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
 
                 // Set the remote URL
