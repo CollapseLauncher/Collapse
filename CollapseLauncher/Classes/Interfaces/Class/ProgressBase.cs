@@ -682,7 +682,10 @@ namespace CollapseLauncher.Interfaces
 
                 // Update the read status
                 downloaded += read;
-                _progress!.ProgressPerFilePercentage = Math.Round((downloaded / sizeToDownload) * 100, 2);
+                lock (_progress!)
+                {
+                    _progress.ProgressPerFilePercentage = Math.Round((downloaded / sizeToDownload) * 100, 2);
+                }
                 lock (_status!)
                 {
                     _status!.ActivityPerFile = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle3!, ConverterTool.SummarizeSizeSimple(downloaded / sw.Elapsed.TotalSeconds));
@@ -960,13 +963,12 @@ namespace CollapseLauncher.Interfaces
                     // Append buffer into hash block
                     hashProvider.TransformBlock(buffer, 0, read, buffer, 0);
 
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        if (updateTotalProgress) _progressAllSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
+                    // Increment total size counter
+                    if (updateTotalProgress)
+                        Interlocked.Add(ref _progressAllSizeCurrent, read);
+
+                    // Increment per file size counter
+                    Interlocked.Add(ref _progressPerFileSizeCurrent, read);
 
                     // Update status and progress for MD5 calculation
                     UpdateProgressCRC();
@@ -1005,13 +1007,12 @@ namespace CollapseLauncher.Interfaces
                     // Append buffer into hash block
                     hashProvider.Append(buffer.AsSpan(0, read));
 
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        if (updateTotalProgress) _progressAllSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
+                    // Increment total size counter
+                    if (updateTotalProgress)
+                        Interlocked.Add(ref _progressAllSizeCurrent, read);
+
+                    // Increment per file size counter
+                    Interlocked.Add(ref _progressPerFileSizeCurrent, read);
 
                     // Update status and progress for Xxh64 calculation
                     UpdateProgressCRC();
@@ -1056,10 +1057,7 @@ namespace CollapseLauncher.Interfaces
                 if (!IsArrayMatch(patchCrc, patchHash.Span))
                 {
                     // Revert back the total size
-                    lock (this)
-                    {
-                        _progressAllSizeCurrent -= patchSize;
-                    }
+                    Interlocked.Add(ref _progressAllSizeCurrent, -patchSize);
 
                     // Redownload the patch file
                     await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
