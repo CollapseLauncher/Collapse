@@ -414,18 +414,17 @@ namespace Hi3Helper.Data
 
         public void Save(string path, FileMode mode = FileMode.Create)
         {
-            using (var stream = new FileStream(path!, mode, FileAccess.Write))
-            {
-                Save(stream);
-            }
+            // Ensure directory creation
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+            using var stream = new FileStream(path, mode, FileAccess.Write, FileShare.Read);
+            Save(stream);
         }
 
         public void Save(Stream stream)
         {
-            using (var writer = new StreamWriter(stream!))
-            {
-                Save(writer);
-            }
+            using var writer = new StreamWriter(stream);
+            Save(writer);
         }
 
         private void Save(StreamWriter writer)
