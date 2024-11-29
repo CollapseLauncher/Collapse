@@ -4,6 +4,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -46,6 +47,7 @@ namespace CollapseLauncher
 
             // Iterate repair asset and check it using different method for each type
             ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            var runningTask = new ConcurrentDictionary<(FilePropertiesRemote, IAssetProperty), byte>();
             if (_isBurstDownloadEnabled)
             {
                 await Parallel.ForEachAsync(
@@ -59,6 +61,11 @@ namespace CollapseLauncher
                     new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
                     async (asset, innerToken) =>
                     {
+                        if (!runningTask.TryAdd(asset, 0))
+                        {
+                            LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                            return;
+                        }
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
@@ -70,6 +77,7 @@ namespace CollapseLauncher
 
                         // Await the task
                         await assetTask;
+                        runningTask.Remove(asset, out _);
                     });
             }
             else
@@ -83,6 +91,11 @@ namespace CollapseLauncher
 #endif
                     , assetProperty))
                 {
+                    if (!runningTask.TryAdd(asset, 0))
+                    {
+                        LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                        break;
+                    }
                     // Assign a task depends on the asset type
                     Task assetTask = asset.AssetIndex.FT switch
                     {
@@ -94,6 +107,7 @@ namespace CollapseLauncher
 
                     // Await the task
                     await assetTask;
+                    runningTask.Remove(asset, out _);
                 }
             }
 
