@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+using System.Collections.Concurrent;
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -600,6 +601,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
+        internal static ConcurrentDictionary<Stamp, byte> _metadataUpdateEntry = new();
         internal static async ValueTask RunMetadataUpdate()
         {
             // Delay the routine if the update check or routine is running
@@ -623,6 +625,13 @@ namespace CollapseLauncher.Helper.Metadata
                 foreach (Stamp? newUpdateStamp in NewUpdateMetadataStamp)
                 {
                     if (newUpdateStamp == null) continue;
+                    if (!_metadataUpdateEntry.TryAdd(newUpdateStamp, 0))
+                    {
+                        Logger.LogWriteLine($"[RunMetadataUpdate] Skipping duplicate assignment for stamp:\r\n\t" +
+                                            $"N : {newUpdateStamp.GameName}\r\n\tT : {newUpdateStamp.MetadataType}",
+                                            LogType.Error, true);
+                        continue;
+                    }
 
                     // Ensure if the MetadataPath is not empty
                     if (string.IsNullOrEmpty(newUpdateStamp.MetadataPath))
@@ -639,6 +648,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                     Logger.LogWriteLine($"Removed old metadata config file! [Name: {newUpdateStamp.GameName} | Region: {newUpdateStamp.GameRegion} | Type: {newUpdateStamp.MetadataType}]\r\nLocation: {configLocalFilePath}",
                                         LogType.Default, true);
+                    _metadataUpdateEntry.Remove(newUpdateStamp, out _);
                 }
 
                 // Then update the stamp file
