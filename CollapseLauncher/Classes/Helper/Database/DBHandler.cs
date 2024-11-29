@@ -315,11 +315,13 @@ namespace CollapseLauncher.Helper.Database
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! Retrying...\r\n{ex}",
                                  LogType.Error, true);
+                    break;
                 }
                 catch (Exception ex) when (!redirectThrow)
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key} after {retryCount} tries!\r\n{ex}",
                                  LogType.Error, true);
+                    return;
                 }
                 catch (Exception ex)
                 {
