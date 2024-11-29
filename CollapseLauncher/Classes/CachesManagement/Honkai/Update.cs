@@ -3,6 +3,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Http;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -35,7 +36,9 @@ namespace CollapseLauncher
                 UpdateStatus();
 
                 // Iterate the asset index and do update operation
-                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                ObservableCollection<IAssetProperty> assetProperty   = new ObservableCollection<IAssetProperty>(AssetEntry);
+
+                var runningTask = new ConcurrentDictionary<(CacheAsset, IAssetProperty), byte>();
                 if (_isBurstDownloadEnabled)
                 {
                     await Parallel.ForEachAsync(
@@ -49,7 +52,13 @@ namespace CollapseLauncher
                         new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
                         async (asset, innerToken) =>
                         {
+                            if (!runningTask.TryAdd(asset, 0))
+                            {
+                                LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                                return;
+                            }
                             await UpdateCacheAsset(asset, downloadClient, _httpClient_UpdateAssetProgress, innerToken);
+                            runningTask.Remove(asset, out _);
                         });
                 }
                 else
@@ -63,7 +72,13 @@ namespace CollapseLauncher
 #endif
                         , assetProperty))
                     {
+                        if (!runningTask.TryAdd(asset, 0))
+                        {
+                            LogWriteLine($"Found duplicated task for {asset.Item1.N}! Skipping...", LogType.Warning, true);
+                            break;
+                        }
                         await UpdateCacheAsset(asset, downloadClient, _httpClient_UpdateAssetProgress, token);
+                        runningTask.Remove(asset, out _);
                     }
                 }
 

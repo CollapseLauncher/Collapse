@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using Hi3Helper.Http;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -39,6 +40,8 @@ namespace CollapseLauncher
 
                 // Iterate the asset index and do update operation
                 ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                
+                var runningTask = new ConcurrentDictionary<(SRAsset, IAssetProperty), byte>();
                 if (_isBurstDownloadEnabled)
                 {
                     await Parallel.ForEachAsync(
@@ -52,7 +55,13 @@ namespace CollapseLauncher
                         new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
                         async (asset, innerToken) =>
                         {
+                            if (!runningTask.TryAdd(asset, 0))
+                            {
+                                LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                                return;
+                            }
                             await UpdateCacheAsset(asset, downloadClient, _httpClient_UpdateAssetProgress, innerToken);
+                            runningTask.Remove(asset, out _);
                         });
                 }
                 else
@@ -66,7 +75,13 @@ namespace CollapseLauncher
 #endif
                         , assetProperty))
                     {
+                        if (!runningTask.TryAdd(asset, 0))
+                        {
+                            LogWriteLine($"Found duplicated task for {asset.Item2.Name}! Skipping...", LogType.Warning, true);
+                            continue;
+                        }
                         await UpdateCacheAsset(asset, downloadClient, _httpClient_UpdateAssetProgress, token);
+                        runningTask.Remove(asset, out _);
                     }
                 }
 
