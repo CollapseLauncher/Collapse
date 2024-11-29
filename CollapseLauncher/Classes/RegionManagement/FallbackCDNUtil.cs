@@ -192,7 +192,9 @@ namespace CollapseLauncher
             // If all of them failed, then throw an exception
             if (!isSuccess)
             {
-                throw new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
+                var ex = new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+                throw ex;
             }
         }
 
@@ -311,7 +313,6 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
