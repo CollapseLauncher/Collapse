@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using System;
 using System.Diagnostics;
-using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
 namespace CollapseLauncher.Interfaces
@@ -19,6 +18,5 @@ namespace CollapseLauncher.Interfaces
 
 #nullable enable
         abstract static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo);
-#nullable restore
     }
 }

@@ -24,7 +24,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
-    internal class GenshinInstall : InstallManagerBase
+    internal partial class GenshinInstall : InstallManagerBase
     {
         #region Override Properties
 

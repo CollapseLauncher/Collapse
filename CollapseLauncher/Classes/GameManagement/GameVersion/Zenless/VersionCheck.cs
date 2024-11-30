@@ -103,6 +103,7 @@ namespace CollapseLauncher.GameVersioning
             return;
 
             // Close the door
+            // ReSharper disable once UnusedParameter.Local
             void DisableRepairAndCacheInstance(PresetConfig config)
             {
 #if !DEBUG

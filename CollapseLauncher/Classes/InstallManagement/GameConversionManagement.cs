@@ -24,7 +24,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public class GameConversionManagement : IDisposable
+    public partial class GameConversionManagement : IDisposable
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 
@@ -33,17 +33,17 @@ namespace CollapseLauncher
         private List<FileProperties> TargetFileManifest;
         private HttpClient _client;
 
-        string BaseURL;
-        string GameVersion;
-        string CookbookPath;
-        Stopwatch ConvertSw;
-        CancellationToken Token = new CancellationToken();
-        private void ResetSw() => ConvertSw = Stopwatch.StartNew();
-        string ConvertStatus, ConvertDetail;
-        byte DownloadThread;
+        string            BaseURL;
+        string            GameVersion;
+        string            CookbookPath;
+        Stopwatch         ConvertSw;
+        CancellationToken Token;
+        private void      ResetSw() => ConvertSw = Stopwatch.StartNew();
+        string            ConvertStatus, ConvertDetail;
+        byte              DownloadThread;
 
         internal GameConversionManagement(PresetConfig SourceProfile, PresetConfig TargetProfile,
-            string BaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new CancellationToken())
+            string BaseURL, string GameVersion, string CookbookPath, CancellationToken Token = new())
         {
             // Initialize new proxy-aware HttpClient
             this._client = new HttpClientBuilder()
@@ -74,7 +74,7 @@ namespace CollapseLauncher
             ConvertStatus = Lang._InstallConvert.Step3Title;
 
             string IngredientsPath = TargetProfile.ActualGameDataLocation + "_Ingredients";
-            string URL = "";
+            string URL;
 
             DownloadClient downloadClient = DownloadClient.CreateInstance(_client);
 
@@ -111,8 +111,8 @@ namespace CollapseLauncher
             await RepairIngredients(downloadClient, await VerifyIngredients(SourceFileManifest, IngredientsPath), IngredientsPath);
         }
 
-        long MakeIngredientsRead = 0;
-        long MakeIngredientsTotalSize = 0;
+        long MakeIngredientsRead;
+        long MakeIngredientsTotalSize;
         private void PrepareIngredients(List<FileProperties> FileManifest)
         {
             ResetSw();
@@ -126,11 +126,11 @@ namespace CollapseLauncher
 
             foreach (FileProperties Entry in FileManifest)
             {
-                InputPath = Path.Combine(SourceProfile.ActualGameDataLocation, Entry.FileName);
+                InputPath = Path.Combine(SourceProfile.ActualGameDataLocation!, Entry.FileName);
                 OutputPath = Path.Combine(TargetProfile.ActualGameDataLocation + "_Ingredients", Entry.FileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
+                    Directory.CreateDirectory(Path.GetDirectoryName(OutputPath)!);
 
                 if (File.Exists(InputPath))
                 {
@@ -246,8 +246,8 @@ namespace CollapseLauncher
             return _out;
         }
 
-        long RepairRead = 0;
-        long RepairTotalSize = 0;
+        long RepairRead;
+        long RepairTotalSize;
         private async Task RepairIngredients(DownloadClient downloadClient, List<FileProperties> BrokenFile, string GamePath)
         {
             if (BrokenFile.Count == 0) return;
@@ -301,7 +301,7 @@ namespace CollapseLauncher
                 if (Directory.Exists(OutputPath))
                     TryDirectoryDelete(OutputPath, true);
 
-                Directory.CreateDirectory(OutputPath);
+                Directory.CreateDirectory(OutputPath!);
 
                 HDiffPatch.LogVerbosity = Verbosity.Verbose;
                 EventListener.LoggerEvent += EventListener_PatchLogEvent;
@@ -400,11 +400,11 @@ namespace CollapseLauncher
             string InputPath, OutputPath;
             foreach (FileProperties Entry in FileManifest)
             {
-                OutputPath = Path.Combine(SourceProfile.ActualGameDataLocation, Entry.FileName);
+                OutputPath = Path.Combine(SourceProfile.ActualGameDataLocation!, Entry.FileName);
                 InputPath = Path.Combine(TargetProfile.ActualGameDataLocation + "_Ingredients", Entry.FileName);
 
                 if (!Directory.Exists(Path.GetDirectoryName(OutputPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(OutputPath));
+                    Directory.CreateDirectory(Path.GetDirectoryName(OutputPath)!);
 
                 if (File.Exists(InputPath))
                     File.Move(InputPath, OutputPath, true);
@@ -424,7 +424,7 @@ namespace CollapseLauncher
                 if (!File.Exists(OutputFile))
                 {
                     if (!Directory.Exists(Path.GetDirectoryName(OutputFile)))
-                        Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+                        Directory.CreateDirectory(Path.GetDirectoryName(OutputFile)!);
                     File.Move(_Entry, OutputFile);
                 }
             }
@@ -453,14 +453,14 @@ namespace CollapseLauncher
             this._DetailMsg = DetailMsg;
         }
 
-        private double _TimeSecond = 0f;
-        private string _StatusMsg = "";
-        private string _DetailMsg = "";
-        public bool UseCountUnit { get; private set; }
-        public long StartSize { get; private set; }
-        public long EndSize { get; private set; }
-        public int StartCount { get; private set; }
-        public int EndCount { get; private set; }
+        private double _TimeSecond;
+        private string _StatusMsg;
+        private string _DetailMsg;
+        public  bool   UseCountUnit { get; private set; }
+        public  long   StartSize    { get; private set; }
+        public  long   EndSize      { get; private set; }
+        public  int    StartCount   { get; private set; }
+        public  int    EndCount     { get; private set; }
         public double Percentage => UseCountUnit ? Math.Round((StartCount / (double)EndCount) * 100, 2) :
                                                    Math.Round((StartSize / (double)EndSize) * 100, 2);
         public long ProgressSpeed => (long)(StartSize / _TimeSecond);

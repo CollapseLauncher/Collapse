@@ -1313,12 +1313,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
+        private void PreloadDownloadStatus(object sender, TotalPerFileStatus e)
         {
             DispatcherQueue?.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
         }
 
-        private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
+        private void PreloadDownloadProgress(object sender, TotalPerFileProgress e)
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
@@ -1519,7 +1519,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void GameInstall_StatusChanged(object sender, TotalPerfileStatus e)
+        private void GameInstall_StatusChanged(object sender, TotalPerFileStatus e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_StatusChanged_Inner(e);
@@ -1527,7 +1527,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
         }
 
-        private void GameInstall_StatusChanged_Inner(TotalPerfileStatus e)
+        private void GameInstall_StatusChanged_Inner(TotalPerFileStatus e)
         {
             ProgressStatusTitle.Text = e.ActivityStatus;
             progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
@@ -1536,7 +1536,7 @@ namespace CollapseLauncher.Pages
             progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
-        private void GameInstall_ProgressChanged(object sender, TotalPerfileProgress e)
+        private void GameInstall_ProgressChanged(object sender, TotalPerFileProgress e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_ProgressChanged_Inner(e);
@@ -1544,7 +1544,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
         }
 
-        private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
+        private void GameInstall_ProgressChanged_Inner(TotalPerFileProgress e)
         {
             progressRing.Value = e.ProgressAllPercentage;
             progressRingPerFile.Value = e.ProgressPerFilePercentage;
@@ -1553,7 +1553,7 @@ namespace CollapseLauncher.Pages
             ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
         }
 
-        private void GameInstallSophon_StatusChanged(object sender, TotalPerfileStatus e)
+        private void GameInstallSophon_StatusChanged(object sender, TotalPerFileStatus e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstallSophon_StatusChanged_Inner(e);
@@ -1561,7 +1561,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(e));
         }
 
-        private void GameInstallSophon_ProgressChanged(object sender, TotalPerfileProgress e)
+        private void GameInstallSophon_ProgressChanged(object sender, TotalPerFileProgress e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstallSophon_ProgressChanged_Inner(e);
@@ -1569,7 +1569,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstallSophon_ProgressChanged_Inner(e));
         }
 
-        private void GameInstallSophon_StatusChanged_Inner(TotalPerfileStatus e)
+        private void GameInstallSophon_StatusChanged_Inner(TotalPerFileStatus e)
         {
             SophonProgressStatusTitleText.Text = e.ActivityStatus;
             SophonProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
@@ -1578,7 +1578,7 @@ namespace CollapseLauncher.Pages
             SophonProgressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
-        private void GameInstallSophon_ProgressChanged_Inner(TotalPerfileProgress e)
+        private void GameInstallSophon_ProgressChanged_Inner(TotalPerFileProgress e)
         {
             SophonProgressRing.Value = e.ProgressAllPercentage;
             SophonProgressRingPerFile.Value = e.ProgressPerFilePercentage;
@@ -1730,7 +1730,9 @@ namespace CollapseLauncher.Pages
 
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost)
+            #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     Task.Run(async () => await GameBoost_Invoke(CurrentGameProperty));
+            #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 // Run game process watcher
                 CheckRunningGameInstance(PageToken.Token);

@@ -34,7 +34,7 @@ namespace Hi3Helper.Shared.ClassStruct
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter<NotificationActionTypeDesc>))]
-    public enum NotificationActionTypeDesc : int
+    public enum NotificationActionTypeDesc
     {
         ClickLink = 0
     }
@@ -49,10 +49,7 @@ namespace Hi3Helper.Shared.ClassStruct
             return null;
         }
 
-        public virtual void BuildFrameworkElement(ref Utf8JsonReader reader)
-        {
-            return;
-        }
+        public virtual void BuildFrameworkElement(ref Utf8JsonReader reader) { }
     }
 
     public class NotificationActionConverter : JsonConverter<NotificationActionBase>
@@ -151,7 +148,7 @@ namespace Hi3Helper.Shared.ClassStruct
             BaseClassType = typeof(NotificationActionClickLink);
         }
 
-        public override FrameworkElement GetFrameworkElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (s, e) =>
+        public override FrameworkElement GetFrameworkElement() => NotificationPush.GenerateNotificationButton(GlyphIcon, Description, (_, _) =>
         {
             new Process
             {
@@ -257,11 +254,8 @@ namespace Hi3Helper.Shared.ClassStruct
 
         public void EliminatePushList()
         {
-            if (AppPush != null || RegionPush != null)
-            {
-                AppPush.RemoveAll(x => AppPushIgnoreMsgIds.Any(y => x.MsgId == y));
-                RegionPush.RemoveAll(x => RegionPushIgnoreMsgIds.Any(y => x.MsgId == y));
-            }
+            AppPush?.RemoveAll(x => AppPushIgnoreMsgIds.Any(y => x.MsgId == y));
+            RegionPush?.RemoveAll(x => RegionPushIgnoreMsgIds.Any(y => x.MsgId == y));
         }
 
         public static Button GenerateNotificationButton(string IconGlyph, string Text, RoutedEventHandler ButtonAction = null, string FontIconName = "FontAwesomeSolid", string ButtonStyle = "AccentButtonStyle")

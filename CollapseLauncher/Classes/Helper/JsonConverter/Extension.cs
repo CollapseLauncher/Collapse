@@ -29,9 +29,9 @@ namespace CollapseLauncher.Helper.JsonConverter
                     ReturnUnescapedData(data) :
                     Encoding.UTF8.GetString(data);
 
-                // Try decode the Base64 data
+                // Try to decode the Base64 data
                 dataBytes = isBufferUsePool ? ArrayPool<byte>.Shared.Rent(data.Length) : new byte[data.Length];
-                OperationStatus opStatus = Base64.DecodeFromUtf8(data, dataBytes, out _, out int dataB64DecodedWritten, true);
+                OperationStatus opStatus = Base64.DecodeFromUtf8(data, dataBytes, out _, out int dataB64DecodedWritten);
                 if (opStatus != OperationStatus.Done)
                     throw new InvalidOperationException($"Data is not a valid Base64! (Status: {opStatus})");
 
@@ -40,7 +40,7 @@ namespace CollapseLauncher.Helper.JsonConverter
 
                 // Check if the data is Base64 encoded and also a ServeV3 data. If no, then return as a raw string
                 bool isValidServeV3Data = DataCooker.IsServeV3Data(dataBase64Decoded);
-                if (!(isValidB64Data && isValidServeV3Data)) return jsonReader.ValueIsEscaped ?
+                if (!isValidServeV3Data) return jsonReader.ValueIsEscaped ?
                     ReturnUnescapedData(data) :
                     Encoding.UTF8.GetString(data);
 
@@ -127,7 +127,7 @@ namespace CollapseLauncher.Helper.JsonConverter
         // Docs:
         // https://github.com/dotnet/runtime/blob/907eff84ef204a2d71c10e7cd726b76951b051bd/src/libraries/System.Text.Json/src/System/Text/Json/Reader/JsonReaderHelper.Unescaping.cs#L429
 
-        internal static partial class JsonConstants
+        internal static class JsonConstants
         {
             public const byte OpenBrace = (byte)'{';
             public const byte CloseBrace = (byte)'}';
@@ -344,7 +344,7 @@ namespace CollapseLauncher.Helper.JsonConverter
                                 throw new InvalidOperationException($"Cannot read invalid UTF-16 JSON text as string. Invalid surrogate value: '0x{lowSurrogate:X2}'");
                             }
 
-                            // To find the unicode scalar:
+                            // To find the Unicode scalar:
                             // (0x400 * (High surrogate - 0xD800)) + Low surrogate - 0xDC00 + 0x10000
                             scalar = JsonConstants.BitShiftBy10 * (scalar - JsonConstants.HighSurrogateStartValue)
                                 + (lowSurrogate - JsonConstants.LowSurrogateStartValue)

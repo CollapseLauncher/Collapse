@@ -18,7 +18,7 @@
 
     namespace CollapseLauncher.Pages
 {
-    public sealed partial class CachesPage : Page
+    public sealed partial class CachesPage
     {
         private GamePresetProperty CurrentGameProperty { get; set; }
 
@@ -178,7 +178,7 @@
             CachesTotalProgressBar.IsIndeterminate = false;
         }
 
-        private void _cacheTool_StatusChanged(object sender, TotalPerfileStatus e)
+        private void _cacheTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
@@ -190,7 +190,7 @@
             });
         }
 
-        private void _cacheTool_ProgressChanged(object sender, TotalPerfileProgress e)
+        private void _cacheTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
             DispatcherQueue?.TryEnqueue(() =>
             {

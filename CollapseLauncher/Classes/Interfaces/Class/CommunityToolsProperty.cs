@@ -38,8 +38,8 @@ namespace CollapseLauncher
             try
             {
                 CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync(InternalAppJSONContext.Default.CommunityToolsProperty);
-                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty.OfficialToolsDictionary);
-                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty.CommunityToolsDictionary);
+                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.OfficialToolsDictionary);
+                ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.CommunityToolsDictionary);
                 return communityToolkitProperty;
             }
             catch (Exception ex)
@@ -68,7 +68,7 @@ namespace CollapseLauncher
                 foreach (CommunityToolsEntry entry in keyPair.Value)
                 {
                     // Get the last index of font namespace. If none was found, then skip
-                    int lastIndexOfNamespace = entry.IconFontFamily.LastIndexOf("#");
+                    int lastIndexOfNamespace = entry.IconFontFamily.LastIndexOf("#", StringComparison.Ordinal);
                     if (lastIndexOfNamespace == -1)
                         continue;
 
@@ -93,7 +93,6 @@ namespace CollapseLauncher
                     if (fontAwesomeBrandPath.AsSpan().StartsWith(currentEntryFontPath, StringComparison.OrdinalIgnoreCase))
                     {
                         entry.IconFontFamily = fontAwesomeBrandPath;
-                        continue;
                     }
                 }
             }

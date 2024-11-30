@@ -31,7 +31,7 @@ using Hi3Helper.Shared.Region;
 
 namespace CollapseLauncher;
 
-public class Updater : IDisposable
+public partial class Updater : IDisposable
 {
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
     private string          ChannelURL;

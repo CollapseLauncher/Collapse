@@ -22,7 +22,7 @@ using static Hi3Helper.Logger;
 
 namespace RegistryUtils
 {
-    public class RegistryMonitor : IDisposable
+    public partial class RegistryMonitor : IDisposable
     {
         #region Event handling
 

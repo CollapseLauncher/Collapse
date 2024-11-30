@@ -15,7 +15,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 
 namespace CollapseLauncher.GamePlaytime
 {
-    internal class Playtime : IGamePlaytime
+    internal partial class Playtime : IGamePlaytime
     {
         #region Properties
         public event EventHandler<CollapsePlaytime> PlaytimeUpdated;

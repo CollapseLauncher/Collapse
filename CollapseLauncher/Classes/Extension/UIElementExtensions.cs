@@ -81,6 +81,8 @@ namespace CollapseLauncher.Extension
 
         internal static void SetAllControlsCursorRecursive(this UIElement element, InputSystemCursor toCursor)
         {
+            // DO NOT REMOVE THIS LINE OR YOU WILL FACE THE CONSEQUENCES!
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (element == null)
             {
                 return;
@@ -125,8 +127,9 @@ namespace CollapseLauncher.Extension
 
             if (element is NavigationView navigationViewKind)
             {
-                foreach (UIElement navigationViewElements in navigationViewKind.FindDescendants())
+                foreach (var o in navigationViewKind.FindDescendants())
                 {
+                    var navigationViewElements = (UIElement)o;
                     if (navigationViewElements is NavigationViewItem)
                     {
                         navigationViewElements.SetCursor(toCursor);

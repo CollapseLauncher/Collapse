@@ -41,10 +41,10 @@ namespace CollapseLauncher.Interfaces
 
         private void Init()
         {
-            _status = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
-            _progress = new TotalPerfileProgress();
-            _sophonStatus = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
-            _sophonProgress = new TotalPerfileProgress();
+            _status = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
+            _progress = new TotalPerFileProgress();
+            _sophonStatus = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
+            _sophonProgress = new TotalPerFileProgress();
             _stopwatch = Stopwatch.StartNew();
             _refreshStopwatch = Stopwatch.StartNew();
             _downloadSpeedRefreshStopwatch = Stopwatch.StartNew();
@@ -53,13 +53,13 @@ namespace CollapseLauncher.Interfaces
 
         private readonly Lock _objLock = new();
 
-        public event EventHandler<TotalPerfileProgress>? ProgressChanged;
-        public event EventHandler<TotalPerfileStatus>?   StatusChanged;
+        public event EventHandler<TotalPerFileProgress>? ProgressChanged;
+        public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-        protected TotalPerfileStatus?   _sophonStatus;
-        protected TotalPerfileProgress? _sophonProgress;
-        protected TotalPerfileStatus?   _status;
-        protected TotalPerfileProgress? _progress;
+        protected TotalPerFileStatus?   _sophonStatus;
+        protected TotalPerFileProgress? _sophonProgress;
+        protected TotalPerFileStatus?   _status;
+        protected TotalPerFileProgress? _progress;
         protected int                   _progressAllCountCurrent;
         protected int                   _progressAllCountFound;
         protected int                   _progressAllCountTotal;
@@ -79,8 +79,8 @@ namespace CollapseLauncher.Interfaces
         protected bool _isSophonInUpdateMode { get; set; }
 
         #region ProgressEventHandlers - Fetch
-        protected void _innerObject_ProgressAdapter(object? sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
-        protected void _innerObject_StatusAdapter(object? sender, TotalPerfileStatus e) => StatusChanged?.Invoke(sender, e);
+        protected void _innerObject_ProgressAdapter(object? sender, TotalPerFileProgress e) => ProgressChanged?.Invoke(sender, e);
+        protected void _innerObject_StatusAdapter(object? sender, TotalPerFileStatus e) => StatusChanged?.Invoke(sender, e);
 
         protected virtual async void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadProgress)
         {

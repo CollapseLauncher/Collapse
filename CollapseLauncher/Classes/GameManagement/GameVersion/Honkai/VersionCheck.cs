@@ -4,7 +4,7 @@ using System;
 namespace CollapseLauncher.GameVersioning
 {
     // ReSharper disable once RedundantExtendsListEntry
-    internal class GameTypeHonkaiVersion : GameVersionBase
+    internal sealed class GameTypeHonkaiVersion : GameVersionBase
     {
         #region Statics
         private static Version senadinaVersion = new Version(7, 3, 0);

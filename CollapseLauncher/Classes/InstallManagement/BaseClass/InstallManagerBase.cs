@@ -3001,7 +3001,7 @@ namespace CollapseLauncher.InstallManager.Base
                 gameRepairInstance.StatusChanged -= StartSteamMigration_StatusChanged;
             }
 
-            void StartSteamMigration_ProgressChanged(object? sender, TotalPerfileProgress e)
+            void StartSteamMigration_ProgressChanged(object? sender, TotalPerFileProgress e)
             {
                 Dispatch(() =>
                 {
@@ -3011,7 +3011,7 @@ namespace CollapseLauncher.InstallManager.Base
                 });
             }
 
-            void StartSteamMigration_StatusChanged(object? sender, TotalPerfileStatus e)
+            void StartSteamMigration_StatusChanged(object? sender, TotalPerFileStatus e)
             {
                 Dispatch(() =>
                 {
@@ -4093,7 +4093,7 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine(e.Message, type, true);
         }
 
-        protected async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
+        protected async void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
             _progress!.ProgressAllPercentage =
                 e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;

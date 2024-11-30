@@ -20,7 +20,7 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class BackgroundMediaUtility : IDisposable
+    internal partial class BackgroundMediaUtility : IDisposable
     {
         internal enum MediaType
         {

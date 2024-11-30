@@ -18,17 +18,17 @@ internal class DefaultSVGRenderer : ISVGRenderer
         var image = new Image();
         // Create a MemoryStream object and write the SVG string to it
         using (var memoryStream = new MemoryStream())
-        using (var streamWriter = new StreamWriter(memoryStream))
-        {
-            await streamWriter.WriteAsync(svgString);
-            await streamWriter.FlushAsync();
+            using (var streamWriter = new StreamWriter(memoryStream))
+            {
+                await streamWriter.WriteAsync(svgString);
+                await streamWriter.FlushAsync();
 
-            // Rewind the MemoryStream
-            memoryStream.Position = 0;
+                // Rewind the MemoryStream
+                memoryStream.Position = 0;
 
-            // Load the SVG from the MemoryStream
-            await svgImageSource.SetSourceAsync(memoryStream.AsRandomAccessStream());
-        }
+                // Load the SVG from the MemoryStream
+                await svgImageSource.SetSourceAsync(memoryStream.AsRandomAccessStream());
+            }
 
         // Set the Source property of the Image control to the SvgImageSource object
         image.Source = svgImageSource;

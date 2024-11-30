@@ -7,8 +7,8 @@ namespace CollapseLauncher.Interfaces
     internal interface ICache : IDisposable
     {
         ObservableCollection<IAssetProperty> AssetEntry { get; set; }
-        event EventHandler<TotalPerfileProgress> ProgressChanged;
-        event EventHandler<TotalPerfileStatus> StatusChanged;
+        event EventHandler<TotalPerFileProgress> ProgressChanged;
+        event EventHandler<TotalPerFileStatus> StatusChanged;
         Task<bool> StartCheckRoutine(bool useFastCheck = false);
         Task StartUpdateRoutine(bool showInteractivePrompt = false);
         void CancelRoutine();

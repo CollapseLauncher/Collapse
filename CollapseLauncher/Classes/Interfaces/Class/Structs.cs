@@ -7,7 +7,7 @@ using System.IO;
 
 namespace CollapseLauncher
 {
-    internal class TotalPerfileProgress
+    internal class TotalPerFileProgress
     {
         private double  _progressPerFilePercentage;
         private double  _progressPerFileSpeed;
@@ -36,7 +36,7 @@ namespace CollapseLauncher
         public TimeSpan ProgressAllTimeLeft { get; set; }
     }
 
-    internal class TotalPerfileStatus
+    internal class TotalPerFileStatus
     {
         public string ActivityStatus { get; set; }
 
@@ -71,7 +71,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            // If does, then process the file
+            // If it does, then process the file
             string[] infoEntries = File.ReadAllLines(infoVendorPath);
             if (infoEntries.Length < 2)
             {
@@ -213,14 +213,14 @@ namespace CollapseLauncher
         public Version ToVersion() => new Version(Major, Minor, Build, Revision);
         public override string ToString() => $"{Major}.{Minor}.{Build}";
 
-        public string VersionStringManifest { get => string.Join('.', VersionArrayManifest); }
-        public string VersionString { get => string.Join('.', VersionArray); }
-        public int[] VersionArrayManifest { get => new int[4] { Major, Minor, Build, Revision }; }
-        public int[] VersionArray { get => new int[3] { Major, Minor, Build }; }
-        public readonly int Major;
-        public readonly int Minor;
-        public readonly int Build;
-        public readonly int Revision;
+        public          string VersionStringManifest { get => string.Join('.', VersionArrayManifest); }
+        public          string VersionString         { get => string.Join('.', VersionArray); }
+        public          int[]  VersionArrayManifest  { get => [Major, Minor, Build, Revision]; }
+        public          int[]  VersionArray          { get => [Major, Minor, Build]; }
+        public readonly int    Major;
+        public readonly int    Minor;
+        public readonly int    Build;
+        public readonly int    Revision;
     }
 
     public interface IAssetProperty

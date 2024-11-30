@@ -26,7 +26,7 @@
 
         #endregion
 
-        public class DiscordPresenceManager : IDisposable
+        public partial class DiscordPresenceManager : IDisposable
         {
             #region Properties
 
@@ -286,7 +286,8 @@
 
             private DateTime GetCachedStartPlayTime(DateTime? activityOffset)
             {
-                _lastPlayTime ??= activityOffset ??= DateTime.UtcNow;
+                _lastPlayTime ??= activityOffset;
+                _lastPlayTime ??= DateTime.UtcNow;
                 return _lastPlayTime.Value;
             }
 

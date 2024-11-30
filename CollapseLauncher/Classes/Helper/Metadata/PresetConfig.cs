@@ -68,9 +68,9 @@ namespace CollapseLauncher.Helper.Metadata
 
     public class SophonChunkUrls
     {
-        private bool IsReassociated = false;
+        private       bool   IsReassociated;
         private const string QueryPackageIdHead = "package_id";
-        private const string QueryPasswordHead = "password";
+        private const string QueryPasswordHead  = "password";
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BranchUrl { get; set; }

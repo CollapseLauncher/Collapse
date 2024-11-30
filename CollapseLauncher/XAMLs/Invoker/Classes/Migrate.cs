@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.Win32;
 using System;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher
 {
-    internal class ZenlessCache(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings)
+    internal partial class ZenlessCache(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings)
         : ZenlessRepair(parentUI, gameVersionManager, gameSettings, false, null, true), ICache, ICacheBase<ZenlessCache>
     {
         public ZenlessCache AsBaseType() => this;

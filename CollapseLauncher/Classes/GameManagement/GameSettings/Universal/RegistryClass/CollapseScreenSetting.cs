@@ -89,7 +89,7 @@ namespace CollapseLauncher.GameSettings.Universal
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalSettingsJSONContext.Default.CollapseScreenSetting, true);
+                string data = this.Serialize(UniversalSettingsJSONContext.Default.CollapseScreenSetting);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Collapse Screen Settings:\r\n{data}", LogType.Debug, true);

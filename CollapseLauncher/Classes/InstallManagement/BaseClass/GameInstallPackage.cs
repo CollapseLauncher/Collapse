@@ -39,7 +39,7 @@ namespace CollapseLauncher.InstallManager
             : this(packageProperty.package, pathOutput)
         {
             PluginId = packageProperty.plugin_id;
-            RunCommand = packageProperty.package.run_command;
+            RunCommand = packageProperty.package?.run_command;
 
             if (packageProperty.version != null)
             {

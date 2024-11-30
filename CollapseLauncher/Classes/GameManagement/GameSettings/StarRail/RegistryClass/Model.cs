@@ -41,9 +41,9 @@ namespace CollapseLauncher.GameSettings.StarRail
         public const  string _ValueName       = "GraphicsSettings_Model_h2986158309";
         private const string _GraphicsQuality = "GraphicsSettings_GraphicsQuality_h523255858";
         
-        public static readonly int[] FPSIndex = new int[] { 30, 60, 120 };
-        public const int FPSDefaultIndex = 1; // 60 in FPSIndex[]
-        public static Dictionary<int, int> FPSIndexDict = GenerateStaticFPSIndexDict();
+        public static readonly int[]                FPSIndex        = [30, 60, 120];
+        public const           int                  FPSDefaultIndex = 1; // 60 in FPSIndex[]
+        public static          Dictionary<int, int> FPSIndexDict    = GenerateStaticFPSIndexDict();
         private static Dictionary<int, int> GenerateStaticFPSIndexDict()
         {
             Dictionary<int, int> ret = new Dictionary<int, int>();

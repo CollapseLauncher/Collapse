@@ -226,7 +226,7 @@ namespace CollapseLauncher.Helper.Metadata
             if (LauncherMetadataStampDictionary == null)
                 LauncherMetadataStampDictionary = new Dictionary<string, Stamp>();
 
-            LauncherMetadataStampDictionary?.Clear();
+            LauncherMetadataStampDictionary.Clear();
 
             FileStream? stampLocalStream = null;
 
@@ -341,7 +341,7 @@ namespace CollapseLauncher.Helper.Metadata
                .FirstOrDefault(x => x?.MetadataType == MetadataType.CommunityTools);
             if (stampCommunityToolkit != null)
             {
-                await LoadConfigInner(stampCommunityToolkit, currentChannel, false, false);
+                await LoadConfigInner(stampCommunityToolkit, currentChannel);
             }
 
             // Iterate the stamp and try to load the configs
@@ -453,19 +453,19 @@ namespace CollapseLauncher.Helper.Metadata
                                 Dictionary<string, PresetConfig> presetConfigDict = [];
                                 if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
                                     // Initialize and add the game preset config dictionary
-                                    LauncherMetadataConfig?.Add(stamp.GameName, presetConfigDict);
+                                    LauncherMetadataConfig.Add(stamp.GameName, presetConfigDict);
 
                                 // If the game name region collection is not exist, create a new one
                                 if (!LauncherGameNameRegionCollection?.ContainsKey(stamp.GameName) ?? false)
-                                    LauncherGameNameRegionCollection?.Add(stamp.GameName, []);
+                                    LauncherGameNameRegionCollection.Add(stamp.GameName, []);
 
                                 // Add the game region name into collection
                                 if (!LauncherGameNameRegionCollection?[stamp.GameName]?.Contains(stamp.GameRegion) ?? false)
-                                    LauncherGameNameRegionCollection?[stamp.GameName]?.Add(stamp.GameRegion);
+                                    LauncherGameNameRegionCollection[stamp.GameName]?.Add(stamp.GameRegion);
 
                                 // If the game preset config dictionary doesn't have the game region, then add it.
                                 if (!LauncherMetadataConfig?[stamp.GameName]?.ContainsKey(stamp.GameRegion) ?? false)
-                                    LauncherMetadataConfig?[stamp.GameName]?.Add(stamp.GameRegion, presetConfig);
+                                    LauncherMetadataConfig[stamp.GameName]?.Add(stamp.GameRegion, presetConfig);
 
                                 break;
                             }
@@ -566,9 +566,9 @@ namespace CollapseLauncher.Helper.Metadata
                                                                        && remoteMetadataStamp.LastUpdated ==
                                                                        x?.LastUpdated
                                                                        && remoteMetadataStamp.MetadataPath ==
-                                                                       x?.MetadataPath
+                                                                       x.MetadataPath
                                                                        && remoteMetadataStamp.MetadataType ==
-                                                                       x?.MetadataType);
+                                                                       x.MetadataType);
                         if (localStamp != null) continue;
 
 
@@ -678,15 +678,15 @@ namespace CollapseLauncher.Helper.Metadata
                     throw new FileNotFoundException($"Unable to update the stamp file because it is not exist! It should have been located here: {stampPath}");
 
                 // Read the old stamp list stream
-                List<Stamp?>? oldStampList = null;
+                List<Stamp?>? oldStampList;
                 using (FileStream stampStream = File.OpenRead(stampPath))
                 {
                     // Deserialize and do sanitize if the old stamp list is empty
                     oldStampList = await stampStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
-                    if (oldStampList == null || oldStampList?.Count == 0)
+                    if (oldStampList == null || oldStampList.Count == 0)
                         throw new NullReferenceException($"The old stamp list contains an empty/null content!");
 
-                    // Try iterate the new stamp list to replace the old ones or add a new entry
+                    // Try to iterate the new stamp list to replace the old ones or add a new entry
                     foreach (Stamp? newStamp in newStampList)
                     {
                         if (newStamp == null) continue;
@@ -702,7 +702,7 @@ namespace CollapseLauncher.Helper.Metadata
                                                                           x?.MetadataType);
                         // Check if the old stamp ref is null or index of old stamp reference returns < 0, then
                         // add it as a new entry.
-                        int indexOfOldStamp = 0;
+                        int indexOfOldStamp;
                         if (oldStampRef == null || (indexOfOldStamp = oldStampList?.IndexOf(oldStampRef) ?? -1) < 0)
                             oldStampList?.Add(newStamp);
                         // Otherwise, overwrite with the new one

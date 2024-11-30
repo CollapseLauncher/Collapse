@@ -22,7 +22,7 @@ namespace CollapseLauncher
     [JsonSourceGenerationOptions(AllowOutOfOrderMetadataProperties = true, AllowTrailingCommas = true)]
     internal partial class ZenlessManifestContext : JsonSerializerContext { }
 
-    internal class ZenlessManifestInterceptStream : Stream
+    internal partial class ZenlessManifestInterceptStream : Stream
     {
         private readonly Stream _redirectStream;
         private readonly Stream _innerStream;

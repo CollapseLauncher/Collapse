@@ -24,6 +24,7 @@ namespace CollapseLauncher.GameSettings.Base
 
     internal static class MagicNodeBaseValuesExt
     {
+        // ReSharper disable once UnusedMember.Local
         private static readonly JsonSerializerOptions JsonSerializerOpts = new JsonSerializerOptions
         {
             AllowTrailingCommas = true,
@@ -384,7 +385,7 @@ namespace CollapseLauncher.GameSettings.Base
             T data = new T();
 
             // Generate raw JSON string
-            string rawJson = data.Serialize(typeInfo, false, false);
+            string rawJson = data.Serialize(typeInfo, false);
 
             // Deserialize it back to JSON Node and inject
             // the node and magic
@@ -406,7 +407,7 @@ namespace CollapseLauncher.GameSettings.Base
                 Directory.CreateDirectory(fileDirPath!);
 
             // Write into the file
-            string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false, false);
+            string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false);
             Sleepy.WriteString(filePath, jsonString, Magic);
         }
 

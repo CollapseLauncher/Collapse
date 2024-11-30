@@ -33,7 +33,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class MediaPlayerLoader : IBackgroundMediaLoader
+    internal partial class MediaPlayerLoader : IBackgroundMediaLoader
     {
     #pragma warning disable CS0169 // Field is never used
         private bool _isFocusChangeRunning;
@@ -127,7 +127,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                     CurrentMediaImage!.Source = CurrentCanvasImageSource;
                     CurrentMediaImage.Visibility = Visibility.Visible;
-                    App.ToggleBlurBackdrop(true);
+                    App.ToggleBlurBackdrop();
                 }
                 else if (CurrentMediaImage != null)
                 {
@@ -286,8 +286,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
         {
             IsCanvasCurrentlyDrawing = true;
-            int bitmapWidth = CurrentFrameBitmap?.PixelWidth ?? 0;
-            int bitmapHeight = CurrentFrameBitmap?.PixelHeight ?? 0;
 
             if (CurrentCanvasImageSource == null)
             {
@@ -311,7 +309,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
                         mediaPlayer.CopyFrameToVideoSurface(CanvasBitmap);
                         canvasDrawingSession.DrawImage(CanvasBitmap);
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        LogWriteLine($"[FrameGrabberEvent] Error drawing frame to canvas.\r\n{e}", LogType.Error, true);
+                    }
                 });
             }
             IsCanvasCurrentlyDrawing = false;
