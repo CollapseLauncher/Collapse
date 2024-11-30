@@ -6,6 +6,7 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
@@ -37,7 +38,7 @@ namespace CollapseLauncher
             // Ensure to delete the DXSetup files
             EnsureDeleteDXSetupFiles();
 
-            // Try move persistent files to StreamingAssets
+            // Try to move persistent files to StreamingAssets
             if (_isParsePersistentManifestSuccess) TryMovePersistentToStreamingAssets(assetIndex);
 
             // Check for any redundant files
@@ -46,11 +47,28 @@ namespace CollapseLauncher
             // Await the task for parallel processing
             try
             {
+                var threadCount = _threadCount;
+                var isSsd = Hi3Helper.Win32.Native.PInvoke.IsDriveSsd(_gameStreamingAssetsPath,
+                                                                      ILoggerHelper.GetILogger());
+                if (!isSsd)
+                {
+                    threadCount = 1;
+                    LogWriteLine($"The drive is not SSD, the repair process will be slower!.\r\n\t" +
+                                 $"Thread count set to {threadCount}.", LogType.Warning, true);
+                }
+                
+                var runningTask = new ConcurrentDictionary<PkgVersionProperties, byte>();
                 // Await the task for parallel processing
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
-                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
+                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
+                    if (!runningTask.TryAdd(asset, 0))
+                    {
+                        LogWriteLine($"Found duplicated task for {asset.remoteURL}! Skipping...", LogType.Warning, true);
+                        return;
+                    }
                     await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
+                    runningTask.Remove(asset, out _);
                 });
             }
             catch (AggregateException ex)
@@ -83,7 +101,7 @@ namespace CollapseLauncher
 
         private void TryMoveAudioPersistent(IEnumerable<PkgVersionProperties> assetIndex)
         {
-            // Try get the exclusion list of the audio (language specific) files
+            // Try to get the exclusion list of the audio (language specific) files
             string[] exclusionList = assetIndex
                 .Where(x => x.isForceStoreInPersistent && x.remoteName
                     .AsSpan()
@@ -92,7 +110,7 @@ namespace CollapseLauncher
                     .Replace('/', '\\'))
                 .ToArray();
 
-            // Get the audio directory paths and create if doesn't exist
+            // Get the audio directory paths and create if it doesn't exist
             string audioAsbPath = Path.Combine(_gameStreamingAssetsPath, "AudioAssets");
             string audioPersistentPath = Path.Combine(_gamePersistentPath, "AudioAssets");
             if (!Directory.Exists(audioPersistentPath)) return;
@@ -110,7 +128,7 @@ namespace CollapseLauncher
                 // If the path section matches the name in language list, then continue
                 if (audioLangList.Contains(langName))
                 {
-                    // Enumerate the files that's being exist in the persistent path of each language
+                    // Enumerate the files that's exist in the persistent path of each language
                     // except the one that's included in the exclusion list
                     foreach (string filePath in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
                         .Where(x => !exclusionList.Any(y => x.AsSpan().EndsWith(y.AsSpan()))))
@@ -120,7 +138,7 @@ namespace CollapseLauncher
                         // Combine the generic name with audioAsbPath
                         string newPath = EnsureCreationOfDirectory(Path.Combine(audioAsbPath, pathName));
 
-                        // Try move the file to the asb path
+                        // Try to move the file to the asb path
                         File.Move(filePath, newPath, true);
                     }
                 }
@@ -272,6 +290,7 @@ namespace CollapseLauncher
 
             async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, ReadOnlyMemory<byte> hashToCompare, CancellationToken cancelToken)
             {
+                if (_useFastMethod) return true; // Skip the hash calculation if the fast method is enabled
                 // Refresh the fileInfo
                 fileInfo.Refresh();
 
