@@ -126,7 +126,7 @@ namespace CollapseLauncher.Pages
                 // ignored
             }
 
-            barWidth = ((consoleWidth - 22) / 2) - 1;
+            barWidth = (consoleWidth - 22) / 2 - 1;
         }
 
         private bool IsPageUnload { get; set; }
@@ -2177,6 +2177,10 @@ namespace CollapseLauncher.Pages
         {
             var saveGameLog = GetAppConfigValue("IncludeGameLogs").ToBool();
             InitializeConsoleValues();
+            
+            // JUST IN CASE
+            // Sentry issue ref : COLLAPSE-LAUNCHER-55; Event ID: 13059407
+            if (int.IsNegative(barWidth)) barWidth = 30;
             
             LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning,
                          true);
