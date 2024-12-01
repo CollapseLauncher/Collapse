@@ -1072,21 +1072,24 @@ namespace CollapseLauncher.Interfaces
             BinaryPatchUtility patchUtil = new BinaryPatchUtility();
             try
             {
+                string inputFilePath = inputFile.FullName;
+                string patchFilePath = patchOutputFile.FullName;
+                string outputFilePath = outputFile.FullName;
+
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
-                patchUtil.Initialize(inputFile.FullName, patchOutputFile.FullName, outputFile.FullName);
+                patchUtil.Initialize(inputFilePath, patchFilePath, outputFilePath);
                 await Task.Run(() => patchUtil.Apply(token), token);
 
                 // Delete old block
+                inputFile.Refresh();
                 inputFile.Delete();
                 if (isNeedRename)
                 {
                     // Rename to the original filename
+                    outputFile.Refresh();
                     outputFile.MoveTo(inputFile.FullName, true);
                 }
-
-                inputFile.Refresh();
-                outputFile.Refresh();
             }
             finally
             {
