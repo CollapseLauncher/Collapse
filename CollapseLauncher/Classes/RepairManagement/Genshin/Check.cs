@@ -4,6 +4,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.Native;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -48,8 +49,7 @@ namespace CollapseLauncher
             try
             {
                 var threadCount = _threadCount;
-                var isSsd = Hi3Helper.Win32.Native.PInvoke.IsDriveSsd(_gameStreamingAssetsPath,
-                                                                      ILoggerHelper.GetILogger());
+                var isSsd = PInvoke.IsDriveSsd(_gameStreamingAssetsPath, ILoggerHelper.GetILogger());
                 if (!isSsd)
                 {
                     threadCount = 1;
@@ -218,22 +218,24 @@ namespace CollapseLauncher
                                                  // Add the count and asset. Mark the type as "RepairAssetType.Unused"
                                                  _progressAllCountFound++;
 
+                                                 PkgVersionProperties clonedAsset = asset.Clone();
+
                                                  Dispatch(() => AssetEntry.Add(
                                                                                new AssetProperty<RepairAssetType>(
                                                                                     Path.GetFileName(c),
                                                                                     RepairAssetType.Unused,
                                                                                     Path.GetDirectoryName(c),
-                                                                                    asset.fileSize,
+                                                                                    clonedAsset.fileSize,
                                                                                     null,
                                                                                     null
                                                                                    )
                                                                               ));
 
-                                                 asset.type      = "Unused";
-                                                 asset.localName = d;
-                                                 targetAssetIndex.Add(asset);
+                                                 clonedAsset.type      = "Unused";
+                                                 clonedAsset.localName = d;
+                                                 targetAssetIndex.Add(clonedAsset);
 
-                                                 LogWriteLine($"File [T: {asset.type}]: {c} is redundant (exist both in persistent and streaming)", LogType.Warning, true);
+                                                 LogWriteLine($"File [T: {clonedAsset.type}]: {c} is redundant (exist both in persistent and streaming)", LogType.Warning, true);
                                              }
                                              );
 

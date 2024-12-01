@@ -263,7 +263,7 @@ namespace CollapseLauncher
                 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataVerURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "data_versions_persist", basePersistentPath,
-                    baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
+                    baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
                 // Parse data_versions (silence)
                 var dataSilURL = queryProperty.ClientDesignDataSilURL;
@@ -273,7 +273,7 @@ namespace CollapseLauncher
                 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataSilURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
-                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, true);
+                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
 
                 // Save persistent manifest numbers
                 SavePersistentRevision(queryProperty);
@@ -290,7 +290,7 @@ namespace CollapseLauncher
             string manifestRemoteName, string manifestLocalName,
             string persistentPath, string streamingAssetsPath,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            CancellationToken token, bool forceStoreInPersistent = false, bool forceOverwrite = false)
+            CancellationToken token, bool forceOverwrite = false)
         {
             try
             {
@@ -312,7 +312,7 @@ namespace CollapseLauncher
                 ParsePersistentManifest(manifestPath,
                     persistentPath, streamingAssetsPath,
                     primaryParentURL, secondaryParentURL,
-                    assetIndex, hashtable, forceStoreInPersistent, forceOverwrite);
+                    assetIndex, hashtable, forceOverwrite);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
@@ -326,7 +326,7 @@ namespace CollapseLauncher
             string persistentPath, string streamingAssetPath,
             string primaryParentURL, string secondaryParentURL,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            bool forceStoreInPersistent, bool forceOverwrite)
+            bool forceOverwrite)
         {
             persistentPath = persistentPath.Replace('\\', '/');
             streamingAssetPath = streamingAssetPath.Replace('\\', '/');
@@ -372,15 +372,14 @@ namespace CollapseLauncher
                 manifestEntry.remoteName           = assetStreamingAssetPath;
                 manifestEntry.remoteNamePersistent = assetPersistentPath;
                 // Decide if the file is forced to be in persistent or not
-                manifestEntry.isForceStoreInPersistent = forceStoreInPersistent || manifestEntry.isPatch;
+                manifestEntry.isForceStoreInPersistent = manifestEntry.isPatch;
 
                 // If forceOverwrite and forceStoreInPersistent is true, then
                 // make it as a patch file and store it to persistent
-                if (forceOverwrite && forceStoreInPersistent)
+                if (forceOverwrite)
                 {
                     manifestEntry.isForceStoreInStreaming  = false;
                     manifestEntry.isForceStoreInPersistent = true;
-                    manifestEntry.isPatch                  = true;
                 }
 
                 // If the manifest has isPatch set to true, then set force store in streaming to false
@@ -398,12 +397,17 @@ namespace CollapseLauncher
                     // Otherwise, continue overriding its value
                     if (indexID == -1) continue;
 
+                    // Check if the hash is equal from reference/old manifest
+                    bool isHashEqual = reference.md5.Equals(manifestEntry.md5);
+
+                    // If it has isForceStoreStreamingAssets flag, isPatch is false and the hash is equal, then continue.
+                    if (reference.isForceStoreInStreaming
+                        && !manifestEntry.isPatch
+                        && isHashEqual) continue;
+
                     // Override the force state if isPatch is true
                     manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
-
-                    // If it has isForceStoreStreamingAssets flag and isPatch is false, then continue.
-                    if (hashtable[assetStreamingAssetPath].isForceStoreInStreaming
-                        && !manifestEntry.isPatch) continue;
+                    manifestEntry.isForceStoreInPersistent = !isHashEqual; // Set the persistent state if hash is not equal.
 
                     // Start overriding the value
                     hashtable[assetStreamingAssetPath] = manifestEntry;
@@ -412,6 +416,7 @@ namespace CollapseLauncher
                 else
                 {
                     manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
+                    manifestEntry.isForceStoreInPersistent = manifestEntry.isPatch;
 
                     hashtable.Add(manifestEntry.remoteName, manifestEntry);
                     assetIndex.Add(manifestEntry);
