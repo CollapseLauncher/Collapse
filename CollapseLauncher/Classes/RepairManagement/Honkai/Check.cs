@@ -216,30 +216,27 @@ namespace CollapseLauncher
                 // Increment/decrement the size of the file based on size differences
                 _progressAllSizeCurrent += sizeDifference;
                 // Increment progress count and size
-                if (asset.AudioPatchInfo != null)
-                {
-                    _progressAllSizeFound +=
-                        asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
-                    _progressAllCountFound++;
+                _progressAllSizeFound +=
+                    asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
+                _progressAllCountFound++;
 
-                    // Add asset to Display
-                    Dispatch(() => AssetEntry.Add(
-                                                  new AssetProperty<RepairAssetType>(
-                                                       Path.GetFileName(asset.N),
-                                                       asset.IsPatchApplicable
-                                                           ? RepairAssetType.AudioUpdate
-                                                           : RepairAssetType.Audio,
-                                                       Path.GetDirectoryName(asset.N),
-                                                       asset.IsPatchApplicable
-                                                           ? asset.AudioPatchInfo.Value.PatchFileSize
-                                                           : asset.S,
-                                                       localCRC,
-                                                       asset.IsPatchApplicable
-                                                           ? asset.AudioPatchInfo.Value.NewAudioMD5Array
-                                                           : asset.CRCArray
-                                                      )
-                                                 ));
-                }
+                // Add asset to Display
+                Dispatch(() => AssetEntry.Add(
+                     new AssetProperty<RepairAssetType>(
+                          Path.GetFileName(asset.N),
+                          asset.IsPatchApplicable
+                              ? RepairAssetType.AudioUpdate
+                              : RepairAssetType.Audio,
+                          Path.GetDirectoryName(asset.N),
+                          asset.IsPatchApplicable
+                              ? asset.AudioPatchInfo.Value.PatchFileSize
+                              : asset.S,
+                          localCRC,
+                          asset.IsPatchApplicable
+                              ? asset.AudioPatchInfo.Value.NewAudioMD5Array
+                              : asset.CRCArray
+                         )
+                    ));
 
                 // Add asset into targetAssetIndex
                 targetAssetIndex.Add(asset);
