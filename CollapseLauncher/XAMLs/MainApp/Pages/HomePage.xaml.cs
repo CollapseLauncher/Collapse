@@ -1731,7 +1731,7 @@ namespace CollapseLauncher.Pages
                 // Set game process priority to Above Normal when GameBoost is on
                 if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost)
             #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    Task.Run(async () => await GameBoost_Invoke(CurrentGameProperty));
+                    Task.Run(() => Task.FromResult(_ = GameBoost_Invoke(CurrentGameProperty)));
             #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 // Run game process watcher
@@ -2773,7 +2773,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private int _gameBoostInvokeTryCount = 0;
+        private int GameBoostInvokeTryCount { get; set; }
         private async Task GameBoost_Invoke(GamePresetProperty gameProp)
         {
 #nullable enable
@@ -2806,25 +2806,25 @@ namespace CollapseLauncher.Pages
 
                 // Assign the priority to the process and write a log (just for displaying any info)
                 toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                GameBoostInvokeTryCount    = 0;
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
                              $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
             }
-            catch (Exception ex) when (_gameBoostInvokeTryCount < 3)
+            catch (Exception ex) when (GameBoostInvokeTryCount < 3)
             {
-                LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{_gameBoostInvokeTryCount})" +
+                LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
                              $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
-                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
-                _gameBoostInvokeTryCount++;
-                await Task.Run(async () =>
-                             {
-                                 await GameBoost_Invoke(gameProp);
-                             });
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
+                             LogType.Error, true);
+                GameBoostInvokeTryCount++;
+                _ = Task.Run(async () => { await GameBoost_Invoke(gameProp); });
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
-                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
+                             LogType.Error, true);
             }
 #nullable restore
         }
