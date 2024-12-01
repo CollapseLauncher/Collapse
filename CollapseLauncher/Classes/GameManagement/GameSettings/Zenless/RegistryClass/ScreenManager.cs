@@ -16,7 +16,9 @@ namespace CollapseLauncher.GameSettings.Zenless
     {
         #region Fields
         private const  string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
+        private const  string _ValueNameScreenManagerWidthDef   = "Screenmanager Resolution Width Default_h680557497";
         private const  string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
+        private const  string _ValueNameScreenManagerHeightDef  = "Screenmanager Resolution Height Default_h1380706816";
         private const  string _ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
         private static Size   currentRes                        = WindowUtility.CurrentScreenProp.CurrentResolution;
         #endregion
@@ -155,7 +157,9 @@ namespace CollapseLauncher.GameSettings.Zenless
             {
                 RegistryRoot?.SetValue(_ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
                 RegistryRoot?.SetValue(_ValueNameScreenManagerWidth, width, RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(_ValueNameScreenManagerWidthDef, width, RegistryValueKind.DWord);
                 RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(_ValueNameScreenManagerHeightDef, height, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Zenless Settings:\r\n\t" +
                              $"{_ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(_ValueNameScreenManagerFullscreen, null)}\r\n\t" +
