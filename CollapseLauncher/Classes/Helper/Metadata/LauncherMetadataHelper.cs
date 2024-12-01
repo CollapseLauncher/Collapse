@@ -450,22 +450,26 @@ namespace CollapseLauncher.Helper.Metadata
                                 await configLocalStream.DisposeAsync();
 
                                 // If the dictionary doesn't contain the dictionary of the game, then initialize it
-                                Dictionary<string, PresetConfig> presetConfigDict = [];
+                                var presetConfigDict = new Dictionary<string, PresetConfig>();
                                 if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
                                     // Initialize and add the game preset config dictionary
-                                    LauncherMetadataConfig.Add(stamp.GameName, presetConfigDict);
+                                    // ReSharper disable once ConstantConditionalAccessQualifier
+                                    LauncherMetadataConfig?.Add(stamp.GameName, presetConfigDict);
 
                                 // If the game name region collection is not exist, create a new one
                                 if (!LauncherGameNameRegionCollection?.ContainsKey(stamp.GameName) ?? false)
-                                    LauncherGameNameRegionCollection.Add(stamp.GameName, []);
+                                    // ReSharper disable once ConstantConditionalAccessQualifier
+                                    LauncherGameNameRegionCollection?.Add(stamp.GameName, []);
 
                                 // Add the game region name into collection
                                 if (!LauncherGameNameRegionCollection?[stamp.GameName]?.Contains(stamp.GameRegion) ?? false)
-                                    LauncherGameNameRegionCollection[stamp.GameName]?.Add(stamp.GameRegion);
+                                    // ReSharper disable once ConstantConditionalAccessQualifier
+                                    LauncherGameNameRegionCollection?[stamp.GameName]?.Add(stamp.GameRegion);
 
                                 // If the game preset config dictionary doesn't have the game region, then add it.
                                 if (!LauncherMetadataConfig?[stamp.GameName]?.ContainsKey(stamp.GameRegion) ?? false)
-                                    LauncherMetadataConfig[stamp.GameName]?.Add(stamp.GameRegion, presetConfig);
+                                    // ReSharper disable once ConstantConditionalAccessQualifier
+                                    LauncherMetadataConfig?[stamp.GameName]?.Add(stamp.GameRegion, presetConfig);
 
                                 break;
                             }
