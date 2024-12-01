@@ -167,6 +167,7 @@
     "GamePlaytime_Idle_ResetBtn": "重置",
     "GamePlaytime_Idle_ChangeBtn": "更改",
     "GamePlaytime_Idle_SyncDb": "同步",
+    "GamePlaytime_Idle_SyncDbSyncing": "同步中……",
     "GamePlaytime_Running_Info1": "目前游戏有一个进程在运行，所以无法编辑游戏时间。",
     "GamePlaytime_Running_Info2": "请注意，完全关闭 Collapse 将停止游戏时间统计（将仅记录至退出的时刻）。",
     "GamePlaytime_Display": "{0}小时 {1}分钟",

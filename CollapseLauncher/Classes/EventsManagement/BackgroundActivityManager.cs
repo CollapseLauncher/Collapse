@@ -55,8 +55,8 @@ namespace CollapseLauncher
             Thickness containerNotClosableMargin = new Thickness(-28, -8, 24, 20);
             Thickness containerClosableMargin = new Thickness(-28, -8, -28, 20);
 
-            InfoBar _parentNotifUI = new InfoBar()
-            {
+            InfoBar _parentNotifUI = new InfoBar
+                                     {
                 Tag = hashID,
                 Severity = InfoBarSeverity.Informational,
                 Background = (Brush)Application.Current!.Resources!["InfoBarAnnouncementBrush"],
@@ -89,7 +89,7 @@ namespace CollapseLauncher
 
             GamePresetProperty CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
             _ = progressLogoContainer.AddElementToStackPanel(
-                new Image()
+                new Image
                 {
                     Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch
                     {
@@ -115,30 +115,30 @@ namespace CollapseLauncher
                     .WithMargin(0d, 0d, 0d, 16d)
             );
 
-            TextBlock progressLeftTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            TextBlock progressLeftTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
                 Text = Lang!._BackgroundNotification!.LoadingTitle,
-            }, 0, 0);
-            TextBlock progressLeftSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            });
+            TextBlock progressLeftSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
                 Text = Lang._BackgroundNotification.Placeholder,
-            }, 1, 0);
+            }, 1);
 
-            TextBlock progressRightTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            TextBlock progressRightTitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("BodyStrongTextBlockStyle"),
                 Text = Lang._BackgroundNotification.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 0, 1);
-            TextBlock progressRightSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock()
+            TextBlock progressRightSubtitle = progressStatusGrid.AddElementToGridRowColumn(new TextBlock
             {
                 Style = UIElementExtensions.GetApplicationResource<Style>("CaptionTextBlockStyle"),
                 Text = Lang._BackgroundNotification.Placeholder
             }.WithHorizontalAlignment(HorizontalAlignment.Right), 1, 1);
 
             ProgressBar progressBar = progressStatusContainer.AddElementToStackPanel(
-                new ProgressBar() { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true });
+                new ProgressBar { Minimum = 0, Maximum = 100, Value = 0, IsIndeterminate = true });
 
             Button cancelButton =
                 UIElementExtensions.CreateButtonWithIcon<Button>(
@@ -175,7 +175,7 @@ namespace CollapseLauncher
             );
             controlButtons.AddElementToStackPanel(settingsButton, cancelButton);
 
-            EventHandler<TotalPerfileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
+            EventHandler<TotalPerFileProgress> ProgressChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.Value = args!.ProgressAllPercentage;
                 progressLeftSubtitle.Text = string.Format(Lang._Misc!.Speed!, ConverterTool.SummarizeSizeSimple(args.ProgressAllSpeed));
@@ -183,7 +183,7 @@ namespace CollapseLauncher
                 progressRightSubtitle.Text = string.Format(Lang._UpdatePage!.UpdateHeader1! + " {0}%", args.ProgressAllPercentage);
             });
 
-            EventHandler<TotalPerfileStatus> StatusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
+            EventHandler<TotalPerFileStatus> StatusChangedEventHandler = (_, args) => activity?.Dispatch(() =>
             {
                 progressBar.IsIndeterminate = args!.IsProgressAllIndetermined;
                 progressLeftTitle.Text = args.ActivityStatus;

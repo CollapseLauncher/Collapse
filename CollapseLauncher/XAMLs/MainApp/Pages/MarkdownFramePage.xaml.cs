@@ -16,6 +16,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 #nullable enable
 namespace CollapseLauncher
 {
+    // ReSharper disable once RedundantExtendsListEntry
     public sealed partial class MarkdownFramePage : Page
     {
         /// <summary>

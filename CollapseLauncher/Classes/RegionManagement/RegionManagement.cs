@@ -29,6 +29,7 @@ namespace CollapseLauncher
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]      
     public sealed partial class MainPage
     {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private GamePresetProperty CurrentGameProperty { get; set; }
         private bool IsLoadRegionComplete { get; set; }
 
@@ -51,7 +52,7 @@ namespace CollapseLauncher
 
                     ClearMainPageState();
                     DisableKbShortcuts(1000);
-                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await Task.Delay(TimeSpan.FromSeconds(1), token);
                     if (preset.GameLauncherApi.IsLoadingCompleted || token.IsCancellationRequested) return;
 
                     LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle, regionToChangeName);

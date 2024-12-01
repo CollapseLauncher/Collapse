@@ -56,7 +56,7 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        internal static unsafe string? UnprotectString(string? input)
+        internal static string? UnprotectString(string? input)
         {
             if (string.IsNullOrEmpty(input))
                 return null;
@@ -108,4 +108,3 @@ namespace CollapseLauncher.Helper
         }
     }
 }
-#nullable restore

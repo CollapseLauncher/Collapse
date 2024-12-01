@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.IO;
 
@@ -35,7 +34,7 @@ namespace CollapseLauncher.Pages.OOBE
         internal static OOBEStartUpMenu oobeStartParentUI;
     }
 
-    public sealed partial class OOBEAgreementMenu : Page
+    public sealed partial class OOBEAgreementMenu
     {
         private List<AgreementProperty> markdownFileList = new List<AgreementProperty>
         {

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal class GameTypeGenshinVersion : GameVersionBase
+    internal sealed class GameTypeGenshinVersion : GameVersionBase
     {
         #region Const
         private const string GlobalExecName = "GenshinImpact.exe";
@@ -180,9 +180,9 @@ namespace CollapseLauncher.GameVersioning
                 {
                     foreach (FileInfo oldFileInfo in oldDirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
                     {
-                        string? oldDirPath = oldDirInfo.FullName;
-                        string? oldFilePathRel = oldFileInfo.FullName.Substring(oldDirPath.Length).Trim('\\');
-                        string? newFilePath = Path.Combine(fullDirPathTo, oldFilePathRel);
+                        string oldDirPath = oldDirInfo.FullName;
+                        string oldFilePathRel = oldFileInfo.FullName.Substring(oldDirPath.Length).Trim('\\');
+                        string newFilePath = Path.Combine(fullDirPathTo, oldFilePathRel);
                         string? newFileDirPath = Path.GetDirectoryName(newFilePath);
 
                         if (!string.IsNullOrEmpty(newFileDirPath) && !Directory.Exists(newFileDirPath))
@@ -199,6 +199,5 @@ namespace CollapseLauncher.GameVersioning
                 }
             }
         }
-#nullable restore
     }
 }

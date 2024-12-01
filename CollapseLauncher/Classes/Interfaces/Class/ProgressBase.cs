@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -40,10 +41,10 @@ namespace CollapseLauncher.Interfaces
 
         private void Init()
         {
-            _status = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
-            _progress = new TotalPerfileProgress();
-            _sophonStatus = new TotalPerfileStatus() { IsIncludePerFileIndicator = true };
-            _sophonProgress = new TotalPerfileProgress();
+            _status = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
+            _progress = new TotalPerFileProgress();
+            _sophonStatus = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
+            _sophonProgress = new TotalPerFileProgress();
             _stopwatch = Stopwatch.StartNew();
             _refreshStopwatch = Stopwatch.StartNew();
             _downloadSpeedRefreshStopwatch = Stopwatch.StartNew();
@@ -52,13 +53,13 @@ namespace CollapseLauncher.Interfaces
 
         private readonly Lock _objLock = new();
 
-        public event EventHandler<TotalPerfileProgress>? ProgressChanged;
-        public event EventHandler<TotalPerfileStatus>?   StatusChanged;
+        public event EventHandler<TotalPerFileProgress>? ProgressChanged;
+        public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-        protected TotalPerfileStatus?   _sophonStatus;
-        protected TotalPerfileProgress? _sophonProgress;
-        protected TotalPerfileStatus?   _status;
-        protected TotalPerfileProgress? _progress;
+        protected TotalPerFileStatus?   _sophonStatus;
+        protected TotalPerFileProgress? _sophonProgress;
+        protected TotalPerFileStatus?   _status;
+        protected TotalPerFileProgress? _progress;
         protected int                   _progressAllCountCurrent;
         protected int                   _progressAllCountFound;
         protected int                   _progressAllCountTotal;
@@ -78,8 +79,8 @@ namespace CollapseLauncher.Interfaces
         protected bool _isSophonInUpdateMode { get; set; }
 
         #region ProgressEventHandlers - Fetch
-        protected void _innerObject_ProgressAdapter(object? sender, TotalPerfileProgress e) => ProgressChanged?.Invoke(sender, e);
-        protected void _innerObject_StatusAdapter(object? sender, TotalPerfileStatus e) => StatusChanged?.Invoke(sender, e);
+        protected void _innerObject_ProgressAdapter(object? sender, TotalPerFileProgress e) => ProgressChanged?.Invoke(sender, e);
+        protected void _innerObject_StatusAdapter(object? sender, TotalPerFileStatus e) => StatusChanged?.Invoke(sender, e);
 
         protected virtual async void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadProgress)
         {
@@ -483,16 +484,10 @@ namespace CollapseLauncher.Interfaces
         }
 
         protected string EnsureCreationOfDirectory(string str)
-        {
-            if (string.IsNullOrEmpty(str))
-                ArgumentException.ThrowIfNullOrEmpty(str);
+            => StreamUtility.EnsureCreationOfDirectory(str).FullName;
 
-            string? dir = Path.GetDirectoryName(str);
-            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            return str;
-        }
+        protected string EnsureCreationOfDirectory(FileInfo str)
+            => str.EnsureCreationOfDirectory().FullName;
 
         protected void TryUnassignReadOnlyFiles(string path)
         {
@@ -687,7 +682,10 @@ namespace CollapseLauncher.Interfaces
 
                 // Update the read status
                 downloaded += read;
-                _progress!.ProgressPerFilePercentage = Math.Round((downloaded / sizeToDownload) * 100, 2);
+                lock (_progress!)
+                {
+                    _progress.ProgressPerFilePercentage = Math.Round((downloaded / sizeToDownload) * 100, 2);
+                }
                 lock (_status!)
                 {
                     _status!.ActivityPerFile = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle3!, ConverterTool.SummarizeSizeSimple(downloaded / sw.Elapsed.TotalSeconds));
@@ -710,8 +708,6 @@ namespace CollapseLauncher.Interfaces
 
             // Initialize SDK DLL path variables
             string   sdkDllPath;
-            string?  sdkDllDir;
-            FileInfo sdkDllFile;
 
             // Set total activity string as "Loading Indexes..."
             _status!.ActivityStatus = Lang!._GameRepairPage!.Status2;
@@ -736,20 +732,17 @@ namespace CollapseLauncher.Interfaces
                     case "PCGameSDK":
                         // Set the SDK DLL path
                         sdkDllPath = Path.Combine(_gamePath!, $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data", "Plugins", "PCGameSDK.dll");
-                        sdkDllDir  = Path.GetDirectoryName(sdkDllPath);
-                        sdkDllFile = new FileInfo(sdkDllPath);
-
-                        // Create the folder of the SDK DLL if it doesn't exist
-                        if (!Directory.Exists(sdkDllDir)) Directory.CreateDirectory(sdkDllDir!);
                         break;
                     case "sdk_pkg_version":
                         // Set the SDK DLL path to be used for sdk_pkg_version
                         sdkDllPath = Path.Combine(_gamePath!, "sdk_pkg_version");
-                        sdkDllFile = new FileInfo(sdkDllPath);
                         break;
                     default:
                         continue;
                 }
+
+                // Assign FileInfo to sdkDllPath
+                FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
 
                 // Do check if sdkDllFile is not null
                 // Try to create the file if not exist or open an existing one
@@ -904,7 +897,7 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
 
-        protected virtual async Task RunDownloadTask(long assetSize, string assetPath, string assetURL,
+        protected virtual async Task RunDownloadTask(long assetSize, FileInfo assetPath, string assetURL,
             DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true)
         {
             // For any instances that uses Burst Download and if the speed limiter is null when
@@ -923,7 +916,7 @@ namespace CollapseLauncher.Interfaces
                 // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
                 await downloadClient.DownloadAsync(
                     assetURL,
-                    EnsureCreationOfDirectory(assetPath),
+                    assetPath,
                     isOverwrite,
                     sessionChunkSize: LauncherConfig.DownloadChunkSize,
                     progressDelegateAsync: downloadProgress,
@@ -942,36 +935,10 @@ namespace CollapseLauncher.Interfaces
         }
 
         /// <summary>
-        /// IDK what Microsoft is smoking but for some reason, the file were throwing IO_SharingViolation_File error,
-        /// or sometimes "File is being used by another process" error even though the file HAS NEVER BEEN OPENED LIKE, WTFFF????!>!!!!!!
+        /// <inheritdoc cref="StreamUtility.NaivelyOpenFileStreamAsync(FileInfo, FileMode, FileAccess, FileShare, FileOptions)"/>
         /// </summary>
-        internal static async ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
-        {
-            const int maxTry = 10;
-            int currentTry = 1;
-            while (true)
-            {
-                try
-                {
-                    return info.Open(new FileStreamOptions
-                    {
-                        Mode = fileMode,
-                        Access = fileAccess,
-                        Share = fileShare
-                    });
-                }
-                catch
-                {
-                    if (currentTry > maxTry)
-                    {
-                        throw; // Throw this MFs
-                    }
-
-                    LogWriteLine($"Failed while trying to open: {info.FullName}. Retry attempt: {++currentTry} / {maxTry}", LogType.Warning, true);
-                    await Task.Delay(50); // Adding 50ms delay
-                }
-            }
-        }
+        internal static ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+            => info.NaivelyOpenFileStreamAsync(fileMode, fileAccess, fileShare);
         #endregion
 
         #region HashTools
@@ -996,13 +963,12 @@ namespace CollapseLauncher.Interfaces
                     // Append buffer into hash block
                     hashProvider.TransformBlock(buffer, 0, read, buffer, 0);
 
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        if (updateTotalProgress) _progressAllSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
+                    // Increment total size counter
+                    if (updateTotalProgress)
+                        Interlocked.Add(ref _progressAllSizeCurrent, read);
+
+                    // Increment per file size counter
+                    Interlocked.Add(ref _progressPerFileSizeCurrent, read);
 
                     // Update status and progress for MD5 calculation
                     UpdateProgressCRC();
@@ -1041,13 +1007,12 @@ namespace CollapseLauncher.Interfaces
                     // Append buffer into hash block
                     hashProvider.Append(buffer.AsSpan(0, read));
 
-                    lock (this)
-                    {
-                        // Increment total size counter
-                        if (updateTotalProgress) _progressAllSizeCurrent += read;
-                        // Increment per file size counter
-                        _progressPerFileSizeCurrent += read;
-                    }
+                    // Increment total size counter
+                    if (updateTotalProgress)
+                        Interlocked.Add(ref _progressAllSizeCurrent, read);
+
+                    // Increment per file size counter
+                    Interlocked.Add(ref _progressPerFileSizeCurrent, read);
 
                     // Update status and progress for Xxh64 calculation
                     UpdateProgressCRC();
@@ -1065,17 +1030,19 @@ namespace CollapseLauncher.Interfaces
 
         #region PatchTools
         protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, long patchSize, Memory<byte> patchHash,
-            string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false)
+                                                       string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false)
+            => await RunPatchTask(downloadClient, downloadProgress, token, patchSize,
+                patchHash, patchURL, new FileInfo(patchOutputFile).EnsureNoReadOnly(), new FileInfo(inputFile).EnsureNoReadOnly(), new FileInfo(outputFile).EnsureCreationOfDirectory().EnsureNoReadOnly(), isNeedRename);
+
+        protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, long patchSize, Memory<byte> patchHash,
+                                                       string patchURL, FileInfo patchOutputFile, FileInfo inputFile, FileInfo outputFile, bool isNeedRename = false)
         {
             ArgumentNullException.ThrowIfNull(patchOutputFile);
             ArgumentNullException.ThrowIfNull(inputFile);
             ArgumentNullException.ThrowIfNull(outputFile);
-            
-            // Get info about patch file
-            FileInfo patchInfo = new FileInfo(patchOutputFile);
 
             // If file doesn't exist, then download the patch first
-            if (!patchInfo.Exists || patchInfo.Length != patchSize)
+            if (!patchOutputFile.Exists || patchOutputFile.Length != patchSize)
             {
                 // Download patch File first
                 await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
@@ -1084,13 +1051,13 @@ namespace CollapseLauncher.Interfaces
             // Always do loop if patch doesn't get downloaded properly
             while (true)
             {
-                await using FileStream patchfs = new FileStream(patchOutputFile, FileMode.Open, FileAccess.Read, FileShare.None, _bufferBigLength);
-                // Verify the patch file and if it doesn't match, then redownload it
-                byte[] patchCrc = await CheckHashAsync(patchfs, MD5.Create(), token, false);
+                await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
+                // Verify the patch file and if it doesn't match, then re-download it
+                byte[] patchCrc = await CheckHashAsync(patchFileStream, MD5.Create(), token, false);
                 if (!IsArrayMatch(patchCrc, patchHash.Span))
                 {
                     // Revert back the total size
-                    _progressAllSizeCurrent -= patchSize;
+                    Interlocked.Add(ref _progressAllSizeCurrent, -patchSize);
 
                     // Redownload the patch file
                     await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
@@ -1105,28 +1072,32 @@ namespace CollapseLauncher.Interfaces
             BinaryPatchUtility patchUtil = new BinaryPatchUtility();
             try
             {
+                string inputFilePath = inputFile.FullName;
+                string patchFilePath = patchOutputFile.FullName;
+                string outputFilePath = outputFile.FullName;
+
                 // Subscribe patching progress and start applying patch
                 patchUtil.ProgressChanged += RepairTypeActionPatching_ProgressChanged;
-                patchUtil.Initialize(inputFile, patchOutputFile, outputFile);
+                patchUtil.Initialize(inputFilePath, patchFilePath, outputFilePath);
                 await Task.Run(() => patchUtil.Apply(token), token);
 
                 // Delete old block
-                File.Delete(inputFile);
+                inputFile.Refresh();
+                inputFile.Delete();
                 if (isNeedRename)
                 {
                     // Rename to the original filename
-                    File.Move(outputFile, inputFile, true);
+                    outputFile.Refresh();
+                    outputFile.MoveTo(inputFile.FullName, true);
                 }
             }
             finally
             {
                 // Delete the patch file and unsubscribe the patching progress
-                FileInfo fileInfo = new FileInfo(patchOutputFile);
-                if (fileInfo.Exists)
-                {
-                    fileInfo.IsReadOnly = false;
-                    fileInfo.Delete();
-                }
+                patchOutputFile.Refresh();
+                if (patchOutputFile.Exists)
+                    patchOutputFile.Delete();
+
                 patchUtil.ProgressChanged -= RepairTypeActionPatching_ProgressChanged;
             }
         }

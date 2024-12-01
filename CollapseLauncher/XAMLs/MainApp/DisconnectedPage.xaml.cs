@@ -14,7 +14,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher
 {
-    public sealed partial class DisconnectedPage : Page
+    public sealed partial class DisconnectedPage
     {
         public DisconnectedPage()
         {

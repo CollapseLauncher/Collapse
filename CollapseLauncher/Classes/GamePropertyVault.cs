@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.Statics
 {
-    internal class GamePresetProperty : IDisposable
+    internal partial class GamePresetProperty : IDisposable
     {
         internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
@@ -37,32 +37,32 @@ namespace CollapseLauncher.Statics
 
             PresetConfig gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
-            _APIResouceProp = apiResourceProp!.Copy();
+            _APIResourceProp = apiResourceProp!.Copy();
             switch (gamePreset!.GameType)
             {
                 case GameNameType.Honkai:
-                    _GameVersion  = new GameTypeHonkaiVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameVersion  = new GameTypeHonkaiVersion(uiElementParent, _APIResourceProp, gameName, gameRegion);
                     _GameSettings = new HonkaiSettings(_GameVersion);
                     _GameCache    = new HonkaiCache(uiElementParent, _GameVersion);
                     _GameRepair   = new HonkaiRepair(uiElementParent, _GameVersion, _GameCache, _GameSettings);
                     _GameInstall  = new HonkaiInstall(uiElementParent, _GameVersion, _GameCache, _GameSettings);
                     break;
                 case GameNameType.StarRail:
-                    _GameVersion  = new GameTypeStarRailVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameVersion  = new GameTypeStarRailVersion(uiElementParent, _APIResourceProp, gameName, gameRegion);
                     _GameSettings = new StarRailSettings(_GameVersion);
                     _GameCache    = new StarRailCache(uiElementParent, _GameVersion);
                     _GameRepair   = new StarRailRepair(uiElementParent, _GameVersion);
                     _GameInstall  = new StarRailInstall(uiElementParent, _GameVersion);
                     break;
                 case GameNameType.Genshin:
-                    _GameVersion  = new GameTypeGenshinVersion(uiElementParent, _APIResouceProp, gameName, gameRegion);
+                    _GameVersion  = new GameTypeGenshinVersion(uiElementParent, _APIResourceProp, gameName, gameRegion);
                     _GameSettings = new GenshinSettings(_GameVersion);
                     _GameCache    = null;
                     _GameRepair   = new GenshinRepair(uiElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
                     _GameInstall  = new GenshinInstall(uiElementParent, _GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    _GameVersion  = new GameTypeZenlessVersion(uiElementParent, _APIResouceProp, gamePreset, gameName, gameRegion);
+                    _GameVersion  = new GameTypeZenlessVersion(uiElementParent, _APIResourceProp, gamePreset, gameName, gameRegion);
                     ZenlessSettings gameSettings = new ZenlessSettings(_GameVersion);
                     _GameSettings = gameSettings;
                     _GameCache    = new ZenlessCache(uiElementParent, _GameVersion, gameSettings);
@@ -84,7 +84,7 @@ namespace CollapseLauncher.Statics
             SentryHelper.CurrentGameHasDelta   = _GameVersion.IsGameHasDeltaPatch();
         }
 
-        internal RegionResourceProp _APIResouceProp { get; set; }
+        internal RegionResourceProp _APIResourceProp { get; set; }
         internal PresetConfig _GamePreset { get => _GameVersion.GamePreset; }
         internal IGameSettings _GameSettings { get; set; }
         internal IGamePlaytime _GamePlaytime { get; set; }
@@ -180,7 +180,7 @@ namespace CollapseLauncher.Statics
             _GameInstall?.Dispose();
             _GamePlaytime?.Dispose();
 
-            _APIResouceProp = null;
+            _APIResourceProp = null;
             _GameSettings   = null;
             _GameRepair     = null;
             _GameCache      = null;
@@ -197,7 +197,7 @@ namespace CollapseLauncher.Statics
         public static int CurrentGameHashID { get; set; }
         public static GamePresetProperty GetCurrentGameProperty() => Vault![CurrentGameHashID];
 
-        public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
+        public static void LoadGameProperty(UIElement UIElementParent, RegionResourceProp apiResourceProp, string GameName, string GameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig != null)
             {
@@ -207,10 +207,10 @@ namespace CollapseLauncher.Statics
                 CurrentGameHashID = GamePreset!.HashID;
             }
 
-            RegisterGameProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
+            RegisterGameProperty(UIElementParent, apiResourceProp, GameName, GameRegion);
         }
 
-        private static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResouceProp, string GameName, string GameRegion)
+        private static void RegisterGameProperty(UIElement UIElementParent, RegionResourceProp APIResourceProp, string GameName, string GameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig != null)
             {
@@ -227,7 +227,7 @@ namespace CollapseLauncher.Statics
                     return;
                 }
 
-                GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResouceProp, GameName, GameRegion);
+                GamePresetProperty Property = new GamePresetProperty(UIElementParent, APIResourceProp, GameName, GameRegion);
                 Vault.Add(GamePreset.HashID, Property);
 #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {GamePreset.HashID}", LogType.Debug, true);

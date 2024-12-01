@@ -58,16 +58,14 @@ namespace CollapseLauncher
             m_arguments = new Arguments();
 
             // Matches anything that is between two \" or " and anything that is not a space.
-            var splitArgs = Regex.Matches(args.Arguments, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
-                                    .Cast<Match>()
-                                    .Select(x => x.Value.Trim('"'));
+            var splitArgs = Regex.Matches(args!.Arguments, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
+                                 .Select(x => x.Value.Trim('"'));
 
             ArgumentParser.ParseArguments(splitArgs.Skip(1).ToArray());
 
             if (m_arguments.StartGame != null)
             {
                 m_mainPage?.OpenAppActivation();
-                return;
             }
         }
 

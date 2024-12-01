@@ -167,6 +167,7 @@
     "GamePlaytime_Idle_ResetBtn": "リセット",
     "GamePlaytime_Idle_ChangeBtn": "変更",
     "GamePlaytime_Idle_SyncDb": "同期",
+    "GamePlaytime_Idle_SyncDbSyncing": "同期中…",
     "GamePlaytime_Running_Info1": "ゲームが実行中なため、プレイ時間を編集できません。",
     "GamePlaytime_Running_Info2": "Collapseを完全に閉じると、プレイ時間の記録が中断されます。（閉じた瞬間までのプレイ時間が記録されます）",
     "GamePlaytime_Display": "{0}時間 {1}分",

@@ -18,7 +18,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages.OOBE
 {
-    public sealed partial class OOBESelectGameBG : Page
+    public sealed partial class OOBESelectGameBG
     {
         public OOBESelectGameBG()
         {

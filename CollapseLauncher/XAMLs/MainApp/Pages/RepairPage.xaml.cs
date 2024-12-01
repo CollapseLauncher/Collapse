@@ -180,7 +180,7 @@
             RepairPerFileProgressBar.IsIndeterminate = false;
         }
 
-        private void _repairTool_StatusChanged(object sender, TotalPerfileStatus e)
+        private void _repairTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
@@ -194,7 +194,7 @@
             });
         }
 
-        private void _repairTool_ProgressChanged(object sender, TotalPerfileProgress e)
+        private void _repairTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
             DispatcherQueue?.TryEnqueue(() =>
             {

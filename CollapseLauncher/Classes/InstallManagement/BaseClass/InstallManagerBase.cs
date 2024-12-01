@@ -320,7 +320,7 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     // Set the activity
-                    _status!.ActivityStatus            = string.Format(Lang!._GameRepairPage!.Status2!);
+                    _status!.ActivityStatus            = Lang!._GameRepairPage!.Status2!;
                     _status!.IsIncludePerFileIndicator = false;
                     _status!.IsProgressAllIndetermined = true;
                     UpdateStatus();
@@ -330,7 +330,7 @@ namespace CollapseLauncher.InstallManager.Base
                     bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                     if (isDownloadNeeded)
                     {
-                        _status!.ActivityStatus   = string.Format(Lang._GameRepairPage.Status8!, "").Replace(": ", "");
+                        _status!.ActivityStatus   = Lang._GameRepairPage.Status8!.Replace(": ", "");
                         _progressAllSizeCurrent   = 0;
                         _progressAllCountCurrent  = 1;
                         _progressAllIOReadCurrent = 0;
@@ -582,46 +582,46 @@ namespace CollapseLauncher.InstallManager.Base
 #nullable enable
         protected virtual IRepair? GetGameRepairInstance(string? sourceVer) => null;
 #nullable restore
+        private delegate ValueTask<int> CheckExistingInstallDelegate(bool isHasOnlyMigrateOption);
 
         // Bool:  0      -> Indicates that the action is completed and no need to step further
         //        1      -> Continue to the next step
         //       -1      -> Cancel the operation
-        public virtual async ValueTask<int> GetInstallationPath()
+        public virtual async ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false)
         {
-            // Try get the existing Steam path. If it return true, then continue to the next step
-            int result = await CheckExistingSteamInstallation();
-            if (result > 1)
+            // Assign check delegates
+            CheckExistingInstallDelegate[] checkExistingDelegates = [
+                CheckExistingSteamInstallation,
+                CheckExistingBHI3LInstallation,
+                CheckExistingOfficialInstallation
+                ];
+
+            int checkResult = 0;
+            foreach (CheckExistingInstallDelegate checkDelegate in checkExistingDelegates)
             {
-                return await CheckExistingOrAskFolderDialog();
+                // Try get the existing path. If it return true, then continue to the next step
+                checkResult = await checkDelegate(isHasOnlyMigrateOption);
+                if (isHasOnlyMigrateOption && checkResult == 0)
+                {
+                    return 0;
+                }
+
+                // Decide the result and continue to ask folder dialog
+                // if the choice is to install a new game
+                switch (checkResult)
+                {
+                    case > 1:
+                        return await CheckExistingOrAskFolderDialog();
+                    case <= 0:
+                        return checkResult;
+                }
             }
 
-            if (result <= 0)
+            // If all results returns 1 (cannot detect existing game and proceed) while
+            // isHasOnlyMigrateOption is set, then cancel it.
+            if (isHasOnlyMigrateOption && checkResult == 1)
             {
-                return result;
-            }
-
-            // Try get the existing Better Hi3 Launcher path. If it return true, then continue to the next step
-            result = await CheckExistingBHI3LInstallation();
-            if (result > 1)
-            {
-                return await CheckExistingOrAskFolderDialog();
-            }
-
-            if (result <= 0)
-            {
-                return result;
-            }
-
-            // Try get the existing Official Launcher path. If it return true, then continue to the next step
-            result = await CheckExistingOfficialInstallation();
-            if (result > 1)
-            {
-                return await CheckExistingOrAskFolderDialog();
-            }
-
-            if (result <= 0)
-            {
-                return result;
+                return -1;
             }
 
             return await CheckExistingOrAskFolderDialog();
@@ -965,14 +965,16 @@ namespace CollapseLauncher.InstallManager.Base
 
                                            // Get the file path and start the write process
                                            var assetName = asset.AssetName;
-                                           var filePath =
+                                           var filePath = new FileInfo(
                                                EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
-                                               "_tempSophon";
-                                           var origFilePath = Path.Combine(_gamePath, assetName);
+                                               "_tempSophon").EnsureNoReadOnly();
+                                           var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly();
 
-                                           if (File.Exists(filePath))
+                                           if (filePath.Exists)
                                            {
-                                               File.Move(filePath, origFilePath, true);
+                                               filePath.MoveTo(origFilePath.FullName, true);
+                                               filePath.Refresh();
+                                               origFilePath.Refresh();
                                            }
                                        }, token);
                     }
@@ -1243,12 +1245,16 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual void CleanupTempSophonVerifiedFiles()
         {
-            string filePath = _gameSophonChunkDir;
+            DirectoryInfo dirPath = new (_gameSophonChunkDir);
             try
             {
-                foreach (string file in Directory.EnumerateFiles(filePath, "*.verified", SearchOption.TopDirectoryOnly))
+                if (!dirPath.Exists)
+                    return;
+
+                foreach (FileInfo file in dirPath.EnumerateFiles("*.verified", SearchOption.TopDirectoryOnly)
+                    .EnumerateNoReadOnly())
                 {
-                    File.Delete(file);
+                    file.Delete();
                 }
             }
             catch
@@ -1293,7 +1299,8 @@ namespace CollapseLauncher.InstallManager.Base
                                             sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
-            if (File.Exists(_gameAudioLangListPath))
+            FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).EnsureNoReadOnly();
+            if (fileInfo.Exists)
             {
                 // Use stream reader to read the list one-by-one
                 using StreamReader reader = new StreamReader(_gameAudioLangListPath);
@@ -2781,15 +2788,103 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Private Methods - GetInstallationPath
+        private async ValueTask<int> CheckExistingBHI3LInstallation(bool isHasOnlyMigrateOption = false)
+        {
+            string pathOnBHi3L = "";
+            if (TryGetExistingBHI3LPath(ref pathOnBHi3L))
+            {
+                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
+                // If not, then return the migrationOptionReturn value.
+                int migrationOptionReturn = await PerformMigrationOption(pathOnBHi3L, MigrateFromLauncherType.BetterHi3Launcher, false, isHasOnlyMigrateOption);
 
-        private async ValueTask<int> CheckExistingSteamInstallation()
+                // If it's on "Migration option only" mode and it returns "Okay"/0, then update the game
+                // path and return 0
+                if (isHasOnlyMigrateOption && migrationOptionReturn == 1)
+                {
+                    _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation,
+                                                       false);
+                    return 0;
+                }
+
+                // If the option is applying to the current directory
+                if (migrationOptionReturn == 0)
+                {
+                    _gameVersionManager.UpdateGamePath(pathOnBHi3L, false);
+                    return 0;
+                }
+
+                if (migrationOptionReturn != 0)
+                    return migrationOptionReturn;
+            }
+
+            // Return 1 to continue to another check
+            return 1;
+        }
+
+        private async ValueTask<int> CheckExistingOfficialInstallation(bool isHasOnlyMigrateOption = false)
+        {
+            if (_gameVersionManager.GamePreset.CheckExistingGame())
+            {
+                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
+                // If not, then return the migrationOptionReturn value.
+                int migrationOptionReturn =
+                    await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation,
+                                                 MigrateFromLauncherType.Official,
+                                                 false,
+                                                 isHasOnlyMigrateOption);
+
+                // If it's on "Migration option only" mode and it returns "Okay"/0, then update the game
+                // path and return 0
+                if (isHasOnlyMigrateOption && migrationOptionReturn == 0)
+                {
+                    _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation,
+                                                       false);
+                    return 0;
+                }
+
+                if (migrationOptionReturn != 1)
+                {
+                    return migrationOptionReturn;
+                }
+
+                switch (await Dialog_ExistingInstallation(_parentUI,
+                                                          _gameVersionManager.GamePreset.ActualGameDataLocation))
+                {
+                    // If action to migrate was taken, then update the game path (but don't save it to the config file)
+                    case ContentDialogResult.Primary:
+                        _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation,
+                                                           false);
+                        return 0;
+                    // If action to fresh install was taken, then return 2 (selecting path)
+                    case ContentDialogResult.Secondary:
+                        return 2;
+                    // If action to cancel was taken, then return -1 (go back)
+                    case ContentDialogResult.None:
+                        return -1;
+                }
+            }
+
+            // Return 1 to continue to another check
+            return 1;
+        }
+
+        private async ValueTask<int> CheckExistingSteamInstallation(bool isHasOnlyMigrateOption = false)
         {
             string pathOnSteam = "";
             if (TryGetExistingSteamPath(ref pathOnSteam))
             {
                 // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
                 // If not, then return the migrationOptionReturn value.
-                int migrationOptionReturn = await PerformMigrationOption(pathOnSteam, MigrateFromLauncherType.Steam);
+                int migrationOptionReturn = await PerformMigrationOption(pathOnSteam, MigrateFromLauncherType.Steam, false, isHasOnlyMigrateOption);
+
+                // If it's on "Migration option only" mode and it returns "Okay"/0, then update the game
+                // path and return 0
+                if (isHasOnlyMigrateOption && migrationOptionReturn == 1)
+                {
+                    _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation,
+                                                       false);
+                    return 0;
+                }
 
                 // If the option is applying to the current directory
                 if (migrationOptionReturn == 0)
@@ -2837,11 +2932,13 @@ namespace CollapseLauncher.InstallManager.Base
                 .WithColumnSpacing(16);
 
             TextBlock statusActivity = mainGrid.AddElementToGridRowColumn(
-                new TextBlock() {
+                new TextBlock()
+                {
                     FontWeight = FontWeights.Medium,
                     FontSize = 18,
                     Text = Lang._InstallMigrateSteam.Step3Title,
-                    TextWrapping = TextWrapping.Wrap }
+                    TextWrapping = TextWrapping.Wrap
+                }
                                .WithHorizontalAlignment(HorizontalAlignment.Left),
                 0, 0, 0, 2)
                 .WithMargin(0, 0, 0, 8);
@@ -2883,10 +2980,10 @@ namespace CollapseLauncher.InstallManager.Base
 
             try
             {
-            #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 // This is intentional as the dialog is only to cancel the routine, not waiting for user input.
                 SimpleDialogs.QueueAndSpawnDialog(contentDialog);
-            #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 await gameRepairInstance.StartCheckRoutine();
                 statusActivity.Text = Lang._InstallMigrateSteam.Step4Title;
                 await gameRepairInstance.StartRepairRoutine();
@@ -2904,7 +3001,7 @@ namespace CollapseLauncher.InstallManager.Base
                 gameRepairInstance.StatusChanged -= StartSteamMigration_StatusChanged;
             }
 
-            void StartSteamMigration_ProgressChanged(object? sender, TotalPerfileProgress e)
+            void StartSteamMigration_ProgressChanged(object? sender, TotalPerFileProgress e)
             {
                 Dispatch(() =>
                 {
@@ -2914,7 +3011,7 @@ namespace CollapseLauncher.InstallManager.Base
                 });
             }
 
-            void StartSteamMigration_StatusChanged(object? sender, TotalPerfileStatus e)
+            void StartSteamMigration_StatusChanged(object? sender, TotalPerFileStatus e)
             {
                 Dispatch(() =>
                 {
@@ -2926,68 +3023,10 @@ namespace CollapseLauncher.InstallManager.Base
         }
 #nullable restore
 
-        private async ValueTask<int> CheckExistingBHI3LInstallation()
-        {
-            string pathOnBHi3L = "";
-            if (TryGetExistingBHI3LPath(ref pathOnBHi3L))
-            {
-                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
-                // If not, then return the migrationOptionReturn value.
-                int migrationOptionReturn = await PerformMigrationOption(pathOnBHi3L, MigrateFromLauncherType.BetterHi3Launcher);
-
-                // If the option is applying to the current directory
-                if (migrationOptionReturn == 0)
-                {
-                    _gameVersionManager.UpdateGamePath(pathOnBHi3L, false);
-                    return 0;
-                }
-
-                if (migrationOptionReturn != 0)
-                    return migrationOptionReturn;
-            }
-
-            // Return 1 to continue to another check
-            return 1;
-        }
-
-        private async ValueTask<int> CheckExistingOfficialInstallation()
-        {
-            if (_gameVersionManager.GamePreset.CheckExistingGame())
-            {
-                // If the "Use current directory" option is chosen (migrationOptionReturn == 1), then proceed to another routine.
-                // If not, then return the migrationOptionReturn value.
-                int migrationOptionReturn =
-                    await PerformMigrationOption(_gameVersionManager.GamePreset.ActualGameDataLocation,
-                                                 MigrateFromLauncherType.Official);
-                if (migrationOptionReturn != 1)
-                {
-                    return migrationOptionReturn;
-                }
-
-                switch (await Dialog_ExistingInstallation(_parentUI,
-                                                          _gameVersionManager.GamePreset.ActualGameDataLocation))
-                {
-                    // If action to migrate was taken, then update the game path (but don't save it to the config file)
-                    case ContentDialogResult.Primary:
-                        _gameVersionManager.UpdateGamePath(_gameVersionManager.GamePreset.ActualGameDataLocation,
-                                                           false);
-                        return 0;
-                    // If action to fresh install was taken, then return 2 (selecting path)
-                    case ContentDialogResult.Secondary:
-                        return 2;
-                    // If action to cancel was taken, then return -1 (go back)
-                    case ContentDialogResult.None:
-                        return -1;
-                }
-            }
-
-            // Return 1 to continue to another check
-            return 1;
-        }
-
         private async ValueTask<int> PerformMigrationOption(string                  pathIfUseExistingSelected,
                                                             MigrateFromLauncherType launcherType,
-                                                            bool                    isMoveOperation = false)
+                                                            bool                    isMoveOperation = false,
+                                                            bool                    isHasOnlyMigrateOption = false)
         {
             string launcherName = launcherType switch
                                   {
@@ -3005,7 +3044,15 @@ namespace CollapseLauncher.InstallManager.Base
                  _gameVersionManager.GamePreset.GameName,
                  _gameVersionManager.GamePreset.ZoneName,
                  launcherName,
-                 launcherType);
+                 launcherType,
+                 isHasOnlyMigrateOption);
+
+                // If the routine is to use "migration option only" mode and the result
+                // is "Okay", then return 0
+                if (isHasOnlyMigrateOption && dialogResult == ContentDialogResult.Primary)
+                {
+                    return 0;
+                }
 
                 if (dialogResult == ContentDialogResult.None)
                 {
@@ -3642,7 +3689,9 @@ namespace CollapseLauncher.InstallManager.Base
                 || existingPackageFileSize != package.Size)
             {
                 // Get the file path
-                string filePath = EnsureCreationOfDirectory(package.PathOutput);
+                FileInfo fileInfo = new FileInfo(package.PathOutput)
+                    .EnsureCreationOfDirectory()
+                    .EnsureNoReadOnly();
 
                 bool isCanMultiSession = false;
                 // If a legacy downloader is used, then use the legacy Http downloader
@@ -3653,11 +3702,11 @@ namespace CollapseLauncher.InstallManager.Base
                     isCanMultiSession = package.Size >= 10 << 20;
                     if (isCanMultiSession)
                     {
-                        await httpClient.Download(package.URL, filePath, _downloadThreadCount, false, token);
+                        await httpClient.Download(package.URL, fileInfo.FullName, _downloadThreadCount, false, token);
                     }
                     else
                     {
-                        await httpClient.Download(package.URL, filePath, false, null, null, token);
+                        await httpClient.Download(package.URL, fileInfo.FullName, false, null, null, token);
                     }
                 }
                 // Otherwise, use the new downloder
@@ -3666,7 +3715,7 @@ namespace CollapseLauncher.InstallManager.Base
                     // Run the new downloader
                     await RunDownloadTask(
                         package.Size,
-                        filePath,
+                        fileInfo,
                         package.URL,
                         downloadClient,
                         HttpClientDownloadProgressAdapter,
@@ -4044,7 +4093,7 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine(e.Message, type, true);
         }
 
-        protected async void DeltaPatchCheckProgress(object sender, TotalPerfileProgress e)
+        protected async void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
             _progress!.ProgressAllPercentage =
                 e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;

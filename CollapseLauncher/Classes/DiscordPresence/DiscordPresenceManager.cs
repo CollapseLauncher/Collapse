@@ -26,7 +26,7 @@
 
         #endregion
 
-        public class DiscordPresenceManager : IDisposable
+        public partial class DiscordPresenceManager : IDisposable
         {
             #region Properties
 
@@ -93,7 +93,7 @@
                 DisablePresence();
 
                 // Initialize Discord RPC client
-                _client = new DiscordRpcClient(applicationId.ToString());
+                _client = new DiscordRpcClient(applicationId.ToString(), ILoggerHelper.GetILogger("DiscordRPC"));
                 _presenceUpdateQueue = new ActionBlock<RichPresence>(
                                             // ReSharper disable once UnusedParameter.Local
                                             presence => _client?.SetPresence(_presence),
@@ -286,7 +286,8 @@
 
             private DateTime GetCachedStartPlayTime(DateTime? activityOffset)
             {
-                _lastPlayTime ??= activityOffset ??= DateTime.UtcNow;
+                _lastPlayTime ??= activityOffset;
+                _lastPlayTime ??= DateTime.UtcNow;
                 return _lastPlayTime.Value;
             }
 

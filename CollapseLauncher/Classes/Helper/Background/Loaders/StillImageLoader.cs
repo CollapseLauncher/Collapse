@@ -20,7 +20,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class StillImageLoader : IBackgroundMediaLoader
+    internal partial class StillImageLoader : IBackgroundMediaLoader
     {
         private FrameworkElement ParentUI            { get; }
         private Compositor       CurrentCompositor   { get; }

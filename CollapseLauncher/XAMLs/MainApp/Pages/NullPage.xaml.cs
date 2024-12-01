@@ -1,8 +1,6 @@
-﻿using Microsoft.UI.Xaml.Controls;
-
-namespace CollapseLauncher.Pages
+﻿namespace CollapseLauncher.Pages
 {
-    public sealed partial class NullPage : Page
+    public sealed partial class NullPage
     {
         public NullPage()
         {

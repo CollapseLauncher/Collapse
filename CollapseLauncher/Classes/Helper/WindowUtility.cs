@@ -374,8 +374,12 @@ namespace CollapseLauncher.Helper
                         const uint SC_MAXIMIZE = 0xF030;
                         const uint SC_MINIMIZE = 0xF020;
                         const uint SC_RESTORE = 0xF120;
+                        const uint SC_CLOSE = 0xF060;
                         switch (wParam)
                         {
+                            case SC_CLOSE: // Ignore close message from behind the invisible/closed close button behind the XAML one.
+                                return 0;
+
                             case SC_MAXIMIZE:
                                 {
                                     // TODO: Apply to force disable the "double-click to maximize" feature.

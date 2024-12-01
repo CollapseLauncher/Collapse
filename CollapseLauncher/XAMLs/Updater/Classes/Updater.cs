@@ -25,12 +25,13 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Hi3Helper.Shared.Region;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
 
 namespace CollapseLauncher;
 
-public class Updater : IDisposable
+public partial class Updater : IDisposable
 {
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
     private string          ChannelURL;
@@ -58,16 +59,16 @@ public class Updater : IDisposable
     private UpdaterStatus   Status;
     private UpdaterProgress Progress;
 
-    public Updater(string ChannelName)
+    public Updater(string channelName)
     {
-        this.ChannelName = ChannelName;
+        ChannelName = channelName;
         ChannelURL = CombineURLFromString(FallbackCDNUtil.GetPreferredCDN().URLPrefix,
 #if USEVELOPACK
                 "velopack",
 #else
                 "squirrel",
 #endif
-                this.ChannelName
+                ChannelName
                 );
         UpdateDownloader = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
@@ -76,7 +77,7 @@ public class Updater : IDisposable
         UpdateOptions updateManagerOptions = new UpdateOptions
         {
             AllowVersionDowngrade = true,
-            ExplicitChannel = this.ChannelName
+            ExplicitChannel = ChannelName
         };
 
         // Initialize update manager source
@@ -115,26 +116,7 @@ public class Updater : IDisposable
 #endif
     }
 
-    public bool IsUpdateAvailable(UpdateInfo info)
-    {
-#if !USEVELOPACK
-        if (!info.ReleasesToApply.Any())
-#else
-        if (info.DeltasToTarget.Length != 0)
-#endif
-        {
-#if !USEVELOPACK
-            NewVersionTag = new GameVersion(info.FutureReleaseEntry.Version.Version);
-#else
-            NewVersionTag = new GameVersion(info.TargetFullRelease.Version.ToString());
-#endif
-            return DoesLatestVersionExist(NewVersionTag.VersionString);
-        }
-
-        return true;
-    }
-
-    public async Task<bool> StartUpdate(UpdateInfo UpdateInfo, CancellationToken token = default)
+    public async Task<bool> StartUpdate(UpdateInfo updateInfo, CancellationToken token = default)
     {
         if (token.IsCancellationRequested) return false;
 
@@ -146,16 +128,9 @@ public class Updater : IDisposable
         try
         {
 #if !USEVELOPACK
-            if (!UpdateInfo.ReleasesToApply.Any())
-#else
-            if (UpdateInfo.DeltasToTarget.Length != 0)
-#endif
+            if (!updateInfo.ReleasesToApply.Any())
             {
-#if !USEVELOPACK
-                NewVersionTag = new GameVersion(UpdateInfo.FutureReleaseEntry.Version.Version);
-#else
-                NewVersionTag = new GameVersion(UpdateInfo.TargetFullRelease.Version.ToString());
-#endif
+                NewVersionTag = new GameVersion(updateInfo.FutureReleaseEntry.Version.Version);
                 if (DoesLatestVersionExist(NewVersionTag.VersionString))
                 {
                     Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
@@ -170,20 +145,29 @@ public class Updater : IDisposable
                 await Task.Delay(3000);
                 return false;
             }
-
-#if !USEVELOPACK
-            NewVersionTag = new GameVersion(UpdateInfo.ReleasesToApply.FirstOrDefault()!.Version.Version);
+            NewVersionTag = new GameVersion(updateInfo.ReleasesToApply.FirstOrDefault()!.Version.Version);
 #else
-            NewVersionTag = new GameVersion(UpdateInfo.TargetFullRelease.Version.ToString());
+            NewVersionTag = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
+            if (IsCurrentHasLatestVersion(NewVersionTag.VersionString))
+            {
+                Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, LauncherUpdateHelper.LauncherCurrentVersionString);
+                Status.message = Lang._UpdatePage.UpdateMessage4;
+                UpdateStatus();
+
+                await Task.Delay(3000);
+                return false;
+            }
 #endif
 
 #if !USEVELOPACK
-            await UpdateManager.DownloadReleases(UpdateInfo.ReleasesToApply, InvokeDownloadUpdateProgress);
+            await UpdateManager.DownloadReleases(updateInfo.ReleasesToApply, InvokeDownloadUpdateProgress);
 
-            await UpdateManager.ApplyReleases(UpdateInfo, InvokeApplyUpdateProgress);
+            await UpdateManager.ApplyReleases(updateInfo, InvokeApplyUpdateProgress);
 #else
-            await UpdateManager.DownloadUpdatesAsync(UpdateInfo, InvokeDownloadUpdateProgress, false, token);
-            VelopackVersionToUpdate = UpdateInfo.TargetFullRelease;
+            await UpdateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, false, token);
+            VelopackVersionToUpdate = updateInfo.TargetFullRelease;
+
+            await EnsureVelopackUpdateExec(token);
 #endif
 
             void InvokeDownloadUpdateProgress(int progress)
@@ -213,6 +197,50 @@ public class Updater : IDisposable
         }
 
         return true;
+    }
+
+    private async Task EnsureVelopackUpdateExec(CancellationToken token)
+    {
+        string updateExecPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath) ?? "", "..\\", "update.exe");
+        FileInfo updateExecFileInfo = new FileInfo(updateExecPath);
+
+        if (!IsFileVersionValid(updateExecFileInfo))
+        {
+            // Initialize new proxy-aware HttpClient
+            using HttpClient client = new HttpClientBuilder()
+                                     .UseLauncherConfig()
+                                     .SetAllowedDecompression(DecompressionMethods.None)
+                                     .Create();
+            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
+            await using FileStream updateExecStream = updateExecFileInfo.Create();
+            await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, updateExecStream, "Update.exe", token);
+        }
+
+        return;
+
+        bool IsFileVersionValid(FileInfo fileInfo)
+        {
+            const string VelopackDesc = "Velopack";
+
+            if (!fileInfo.Exists || fileInfo.Length == 0)
+                return false;
+
+            try
+            {
+                FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(fileInfo.FullName);
+                bool isVelopack = fileVersionInfo.FileDescription?.StartsWith(VelopackDesc, StringComparison.OrdinalIgnoreCase) ?? false;
+
+                return isVelopack;
+            }
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(new InvalidDataException($"Failed while reading FileVersionInfo of {fileInfo.FullName}", ex));
+                Logger.LogWriteLine($"Failed while reading FileVersionInfo of {fileInfo.FullName}");
+            }
+
+            return false;
+        }
     }
 
     private async Task StartLegacyUpdate()
@@ -256,17 +284,17 @@ public class Updater : IDisposable
         UpdateProgress();
     }
 
-    private bool DoesLatestVersionExist(string versionString)
+    private bool IsCurrentHasLatestVersion(string latestVersionString)
     {
         // Check legacy version first
-        var filePath = Path.Combine(AppFolder, $"..\\app-{versionString}\\{Path.GetFileName(AppExecutablePath)}");
+        var filePath = Path.Combine(AppFolder, $@"..\app-{latestVersionString}\{Path.GetFileName(AppExecutablePath)}");
         if (File.Exists(filePath)) return true;
 
         // If none does not exist, then check the latest version
-        filePath = Path.Combine(AppFolder, $"..\\current\\{Path.GetFileName(AppExecutablePath)}");
-        if (!Version.TryParse(versionString, out Version currentVersion))
+        filePath = Path.Combine(AppFolder, $@"..\current\{Path.GetFileName(AppExecutablePath)}");
+        if (!Version.TryParse(latestVersionString, out Version latestVersion))
         {
-            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] versionString is not valid! {versionString}", LogType.Error, true);
+            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] latestVersionString is not valid! {latestVersionString}", LogType.Error, true);
             return false;
         }
 
@@ -276,19 +304,19 @@ public class Updater : IDisposable
             return false;
         }
 
-        // Try get the version info and if the version info is null, return false
+        // Try to get the version info and if the version info is null, return false
         FileVersionInfo toCheckVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
 
         // Otherwise, try compare the version info.
-        if (!Version.TryParse(toCheckVersionInfo.ProductVersion, out Version latestVersion))
+        if (!Version.TryParse(toCheckVersionInfo.FileVersion, out Version currentVersion))
         {
-            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.ProductVersion is not valid! {versionString}", LogType.Error, true);
+            Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] toCheckVersionInfo.FileVersion is not valid! {toCheckVersionInfo.FileVersion}", LogType.Error, true);
             return false;
         }
 
-        // Try compare. If latestVersion is more or equal to current version, return true. 
+        // Try compare. If currentVersion is more or equal to latestVersion, return true. 
         // Otherwise, return false.
-        return latestVersion >= currentVersion;
+        return currentVersion >= latestVersion;
     }
 
     public async Task FinishUpdate(bool noSuicide = false)

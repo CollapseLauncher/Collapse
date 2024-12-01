@@ -10,10 +10,7 @@ using System.Runtime.InteropServices;
 #nullable enable
 namespace CollapseLauncher.Helper
 {
-    public class HttpClientBuilder : HttpClientBuilder<SocketsHttpHandler>
-    {
-        public HttpClientBuilder() : base() { }
-    }
+    public class HttpClientBuilder : HttpClientBuilder<SocketsHttpHandler>;
 
     public class HttpClientBuilder<THandler> where THandler : HttpMessageHandler, new()
     {
@@ -199,7 +196,7 @@ namespace CollapseLauncher.Helper
             // Create the instance of the handler
             THandler handler = new();
 
-            // Set the features of each handlers
+            // Set the features of each handler
             if (typeof(THandler) == typeof(HttpClientHandler))
             {
                 // Cast as HttpClientHandler

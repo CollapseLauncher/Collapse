@@ -493,7 +493,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
             if (hypLauncherGameInfo != null)
             {
-                ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo?.GameInfoData);
+                ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo.GameInfoData);
 
                 base.LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
             }

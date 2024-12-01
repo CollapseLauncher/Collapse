@@ -64,7 +64,7 @@ namespace CollapseLauncher.GameSettings
         /// Load the instance of the preset
         /// </summary>
         /// <param name="gameType">The type of the game</param>
-        /// <param name="jsonContext">JSON source generation context</param>
+        /// <param name="jsonType">JSON type information for deserialization</param>
         /// <returns>The instance of preset</returns>
         public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
@@ -73,7 +73,7 @@ namespace CollapseLauncher.GameSettings
         }
 
         /// <param name="key">The key of the preset</param>
-        /// <returns>Returns a boolean to check whether the key is exist. Otherwise, false if key doesn't exist or preset is <c>null</c></returns>
+        /// <returns>Returns a boolean to check whether the key exists. Otherwise, false if key doesn't exist or preset is <c>null</c></returns>
         public bool IsPresetKeyExist(string key) => Presets?.ContainsKey(key) ?? false;
 
         /// <param name="key">The key of the preset</param>
@@ -105,7 +105,7 @@ namespace CollapseLauncher.GameSettings
         }
         
         /// <summary>
-        /// Set the preset name based on equality of the given value with the preset. If doesn't match, it will be set to <c>DefaultPresetName</c>
+        /// Set the preset name based on equality of the given value with the preset. If it doesn't match, it will be set to <c>DefaultPresetName</c>
         /// </summary>
         /// <param name="value">The value to be compared with the preset</param>
         /// <exception cref="NullReferenceException">If <code>RegistryRoot</code> is null</exception>
@@ -124,7 +124,7 @@ namespace CollapseLauncher.GameSettings
             CurrentPresetName = PresetConst.DefaultPresetName;
         }
 
-        /// <returns>Get the current preset key name. If doesn't match, then return the <c>DefaultPresetName</c></returns>
+        /// <returns>Get the current preset key name. If it doesn't match, then return the <c>DefaultPresetName</c></returns>
         /// <exception cref="NullReferenceException">If <code>RegistryRoot</code> is null</exception>
         public string GetPresetKey()
         {

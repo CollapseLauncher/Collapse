@@ -9,7 +9,6 @@
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Media;
-    using Microsoft.UI.Xaml.Navigation;
     using Microsoft.Win32;
     using RegistryUtils;
     using System;

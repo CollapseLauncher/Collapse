@@ -126,7 +126,7 @@ namespace CollapseLauncher.Pages
                 // ignored
             }
 
-            barWidth = ((consoleWidth - 22) / 2) - 1;
+            barWidth = (consoleWidth - 22) / 2 - 1;
         }
 
         private bool IsPageUnload { get; set; }
@@ -177,7 +177,6 @@ namespace CollapseLauncher.Pages
                 
                 if (!DbConfig.DbEnabled || !CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                     SyncDbPlaytimeBtn.IsEnabled = false;
-                   
 
                 TryLoadEventPanelImage();
 
@@ -234,6 +233,20 @@ namespace CollapseLauncher.Pages
 
                 // Get game state
                 GameInstallStateEnum gameState = await CurrentGameProperty._GameVersion.GetGameState();
+
+                // Start automatic scan if the game is in NotInstalled state
+                // and if the return is 0 (yes), then save the config
+                if (gameState == GameInstallStateEnum.NotInstalled &&
+                    await CurrentGameProperty._GameInstall.GetInstallationPath(true)
+                    == 0)
+                {
+                    // Save the config
+                    CurrentGameProperty._GameInstall.ApplyGameConfig();
+
+                    // Refresh the Home page.
+                    ReturnToHomePage();
+                    return;
+                }
 
                 // Check if the game state returns NotInstalled, double-check by doing config.ini validation
                 if (!await CurrentGameProperty._GameVersion
@@ -399,6 +412,10 @@ namespace CollapseLauncher.Pages
             {
                 while (true)
                 {
+                    if (CarouselToken.IsCancellationRequested || CarouselToken.IsDisposed || CarouselToken.IsCancelled)
+                    {
+                        CarouselToken = new CancellationTokenSourceWrapper();
+                    }
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
                     if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1)
@@ -1296,12 +1313,12 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void PreloadDownloadStatus(object sender, TotalPerfileStatus e)
+        private void PreloadDownloadStatus(object sender, TotalPerFileStatus e)
         {
             DispatcherQueue?.TryEnqueue(() => ProgressPrePerFileStatusFooter.Text = e.ActivityStatus);
         }
 
-        private void PreloadDownloadProgress(object sender, TotalPerfileProgress e)
+        private void PreloadDownloadProgress(object sender, TotalPerFileProgress e)
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
@@ -1502,7 +1519,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void GameInstall_StatusChanged(object sender, TotalPerfileStatus e)
+        private void GameInstall_StatusChanged(object sender, TotalPerFileStatus e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_StatusChanged_Inner(e);
@@ -1510,7 +1527,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
         }
 
-        private void GameInstall_StatusChanged_Inner(TotalPerfileStatus e)
+        private void GameInstall_StatusChanged_Inner(TotalPerFileStatus e)
         {
             ProgressStatusTitle.Text = e.ActivityStatus;
             progressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
@@ -1519,7 +1536,7 @@ namespace CollapseLauncher.Pages
             progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
-        private void GameInstall_ProgressChanged(object sender, TotalPerfileProgress e)
+        private void GameInstall_ProgressChanged(object sender, TotalPerFileProgress e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstall_ProgressChanged_Inner(e);
@@ -1527,7 +1544,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
         }
 
-        private void GameInstall_ProgressChanged_Inner(TotalPerfileProgress e)
+        private void GameInstall_ProgressChanged_Inner(TotalPerFileProgress e)
         {
             progressRing.Value = e.ProgressAllPercentage;
             progressRingPerFile.Value = e.ProgressPerFilePercentage;
@@ -1536,7 +1553,7 @@ namespace CollapseLauncher.Pages
             ProgressTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
         }
 
-        private void GameInstallSophon_StatusChanged(object sender, TotalPerfileStatus e)
+        private void GameInstallSophon_StatusChanged(object sender, TotalPerFileStatus e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstallSophon_StatusChanged_Inner(e);
@@ -1544,7 +1561,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(e));
         }
 
-        private void GameInstallSophon_ProgressChanged(object sender, TotalPerfileProgress e)
+        private void GameInstallSophon_ProgressChanged(object sender, TotalPerFileProgress e)
         {
             if (DispatcherQueue.HasThreadAccess)
                 GameInstallSophon_ProgressChanged_Inner(e);
@@ -1552,7 +1569,7 @@ namespace CollapseLauncher.Pages
                 DispatcherQueue?.TryEnqueue(() => GameInstallSophon_ProgressChanged_Inner(e));
         }
 
-        private void GameInstallSophon_StatusChanged_Inner(TotalPerfileStatus e)
+        private void GameInstallSophon_StatusChanged_Inner(TotalPerFileStatus e)
         {
             SophonProgressStatusTitleText.Text = e.ActivityStatus;
             SophonProgressPerFile.Visibility = e.IsIncludePerFileIndicator ? Visibility.Visible : Visibility.Collapsed;
@@ -1561,7 +1578,7 @@ namespace CollapseLauncher.Pages
             SophonProgressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
         }
 
-        private void GameInstallSophon_ProgressChanged_Inner(TotalPerfileProgress e)
+        private void GameInstallSophon_ProgressChanged_Inner(TotalPerFileProgress e)
         {
             SophonProgressRing.Value = e.ProgressAllPercentage;
             SophonProgressRingPerFile.Value = e.ProgressPerFilePercentage;
@@ -1712,7 +1729,10 @@ namespace CollapseLauncher.Pages
                 if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
                 // Set game process priority to Above Normal when GameBoost is on
-                if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost) GameBoost_Invoke(CurrentGameProperty);
+                if (_Settings.SettingsCollapseMisc != null && _Settings.SettingsCollapseMisc.UseGameBoost)
+            #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    Task.Run(() => Task.FromResult(_ = GameBoost_Invoke(CurrentGameProperty)));
+            #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 // Run game process watcher
                 CheckRunningGameInstance(PageToken.Token);
@@ -2159,6 +2179,10 @@ namespace CollapseLauncher.Pages
         {
             var saveGameLog = GetAppConfigValue("IncludeGameLogs").ToBool();
             InitializeConsoleValues();
+            
+            // JUST IN CASE
+            // Sentry issue ref : COLLAPSE-LAUNCHER-55; Event ID: 13059407
+            if (int.IsNegative(barWidth)) barWidth = 30;
             
             LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning,
                          true);
@@ -2749,7 +2773,8 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async void GameBoost_Invoke(GamePresetProperty gameProp)
+        private int GameBoostInvokeTryCount { get; set; }
+        private async Task GameBoost_Invoke(GamePresetProperty gameProp)
         {
 #nullable enable
             // Init new target process
@@ -2764,6 +2789,7 @@ namespace CollapseLauncher.Pages
                     // it will instead return a non-null value and assign it to "toTargetProc" variable,
                     // which it will break the loop and execute the next code below it.
                 }
+
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                              $"Target Process : {toTargetProc.ProcessName} [{toTargetProc.Id}]", LogType.Default, true);
 
@@ -2773,20 +2799,32 @@ namespace CollapseLauncher.Pages
                 // Check early exit
                 if (toTargetProc.HasExited)
                 {
-                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] has exited!", LogType.Warning, true);
+                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] has exited!",
+                                 LogType.Warning, true);
                     return;
                 }
 
                 // Assign the priority to the process and write a log (just for displaying any info)
                 toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                GameBoostInvokeTryCount    = 0;
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
                              $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+            }
+            catch (Exception ex) when (GameBoostInvokeTryCount < 3)
+            {
+                LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
+                             $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
+                             LogType.Error, true);
+                GameBoostInvokeTryCount++;
+                _ = Task.Run(async () => { await GameBoost_Invoke(gameProp); });
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
-                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}", LogType.Error, true);
+                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
+                             LogType.Error, true);
             }
 #nullable restore
         }
@@ -2847,7 +2885,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (_procPreGLC is not { HasExited: false }) return;
+                if (_procPreGLC == null || _procPreGLC.HasExited || _procPreGLC.Id == 0) return;
 
                 // Kill main and child processes
                 var taskKill = new Process();

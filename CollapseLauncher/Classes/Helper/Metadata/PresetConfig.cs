@@ -68,9 +68,9 @@ namespace CollapseLauncher.Helper.Metadata
 
     public class SophonChunkUrls
     {
-        private bool IsReassociated = false;
+        private       bool   IsReassociated;
         private const string QueryPackageIdHead = "package_id";
-        private const string QueryPasswordHead = "password";
+        private const string QueryPasswordHead  = "password";
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BranchUrl { get; set; }
@@ -764,13 +764,11 @@ namespace CollapseLauncher.Helper.Metadata
             try
             {
                 if (LauncherType == LauncherType.HoYoPlay)
-                    return TryCheckGameLocationHYP();
-                else
-                {
-                    if (string.IsNullOrEmpty(InstallRegistryLocation)) return false;
-                    string? value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
-                    return TryCheckGameLocation(value);
-                }
+                    return TryCheckGameLocationHoYoPlay();
+
+                if (string.IsNullOrEmpty(InstallRegistryLocation)) return false;
+                string? value = (string?)Registry.GetValue(InstallRegistryLocation, "InstallPath", null);
+                return TryCheckGameLocationLegacy(value);
             }
             catch (Exception ex)
             {
@@ -780,38 +778,52 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        public bool TryCheckGameLocationHYP()
+        public bool TryCheckGameLocationHoYoPlay()
         {
-            string rootRegistryKey = string.Format(@"Software\{0}\HYP", VendorType);
-            RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey(rootRegistryKey);
-            if (registryKey == null) return false;
+            // List the possible launcher parent registry path
+            string[] possibleVendorList = ["miHoYo", "Cognosphere"];
 
-            string[] subKeyVersions = registryKey.GetSubKeyNames();
-            foreach (string subKeyVersion in subKeyVersions)
+            // Try to enumerate to any possible existing launcher
+            foreach (string possibleVendorType in possibleVendorList)
             {
-                RegistryKey? subKey = registryKey.OpenSubKey(subKeyVersion);
-                if (subKey == null) continue;
+                // Try to get the root registry key. If it doesn't exist, next to another vendor
+                string             rootRegistryKey = $@"Software\{possibleVendorType}\HYP";
+                using RegistryKey? registryKey     = Registry.CurrentUser.OpenSubKey(rootRegistryKey);
+                if (registryKey == null) continue;
 
-                string[] subKeyKey = subKey.GetSubKeyNames();
-                if (subKeyKey.Length == 0) continue;
-
-                string? gameKeyName = subKeyKey.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
-                if (string.IsNullOrEmpty(gameKeyName)) continue;
-
-                RegistryKey? gameKey = subKey.OpenSubKey(gameKeyName);
-                if (gameKey == null) continue;
-
-                object? gamePathObj = gameKey.GetValue("GameInstallPath", null);
-                if (gamePathObj is not null and string gamePath)
+                // Try to get possible sub-keys and scan them.
+                string[] subKeyVersions = registryKey.GetSubKeyNames();
+                foreach (string subKeyVersion in subKeyVersions)
                 {
-                    return CheckInnerGameConfig(gamePath, LauncherType.HoYoPlay);
+                    // Try to get the sub-key and if it doesn't exist, next to another sub-key
+                    using RegistryKey? subKey = registryKey.OpenSubKey(subKeyVersion);
+                    if (subKey == null) continue;
+
+                    // Get sub-key names containing list of LauncherBizName.
+                    // If it doesn't exist, next to another sub-key.
+                    string[] subKeyKey = subKey.GetSubKeyNames();
+                    if (subKeyKey.Length == 0) continue;
+
+                    // Try to get the matching LauncherBizName if it there isn't any, next to another sub-key.
+                    string? gameKeyName = subKeyKey.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
+                    if (string.IsNullOrEmpty(gameKeyName)) continue;
+
+                    // Get the game-key once a BizName is obtained.
+                    using RegistryKey? gameKey = subKey.OpenSubKey(gameKeyName);
+
+                    // Try to get the value of "GameInstallPath" key and check if the game
+                    // path mentioned in the key does exist. Otherwise, move to another sub-key (shouldn't happen).
+                    object? gamePathObj = gameKey?.GetValue("GameInstallPath", null);
+                    if (gamePathObj is string gamePath && CheckInnerGameConfig(gamePath, LauncherType.HoYoPlay))
+                        return true;
                 }
             }
 
+            // If it fails to find one, return as not found.
             return false;
         }
 
-        public bool TryCheckGameLocation(string? path)
+        public bool TryCheckGameLocationLegacy(string? path)
         {
             if (string.IsNullOrEmpty(path))
             {

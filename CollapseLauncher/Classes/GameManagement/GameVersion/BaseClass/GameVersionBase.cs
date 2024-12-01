@@ -147,6 +147,7 @@ namespace CollapseLauncher.GameVersioning
                 _ => "Player.log"
             };
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         protected UIElement   ParentUIElement { get; init; }
 
         protected GameVersion? GameVersionAPI
@@ -386,7 +387,7 @@ namespace CollapseLauncher.GameVersioning
                 return returnList;
             }
 
-            // Try get the diff file  by the first or default (null)
+            // Try to get the diff file  by the first or default (null)
             if (GameAPIProp.data?.game?.diffs != null)
             {
                 RegionResourceVersion diff = GameAPIProp.data?.game?.diffs
@@ -413,7 +414,7 @@ namespace CollapseLauncher.GameVersioning
                 return null;
             }
 
-            // Try get the diff file  by the first or default (null)
+            // Try to get the diff file  by the first or default (null)
             RegionResourceVersion? diff = GameAPIProp.data?.pre_download_game?.diffs?
                                                     .FirstOrDefault(x => x.version == GameVersionInstalled?.VersionString);
 
@@ -488,7 +489,7 @@ namespace CollapseLauncher.GameVersioning
 
         public virtual bool IsGameVersionMatch()
         {
-            // Ensure if the GameVersionInstalled is available (this is coming from the Game Profile's Ini file.
+            // Ensure if the GameVersionInstalled is available (this is coming from the Game Profile's Ini file).
             // If not, then return false to indicate that the game isn't installed.
             if (!GameVersionInstalled.HasValue)
             {
@@ -592,7 +593,7 @@ namespace CollapseLauncher.GameVersioning
 
                             using FileStream fs  = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                             string           md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
-                            if (!md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
+                            if (md5 == null || !md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
                                 return false;
                         }
                     }
@@ -682,7 +683,7 @@ namespace CollapseLauncher.GameVersioning
     #nullable enable
         public virtual string? FindGameInstallationPath(string path)
         {
-            // Try find the base game path from the executable location.
+            // Try to find the base game path from the executable location.
             string? basePath = TryFindGamePathFromExecutableAndConfig(path, GamePreset.GameExecutableName);
 
             // If the executable file and version config doesn't exist (null), then return null.
@@ -765,7 +766,7 @@ namespace CollapseLauncher.GameVersioning
                 .AddTextBlockLine(Locale.Lang._GameRepairPage.PageTitle, FontWeights.Bold)
                 .AddTextBlockLine(Locale.Lang._HomePage.GameStateInvalidFixed_Subtitle4);
 
-                dialogResult = await SimpleDialogs.SpawnDialog(
+                _ = await SimpleDialogs.SpawnDialog(
                     Locale.Lang._HomePage.GameStateInvalidFixed_Title,
                     textBlock,
                     uiParentElement,
@@ -804,11 +805,11 @@ namespace CollapseLauncher.GameVersioning
             string[] strings = File.ReadAllLines(appInfoFilePath);
             if (strings.Length != 2) return false;
 
-            string? metaGameVendor = GamePreset.VendorType.ToString();
+            string metaGameVendor = GamePreset.VendorType.ToString();
             string? metaGameName = GamePreset.InternalGameNameInConfig;
-
-            return (metaGameVendor?.Equals(strings[0]) ?? false)
-                && (metaGameName?.Equals(strings[1]) ?? false);
+            
+            return metaGameVendor.Equals(strings[0])
+                   && (metaGameName?.Equals(strings[1]) ?? false);
         }
 
         protected virtual bool IsGameConfigIdValid()
@@ -841,7 +842,7 @@ namespace CollapseLauncher.GameVersioning
 
             return !(channelIdCurrentInt != GamePreset.ChannelID
              || subChannelIdCurrentInt != GamePreset.SubChannelID
-             || !(cpsCurrent?.Equals(GamePreset.LauncherCPSType) ?? false));
+             || !cpsCurrent.Equals(GamePreset.LauncherCPSType));
         }
 
         protected virtual bool IsGameExecDataDirValid(string? executableName)
@@ -866,7 +867,7 @@ namespace CollapseLauncher.GameVersioning
         protected virtual void FixInvalidGameVendor(string? executableName)
         {
             executableName = Path.GetFileNameWithoutExtension(executableName);
-            string? appInfoFilePath = Path.Combine(GameDirPath, $"{executableName}_Data", "app.info");
+            string appInfoFilePath = Path.Combine(GameDirPath, $"{executableName}_Data", "app.info");
             string? appInfoFileDir = Path.GetDirectoryName(appInfoFilePath);
 
             if (!string.IsNullOrEmpty(appInfoFileDir) && !Directory.Exists(appInfoFileDir))
@@ -879,7 +880,7 @@ namespace CollapseLauncher.GameVersioning
 
         protected virtual void FixInvalidGameExecDataDir(string? executableName)
         {
-            return; // Always return for games other than Genshin Impact
+            // Always return for games other than Genshin Impact
         }
 
         protected virtual void FixInvalidGameConfigId()
@@ -921,7 +922,7 @@ namespace CollapseLauncher.GameVersioning
                 return null;
             }
 
-            // Get the pre-load status
+            // Get the preload status
             bool isGameHasPreload = IsGameHasPreload() && GameVersionInstalled.Value.IsMatch(gameVersion);
 
             // If the game version doesn't match with the API's version, then go to the next check.
@@ -948,7 +949,7 @@ namespace CollapseLauncher.GameVersioning
                         return patchProperty;
                     }
 
-                    // If the state is on pre-load, then try check the pre-load delta patch
+                    // If the state is on preload, then try check the preload delta patch
                     if (GameVersionAPIPreload != null && isGameHasPreload && GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
                         && GameVersionAPIPreload.Value.IsMatch(patchProperty.TargetVer)
                         && patchProperty.ProfileName == GamePreset.ProfileName)
@@ -1005,7 +1006,7 @@ namespace CollapseLauncher.GameVersioning
             /* Disable these lines as these will trigger some bugs (like Endless "Broken config.ini" dialog)
              * and causes the cps field to be missing for other non-Bilibili games
              * 
-            // Remove the contains section if the client is not Bilibili and it does have the value.
+            // Remove the contains section if the client is not Bilibili, and it does have the value.
             // This to avoid an issue with HSR config.ini detection
             bool isBilibili = GamePreset.ZoneName == "Bilibili";
             if ( !isBilibili
@@ -1125,7 +1126,7 @@ namespace CollapseLauncher.GameVersioning
             IniFile iniFile = new IniFile();
             iniFile.Load(iniPath);
 
-            // Check whether the config has game_version value and it must be a non-null value.
+            // Check whether the config has game_version value, and it must be a non-null value.
             if (iniFile[_defaultIniVersionSection].ContainsKey("game_version"))
             {
                 string val = iniFile[_defaultIniVersionSection]["game_version"].ToString();
@@ -1135,7 +1136,7 @@ namespace CollapseLauncher.GameVersioning
                 }
             }
 
-            // If above doesn't passes, then return false.
+            // If above doesn't pass, then return false.
             return false;
         }
 
@@ -1159,7 +1160,7 @@ namespace CollapseLauncher.GameVersioning
             // Check if the disk partition is ready (exist)
             bool IsDiskReady = IsDiskPartitionExist(iniDirPath);
 
-            // Create the directory of the gile if doesn't exist
+            // Create the directory of the file if it doesn't exist
             if (iniDirPath != null && !Directory.Exists(iniDirPath) && IsDiskReady)
             {
                 Directory.CreateDirectory(iniDirPath);

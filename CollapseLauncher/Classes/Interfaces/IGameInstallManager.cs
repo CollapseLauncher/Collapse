@@ -9,7 +9,7 @@ namespace CollapseLauncher.Interfaces
 {
     internal interface IGameInstallManager : IBackgroundActivity, IDisposable
     {
-        ValueTask<int> GetInstallationPath();
+        ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false);
         Task StartPackageDownload(bool skipDialog = false);
         ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage = null);
         Task StartPackageInstallation();

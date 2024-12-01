@@ -4,6 +4,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -46,6 +47,7 @@ namespace CollapseLauncher
 
             // Iterate repair asset and check it using different method for each type
             ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            var runningTask = new ConcurrentDictionary<(FilePropertiesRemote, IAssetProperty), byte>();
             if (_isBurstDownloadEnabled)
             {
                 await Parallel.ForEachAsync(
@@ -59,6 +61,11 @@ namespace CollapseLauncher
                     new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
                     async (asset, innerToken) =>
                     {
+                        if (!runningTask.TryAdd(asset, 0))
+                        {
+                            LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                            return;
+                        }
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
@@ -70,6 +77,7 @@ namespace CollapseLauncher
 
                         // Await the task
                         await assetTask;
+                        runningTask.Remove(asset, out _);
                     });
             }
             else
@@ -83,6 +91,11 @@ namespace CollapseLauncher
 #endif
                     , assetProperty))
                 {
+                    if (!runningTask.TryAdd(asset, 0))
+                    {
+                        LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                        break;
+                    }
                     // Assign a task depends on the asset type
                     Task assetTask = asset.AssetIndex.FT switch
                     {
@@ -94,6 +107,7 @@ namespace CollapseLauncher
 
                     // Await the task
                     await assetTask;
+                    runningTask.Remove(asset, out _);
                 }
             }
 
@@ -164,17 +178,18 @@ namespace CollapseLauncher
             // Set URL of the asset
             string assetURL  = customURL ?? asset.AssetIndex.RN;
             string assetPath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
+            FileInfo assetFileInfo = new FileInfo(assetPath).EnsureNoReadOnly();
 
             if (asset.AssetIndex.FT == FileType.Unused && !_isOnlyRecoverMain)
             {
                 // Remove unused asset
-                RemoveUnusedAssetTypeGeneric(assetPath);
+                RemoveUnusedAssetTypeGeneric(assetFileInfo);
                 LogWriteLine($"Unused {asset.AssetIndex.N} has been deleted!", LogType.Default, true);
             }
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, assetPath, assetURL, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.S, assetFileInfo, assetURL, downloadClient, downloadProgress, token);
                 LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 
@@ -182,16 +197,14 @@ namespace CollapseLauncher
             PopRepairAssetEntry(asset.AssetProperty);
         }
 
-        private void RemoveUnusedAssetTypeGeneric(string filePath)
+        private void RemoveUnusedAssetTypeGeneric(FileInfo filePath)
         {
             try
             {
                 // Unassign Read only attribute and delete the file.
-                FileInfo fInfo = new FileInfo(filePath);
-                if (fInfo.Exists)
+                if (filePath.Exists)
                 {
-                    fInfo.IsReadOnly = false;
-                    fInfo.Delete();
+                    filePath.Delete();
                 }
             }
             catch (Exception ex)

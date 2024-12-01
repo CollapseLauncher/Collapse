@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -42,6 +43,7 @@ namespace CollapseLauncher
 
             // Iterate repair asset and check it using different method for each type
             ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            var runningTask = new ConcurrentDictionary<(FilePropertiesRemote, IAssetProperty), byte>();
             if (_isBurstDownloadEnabled)
             {
                 await Parallel.ForEachAsync(
@@ -55,6 +57,11 @@ namespace CollapseLauncher
                     new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = _downloadThreadCount },
                     async (asset, innerToken) =>
                     {
+                        if (!runningTask.TryAdd(asset, 0))
+                        {
+                            LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                            return;
+                        }
                         // Assign a task depends on the asset type
                         Task assetTask = asset.AssetIndex.FT switch
                         {
@@ -66,6 +73,7 @@ namespace CollapseLauncher
 
                         // Await the task
                         await assetTask;
+                        runningTask.Remove(asset, out _);
                     });
             }
             else
@@ -79,6 +87,11 @@ namespace CollapseLauncher
 #endif
                     , assetProperty))
                 {
+                    if (!runningTask.TryAdd(asset, 0))
+                    {
+                        LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
+                        break;
+                    }
                     // Assign a task depends on the asset type
                     Task assetTask = asset.AssetIndex.FT switch
                     {
@@ -90,6 +103,7 @@ namespace CollapseLauncher
 
                     // Await the task
                     await assetTask;
+                    runningTask.Remove(asset, out _);
                 }
             }
 
@@ -107,13 +121,13 @@ namespace CollapseLauncher
                 string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).EnsureNoReadOnly();
+
             // If asset type is unused, then delete it
             if (asset.AssetIndex.FT == FileType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!);
                 if (fileInfo.Exists)
                 {
-                    fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
                     LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
@@ -122,7 +136,7 @@ namespace CollapseLauncher
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N!, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
                 LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 

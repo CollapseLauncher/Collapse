@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -95,8 +96,15 @@ namespace CollapseLauncher
         }
 
         #region GenericRepair
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
+        private ConcurrentDictionary<(FilePropertiesRemote, IAssetProperty), byte> _repairAssetEntry = new();
         private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)
         {
+            if (!_repairAssetEntry.TryAdd(asset, 0))
+            {
+                Logger.LogWriteLine($"[RepairAssetTypeGeneric] Skipping duplicate assignment for asset:\r\n\tN : {asset.AssetIndex.N}\r\n\tT : {asset.AssetIndex.FT}", LogType.Error, true);
+                return;
+            }
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
@@ -105,13 +113,13 @@ namespace CollapseLauncher
                 string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).EnsureNoReadOnly();
+
             // If asset type is unused, then delete it
             if (asset.AssetIndex.FT == FileType.Unused)
             {
-                FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!);
                 if (fileInfo.Exists)
                 {
-                    fileInfo.IsReadOnly = false;
                     fileInfo.Delete();
                     Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} deleted!", LogType.Default, true);
                 }
@@ -119,12 +127,13 @@ namespace CollapseLauncher
             else
             {
                 // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, asset.AssetIndex.N!, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
                 Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
             }
 
             // Pop repair asset display entry
             PopRepairAssetEntry(asset.AssetProperty);
+            _repairAssetEntry.Remove(asset, out _);
         }
         #endregion
     }

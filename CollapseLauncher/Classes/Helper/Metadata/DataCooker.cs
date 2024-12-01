@@ -157,7 +157,7 @@ namespace CollapseLauncher.Helper.Metadata
                         dataWritten = DecompressDataFromBrotli(outData, compressedSize, decompressedSize, dataRawBuffer);
                         break;
                     case CompressionType.Zstd:
-                        dataWritten = DecompressDataFromZstd(outData, compressedSize, decompressedSize, dataRawBuffer);
+                        dataWritten = DecompressDataFromZstd(outData, decompressedSize, dataRawBuffer);
                         break;
                     default:
                         throw new FormatException($"Decompression format is not supported! ({compressionType})");
@@ -199,7 +199,7 @@ namespace CollapseLauncher.Helper.Metadata
             return decompressedWritten;
         }
 
-        private static unsafe int DecompressDataFromZstd(Span<byte> outData, int compressedSize, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
+        private static unsafe int DecompressDataFromZstd(Span<byte> outData, int decompressedSize, ReadOnlySpan<byte> dataRawBuffer)
         {
             fixed (byte* inputBuffer = &dataRawBuffer[0])
                 fixed (byte* outputBuffer = &outData[0])

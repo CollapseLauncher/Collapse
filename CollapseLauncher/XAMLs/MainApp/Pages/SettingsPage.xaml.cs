@@ -33,6 +33,7 @@
     using System.IO;
     using System.Linq;
     using System.Text;
+    using WinRT;
     using static CollapseLauncher.Dialogs.SimpleDialogs;
     using static CollapseLauncher.Helper.Image.Waifu2X;
     using static CollapseLauncher.InnerLauncherConfig;
@@ -88,11 +89,12 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = Version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
+        #pragma warning disable CS0618 // Type or member is obsolete
             GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
-
+        #pragma warning restore CS0618 // Type or member is obsolete
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
@@ -118,6 +120,7 @@ namespace CollapseLauncher.Pages
 
         private string GitVersionIndicator_Builder()
         {
+        #pragma warning disable CS0618 // Type or member is obsolete
             var branchName  = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
 
@@ -131,7 +134,7 @@ namespace CollapseLauncher.Pages
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
-
+        #pragma warning restore CS0618 // Type or member is obsolete
             return outString;
         }
         
@@ -1524,7 +1527,7 @@ namespace CollapseLauncher.Pages
             }
             catch (DllNotFoundException ex)
             {
-                // No need to revert the value if fail, user is asked to restart the app
+                // No need to revert the value if fails, user is asked to restart the app
                 ShowFailed(ex);
                 var res = await SpawnDialog(
                                   Lang._Misc.MissingVcRedist,
@@ -1562,7 +1565,7 @@ namespace CollapseLauncher.Pages
 
                 // Show exception
                 ShowFailed(ex);
-                ErrorSender.SendException(newEx); // Send error with dialog
+                ErrorSender.SendException(newEx, ErrorType.Unhandled, false); // Send error with dialog
             }
             finally
             {
@@ -1618,6 +1621,16 @@ namespace CollapseLauncher.Pages
 
                 ShowDbWarningStatus(Lang._SettingsPage.Database_Warning_PropertyChanged);
             }
+        }
+        
+        private void DbTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            ValidateDbButton.IsEnabled = !string.IsNullOrEmpty(sender.As<TextBox>().Text);
+        }
+
+        private void DbTokenPasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            ValidateDbButton.IsEnabled = !string.IsNullOrEmpty(sender.As<PasswordBox>().Password);
         }
         #endregion
         #endregion

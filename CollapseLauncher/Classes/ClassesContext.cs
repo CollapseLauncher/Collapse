@@ -14,6 +14,7 @@ namespace CollapseLauncher
         IncludeFields = false,
         GenerationMode = JsonSourceGenerationMode.Metadata,
         IgnoreReadOnlyFields = true,
+        // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull,
         WriteIndented = true)]
     [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>))]

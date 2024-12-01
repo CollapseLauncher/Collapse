@@ -1,7 +1,6 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.WindowSize;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -11,7 +10,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Pages
 {
-    public sealed partial class HomePage : Page
+    public sealed partial class HomePage
     {
         string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
 
