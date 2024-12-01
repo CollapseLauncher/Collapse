@@ -49,6 +49,11 @@
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <NoWarn>TA101</NoWarn>
+        <NoWarn>TA100</NoWarn>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(PublishAot)' == 'true'">
         <RunAOTCompilation>true</RunAOTCompilation>
         <OptimizationPreference>Speed</OptimizationPreference>

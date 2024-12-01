@@ -89,11 +89,12 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = Version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
+        #pragma warning disable CS0618 // Type or member is obsolete
             GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
-
+        #pragma warning restore CS0618 // Type or member is obsolete
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
@@ -119,6 +120,7 @@ namespace CollapseLauncher.Pages
 
         private string GitVersionIndicator_Builder()
         {
+        #pragma warning disable CS0618 // Type or member is obsolete
             var branchName  = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
 
@@ -132,7 +134,7 @@ namespace CollapseLauncher.Pages
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
-
+        #pragma warning restore CS0618 // Type or member is obsolete
             return outString;
         }
         
