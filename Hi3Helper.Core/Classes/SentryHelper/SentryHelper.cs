@@ -117,6 +117,11 @@ namespace Hi3Helper.SentryHelper
 
         public static void InitializeSentrySdk()
         {
+        #if DEBUG
+            _isEnabled = false;
+            return;
+        #pragma warning disable CS0162 // Unreachable code detected
+        #endif
             _sentryInstance =
                 SentrySdk.Init(o =>
                              {
@@ -164,6 +169,9 @@ namespace Hi3Helper.SentryHelper
                                              IpAddress = null
                                          };
                                      });
+        #if DEBUG
+        #pragma warning restore CS0162 // Unreachable code detected
+        #endif
         }
 
         /// <summary>
