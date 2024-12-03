@@ -292,10 +292,13 @@ namespace CollapseLauncher
 
             async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, ReadOnlyMemory<byte> hashToCompare, CancellationToken cancelToken)
             {
-                if (_useFastMethod) return true; // Skip the hash calculation if the fast method is enabled
                 // Refresh the fileInfo
                 fileInfo.Refresh();
 
+                if (fileInfo.Length != asset.fileSize) return false; // Skip the hash calculation if the file size is different
+                
+                if (_useFastMethod) return true; // Skip the hash calculation if the fast method is enabled
+                
                 // Try to get filestream
                 await using FileStream fileStream = await fileInfo.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
