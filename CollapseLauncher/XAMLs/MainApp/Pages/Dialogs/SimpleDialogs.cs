@@ -8,7 +8,7 @@ using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -1146,7 +1146,7 @@ namespace CollapseLauncher.Dialogs
 
         private static async void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {
-            PInvoke.CopyStringToClipboard(ErrorSender.ExceptionContent, ILoggerHelper.GetILogger());
+            Clipboard.CopyStringToClipboard(ErrorSender.ExceptionContent, ILoggerHelper.GetILogger());
             if (sender is Button btn && btn.Content != null && btn.Content is Panel panel)
             {
                 FontIcon  fontIcon  = panel.Children[0] as FontIcon;

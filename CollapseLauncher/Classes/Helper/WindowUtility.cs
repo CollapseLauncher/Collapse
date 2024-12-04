@@ -5,8 +5,9 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
-using Hi3Helper.Win32.Native;
 using Hi3Helper.Win32.Native.Enums;
+using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
 using Microsoft.Graphics.Display;
@@ -557,7 +558,7 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            PInvoke.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
+            Windowing.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
         }
 
         #endregion

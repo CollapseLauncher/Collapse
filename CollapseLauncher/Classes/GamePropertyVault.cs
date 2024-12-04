@@ -13,7 +13,7 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -117,7 +117,7 @@ namespace CollapseLauncher.Statics
 
         internal bool IsGameRunning
         {
-            get => PInvoke.IsProcessExist(_GameExecutableName, out _, out _, Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName), ILoggerHelper.GetILogger());
+            get => ProcessChecker.IsProcessExist(_GameExecutableName, out _, out _, Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName), ILoggerHelper.GetILogger());
         }
 
 #nullable enable
@@ -136,7 +136,7 @@ namespace CollapseLauncher.Statics
                     Process process = processArr[i];
                     int processId = process.Id;
 
-                    string? processPath = PInvoke.GetProcessPathByProcessId(processId, ILoggerHelper.GetILogger());
+                    string? processPath = ProcessChecker.GetProcessPathByProcessId(processId, ILoggerHelper.GetILogger());
                     string expectedProcessPath = Path.Combine(_GameVersion?.GameDirPath ?? "", _GameExecutableName);
                     if (string.IsNullOrEmpty(processPath) || !expectedProcessPath.Equals(processPath, StringComparison.OrdinalIgnoreCase)
                      || process.MainWindowHandle == IntPtr.Zero)

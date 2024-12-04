@@ -5,7 +5,8 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.ShellLinkCOM;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
@@ -184,7 +185,7 @@ public static class MainEntryPoint
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
-                InstanceCount = PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
+                InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
                 AppActivation.Enable();
                 if (!AppActivation.DecideRedirection())

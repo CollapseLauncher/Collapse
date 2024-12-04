@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Win32.Native;
+﻿using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.ManagedTools;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -118,7 +119,7 @@ namespace Hi3Helper
             Console.OutputEncoding = Encoding.UTF8;
 
             var instanceIndicator = "";
-            var instanceCount = PInvoke.EnumerateInstances(ILoggerHelper.GetILogger());
+            var instanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
             if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
             Console.Title = $"Collapse Console{instanceIndicator}";
@@ -136,7 +137,7 @@ namespace Hi3Helper
             }
 
 #if !APPLYUPDATE
-            PInvoke.SetWindowIcon(PInvoke.GetConsoleWindow(), AppIconLarge, AppIconSmall);
+            Windowing.SetWindowIcon(PInvoke.GetConsoleWindow(), AppIconLarge, AppIconSmall);
 #endif
         }
 #endregion

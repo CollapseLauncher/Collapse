@@ -4,7 +4,7 @@ using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;

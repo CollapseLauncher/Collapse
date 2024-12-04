@@ -4,7 +4,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.ManagedTools;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -49,7 +49,7 @@ namespace CollapseLauncher
             try
             {
                 var threadCount = _threadCount;
-                var isSsd = PInvoke.IsDriveSsd(_gameStreamingAssetsPath, ILoggerHelper.GetILogger());
+                var isSsd = DriveTypeChecker.IsDriveSsd(_gameStreamingAssetsPath, ILoggerHelper.GetILogger());
                 if (!isSsd)
                 {
                     threadCount = 1;

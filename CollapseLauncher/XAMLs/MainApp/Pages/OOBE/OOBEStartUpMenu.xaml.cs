@@ -13,7 +13,7 @@ using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
