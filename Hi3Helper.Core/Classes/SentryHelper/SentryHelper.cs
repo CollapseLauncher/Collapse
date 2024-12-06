@@ -4,9 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
-#if DEBUG
 using Sentry.Infrastructure;
-#endif
 using Sentry.Protocol;
 using System.Collections.Generic;
 using System.Diagnostics;
