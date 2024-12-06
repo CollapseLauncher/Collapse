@@ -42,9 +42,9 @@ jobs:
         uses: Cyberboss/install-winget@v1
 
       - name: Install Qodana CLI
-        run: |
-          winget source remove msstore
-          winget install -e --id JetBrains.QodanaCLI --force
+        uses: crazy-max/ghaction-chocolatey@v3
+        with:
+          args: install qodana --pre --confirm
       
       - name: Verify Qodana
         run: |
