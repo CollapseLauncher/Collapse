@@ -45,6 +45,9 @@ jobs:
         run: |
           winget source remove msstore
           winget install -e --id JetBrains.QodanaCLI --force
+      
+      - name: Verify Qodana
+        run: |
           qodana --version
 
       - name: Install .NET
@@ -52,7 +55,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           dotnet-quality: ${{ env.DOTNET_QUALITY }}
-          cache: true
+          cache: false
           cache-dependency-path: CollapseLauncher/packages.lock.json
 
       - name: Qodana Scan
