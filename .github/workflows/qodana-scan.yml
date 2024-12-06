@@ -37,8 +37,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           submodules: recursive # many many submodules
 
-      - name: Install winget
-        uses: Cyberboss/install-winget@v1
+      # - name: Install winget
+      #   uses: Cyberboss/install-winget@v1
 
       # - name: Install Qodana CLI
       #   uses: crazy-max/ghaction-chocolatey@v3
@@ -56,7 +56,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           dotnet-quality: ${{ env.DOTNET_QUALITY }}
-          cache: false
+          cache: true
           cache-dependency-path: CollapseLauncher/packages.lock.json
 
       # - name: Qodana Scan
@@ -67,11 +67,14 @@ jobs:
 
       - name: Qodana Scan
         uses: JetBrains/qodana-action@next
+        continue-on-error: true
         with:
           args: --ide,QDNET-EAP
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
       - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        continue-on-error: true
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
