@@ -78,6 +78,7 @@ namespace CollapseLauncher.Statics
 
             SentryHelper.CurrentGameCategory   = _GameVersion.GameName;
             SentryHelper.CurrentGameRegion     = _GameVersion.GameRegion;
+            SentryHelper.CurrentGameLocation   = _GameVersion.GameDirPath;
             SentryHelper.CurrentGameInstalled  = _GameVersion.IsGameInstalled();
             SentryHelper.CurrentGameUpdated    = _GameVersion.IsGameVersionMatch();
             SentryHelper.CurrentGameHasPreload = _GameVersion.IsGameHasPreload();

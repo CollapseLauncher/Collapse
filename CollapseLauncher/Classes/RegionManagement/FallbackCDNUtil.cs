@@ -172,6 +172,7 @@ namespace CollapseLauncher
         {
             // Get the preferred CDN first and try get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
+            SentryHelper.AppCdnOption = preferredCDN.Name;
             bool isSuccess = await TryGetCDNContent(preferredCDN, downloadClient, outputPath, relativeURL, parallelThread, token);
 
             // If successful, then return

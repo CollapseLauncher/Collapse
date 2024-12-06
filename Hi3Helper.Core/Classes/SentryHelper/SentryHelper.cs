@@ -130,16 +130,14 @@ namespace Hi3Helper.SentryHelper
                                  o.Dsn = SentryDsn;
                                  o.AddEventProcessor(new SentryEventProcessor());
                                  o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-                                 if (IsDebugSentry)
-                                 {
-                                     o.Debug            = true;
-                                     o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
-                                     o.DiagnosticLevel  = SentryLevel.Debug;
-                                 }
+                                 o.Debug              = IsDebugSentry;
+                                 o.DiagnosticLogger = IsDebugSentry
+                                     ? new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug) : null;
+                                 o.DiagnosticLevel     = IsDebugSentry ? SentryLevel.Debug : SentryLevel.Error;
                                  o.AutoSessionTracking = true;
                                  o.StackTraceMode      = StackTraceMode.Enhanced;
                                  o.DisableSystemDiagnosticsMetricsIntegration();
-                                 o.IsGlobalModeEnabled      = true;
+                                 o.IsGlobalModeEnabled = true;
                                  o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
                                  o.StackTraceMode    = StackTraceMode.Enhanced;
                                  o.SendDefaultPii    = false;
@@ -326,8 +324,10 @@ namespace Hi3Helper.SentryHelper
         public static string AppBuildCommit        { get; set; } = "";
         public static string AppBuildBranch        { get; set; } = "";
         public static string AppBuildRepo          { get; set; } = "";
+        public static string AppCdnOption          { get; set; } = "";
         public static string CurrentGameCategory   { get; set; } = "";
         public static string CurrentGameRegion     { get; set; } = "";
+        public static string CurrentGameLocation   { get; set; } = "";
         public static bool   CurrentGameInstalled  { get; set; }
         public static bool   CurrentGameUpdated    { get; set; }
         public static bool   CurrentGameHasPreload { get; set; }
@@ -450,7 +450,9 @@ namespace Hi3Helper.SentryHelper
                 { "Installed", CurrentGameInstalled.ToString() },
                 { "Updated", CurrentGameUpdated.ToString() },
                 { "HasPreload", CurrentGameHasPreload.ToString() },
-                { "HasDelta", CurrentGameHasDelta.ToString() }
+                { "HasDelta", CurrentGameHasDelta.ToString() },
+                { "Location", CurrentGameLocation },
+                { "CdnOption", AppCdnOption }
             }, "GameInfo");
 
         #endregion
