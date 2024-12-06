@@ -43,6 +43,7 @@ jobs:
 
       - name: Install Qodana CLI
         run: |
+          winget source remove msstore
           winget install -e --id JetBrains.QodanaCLI --force
           qodana --version
 
