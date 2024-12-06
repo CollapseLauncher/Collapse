@@ -62,6 +62,8 @@ jobs:
 
       - name: Qodana Scan
         run: |
+          Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
+          refreshenv
           qodana scan --ide QDNET-EAP -o ${{ runner.temp }}\qodana\results --cache-dir ${{ runner.temp }}\qodana\cache
 
       - uses: github/codeql-action/upload-sarif@v3
