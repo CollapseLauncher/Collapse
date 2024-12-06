@@ -180,17 +180,17 @@
       },
       "PhotoSauce.MagicScaler": {
         "type": "Direct",
-        "requested": "[0.14.2, )",
-        "resolved": "0.14.2",
-        "contentHash": "rVz7Fb3/hyTLIP6NikCnnAiIz3vl5yfOooyehVz0FFsZCSd+UFgNTOjTvI+4xhpoQs08/RjU6DQz181qxzzRVA=="
+        "requested": "[0.15.0, )",
+        "resolved": "0.15.0",
+        "contentHash": "ajPOdS5wGIZrHGT0NHvmmrQ7sJb0Vp+Ex3JauD7Ru+U+F+N7tTYRVDcvXW2ER56MLzC+VSqK3KjRn4Sntkf3vA=="
       },
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",
         "requested": "[*-*, )",
-        "resolved": "1.3.2-preview3",
-        "contentHash": "kPBYxzIOx2XW/vvt/AGWSbeOInLVnM/teCXN+ABwDXSAC2kQYAF0pKoPxyg+YQimgmAORgAnV7817X8jYHT/Ew==",
+        "resolved": "1.4.0-preview1",
+        "contentHash": "0AyuhMpynCdCq84dh0wU/Kjuxzo3GkYny5Z1l2JlWTHD2muUlE3Akqa1CtEPj0lif9o/KHnYwhmIWnP0ZctF4g==",
         "dependencies": {
-          "PhotoSauce.MagicScaler": "[0.14.2]"
+          "PhotoSauce.MagicScaler": "[0.15.0]"
         }
       },
       "Roman-Numerals": {
@@ -302,8 +302,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.29.0",
-        "contentHash": "l1012jd1Y2XsLQ+h9cXE7Bo3WruXql3Xc3KP/z+yZDJMSkfb2guslHCxwFsqd2ScHB0h2J7Yuy255RrBD/DGBw=="
+        "resolved": "3.29.1",
+        "contentHash": "kDFLP72bPu4GwquVN7HtFnfqxhQs4CLbUEyOc/0yV48HB0Pxf7tDK7zIx6ifaQwGp+RSoLY1sz1CXqoAEAu+AQ=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -542,10 +542,10 @@
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",
         "requested": "[*-*, )",
-        "resolved": "1.3.2-preview3",
-        "contentHash": "kPBYxzIOx2XW/vvt/AGWSbeOInLVnM/teCXN+ABwDXSAC2kQYAF0pKoPxyg+YQimgmAORgAnV7817X8jYHT/Ew==",
+        "resolved": "1.4.0-preview1",
+        "contentHash": "0AyuhMpynCdCq84dh0wU/Kjuxzo3GkYny5Z1l2JlWTHD2muUlE3Akqa1CtEPj0lif9o/KHnYwhmIWnP0ZctF4g==",
         "dependencies": {
-          "PhotoSauce.MagicScaler": "[0.14.2]"
+          "PhotoSauce.MagicScaler": "[0.15.0]"
         }
       },
       "System.Security.AccessControl": {
