@@ -1,7 +1,10 @@
 version: "1.0"
-linter: jetbrains/qodana-dotnet:latest
+ide: QDNET-EAP
+bootstrap: dotnet build CollapseLauncher -c Release
 dotnet:
   solution: CollapseLauncher.sln
+profile:
+  name: qodana.recommended
 exclude:
   - name: All
     paths:
