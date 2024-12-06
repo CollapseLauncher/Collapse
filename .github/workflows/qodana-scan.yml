@@ -48,6 +48,8 @@ jobs:
       
       - name: Verify Qodana
         run: |
+          Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
+          refreshenv
           qodana --version
 
       - name: Install .NET
