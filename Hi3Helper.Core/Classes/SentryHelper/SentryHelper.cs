@@ -39,6 +39,8 @@ namespace Hi3Helper.SentryHelper
         /// </summary>
         private const bool SentryUploadLog = true;
 
+        private static bool IsDebugSentry => Convert.ToBoolean(Environment.GetEnvironmentVariable("DEBUG_SENTRY"));
+
         #endregion
 
         #region Enums
@@ -128,27 +130,12 @@ namespace Hi3Helper.SentryHelper
                                  o.Dsn = SentryDsn;
                                  o.AddEventProcessor(new SentryEventProcessor());
                                  o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-                             #if DEBUG
-                                o.Debug = true;
-                                o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
-                                o.DiagnosticLevel = SentryLevel.Debug;
-                                o.Distribution = "Debug";
-                                // Set TracesSampleRate to 1.0 to capture 100%
-                                // of transactions for tracing.
-                                // We recommend adjusting this value in production.
-                                o.TracesSampleRate = 1.0;
-
-                                // Sample rate for profiling, applied on top of other TracesSampleRate,
-                                // e.g. 0.2 means we want to profile 20 % of the captured transactions.
-                                // We recommend adjusting this value in production.
-                                o.ProfilesSampleRate = 1.0;
-                             #else
-                                 o.Debug              = false;
-                                 o.DiagnosticLevel    = SentryLevel.Error;
-                                 o.Distribution       = IsPreview ? "Preview" : "Stable";
-                                 o.TracesSampleRate   = 0.4;
-                                 o.ProfilesSampleRate = 0.2;
-                             #endif
+                                 if (IsDebugSentry)
+                                 {
+                                     o.Debug            = true;
+                                     o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
+                                     o.DiagnosticLevel  = SentryLevel.Debug;
+                                 }
                                  o.AutoSessionTracking = true;
                                  o.StackTraceMode      = StackTraceMode.Enhanced;
                                  o.DisableSystemDiagnosticsMetricsIntegration();
