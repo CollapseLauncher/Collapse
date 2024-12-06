@@ -23,7 +23,6 @@ jobs:
       DOTNET_VERSION: '9.x'
       DOTNET_QUALITY: 'ga'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
     permissions:
       actions: read
@@ -41,16 +40,16 @@ jobs:
       - name: Install winget
         uses: Cyberboss/install-winget@v1
 
-      - name: Install Qodana CLI
-        uses: crazy-max/ghaction-chocolatey@v3
-        with:
-          args: install qodana --pre --confirm
+      # - name: Install Qodana CLI
+      #   uses: crazy-max/ghaction-chocolatey@v3
+      #   with:
+      #     args: install qodana --pre --confirm
       
-      - name: Verify Qodana
-        run: |
-          Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
-          refreshenv
-          qodana --version
+      # - name: Verify Qodana
+      #   run: |
+      #     Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
+      #     refreshenv
+      #     qodana --version
 
       - name: Install .NET
         uses: actions/setup-dotnet@v4
@@ -60,12 +59,19 @@ jobs:
           cache: false
           cache-dependency-path: CollapseLauncher/packages.lock.json
 
+      # - name: Qodana Scan
+      #   run: |
+      #     Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
+      #     refreshenv
+      #     qodana scan --ide QDNET-EAP -o ${{ runner.temp }}\qodana\results --cache-dir ${{ runner.temp }}\qodana\cache
+
       - name: Qodana Scan
-        run: |
-          Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
-          refreshenv
-          qodana scan --ide QDNET-EAP -o ${{ runner.temp }}\qodana\results --cache-dir ${{ runner.temp }}\qodana\cache
+        uses: JetBrains/qodana-action@latest
+        with:
+          args: --ide,QDNET-EAP
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
       - uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ runner.temp }}\qodana\results\qodana.sarif.json
+          sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
