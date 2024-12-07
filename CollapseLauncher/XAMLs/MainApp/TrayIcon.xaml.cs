@@ -47,14 +47,14 @@ namespace CollapseLauncher
             var instanceIndicator = "";
             var instanceCount     = MainEntryPoint.InstanceCount;
             var guid              = LauncherConfig.GetGuid(instanceCount);
-            if (m_isWindows11)
+            if (Environment.OSVersion.Version >= new Version(10, 0, 22621))
             {
                 LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
                              $"GUID: {guid}\r\n\t" +
                              $"Instance Count: {instanceCount}", LogType.Scheme, true);
                 CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, guid);
             }
-            else // Do not use static GUID on W10
+            else // Do not use static GUID on W10 and W11 21H2
             {
                 var guidGet = CollapseTaskbar.GetValue(TaskbarIcon.IdProperty).ToString();
                 LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
