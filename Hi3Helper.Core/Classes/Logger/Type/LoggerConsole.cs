@@ -111,7 +111,7 @@ namespace Hi3Helper
             const uint GENERIC_WRITE = 0x40000000;
             const uint FILE_SHARE_WRITE = 2;
             const uint OPEN_EXISTING = 3;
-            ConsoleHandle = PInvoke.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+            ConsoleHandle = PInvoke.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, (uint)0, OPEN_EXISTING, 0, 0);
 
             const int STD_OUTPUT_HANDLE = -11;
             PInvoke.SetStdHandle(STD_OUTPUT_HANDLE, ConsoleHandle);
