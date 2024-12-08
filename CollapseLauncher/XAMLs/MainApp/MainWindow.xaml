@@ -18,6 +18,10 @@
             <RowDefinition />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
+        <!--  ReSharper disable once InconsistentNaming  -->
+        <local:TrayIcon x:Name="_TrayIcon"
+                        Grid.Row="0"
+                        x:FieldModifier="public" />
         <Grid x:Name="RootFrameGrid"
               Grid.Row="0"
               Grid.RowSpan="3"
@@ -156,9 +160,6 @@
         </Grid>
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
                                              x:FieldModifier="internal" />
-        <local:TrayIcon x:Name="_TrayIcon"
-                        Grid.Row="0"
-                        x:FieldModifier="public" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
             <Grid x:Name="AppTitleBar"

@@ -4,12 +4,14 @@ using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml.Markup;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
@@ -22,6 +24,21 @@ namespace CollapseLauncher
     public sealed partial class TrayIcon
     {
         internal static TrayIcon Current { get; private set; }
+
+        internal bool IsCreated
+        {
+            get 
+            { 
+                var v = CollapseTaskbar.IsCreated;
+                if (!v)
+                {
+                    var s = new System.Diagnostics.StackTrace();
+                    var c = System.Diagnostics.DiagnosticMethodInfo.Create(s.GetFrame(1));
+                    LogWriteLine($"[TrayIcon] {c.Name} called when TrayIcon is not created!", LogType.Error, true);
+                }
+                return v;
+            }
+        }
 
         #region Locales
         private string _popupHelp1 => Lang._Misc.Taskbar_PopupHelp1;
@@ -43,14 +60,27 @@ namespace CollapseLauncher
         public TrayIcon()
         {
             InitializeComponent();
+            
+            CollapseTaskbar.Logger = LoggerInstance;
+            CollapseTaskbar.SetValue(TaskbarIcon.LoggerProp, LoggerInstance);
 
             var instanceIndicator = "";
             var instanceCount     = MainEntryPoint.InstanceCount;
             var guid              = LauncherConfig.GetGuid(instanceCount);
-            LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
-                         $"GUID: {guid}\r\n\t" +
-                         $"Instance Count: {instanceCount}", LogType.Scheme, true);
-            CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, guid);
+            if (Environment.OSVersion.Version >= new Version(10, 0, 22621))
+            {
+                LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
+                             $"GUID: {guid}\r\n\t" +
+                             $"Instance Count: {instanceCount}", LogType.Scheme, true);
+                CollapseTaskbar.SetValue(TaskbarIcon.IdProperty, guid);
+            }
+            else // Do not use static GUID on W10 and W11 21H2
+            {
+                var guidGet = CollapseTaskbar.GetValue(TaskbarIcon.IdProperty).ToString();
+                LogWriteLine("[TrayIcon] Initializing Tray with parameters:\r\n\t" +
+                             $"GUID: {guidGet}\r\n\t" +
+                             $"Instance Count: {instanceCount}", LogType.Scheme, true);
+            }
 
             if (instanceCount > 1)
             {
@@ -83,13 +113,15 @@ namespace CollapseLauncher
             
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
 
-            Current = this;
+            Current   = this;
         }
 
         public void Dispose()
         {
             CollapseTaskbar.Dispose();
         }
+        
+        private ILogger LoggerInstance => ILoggerHelper.GetILogger("TrayIcon");
 
         private void BalloonChangedEvent(object o, MessageWindow.BalloonToolTipChangedEventArgs args)
         {
@@ -277,6 +309,7 @@ namespace CollapseLauncher
         // ReSharper disable once MemberCanBePrivate.Global
         public void UpdateContextMenu()
         {
+            if (!IsCreated) return;
             // Enable visibility toggle for console if the console is enabled
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
@@ -347,6 +380,7 @@ namespace CollapseLauncher
         {
             try
             {
+                if (!IsCreated) return;
                 CollapseTaskbar.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
             }
             catch (Exception e) //Just write a log if it throws an error, not that important anyway o((⊙﹏⊙))o.

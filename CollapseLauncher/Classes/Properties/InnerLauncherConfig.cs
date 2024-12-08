@@ -4,7 +4,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

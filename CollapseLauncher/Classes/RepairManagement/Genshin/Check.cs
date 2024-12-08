@@ -4,7 +4,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.ManagedTools;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -49,7 +49,7 @@ namespace CollapseLauncher
             try
             {
                 var threadCount = _threadCount;
-                var isSsd = PInvoke.IsDriveSsd(_gameStreamingAssetsPath, ILoggerHelper.GetILogger());
+                var isSsd = DriveTypeChecker.IsDriveSsd(_gameStreamingAssetsPath, ILoggerHelper.GetILogger());
                 if (!isSsd)
                 {
                     threadCount = 1;
@@ -292,10 +292,13 @@ namespace CollapseLauncher
 
             async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, ReadOnlyMemory<byte> hashToCompare, CancellationToken cancelToken)
             {
-                if (_useFastMethod) return true; // Skip the hash calculation if the fast method is enabled
                 // Refresh the fileInfo
                 fileInfo.Refresh();
 
+                if (fileInfo.Length != asset.fileSize) return false; // Skip the hash calculation if the file size is different
+                
+                if (_useFastMethod) return true; // Skip the hash calculation if the fast method is enabled
+                
                 // Try to get filestream
                 await using FileStream fileStream = await fileInfo.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 

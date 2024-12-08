@@ -11,8 +11,8 @@
 
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.Native;
 using Hi3Helper.Win32.Native.Enums;
+using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.Win32;
 using System;
 using System.ComponentModel;

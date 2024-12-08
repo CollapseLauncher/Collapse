@@ -4,9 +4,9 @@
     ".NETFramework,Version=v4.6.2": {
       "Costura.Fody": {
         "type": "Direct",
-        "requested": "[6.0.0-beta0000, )",
-        "resolved": "6.0.0-beta0000",
-        "contentHash": "LmQtwv0tqR3RDNNOypyFPr29qpqnoSflMvIzcI4k8PvnpQIqvk7ZjLgKHJHdrxqEK3fkacvRsTgJzEeMO7/xqg==",
+        "requested": "[6.0.0, )",
+        "resolved": "6.0.0",
+        "contentHash": "3Uriu9GJABMivG0wXMJs6NQ7FNE3pylir1gZEBAWDvpii3cnrmxXnOG44MMDuIVOIk/Xhef7WZFsaCNV+py9qA==",
         "dependencies": {
           "Fody": "6.8.2"
         }

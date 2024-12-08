@@ -1,22 +1,22 @@
 ﻿#if !DISABLEDISCORD
-    using CollapseLauncher.DiscordPresence;
+using CollapseLauncher.DiscordPresence;
 #endif
-    using CollapseLauncher.Helper;
-    using CollapseLauncher.Statics;
-    using Hi3Helper;
-    using Hi3Helper.Shared.ClassStruct;
-    using Hi3Helper.Win32.Native;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Controls;
-    using Microsoft.UI.Xaml.Controls.Primitives;
-    using System;
-    using System.Threading.Tasks;
-    using static CollapseLauncher.InnerLauncherConfig;
-    using static Hi3Helper.Locale;
-    using static Hi3Helper.Logger;
-    using static Hi3Helper.Shared.Region.LauncherConfig;
+using CollapseLauncher.Helper;
+using CollapseLauncher.Statics;
+using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.Native.ManagedTools;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using System;
+using System.Threading.Tasks;
+using static CollapseLauncher.InnerLauncherConfig;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
 
-    namespace CollapseLauncher.Pages
+namespace CollapseLauncher.Pages
 {
     public sealed partial class CachesPage
     {
@@ -58,7 +58,7 @@
 
             try
             {
-                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
                 bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
@@ -97,7 +97,7 @@
             finally
             {
                 RemoveEvent();
-                PInvoke.RestoreSleep();
+                Sleep.RestoreSleep();
             }
         }
 
@@ -108,7 +108,7 @@
 
             try
             {
-                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
                 int assetCount = CurrentGameProperty._GameCache.AssetEntry.Count;
@@ -146,7 +146,7 @@
             }
             finally
             {
-                PInvoke.RestoreSleep();
+                Sleep.RestoreSleep();
                 RemoveEvent();
             }
         }

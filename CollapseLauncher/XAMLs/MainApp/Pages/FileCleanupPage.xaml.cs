@@ -4,7 +4,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.InstallManager.Base;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -217,7 +217,7 @@ namespace CollapseLauncher.Pages
                     }
                 }
 
-                await Task.Run(() => PInvoke.MoveFileToRecycleBin(toBeDeleted));
+                await Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted));
                 DispatcherQueue.TryEnqueue(() =>
                                            {
                                                for (int i = FileInfoSource.Count - 1; i >= 0; i--)

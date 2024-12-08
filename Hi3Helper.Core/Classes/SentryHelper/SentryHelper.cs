@@ -4,9 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
-#if DEBUG
 using Sentry.Infrastructure;
-#endif
 using Sentry.Protocol;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,6 +36,8 @@ namespace Hi3Helper.SentryHelper
         /// Whether to upload log file when exception is caught.
         /// </summary>
         private const bool SentryUploadLog = true;
+
+        private static bool IsDebugSentry => Convert.ToBoolean(Environment.GetEnvironmentVariable("DEBUG_SENTRY"));
 
         #endregion
 
@@ -117,37 +117,25 @@ namespace Hi3Helper.SentryHelper
 
         public static void InitializeSentrySdk()
         {
+        #if DEBUG
+            _isEnabled = false;
+            return;
+        #pragma warning disable CS0162 // Unreachable code detected
+        #endif
             _sentryInstance =
                 SentrySdk.Init(o =>
                              {
                                  o.Dsn = SentryDsn;
                                  o.AddEventProcessor(new SentryEventProcessor());
                                  o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-                             #if DEBUG
-                                o.Debug = true;
-                                o.DiagnosticLogger = new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug);
-                                o.DiagnosticLevel = SentryLevel.Debug;
-                                o.Distribution = "Debug";
-                                // Set TracesSampleRate to 1.0 to capture 100%
-                                // of transactions for tracing.
-                                // We recommend adjusting this value in production.
-                                o.TracesSampleRate = 1.0;
-
-                                // Sample rate for profiling, applied on top of other TracesSampleRate,
-                                // e.g. 0.2 means we want to profile 20 % of the captured transactions.
-                                // We recommend adjusting this value in production.
-                                o.ProfilesSampleRate = 1.0;
-                             #else
-                                 o.Debug              = false;
-                                 o.DiagnosticLevel    = SentryLevel.Error;
-                                 o.Distribution       = IsPreview ? "Preview" : "Stable";
-                                 o.TracesSampleRate   = 0.4;
-                                 o.ProfilesSampleRate = 0.2;
-                             #endif
+                                 o.Debug              = IsDebugSentry;
+                                 o.DiagnosticLogger = IsDebugSentry
+                                     ? new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug) : null;
+                                 o.DiagnosticLevel     = IsDebugSentry ? SentryLevel.Debug : SentryLevel.Error;
                                  o.AutoSessionTracking = true;
                                  o.StackTraceMode      = StackTraceMode.Enhanced;
                                  o.DisableSystemDiagnosticsMetricsIntegration();
-                                 o.IsGlobalModeEnabled      = true;
+                                 o.IsGlobalModeEnabled = true;
                                  o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
                                  o.StackTraceMode    = StackTraceMode.Enhanced;
                                  o.SendDefaultPii    = false;
@@ -164,6 +152,9 @@ namespace Hi3Helper.SentryHelper
                                              IpAddress = null
                                          };
                                      });
+        #if DEBUG
+        #pragma warning restore CS0162 // Unreachable code detected
+        #endif
         }
 
         /// <summary>
@@ -331,8 +322,10 @@ namespace Hi3Helper.SentryHelper
         public static string AppBuildCommit        { get; set; } = "";
         public static string AppBuildBranch        { get; set; } = "";
         public static string AppBuildRepo          { get; set; } = "";
+        public static string AppCdnOption          { get; set; } = "";
         public static string CurrentGameCategory   { get; set; } = "";
         public static string CurrentGameRegion     { get; set; } = "";
+        public static string CurrentGameLocation   { get; set; } = "";
         public static bool   CurrentGameInstalled  { get; set; }
         public static bool   CurrentGameUpdated    { get; set; }
         public static bool   CurrentGameHasPreload { get; set; }
@@ -455,7 +448,9 @@ namespace Hi3Helper.SentryHelper
                 { "Installed", CurrentGameInstalled.ToString() },
                 { "Updated", CurrentGameUpdated.ToString() },
                 { "HasPreload", CurrentGameHasPreload.ToString() },
-                { "HasDelta", CurrentGameHasDelta.ToString() }
+                { "HasDelta", CurrentGameHasDelta.ToString() },
+                { "Location", CurrentGameLocation },
+                { "CdnOption", AppCdnOption }
             }, "GameInfo");
 
         #endregion

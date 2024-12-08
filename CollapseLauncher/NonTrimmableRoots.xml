@@ -18,7 +18,10 @@
     
     <assembly fullname="Hi3Helper.Win32">
         <!-- Preserve COM Interop used in project code when trimming -->
-        <type fullname="Hi3Helper.Win32.Native.PInvoke" preserve="all" />
+        <namespace fullname="Hi3Helper.Win32.Native.LibraryImport" preserve="all" />
+        <namespace fullname="Hi3Helper.Win32.FileDialogCOM" preserve="all" />
+        <namespace fullname="Hi3Helper.Win32.ShellLinkCOM" preserve="all" />
+        <type fullname="Hi3Helper.Win32.Native.LibraryImport.PInvoke" preserve="all" />
         <type fullname="Hi3Helper.Win32.Native.Structs.HResult" preserve="all" />
         <type fullname="Hi3Helper.Win32.FileDialogCOM.FileDialogNative" preserve="all" />
     </assembly>

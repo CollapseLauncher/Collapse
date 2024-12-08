@@ -24,7 +24,7 @@ using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
-using Hi3Helper.Win32.Native;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
@@ -208,7 +208,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
                 UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
 
-                StartCarouselAutoScroll();
+                _ = StartCarouselAutoScroll();
 
 #if !DISABLEDISCORD
                 AppDiscordPresence?.SetActivity(ActivityType.Idle);
@@ -405,9 +405,11 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        public async void StartCarouselAutoScroll(int delaySeconds = 5)
+        public async Task StartCarouselAutoScroll(int delaySeconds = 5)
         {
             if (!IsCarouselPanelAvailable) return;
+            if (delaySeconds < 5) delaySeconds = 5;
+            
             try
             {
                 while (true)
@@ -439,17 +441,20 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll();
-        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) =>
+            CarouselRestartScroll().GetAwaiter();
 
-        public async void CarouselRestartScroll(int delaySeconds = 5)
+        private void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) =>
+            CarouselStopScroll().GetAwaiter();
+
+        public async Task CarouselRestartScroll(int delaySeconds = 5)
         {
             // Don't restart carousel if game is running and LoPrio is on
             if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
             await CarouselStopScroll();
 
             CarouselToken = new CancellationTokenSourceWrapper();
-            StartCarouselAutoScroll(delaySeconds);
+            _ = StartCarouselAutoScroll(delaySeconds);
         }
 
         public async ValueTask CarouselStopScroll()
@@ -1224,7 +1229,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1259,7 +1264,7 @@ namespace CollapseLauncher.Pages
 
                     // Restore sleep before the dialog
                     // so system won't be stuck when download is finished because of the download verified dialog
-                    PInvoke.RestoreSleep();
+                    Sleep.RestoreSleep();
 
                     if (verifResult == -1)
                     {
@@ -1309,7 +1314,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GameInstall.Flush();
 
                 // Turn the sleep back on
-                PInvoke.RestoreSleep();
+                Sleep.RestoreSleep();
             }
         }
 
@@ -1347,7 +1352,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -1515,7 +1520,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                PInvoke.RestoreSleep();
+                Sleep.RestoreSleep();
             }
         }
 
@@ -2166,11 +2171,11 @@ namespace CollapseLauncher.Pages
         #region Exclusive Window Payload
         public async void StartExclusiveWindowPayload()
         {
-            IntPtr _windowPtr = PInvoke.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName ?? "");
+            IntPtr _windowPtr = ProcessChecker.GetProcessWindowHandle(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName ?? "");
             await Task.Delay(1000);
-            PInvoke.HideWindow(_windowPtr);
+            Windowing.HideWindow(_windowPtr);
             await Task.Delay(1000);
-            PInvoke.ShowWindow(_windowPtr);
+            Windowing.ShowWindow(_windowPtr);
         }
         #endregion
 
@@ -2462,7 +2467,8 @@ namespace CollapseLauncher.Pages
         {
             Button button = sender as Button;
             if (sender != null)
-                button.IsEnabled = false;
+                if (button != null)
+                    button.IsEnabled = false;
 
             try
             {
@@ -2490,7 +2496,8 @@ namespace CollapseLauncher.Pages
             finally
             {
                 if (sender != null)
-                    button.IsEnabled = true;
+                    if (button != null) 
+                        button.IsEnabled = true;
             }
         }
 
@@ -2570,7 +2577,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Prevent device from sleep
-                PInvoke.PreventSleep(ILoggerHelper.GetILogger());
+                Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
                 CurrentGameProperty._GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
 
@@ -2673,7 +2680,7 @@ namespace CollapseLauncher.Pages
                 ReturnToHomePage();
 
                 // Turn the sleep back on
-                PInvoke.RestoreSleep();
+                Sleep.RestoreSleep();
             }
         }
         #endregion
@@ -2747,7 +2754,7 @@ namespace CollapseLauncher.Pages
                                  $"PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
 
-                CarouselRestartScroll();
+                await CarouselRestartScroll();
             }
             catch (Exception ex)
             {
@@ -2793,8 +2800,15 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                              $"Target Process : {toTargetProc.ProcessName} [{toTargetProc.Id}]", LogType.Default, true);
 
-                // Wait 10 seconds before applying
-                await Task.Delay(10000);
+                // Wait 20 (or 10 if its first try) seconds before applying
+                if (GameBoostInvokeTryCount == 0)
+                {
+                    await Task.Delay(20000);
+                }
+                else
+                {
+                    await Task.Delay(10000);
+                }
 
                 // Check early exit
                 if (toTargetProc.HasExited)
@@ -2810,7 +2824,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
                              $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
             }
-            catch (Exception ex) when (GameBoostInvokeTryCount < 3)
+            catch (Exception ex) when (GameBoostInvokeTryCount < 5)
             {
                 LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
                              $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
@@ -2821,7 +2835,6 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
                              LogType.Error, true);
