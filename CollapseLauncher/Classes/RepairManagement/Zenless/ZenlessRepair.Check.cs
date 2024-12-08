@@ -83,30 +83,18 @@ namespace CollapseLauncher
             // Check if the file exist
             if (!fileInfo.Exists)
             {
-                // Update the total progress and found counter
-                _progressAllSizeFound += asset.S;
-                _progressAllCountFound++;
-
-                // Set the per size progress
-                _progressPerFileSizeCurrent = asset.S;
-
-                // Increment the total current progress
-                _progressAllSizeCurrent += asset.S;
-
-                Dispatch(() => AssetEntry.Add(
-                    new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(asset.N),
-                        ConvertRepairAssetTypeEnum(asset.FT),
-                        Path.GetDirectoryName(asset.N),
-                        asset.S,
-                        null,
-                        null
-                    )
-                ));
-                targetAssetIndex.Add(asset);
-
+                AddIndex();
                 Logger.LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
+                return;
+            }
 
+            if (fileInfo.Length != asset.S)
+            {
+                if (fileInfo.Name.Contains("pkg_version")) return;
+                AddIndex();
+                Logger.LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size " +
+                             $"(Local: {fileInfo.Length} <=> Remote: {asset.S}",
+                             LogType.Warning, true);
                 return;
             }
 
@@ -144,6 +132,33 @@ namespace CollapseLauncher
                 targetAssetIndex.Add(asset);
 
                 Logger.LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+            }
+
+            return;
+
+            void AddIndex()
+            {
+                // Update the total progress and found counter
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
+
+                // Set the per size progress
+                _progressPerFileSizeCurrent = asset.S;
+
+                // Increment the total current progress
+                _progressAllSizeCurrent += asset.S;
+
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(asset.N),
+                                                   ConvertRepairAssetTypeEnum(asset.FT),
+                                                   Path.GetDirectoryName(asset.N),
+                                                   asset.S,
+                                                   null,
+                                                   null
+                                                  )
+                                             ));
+                targetAssetIndex.Add(asset);
             }
         }
 
