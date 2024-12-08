@@ -416,13 +416,15 @@
       "h.notifyicon": {
         "type": "Project",
         "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "[1.0.0, )"
+          "H.GeneratedIcons.System.Drawing": "[1.0.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )"
         }
       },
       "h.notifyicon.winui": {
         "type": "Project",
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )",
           "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
           "Microsoft.WindowsAppSDK": "[1.6.241114003, )"
