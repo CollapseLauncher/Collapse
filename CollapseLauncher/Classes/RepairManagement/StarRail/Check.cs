@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Native.LibraryImport;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -141,31 +142,18 @@ namespace CollapseLauncher
             // Check if the file exist or has unmatched size
             if (!fileInfo.Exists)
             {
-                // Update the total progress and found counter
-                _progressAllSizeFound += asset.S;
-                _progressAllCountFound++;
-
-                // Set the per size progress
-                _progressPerFileSizeCurrent = asset.S;
-
-                // Increment the total current progress
-                _progressAllSizeCurrent += asset.S;
-
-                Dispatch(() => AssetEntry.Add(
-                    new AssetProperty<RepairAssetType>(
-                        Path.GetFileName(asset.N),
-                        ConvertRepairAssetTypeEnum(asset.FT),
-                        Path.GetDirectoryName(asset.N),
-                        asset.S,
-                        null,
-                        null
-                    )
-                ));
-                targetAssetIndex.Add(asset);
-
+                AddIndex();
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
-
                 return;
+            }
+
+            if (fileInfo.Length != asset.S)
+            {
+                if (fileInfo.Name.Contains("pkg_version")) return;
+                AddIndex();
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size " +
+                             $"(Local: {fileInfo.Length} <=> Remote: {asset.S}",
+                             LogType.Warning, true);
             }
 
             // Skip CRC check if fast method is used
@@ -202,6 +190,32 @@ namespace CollapseLauncher
                 targetAssetIndex.Add(asset);
 
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
+            }
+            return;
+
+            void AddIndex()
+            {
+                // Update the total progress and found counter
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
+
+                // Set the per size progress
+                _progressPerFileSizeCurrent = asset.S;
+
+                // Increment the total current progress
+                _progressAllSizeCurrent += asset.S;
+
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(asset.N),
+                                                   ConvertRepairAssetTypeEnum(asset.FT),
+                                                   Path.GetDirectoryName(asset.N),
+                                                   asset.S,
+                                                   null,
+                                                   null
+                                                  )
+                                             ));
+                targetAssetIndex.Add(asset);
             }
         }
 
