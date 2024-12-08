@@ -208,7 +208,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty._GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
                 UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
 
-                StartCarouselAutoScroll();
+                _ = StartCarouselAutoScroll();
 
 #if !DISABLEDISCORD
                 AppDiscordPresence?.SetActivity(ActivityType.Idle);
@@ -405,9 +405,11 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        public async void StartCarouselAutoScroll(int delaySeconds = 5)
+        public async Task StartCarouselAutoScroll(int delaySeconds = 5)
         {
             if (!IsCarouselPanelAvailable) return;
+            if (delaySeconds < 5) delaySeconds = 5;
+            
             try
             {
                 while (true)
@@ -439,17 +441,20 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) => CarouselRestartScroll();
-        private async void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) => await CarouselStopScroll();
+        private void CarouselPointerExited(object sender = null, PointerRoutedEventArgs e = null) =>
+            CarouselRestartScroll().GetAwaiter();
 
-        public async void CarouselRestartScroll(int delaySeconds = 5)
+        private void CarouselPointerEntered(object sender = null, PointerRoutedEventArgs e = null) =>
+            CarouselStopScroll().GetAwaiter();
+
+        public async Task CarouselRestartScroll(int delaySeconds = 5)
         {
             // Don't restart carousel if game is running and LoPrio is on
             if (_cachedIsGameRunning && GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) return;
             await CarouselStopScroll();
 
             CarouselToken = new CancellationTokenSourceWrapper();
-            StartCarouselAutoScroll(delaySeconds);
+            _ = StartCarouselAutoScroll(delaySeconds);
         }
 
         public async ValueTask CarouselStopScroll()
@@ -2462,7 +2467,8 @@ namespace CollapseLauncher.Pages
         {
             Button button = sender as Button;
             if (sender != null)
-                button.IsEnabled = false;
+                if (button != null)
+                    button.IsEnabled = false;
 
             try
             {
@@ -2490,7 +2496,8 @@ namespace CollapseLauncher.Pages
             finally
             {
                 if (sender != null)
-                    button.IsEnabled = true;
+                    if (button != null) 
+                        button.IsEnabled = true;
             }
         }
 
@@ -2747,7 +2754,7 @@ namespace CollapseLauncher.Pages
                                  $"PriorityBoost is on, carousel is started", LogType.Default, true);
                 }
 
-                CarouselRestartScroll();
+                await CarouselRestartScroll();
             }
             catch (Exception ex)
             {
