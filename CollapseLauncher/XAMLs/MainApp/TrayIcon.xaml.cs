@@ -10,6 +10,8 @@ using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml.Markup;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
@@ -22,6 +24,7 @@ namespace CollapseLauncher
     public sealed partial class TrayIcon
     {
         internal static TrayIcon Current { get; private set; }
+        internal static bool IsCreated { get; private set; }
 
         #region Locales
         private string _popupHelp1 => Lang._Misc.Taskbar_PopupHelp1;
@@ -43,6 +46,9 @@ namespace CollapseLauncher
         public TrayIcon()
         {
             InitializeComponent();
+            
+            CollapseTaskbar.Logger = LoggerInstance;
+            CollapseTaskbar.SetValue(TaskbarIcon.LoggerProp, LoggerInstance);
 
             var instanceIndicator = "";
             var instanceCount     = MainEntryPoint.InstanceCount;
@@ -93,13 +99,16 @@ namespace CollapseLauncher
             
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
 
-            Current = this;
+            Current   = this;
+            IsCreated = CollapseTaskbar.IsCreated;
         }
 
         public void Dispose()
         {
             CollapseTaskbar.Dispose();
         }
+        
+        private ILogger LoggerInstance => ILoggerHelper.GetILogger("TrayIcon");
 
         private void BalloonChangedEvent(object o, MessageWindow.BalloonToolTipChangedEventArgs args)
         {
