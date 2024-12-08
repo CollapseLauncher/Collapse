@@ -2793,8 +2793,15 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                              $"Target Process : {toTargetProc.ProcessName} [{toTargetProc.Id}]", LogType.Default, true);
 
-                // Wait 10 seconds before applying
-                await Task.Delay(10000);
+                // Wait 20 (or 10 if its first try) seconds before applying
+                if (GameBoostInvokeTryCount == 0)
+                {
+                    await Task.Delay(20000);
+                }
+                else
+                {
+                    await Task.Delay(10000);
+                }
 
                 // Check early exit
                 if (toTargetProc.HasExited)
@@ -2810,7 +2817,7 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
                              $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
             }
-            catch (Exception ex) when (GameBoostInvokeTryCount < 3)
+            catch (Exception ex) when (GameBoostInvokeTryCount < 5)
             {
                 LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
                              $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
@@ -2821,7 +2828,6 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
                              LogType.Error, true);
