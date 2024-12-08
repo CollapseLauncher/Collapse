@@ -24,7 +24,21 @@ namespace CollapseLauncher
     public sealed partial class TrayIcon
     {
         internal static TrayIcon Current { get; private set; }
-        internal static bool IsCreated { get; private set; }
+
+        internal bool IsCreated
+        {
+            get 
+            { 
+                var v = CollapseTaskbar.IsCreated;
+                if (!v)
+                {
+                    var s = new System.Diagnostics.StackTrace();
+                    var c = System.Diagnostics.DiagnosticMethodInfo.Create(s.GetFrame(1));
+                    LogWriteLine($"[TrayIcon] {c.Name} called when TrayIcon is not created!", LogType.Error, true);
+                }
+                return v;
+            }
+        }
 
         #region Locales
         private string _popupHelp1 => Lang._Misc.Taskbar_PopupHelp1;
@@ -100,7 +114,6 @@ namespace CollapseLauncher
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
 
             Current   = this;
-            IsCreated = CollapseTaskbar.IsCreated;
         }
 
         public void Dispose()
@@ -296,6 +309,7 @@ namespace CollapseLauncher
         // ReSharper disable once MemberCanBePrivate.Global
         public void UpdateContextMenu()
         {
+            if (!IsCreated) return;
             // Enable visibility toggle for console if the console is enabled
             if (LauncherConfig.GetAppConfigValue("EnableConsole").ToBool())
             {
@@ -366,6 +380,7 @@ namespace CollapseLauncher
         {
             try
             {
+                if (!IsCreated) return;
                 CollapseTaskbar.ShowNotification(title, message, icon, customIconHandle, largeIcon, sound, respectQuietTime, realtime);
             }
             catch (Exception e) //Just write a log if it throws an error, not that important anyway o((⊙﹏⊙))o.
