@@ -187,7 +187,12 @@ namespace CollapseLauncher
                 isSuccess = await TryGetCDNContent(fallbackCDN, downloadClient, outputPath, relativeURL, parallelThread, token);
 
                 // If successful, then return
-                if (isSuccess) return;
+                if (isSuccess)
+                {
+                    var i = CDNList.IndexOf(fallbackCDN);
+                    SetAndSaveConfigValue("CurrentCDN", i);
+                    return;
+                }
             }
 
             // If all of them failed, then throw an exception
@@ -220,7 +225,12 @@ namespace CollapseLauncher
                 isSuccess = await TryGetCDNContent(fallbackCDN, downloadClient, outputStream, relativeURL, token);
 
                 // If successful, then return
-                if (isSuccess) return;
+                if (isSuccess)
+                {
+                    var i = CDNList.IndexOf(fallbackCDN);
+                    SetAndSaveConfigValue("CurrentCDN", i);
+                    return;
+                }
             }
 
             // If all of them failed, then throw an exception
@@ -434,11 +444,11 @@ namespace CollapseLauncher
                 return CDNUtilHTTPStatus.CreateInitializationError();
             }
         }
-
+        
         public static CDNURLProperty GetPreferredCDN()
         {
             // Get the CurrentCDN index
-            int cdnIndex = GetAppConfigValue("CurrentCDN").ToInt();
+            var cdnIndex = GetAppConfigValue("CurrentCDN").ToInt();
 
             // Fallback to the first CDN if index < 0 or > length of the list
             if (cdnIndex < 0 || cdnIndex > CDNList.Count - 1)
