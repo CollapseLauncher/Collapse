@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+#nullable enable
 namespace CollapseLauncher.Helper
 {
     internal static class TaskSchedulerHelper
@@ -143,40 +144,77 @@ namespace CollapseLauncher.Helper
 
         internal static void RecreateIconShortcuts()
         {
-            /* Invocation from Hi3Helper.TaskScheduler is no longer being user.
-             * Moving to Main App's ShellLink implementation instead!
+            // Get icons paths
+            (string iconLocationStartMenu, string iconLocationDesktop)
+                = GetIconLocationPaths(
+                    out _,
+                    out string? appDescription,
+                    out string? executablePath,
+                    out string? workingDirPath);
+
+            // Create shell link instance and save the shortcut under Desktop and User's Start menu
+            CreateShortcut(iconLocationStartMenu, appDescription, executablePath, workingDirPath);
+            CreateShortcut(iconLocationDesktop, appDescription, executablePath, workingDirPath);
+        }
+
+        private static void CreateShortcut(
+            string iconLocation,
+            string? appDescription,
+            string? executablePath,
+            string? workingDirPath)
+        {
+            // Try create icon location directory
+            string iconLocationDir = Path.GetDirectoryName(iconLocation) ?? "";
+
+            // Try create directory
+            Directory.CreateDirectory(iconLocationDir);
             
-            // Build the argument and get the current executable path
-            StringBuilder argumentBuilder = new StringBuilder();
-            argumentBuilder.Append("RecreateIcons");
-            string currentExecPath = LauncherConfig.AppExecutablePath;
+            // Create ShellLink instance
+            using ShellLink shellLink = new ShellLink();
 
-            // Build argument to the executable path
-            argumentBuilder.Append(" \"");
-            argumentBuilder.Append(currentExecPath);
-            argumentBuilder.Append('"');
+            // If existing icon exist, try open it
+            try
+            {
+                if (File.Exists(iconLocation))
+                    shellLink.Open(iconLocation);
+            }
+            catch (Exception ex)
+            {
+                string msg = $"An error occurred while opening existing icon file at: {iconLocation}";
+                SentryHelper.ExceptionHandler(new Exception(msg, ex));
+                Logger.LogWriteLine(msg + $"\r\n{ex}", LogType.Error, true);
+            }
+            
+            // Set params on the shortcut instance
+            shellLink.IconIndex         = 0;
+            shellLink.IconPath          = executablePath ?? "";
+            shellLink.DisplayMode       = LinkDisplayMode.edmNormal;
+            shellLink.WorkingDirectory  = workingDirPath ?? "";
+            shellLink.Target            = executablePath ?? "";
+            shellLink.Description       = appDescription ?? "";
 
-            // Store argument builder as string
-            string argumentString = argumentBuilder.ToString();
+            // Save the icons
+            shellLink.Save(iconLocation);
+        }
 
-            // Invoke applet
-            int returnCode = await GetInvokeCommandReturnCode(argumentString);
-
-            // Print init determination
-            CheckInitDetermination(returnCode);
-            */
-
+        internal static (string IconStartMenu, string IconDesktop) GetIconLocationPaths(
+            out string? appProductName,
+            out string? appDescription,
+            out string? executablePath,
+            out string? workingDirPath)
+        {
             // Get current executable path as its target.
-            string currentExecPath = LauncherConfig.AppExecutablePath;
-            string workingDirPath  = Path.GetDirectoryName(currentExecPath);
+            executablePath = LauncherConfig.AppExecutablePath;
+            workingDirPath = Path.GetDirectoryName(executablePath);
 
             // Get exe's description
-            FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(currentExecPath);
-            string          currentExecDescription = currentExecVersionInfo.FileDescription ?? "";
+            FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(executablePath);
+            appDescription = currentExecVersionInfo.FileDescription ?? "";
 
             // Get paths
-            string shortcutFilename = currentExecVersionInfo.ProductName + ".lnk";
-            string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
+            appProductName = currentExecVersionInfo.ProductName;
+            string shortcutFilename = appProductName + ".lnk";
+            string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
             string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
             string iconLocationStartMenu = Path.Combine(
                 startMenuLocation,
@@ -187,44 +225,7 @@ namespace CollapseLauncher.Helper
                 desktopLocation,
                 shortcutFilename);
 
-            // Get icon location directory
-            string iconLocationStartMenuDir = Path.GetDirectoryName(iconLocationStartMenu);
-            string iconLocationDesktopDir = Path.GetDirectoryName(iconLocationDesktop);
-
-            // Try create directory
-            Directory.CreateDirectory(iconLocationStartMenuDir!);
-            Directory.CreateDirectory(iconLocationDesktopDir!);
-
-            // Create shell link instance and save the shortcut under Desktop and User's Start menu
-            using ShellLink shellLink = new ShellLink();
-            shellLink.IconIndex        = 0;
-            shellLink.IconPath         = currentExecPath;
-            shellLink.DisplayMode      = LinkDisplayMode.edmNormal;
-            shellLink.WorkingDirectory = workingDirPath ?? "";
-            shellLink.Target           = currentExecPath;
-            shellLink.Description      = currentExecDescription;
-            
-            // Save the icons, do not recreate if equal
-            SaveIcon(iconLocationStartMenu);
-            SaveIcon(iconLocationDesktop);
-            return;
-            
-            void SaveIcon(string iconLocation)
-            {
-                if (string.IsNullOrEmpty(iconLocation)) return;
-                if (File.Exists(iconLocation))
-                {
-                    var curStartIcon = new ShellLink(iconLocation);
-                    if (curStartIcon.Target.Equals(currentExecPath, StringComparison.OrdinalIgnoreCase))
-                    {
-                        shellLink.Save(iconLocation);
-                    }
-                }
-                else
-                {
-                    shellLink.Save(iconLocation);
-                }
-            }
+            return (iconLocationStartMenu, iconLocationDesktop);
         }
 
         private static async Task<int> GetInvokeCommandReturnCode(string argument)
@@ -261,7 +262,7 @@ namespace CollapseLauncher.Helper
                 process.Start();
                 while (!process.StandardOutput.EndOfStream)
                 {
-                    string consoleStdOut = await process.StandardOutput.ReadLineAsync();
+                    string? consoleStdOut = await process.StandardOutput.ReadLineAsync();
                     Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
 
                     // Parse if it has RETURNVAL_
