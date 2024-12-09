@@ -427,7 +427,10 @@ namespace CollapseLauncher.Pages
                         for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
                             ImageCarousel.SelectedIndex = i - 1;
-                            await Task.Delay(100, CarouselToken.Token);
+                            if (CarouselToken is { IsDisposed: false, IsCancellationRequested: false })
+                            {
+                                await Task.Delay(100, CarouselToken.Token);
+                            }
                         }
                 }
             }
