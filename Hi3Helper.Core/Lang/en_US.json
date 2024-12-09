@@ -1545,6 +1545,9 @@
     "CacheUpdateDownloadCompleted_Title": "Cache Update Download is Completed",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} cache file(s) have been successfully updated.",
 
-    "GenericClickNotifToGoBack_Subtitle": "Click this notification to go back to the launcher."
+    "GenericClickNotifToGoBack_Subtitle": "Click this notification to go back to the launcher.",
+
+    "OOBE_WelcomeTitle": "Welcome to Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "You are currently selecting {0} - {1} as your game. There are more games awaits you, find out more!"
   }
 }

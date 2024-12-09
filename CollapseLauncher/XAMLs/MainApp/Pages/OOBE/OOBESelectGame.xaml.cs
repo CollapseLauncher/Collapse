@@ -1,6 +1,9 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
+using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
+using Hi3Helper.Win32.ToastCOM.Notification;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -8,6 +11,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -33,9 +37,10 @@ namespace CollapseLauncher.Pages.OOBE
         {
             // Set and Save CurrentRegion in AppConfig
             string? categorySelected = GetComboBoxGameRegionValue(GameCategorySelect.SelectedValue);
+            string? regionSelected = GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue);
             SetAppConfigValue("GameCategory", categorySelected);
             LauncherMetadataHelper.SetPreviousGameRegion(categorySelected,
-                                                         GetComboBoxGameRegionValue(GameRegionSelect.SelectedValue),
+                                                         regionSelected,
                                                          false);
             SaveAppConfig();
 
@@ -44,7 +49,62 @@ namespace CollapseLauncher.Pages.OOBE
                                                              { Effect = SlideNavigationTransitionEffect.FromBottom });
 
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
+
+            // Spawn welcome toast after clicking in
+            SpawnGreetingsToastNotification(categorySelected, regionSelected);
         }
+
+        private void SpawnGreetingsToastNotification(string? gameName, string? regionName)
+        {
+            if (!string.IsNullOrEmpty(gameName)
+             && !string.IsNullOrEmpty(regionName))
+            {
+                string gameNameTranslated = GetGameTitleRegionTranslationString(gameName, Locale.Lang._GameClientTitles) ?? gameName;
+                string gameRegionTranslated = GetGameTitleRegionTranslationString(regionName, Locale.Lang._GameClientRegions) ?? regionName;
+
+                // Get game preset config
+                PresetConfig? gamePresetConfig = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[regionName];
+                if (gamePresetConfig == null) // If empty, return
+                    return;
+
+                // Get logo name and poster name
+                (string logoName, string posterName) = gamePresetConfig.GameType switch
+                {
+                    GameNameType.Honkai => ("honkai", "honkai"),
+                    GameNameType.StarRail => ("starrail", "starrail"),
+                    GameNameType.Zenless => ("zenless", "zzz"),
+                    _ => ("genshin", "genshin") // Fallback to Genshin by default
+                };
+
+                // Create Toast Notification Content
+                NotificationContent toastContent = NotificationContent.Create()
+                    .SetTitle(Locale.Lang._NotificationToast.OOBE_WelcomeTitle)
+                    .SetContent(
+                        string.Format(
+                            Locale.Lang._NotificationToast.OOBE_WelcomeSubtitle,
+                            gameNameTranslated,
+                            gameRegionTranslated))
+                    .SetAppLogoPath(
+                        string.Format(
+                            @"Assets\Images\GameLogo\{0}-logo.png",
+                            logoName
+                        ),
+                        true)
+                    .AddAppHeroImagePath(
+                        string.Format(
+                            @"Assets\Images\GamePoster\poster_{0}.png",
+                            posterName
+                        ));
+
+                // Create Toast Notification Service
+                ToastNotification? toastService = WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
+
+                // Create Toast Notifier
+                ToastNotifier? toastNotifier = WindowUtility.CurrentToastNotificationService?.CreateToastNotifier();
+                toastNotifier?.Show(toastService);
+            }
+        }
+
 
         private void PrevPage_Click(object sender, RoutedEventArgs e)
         {

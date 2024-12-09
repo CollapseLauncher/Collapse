@@ -10,6 +10,7 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
+using Hi3Helper.Win32.ToastCOM.Notification;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -19,6 +20,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -283,6 +285,45 @@ namespace CollapseLauncher.Helper
             }
         }
 
+        private static NotificationService? _currentToastNotificationService;
+        internal static NotificationService? CurrentToastNotificationService
+        {
+            get
+            {
+                // If toast notification service field is null, then initialize
+                if (_currentToastNotificationService == null)
+                {
+                    // Get Icon location paths
+                    (string iconLocationStartMenu, _)
+                        = TaskSchedulerHelper.GetIconLocationPaths(
+                            out string? appAumIdName,
+                            out _,
+                            out string? executablePath,
+                            out _);
+
+                    // Register notification service
+                    _currentToastNotificationService = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+
+                    // Get string for AumId registration
+                    if (!string.IsNullOrEmpty(appAumIdName))
+                    {
+                        // Initialize Toast Notification service
+                        _currentToastNotificationService.Initialize(
+                            appAumIdName,
+                            executablePath ?? "",
+                            iconLocationStartMenu,
+                            asElevatedUser: true
+                            );
+
+                        // Subscribe ToastCallback
+                        _currentToastNotificationService.ToastCallback += Service_ToastNotificationCallback;
+                    }
+                }
+
+                return _currentToastNotificationService;
+            }
+        }
+
         internal static void RegisterWindow(this Window window)
         {
             // Uninstall existing drag area change
@@ -339,7 +380,6 @@ namespace CollapseLauncher.Helper
         #endregion
 
         #region WndProc Handler
-
         private static IntPtr InstallWndProcCallback(IntPtr hwnd, WndProcDelegate wndProc)
         {
             // Install WndProc hook
@@ -486,7 +526,6 @@ namespace CollapseLauncher.Helper
         #endregion
 
         #region Titlebar Methods
-
         private static void ApplyWindowTitlebarContextFix()
         {
             if (!CurrentWindowId.HasValue)
@@ -560,11 +599,9 @@ namespace CollapseLauncher.Helper
 
             Windowing.SetWindowIcon(CurrentWindowPtr, smallIconPtr, largeIconPtr);
         }
-
         #endregion
 
         #region Window state methods
-
         private static void ApplyWindowBorderFix()
         {
             // Hide window border but keep drop shadow
@@ -691,7 +728,6 @@ namespace CollapseLauncher.Helper
             IntPtr currentForegroundWindow = PInvoke.GetForegroundWindow();
             return CurrentWindowPtr == currentForegroundWindow;
         }
-
         #endregion
 
         #region Tray Icon Invoker
@@ -718,7 +754,7 @@ namespace CollapseLauncher.Helper
         }
 
         /// <summary>
-        ///  <inheritdoc cref="CollapseLauncher.TrayIcon.ShowNotification"/>
+        ///  <inheritdoc cref="TrayIcon.ShowNotification"/>
         /// </summary>
         /// <param name="title">The title to display on the balloon tip.</param>
         /// <param name="message">The text to display on the balloon tip.</param>
@@ -774,6 +810,16 @@ namespace CollapseLauncher.Helper
             Logger.LogWriteLine($"TrayIcon is null/not initialized!\r\n\tCalled by: {caller}");
         }
 
+        private static void Service_ToastNotificationCallback(string app, string arg, Dictionary<string, string?>? userInputData)
+        {
+            if (CurrentWindow is not MainWindow window) return;
+
+            // If the MainWindow is currently active, then set the window
+            // to foreground.
+            window._TrayIcon?.ToggleAllVisibility();
+
+            // TODO: Make the callback actually usable on elevated app
+        }
         #endregion
     }
 }

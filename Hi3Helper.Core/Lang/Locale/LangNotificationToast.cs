@@ -38,6 +38,9 @@ namespace Hi3Helper
                 public string CacheUpdateDownloadCompleted_Subtitle         { get; set; } = LangFallback?._NotificationToast.CacheUpdateDownloadCompleted_Subtitle;
 
                 public string GenericClickNotifToGoBack_Subtitle            { get; set; } = LangFallback?._NotificationToast.GenericClickNotifToGoBack_Subtitle;
+
+                public string OOBE_WelcomeTitle                             { get; set; } = LangFallback?._NotificationToast.OOBE_WelcomeTitle;
+                public string OOBE_WelcomeSubtitle                          { get; set; } = LangFallback?._NotificationToast.OOBE_WelcomeSubtitle;
             }
         }
         #endregion
