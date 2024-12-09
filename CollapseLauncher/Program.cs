@@ -334,7 +334,6 @@ public static class MainEntryPoint
     {
         string currentExecutedAppFolder = AppFolder.TrimEnd('\\');
         string currentExecutedPath = AppExecutablePath;
-        string currentExecutedFilename = Path.GetFileName(currentExecutedPath);
 
         // If the path is not actually running under "current" velopack folder, then return
 #if !DEBUG
@@ -356,7 +355,7 @@ public static class MainEntryPoint
                 {
                     // Removing the "app-*" folder
                     childLegacyAppSemVerFolder.Delete(true);
-                    Logger.LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!", LogType.Default, true);
+                    LogWriteLine($"[TryCleanupFallbackUpdate] Removed {childLegacyAppSemVerFolder.FullName} folder!", LogType.Default, true);
                 }
 
                 // Try to remove squirrel temp clowd folder
@@ -394,36 +393,35 @@ public static class MainEntryPoint
             }
 
             // Try to delete all possible shortcuts on any users (since the shortcut used will be the global one)
-            // Only do this once tho... It pain to re-pin the shortcut again...
-            if (GetAppConfigValue("IsShortcutRecreated").ToBool())
+            // Only do this if shortcut path is not same as current path tho... It pain to re-pin the shortcut again...
+            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive!, "Users");
+            foreach (string userDirInfoPath in Directory
+                                              .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
+                                              .Where(ConverterTool.IsUserHasPermission))
             {
-                string currentUsersDirPath = Path.Combine(currentWindowsPathDrive!, "Users");
-                foreach (string userDirInfoPath in Directory
-                                                  .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
-                                                  .Where(ConverterTool.IsUserHasPermission))
+                // Get the shortcut file
+                string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath, @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
+                if (File.Exists(thisUserStartMenuShortcut))
                 {
-                    // Get the shortcut file
-                    string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath, @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
-                    if (File.Exists(thisUserStartMenuShortcut))
+                    // Try open the shortcut and check whether this shortcut is actually pointing to
+                    // CollapseLauncher.exe file
+                    using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
                     {
-                        // Try open the shortcut and check whether this shortcut is actually pointing to
-                        // CollapseLauncher.exe file
-                        using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
+                        // Try to get the target path and its filename
+                        string shortcutTargetPath     = shellLink.Target;
+
+                        // Compare if the filename is equal, then delete it.
+                        if (shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
                         {
-                            // Try get the target path and its filename
-                            string shortcutTargetPath     = shellLink.Target;
-                            string shortcutTargetFilename = Path.GetFileName(shortcutTargetPath);
-
-                            // Compare if the filename is equal, then delete it.
-                            if (shortcutTargetFilename.Equals(currentExecutedFilename, StringComparison.OrdinalIgnoreCase))
-                                File.Delete(thisUserStartMenuShortcut);
-
-                            LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: {thisUserStartMenuShortcut} -> {shortcutTargetPath}", LogType.Default, true);
+                            File.Delete(thisUserStartMenuShortcut);
+                            LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
+                                         $"{thisUserStartMenuShortcut} -> {shortcutTargetPath}",
+                                         LogType.Default, true);
                         }
                     }
                 }
-                SetAndSaveConfigValue("IsShortcutRecreated", true);
             }
+
             // Try to recreate shortcuts
             TaskSchedulerHelper.RecreateIconShortcuts();
         }

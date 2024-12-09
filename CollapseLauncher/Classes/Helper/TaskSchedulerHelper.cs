@@ -205,24 +205,25 @@ namespace CollapseLauncher.Helper
             shellLink.Description      = currentExecDescription;
             
             // Save the icons, do not recreate if equal
-            if (File.Exists(iconLocationStartMenu))
-            {
-                var curStartIcon = new ShellLink(iconLocationStartMenu);
-                if (curStartIcon.Target != currentExecPath) shellLink.Save(iconLocationStartMenu);
-            }
-            else
-            {
-                shellLink.Save(iconLocationStartMenu);
-            }
+            SaveIcon(iconLocationStartMenu);
+            SaveIcon(iconLocationDesktop);
+            return;
             
-            if (File.Exists(iconLocationDesktop))
+            void SaveIcon(string iconLocation)
             {
-                var curStartIcon = new ShellLink(iconLocationDesktop);
-                if (curStartIcon.Target != currentExecPath) shellLink.Save(iconLocationDesktop);
-            }
-            else
-            {
-                shellLink.Save(iconLocationDesktop);
+                if (string.IsNullOrEmpty(iconLocation)) return;
+                if (File.Exists(iconLocation))
+                {
+                    var curStartIcon = new ShellLink(iconLocation);
+                    if (curStartIcon.Target.Equals(currentExecPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        shellLink.Save(iconLocation);
+                    }
+                }
+                else
+                {
+                    shellLink.Save(iconLocation);
+                }
             }
         }
 
