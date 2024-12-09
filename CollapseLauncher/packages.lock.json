@@ -442,7 +442,7 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.29.0, )",
+          "Google.Protobuf": "[3.29.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[9.0.0, )"
@@ -454,7 +454,7 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[*, )",
+          "Google.Protobuf": "[3.29.1, )",
           "Hi3Helper.ZstdNet": "[*, )",
           "System.IO.Hashing": "[9.0.0, )"
         }
