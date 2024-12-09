@@ -16,9 +16,9 @@ namespace Hi3Helper
         public static IntPtr ConsoleHandle;
         private static bool _virtualTerminal;
 
-        public LoggerConsole(string folderPath, Encoding encoding) : base(folderPath, encoding)
+        public LoggerConsole(string folderPath, Encoding encoding, bool isConsoleApp = false) : base(folderPath, encoding)
 #if !APPLYUPDATE
-            => AllocateConsole();
+            => AllocateConsole(isConsoleApp);
 #else
         { }
 #endif
@@ -93,7 +93,7 @@ namespace Hi3Helper
             }
         }
 
-        public static void AllocateConsole()
+        public static void AllocateConsole(bool isConsoleApp = false)
         {
             if (ConsoleHandle != IntPtr.Zero)
             {
@@ -102,9 +102,9 @@ namespace Hi3Helper
                 return;
             }
 
-            if (!PInvoke.AllocConsole())
+            if (!isConsoleApp && !PInvoke.AllocConsole())
             {
-                throw new ContextMarshalException($"Failed to allocate console with error code: {Marshal.GetLastPInvokeError()}");
+                throw new ContextMarshalException($"Failed to allocate console with error code: {Win32Error.GetLastWin32ErrorMessage()}");
             }
 
             const uint GENERIC_READ = 0x80000000;
