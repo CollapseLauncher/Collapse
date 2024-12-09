@@ -122,10 +122,12 @@ namespace CollapseLauncher
 
             // Step 4: Summarize and returns true if the assetIndex count != 0 indicates broken file was found.
             //         either way, returns false.
+            string status3Msg = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusNeedUpdate : Locale.Lang._GameRepairPage.Status3;
+            string status4Msg = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusUpToDate : Locale.Lang._GameRepairPage.Status4;
             return SummarizeStatusAndProgress(
                 _assetIndex,
-                string.Format(Locale.Lang._GameRepairPage.Status3, _progressAllCountFound, ConverterTool.SummarizeSizeSimple(_progressAllSizeFound)),
-                Locale.Lang._GameRepairPage.Status4);
+                string.Format(status3Msg, _progressAllCountFound, ConverterTool.SummarizeSizeSimple(_progressAllSizeFound)),
+                status4Msg);
         }
 
         private async Task<bool> RepairRoutine()
@@ -147,7 +149,7 @@ namespace CollapseLauncher
             {
                 _status.IsCompleted = true;
                 _status.IsCanceled = false;
-                _status.ActivityStatus = Locale.Lang._GameRepairPage.Status7;
+                _status.ActivityStatus = IsCacheUpdateMode ? Locale.Lang._CachesPage.CachesStatusUpToDate : Locale.Lang._GameRepairPage.Status7;
             }
             
             // Update status and progress
