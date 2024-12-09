@@ -394,32 +394,36 @@ public static class MainEntryPoint
             }
 
             // Try to delete all possible shortcuts on any users (since the shortcut used will be the global one)
-            string currentUsersDirPath = Path.Combine(currentWindowsPathDrive!, "Users");
-            foreach (string userDirInfoPath in Directory
-                .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
-                .Where(ConverterTool.IsUserHasPermission))
+            // Only do this once tho... It pain to re-pin the shortcut again...
+            if (GetAppConfigValue("IsShortcutRecreated").ToBool())
             {
-                // Get the shortcut file
-                string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath, @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
-                if (File.Exists(thisUserStartMenuShortcut))
+                string currentUsersDirPath = Path.Combine(currentWindowsPathDrive!, "Users");
+                foreach (string userDirInfoPath in Directory
+                                                  .EnumerateDirectories(currentUsersDirPath, "*", SearchOption.TopDirectoryOnly)
+                                                  .Where(ConverterTool.IsUserHasPermission))
                 {
-                    // Try open the shortcut and check whether this shortcut is actually pointing to
-                    // CollapseLauncher.exe file
-                    using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
+                    // Get the shortcut file
+                    string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath, @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
+                    if (File.Exists(thisUserStartMenuShortcut))
                     {
-                        // Try get the target path and its filename
-                        string shortcutTargetPath = shellLink.Target;
-                        string shortcutTargetFilename = Path.GetFileName(shortcutTargetPath);
+                        // Try open the shortcut and check whether this shortcut is actually pointing to
+                        // CollapseLauncher.exe file
+                        using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
+                        {
+                            // Try get the target path and its filename
+                            string shortcutTargetPath     = shellLink.Target;
+                            string shortcutTargetFilename = Path.GetFileName(shortcutTargetPath);
 
-                        // Compare if the filename is equal, then delete it.
-                        if (shortcutTargetFilename.Equals(currentExecutedFilename, StringComparison.OrdinalIgnoreCase))
-                            File.Delete(thisUserStartMenuShortcut);
+                            // Compare if the filename is equal, then delete it.
+                            if (shortcutTargetFilename.Equals(currentExecutedFilename, StringComparison.OrdinalIgnoreCase))
+                                File.Delete(thisUserStartMenuShortcut);
 
-                        LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: {thisUserStartMenuShortcut} -> {shortcutTargetPath}", LogType.Default, true);
+                            LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: {thisUserStartMenuShortcut} -> {shortcutTargetPath}", LogType.Default, true);
+                        }
                     }
                 }
+                SetAndSaveConfigValue("IsShortcutRecreated", true);
             }
-
             // Try to recreate shortcuts
             TaskSchedulerHelper.RecreateIconShortcuts();
         }

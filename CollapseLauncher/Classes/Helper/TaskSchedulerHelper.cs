@@ -168,20 +168,11 @@ namespace CollapseLauncher.Helper
 
             // Get current executable path as its target.
             string currentExecPath = LauncherConfig.AppExecutablePath;
-            string workingDirPath = Path.GetDirectoryName(currentExecPath);
+            string workingDirPath  = Path.GetDirectoryName(currentExecPath);
 
             // Get exe's description
             FileVersionInfo currentExecVersionInfo = FileVersionInfo.GetVersionInfo(currentExecPath);
-            string currentExecDescription = currentExecVersionInfo.FileDescription ?? "";
-
-            // Create shell link instance and save the shortcut under Desktop and User's Start menu
-            using ShellLink shellLink = new ShellLink();
-            shellLink.IconIndex        = 0;
-            shellLink.IconPath         = currentExecPath;
-            shellLink.DisplayMode      = LinkDisplayMode.edmNormal;
-            shellLink.WorkingDirectory = workingDirPath ?? "";
-            shellLink.Target           = currentExecPath;
-            shellLink.Description      = currentExecDescription;
+            string          currentExecDescription = currentExecVersionInfo.FileDescription ?? "";
 
             // Get paths
             string shortcutFilename = currentExecVersionInfo.ProductName + ".lnk";
@@ -204,9 +195,35 @@ namespace CollapseLauncher.Helper
             Directory.CreateDirectory(iconLocationStartMenuDir!);
             Directory.CreateDirectory(iconLocationDesktopDir!);
 
-            // Save the icons
-            shellLink.Save(iconLocationStartMenu);
-            shellLink.Save(iconLocationDesktop);
+            // Create shell link instance and save the shortcut under Desktop and User's Start menu
+            using ShellLink shellLink = new ShellLink();
+            shellLink.IconIndex        = 0;
+            shellLink.IconPath         = currentExecPath;
+            shellLink.DisplayMode      = LinkDisplayMode.edmNormal;
+            shellLink.WorkingDirectory = workingDirPath ?? "";
+            shellLink.Target           = currentExecPath;
+            shellLink.Description      = currentExecDescription;
+            
+            // Save the icons, do not recreate if equal
+            if (File.Exists(iconLocationStartMenu))
+            {
+                var curStartIcon = new ShellLink(iconLocationStartMenu);
+                if (curStartIcon.Target != currentExecPath) shellLink.Save(iconLocationStartMenu);
+            }
+            else
+            {
+                shellLink.Save(iconLocationStartMenu);
+            }
+            
+            if (File.Exists(iconLocationDesktop))
+            {
+                var curStartIcon = new ShellLink(iconLocationDesktop);
+                if (curStartIcon.Target != currentExecPath) shellLink.Save(iconLocationDesktop);
+            }
+            else
+            {
+                shellLink.Save(iconLocationDesktop);
+            }
         }
 
         private static async Task<int> GetInvokeCommandReturnCode(string argument)
