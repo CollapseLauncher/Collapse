@@ -1548,6 +1548,9 @@
     "GenericClickNotifToGoBack_Subtitle": "Click this notification to go back to the launcher.",
 
     "OOBE_WelcomeTitle": "Welcome to Collapse Launcher!",
-    "OOBE_WelcomeSubtitle": "You are currently selecting {0} - {1} as your game. There are more games awaits you, find out more!"
+    "OOBE_WelcomeSubtitle": "You are currently selecting {0} - {1} as your game. There are more games awaits you, find out more!",
+
+    "LauncherUpdated_NotifTitle": "Your launcher is up-to-date!",
+    "LauncherUpdated_NotifSubtitle": "Your launcher has been updated to: {0}. Go to \"{1}\" and click \"{2}\" to see what changed."
   }
 }

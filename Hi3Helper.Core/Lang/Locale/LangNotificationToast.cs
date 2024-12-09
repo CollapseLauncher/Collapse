@@ -41,6 +41,9 @@ namespace Hi3Helper
 
                 public string OOBE_WelcomeTitle                             { get; set; } = LangFallback?._NotificationToast.OOBE_WelcomeTitle;
                 public string OOBE_WelcomeSubtitle                          { get; set; } = LangFallback?._NotificationToast.OOBE_WelcomeSubtitle;
+
+                public string LauncherUpdated_NotifTitle                    { get; set; } = LangFallback?._NotificationToast.LauncherUpdated_NotifTitle;
+                public string LauncherUpdated_NotifSubtitle                 { get; set; } = LangFallback?._NotificationToast.LauncherUpdated_NotifSubtitle;
             }
         }
         #endregion

@@ -68,13 +68,7 @@ namespace CollapseLauncher.Pages.OOBE
                     return;
 
                 // Get logo name and poster name
-                (string logoName, string posterName) = gamePresetConfig.GameType switch
-                {
-                    GameNameType.Honkai => ("honkai", "honkai"),
-                    GameNameType.StarRail => ("starrail", "starrail"),
-                    GameNameType.Zenless => ("zenless", "zzz"),
-                    _ => ("genshin", "genshin") // Fallback to Genshin by default
-                };
+                (string? logoName, string? posterName) = GetLogoAndHeroImgPath(gamePresetConfig);
 
                 // Create Toast Notification Content
                 NotificationContent toastContent = NotificationContent.Create()
@@ -85,16 +79,10 @@ namespace CollapseLauncher.Pages.OOBE
                             gameNameTranslated,
                             gameRegionTranslated))
                     .SetAppLogoPath(
-                        string.Format(
-                            @"Assets\Images\GameLogo\{0}-logo.png",
-                            logoName
-                        ),
+                        logoName,
                         true)
                     .AddAppHeroImagePath(
-                        string.Format(
-                            @"Assets\Images\GamePoster\poster_{0}.png",
-                            posterName
-                        ));
+                        posterName);
 
                 // Create Toast Notification Service
                 ToastNotification? toastService = WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
@@ -103,6 +91,31 @@ namespace CollapseLauncher.Pages.OOBE
                 ToastNotifier? toastNotifier = WindowUtility.CurrentToastNotificationService?.CreateToastNotifier();
                 toastNotifier?.Show(toastService);
             }
+        }
+
+        internal static (string? LogoPath, string? HeroPath) GetLogoAndHeroImgPath(PresetConfig? gamePresetConfig)
+        {
+            if (gamePresetConfig == null) // If config is null, return
+                return (null, null);
+
+            // Get logo name and poster name
+            (string logoName, string posterName) = gamePresetConfig.GameType switch
+            {
+                GameNameType.Honkai => ("honkai", "honkai"),
+                GameNameType.StarRail => ("starrail", "starrail"),
+                GameNameType.Zenless => ("zenless", "zzz"),
+                _ => ("genshin", "genshin") // Fallback to Genshin by default
+            };
+
+            // Return paths
+            return (string.Format(
+                            @"Assets\Images\GameLogo\{0}-logo.png",
+                            logoName
+                        ),
+                        string.Format(
+                            @"Assets\Images\GamePoster\poster_{0}.png",
+                            posterName
+                        ));
         }
 
 
