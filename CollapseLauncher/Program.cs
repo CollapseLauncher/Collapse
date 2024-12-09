@@ -326,6 +326,28 @@ public static class MainEntryPoint
             .WithAfterUpdateFastCallback(TryCleanupFallbackUpdate)
             .WithFirstRun(TryCleanupFallbackUpdate)
             .Run(ILoggerHelper.GetILogger());
+        
+        _ = Task.Run(DeleteVelopackLock);
+
+        void DeleteVelopackLock()
+        {
+            // Get the current application directory
+            string currentAppDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Construct the path to the .velopack_lock file
+            string velopackLockPath = Path.Combine(currentAppDir, "..", "packages", ".velopack_lock");
+
+            // Normalize the path
+            velopackLockPath = Path.GetFullPath(velopackLockPath);
+
+            // Check if the file exists
+            if (File.Exists(velopackLockPath))
+            {
+                // Delete the file
+                File.Delete(velopackLockPath);
+                LogWriteLine(".velopack_lock file deleted successfully.");
+            }
+        }
 #endif
     }
 
