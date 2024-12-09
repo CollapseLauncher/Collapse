@@ -29,20 +29,7 @@ for:
         echo Init submodules
         
         git submodule update --init --force --depth=20 --recursive
-        
-        echo.
-        
-        echo Install InnoSetup
-        
-        set innoinstall=%temp%\innosetup.exe
-        
-        curl "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" --output %innoinstall%
-        
-        
-        cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
-        
-        echo.
-        
+          
         echo Install dotnet sdk
         
         choco install dotnet-sdk --pre
@@ -64,8 +51,6 @@ for:
         set name=Collapse
         
         set channel=preview
-        
-        set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
         
         echo.
         
@@ -100,27 +85,14 @@ for:
         curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
         
         
-        echo Making innosetup file...
-        
-        mkdir InnoTarget
-        
-        %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
-        
-        echo.
-        
-        
         echo Moving all the files into artifact to be pushed to SignPath
         
         mkdir SignArtifact
         
         mkdir SignArtifact\BuildArtifact-%version%
         
-        mkdir SignArtifact\InnoInstaller
         
         xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
-        
-        xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
-    
     
     
     test: off
