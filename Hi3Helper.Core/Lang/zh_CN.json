@@ -1545,6 +1545,12 @@
     "CacheUpdateDownloadCompleted_Title": "缓存更新下载已完成",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} 个缓存文件已成功更新。",
 
-    "GenericClickNotifToGoBack_Subtitle": "点击此通知以返回到启动器。"
+    "GenericClickNotifToGoBack_Subtitle": "点击此通知以返回到启动器。",
+
+    "OOBE_WelcomeTitle": "欢迎来到 Collapse 启动器！",
+    "OOBE_WelcomeSubtitle": "您正选中的游戏为 {0} - {1}。还有更多游戏等着你，快来了解吧！",
+
+    "LauncherUpdated_NotifTitle": "您的启动器是最新的！",
+    "LauncherUpdated_NotifSubtitle": "您的启动器已被更新到 {0}。前往“{1}”并点击“{2}”以查看更新日志。"
   }
 }
