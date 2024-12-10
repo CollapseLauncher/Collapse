@@ -70,7 +70,7 @@ namespace CollapseLauncher.Helper.Image
 
         public static bool IsWaifu2XEnabled
         {
-            get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable;
+            get => GetAppConfigValue("EnableWaifu2X").ToBool() && IsWaifu2XUsable && _waifu2X != null;
             set
             {
                 SetAndSaveConfigValue("EnableWaifu2X", value);
