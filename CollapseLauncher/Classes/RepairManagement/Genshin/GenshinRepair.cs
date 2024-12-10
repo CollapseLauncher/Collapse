@@ -68,7 +68,7 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
             _assetIndex.Clear();
 
-            // Step 1: Ensure that every files are not read-only
+            // Step 1: Ensure that every file are not read-only
             TryUnassignReadOnlyFiles(_gamePath);
 
             // Step 2: Fetch asset index

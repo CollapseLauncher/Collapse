@@ -375,7 +375,6 @@ namespace CollapseLauncher
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"Failed while getting CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL})\r\n{ex}", LogType.Error, true);
                 return false;
             }
@@ -439,8 +438,8 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 return CDNUtilHTTPStatus.CreateInitializationError();
             }
         }

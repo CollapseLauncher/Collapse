@@ -10,11 +10,13 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.ToastCOM.Notification;
 using InnoSetupHelper;
 using Microsoft.UI;
 using Microsoft.UI.Input;
@@ -160,8 +162,6 @@ namespace CollapseLauncher
 
         private async Task InitializeStartup()
         {
-            RunBackgroundCheck();
-
             // Initialize the background image utility
             await InitBackgroundHandler();
 
@@ -196,6 +196,10 @@ namespace CollapseLauncher
             // Unlock ChangeBtn for first start
             LockRegionChangeBtn = false;
             InvokeLoadingRegionPopup(false);
+
+            // After all activities were complete, run background check, including
+            // invoking notifications
+            RunBackgroundCheck();
         }
 
         private async Task InitBackgroundHandler()
@@ -896,6 +900,37 @@ namespace CollapseLauncher
 
                         Directory.Delete(fold, true);
                     }
+
+                    try
+                    {
+                        // Remove update notif mark file to avoid it showing the same notification again.
+                        File.Delete(UpdateNotifFile);
+
+                        // Get current game property, including game preset
+                        GamePresetProperty currentGameProperty = GetCurrentGameProperty();
+                        (_, string heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty?._GamePreset);
+
+                        // Create notification
+                        NotificationContent toastContent = NotificationContent.Create()
+                            .SetTitle(Lang._NotificationToast.LauncherUpdated_NotifTitle)
+                            .SetContent(
+                                string.Format(Lang._NotificationToast.LauncherUpdated_NotifSubtitle,
+                                    VerString + (IsPreview ? "-preview" : ""),
+                                    Lang._SettingsPage.PageTitle,
+                                    Lang._SettingsPage.Update_SeeChangelog)
+                                )
+                            .AddAppHeroImagePath(heroImage);
+
+                        // Get notification service
+                        Windows.UI.Notifications.ToastNotification notificationService =
+                            WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
+
+                        // Spawn notification service
+                        Windows.UI.Notifications.ToastNotifier notifier =
+                            WindowUtility.CurrentToastNotificationService?.CreateToastNotifier();
+                        notifier.Show(notificationService);
+                    }
+                    catch { }
                 }
             }
             catch

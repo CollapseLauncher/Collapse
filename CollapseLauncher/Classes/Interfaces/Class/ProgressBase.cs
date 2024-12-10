@@ -495,7 +495,7 @@ namespace CollapseLauncher.Interfaces
             foreach (string file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
             {
                 FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo.IsReadOnly)
+                if (fileInfo is { Exists: true, IsReadOnly: true })
                     fileInfo.IsReadOnly = false;
             }
         }

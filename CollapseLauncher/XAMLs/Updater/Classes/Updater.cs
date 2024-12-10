@@ -354,11 +354,20 @@ public partial class Updater : IDisposable
 #else
         if (VelopackVersionToUpdate != null)
         {
-            string currentAppPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "current");
-            if (!Directory.Exists(currentAppPath))
-                Directory.CreateDirectory(currentAppPath);
+            try
+            {
+                string currentAppPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "current");
+                if (!Directory.Exists(currentAppPath))
+                    Directory.CreateDirectory(currentAppPath);
 
-            UpdateManager.ApplyUpdatesAndRestart(VelopackVersionToUpdate);
+                UpdateManager.ApplyUpdatesAndRestart(VelopackVersionToUpdate);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"Failed to suicide\r\n{ex}", LogType.Error);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+                Environment.Exit(100);
+            }
         }
 #endif
     }

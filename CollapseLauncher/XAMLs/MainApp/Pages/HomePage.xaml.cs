@@ -414,19 +414,23 @@ namespace CollapseLauncher.Pages
             {
                 while (true)
                 {
-                    if (CarouselToken.IsCancellationRequested || CarouselToken.IsDisposed || CarouselToken.IsCancelled)
+                    if (CarouselToken == null || CarouselToken.IsCancellationRequested || CarouselToken.IsDisposed || CarouselToken.IsCancelled)
                     {
                         CarouselToken = new CancellationTokenSourceWrapper();
                     }
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
-                    if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1)
+                    if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1 
+                        && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
                         ImageCarousel.SelectedIndex++;
                     else
                         for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
                             ImageCarousel.SelectedIndex = i - 1;
-                            await Task.Delay(100, CarouselToken.Token);
+                            if (CarouselToken is { IsDisposed: false, IsCancellationRequested: false })
+                            {
+                                await Task.Delay(100, CarouselToken.Token);
+                            }
                         }
                 }
             }
@@ -459,7 +463,7 @@ namespace CollapseLauncher.Pages
 
         public async ValueTask CarouselStopScroll()
         {
-            if (!CarouselToken.IsCancellationRequested && !CarouselToken.IsDisposed && !CarouselToken.IsCancelled)
+            if (CarouselToken is { IsCancellationRequested: false, IsDisposed: false, IsCancelled: false })
             {
                 await CarouselToken.CancelAsync();
                 CarouselToken.Dispose();

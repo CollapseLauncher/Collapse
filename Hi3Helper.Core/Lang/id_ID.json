@@ -1541,6 +1541,12 @@
     "CacheUpdateDownloadCompleted_Title": "Unduhan pada Pembaruan Cache sudah Selesai",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} file cache telah berhasil diperbarui.",
 
-    "GenericClickNotifToGoBack_Subtitle": "Klik notifikasi ini untuk kembali ke launcher."
+    "GenericClickNotifToGoBack_Subtitle": "Klik notifikasi ini untuk kembali ke launcher.",
+
+    "OOBE_WelcomeTitle": "Selamat datang di Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "Kamu telah memilih {0} - {1} sebagai game-mu. Ada banyak game lainnya yang menanti loh. Yuk cari tahu!",
+
+    "LauncherUpdated_NotifTitle": "Launchermu sudah paling baru!",
+    "LauncherUpdated_NotifSubtitle": "Launchermu sudah diperbaharui ke versi: {0}. Masuk ke \"{1}\" dan klik \"{2}\" untuk melihat daftar perubahan."
   }
 }
