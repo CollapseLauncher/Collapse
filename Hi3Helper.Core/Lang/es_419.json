@@ -167,6 +167,7 @@
     "GamePlaytime_Idle_ResetBtn": "Restablecer",
     "GamePlaytime_Idle_ChangeBtn": "Cambiar",
     "GamePlaytime_Idle_SyncDb": "Sincronizar",
+    "GamePlaytime_Idle_SyncDbSyncing": "Sincronizando...",
     "GamePlaytime_Running_Info1": "El juego se está ejecutando, por lo tanto no se puede editar el tiempo de juego.",
     "GamePlaytime_Running_Info2": "Por favor ten en cuenta que al cerrar completamente Collapse se detendrá el seguimiento del tiempo de juego (guardando lo jugado hasta ese punto)",
     "GamePlaytime_Display": "{0}h {1}m",
@@ -1544,6 +1545,12 @@
     "CacheUpdateDownloadCompleted_Title": "Actualizar Cachés - Descarga Completada",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} archivo(s) de caché fueron actualizados exitosamente.",
 
-    "GenericClickNotifToGoBack_Subtitle": "Haz clic en esta notificación para ir al Launcher "
+    "GenericClickNotifToGoBack_Subtitle": "Haz clic en esta notificación para ir al Launcher ",
+
+    "OOBE_WelcomeTitle": "¡Bienvenido a Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "Actualmente estás seleccionando {0} - {1} como juego. Hay más juegos esperándote, ¡descúbrelos!",
+
+    "LauncherUpdated_NotifTitle": "¡Tu launcher está actualizado!",
+    "LauncherUpdated_NotifSubtitle": "Tu launcher fue actualizado a: {0}. Ve a \"{1}\" y haz clic en \"{2}\" para ver qué ha cambiado."
   }
 }
