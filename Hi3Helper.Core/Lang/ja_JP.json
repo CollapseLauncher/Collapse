@@ -1545,6 +1545,12 @@
     "CacheUpdateDownloadCompleted_Title": "キャッシュ更新ダウンロードが完了しました",
     "CacheUpdateDownloadCompleted_Subtitle": "{0}個のキャッシュがアップデートされました。",
 
-    "GenericClickNotifToGoBack_Subtitle": "この通知をクリックするとランチャーに戻ります。"
+    "GenericClickNotifToGoBack_Subtitle": "この通知をクリックするとランチャーに戻ります。",
+
+    "OOBE_WelcomeTitle": "Collapse Launcherへようこそ！",
+    "OOBE_WelcomeSubtitle": "現在選択されているゲームは{0} - {1}です。他にもたくさんのゲームがあなたを待っています！レッツゴー！",
+
+    "LauncherUpdated_NotifTitle": "ランチャーが最新版になりました！",
+    "LauncherUpdated_NotifSubtitle": "ランチャーが{0}へアップデートされました。\"{1}\"の\"{2}\"をクリックすると更新の内容を確認できます。"
   }
 }

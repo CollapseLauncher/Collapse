@@ -1140,7 +1140,21 @@ namespace CollapseLauncher.GameVersioning
             return false;
         }
 
-        private bool IsDiskPartitionExist(string path) => !string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(Path.GetPathRoot(path)) && new DriveInfo(Path.GetPathRoot(path) ?? string.Empty).IsReady;
+        private bool IsDiskPartitionExist(string path)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(Path.GetPathRoot(path)))
+                {
+                    return false;
+                }
+                return new DriveInfo(Path.GetPathRoot(path) ?? string.Empty).IsReady;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         private void SaveGameIni(string filePath, in IniFile INI)
         {

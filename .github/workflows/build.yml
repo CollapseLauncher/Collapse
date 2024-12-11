@@ -49,7 +49,7 @@ jobs:
 
     - name: Build
       run: |
-        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
+        dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
           
     - name: Upload Artifact
       uses: actions/upload-artifact@v4.3.1
@@ -94,7 +94,7 @@ jobs:
 
     - name: Build
       run: |
-        dotnet publish CollapseLauncher -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
+        dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
           
     - name: Upload Artifact
       uses: actions/upload-artifact@v4.3.1
