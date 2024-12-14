@@ -74,6 +74,9 @@ public static class MainEntryPoint
                     AppIconLarge = largeIcons[0];
                     AppIconSmall = smallIcons[0];
                 }
+                
+                // Set AUMID
+                PInvoke.SetProcessAumid("velopack.CollapseLauncher");
 
                 WindowUtility.CurrentScreenProp = new Hi3Helper.Win32.Screen.ScreenProp();
                 InitAppPreset(WindowUtility.CurrentScreenProp);
@@ -88,8 +91,9 @@ public static class MainEntryPoint
                         LogType.Warning, true);
                     Directory.SetCurrentDirectory(AppFolder);
                 }
-
-
+                
+                InitializeAppSettings();
+                
                 SentryHelper.IsPreview      = IsPreview;
             #pragma warning disable CS0618 // Type or member is obsolete
                 SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
@@ -138,7 +142,6 @@ public static class MainEntryPoint
                 Process.GetCurrentProcess().PriorityBoostEnabled = true;
 
                 ParseArguments(args);
-                InitializeAppSettings();
 
                 // Initiate InnoSetupHelper's log event
                 InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
