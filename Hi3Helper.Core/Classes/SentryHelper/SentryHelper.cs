@@ -417,7 +417,8 @@ namespace Hi3Helper.SentryHelper
             {
                 { "Branch", AppBuildBranch },
                 { "Commit", AppBuildCommit },
-                { "Repository", AppBuildRepo }
+                { "Repository", AppBuildRepo },
+                { "IsPreview", IsPreview.ToString() }
             }, "BuildInfo");
         }
         

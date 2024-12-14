@@ -95,6 +95,7 @@ public static class MainEntryPoint
                 SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
                 SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
                 SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
+                SentryHelper.AppCdnOption   = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
             #pragma warning restore CS0618 // Type or member is obsolete
                 if (SentryHelper.IsEnabled)
                 {
