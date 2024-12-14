@@ -4,15 +4,15 @@
     "net9.0-windows10.0.22621": {
       "CommunityToolkit.Common": {
         "type": "Direct",
-        "requested": "[8.4.0-preview3, )",
-        "resolved": "8.4.0-preview3",
-        "contentHash": "eDbSa0VPr5p53oYptIychcRNBls/NVjlM9oKfARP9BGdu55hL7EDdCEbizpecIrBFKo3HUugxp+DacxJbDLQbQ=="
+        "requested": "[8.4.0, )",
+        "resolved": "8.4.0",
+        "contentHash": "yqU6s4sLjaMuJ0OS6MSpOLkdbLS8HhyD0RSMQ/+/AyAjXizLMdXnlImgVBXPEGmBsNKDjApGF7uFmSh/xhie7A=="
       },
       "CommunityToolkit.Mvvm": {
         "type": "Direct",
-        "requested": "[8.4.0-preview3, )",
-        "resolved": "8.4.0-preview3",
-        "contentHash": "6lWEC0hIGZbJfF7AMzFrzn1HPnGXo8weGAddhB7SU3EhNeTDOhEWkCyPGEGxk6+qqSg6mMdxRvY4wzQlHZ7QSg=="
+        "requested": "[8.4.0, )",
+        "resolved": "8.4.0",
+        "contentHash": "tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw=="
       },
       "CommunityToolkit.WinUI.Behaviors": {
         "type": "Direct",
@@ -468,7 +468,7 @@
       "ImageCropper": {
         "type": "Project",
         "dependencies": {
-          "CommunityToolkit.Common": "[8.4.0-preview3, )",
+          "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.241112-preview1, )",
           "CommunityToolkit.WinUI.Media": "[8.2.241112-preview1, )",
           "Microsoft.Graphics.Win2D": "[1.3.0, )",
@@ -481,7 +481,7 @@
       "imageex": {
         "type": "Project",
         "dependencies": {
-          "CommunityToolkit.Common": "[8.4.0-preview3, )",
+          "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.241112-preview1, )",
           "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
@@ -497,7 +497,7 @@
       "SettingsControls": {
         "type": "Project",
         "dependencies": {
-          "CommunityToolkit.Common": "[8.4.0-preview3, )",
+          "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Triggers": "[8.2.241112-preview1, )",
           "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",

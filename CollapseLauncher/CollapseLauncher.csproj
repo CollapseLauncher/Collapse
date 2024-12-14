@@ -157,8 +157,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
 		<PackageReference Include="Velopack" Version="0.0.942" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
-        <PackageReference Include="CommunityToolkit.Common" Version="8.4.0-preview3" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0-preview3" />
+        <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.241112-preview1" />
         <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.241112-preview1" />
         <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.241112-preview1" />
