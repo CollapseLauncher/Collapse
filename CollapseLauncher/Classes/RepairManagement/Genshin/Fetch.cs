@@ -72,13 +72,23 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
         {
-            _gameVersionManager.GameAPIProp.data?.plugins?.ForEach(plugin =>
-            {
-                assetIndex.RemoveAll(asset =>
-                {
-                    return plugin.package?.validate?.Exists(validate => validate.path == asset.remoteName) ?? false;
-                });
-            });
+            _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
+               {
+                   if (plugin.package?.validate == null) return;
+
+                   assetIndex.RemoveAll(asset =>
+                   {
+                       var r = plugin.package.validate.Any(validate => validate.path != null &&
+                           asset.localName
+                              .Contains(validate.path));
+                       if (r)
+                       {
+                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
+                                        true);
+                       }
+                       return r;
+                   });
+               });
         }
 
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)
