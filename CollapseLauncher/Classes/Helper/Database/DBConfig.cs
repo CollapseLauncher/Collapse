@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 namespace CollapseLauncher.Helper.Database
 {
@@ -26,7 +27,7 @@ namespace CollapseLauncher.Helper.Database
         {
             EnsureConfigExist();
             Load();
-            if (!_config.ContainsSection(DbSectionName))
+            if (!_config.ContainsKey(DbSectionName))
                 _config.Add(DbSectionName, DbSettingsTemplate);
 
             DefaultChecker();
@@ -45,15 +46,15 @@ namespace CollapseLauncher.Helper.Database
             foreach (KeyValuePair<string, IniValue> Entry in DbSettingsTemplate)
             {
                 if (!_config[DbSectionName].ContainsKey(Entry.Key) ||
-                    string.IsNullOrEmpty(_config[DbSectionName][Entry.Key].Value))
+                    string.IsNullOrEmpty(_config[DbSectionName][Entry.Key]))
                 {
                     SetValue(Entry.Key, Entry.Value);
                 }
             }
         }
 
-        private static void Load() => _config.Load(_configPath);
-        private static void Save() => _config.Save(_configPath);
+        private static void Load(CancellationToken token = default) => _config.Load(_configPath);
+        private static void Save(CancellationToken token = default) => _config.Save(_configPath);
         
         public static IniValue GetConfig(string key) => _config[DbSectionName][key];
 
@@ -77,7 +78,7 @@ namespace CollapseLauncher.Helper.Database
 
         public static bool DbEnabled
         {
-            get => GetConfig("enabled").ToBool();
+            get => GetConfig("enabled");
             set => SetAndSaveValue("enabled", value);
         }
 
@@ -85,7 +86,7 @@ namespace CollapseLauncher.Helper.Database
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string DbUrl
         {
-            get => GetConfig("url").ToString();
+            get => GetConfig("url");
             set => SetAndSaveValue("url", value);
         }
         
@@ -93,7 +94,7 @@ namespace CollapseLauncher.Helper.Database
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string DbToken
         {
-            get => GetConfig("token").ToString();
+            get => GetConfig("token");
             set => SetAndSaveValue("token", value);
         }
 
@@ -103,7 +104,7 @@ namespace CollapseLauncher.Helper.Database
         {
             get
             {
-                var  c = GetConfig("userGuid").ToString();
+                var  c = GetConfig("userGuid");
 
                 if (!string.IsNullOrEmpty(c)) return c; // Return early if config is set
 

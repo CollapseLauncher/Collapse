@@ -45,7 +45,7 @@ namespace Hi3Helper.Shared.Region
             }
 
             // If the section doesn't exist, then add the section template
-            if (!appIni.Profile.ContainsSection(SectionName))
+            if (!appIni.Profile.ContainsKey(SectionName))
             {
                 appIni.Profile.Add(SectionName, AppSettingsTemplate);
             }
@@ -102,7 +102,7 @@ namespace Hi3Helper.Shared.Region
         {
             foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate!)
             {
-                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || string.IsNullOrEmpty(appIni.Profile[SectionName][Entry.Key].Value))
+                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || string.IsNullOrEmpty(appIni.Profile[SectionName][Entry.Key]))
                 {
                     SetAppConfigValue(Entry.Key, Entry.Value);
                 }

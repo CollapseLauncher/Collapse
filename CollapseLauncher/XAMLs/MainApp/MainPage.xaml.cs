@@ -1135,18 +1135,18 @@ namespace CollapseLauncher
         {
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
 
-            string gameName = GetAppConfigValue("GameCategory").ToString();
+            string gameName = GetAppConfigValue("GameCategory")!;
 
             #nullable enable
-            List<string>? gameCollection   = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
+            List<string>? gameCollection   = LauncherMetadataHelper.GetGameNameCollection();
+            List<string?>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
             
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();
 
             ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(gameName);
 
-            var indexCategory                    = gameCollection.IndexOf(gameName!);
+            var indexCategory                    = gameCollection?.IndexOf(gameName!) ?? -1;
             if (indexCategory < 0) indexCategory = 0;
 
             var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
@@ -1931,12 +1931,12 @@ namespace CollapseLauncher
 
         private void RestoreCurrentRegion()
         {
-            var gameName = GetAppConfigValue("GameCategory").ToString();
+            string gameName = GetAppConfigValue("GameCategory")!;
             #nullable enable
-            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            _ = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
+            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            _ = LauncherMetadataHelper.GetGameRegionCollection(gameName);
 
-            var indexCategory                    = gameNameCollection.IndexOf(gameName!);
+            var indexCategory                    = gameNameCollection?.IndexOf(gameName!) ?? -1;
             if (indexCategory < 0) indexCategory = 0;
 
             var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
@@ -2205,7 +2205,7 @@ namespace CollapseLauncher
             var args = m_arguments.StartGame;
             if (args == null) return true;
 
-            string oldGameCategory = GetAppConfigValue("GameCategory").ToString();
+            string? oldGameCategory = GetAppConfigValue("GameCategory");
 
             string gameName = args.Game;
 

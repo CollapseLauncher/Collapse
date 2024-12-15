@@ -73,7 +73,6 @@ namespace CollapseLauncher.Pages
             this.SetAllControlsCursorRecursive(InputSystemCursor.Create(InputSystemCursorShape.Hand));
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
-            LoadAppConfig();
             DataContext = this;
 
             string Version = $" {LauncherUpdateHelper.LauncherCurrentVersionString}";
@@ -607,7 +606,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool isEnabled = GetAppConfigValue("EnableDiscordRPC").ToBool();
+                bool isEnabled = GetAppConfigValue("EnableDiscordRPC");
                 ToggleDiscordGameStatus.IsEnabled = IsEnabled;
                 if (isEnabled)
                 {
@@ -656,7 +655,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                double value = GetAppConfigValue("BackgroundAudioVolume").ToDouble();
+                double value = GetAppConfigValue("BackgroundAudioVolume");
                 if (value < 0)
                     MainPage.CurrentBackgroundHandler?.SetVolume(0d);
                 if (value > 1)
@@ -674,7 +673,7 @@ namespace CollapseLauncher.Pages
 
         private bool IsDiscordGameStatusEnabled
         {
-            get => GetAppConfigValue("EnableDiscordGameStatus").ToBool();
+            get => GetAppConfigValue("EnableDiscordGameStatus");
             set
             {
                 SetAndSaveConfigValue("EnableDiscordGameStatus", value);
@@ -1107,7 +1106,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string url = GetAppConfigValue("HttpProxyUrl").ToString();
+                string? url = GetAppConfigValue("HttpProxyUrl");
                 ValidateHttpProxyUrl(url);
                 return url;
             }
@@ -1248,7 +1247,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                string encData = GetAppConfigValue("HttpProxyPassword").ToString();
+                string? encData = GetAppConfigValue("HttpProxyPassword");
                 if (string.IsNullOrEmpty(encData))
                     return null;
 

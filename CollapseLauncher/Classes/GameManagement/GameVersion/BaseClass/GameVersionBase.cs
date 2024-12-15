@@ -831,9 +831,9 @@ namespace CollapseLauncher.GameVersioning
              || !isCps)
                 return false;
 
-            string? channelIdCurrent = GameIniVersion[_defaultIniVersionSection][ChannelIdKeyName].ToString();
-            string? subChannelIdCurrent = GameIniVersion[_defaultIniVersionSection][SubChannelIdKeyName].ToString();
-            string? cpsCurrent = GameIniVersion[_defaultIniVersionSection][CpsKeyName].ToString();
+            string? channelIdCurrent = GameIniVersion[_defaultIniVersionSection][ChannelIdKeyName];
+            string? subChannelIdCurrent = GameIniVersion[_defaultIniVersionSection][SubChannelIdKeyName];
+            string? cpsCurrent = GameIniVersion[_defaultIniVersionSection][CpsKeyName];
 
             if (!int.TryParse(channelIdCurrent, null, out int channelIdCurrentInt)
              || !int.TryParse(subChannelIdCurrent, null, out int subChannelIdCurrentInt)
@@ -1183,7 +1183,7 @@ namespace CollapseLauncher.GameVersioning
             // Load the INI file.
             if (IsDiskReady)
             {
-                ini.Load(iniFilePath, false, true);
+                ini.Load(iniFilePath);
             }
 
             // Initialize and ensure the non-existed values to their defaults.
@@ -1196,7 +1196,7 @@ namespace CollapseLauncher.GameVersioning
         private void InitializeIniDefaults(in IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchValues)
         {
             // If the section doesn't exist, then add the section.
-            if (!ini.ContainsSection(section))
+            if (!ini.ContainsKey(section))
             {
                 ini.Add(section);
             }

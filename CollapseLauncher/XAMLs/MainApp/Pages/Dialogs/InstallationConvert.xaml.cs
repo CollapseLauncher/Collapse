@@ -222,7 +222,7 @@ namespace CollapseLauncher.Dialogs
                 SourceIniVersionFile.Load(SourceINIVersionPath);
 
                 // Check if the version value exist and matches
-                if (!(SourceIniVersionFile.ContainsSection("General") && SourceIniVersionFile["General"].ContainsKey("game_version"))) return false;
+                if (!(SourceIniVersionFile.ContainsKey("General") && SourceIniVersionFile["General"].ContainsKey("game_version"))) return false;
                 string localVersionString = SourceIniVersionFile["General"]["game_version"].ToString();
                 if (string.IsNullOrEmpty(localVersionString)) return false;
                 GameVersion localVersion = new GameVersion(localVersionString);
