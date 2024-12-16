@@ -95,7 +95,7 @@ namespace Hi3Helper.Shared.Region
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
 
-        public static void LoadAppConfig() => appIni.Profile!.Load(appIni.ProfilePath);
+        public static void LoadAppConfig() => appIni.Profile!.Load(appIni.ProfilePath, true);
         public static void SaveAppConfig() => appIni.Profile!.Save(appIni.ProfilePath);
 
         public static void CheckAndSetDefaultConfigValue()

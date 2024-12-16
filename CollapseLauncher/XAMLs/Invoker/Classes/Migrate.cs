@@ -98,9 +98,11 @@ namespace CollapseLauncher
 
             IniFile iniFile = new IniFile();
 
-            if (File.Exists(Path.Combine(source, "config.ini")))
+            string configFilePath = Path.Combine(source, "config.ini");
+
+            if (File.Exists(configFilePath))
             {
-                iniFile.Load(Path.Combine(source, "config.ini"));
+                iniFile.Load(configFilePath, true);
                 sourceGame = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
                 targetGame = Path.Combine(target, Path.GetFileName(sourceGame));
                 Console.WriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}");

@@ -104,6 +104,8 @@ namespace Hi3Helper.Data
         #region Load and Save Methods
         public void Save(string path)
         {
+            EnsureFolderExist(path);
+
             using FileStream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite, CreateStreamBufferSize, FileOptions.None);
             using StreamWriter writer = new StreamWriter(stream, encoding: Encoding.UTF8, leaveOpen: false);
             SaveInner(writer);
@@ -152,9 +154,16 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(string path)
+        public void Load(string path, bool createIfNotExist = false)
         {
-            using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, OpenStreamBufferSize, FileOptions.None);
+            FileMode fileMode = createIfNotExist ? FileMode.OpenOrCreate : FileMode.Open;
+            if (createIfNotExist)
+            {
+                // Always ensure folder existence if createIfNotExist was toggled
+                EnsureFolderExist(path);
+            }
+
+            using FileStream stream = new FileStream(path, fileMode, FileAccess.Read, FileShare.ReadWrite, OpenStreamBufferSize, FileOptions.None);
             using StreamReader reader = new StreamReader(stream, leaveOpen: false);
             LoadInner(reader);
         }
@@ -225,6 +234,14 @@ namespace Hi3Helper.Data
             {
                 Add("default", DefaultSection);
             }
+        }
+
+        private void EnsureFolderExist(string filePath)
+        {
+            // Always create the directory if none of it exist
+            string? pathDirectory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(pathDirectory))
+                _ = Directory.CreateDirectory(pathDirectory);
         }
 
         private void GetOrCreateSection(string sectionName, [NotNull] out IniSection? iniSection)
