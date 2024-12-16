@@ -401,7 +401,7 @@ namespace Hi3Helper.Data
 
         public static implicit operator ushort(IniValue value) => value.ToNumber<ushort>();
 
-        public static implicit operator int(IniValue value) => value.ToNumber<ushort>();
+        public static implicit operator int(IniValue value) => value.ToNumber<int>();
 
         public static implicit operator uint(IniValue value) => value.ToNumber<uint>();
 
