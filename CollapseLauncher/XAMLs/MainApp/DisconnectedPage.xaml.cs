@@ -35,11 +35,11 @@ namespace CollapseLauncher
         private void InitializeRegionComboBox()
         {
             ComboBoxGameCategory.ItemsSource = InnerLauncherConfig.BuildGameTitleListUI();
-            string gameName = LauncherConfig.GetAppConfigValue("GameCategory").ToString();
-
 #nullable enable
+            string? gameName = LauncherConfig.GetAppConfigValue("GameCategory");
+
             List<string>? gameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName)!;
+            List<string?>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName ?? "");
 
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();

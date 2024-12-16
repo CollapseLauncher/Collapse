@@ -778,8 +778,8 @@
                                            Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_NewPreallocChunk_NumBox}"
                                            IsEnabled="{x:Bind NetworkNewPreallocDownloaderToggle.IsOn, Mode=OneWay}"
                                            LargeChange="10"
-                                           Maximum="32"
-                                           Minimum="1"
+                                           Maximum="512"
+                                           Minimum="32"
                                            NumberFormatter="{StaticResource DoubleFormatter}"
                                            SmallChange="0.125"
                                            SpinButtonPlacementMode="Inline"
@@ -960,7 +960,7 @@
                                     HorizontalAlignment="Left"
                                     Orientation="Horizontal">
                             <NumberBox x:Name="DownloadThreadsNumBox"
-                                       Width="128"
+                                       Width="160"
                                        VerticalAlignment="Bottom"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Download}"
                                        Maximum="16"
@@ -968,7 +968,7 @@
                                        SpinButtonPlacementMode="Inline"
                                        Value="{x:Bind CurrentAppThreadDownloadValue, Mode=TwoWay}" />
                             <NumberBox x:Name="ExtractionThreadsNumBox"
-                                       Width="128"
+                                       Width="160"
                                        Margin="16,0,0,0"
                                        VerticalAlignment="Bottom"
                                        Header="{x:Bind helper:Locale.Lang._SettingsPage.AppThreads_Extract}"

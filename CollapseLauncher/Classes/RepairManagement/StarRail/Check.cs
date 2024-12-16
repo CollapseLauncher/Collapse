@@ -3,7 +3,6 @@ using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Native.LibraryImport;
-using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.IO;

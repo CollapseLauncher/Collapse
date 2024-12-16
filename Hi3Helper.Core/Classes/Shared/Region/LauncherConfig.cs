@@ -45,7 +45,7 @@ namespace Hi3Helper.Shared.Region
             }
 
             // If the section doesn't exist, then add the section template
-            if (!appIni.Profile.ContainsSection(SectionName))
+            if (!appIni.Profile.ContainsKey(SectionName))
             {
                 appIni.Profile.Add(SectionName, AppSettingsTemplate);
             }
@@ -102,7 +102,7 @@ namespace Hi3Helper.Shared.Region
         {
             foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate!)
             {
-                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || string.IsNullOrEmpty(appIni.Profile[SectionName][Entry.Key].Value))
+                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || string.IsNullOrEmpty(appIni.Profile[SectionName][Entry.Key]))
                 {
                     SetAppConfigValue(Entry.Key, Entry.Value);
                 }
@@ -343,8 +343,19 @@ namespace Hi3Helper.Shared.Region
 
         public static int DownloadChunkSize
         {
-            get => GetAppConfigValue("DownloadChunkSize").ToInt();
-            set => SetAndSaveConfigValue("DownloadChunkSize", value);
+            get
+            {
+                // Clamp value, Min: 32 MiB, Max: 512 MiB
+                int configValue = GetAppConfigValue("DownloadChunkSize").ToInt();
+                configValue = Math.Clamp(configValue, 32 << 20, 512 << 20);
+                return configValue;
+            }
+            set
+            {
+                // Clamp value, Min: 32 MiB, Max: 512 MiB
+                int configValue = Math.Clamp(value, 32 << 20, 512 << 20);
+                SetAndSaveConfigValue("DownloadChunkSize", configValue);
+            }
         }
 
         public static bool IsEnforceToUse7zipOnExtract
@@ -458,7 +469,7 @@ namespace Hi3Helper.Shared.Region
             { "IsUsePreallocatedDownloader", true },
             { "IsBurstDownloadModeEnabled", true },
             { "DownloadSpeedLimit", 0 },
-            { "DownloadChunkSize", 20 << 20 },
+            { "DownloadChunkSize", 64 << 20 },
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },

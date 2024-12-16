@@ -226,13 +226,20 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            _gameVersionManager!.GameAPIProp?.data?.plugins?.ForEach(plugin =>
-            {
-                assetIndex!.RemoveAll(asset =>
-                {
-                    return plugin!.package!.validate?.Exists(validate => validate!.path == asset!.N) ?? false;
-                });
-            });
+            _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
+              {
+                  if (plugin.package?.validate == null) return;
+
+                  assetIndex.RemoveAll(asset =>
+                  {
+                      var r = plugin.package.validate.Any(validate => validate.path != null && asset.N.Contains(validate.path));
+                      if (r)
+                      {
+                          LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
+                      }
+                      return r;
+                  });
+              });
         }
 
         #region Registry Utils

@@ -439,7 +439,7 @@ namespace CollapseLauncher.Pages.OOBE
 
         private static int GetInitialTheme()
         {
-            string themeValue = GetAppConfigValue("ThemeMode").ToString();
+            string? themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme)) return (int)CurrentAppTheme;
 
             CurrentAppTheme = !PInvoke.ShouldAppsUseDarkMode() ? AppThemeMode.Light : AppThemeMode.Dark;
@@ -779,7 +779,7 @@ namespace CollapseLauncher.Pages.OOBE
             {
                 if (value < 0) return;
                 var langID = LanguageIDIndex[value].ToLower();
-                if (langID == GetAppConfigValue("AppLanguage").ToString().ToLower()) return;
+                if (langID == GetAppConfigValue("AppLanguage").ToString()?.ToLower()) return;
                 SetAppConfigValue("AppLanguage", langID);
                 LoadLocale(langID);
                 PrintCDNList();
