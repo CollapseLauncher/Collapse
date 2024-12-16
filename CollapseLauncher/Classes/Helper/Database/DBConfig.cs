@@ -17,7 +17,7 @@ namespace CollapseLauncher.Helper.Database
         private const string _configFileName = "dbConfig.ini";
         private const string DbSectionName   = "database";
 
-        private static readonly string  _configPath = Path.Combine(_configFolder, _configFileName);
+        private static readonly string _configPath = Path.Combine(_configFolder, _configFileName);
 
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
         private static IniFile _config = new();
@@ -32,7 +32,7 @@ namespace CollapseLauncher.Helper.Database
 
             DefaultChecker();
         }
-        
+
         private static void EnsureConfigExist()
         {
             if (File.Exists(_configPath)) return;
@@ -53,7 +53,14 @@ namespace CollapseLauncher.Helper.Database
             }
         }
 
-        private static void Load(CancellationToken token = default) => _config.Load(_configPath);
+        private static void Load(CancellationToken token = default)
+        {
+            if (File.Exists(_configPath))
+            {
+                _config.Load(_configPath);
+            }
+        }
+
         private static void Save(CancellationToken token = default) => _config.Save(_configPath);
         
         public static IniValue GetConfig(string key) => _config[DbSectionName][key];

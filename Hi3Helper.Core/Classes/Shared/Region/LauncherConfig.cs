@@ -95,14 +95,14 @@ namespace Hi3Helper.Shared.Region
         }
         public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
 
-        public static void LoadAppConfig() => appIni.Profile!.Load(appIni.ProfilePath);
+        public static void LoadAppConfig() => appIni.Profile!.Load(appIni.ProfilePath, true);
         public static void SaveAppConfig() => appIni.Profile!.Save(appIni.ProfilePath);
 
         public static void CheckAndSetDefaultConfigValue()
         {
             foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate!)
             {
-                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || string.IsNullOrEmpty(appIni.Profile[SectionName][Entry.Key]))
+                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || appIni.Profile[SectionName][Entry.Key].IsEmpty)
                 {
                     SetAppConfigValue(Entry.Key, Entry.Value);
                 }
@@ -111,7 +111,7 @@ namespace Hi3Helper.Shared.Region
         #endregion
 
         #region Misc Methods
-        public static void LoadGamePreset() => AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder").ToString()!);
+        public static void LoadGamePreset() => AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder")!);
 
         public static void GetScreenResolutionString(ScreenProp screenProp)
         {
@@ -161,7 +161,7 @@ namespace Hi3Helper.Shared.Region
               },
           };
 
-        public static CDNURLProperty GetCurrentCDN() => CDNList![GetAppConfigValue("CurrentCDN").ToInt()];
+        public static CDNURLProperty GetCurrentCDN() => CDNList![GetAppConfigValue("CurrentCDN")];
         #endregion
 
         #region Misc Fields
@@ -202,7 +202,7 @@ namespace Hi3Helper.Shared.Region
         public static string AppImagesFolder = Path.Combine(AppFolder, "Assets", "Images");
         public static string AppGameFolder
         {
-            get => GetAppConfigValue("GameFolder").ToString();
+            get => GetAppConfigValue("GameFolder");
             set => SetAppConfigValue("GameFolder", value);
         }
         public static string[] AppCurrentArgument;
@@ -262,11 +262,11 @@ namespace Hi3Helper.Shared.Region
         {
             get
             {
-                int val = GetAppConfigValue("ExtractionThread").ToInt();
+                int val = GetAppConfigValue("ExtractionThread");
                 return val <= 0 ? Environment.ProcessorCount : val;
             }
         }
-        public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread").ToInt();
+        public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread");
         public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadatav3"); }
 
         public static readonly bool IsAppLangNeedRestart    = false;
@@ -278,55 +278,55 @@ namespace Hi3Helper.Shared.Region
         public static bool IsFirstInstall                   = false;
         public static bool IsConsoleEnabled
         {
-            get => GetAppConfigValue("EnableConsole").ToBoolNullable() ?? false;
+            get => GetAppConfigValue("EnableConsole");
             set => SetAppConfigValue("EnableConsole", value);
         }
 
         public static bool IsMultipleInstanceEnabled
         {
-            get => GetAppConfigValue("EnableMultipleInstance").ToBoolNullable() ?? false;
+            get => GetAppConfigValue("EnableMultipleInstance");
             set => SetAndSaveConfigValue("EnableMultipleInstance", value);
         }
 
         public static bool IsShowRegionChangeWarning
         {
-            get => GetAppConfigValue("ShowRegionChangeWarning").ToBool();
+            get => GetAppConfigValue("ShowRegionChangeWarning");
             set => SetAndSaveConfigValue("ShowRegionChangeWarning", value);
         }
 
         public static bool EnableAcrylicEffect
         {
-            get => GetAppConfigValue("EnableAcrylicEffect").ToBoolNullable() ?? false;
+            get => GetAppConfigValue("EnableAcrylicEffect");
             set => SetAndSaveConfigValue("EnableAcrylicEffect", value);
         }
 
         public static bool IsUseVideoBGDynamicColorUpdate
         {
-            get => GetAppConfigValue("IsUseVideoBGDynamicColorUpdate").ToBoolNullable() ?? false;
+            get => GetAppConfigValue("IsUseVideoBGDynamicColorUpdate");
             set => SetAndSaveConfigValue("IsUseVideoBGDynamicColorUpdate", value);
         }
 
         public static bool IsIntroEnabled
         {
-            get => GetAppConfigValue("IsIntroEnabled").ToBoolNullable() ?? true;
+            get => GetAppConfigValue("IsIntroEnabled");
             set => SetAndSaveConfigValue("IsIntroEnabled", value);
         }
 
         public static bool IsBurstDownloadModeEnabled
         {
-            get => GetAppConfigValue("IsBurstDownloadModeEnabled").ToBoolNullable() ?? true;
+            get => GetAppConfigValue("IsBurstDownloadModeEnabled");
             set => SetAndSaveConfigValue("IsBurstDownloadModeEnabled", value);
         }
 
         public static bool IsUsePreallocatedDownloader
         {
-            get => GetAppConfigValue("IsUsePreallocatedDownloader").ToBoolNullable() ?? true;
+            get => GetAppConfigValue("IsUsePreallocatedDownloader");
             set => SetAndSaveConfigValue("IsUsePreallocatedDownloader", value);
         }
 
         public static bool IsUseDownloadSpeedLimiter
         {
-            get => GetAppConfigValue("IsUseDownloadSpeedLimiter").ToBoolNullable() ?? true;
+            get => GetAppConfigValue("IsUseDownloadSpeedLimiter");
             set
             {
                 SetAndSaveConfigValue("IsUseDownloadSpeedLimiter", value);
@@ -337,7 +337,7 @@ namespace Hi3Helper.Shared.Region
 
         public static long DownloadSpeedLimit
         {
-            get => DownloadSpeedLimitCached = GetAppConfigValue("DownloadSpeedLimit").ToLong();
+            get => DownloadSpeedLimitCached = GetAppConfigValue("DownloadSpeedLimit");
             set => SetAndSaveConfigValue("DownloadSpeedLimit", DownloadSpeedLimitCached = value);
         }
 
@@ -346,7 +346,7 @@ namespace Hi3Helper.Shared.Region
             get
             {
                 // Clamp value, Min: 32 MiB, Max: 512 MiB
-                int configValue = GetAppConfigValue("DownloadChunkSize").ToInt();
+                int configValue = GetAppConfigValue("DownloadChunkSize");
                 configValue = Math.Clamp(configValue, 32 << 20, 512 << 20);
                 return configValue;
             }
@@ -360,7 +360,7 @@ namespace Hi3Helper.Shared.Region
 
         public static bool IsEnforceToUse7zipOnExtract
         {
-            get => GetAppConfigValue("EnforceToUse7zipOnExtract").ToBool();
+            get => GetAppConfigValue("EnforceToUse7zipOnExtract");
             set => SetAndSaveConfigValue("EnforceToUse7zipOnExtract", value);
         }
 
@@ -384,7 +384,7 @@ namespace Hi3Helper.Shared.Region
         {
             get
             {
-                _cachedIsInstantRegionChange ??= GetAppConfigValue("UseInstantRegionChange").ToBool();
+                _cachedIsInstantRegionChange ??= GetAppConfigValue("UseInstantRegionChange");
                 return (bool)_cachedIsInstantRegionChange;
             }
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
@@ -395,14 +395,14 @@ namespace Hi3Helper.Shared.Region
 
         public static Guid GetGuid(int sessionNum)
         {
-            var guidString = GetAppConfigValue($"sessionGuid{sessionNum}").ToString();
-            if (string.IsNullOrEmpty(guidString))
+            Guid guidString = GetAppConfigValue($"sessionGuid{sessionNum}");
+            if (guidString == Guid.Empty)
             {
                 var g = Guid.NewGuid();
-                SetAndSaveConfigValue($"sessionGuid{sessionNum}", g.ToString());
+                SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
                 return g;
             }
-            return Guid.Parse(guidString);
+            return guidString;
         }
         #endregion
 
@@ -422,7 +422,7 @@ namespace Hi3Helper.Shared.Region
             { "SendRemoteCrashData", true },
             { "EnableMultipleInstance", false },
             { "DontAskUpdate", false },
-            { "ThemeMode", new IniValue(AppThemeMode.Default) },
+            { "ThemeMode", IniValue.Create(AppThemeMode.Default) },
             { "AppLanguage", "en-us" },
             { "UseCustomBG", false },
             { "IsUseVideoBGDynamicColorUpdate", false },

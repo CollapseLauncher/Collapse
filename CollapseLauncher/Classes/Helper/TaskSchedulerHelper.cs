@@ -215,7 +215,7 @@ namespace CollapseLauncher.Helper
             appProductName = currentExecVersionInfo.ProductName;
             string shortcutFilename = appProductName + ".lnk";
             string startMenuLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
-            string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
+            string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             string iconLocationStartMenu = Path.Combine(
                 startMenuLocation,
                 "Programs",

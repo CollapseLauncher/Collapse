@@ -242,8 +242,8 @@ namespace CollapseLauncher.GameVersioning
             }
             set
             {
-                UpdateGameVersion(value ?? GameVersionAPI);
-                UpdateGameChannels();
+                UpdateGameVersion(value ?? GameVersionAPI, false);
+                UpdateGameChannels(false);
             }
         }
 
@@ -1071,7 +1071,7 @@ namespace CollapseLauncher.GameVersioning
         {
             // Check if the GameVersionInstalled == null (version config doesn't exist),
             // Reinitialize the version config and save the version config by assigning GameVersionInstalled.
-            if (GameVersionInstalled == null && GameAPIProp.data?.game?.latest?.version != null)
+            if (!GameVersionInstalled.HasValue && !string.IsNullOrEmpty(GameAPIProp.data?.game?.latest?.version))
             {
                 GameVersionInstalled = GameVersionAPI;
             }
@@ -1122,6 +1122,12 @@ namespace CollapseLauncher.GameVersioning
 
         private bool IsTryParseIniVersionExist(string iniPath)
         {
+            // If the file doesn't exist, return false by default
+            if (!File.Exists(iniPath))
+            {
+                return false;
+            }
+
             // Load version config file.
             IniFile iniFile = new IniFile();
             iniFile.Load(iniPath);
@@ -1156,7 +1162,7 @@ namespace CollapseLauncher.GameVersioning
             }
         }
 
-        private void SaveGameIni(string filePath, in IniFile INI)
+        private void SaveGameIni(string filePath, IniFile INI)
         {
             // Check if the disk partition exist. If it's exist, then save the INI.
             if (IsDiskPartitionExist(filePath))
@@ -1165,7 +1171,7 @@ namespace CollapseLauncher.GameVersioning
             }
         }
 
-        private void InitializeIniProp(string iniFilePath, in IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchValues = false)
+        private void InitializeIniProp(string iniFilePath, IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchValues = false)
         {
             // Get the file path of the INI file and normalize it
             iniFilePath = ConverterTool.NormalizePath(iniFilePath);
@@ -1174,26 +1180,17 @@ namespace CollapseLauncher.GameVersioning
             // Check if the disk partition is ready (exist)
             bool IsDiskReady = IsDiskPartitionExist(iniDirPath);
 
-            // Create the directory of the file if it doesn't exist
-            if (iniDirPath != null && !Directory.Exists(iniDirPath) && IsDiskReady)
-            {
-                Directory.CreateDirectory(iniDirPath);
-            }
-
-            // Load the INI file.
-            if (IsDiskReady)
+            // Load the existing INI file if only the file exist.
+            if (IsDiskReady && File.Exists(iniFilePath))
             {
                 ini.Load(iniFilePath);
             }
 
             // Initialize and ensure the non-existed values to their defaults.
             InitializeIniDefaults(ini, defaults, section, allowOverwriteUnmatchValues);
-
-            // Always save the file to ensure file existency
-            SaveGameIni(iniFilePath, ini);
         }
 
-        private void InitializeIniDefaults(in IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchValues)
+        private void InitializeIniDefaults(IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchValues)
         {
             // If the section doesn't exist, then add the section.
             if (!ini.ContainsKey(section))

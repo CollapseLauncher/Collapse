@@ -8,11 +8,18 @@ namespace Hi3Helper.Data
     public struct IniValue
     {
         #region Fields
-        public string? Value;
+        private string? _value;
+        private bool _isEmpty = true;
         #endregion
 
         #region Methods
-        public bool IsEmpty { get => string.IsNullOrEmpty(Value) || string.IsNullOrWhiteSpace(Value); }
+        public string? Value
+        {
+            get => _value;
+            set => _isEmpty = string.IsNullOrEmpty(_value = value);
+        }
+
+        public bool IsEmpty => _isEmpty;
         #endregion
 
         #region Constructors
@@ -39,8 +46,14 @@ namespace Hi3Helper.Data
         /// <summary>
         /// Create <seealso cref="IniValue"/> instance from <seealso cref="IFormattable"/> members
         /// </summary>
-        /// <param name="formattableObj">Value to convert from <seealso cref="IFormattable"/> members</param>
+        /// <param name="formattableValue">Value to convert from <seealso cref="IFormattable"/> members</param>
         public IniValue(IFormattable? formattableValue) => Value = formattableValue?.ToString(null, IniFile.DefaultCulture);
+
+        /// <summary>
+        /// Create <seealso cref="IniValue"/> instance from a <seealso cref="Boolean"/>
+        /// </summary>
+        /// <param name="value">Value to convert from <seealso cref="Boolean"/></param>
+        public IniValue(bool value) => Value = value ? "True" : "False";
 
         /// <summary>
         /// Create <seealso cref="IniValue"/> instance from a <seealso cref="string"/>
@@ -53,6 +66,33 @@ namespace Hi3Helper.Data
         /// </summary>
         /// <param name="value">Value to convert from <seealso cref="Size"/></param>
         public IniValue(Size value) => Value = $"{value.Width}x{value.Height}";
+
+        /// <summary>
+        /// Create <seealso cref="IniValue"/> instance from <seealso cref="Guid"/>
+        /// </summary>
+        /// <param name="value">Value to convert from <seealso cref="Guid"/></param>
+        public IniValue(Guid value)
+        {
+            string guidAsString = value.ToString(null, IniFile.DefaultCulture);
+            Value = guidAsString;
+        }
+        #endregion
+
+        #region Create Methods
+        public static IniValue Create<TEnum>(TEnum value)
+            where TEnum : struct, Enum => new IniValue(Enum.GetName(value));
+
+        public static IniValue Create(IFormattable? value) => new IniValue(value);
+
+        public static IniValue Create(object? value) => new IniValue(value);
+
+        public static IniValue Create(string? value) => new IniValue(value);
+
+        public static IniValue Create(bool value) => new IniValue(value);
+
+        public static IniValue Create(Size value) => new IniValue(value);
+
+        public static IniValue CreateEmpty() => new IniValue();
         #endregion
 
         #region Try Methods
@@ -65,7 +105,7 @@ namespace Hi3Helper.Data
         public bool TryParseValue<TNumber>(out TNumber result)
             where TNumber : struct, ISpanParsable<TNumber>
         {
-            ReadOnlySpan<char> valueSpan = Value;
+            ReadOnlySpan<char> valueSpan = _value;
 
             // Assign the default value first
             result = default;
@@ -95,7 +135,7 @@ namespace Hi3Helper.Data
             const string PossibleSeparators = ",x:";
 
             // Assign value string to span
-            ReadOnlySpan<char> valueString = Value;
+            ReadOnlySpan<char> valueString = _value;
 
             // If it's empty due to null or is empty, return default size
             if (valueString.IsEmpty)
@@ -142,6 +182,29 @@ namespace Hi3Helper.Data
         }
 
         /// <summary>
+        /// Convert the <seealso cref="IniValue"/> into <seealso cref="Guid"/>
+        /// </summary>
+        /// <returns>Value of <seealso cref="Guid"/>. If <see cref="IsEmpty"/> is true, or the value is not
+        /// in a valid <seealso cref="Guid"/> form, then return <see cref="Guid.Empty"/></returns>
+        public readonly Guid ToGuid()
+        {
+            // If the back value is empty, return an empty Guid
+            if (_isEmpty)
+            {
+                return Guid.Empty;
+            }
+
+            // If the back value can be parsed to Guid, then return
+            if (Guid.TryParse(_value, out Guid guid))
+            {
+                return guid;
+            }
+
+            // Otherwise, return the empty guid again
+            return Guid.Empty;
+        }
+
+        /// <summary>
         /// Convert the <seealso cref="IniValue"/> to <seealso cref="bool"/>
         /// </summary>
         /// <param name="defaultValue">The default value to be returned if the <seealso cref="IniValue"/> is invalid</param>
@@ -149,7 +212,7 @@ namespace Hi3Helper.Data
         public bool ToBool(bool defaultValue = false)
         {
             // Try parse the value
-            if (bool.TryParse(Value, out bool result))
+            if (bool.TryParse(_value, out bool result))
             {
                 return result;
             }
@@ -164,8 +227,8 @@ namespace Hi3Helper.Data
         /// <returns>Value of a nullable <seealso cref="bool"/></returns>
         public bool? ToBoolNullable()
         {
-            // If the value is empty or null, return null
-            if (string.IsNullOrEmpty(Value) || string.IsNullOrWhiteSpace(Value))
+            // If the value is empty, return null
+            if (_isEmpty)
             {
                 return null;
             }
@@ -286,9 +349,9 @@ namespace Hi3Helper.Data
         #endregion
 
         #region Get String Methods
-        private string? GetStringValue() => Value;
+        private string? GetStringValue() => _value;
 
-        public override string? ToString() => Value;
+        public override string? ToString() => _value;
         #endregion
 
         #region Implicit Cast Operators
@@ -326,6 +389,10 @@ namespace Hi3Helper.Data
 
         public static implicit operator IniValue(nuint o) => new IniValue(o);
 
+        public static implicit operator IniValue(Size o) => new IniValue(o);
+
+        public static implicit operator IniValue(Guid o) => new IniValue(o);
+
         public static implicit operator sbyte(IniValue value) => value.ToNumber<sbyte>();
 
         public static implicit operator byte(IniValue value) => value.ToNumber<byte>();
@@ -334,7 +401,7 @@ namespace Hi3Helper.Data
 
         public static implicit operator ushort(IniValue value) => value.ToNumber<ushort>();
 
-        public static implicit operator int(IniValue value) => value.ToNumber<ushort>();
+        public static implicit operator int(IniValue value) => value.ToNumber<int>();
 
         public static implicit operator uint(IniValue value) => value.ToNumber<uint>();
 
@@ -359,6 +426,10 @@ namespace Hi3Helper.Data
         public static implicit operator nint(IniValue value) => value.ToNumber<nint>();
 
         public static implicit operator nuint(IniValue value) => value.ToNumber<nuint>();
+
+        public static implicit operator Size(IniValue value) => value.ToSize();
+
+        public static implicit operator Guid(IniValue value) => value.ToGuid();
         #endregion
     }
 }
