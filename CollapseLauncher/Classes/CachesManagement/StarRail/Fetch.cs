@@ -36,9 +36,9 @@ namespace CollapseLauncher
 
             // Initialize metadata
             // Set total activity string as "Fetching Caches Type: Dispatcher"
-            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, CacheAssetType.Dispatcher);
-            _status!.IsProgressAllIndetermined = true;
-            _status!.IsIncludePerFileIndicator = false;
+            _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, CacheAssetType.Dispatcher);
+            _status.IsProgressAllIndetermined = true;
+            _status.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
             if (!await _innerGameVersionManager!.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath!, $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent")))
@@ -78,9 +78,9 @@ namespace CollapseLauncher
         private async Task<(int, long)> FetchByType(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, SRAssetType type, List<SRAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
-            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
-            _status!.IsProgressAllIndetermined = true;
-            _status!.IsIncludePerFileIndicator = false;
+            _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
+            _status.IsProgressAllIndetermined = true;
+            _status.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
             // Start reading the metadata and build the asset index of each type

@@ -320,9 +320,9 @@ namespace CollapseLauncher.InstallManager.Base
                 try
                 {
                     // Set the activity
-                    _status!.ActivityStatus            = Lang!._GameRepairPage!.Status2!;
-                    _status!.IsIncludePerFileIndicator = false;
-                    _status!.IsProgressAllIndetermined = true;
+                    _status.ActivityStatus            = Lang!._GameRepairPage!.Status2!;
+                    _status.IsIncludePerFileIndicator = false;
+                    _status.IsProgressAllIndetermined = true;
                     UpdateStatus();
 
                     // Start the check routine and get the state if download needed
@@ -330,10 +330,9 @@ namespace CollapseLauncher.InstallManager.Base
                     bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                     if (isDownloadNeeded)
                     {
-                        _status!.ActivityStatus   = Lang._GameRepairPage.Status8!.Replace(": ", "");
+                        _status.ActivityStatus   = Lang._GameRepairPage.Status8!.Replace(": ", "");
                         _progressAllSizeCurrent   = 0;
                         _progressAllCountCurrent  = 1;
-                        _progressAllIOReadCurrent = 0;
                         UpdateStatus();
 
                         // If download needed, then start the repair (download) routine
@@ -390,11 +389,10 @@ namespace CollapseLauncher.InstallManager.Base
                 _progressAllSizeTotal              = localAssetIndex!.Sum(x => x!.S);
                 _progressAllSizeCurrent            = 0;
                 _progressAllCountCurrent           = 1;
-                _status!.IsIncludePerFileIndicator = false;
-                _status!.IsProgressAllIndetermined = true;
-                _status!.ActivityStatus            = Lang!._Misc!.ApplyingPatch;
+                _status.IsIncludePerFileIndicator = false;
+                _status.IsProgressAllIndetermined = true;
+                _status.ActivityStatus            = Lang!._Misc!.ApplyingPatch;
                 UpdateStatus();
-                RestartStopwatch();
 
                 // Start the patching process
                 HDiffPatch.LogVerbosity   =  Verbosity.Verbose;
@@ -553,8 +551,8 @@ namespace CollapseLauncher.InstallManager.Base
 
             StartDeltaPatchPreReqVerification:
             // Set progress bar to not indetermined
-            _status!.IsProgressPerFileIndetermined = false;
-            _status!.IsProgressAllIndetermined     = false;
+            _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressAllIndetermined     = false;
 
             // Start downloading process
             await InvokePackageDownloadRoutine(downloadClient, gamePackage, _token!.Token);
@@ -562,7 +560,6 @@ namespace CollapseLauncher.InstallManager.Base
             // Reset the progress status
             _progressAllSizeCurrent  = 0;
             _progressAllCountCurrent = 1;
-            RestartStopwatch();
 
             // Start the verification routine
             foreach (GameInstallPackage asset in gamePackage)
@@ -677,10 +674,10 @@ namespace CollapseLauncher.InstallManager.Base
             DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
 
             // Set the progress bar to indetermined
-            _status!.IsIncludePerFileIndicator =
+            _status.IsIncludePerFileIndicator =
                 _assetIndex!.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
-            _status!.IsProgressPerFileIndetermined = true;
-            _status!.IsProgressAllIndetermined     = true;
+            _status.IsProgressPerFileIndetermined = true;
+            _status.IsProgressAllIndetermined     = true;
             UpdateStatus();
 
             // Start getting the size of the packages
@@ -749,12 +746,11 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllSizeCurrent            = 0;
             _progressAllCountCurrent           = 1;
             _progressAllCountTotal             = assetCount;
-            _status!.IsIncludePerFileIndicator = assetCount > 1;
-            RestartStopwatch();
+            _status.IsIncludePerFileIndicator = assetCount > 1;
 
             // Set progress bar to not indetermined
-            _status!.IsProgressPerFileIndetermined = false;
-            _status!.IsProgressAllIndetermined     = false;
+            _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressAllIndetermined     = false;
 
             // Iterate the asset
             foreach (GameInstallPackage asset in gamePackage)
@@ -876,9 +872,9 @@ namespace CollapseLauncher.InstallManager.Base
                 #endif
 
                     // Set the progress bar to indetermined
-                    _status!.IsIncludePerFileIndicator     = false;
-                    _status!.IsProgressPerFileIndetermined = false;
-                    _status!.IsProgressAllIndetermined     = true;
+                    _status.IsIncludePerFileIndicator     = false;
+                    _status.IsProgressPerFileIndetermined = false;
+                    _status.IsProgressAllIndetermined     = true;
                     UpdateStatus();
 
                     // Initialize the info pair list
@@ -936,13 +932,10 @@ namespace CollapseLauncher.InstallManager.Base
                         CancellationToken      = _token.Token
                     };
 
-                    // Start over the stopwatch
-                    RestartStopwatch();
-
                     // Set the progress bar to indetermined
-                    _status!.IsIncludePerFileIndicator     = false;
-                    _status!.IsProgressPerFileIndetermined = false;
-                    _status!.IsProgressAllIndetermined     = false;
+                    _status.IsIncludePerFileIndicator     = false;
+                    _status.IsProgressPerFileIndetermined = false;
+                    _status.IsProgressAllIndetermined     = false;
                     UpdateStatus();
 
                     // Declare the download delegate
@@ -1139,15 +1132,12 @@ namespace CollapseLauncher.InstallManager.Base
                     CancellationToken      = _token.Token
                 };
 
-                // Start over the stopwatch
-                RestartStopwatch();
-
                 // Set the progress bar to indetermined
                 _isSophonInUpdateMode                  = !isPreloadMode;
-                _status!.IsIncludePerFileIndicator     = !isPreloadMode;
-                _status!.IsProgressPerFileIndetermined = false;
-                _status!.IsProgressAllIndetermined     = false;
-                _status!.ActivityStatus = $"{(_isSophonInUpdateMode && !isPreloadMode
+                _status.IsIncludePerFileIndicator     = !isPreloadMode;
+                _status.IsProgressPerFileIndetermined = false;
+                _status.IsProgressAllIndetermined     = false;
+                _status.ActivityStatus = $"{(_isSophonInUpdateMode && !isPreloadMode
                     ? Lang._Misc.UpdatingAndApplying
                     : Lang._Misc.Downloading)}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent,
                                                                _progressAllCountTotal)}";
@@ -1386,7 +1376,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Reset the per file size
                 _progressPerFileSizeTotal = fs.Length;
-                _status!.ActivityStatus =
+                _status.ActivityStatus =
                     $"{Lang!._Misc!.Verifying}: {string.Format(Lang._Misc.PerFromTo!, _progressAllCountCurrent,
                                                                _progressAllCountTotal)}";
                 UpdateStatus();
@@ -1509,8 +1499,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllSizeCurrent            = 0;
             _progressAllCountCurrent           = 1;
             _progressAllCountTotal             = gamePackage.Count;
-            _status!.IsIncludePerFileIndicator = gamePackage.Count > 1;
-            RestartStopwatch();
+            _status.IsIncludePerFileIndicator = gamePackage.Count > 1;
 
             // Reset the last size counter
             _totalLastSizeCurrent = 0;
@@ -1523,11 +1512,11 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (GameInstallPackage asset in gamePackage)
             {
                 // Update the status
-                _status!.ActivityStatus =
+                _status.ActivityStatus =
                     $"{Lang!._Misc!.Extracting}: {string.Format(Lang._Misc.PerFromTo!, _progressAllCountCurrent,
                                                                 _progressAllCountTotal)}";
-                _status!.IsProgressPerFileIndetermined = false;
-                _status!.IsProgressAllIndetermined     = false;
+                _status.IsProgressPerFileIndetermined = false;
+                _status.IsProgressAllIndetermined     = false;
                 UpdateStatus();
 
                 _progressPerFileSizeCurrent = 0;
@@ -1581,11 +1570,11 @@ namespace CollapseLauncher.InstallManager.Base
                 if (!string.IsNullOrEmpty(asset.RunCommand))
                 {
                     // Update the status
-                    _status!.ActivityStatus = $"{Lang!._Misc!.FinishingUp}: {string.Format(Lang._Misc.PerFromTo!,
+                    _status.ActivityStatus = $"{Lang!._Misc!.FinishingUp}: {string.Format(Lang._Misc.PerFromTo!,
                         _progressAllCountCurrent,
                         _progressAllCountTotal)}";
-                    _status!.IsProgressPerFileIndetermined = true;
-                    _status!.IsProgressAllIndetermined     = true;
+                    _status.IsProgressPerFileIndetermined = true;
+                    _status.IsProgressAllIndetermined     = true;
                     UpdateStatus();
 
                     try
@@ -1760,13 +1749,13 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Assign local sizes to progress
-                    _progress!.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                     _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                     _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                     _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
                     // Calculate the speed
-                    _progress.ProgressAllSpeed = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed = CalculateSpeed(read);
 
                     // Calculate percentage
                     _progress.ProgressAllPercentage =
@@ -2279,10 +2268,9 @@ namespace CollapseLauncher.InstallManager.Base
         {
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
 
-            _progress!.ProgressAllSizeTotal    = hdiffEntry.Sum(x => x.fileSize);
-            _progress.ProgressAllSizeCurrent  = 0;
-            _status!.IsIncludePerFileIndicator = false;
-            RestartStopwatch();
+            _progress.ProgressAllSizeTotal    = hdiffEntry.Sum(x => x.fileSize);
+            _progress.ProgressAllSizeCurrent   = 0;
+            _status.IsIncludePerFileIndicator = false;
 
             _progressAllCountTotal = 1;
             _progressAllCountFound = hdiffEntry.Count;
@@ -2335,7 +2323,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     _progress.ProgressAllPercentage =
                         Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                    _progress.ProgressAllSpeed = _progress.ProgressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed = CalculateSpeed(entry.fileSize);
 
                     _progress.ProgressAllTimeLeft =
                         ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
@@ -2388,7 +2376,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         private async void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            lock (_progress!)
+            lock (_progress)
             {
                 _progress.ProgressAllSizeCurrent += e.Read;
             }
@@ -2396,7 +2384,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 _progress.ProgressAllPercentage =
                     Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                _progress.ProgressAllSpeed = _progress.ProgressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+                _progress.ProgressAllSpeed = CalculateSpeed(e.Read);
 
                 _progress.ProgressAllTimeLeft =
                     ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
@@ -3629,7 +3617,6 @@ namespace CollapseLauncher.InstallManager.Base
             // Set progress count to beginning
             _progressAllCountCurrent = 1;
             _progressAllCountTotal   = packageCount;
-            RestartStopwatch();
 
             // Initialize a legacy Http as well
             using Http _httpClient = new Http(true, customHttpClient: downloadClient.GetHttpClient());
@@ -3673,7 +3660,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                           int                   packageCount)
         {
             // Set the activity status
-            _status!.IsIncludePerFileIndicator = packageCount > 1;
+            _status.IsIncludePerFileIndicator = packageCount > 1;
             _status.ActivityStatus =
                 $"{Lang._Misc.Downloading}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent,
                                                            _progressAllCountTotal)}";
@@ -3728,7 +3715,6 @@ namespace CollapseLauncher.InstallManager.Base
                     $"{Lang._Misc.Merging}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent,
                                                            _progressAllCountTotal)}";
                 UpdateStatus();
-                _stopwatch.Stop();
 
                 // Check if the merge chunk is enabled and the download could perform multisession,
                 // then do merge (also if legacy downloader is used).
@@ -3736,8 +3722,6 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     await httpClient.Merge(token);
                 }
-
-                _stopwatch.Start();
             }
 
             // Increment the total count
@@ -3959,7 +3943,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 case CompletenessStatus.Running:
                     IsRunning           = true;
-                    _status!.IsRunning   = true;
+                    _status.IsRunning   = true;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
                     #if !DISABLEDISCORD
@@ -3968,19 +3952,19 @@ namespace CollapseLauncher.InstallManager.Base
                     break;
                 case CompletenessStatus.Completed:
                     IsRunning           = false;
-                    _status!.IsRunning   = false;
+                    _status.IsRunning   = false;
                     _status.IsCompleted = true;
                     _status.IsCanceled  = false;
                     #if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
                     #endif
                     // HACK: Fix the progress not achieving 100% while completed
-                    _progress!.ProgressAllPercentage     = 100f;
+                    _progress.ProgressAllPercentage     = 100f;
                     _progress.ProgressPerFilePercentage = 100f;
                     break;
                 case CompletenessStatus.Cancelled:
                     IsRunning           = false;
-                    _status!.IsRunning   = false;
+                    _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = true;
                     #if !DISABLEDISCORD
@@ -3989,7 +3973,7 @@ namespace CollapseLauncher.InstallManager.Base
                     break;
                 case CompletenessStatus.Idle:
                     IsRunning           = false;
-                    _status!.IsRunning   = false;
+                    _status.IsRunning   = false;
                     _status.IsCompleted = false;
                     _status.IsCanceled  = false;
                     #if !DISABLEDISCORD
@@ -4051,7 +4035,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async void DeltaPatchCheckProgress(object sender, PatchEvent e)
         {
-            _progress!.ProgressAllPercentage = e.ProgressPercentage;
+            _progress.ProgressAllPercentage = e.ProgressPercentage;
 
             _progress.ProgressAllTimeLeft = e.TimeLeft;
             _progress.ProgressAllSpeed    = e.Speed;
@@ -4061,7 +4045,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             if (await CheckIfNeedRefreshStopwatch())
             {
-                _status!.IsProgressAllIndetermined = false;
+                _status.IsProgressAllIndetermined = false;
                 UpdateProgressBase();
                 UpdateStatus();
             }
@@ -4095,7 +4079,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected async void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
-            _progress!.ProgressAllPercentage =
+            _progress.ProgressAllPercentage =
                 e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
 
             _progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
@@ -4106,7 +4090,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             if (await CheckIfNeedRefreshStopwatch())
             {
-                _status!.IsProgressAllIndetermined = false;
+                _status.IsProgressAllIndetermined = false;
                 UpdateProgressBase();
                 UpdateStatus();
             }
@@ -4125,13 +4109,13 @@ namespace CollapseLauncher.InstallManager.Base
                 _progressPerFileSizeTotal   = (long)e.TotalSize;
 
                 // Assign local sizes to progress
-                _progress!.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                 _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                 _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                 _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
                 // Calculate the speed
-                _progress.ProgressAllSpeed = _progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds;
+                _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
 
                 // Calculate percentage
                 _progress.ProgressAllPercentage =
@@ -4162,26 +4146,26 @@ namespace CollapseLauncher.InstallManager.Base
         private async void HttpClientDownloadProgressAdapter(int read, DownloadProgress downloadProgress)
         {
             // Set the progress bar not indetermined
-            _status!.IsProgressPerFileIndetermined = false;
+            _status.IsProgressPerFileIndetermined = false;
             _status.IsProgressAllIndetermined = false;
 
             // Increment the total current size if status is not merging
             Interlocked.Add(ref _progressAllSizeCurrent, read);
-            // Increment the total last read
-            Interlocked.Add(ref _progressAllIOReadCurrent, read);
 
-            if (_refreshStopwatch!.ElapsedMilliseconds > _refreshInterval)
+            // Calculate the speed
+            double speedAll = CalculateSpeed(read);
+
+            if (await CheckIfNeedRefreshStopwatch())
             {
                 // Assign local sizes to progress
-                _progress!.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                 _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
                 _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
                 _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
 
-                // Calculate the speed
-                double speedPerFile = _progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
-                double speedAllFile = (_progressAllSizeCurrent / _stopwatch.Elapsed.TotalSeconds).ClampLimitedSpeedNumber();
-                _progress.ProgressAllSpeed = speedPerFile.ClampLimitedSpeedNumber();
+                // Assign speed with clamped value
+                double speedClamped = speedAll.ClampLimitedSpeedNumber();
+                _progress.ProgressAllSpeed = speedClamped;
 
                 // Calculate percentage
                 _progress.ProgressPerFilePercentage =
@@ -4190,58 +4174,46 @@ namespace CollapseLauncher.InstallManager.Base
                     Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
 
                 // Calculate the timelapse
-                _progress.ProgressAllTimeLeft =
-                    ((_progressAllSizeTotal - _progressAllSizeCurrent) / speedAllFile.Unzeroed())
-                   .ToTimeSpanNormalized();
+                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
+                _progress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
 
                 // Update the status of per file size and current progress from Http client
                 _progressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
                 _progressPerFileSizeTotal = downloadProgress.BytesTotal;
                 _progress.ProgressPerFilePercentage = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
 
-                lock (_downloadSpeedRefreshStopwatch)
-                {
-                    if (_downloadSpeedRefreshInterval < _downloadSpeedRefreshStopwatch!.ElapsedMilliseconds)
-                    {
-                        _progressAllIOReadCurrent = 0;
-                        _downloadSpeedRefreshStopwatch.Restart();
-                    }
-                }
-
                 // Update the status
                 UpdateAll();
-
-                _refreshStopwatch.Restart();
-                await Task.Delay(_refreshInterval);
             }
         }
 
         private async void HttpClientDownloadProgressAdapter(object sender, DownloadEvent e)
         {
             // Set the progress bar not indetermined
-            _status!.IsProgressPerFileIndetermined = false;
+            _status.IsProgressPerFileIndetermined = false;
             _status.IsProgressAllIndetermined     = false;
 
             if (e.State != DownloadState.Merging)
             {
                 // Increment the total current size if status is not merging
                 _progressAllSizeCurrent += e.Read;
-                // Increment the total last read
-                _progressAllIOReadCurrent += e.Read;
             }
+
+            // Calculate the speed
+            double speedAll = CalculateSpeed(e.Read);
 
             if (await CheckIfNeedRefreshStopwatch())
             {
                 if (e.State != DownloadState.Merging)
                 {
                     // Assign local sizes to progress
-                    _progress!.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                     _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                     _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                     _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
                     // Calculate the speed
-                    _progress.ProgressAllSpeed = _progressAllIOReadCurrent / _stopwatch.Elapsed.TotalSeconds;
+                    _progress.ProgressAllSpeed = speedAll;
 
                     // Calculate percentage
                     _progress.ProgressPerFilePercentage =
@@ -4262,10 +4234,9 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // If status is merging, then use progress for speed and timelapse from Http client
                     // and set the rest from the base class
-                    _progress!.ProgressAllTimeLeft        = e.TimeLeft;
+                    _progress.ProgressAllTimeLeft        = e.TimeLeft;
 
-                    double speedWithReset                = _progressAllIOReadCurrent / _downloadSpeedRefreshStopwatch.Elapsed.TotalSeconds;
-                    _progress.ProgressAllSpeed           = speedWithReset;
+                    _progress.ProgressAllSpeed           = speedAll;
 
                     _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
                     _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
@@ -4273,12 +4244,6 @@ namespace CollapseLauncher.InstallManager.Base
                     _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
                     _progress.ProgressAllPercentage =
                         Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
-
-                    if (_downloadSpeedRefreshInterval < _downloadSpeedRefreshStopwatch!.ElapsedMilliseconds)
-                    {
-                        _progressAllIOReadCurrent = 0;
-                        _downloadSpeedRefreshStopwatch.Restart();
-                    }
                 }
 
                 // Update the status of per file size and current progress from Http client
@@ -4290,16 +4255,6 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateAll();
             }
         }
-
-        protected override void RestartStopwatch()
-        {
-            // Reset read count to 0
-            _progressAllIOReadCurrent = 0;
-
-            // Restart the stopwatch from base
-            base.RestartStopwatch();
-        }
-
         #endregion
     }
 }

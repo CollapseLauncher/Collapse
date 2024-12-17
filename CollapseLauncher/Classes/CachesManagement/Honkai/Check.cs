@@ -20,13 +20,11 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = new List<CacheAsset>();
 
             // Set Indetermined status as false
-            _status!.IsProgressAllIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
 
-            // Reset stopwatch
-            RestartStopwatch();
             try
             {
                 // Create the cache directory if it doesn't exist
@@ -104,8 +102,8 @@ namespace CollapseLauncher
         {
             // Increment the count and update the status
             Interlocked.Add(ref _progressAllCountCurrent, 1);
-            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
-            _status!.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
+            _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
+            _status.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
 
             // Assign the file info.
             FileInfo fileInfo = new FileInfo(asset.ConcatPath!);
@@ -148,7 +146,7 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status!.IsProgressAllIndetermined = false;
+                _status.IsProgressAllIndetermined = false;
                 _progressAllCountFound++;
                 _progressAllSizeFound += asset!.CS;
             }
@@ -172,9 +170,6 @@ namespace CollapseLauncher
                     remoteCRC
                 ))
             );
-
-            // Update the progress and status
-            UpdateProgressCRC();
         }
     }
 }

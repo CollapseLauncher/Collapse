@@ -40,9 +40,6 @@ namespace CollapseLauncher
                 // Check for skippable assets to skip the check
                 RemoveSkippableAssets(assetIndex);
 
-                // Reset stopwatch
-                RestartStopwatch();
-
                 // Iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {

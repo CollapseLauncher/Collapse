@@ -32,7 +32,7 @@ namespace CollapseLauncher
             try
             {
                 // Set IsProgressAllIndetermined as false and update the status 
-                _status!.IsProgressAllIndetermined = true;
+                _status.IsProgressAllIndetermined = true;
                 UpdateStatus();
 
                 // Iterate the asset index and do update operation
@@ -121,7 +121,7 @@ namespace CollapseLauncher
         {
             // Increment total count and update the status
             _progressAllCountCurrent++;
-            _status!.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
+            _status.ActivityStatus = string.Format(Lang!._Misc!.Downloading + " {0}: {1}", asset!.AssetIndex.DataType, asset.AssetIndex.N);
             UpdateAll();
 
             FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!)

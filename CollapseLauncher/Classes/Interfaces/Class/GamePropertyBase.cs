@@ -13,28 +13,29 @@ namespace CollapseLauncher.Interfaces
         private string _gamePathField { get; init; }
         private GameVersion _gameVersionOverride { get; init; }
 
-        public GamePropertyBase(UIElement parentUI, IGameVersionCheck gameVersionManager, IGameSettings gameSettings, string gamePath, string gameRepoURL, string versionOverride)
-            : this(parentUI, gameVersionManager, gamePath, gameRepoURL, versionOverride)
+#nullable enable
+        public GamePropertyBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
         {
             _gameSettings = gameSettings;
-        }
-
-        public GamePropertyBase(UIElement parentUI, IGameVersionCheck gameVersionManager, string gamePath, string gameRepoURL, string versionOverride)
-        {
             _gameVersionManager = gameVersionManager;
-            _parentUI           = parentUI;
-            _gamePathField      = gamePath;
-            _gameRepoURL        = gameRepoURL;
-            _token              = new CancellationTokenSourceWrapper();
-            AssetEntry          = new ObservableCollection<IAssetProperty>();
-            _isVersionOverride  = versionOverride != null;
+            _parentUI = parentUI;
+            _gamePathField = gamePath;
+            _gameRepoURL = gameRepoURL;
+            _token = new CancellationTokenSourceWrapper();
+            _isVersionOverride = versionOverride != null;
 
             // If the version override is not null, then assign the override value
             if (_isVersionOverride)
             {
                 _gameVersionOverride = new GameVersion(versionOverride);
             }
+
+            AssetEntry = new ObservableCollection<IAssetProperty>();
         }
+
+        public GamePropertyBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
+            : this(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
+#nullable restore
 
         protected const int _bufferLength = 4 << 10; // 4 KiB
         protected const int _bufferMediumLength = 4 << 17; // 512 KiB
@@ -49,9 +50,6 @@ namespace CollapseLauncher.Interfaces
         protected byte _threadCount { get => (byte)AppCurrentThread; }
         protected int _downloadThreadCountSqrt { get => (int)Math.Max(Math.Sqrt(_downloadThreadCount), 4); }
         protected CancellationTokenSourceWrapper _token { get; set; }
-        protected Stopwatch _stopwatch { get; set; }
-        protected Stopwatch _refreshStopwatch { get; set; }
-        protected Stopwatch _downloadSpeedRefreshStopwatch { get; set; }
         protected GameVersion _gameVersion
         {
             get

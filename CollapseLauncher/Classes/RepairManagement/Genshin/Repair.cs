@@ -21,15 +21,12 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<PkgVersionProperties> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            _status!.ActivityStatus = Lang._GameRepairPage.Status11;
+            _status.ActivityStatus = Lang._GameRepairPage.Status11;
             _status.IsProgressAllIndetermined = true;
             _status.IsProgressPerFileIndetermined = true;
 
             // Update status
             UpdateStatus();
-
-            // Reset stopwatch
-            RestartStopwatch();
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()

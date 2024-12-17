@@ -580,7 +580,7 @@ namespace CollapseLauncher
         private void _httpClient_FetchManifestAssetProgress(int read, DownloadProgress downloadProgress)
         {
             // Update fetch status
-            double speed = downloadProgress.BytesDownloaded / _stopwatch.Elapsed.TotalSeconds;
+            double speed = CalculateSpeed(read);
             if (_status != null)
             {
                 _status.IsProgressPerFileIndetermined = false;

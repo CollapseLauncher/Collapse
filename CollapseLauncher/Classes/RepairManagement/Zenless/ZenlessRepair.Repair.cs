@@ -26,9 +26,6 @@ namespace CollapseLauncher
             // Update status
             UpdateStatus();
 
-            // Reset stopwatch
-            RestartStopwatch();
-
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
                 .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)

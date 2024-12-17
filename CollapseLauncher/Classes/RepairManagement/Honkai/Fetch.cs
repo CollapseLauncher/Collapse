@@ -53,7 +53,7 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            _status!.ActivityStatus = Lang!._GameRepairPage!.Status2!;
+            _status.ActivityStatus = Lang!._GameRepairPage!.Status2!;
             _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
@@ -370,9 +370,9 @@ namespace CollapseLauncher
             if (cgInfo!.AppointmentDownloadScheduleID == 0) return true;
 
             // Update the status
-            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
-            _status!.IsProgressAllIndetermined = true;
-            _status!.IsProgressPerFileIndetermined = true;
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
+            _status.IsProgressAllIndetermined = true;
+            _status.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
             // Set the URL and try get the status
@@ -496,9 +496,9 @@ namespace CollapseLauncher
 
             // Update the status
             // TODO: Localize
-            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
-            _status!.IsProgressAllIndetermined = true;
-            _status!.IsProgressPerFileIndetermined = true;
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
+            _status.IsProgressAllIndetermined = true;
+            _status.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
             // Set the URL and try get the status
