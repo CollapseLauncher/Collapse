@@ -38,8 +38,8 @@ namespace CollapseLauncher.Interfaces
 #nullable restore
 
         protected const int _bufferLength = 4 << 10; // 4 KiB
-        protected const int _bufferMediumLength = 4 << 17; // 512 KiB
-        protected const int _bufferBigLength = 1 << 20; // 1 MiB
+        protected const int _bufferMediumLength = 1 << 20; // 1 MiB
+        protected const int _bufferBigLength = 2 << 20; // 2 MiB
         protected const int _sizeForMultiDownload = 10 << 20;
         protected const int _downloadThreadCountReserved = 16;
         protected virtual string _userAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
