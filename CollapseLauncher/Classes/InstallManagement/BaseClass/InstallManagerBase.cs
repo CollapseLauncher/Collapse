@@ -883,7 +883,8 @@ namespace CollapseLauncher.InstallManager.Base
                     // Get the info pair based on info provided above (for main game file)
                     var sophonMainInfoPair = await
                         SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game",
-                                                                         _token.Token);
+                                                                         _token.Token)
+                        .ConfigureAwait(false);
                     sophonInfoPairList.Add(sophonMainInfoPair);
 
                     List<string> voLanguageList =
@@ -1016,7 +1017,7 @@ namespace CollapseLauncher.InstallManager.Base
                         await Parallel.ForEachAsync(SophonManifest.EnumerateAsync(client, sophonDownloadInfoPair,
                                                                                   downloadSpeedLimiter),
                                                     parallelOptions,
-                                                    actionDelegate);
+                                                    actionDelegate).ConfigureAwait(false);
                         processingInfoPair.Remove(sophonDownloadInfoPair.ChunksInfo, out _);
                     }
                 }
@@ -1262,9 +1263,11 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token)
+               .ConfigureAwait(false);
             SophonChunkManifestInfoPair requestPairTo = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token)
+               .ConfigureAwait(false);
 
             // Add asset to the list
             await foreach (SophonAsset sophonAsset in SophonUpdate
