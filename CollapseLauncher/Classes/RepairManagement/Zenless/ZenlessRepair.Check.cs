@@ -35,18 +35,9 @@ namespace CollapseLauncher
                     switch (asset.FT)
                     {
                         case FileType.Generic:
-                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
-                            break;
                         case FileType.Block:
-                            // await CheckAssetType(asset, brokenAssetIndex, threadToken);
-                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
-                            break;
                         case FileType.Audio:
-                            // await CheckAssetType(asset, brokenAssetIndex, threadToken);
-                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
-                            break;
                         case FileType.Video:
-                            // await CheckAssetType(asset, brokenAssetIndex, threadToken);
                             await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                     }
