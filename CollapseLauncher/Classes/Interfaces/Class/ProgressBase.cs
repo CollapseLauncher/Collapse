@@ -73,12 +73,12 @@ namespace CollapseLauncher.Interfaces
         protected void _innerObject_ProgressAdapter(object? sender, TotalPerFileProgress e) => ProgressChanged?.Invoke(sender, e);
         protected void _innerObject_StatusAdapter(object? sender, TotalPerFileStatus e) => StatusChanged?.Invoke(sender, e);
 
-        protected virtual async void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadProgress)
+        protected virtual void _httpClient_FetchAssetProgress(int size, DownloadProgress downloadProgress)
         {
             // Calculate the speed
             double speedAll = CalculateSpeed(size);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 // Calculate the clamped speed and timelapse
                 double speedClamped = speedAll.ClampLimitedSpeedNumber();
@@ -114,14 +114,14 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region ProgressEventHandlers - Repair
-        protected virtual async void _httpClient_RepairAssetProgress(int size, DownloadProgress downloadProgress)
+        protected virtual void _httpClient_RepairAssetProgress(int size, DownloadProgress downloadProgress)
         {
             Interlocked.Add(ref _progressAllSizeCurrent, size);
 
             // Calculate the speed
             double speedAll = CalculateSpeed(size);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 // Calculate the clamped speed and timelapse
                 double speedClamped = speedAll.ClampLimitedSpeedNumber();
@@ -184,14 +184,14 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region ProgressEventHandlers - UpdateCache
-        protected virtual async void _httpClient_UpdateAssetProgress(int size, DownloadProgress downloadProgress)
+        protected virtual void _httpClient_UpdateAssetProgress(int size, DownloadProgress downloadProgress)
         {
             Interlocked.Add(ref _progressAllSizeCurrent, size);
 
             // Calculate the speed
             double speedAll = CalculateSpeed(size);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 // Calculate the clamped speed and timelapse
                 double speedClamped = speedAll.ClampLimitedSpeedNumber();
@@ -225,7 +225,7 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region ProgressEventHandlers - Patch
-        protected virtual async void RepairTypeActionPatching_ProgressChanged(object? sender, BinaryPatchProgress e)
+        protected virtual void RepairTypeActionPatching_ProgressChanged(object? sender, BinaryPatchProgress e)
         {
             lock (_progress)
             {
@@ -238,7 +238,7 @@ namespace CollapseLauncher.Interfaces
                     0;
             }
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 lock (_status)
                 {
@@ -256,12 +256,12 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region ProgressEventHandlers - CRC/HashCheck
-        protected virtual async void UpdateProgressCRC(long read)
+        protected virtual void UpdateProgressCRC(long read)
         {
             // Calculate speed
             double speedAll = CalculateSpeed(read);
 
-            if (!await CheckIfNeedRefreshStopwatch())
+            if (!CheckIfNeedRefreshStopwatch())
             {
                 return;
             }
@@ -307,12 +307,12 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region ProgressEventHandlers - DoCopyStreamProgress
-        protected virtual async void UpdateProgressCopyStream(long currentPosition, int read, long totalReadSize)
+        protected virtual void UpdateProgressCopyStream(long currentPosition, int read, long totalReadSize)
         {
             // Calculate the speed
             double speedAll = CalculateSpeed(read);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 lock (_progress)
                 {
@@ -371,7 +371,7 @@ namespace CollapseLauncher.Interfaces
 
         private int _riLastTick = Environment.TickCount;
 
-        protected async ValueTask<bool> CheckIfNeedRefreshStopwatch()
+        protected bool CheckIfNeedRefreshStopwatch()
         {
             int currentTick = Environment.TickCount - _riLastTick;
             if (currentTick > _refreshInterval && currentTick > 0)
@@ -380,20 +380,19 @@ namespace CollapseLauncher.Interfaces
                 return true;
             }
 
-            await Task.Delay(_refreshInterval);
             return false;
         }
         #endregion
 
         #region ProgressEventHandlers - SophonInstaller
-        protected async void UpdateSophonFileTotalProgress(long read)
+        protected void UpdateSophonFileTotalProgress(long read)
         {
             Interlocked.Add(ref _progressAllSizeCurrent, read);
 
             // Calculate the speed
             double speedAll = CalculateSpeed(read);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 // Assign local sizes to progress
                 _sophonProgress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
