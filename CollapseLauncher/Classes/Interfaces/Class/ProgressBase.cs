@@ -956,7 +956,22 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HashTools
-        protected virtual async Task<byte[]> CheckHashAsync<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async ValueTask<byte[]> CheckHashAsync<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
+            where T : HashAlgorithm
+        {
+            // Create a new task from factory, assign a synchronous method to it with detached thread.
+            Task<byte[]> task = Task<byte[]>
+                .Factory
+                .StartNew(() => CheckHash(stream, hashProvider, token, updateTotalProgress),
+                          token,
+                          TaskCreationOptions.DenyChildAttach,
+                          TaskScheduler.Default);
+
+            // Run the task and await, return the result
+            return await task.ConfigureAwait(false);
+        }
+
+        protected virtual byte[] CheckHash<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
             where T : HashAlgorithm
         {
             // Get length based on stream length or at least if bigger, use the default one
@@ -964,12 +979,13 @@ namespace CollapseLauncher.Interfaces
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
+            bufferLen = buffer.Length;
 
             try
             {
                 // Do read activity
                 int read;
-                while ((read = await stream.ReadAsync(buffer, token)) > 0)
+                while ((read = stream.Read(buffer, 0, bufferLen)) > 0)
                 {
                     // Throw Cancellation exception if detected
                     token.ThrowIfCancellationRequested();
@@ -1000,7 +1016,22 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected virtual async Task<byte[]> CheckNonCryptoHashAsync<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
+        protected virtual async ValueTask<byte[]> CheckNonCryptoHashAsync<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
+            where T : NonCryptographicHashAlgorithm
+        {
+            // Create a new task from factory, assign a synchronous method to it with detached thread.
+            Task<byte[]> task = Task<byte[]>
+                .Factory
+                .StartNew(() => CheckNonCryptoHash(stream, hashProvider, token, updateTotalProgress),
+                          token,
+                          TaskCreationOptions.DenyChildAttach,
+                          TaskScheduler.Default);
+
+            // Run the task and await, return the result
+            return await task.ConfigureAwait(false);
+        }
+
+        protected virtual byte[] CheckNonCryptoHash<T>(Stream stream, T hashProvider, CancellationToken token, bool updateTotalProgress = true)
             where T : NonCryptographicHashAlgorithm
         {
             // Get length based on stream length or at least if bigger, use the default one
@@ -1008,12 +1039,13 @@ namespace CollapseLauncher.Interfaces
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
+            bufferLen = buffer.Length;
 
             try
             {
                 // Do read activity
                 int read;
-                while ((read = await stream.ReadAsync(buffer, token)) > 0)
+                while ((read = stream.Read(buffer, 0, bufferLen)) > 0)
                 {
                     // Throw Cancellation exception if detected
                     token.ThrowIfCancellationRequested();
