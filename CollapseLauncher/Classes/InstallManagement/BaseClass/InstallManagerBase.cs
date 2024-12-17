@@ -1730,22 +1730,40 @@ namespace CollapseLauncher.InstallManager.Base
 
                 string outputPath = EnsureCreationOfDirectory(Path.Combine(_gamePath, zipEntry.Key));
 
-                int read;
                 await using FileStream outputStream =
                     new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Write);
                 await using Stream entryStream = zipEntry.OpenEntryStream();
 
+                Task runningTask = Task.Factory.StartNew(
+                    () => StartWriteInner(buffer, outputStream, entryStream, cancellationToken),
+                    cancellationToken,
+                    TaskCreationOptions.DenyChildAttach,
+                    TaskScheduler.Default);
+
+                await runningTask.ConfigureAwait(false);
+            }
+
+            void StartWriteInner(byte[] buffer, FileStream outputStream, Stream entryStream, CancellationToken cancellationToken)
+            {
+                int read;
+
                 // Perform async read
-                while ((read = await entryStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
+                while ((read = entryStream.Read(buffer, 0, buffer.Length)) > 0)
                 {
+                    // Throw if cancellation requested
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     // Perform sync write
-                    await outputStream.WriteAsync(buffer, 0, read, cancellationToken);
+                    outputStream.Write(buffer, 0, read);
 
                     // Increment total size
                     _progressAllSizeCurrent     += read;
                     _progressPerFileSizeCurrent += read;
 
-                    if (!await CheckIfNeedRefreshStopwatch())
+                    // Calculate the speed
+                    _progress.ProgressAllSpeed = CalculateSpeed(read);
+
+                    if (!CheckIfNeedRefreshStopwatch())
                     {
                         continue;
                     }
@@ -1755,9 +1773,6 @@ namespace CollapseLauncher.InstallManager.Base
                     _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                     _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                     _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
-
-                    // Calculate the speed
-                    _progress.ProgressAllSpeed = CalculateSpeed(read);
 
                     // Calculate percentage
                     _progress.ProgressAllPercentage =
@@ -2376,13 +2391,13 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async void EventListener_PatchEvent(object sender, PatchEvent e)
+        private void EventListener_PatchEvent(object sender, PatchEvent e)
         {
             lock (_progress)
             {
                 _progress.ProgressAllSizeCurrent += e.Read;
             }
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 _progress.ProgressAllPercentage =
                     Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
@@ -4035,7 +4050,7 @@ namespace CollapseLauncher.InstallManager.Base
             base.UpdateProgress();
         }
 
-        protected async void DeltaPatchCheckProgress(object sender, PatchEvent e)
+        protected void DeltaPatchCheckProgress(object sender, PatchEvent e)
         {
             _progress.ProgressAllPercentage = e.ProgressPercentage;
 
@@ -4045,7 +4060,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
             _progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 _status.IsProgressAllIndetermined = false;
                 UpdateProgressBase();
@@ -4079,7 +4094,7 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine(e.Message, type, true);
         }
 
-        protected async void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
+        protected void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
             _progress.ProgressAllPercentage =
                 e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
@@ -4090,7 +4105,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progress.ProgressAllSizeTotal   = e.ProgressAllSizeTotal;
             _progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 _status.IsProgressAllIndetermined = false;
                 UpdateProgressBase();
@@ -4098,9 +4113,9 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async void ZipProgressAdapter(object sender, ExtractProgressProp e)
+        private void ZipProgressAdapter(object sender, ExtractProgressProp e)
         {
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 // Incrment current total size
                 long lastSize = GetLastSize((long)e.TotalRead);
@@ -4145,7 +4160,7 @@ namespace CollapseLauncher.InstallManager.Base
             return a;
         }
 
-        private async void HttpClientDownloadProgressAdapter(int read, DownloadProgress downloadProgress)
+        private void HttpClientDownloadProgressAdapter(int read, DownloadProgress downloadProgress)
         {
             // Set the progress bar not indetermined
             _status.IsProgressPerFileIndetermined = false;
@@ -4157,7 +4172,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Calculate the speed
             double speedAll = CalculateSpeed(read);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 // Assign local sizes to progress
                 _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
@@ -4189,7 +4204,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async void HttpClientDownloadProgressAdapter(object sender, DownloadEvent e)
+        private void HttpClientDownloadProgressAdapter(object sender, DownloadEvent e)
         {
             // Set the progress bar not indetermined
             _status.IsProgressPerFileIndetermined = false;
@@ -4204,7 +4219,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Calculate the speed
             double speedAll = CalculateSpeed(e.Read);
 
-            if (await CheckIfNeedRefreshStopwatch())
+            if (CheckIfNeedRefreshStopwatch())
             {
                 if (e.State != DownloadState.Merging)
                 {
