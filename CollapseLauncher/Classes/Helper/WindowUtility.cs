@@ -296,13 +296,19 @@ namespace CollapseLauncher.Helper
                     // Get Icon location paths
                     (string iconLocationStartMenu, _)
                         = TaskSchedulerHelper.GetIconLocationPaths(
-                            out string? appAumIdName,
+                            out string? appAumIdNameAlternative,
                             out _,
                             out string? executablePath,
                             out _);
 
                     // Register notification service
                     _currentToastNotificationService = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+
+                    // Get AUMID name from Win32
+                    PInvoke.GetProcessAumid(out string? appAumIdName);
+
+                    // If it's empty due to an error, set the alternative AUMID
+                    appAumIdName ??= appAumIdNameAlternative;
 
                     // Get string for AumId registration
                     if (!string.IsNullOrEmpty(appAumIdName))

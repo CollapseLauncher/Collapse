@@ -76,7 +76,7 @@ public static class MainEntryPoint
                 }
                 
                 // Set AUMID
-                PInvoke.SetProcessAumid("velopack.CollapseLauncher");
+                PInvoke.SetProcessAumid("Collapse").ThrowOnFailure();
 
                 WindowUtility.CurrentScreenProp = new Hi3Helper.Win32.Screen.ScreenProp();
                 InitAppPreset(WindowUtility.CurrentScreenProp);
