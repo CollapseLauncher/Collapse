@@ -1707,8 +1707,7 @@ namespace CollapseLauncher.InstallManager.Base
         private async Task ExtractUsingNativeZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
                                                        CancellationToken cancellationToken)
         {
-            // 4 MB of buffer
-            byte[] buffer = GC.AllocateUninitializedArray<byte>(4 << 20);
+            byte[] buffer = GC.AllocateUninitializedArray<byte>(_bufferBigLength);
 
             foreach (int entryIndex in entriesIndex)
             {
@@ -1737,7 +1736,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await using Stream entryStream = zipEntry.OpenEntryStream();
 
                 // Perform async read
-                while ((read = await entryStream.ReadAsync(buffer, cancellationToken)) > 0)
+                while ((read = await entryStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) > 0)
                 {
                     // Perform sync write
                     await outputStream.WriteAsync(buffer, 0, read, cancellationToken);
