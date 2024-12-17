@@ -1129,8 +1129,7 @@ namespace CollapseLauncher.GameVersioning
             }
 
             // Load version config file.
-            IniFile iniFile = new IniFile();
-            iniFile.Load(iniPath);
+            IniFile iniFile = IniFile.LoadFrom(iniPath);
 
             // Check whether the config has game_version value, and it must be a non-null value.
             if (iniFile[_defaultIniVersionSection].ContainsKey("game_version"))

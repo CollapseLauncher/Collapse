@@ -95,14 +95,11 @@ namespace CollapseLauncher
         public void DoMigration(string source, string target)
         {
             string sourceGame, targetGame;
-
-            IniFile iniFile = new IniFile();
-
             string configFilePath = Path.Combine(source, "config.ini");
 
             if (File.Exists(configFilePath))
             {
-                iniFile.Load(configFilePath, true);
+                IniFile iniFile = IniFile.LoadFrom(configFilePath);
                 sourceGame = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
                 targetGame = Path.Combine(target, Path.GetFileName(sourceGame));
                 Console.WriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}");

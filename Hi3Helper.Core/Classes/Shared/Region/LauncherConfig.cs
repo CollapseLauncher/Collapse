@@ -38,11 +38,7 @@ namespace Hi3Helper.Shared.Region
             bool IsConfigFileExist = File.Exists(appIni.ProfilePath);
 
             // If the config file is exist, then continue to load the file
-            appIni.Profile = new IniFile();
-            if (IsConfigFileExist)
-            {
-                appIni.Profile.Load(appIni.ProfilePath);
-            }
+            appIni.Profile = IniFile.LoadFrom(appIni.ProfilePath);
 
             // If the section doesn't exist, then add the section template
             if (!appIni.Profile.ContainsKey(SectionName))
