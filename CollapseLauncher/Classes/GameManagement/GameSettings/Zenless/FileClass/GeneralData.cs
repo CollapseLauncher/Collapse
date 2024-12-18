@@ -114,7 +114,7 @@
             [JsonIgnore] // We ignore this one from getting serialized to default JSON value
             public JsonNode PlayerPrefsStringContainer
             {
-                // Cache the GamepadBindingMap inside the parent SettingsJsonNode
+                // Cache the PlayerPrefsStringContainer inside the parent SettingsJsonNode
                 // and ensure that the node for PlayerPrefsStringContainer exists. If not exist,
                 // create a new one (via GetAsJsonNode<T>()).
                 get => _playerPrefsStringContainer ??=
@@ -126,7 +126,7 @@
             [JsonIgnore] // We ignore this one from getting serialized to default JSON value
             public JsonNode PlayerPrefsIntContainer
             {
-                // Cache the GamepadBindingMap inside the parent SettingsJsonNode
+                // Cache the PlayerPrefsIntContainer inside the parent SettingsJsonNode
                 // and ensure that the node for PlayerPrefsIntContainer exists. If not exist,
                 // create a new one (via GetAsJsonNode<T>()).
                 get => _playerPrefsIntContainer ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_IntContainer");
@@ -137,7 +137,7 @@
             [JsonIgnore] // We ignore this one from getting serialized to default JSON value
             public JsonNode PlayerPrefsFloatContainer
             {
-                // Cache the GamepadBindingMap inside the parent SettingsJsonNode
+                // Cache the PlayerPrefsFloatContainer inside the parent SettingsJsonNode
                 // and ensure that the node for PlayerPrefsFloatContainer exists. If not exist,
                 // create a new one (via GetAsJsonNode<T>()).
                 get => _playerPrefsFloatContainer ??=
@@ -406,18 +406,18 @@
             }
 
             // Key 16 Effects
-            private SystemSettingLocalData<QualityOption3>? _fxQualityData;
+            private SystemSettingLocalData<QualityOption5>? _fxQualityData;
 
             /// <summary>
             ///     Sets the in-game quality settings for Effects
             /// </summary>
-            /// <see cref="QualityOption3" />
+            /// <see cref="QualityOption5" />
             [JsonIgnore]
-            public QualityOption3 FxQuality
+            public QualityOption5 FxQuality
             {
                 get => (_fxQualityData ??= SystemSettingDataMap
-                .AsSystemSettingLocalData("16", QualityOption3.Medium))
-                .GetDataEnum<QualityOption3>();
+                .AsSystemSettingLocalData("16", QualityOption5.Medium))
+                .GetDataEnum<QualityOption5>();
                 set => _fxQualityData?.SetDataEnum(value);
             }
 

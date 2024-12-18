@@ -505,7 +505,7 @@ namespace CollapseLauncher.Pages
         public int Graphics_Effects
         {
             get => (int)Settings.GeneralData.FxQuality;
-            set => Settings.GeneralData.FxQuality = (QualityOption3)value;
+            set => Settings.GeneralData.FxQuality = (QualityOption5)value;
         }
 
         public int Graphics_ColorFilter
