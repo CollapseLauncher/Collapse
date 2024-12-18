@@ -349,24 +349,29 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region ProgressEventHandlers - SpeedCalculator and Refresh Interval Checker
-        private const int _scOneSecond = 1000;
-        private int _scLastTick = Environment.TickCount;
+        private const double _scOneSecond = 1000;
+        private long _scLastTick = Environment.TickCount64;
         private long _scLastReceivedBytes;
         private double _scLastSpeed;
 
-        protected double CalculateSpeed(long receivedBytes)
-        {
-            int currentTick = Environment.TickCount - _scLastTick + 1;
-            long totalReceivedInSecond = Interlocked.Add(ref _scLastReceivedBytes, receivedBytes);
-            double speed = totalReceivedInSecond * _scOneSecond / currentTick;
+        protected double CalculateSpeed(long receivedBytes) => CalculateSpeed(receivedBytes, ref _scLastSpeed, ref _scLastReceivedBytes, ref _scLastTick);
 
-            if (currentTick > 1000 && totalReceivedInSecond > 0)
+        protected double CalculateSpeed(long receivedBytes, ref double lastSpeedToUse, ref long lastReceivedBytesToUse, ref long lastTickToUse)
+        {
+            long   currentTick           = Environment.TickCount64 - lastTickToUse + 1;
+            long   totalReceivedInSecond = Interlocked.Add(ref lastReceivedBytesToUse, receivedBytes);
+            double speed                 = totalReceivedInSecond * _scOneSecond / currentTick;
+
+            if (!(currentTick > _scOneSecond))
             {
-                _scLastSpeed = speed;
-                Interlocked.Exchange(ref _scLastReceivedBytes, 0);
-                Interlocked.Exchange(ref _scLastTick, Environment.TickCount);
+                return lastSpeedToUse;
             }
-            return _scLastSpeed;
+
+            lastSpeedToUse = speed;
+            _ = Interlocked.Exchange(ref lastSpeedToUse,         speed);
+            _ = Interlocked.Exchange(ref lastReceivedBytesToUse, 0);
+            _ = Interlocked.Exchange(ref lastTickToUse,          Environment.TickCount64);
+            return lastSpeedToUse;
         }
 
         private int _riLastTick = Environment.TickCount;
@@ -374,64 +379,84 @@ namespace CollapseLauncher.Interfaces
         protected bool CheckIfNeedRefreshStopwatch()
         {
             int currentTick = Environment.TickCount - _riLastTick;
-            if (currentTick > _refreshInterval && currentTick > 0)
+            if (currentTick <= _refreshInterval)
             {
-                Interlocked.Exchange(ref _riLastTick, Environment.TickCount);
-                return true;
+                return false;
             }
 
-            return false;
+            Interlocked.Exchange(ref _riLastTick, Environment.TickCount);
+            return true;
+
         }
         #endregion
 
         #region ProgressEventHandlers - SophonInstaller
+        private double _sophonDownloadOnlySpeed = 1;
+        private double _sophonDownloadOnlyLastSpeed;
+        private long   _sophonDownloadOnlyReceivedBytes;
+        private long   _sophonDownloadOnlyLastTick = Environment.TickCount64;
+
+        private long   _sophonDownloadOnlyCurrentDownloadedBytes;
+        private long   _sophonDownloadOnlyLastDownloadedBytes;
+
         protected void UpdateSophonFileTotalProgress(long read)
         {
-            Interlocked.Add(ref _progressAllSizeCurrent, read);
+            _ = Interlocked.Add(ref _progressAllSizeCurrent, read);
 
             // Calculate the speed
             double speedAll = CalculateSpeed(read);
 
-            if (CheckIfNeedRefreshStopwatch())
+            // Get last received bytes from download
+            long lastReceivedDownloadBytes = _sophonDownloadOnlyCurrentDownloadedBytes - _sophonDownloadOnlyLastDownloadedBytes;
+            _ = Interlocked.Exchange(ref _sophonDownloadOnlyLastDownloadedBytes, _sophonDownloadOnlyCurrentDownloadedBytes);
+
+            // Calculate the speed for download (just use it for update only by setting receivedBytes to 0)
+            _sophonDownloadOnlySpeed = CalculateSpeed(lastReceivedDownloadBytes, ref _sophonDownloadOnlyLastSpeed, ref _sophonDownloadOnlyReceivedBytes, ref _sophonDownloadOnlyLastTick);
+
+            // Calculate the clamped speed for download and timelapse
+            double speedDownloadClamped = _sophonDownloadOnlySpeed.ClampLimitedSpeedNumber();
+
+            if (!CheckIfNeedRefreshStopwatch())
             {
-                // Assign local sizes to progress
-                _sophonProgress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
-                _sophonProgress.ProgressAllSizeTotal = _progressAllSizeTotal;
-                _sophonProgress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                _sophonProgress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
-
-                // Calculate the clamped speed and timelapse
-                double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
-
-                _sophonProgress.ProgressAllSpeed = speedClamped;
-                _sophonProgress.ProgressPerFileSpeed = speedClamped;
-
-                // Calculate Count
-                _sophonProgress.ProgressAllEntryCountCurrent = _progressAllCountCurrent;
-                _sophonProgress.ProgressAllEntryCountTotal = _progressAllCountTotal;
-
-                // Always change the status progress to determined
-                _status.IsProgressAllIndetermined = false;
-                _status.IsProgressPerFileIndetermined = false;
-                StatusChanged?.Invoke(this, _status);
-
-                // Calculate percentage
-                _sophonProgress.ProgressAllPercentage =
-                    Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                _sophonProgress.ProgressPerFilePercentage =
-                    Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-
-                _sophonProgress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
-
-                // Update progress
-                ProgressChanged?.Invoke(this, _sophonProgress);
+                return;
             }
+
+            // Assign local sizes to progress
+            _sophonProgress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+            _sophonProgress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+            _sophonProgress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+            _sophonProgress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+
+            double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedAll;
+
+            _sophonProgress.ProgressAllSpeed     = speedAll;
+            _sophonProgress.ProgressPerFileSpeed = speedDownloadClamped;
+
+            // Calculate Count
+            _sophonProgress.ProgressAllEntryCountCurrent = _progressAllCountCurrent;
+            _sophonProgress.ProgressAllEntryCountTotal   = _progressAllCountTotal;
+
+            // Always change the status progress to determined
+            _status.IsProgressAllIndetermined     = false;
+            _status.IsProgressPerFileIndetermined = false;
+            StatusChanged?.Invoke(this, _status);
+
+            // Calculate percentage
+            _sophonProgress.ProgressAllPercentage =
+                Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
+            _sophonProgress.ProgressPerFilePercentage =
+                Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
+
+            _sophonProgress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
+
+            // Update progress
+            ProgressChanged?.Invoke(this, _sophonProgress);
         }
 
         protected void UpdateSophonFileDownloadProgress(long downloadedWrite, long currentWrite)
         {
-            Interlocked.Add(ref _progressPerFileSizeCurrent, downloadedWrite);
+            _ = Interlocked.Add(ref _progressPerFileSizeCurrent,               downloadedWrite);
+            _ = Interlocked.Add(ref _sophonDownloadOnlyCurrentDownloadedBytes, currentWrite);
         }
 
         protected void UpdateSophonDownloadStatus(SophonAsset asset)
