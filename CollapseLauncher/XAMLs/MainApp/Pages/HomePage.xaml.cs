@@ -2208,6 +2208,9 @@ namespace CollapseLauncher.Pages
                 {
                     var logDir = Path.Combine(CurrentGameProperty._GameVersion.GameDirPath,
                                               "ZenlessZoneZero_Data\\Persistent\\LogDir\\");
+
+                    _ = Directory.CreateDirectory(logDir); // Always ensure that the LogDir will always be created.
+
                     var newLog = await FileUtility.WaitForNewFileAsync(logDir, 20000);
                     if (!newLog)
                     {
