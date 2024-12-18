@@ -62,12 +62,12 @@ namespace Hi3Helper.Data
             ValuesDict = new Dictionary<string, IniValue>(values, stringComparer);
         }
 
-        public IniSection(IniSection? values)
+        public IniSection(IniSection values)
             : this(values, IniFile.DefaultComparer)
         {
         }
 
-        public IniSection(IniSection? values, IEqualityComparer<string> stringComparer)
+        public IniSection(IniSection values, IEqualityComparer<string> stringComparer)
         {
             Comparer = stringComparer;
             if (values == null)

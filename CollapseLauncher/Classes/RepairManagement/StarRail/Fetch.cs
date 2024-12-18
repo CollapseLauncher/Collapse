@@ -150,15 +150,15 @@ namespace CollapseLauncher
             _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
-
                   assetIndex.RemoveAll(asset =>
                   {
-                      var r = plugin.package.validate.Any(validate => validate.path != null && asset.N.Contains(validate.path));
-                      if (r)
+                      var r = plugin.package?.validate.Any(validate => validate.path != null &&
+                                                                      (asset.N.Contains(validate.path)||asset.RN.Contains(validate.path)));
+                      if (r ?? false)
                       {
                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
                       }
-                      return r;
+                      return r ?? false;
                   });
               });
         }

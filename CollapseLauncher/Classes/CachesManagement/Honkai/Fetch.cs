@@ -119,7 +119,7 @@ namespace CollapseLauncher
         private async Task<(int, long)> FetchByType(CacheAssetType type, DownloadClient downloadClient, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Fetching Caches Type: <type>"
-            _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
+            _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusFetchingType!, type);
             _status.IsProgressAllIndetermined = true;
             _status.IsIncludePerFileIndicator = false;
             UpdateStatus();
@@ -271,9 +271,9 @@ namespace CollapseLauncher
                     if (content.DLM == 2)
                     {
                         // Update the status
-                        _status!.ActivityStatus = string.Format(Lang._CachesPage.Status2, type, content.N);
-                        _status!.IsProgressAllIndetermined = true;
-                        _status!.IsProgressPerFileIndetermined = true;
+                        _status.ActivityStatus = string.Format(Lang._CachesPage.Status2, type, content.N);
+                        _status.IsProgressAllIndetermined = true;
+                        _status.IsProgressPerFileIndetermined = true;
                         UpdateStatus();
 
                         // Check for the URL availability and is not available, then skip.

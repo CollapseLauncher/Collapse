@@ -848,8 +848,7 @@ namespace CollapseLauncher.Helper.Metadata
                     if (!File.Exists(configPath))
                         return false;
 
-                    IniFile ini = new IniFile();
-                    ini.Load(configPath);
+                    IniFile ini = IniFile.LoadFrom(configPath);
                     string? path1 = ini["launcher"]!["game_install_path"].ToString();
                     if (string.IsNullOrEmpty(path1))
                         return false;
