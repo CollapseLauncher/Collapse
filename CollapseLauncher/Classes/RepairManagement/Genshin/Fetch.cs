@@ -77,17 +77,18 @@ namespace CollapseLauncher
                    if (plugin.package?.validate == null) return;
 
                    assetIndex.RemoveAll(asset =>
-                   {
-                       var r = plugin.package.validate.Any(validate => validate.path != null &&
-                           asset.localName
-                              .Contains(validate.path));
-                       if (r)
-                       {
-                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
-                                        true);
-                       }
-                       return r;
-                   });
+                    {
+                        var r = plugin.package.validate.Any(validate => validate.path != null &&
+                                                    (asset.localName.Contains(validate.path) ||
+                                                    asset.remoteName.Contains(validate.path) ||
+                                                    asset.remoteNamePersistent.Contains(validate.path)));
+                        if (r)
+                        {
+                            LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
+                                true);
+                        }
+                        return r;
+                    });
                });
         }
 
