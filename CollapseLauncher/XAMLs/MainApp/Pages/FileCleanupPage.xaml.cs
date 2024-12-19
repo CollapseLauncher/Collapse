@@ -88,30 +88,34 @@ namespace CollapseLauncher.Pages
                                                                                sI.Stop();
                                                                                Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished batch #{b} with {batch.Count} items after {s.ElapsedMilliseconds} ms", LogType.Scheme);
                                                                                b++;
+                                                                               sI = null;
                                                                            }));
                                    
                                }
                            });
             await Task.WhenAll(tasks);
 
-            await EnqueueOnDispatcherQueueAsync(() =>
-                                                {
-                                                    var i  = 0;
-                                                    var sI = new Stopwatch();
-                                                    sI.Start();
-                                                    while (_localFileCollection.Count > 0)
+            if (_localFileCollection.Count > 0)
+            {
+                await EnqueueOnDispatcherQueueAsync(() =>
                                                     {
-                                                        FileInfoSource.Add(_localFileCollection[0]);
-                                                        _localFileCollection.RemoveAt(0);
-                                                        i++;
-                                                    }
+                                                        var i  = 0;
+                                                        var sI = new Stopwatch();
+                                                        sI.Start();
+                                                        while (_localFileCollection.Count > 0)
+                                                        {
+                                                            FileInfoSource.Add(_localFileCollection[0]);
+                                                            _localFileCollection.RemoveAt(0);
+                                                            i++;
+                                                        }
 
-                                                    sI.Stop();
-                                                    Logger
-                                                       .LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished last batch at #{b} after {i} items",
-                                                                     LogType.Scheme);
-                                                });
-            
+                                                        sI.Stop();
+                                                        Logger
+                                                        .LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished last batch at #{b} after {i} items in {sI.ElapsedMilliseconds} ms",
+                                                                        LogType.Scheme);
+                                                    });
+            }
+
             while (_localFileCollection.Count != 0)
             {
                 FileInfoSource.Add(_localFileCollection[0]);
@@ -133,7 +137,6 @@ namespace CollapseLauncher.Pages
                 DeleteSelectedFilesText.Text =
                     string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, 0);
             }
-
         }
 
         private void UpdateUIOnCollectionChange(object? sender, NotifyCollectionChangedEventArgs? args)
