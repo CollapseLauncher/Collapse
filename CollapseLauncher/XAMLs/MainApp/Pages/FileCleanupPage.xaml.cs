@@ -11,6 +11,7 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -18,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 
 // ReSharper disable CheckNamespace
@@ -175,58 +177,11 @@ namespace CollapseLauncher.Pages
             await ToggleCheckAllInnerAsync(true);
         }
 
-        private ObservableCollection<LocalFileInfo> _fileInfoSourceCopy;
-
         private async Task ToggleCheckAllInnerAsync(bool selectAll)
         {
             if (selectAll)
             {
-                int                 batchSize = Math.Clamp(FileInfoSource.Count / (Environment.ProcessorCount * 4), 50, 1000);
-                var                 tasks     = new List<Task>();
-                _fileInfoSourceCopy = new ObservableCollection<LocalFileInfo>(FileInfoSource);
-                int b = 0;
-                await Task.Run(() =>
-                               {
-                                   var batches = FileInfoSource
-                                                .Select((file, index) => new { File = file, Index = index })
-                                                .GroupBy(x => x.Index / batchSize)
-                                                .Select(group => group.Select(x => x.File).ToList());
-                                   
-                                   foreach (var batch in batches)
-                                   {
-                                       tasks.Add(EnqueueOnDispatcherQueueAsync(() =>
-                                                                               {
-                                                                                   var s = new Stopwatch();
-                                                                                   s.Start();
-                                                                                   foreach (var fileInfo in batch)
-                                                                                   {
-                                                                                       ListViewTable.SelectedItems.Add(fileInfo);
-                                                                                       _fileInfoSourceCopy.Remove(fileInfo);
-                                                                                   }
-                                                                                   s.Stop();
-                                                                                   Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAllInnerAsync] Finished batch #{b} with {batch.Count} items after {s.ElapsedMilliseconds} ms", LogType.Scheme);
-                                                                                   
-                                                                                   b++;
-                                                                               }));
-                                   }
-                               });
-
-                await Task.WhenAll(tasks);
-
-                await EnqueueOnDispatcherQueueAsync(() =>
-                                                    {
-                                                        var i = 0;
-                                                        while (_fileInfoSourceCopy.Count > 0)
-                                                        {
-                                                            ListViewTable.SelectedItems.Add(_fileInfoSourceCopy[0]);
-                                                            _fileInfoSourceCopy.RemoveAt(0);
-                                                            i++;
-                                                        }
-
-                                                        Logger
-                                                           .LogWriteLine($"[FileCleanupPage::ToggleCheckAllInnerAsync] Finished last batch at #{b} after {i} items",
-                                                                         LogType.Scheme);
-                                                    });
+                await EnqueueOnDispatcherQueueAsync(() => ListViewTable.SelectAll());
             }
             else
             {
@@ -382,6 +337,9 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
+            LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle, "TODO: Translate - Deleting files...");
+            LoadingMessageHelper.ShowLoadingFrame();
+            
             if (isToRecycleBin)
             {
                 IList<string> toBeDeleted = new List<string>();
@@ -421,8 +379,14 @@ namespace CollapseLauncher.Pages
             }
             else
             {
-                foreach (LocalFileInfo fileInfo in deletionSource)
+                ConcurrentDictionary<LocalFileInfo, byte> processedFiles = new();
+                
+                var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                await Parallel.ForEachAsync(deletionSource, options, async (fileInfo, _) =>
                 {
+                    if (!processedFiles.TryAdd(fileInfo, 0))
+                        return;    
+
                     try
                     {
                         FileInfo fileInfoN = fileInfo.ToFileInfo();
@@ -432,16 +396,16 @@ namespace CollapseLauncher.Pages
                             fileInfoN.Delete();
                         }
 
-                        FileInfoSource.Remove(fileInfo);
-                        ++deleteSuccess;
+                        await EnqueueOnDispatcherQueueAsync(() => FileInfoSource.Remove(fileInfo));
+                        Interlocked.Increment(ref deleteSuccess);
                     }
                     catch (Exception ex)
                     {
-                        ++deleteFailed;
-                        Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
-                                            LogType.Error, true);
+                     Interlocked.Increment(ref deleteFailed);
+                     Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                         LogType.Error, true);
                     }
-                }
+                });
             }
 
             string diagTitle = dialogResult == ContentDialogResult.Primary
