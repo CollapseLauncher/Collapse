@@ -58,10 +58,10 @@ namespace CollapseLauncher.Pages
             
             FileInfoSource.Clear();
             _assetTotalSize = 0;
-            int batchSize = Math.Clamp(FileInfoSource.Count / (Environment.ProcessorCount * 4), 50, 1000);
             
             _localFileCollection = new ObservableCollection<LocalFileInfo>(fileInfoList);
-
+            int batchSize = Math.Clamp(_localFileCollection.Count / Environment.ProcessorCount, 50, 5000);
+            
             var batches = _localFileCollection
                          .Select((file, index) => new { File = file, Index = index })
                          .GroupBy(x => x.Index / batchSize)
@@ -86,9 +86,8 @@ namespace CollapseLauncher.Pages
                                                                                    _localFileCollection.Remove(fileInfoInner);
                                                                                }
                                                                                sI.Stop();
-                                                                               Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished batch #{b} with {batch.Count} items after {s.ElapsedMilliseconds} ms", LogType.Scheme);
-                                                                               b++;
-                                                                               sI = null;
+                                                                               Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished batch #{b} with {batch.Count} items after {sI.ElapsedMilliseconds} ms", LogType.Scheme);
+                                                                               Interlocked.Increment(ref b);
                                                                            }));
                                    
                                }
@@ -129,7 +128,7 @@ namespace CollapseLauncher.Pages
 
             if (ListViewTable.Items.Count < 1000)
             {
-                CheckAll();
+                await CheckAll();
             }
             else
             {
@@ -165,17 +164,19 @@ namespace CollapseLauncher.Pages
             LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle, "UI might freeze for a moment...");
             await Task.Delay(100);
             s.Start();
+            bool toCheckCopy = false;
             if (sender is CheckBox checkBox)
             {
                 bool toCheck = checkBox.IsChecked ?? false;
                 await ToggleCheckAllInnerAsync(toCheck);
+                toCheckCopy = toCheck;
             } 
             s.Stop();
             LoadingMessageHelper.HideLoadingFrame();
-            Logger.LogWriteLine("[FileCleanupPage::ToggleCheckAll] Elapsed time: " + s.ElapsedMilliseconds + "ms", LogType.Scheme);
+            Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll{toCheckCopy}] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
         }
 
-        private async void CheckAll()
+        private async Task CheckAll()
         {
             await ToggleCheckAllInnerAsync(true);
         }
@@ -184,11 +185,11 @@ namespace CollapseLauncher.Pages
         {
             if (selectAll)
             {
-                await EnqueueOnDispatcherQueueAsync(() => ListViewTable.SelectAll());
+                await EnqueueOnDispatcherQueueAsync(() => ListViewTable.SelectAllSafe());
             }
             else
             {
-                await EnqueueOnDispatcherQueueAsync(() => ListViewTable.SelectedItems.Clear());
+                await EnqueueOnDispatcherQueueAsync(() => ListViewTable.DeselectAll());
             }
         }
 
@@ -369,9 +370,10 @@ namespace CollapseLauncher.Pages
                 await Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted));
                 DispatcherQueue.TryEnqueue(() =>
                                            {
+                                               var toBeDeletedSet = new HashSet<string>(toBeDeleted);
                                                for (int i = FileInfoSource.Count - 1; i >= 0; i--)
                                                {
-                                                   if (toBeDeleted.Contains(FileInfoSource[i].ToFileInfo().FullName))
+                                                   if (toBeDeletedSet.Contains(FileInfoSource[i].FullPath))
                                                    {
                                                        FileInfoSource.RemoveAt(i);
                                                    }
