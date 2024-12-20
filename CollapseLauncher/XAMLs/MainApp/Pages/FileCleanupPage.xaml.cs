@@ -173,7 +173,7 @@ namespace CollapseLauncher.Pages
             } 
             s.Stop();
             LoadingMessageHelper.HideLoadingFrame();
-            Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll{toCheckCopy}] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+            Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
         }
 
         private async Task CheckAll()
@@ -197,9 +197,18 @@ namespace CollapseLauncher.Pages
         {
             var removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
             var addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
+            
+            var removedSizeTask = Task.Run(() => removedItems.Count < 512
+                                               ? removedItems.Sum(x => x.FileSize)
+                                               : removedItems.Select(x => x.FileSize).ToArray().Sum());
 
-            long removedSize = await Task.Run(() => SumFileSizes(removedItems));
-            long addedSize   = await Task.Run(() => SumFileSizes(addedItems));
+            var addedSizeTask = Task.Run(() => addedItems.Count < 512
+                                             ? addedItems.Sum(x => x.FileSize)
+                                             : addedItems.Select(x => x.FileSize).ToArray().Sum());
+
+            var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
+            var removedSize = results[0];
+            var addedSize   = results[1];
 
             _selectedAssetsCount += addedItems.Count - removedItems.Count;
             _assetSelectedSize   += addedSize - removedSize;
@@ -227,42 +236,6 @@ namespace CollapseLauncher.Pages
                     ? false
                     : _selectedAssetsCount == FileInfoSource.Count ? true : null;
             });
-        }
-
-        private long SumFileSizes(List<LocalFileInfo> items)
-        {
-            var vectorSize = Vector<long>.Count;
-            var sumVector  = Vector<long>.Zero;
-
-            int i = 0;
-
-            // Vectorized loop
-            for (; i <= items.Count - vectorSize; i += vectorSize)
-            {
-                var fileSizeArray = new long[vectorSize];
-                for (int j = 0; j < vectorSize; j++)
-                {
-                    fileSizeArray[j] = items[i + j].FileSize;
-                }
-
-                var vector = new Vector<long>(fileSizeArray);
-                sumVector += vector;
-            }
-
-            // Aggregate SIMD results
-            long total = 0;
-            for (int j = 0; j < vectorSize; j++)
-            {
-                total += sumVector[j];
-            }
-
-            // Remainder loop for non-vectorized items
-            for (; i < items.Count; i++)
-            {
-                total += items[i].FileSize;
-            }
-
-            return total;
         }
 
         private Task EnqueueOnDispatcherQueueAsync(Action action)
