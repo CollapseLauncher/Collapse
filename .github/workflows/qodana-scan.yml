@@ -69,7 +69,7 @@ jobs:
         uses: JetBrains/qodana-action@v2024.3.3
         continue-on-error: true
         with:
-          args: --ide,QDNET-EAP
+          args: --ide,QDNET
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
