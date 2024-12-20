@@ -890,37 +890,52 @@ namespace CollapseLauncher.InstallManager.Base
                     List<string> voLanguageList =
                         GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
 
-                    // Run the audio dialog question
-                    (List<int> addedVO, int setAsDefaultVO) =
-                        await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList);
-                    if (addedVO == null || setAsDefaultVO < 0)
-                    {
-                        throw new TaskCanceledException();
-                    }
+                    Dispatch( async void () =>
+                                   {
+                                       try
+                                       {
+                                           (List<int> addedVO, int setAsDefaultVO) =
+                                               await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList);
+                                           if (addedVO == null || setAsDefaultVO < 0)
+                                           {
+                                               throw new TaskCanceledException();
+                                           }
 
-                    for (int i = 0; i < addedVO.Count; i++)
-                    {
-                        int    voLangIndex      = addedVO[i];
-                        string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-                        _sophonVOLanguageList?.Add(voLangLocaleCode);
+                                           for (int i = 0; i < addedVO.Count; i++)
+                                           {
+                                               int    voLangIndex      = addedVO[i];
+                                               string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                                               _sophonVOLanguageList?.Add(voLangLocaleCode);
 
-                        // Get the info pair based on info provided above (for the selected VO audio file)
-                        SophonChunkManifestInfoPair sophonSelectedVoLang =
-                            sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
-                        sophonInfoPairList.Add(sophonSelectedVoLang);
-                    }
+                                               // Get the info pair based on info provided above (for the selected VO audio file)
+                                               SophonChunkManifestInfoPair sophonSelectedVoLang =
+                                                   sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                                               sophonInfoPairList.Add(sophonSelectedVoLang);
+                                           }
 
-                    // Set the voice language ID to value given
-                    _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+                                           // Set the voice language ID to value given
+                                           _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
 
-                    // Get the remote total size and current total size
-                    _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                    _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                    _progressAllSizeCurrent = 0;
+                                           // Get the remote total size and current total size
+                                           _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                                           _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                                           _progressAllSizeCurrent = 0;
 
-                    // Set the display to Install Mode
-                    _isSophonInUpdateMode = false;
+                                           // Set the display to Install Mode
+                                           _isSophonInUpdateMode = false;
 
+                                           // Set the progress bar to indetermined
+                                           _status.IsIncludePerFileIndicator     = false;
+                                           _status.IsProgressPerFileIndetermined = false;
+                                           _status.IsProgressAllIndetermined     = false;
+                                           UpdateStatus();
+                                       }
+                                       catch (Exception e)
+                                       {
+                                           ErrorSender.SendException(e);
+                                       }
+                                   });
+                    
                     // Get the parallel options
                     var parallelOptions = new ParallelOptions
                     {
@@ -932,13 +947,7 @@ namespace CollapseLauncher.InstallManager.Base
                         MaxDegreeOfParallelism = maxChunksThread,
                         CancellationToken      = _token.Token
                     };
-
-                    // Set the progress bar to indetermined
-                    _status.IsIncludePerFileIndicator     = false;
-                    _status.IsProgressPerFileIndetermined = false;
-                    _status.IsProgressAllIndetermined     = false;
-                    UpdateStatus();
-
+                    
                     // Declare the download delegate
                     async ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
                     {
