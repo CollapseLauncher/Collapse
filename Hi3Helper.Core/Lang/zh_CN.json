@@ -566,7 +566,7 @@
     "AppBehavior_LaunchOnStartup": "开机时自动启动 Collapse",
     "AppBehavior_StartupToTray": "自动启动时隐藏 Collapse 窗口",
 
-    "Waifu2X_Toggle": "使用 Waifu2X [实验性]",
+    "Waifu2X_Toggle": "使用 Waifu2X",
     "Waifu2X_Help": "使用 Waifu2X 放大背景图像。\n开启后，图像质量会有显著提升，但首次加载图像时会多花一些时间。",
     "Waifu2X_Help2": "仅对静态图像生效！",
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
