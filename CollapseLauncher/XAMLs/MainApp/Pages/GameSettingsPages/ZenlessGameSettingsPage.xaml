@@ -164,7 +164,9 @@
                                             <CheckBox x:Name="MobileModeToggle"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}">
+                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
+                                                      IsEnabled="False"
+                                                      Visibility="Collapsed">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>

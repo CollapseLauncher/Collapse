@@ -310,17 +310,8 @@ namespace CollapseLauncher.Pages
         
         public bool IsMobileMode
         {
-            get
-            {
-                var cSet = Settings?.SettingsCollapseMisc?.LaunchMobileMode ?? false;
-                var gSet = Settings.GeneralData.LocalUILayoutPlatform == 1;
-                return cSet || gSet;
-            }
-            set
-            {
-                Settings.SettingsCollapseMisc.LaunchMobileMode = value;
-                Settings.GeneralData.LocalUILayoutPlatform     = value ? 1 : 3;
-            }
+            get => Settings?.SettingsCollapseMisc?.LaunchMobileMode ?? false;
+            set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
         }
         #endregion
 
