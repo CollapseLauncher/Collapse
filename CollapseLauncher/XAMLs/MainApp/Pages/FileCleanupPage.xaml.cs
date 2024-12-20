@@ -66,10 +66,11 @@ namespace CollapseLauncher.Pages
                          .Select((file, index) => new { File = file, Index = index })
                          .GroupBy(x => x.Index / batchSize)
                          .Select(group => group.Select(x => x.File).ToList());
-            var tasks = new List<Task>();
-            Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Starting to inject file info source with {_localFileCollection.Count} items", LogType.Scheme);
             
-            LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle, "TODO: Translate TempAsync1");
+            var tasks = new List<Task>();
+            Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " +
+                                $"Starting to inject file info source with {_localFileCollection.Count} items",
+                                LogType.Scheme);
 
             int b = 0;
             await Task.Run(() =>
@@ -77,18 +78,21 @@ namespace CollapseLauncher.Pages
                                foreach (var batch in batches)
                                {
                                    tasks.Add(EnqueueOnDispatcherQueueAsync(() =>
-                                                                           {
-                                                                               var sI = new Stopwatch();
-                                                                               s.Start();
-                                                                               foreach (var fileInfoInner in batch)
-                                                                               {
-                                                                                   FileInfoSource.Add(fileInfoInner);
-                                                                                   _localFileCollection.Remove(fileInfoInner);
-                                                                               }
-                                                                               sI.Stop();
-                                                                               Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished batch #{b} with {batch.Count} items after {sI.ElapsedMilliseconds} ms", LogType.Scheme);
-                                                                               Interlocked.Increment(ref b);
-                                                                           }));
+                                   {
+                                       var sI = new Stopwatch();
+                                       s.Start();
+                                       foreach (var fileInfoInner in batch)
+                                       {
+                                           FileInfoSource.Add(fileInfoInner);
+                                           _localFileCollection.Remove(fileInfoInner);
+                                       }
+                                       sI.Stop();
+                                       Logger
+                                          .LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " +
+                                                        $"Finished batch #{b} with {batch.Count} items after {sI.ElapsedMilliseconds} ms",
+                                                        LogType.Scheme);
+                                       Interlocked.Increment(ref b);
+                                   }));
                                    
                                }
                            });
@@ -97,22 +101,23 @@ namespace CollapseLauncher.Pages
             if (_localFileCollection.Count > 0)
             {
                 await EnqueueOnDispatcherQueueAsync(() =>
-                                                    {
-                                                        var i  = 0;
-                                                        var sI = new Stopwatch();
-                                                        sI.Start();
-                                                        while (_localFileCollection.Count > 0)
-                                                        {
-                                                            FileInfoSource.Add(_localFileCollection[0]);
-                                                            _localFileCollection.RemoveAt(0);
-                                                            i++;
-                                                        }
+                {
+                    var i  = 0;
+                    var sI = new Stopwatch();
+                    sI.Start();
+                    while (_localFileCollection.Count > 0)
+                    {
+                        FileInfoSource.Add(_localFileCollection[0]);
+                        _localFileCollection.RemoveAt(0);
+                        i++;
+                    }
 
-                                                        sI.Stop();
-                                                        Logger
-                                                        .LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] Finished last batch at #{b} after {i} items in {sI.ElapsedMilliseconds} ms",
-                                                                        LogType.Scheme);
-                                                    });
+                    sI.Stop();
+                    Logger
+                    .LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " +
+                                  $"Finished last batch at #{b} after {i} items in {sI.ElapsedMilliseconds} ms",
+                                    LogType.Scheme);
+                });
             }
 
             while (_localFileCollection.Count != 0)
@@ -125,17 +130,7 @@ namespace CollapseLauncher.Pages
             await DispatcherQueue.EnqueueAsync(() => UpdateUIOnCollectionChange(FileInfoSource, null));
             s.Stop();
             Logger.LogWriteLine($"InjectFileInfoSource done after {s.ElapsedMilliseconds} ms", LogType.Scheme);
-
-            if (ListViewTable.Items.Count < 1000)
-            {
-                await CheckAll();
-            }
-            else
-            {
-                ToggleCheckAllCheckBox.Content = Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
-                DeleteSelectedFilesText.Text =
-                    string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, 0);
-            }
+            await CheckAll();
         }
 
         private void UpdateUIOnCollectionChange(object? sender, NotifyCollectionChangedEventArgs? args)
@@ -159,9 +154,14 @@ namespace CollapseLauncher.Pages
         private async void ToggleCheckAll(object sender, RoutedEventArgs e)
         {
             var s = new Stopwatch();
-            LoadingMessageHelper.Initialize();
-            LoadingMessageHelper.ShowLoadingFrame();
-            LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle, "UI might freeze for a moment...");
+            if (ListViewTable.Items.Count > 1000)
+            {
+                LoadingMessageHelper.Initialize();
+                LoadingMessageHelper.ShowLoadingFrame();
+                LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
+                                                Locale.Lang._FileCleanupPage.LoadingSubtitle3);
+            }
+            
             await Task.Delay(100);
             s.Start();
             bool toCheckCopy = false;
@@ -314,7 +314,8 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle, "TODO: Translate - Deleting files...");
+            LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
+                                            Locale.Lang._FileCleanupPage.DeleteSubtitle);
             LoadingMessageHelper.ShowLoadingFrame();
             
             if (isToRecycleBin)
