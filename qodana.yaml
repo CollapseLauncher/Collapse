@@ -1,5 +1,5 @@
 version: "1.0"
-ide: QDNET-EAP
+ide: QDNET
 bootstrap: dotnet build CollapseLauncher -c Release
 dotnet:
   solution: CollapseLauncher.sln
