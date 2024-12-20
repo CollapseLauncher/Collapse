@@ -566,7 +566,7 @@
     "AppBehavior_LaunchOnStartup": "Iniciar automáticamente Collapse cuando se inicie tu computadora.",
     "AppBehavior_StartupToTray": "Ocultar ventana de Collapse cuando se inicie automáticamente.",
 
-    "Waifu2X_Toggle": "Usar Waifu2X [Experimental]",
+    "Waifu2X_Toggle": "Usar Waifu2X",
     "Waifu2X_Help": "Usa Waifu2X para escalar imágenes de fondo.\nCuando está activado, la calidad de la imagen mejora significativamente, pero tardará en cargar la imagen la primera vez.",
     "Waifu2X_Help2": "¡Solo disponible para imágenes fijas!",
     "Waifu2X_Warning_CpuMode": "ADVERTENCIA: No se encontró un dispositivo Vulkan GPU disponible, se usara el modo CPU. Esto aumentara considerablemente el tiempo de procesamiento de la imagen.",
