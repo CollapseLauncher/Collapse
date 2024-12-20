@@ -3,8 +3,6 @@ ide: QDNET
 bootstrap: dotnet build CollapseLauncher -c Release
 dotnet:
   solution: CollapseLauncher.sln
-profile:
-  name: qodana.recommended
 exclude:
   - name: All
     paths:
