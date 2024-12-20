@@ -35,7 +35,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.5
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -52,7 +52,7 @@ jobs:
         dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
           
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4.3.1
+      uses: actions/upload-artifact@v4
       with:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/debug-build/
@@ -76,7 +76,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.5
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -97,7 +97,7 @@ jobs:
         dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
           
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4.3.1
+      uses: actions/upload-artifact@v4
       with:
           name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/debug-aot-build/
@@ -109,7 +109,7 @@ jobs:
     needs: [build, build-nativeaot]
     steps:
     - name: Notify Discord
-      uses: sarisia/actions-status-discord@v1.13.0
+      uses: sarisia/actions-status-discord@v1.15.1
       if: always()
       continue-on-error: true
       with:
