@@ -75,9 +75,6 @@ namespace CollapseLauncher
 
         private async Task<bool> UpdateRoutine()
         {
-            // Restart stopwatch
-            RestartStopwatch();
-
             // Assign update task
             Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex, _token!.Token);
 
@@ -88,9 +85,9 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            _status!.IsCompleted = true;
-            _status!.IsCanceled = false;
-            _status!.ActivityStatus = Lang!._CachesPage!.CachesStatusUpToDate;
+            _status.IsCompleted = true;
+            _status.IsCanceled = false;
+            _status.ActivityStatus = Lang!._CachesPage!.CachesStatusUpToDate;
 
             // Update status and progress
             UpdateAll();

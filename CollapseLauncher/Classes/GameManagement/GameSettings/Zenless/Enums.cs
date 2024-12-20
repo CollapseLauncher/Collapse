@@ -116,6 +116,18 @@ public enum QualityOption4
 }
 
 /// <summary>
+/// Available options for graphics settings that has 4 options starting from Very Low <br/>
+/// VeryLow, Low, Medium, High
+/// </summary>
+public enum QualityOption5
+{
+    VeryLow,
+    Low,
+    Medium,
+    High
+}
+
+/// <summary>
 /// Available options for Audio Playback Device. Alters sound profile <br/>
 /// Default : Headphones, Options: Headphones, Speakers, TV
 /// </summary>
