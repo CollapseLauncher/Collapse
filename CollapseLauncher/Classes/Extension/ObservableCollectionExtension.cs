@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace CollapseLauncher.Extension
 {
@@ -69,11 +70,12 @@ namespace CollapseLauncher.Extension
             List<T> targetBackedList = GetBackedCollectionList(target) as List<T> ?? throw new InvalidCastException();
 
             // Get the count and iterate the reference of the T from the source range
-            int len = sourceRange.Count - 1;
+            ReadOnlySpan<T> sourceRangeSpan = CollectionsMarshal.AsSpan(sourceRange);
+            int len = sourceRangeSpan.Length - 1;
             for (; len >= 0; len--)
             {
                 // Remove the reference of the item T from the target backed list
-                _ = targetBackedList.Remove(sourceRange[len]);
+                _ = targetBackedList.Remove(sourceRangeSpan[len]);
             }
 
             // Fire the changes event

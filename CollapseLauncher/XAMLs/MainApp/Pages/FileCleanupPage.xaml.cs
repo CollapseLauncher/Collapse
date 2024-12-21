@@ -59,9 +59,12 @@ namespace CollapseLauncher.Pages
             s.Start();
             
             FileInfoSource.Clear();
+            List<LocalFileInfo> backedFileInfoSourceList = ObservableCollectionExtension<LocalFileInfo>
+                .GetBackedCollectionList(FileInfoSource) as List<LocalFileInfo> ?? throw new InvalidCastException();
+
             _assetTotalSize = 0;
 
-            ObservableCollection<LocalFileInfo>  localFileCollection = new ObservableCollection<LocalFileInfo>(fileInfoList);
+            List<LocalFileInfo> localFileCollection = [..fileInfoList];
             int batchSize = Math.Clamp(localFileCollection.Count / Environment.ProcessorCount, 50, 5000);
             
             IEnumerable<List<LocalFileInfo>> batches = localFileCollection
@@ -103,7 +106,7 @@ namespace CollapseLauncher.Pages
                     sI.Start();
                     while (localFileCollection.Count > 0)
                     {
-                        FileInfoSource.Add(localFileCollection[0]);
+                        backedFileInfoSourceList.Add(localFileCollection[0]);
                         localFileCollection.RemoveAt(0);
                         i++;
                     }
@@ -118,10 +121,12 @@ namespace CollapseLauncher.Pages
 
             while (localFileCollection.Count != 0)
             {
-                FileInfoSource.Add(localFileCollection[0]);
+                backedFileInfoSourceList.Add(localFileCollection[0]);
                 localFileCollection.RemoveAt(0);
             }
-            
+
+            ObservableCollectionExtension<LocalFileInfo>.RefreshAllEvents(FileInfoSource);
+
             await Task.Run(() => _assetTotalSizeString = ConverterTool.SummarizeSizeSimple(_assetTotalSize));
             await DispatcherQueue.EnqueueAsync(() => UpdateUIOnCollectionChange(FileInfoSource, null));
             s.Stop();
@@ -254,7 +259,7 @@ namespace CollapseLauncher.Pages
 
         private async void DeleteAllFiles_Click(object sender, RoutedEventArgs e)
         {
-            IList<LocalFileInfo> fileInfoList = FileInfoSource
+            List<LocalFileInfo> fileInfoList = FileInfoSource
                .ToList();
             long size = fileInfoList.Sum(x => x.FileSize);
             await PerformRemoval(fileInfoList, size);
@@ -269,7 +274,7 @@ namespace CollapseLauncher.Pages
             await PerformRemoval(fileInfoList, size);
         }
 
-        private async Task PerformRemoval(ICollection<LocalFileInfo>? deletionSource, long totalSize)
+        private async Task PerformRemoval(List<LocalFileInfo>? deletionSource, long totalSize)
         {
             if (deletionSource == null)
             {
@@ -321,8 +326,8 @@ namespace CollapseLauncher.Pages
                 List<string> toBeDeleted = await Task.Run(() => deletionSource
                                           .Select(x =>
                                                   {
-                                                      var localFileInfo = x.ToFileInfo().EnsureNoReadOnly();
-                                                      if (!localFileInfo.Exists)
+                                                      var localFileInfo = x.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                                                      if (!isFileExist)
                                                       {
                                                           return string.Empty;
                                                       }
@@ -331,10 +336,10 @@ namespace CollapseLauncher.Pages
                                                       return localFileInfo.FullName;
                                                   })
                                           .Where(x => !string.IsNullOrEmpty(x))
-                                          .ToList());
+                                          .ToList()).ConfigureAwait(false);
 
                 // Execute the deletion process
-                await Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted));
+                await Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted)).ConfigureAwait(false);
                 deleteSuccess = toBeDeleted.Count;
             }
             else
