@@ -159,7 +159,6 @@ namespace CollapseLauncher.Pages.OOBE
                 WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
             }
             WelcomeLogoIntro.Source = null;
-            newIntro = null;
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }

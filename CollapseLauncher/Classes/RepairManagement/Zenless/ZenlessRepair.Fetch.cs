@@ -407,15 +407,15 @@ namespace CollapseLauncher
             _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
-
                   assetIndex.RemoveAll(asset =>
                   {
-                      var r = plugin.package.validate.Any(validate => validate.path != null && asset.N.Contains(validate.path));
-                      if (r)
+                      var r = plugin.package?.validate.Any(validate => validate.path != null &&
+                                                                      (asset.N.Contains(validate.path)||asset.RN.Contains(validate.path)));
+                      if (r ?? false)
                       {
                           Logger.LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
                       }
-                      return r;
+                      return r ?? false;
                   });
               });
         }
@@ -442,13 +442,13 @@ namespace CollapseLauncher
             // then create a new one from the fallback value
             if (audioLangListPath == null || !File.Exists(audioLangListPathStatic))
             {
-                // Try check if the folder is exist. If not, create one.
+                // Try check if the folder is existed. If not, create one.
                 string audioLangPathDir = Path.GetDirectoryName(audioLangListPathStatic);
                 if (Directory.Exists(audioLangPathDir))
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValue = new string[] { fallbackCurrentLangname };
+                returnValue = new[] { fallbackCurrentLangname };
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
                 return returnValue;
             }
@@ -457,7 +457,7 @@ namespace CollapseLauncher
             returnValue = File.ReadAllLines(audioLangListPathStatic);
             if (returnValue.Length == 0)
             {
-                returnValue = new string[] { fallbackCurrentLangname };
+                returnValue = new[] { fallbackCurrentLangname };
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
             }
 
@@ -467,13 +467,13 @@ namespace CollapseLauncher
             // then create a new one from the fallback value
             if (audioLangListPathAlternative == null || !File.Exists(audioLangListPathAlternativeStatic))
             {
-                // Try check if the folder is exist. If not, create one.
+                // Try check if the folder is existed. If not, create one.
                 string audioLangPathDir = Path.GetDirectoryName(audioLangListPathAlternativeStatic);
                 if (Directory.Exists(audioLangPathDir))
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValueAlternate = new string[] { fallbackCurrentLangnameNative };
+                returnValueAlternate = new[] { fallbackCurrentLangnameNative };
                 File.WriteAllLines(audioLangListPathAlternativeStatic, returnValueAlternate);
                 return returnValueAlternate;
             }
@@ -482,7 +482,7 @@ namespace CollapseLauncher
             returnValueAlternate = File.ReadAllLines(audioLangListPathAlternativeStatic);
             if (returnValueAlternate.Length == 0)
             {
-                returnValueAlternate = new string[] { fallbackCurrentLangnameNative };
+                returnValueAlternate = new[] { fallbackCurrentLangnameNative };
                 File.WriteAllLines(audioLangListPathAlternativeStatic, returnValueAlternate);
             }
 

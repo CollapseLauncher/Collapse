@@ -80,7 +80,7 @@ namespace CollapseLauncher.WindowSize
             get
             {
                 string val = GetAppConfigValue("WindowSizeProfile").ToString();
-                if (!WindowSizeProfiles.ContainsKey(val))
+                if (!WindowSizeProfiles.ContainsKey(val ?? "Normal"))
                 {
                     return WindowSizeProfiles.Keys.FirstOrDefault();
                 }

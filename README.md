@@ -230,8 +230,8 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 [<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.80.19/CL-1.80.19-stable_Installer.exe)
 > **Note**: The version for this build is `1.80.19` (Released on: August 12th, 2024).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.4-pre/CL-1.82.4-preview_Installer.exe)
-> **Note**: The version for this build is `1.82.6` (Released on: December 16th, 2024).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.7-pre/CollapseLauncher-preview-Setup.exe)
+> **Note**: The version for this build is `1.82.7` (Released on: December 17th, 2024).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 

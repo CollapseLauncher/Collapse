@@ -65,11 +65,8 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            if (_status != null)
-            {
-                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
-                _status.IsProgressAllIndetermined = true;
-            }
+            _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+            _status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
             StarRailRepairExtension.ClearHashtable();
@@ -150,15 +147,15 @@ namespace CollapseLauncher
             _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
-
                   assetIndex.RemoveAll(asset =>
                   {
-                      var r = plugin.package.validate.Any(validate => validate.path != null && asset.N.Contains(validate.path));
-                      if (r)
+                      var r = plugin.package?.validate.Any(validate => validate.path != null &&
+                                                                      (asset.N.Contains(validate.path)||asset.RN.Contains(validate.path)));
+                      if (r ?? false)
                       {
                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
                       }
-                      return r;
+                      return r ?? false;
                   });
               });
         }
@@ -376,7 +373,7 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValue = new string[] { fallbackCurrentLangname };
+                returnValue = new[] { fallbackCurrentLangname };
                 if (audioLangListPathStatic != null)
                 {
                     File.WriteAllLines(audioLangListPathStatic, returnValue);
@@ -389,7 +386,7 @@ namespace CollapseLauncher
             returnValue = File.ReadAllLines(audioLangListPathStatic);
             if (returnValue.Length == 0)
             {
-                returnValue = new string[] { fallbackCurrentLangname };
+                returnValue = new[] { fallbackCurrentLangname };
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
             }
             

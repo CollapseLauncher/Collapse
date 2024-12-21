@@ -200,7 +200,10 @@ namespace CollapseLauncher
             LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
 
             m_consoleCtrlHandler += ConsoleCtrlHandler;
-            PInvoke.SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
+            if (m_consoleCtrlHandler != null)
+            {
+                PInvoke.SetConsoleCtrlHandler(m_consoleCtrlHandler, true);
+            }
         }
 
         private bool ConsoleCtrlHandler(uint dwCtrlType)

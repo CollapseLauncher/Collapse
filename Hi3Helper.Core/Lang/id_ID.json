@@ -167,6 +167,7 @@
     "GamePlaytime_Idle_ResetBtn": "Atur Ulang",
     "GamePlaytime_Idle_ChangeBtn": "Ubah",
     "GamePlaytime_Idle_SyncDb": "Sinkronkan",
+    "GamePlaytime_Idle_SyncDbSyncing": "Menyinkronkan...",
     "GamePlaytime_Running_Info1": "Game ini sedang berjalan, maka dari itu waktu main tidak dapat diubah.",
     "GamePlaytime_Running_Info2": "Perlu diingat bahwa menutup Collapse Launcher akan menghentikan penghitungan waktu main (selama game dimainkan dari awal sampai akhir).",
     "GamePlaytime_Display": "{0}j {1}m",
@@ -565,7 +566,7 @@
     "AppBehavior_LaunchOnStartup": "Jalankan Collapse secara otomatis saat komputer menyala",
     "AppBehavior_StartupToTray": "Sembunyikan jendela Collapse setelah dijalankan secara otomatis",
 
-    "Waifu2X_Toggle": "Gunakan Waifu2X [Eksperimental]",
+    "Waifu2X_Toggle": "Gunakan Waifu2X",
     "Waifu2X_Help": "Gunakan Waifu2X untuk memperbesar gambar latar belakang.\nKetika dihidupkan, kualitas gambar akan ditingkatkan secara signifikan, namun gambar akan dimuat sedikit lebih lama saat gambar dimuat untuk pertama kalinya.",
     "Waifu2X_Help2": "Hanya tersedia untuk gambar saja!",
     "Waifu2X_Warning_CpuMode": "PERINGATAN: Kamu tidak memiliki GPU yang mendukung API Vulkan dan CPU kamu akan digunakan untuk memproses gambar. Proses pemrosesan akan menjadi lebih lama dari yang seharusnya.",
@@ -790,7 +791,10 @@
 
     "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= Tidak Terbatas",
-    "IsBytesNotANumber": "= Bukan Nomor"
+    "IsBytesNotANumber": "= Bukan Nomor",
+    
+    "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
+    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami."
   },
 
   "_BackgroundNotification": {
@@ -1447,6 +1451,8 @@
     "LoadingTitle": "Memproses",
     "LoadingSubtitle1": "Menghitung File yang Ada ({0} file ditemukan - dengan ukuran total {1})...",
     "LoadingSubtitle2": "Memeriksa ketersediaan pkg_version...",
+    "LoadingSubtitle3": "Antarmuka kemungkinan tidak responsive saat proses ini berlangsung...",
+    "DeleteSubtitle": "Menghapus file...",
     "BottomButtonDeleteAllFiles": "Hapus Semua File",
     "BottomButtonDeleteSelectedFiles": "Hapus {0} File yang Dipilih",
     "BottomCheckboxFilesSelected": "{0} File Terpilih ({1} / {2} Keseluruhan)",
@@ -1543,10 +1549,10 @@
 
     "GenericClickNotifToGoBack_Subtitle": "Klik notifikasi ini untuk kembali ke launcher.",
 
-    "OOBE_WelcomeTitle": "Selamat datang di Collapse Launcher!",
-    "OOBE_WelcomeSubtitle": "Kamu telah memilih {0} - {1} sebagai game-mu. Ada banyak game lainnya yang menanti loh. Yuk cari tahu!",
+    "OOBE_WelcomeTitle": "Selamat Datang di Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "Kamu memilih {0} - {1} sebagai game-mu. Ada pilihan game lain yang bisa kamu pilih, lho! Yuk cari tahu!",
 
-    "LauncherUpdated_NotifTitle": "Launchermu sudah paling baru!",
-    "LauncherUpdated_NotifSubtitle": "Launchermu sudah diperbaharui ke versi: {0}. Masuk ke \"{1}\" dan klik \"{2}\" untuk melihat daftar perubahan."
+    "LauncherUpdated_NotifTitle": "Launchermu sudah ter-up-to-date!",
+    "LauncherUpdated_NotifSubtitle": "Launchermu sudah diperbaharui ke: {0}. Masuk ke \"{1}\" dan klik \"{2}\" untuk melihat daftar perubahan."
   }
 }

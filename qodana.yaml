@@ -1,10 +1,8 @@
 version: "1.0"
-ide: QDNET-EAP
+ide: QDNET
 bootstrap: dotnet build CollapseLauncher -c Release
 dotnet:
   solution: CollapseLauncher.sln
-profile:
-  name: qodana.recommended
 exclude:
   - name: All
     paths:
@@ -49,3 +47,6 @@ dependencyIgnores:
   - name: "System.CommandLine.NamingConventionBinder"
   # huh?
   - name: "ThisAssembly.Constants"
+  - name: "Libsql.Client"
+  - name: "PolySharp"
+  - name: "DependencyPropertyGenerator"

@@ -28,11 +28,8 @@ namespace CollapseLauncher
         private async ValueTask<List<PkgVersionProperties>> Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            if (_status != null)
-            {
-                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
-                _status.IsProgressAllIndetermined = true;
-            }
+            _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+            _status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
 
@@ -77,17 +74,18 @@ namespace CollapseLauncher
                    if (plugin.package?.validate == null) return;
 
                    assetIndex.RemoveAll(asset =>
-                   {
-                       var r = plugin.package.validate.Any(validate => validate.path != null &&
-                           asset.localName
-                              .Contains(validate.path));
-                       if (r)
-                       {
-                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
-                                        true);
-                       }
-                       return r;
-                   });
+                    {
+                        var r = plugin.package.validate.Any(validate => validate.path != null &&
+                                                    (asset.localName.Contains(validate.path) ||
+                                                    asset.remoteName.Contains(validate.path) ||
+                                                    asset.remoteNamePersistent.Contains(validate.path)));
+                        if (r)
+                        {
+                            LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
+                                true);
+                        }
+                        return r;
+                    });
                });
         }
 
@@ -580,16 +578,14 @@ namespace CollapseLauncher
         private void _httpClient_FetchManifestAssetProgress(int read, DownloadProgress downloadProgress)
         {
             // Update fetch status
-            double speed = downloadProgress.BytesDownloaded / _stopwatch.Elapsed.TotalSeconds;
-            if (_status != null)
-            {
-                _status.IsProgressPerFileIndetermined = false;
-                _status.ActivityPerFile =
-                    string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
-            }
+            double speed = CalculateSpeed(read);
+            
+            _status.IsProgressPerFileIndetermined = false;
+            _status.ActivityPerFile =
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
 
             // Update fetch progress
-            if (_progress != null)
+            lock (_progress)
             {
                 _progress.ProgressPerFilePercentage =
                     GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);

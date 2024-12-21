@@ -53,7 +53,7 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            _status!.ActivityStatus = Lang!._GameRepairPage!.Status2!;
+            _status.ActivityStatus = Lang!._GameRepairPage!.Status2!;
             _status.IsProgressAllIndetermined = true;
             UpdateStatus();
 
@@ -229,15 +229,15 @@ namespace CollapseLauncher
             _gameVersionManager.GameAPIProp.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
-
                   assetIndex.RemoveAll(asset =>
                   {
-                      var r = plugin.package.validate.Any(validate => validate.path != null && asset.N.Contains(validate.path));
-                      if (r)
+                      var r = plugin.package?.validate.Any(validate => validate.path != null &&
+                                                                      (asset.N.Contains(validate.path)||asset.RN.Contains(validate.path)));
+                      if (r ?? false)
                       {
                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
                       }
-                      return r;
+                      return r ?? false;
                   });
               });
         }
@@ -370,9 +370,9 @@ namespace CollapseLauncher
             if (cgInfo!.AppointmentDownloadScheduleID == 0) return true;
 
             // Update the status
-            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
-            _status!.IsProgressAllIndetermined = true;
-            _status!.IsProgressPerFileIndetermined = true;
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status14, cgInfo.CgExtraKey);
+            _status.IsProgressAllIndetermined = true;
+            _status.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
             // Set the URL and try get the status
@@ -496,9 +496,9 @@ namespace CollapseLauncher
 
             // Update the status
             // TODO: Localize
-            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
-            _status!.IsProgressAllIndetermined = true;
-            _status!.IsProgressPerFileIndetermined = true;
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status15, audioInfo.Path);
+            _status.IsProgressAllIndetermined = true;
+            _status.IsProgressPerFileIndetermined = true;
             UpdateStatus();
 
             // Set the URL and try get the status
@@ -640,7 +640,7 @@ namespace CollapseLauncher
                             // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
                             if (!_isOnlyRecoverMain)
                             {
-                                await using FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write);
+                                await using FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath), FileMode.Create, FileAccess.Write);
                                 fs1.Position = 0;
                                 await fs1.CopyToAsync(fs2);
                             }

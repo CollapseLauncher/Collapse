@@ -21,6 +21,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -285,42 +286,48 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        private static NotificationService? _currentToastNotificationService;
-        internal static NotificationService? CurrentToastNotificationService
+        [field: AllowNull, MaybeNull]
+        internal static NotificationService CurrentToastNotificationService
         {
             get
             {
                 // If toast notification service field is null, then initialize
-                if (_currentToastNotificationService == null)
+                if (field == null)
                 {
                     // Get Icon location paths
                     (string iconLocationStartMenu, _)
                         = TaskSchedulerHelper.GetIconLocationPaths(
-                            out string? appAumIdName,
+                            out string? appAumIdNameAlternative,
                             out _,
                             out string? executablePath,
                             out _);
 
                     // Register notification service
-                    _currentToastNotificationService = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+                    field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+
+                    // Get AUMID name from Win32
+                    PInvoke.GetProcessAumid(out string? appAumIdName);
+
+                    // If it's empty due to an error, set the alternative AUMID
+                    appAumIdName ??= appAumIdNameAlternative;
 
                     // Get string for AumId registration
                     if (!string.IsNullOrEmpty(appAumIdName))
                     {
                         // Initialize Toast Notification service
-                        _currentToastNotificationService.Initialize(
-                            appAumIdName,
-                            executablePath ?? "",
-                            iconLocationStartMenu,
-                            asElevatedUser: true
-                            );
+                        field.Initialize(
+                                         appAumIdName,
+                                         executablePath ?? "",
+                                         iconLocationStartMenu,
+                                         asElevatedUser: true
+                                        );
 
                         // Subscribe ToastCallback
-                        _currentToastNotificationService.ToastCallback += Service_ToastNotificationCallback;
+                        field.ToastCallback += Service_ToastNotificationCallback;
                     }
                 }
 
-                return _currentToastNotificationService;
+                return field;
             }
         }
 
@@ -418,9 +425,15 @@ namespace CollapseLauncher.Helper
                         const uint SC_CLOSE = 0xF060;
                         switch (wParam)
                         {
-                            case SC_CLOSE: // Ignore close message from behind the invisible/closed close button behind the XAML one.
-                                return 0;
-
+                            case SC_CLOSE:
+                                {
+                                    // Deal with close message from system shell.
+                                    if (CurrentWindow is MainWindow mainWindow)
+                                    {
+                                        mainWindow.CloseApp();
+                                    }
+                                    return 0;
+                                }
                             case SC_MAXIMIZE:
                                 {
                                     // TODO: Apply to force disable the "double-click to maximize" feature.

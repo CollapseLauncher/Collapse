@@ -20,6 +20,8 @@ namespace Hi3Helper
                 public string LoadingTitle { get; set; } = LangFallback?._FileCleanupPage.LoadingTitle;
                 public string LoadingSubtitle1 { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle1;
                 public string LoadingSubtitle2 { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle2;
+                public string LoadingSubtitle3 { get; set; } = LangFallback?._FileCleanupPage.LoadingSubtitle3;
+                public string DeleteSubtitle { get; set; } = LangFallback?._FileCleanupPage.DeleteSubtitle;
                 public string BottomButtonDeleteAllFiles { get; set; } = LangFallback?._FileCleanupPage.BottomButtonDeleteAllFiles;
                 public string BottomButtonDeleteSelectedFiles { get; set; } = LangFallback?._FileCleanupPage.BottomButtonDeleteSelectedFiles;
                 public string BottomCheckboxFilesSelected { get; set; } = LangFallback?._FileCleanupPage.BottomCheckboxFilesSelected;

@@ -102,9 +102,7 @@ namespace CollapseLauncher.Dialogs
                         Lang._Dialogs.UnauthorizedDirTitle,
                         string.Format(Lang._Dialogs.UnauthorizedDirSubtitle, path),
                         Content,
-                        Lang._Misc.Okay,
-                        null,
-                        null
+                        Lang._Misc.Okay
                 );
 
         public static async Task<(Dictionary<string, string>, string)> Dialog_ChooseAudioLanguageChoice(UIElement Content, Dictionary<string, string> langDict, string defaultLocaleCode = "ja-jp")
@@ -206,10 +204,10 @@ namespace CollapseLauncher.Dialogs
                 radioButton.Checked += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    choiceAsDefault = (int)radioButtonLocal.Tag;
+                    choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
                     checkBox.IsChecked = true;
 
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
                         textBlockLocal.Opacity = 1;
                 };
@@ -217,7 +215,7 @@ namespace CollapseLauncher.Dialogs
                 radioButton.Unchecked += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
                         textBlockLocal.Opacity = 0.5;
                 };
@@ -225,10 +223,10 @@ namespace CollapseLauncher.Dialogs
                 radioButton.PointerEntered += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
 
-                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
                     {
                         textBlockLocal.Opacity = 1;
@@ -239,10 +237,10 @@ namespace CollapseLauncher.Dialogs
                 radioButton.PointerExited += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
 
-                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
                     {
                         textBlockLocal.Opacity = 0.5;
@@ -261,7 +259,7 @@ namespace CollapseLauncher.Dialogs
                 checkBox.Checked += (sender, _) =>
                 {
                     CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)thisCheckBox.Tag;
+                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
                     choices[thisIndex] = true;
                     radioButton.IsEnabled = true;
 
@@ -270,18 +268,18 @@ namespace CollapseLauncher.Dialogs
                     if (defaultChoiceRadioButton.SelectedIndex < 0)
                         defaultChoiceRadioButton.SelectedIndex = thisIndex;
 
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (thisIconText != null)
                         thisIconText.Opacity = 1;
                 };
                 checkBox.Unchecked += (sender, _) =>
                 {
                     CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)thisCheckBox.Tag;
+                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
                     choices[thisIndex] = false;
                     radioButton.IsChecked = false;
 
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (thisIconText != null)
                         thisIconText.Opacity = 0.5;
 
@@ -291,11 +289,11 @@ namespace CollapseLauncher.Dialogs
                     // TODO: Find a better way rather than this SPAGHEETTTTT CODE
                     if (defaultChoiceRadioButton.SelectedIndex < 0 && isHasAnyChoices)
                     {
-                        for (int i = 0; i < choices.Length; i++)
+                        for (int index = 0; index < choices.Length; index++)
                         {
-                            if (choices[i])
+                            if (choices[index])
                             {
-                                defaultChoiceRadioButton.SelectedIndex = i;
+                                defaultChoiceRadioButton.SelectedIndex = index;
                                 break;
                             }
                         }
@@ -407,10 +405,10 @@ namespace CollapseLauncher.Dialogs
                 radioButton.Checked += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    choiceAsDefault = (int)radioButtonLocal.Tag;
+                    choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
                     checkBox.IsChecked = true;
 
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
                         textBlockLocal.Opacity = 1;
                 };
@@ -418,7 +416,7 @@ namespace CollapseLauncher.Dialogs
                 radioButton.Unchecked += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
                     if (textBlockLocal != null)
                         textBlockLocal.Opacity = 0.5;
                 };
@@ -426,10 +424,10 @@ namespace CollapseLauncher.Dialogs
                 radioButton.PointerEntered += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
 
-                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
                     {
                         textBlockLocal.Opacity = 1;
@@ -440,10 +438,10 @@ namespace CollapseLauncher.Dialogs
                 radioButton.PointerExited += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal.FindDescendant("UseAsDefaultLabel");
+                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
 
-                    CheckBox thisCheckBox = radioButtonLocal.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
                     {
                         textBlockLocal.Opacity = 0.5;
@@ -462,7 +460,7 @@ namespace CollapseLauncher.Dialogs
                 checkBox.Checked += (sender, _) =>
                 {
                     CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)thisCheckBox.Tag;
+                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
                     choices[thisIndex] = true;
                     radioButton.IsEnabled = true;
 
@@ -471,18 +469,18 @@ namespace CollapseLauncher.Dialogs
                     if (defaultChoiceRadioButton.SelectedIndex < 0)
                         defaultChoiceRadioButton.SelectedIndex = thisIndex;
 
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (thisIconText != null)
                         thisIconText.Opacity = 1;
                 };
                 checkBox.Unchecked += (sender, _) =>
                 {
                     CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)thisCheckBox.Tag;
+                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
                     choices[thisIndex] = false;
                     radioButton.IsChecked = false;
 
-                    Grid thisIconText = (Grid)thisCheckBox.FindDescendant("IconText");
+                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (thisIconText != null)
                         thisIconText.Opacity = 0.5;
 
@@ -492,11 +490,11 @@ namespace CollapseLauncher.Dialogs
                     // TODO: Find a better way rather than this SPAGHEETTTTT CODE
                     if (defaultChoiceRadioButton.SelectedIndex < 0 && isHasAnyChoices)
                     {
-                        for (int i = 0; i < choices.Length; i++)
+                        for (int index = 0; index < choices.Length; index++)
                         {
-                            if (choices[i])
+                            if (choices[index])
                             {
-                                defaultChoiceRadioButton.SelectedIndex = i;
+                                defaultChoiceRadioButton.SelectedIndex = index;
                                 break;
                             }
                         }
@@ -533,70 +531,72 @@ namespace CollapseLauncher.Dialogs
         public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe(UIElement Content)
         {
             Dictionary<string, PresetConfig> ConvertibleRegions = new Dictionary<string, PresetConfig>();
-            foreach (KeyValuePair<string, PresetConfig> Config in LauncherMetadataHelper.LauncherMetadataConfig[LauncherMetadataHelper.CurrentMetadataConfigGameName]
+            foreach (KeyValuePair<string, PresetConfig> Config in LauncherMetadataHelper.LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName!]
                 .Where(x => x.Value.IsConvertible ?? false))
                 ConvertibleRegions.Add(Config.Key, Config.Value);
 
             ContentDialogCollapse Dialog = new ContentDialogCollapse();
-            ComboBox SourceGame = new ComboBox();
-            ComboBox TargetGame = new ComboBox();
 
-            SelectionChangedEventHandler SourceGameChangedArgs = (object sender, SelectionChangedEventArgs e) =>
+            ComboBox targetGame = new ComboBox();
+
+            SelectionChangedEventHandler SourceGameChangedArgs = (sender, _) =>
                                                                  {
-                                                                     TargetGame.IsEnabled            = true;
-                                                                     Dialog.IsSecondaryButtonEnabled = false;
-                                                                     TargetGame.ItemsSource =
+                                                                     // ReSharper disable AccessToModifiedClosure
+                                                                     targetGame!.IsEnabled            = true;
+                                                                     Dialog!.IsSecondaryButtonEnabled = false;
+                                                                     targetGame!.ItemsSource =
                                                                          InnerLauncherConfig
                                                                             .BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
                                                                                  InstallationConvert
                                                                                     .GetConvertibleNameList(
-                                                                        InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox).SelectedItem)));
+                                                                        InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox)!.SelectedItem)));
                                                                  };
-            SelectionChangedEventHandler TargetGameChangedArgs = (object sender, SelectionChangedEventArgs e) =>
+            SelectionChangedEventHandler TargetGameChangedArgs = (sender, _) =>
                                                                  {
-                                                                     if ((sender as ComboBox).SelectedIndex != -1)
-                                                                         Dialog.IsSecondaryButtonEnabled = true;
+                                                                     if ((sender as ComboBox)!.SelectedIndex != -1)
+                                                                         Dialog!.IsSecondaryButtonEnabled = true;
+                                                                     // ReSharper restore AccessToModifiedClosure
                                                                  };
-            SourceGame = new ComboBox
+            var sourceGame = new ComboBox
             {
                 Width = 200,
                 ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, new List<string>(ConvertibleRegions.Keys)),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };
-            SourceGame.SelectionChanged += SourceGameChangedArgs;
-            TargetGame = new ComboBox
+            sourceGame.SelectionChanged += SourceGameChangedArgs;
+            targetGame = new ComboBox
             {
                 Width = 200,
                 PlaceholderText = Lang._InstallConvert.SelectDialogTarget,
                 IsEnabled = false,
                 CornerRadius = new CornerRadius(14)
             };
-            TargetGame.SelectionChanged += TargetGameChangedArgs;
+            targetGame.SelectionChanged += TargetGameChangedArgs;
 
-            StackPanel DialogContainer = CollapseUIExt.CreateStackPanel();
-            StackPanel ComboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
-            ComboBoxContainer.AddElementToStackPanel(
-                SourceGame,
+            StackPanel dialogContainer = CollapseUIExt.CreateStackPanel();
+            StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
+            comboBoxContainer.AddElementToStackPanel(
+                sourceGame,
                 new FontIcon()
                 {
                     Glyph = "",
                     FontFamily = FontCollections.FontAwesomeSolid,
                     Opacity = 0.5f
                 }.WithVerticalAlignment(VerticalAlignment.Center).WithMargin(16d, 0d),
-                TargetGame
+                targetGame
                 );
-            DialogContainer.AddElementToStackPanel(new TextBlock
+            dialogContainer.AddElementToStackPanel(new TextBlock
             {
                 Text = Lang._InstallConvert.SelectDialogSubtitle,
                 TextWrapping = TextWrapping.Wrap
             }.WithMargin(0d, 0d, 0d, 16d));
-            DialogContainer.AddElementToStackPanel(ComboBoxContainer);
+            dialogContainer.AddElementToStackPanel(comboBoxContainer);
 
             Dialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
                 Title = Lang._InstallConvert.SelectDialogTitle,
-                Content = DialogContainer,
+                Content = dialogContainer,
                 CloseButtonText = null,
                 PrimaryButtonText = Lang._Misc.Cancel,
                 SecondaryButtonText = Lang._Misc.Next,
@@ -606,7 +606,7 @@ namespace CollapseLauncher.Dialogs
                 Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
                 XamlRoot = Content.XamlRoot
             };
-            return (await Dialog.QueueAndSpawnDialog(), SourceGame, TargetGame);
+            return (await Dialog.QueueAndSpawnDialog(), sourceGame, targetGame);
         }
 
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement Content, string FileName)
@@ -629,10 +629,7 @@ namespace CollapseLauncher.Dialogs
                         texts,
                         Content,
                         Lang._Misc.Cancel,
-                        Lang._Misc.Next,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._Misc.Next
                 );
         }
 
@@ -663,9 +660,7 @@ namespace CollapseLauncher.Dialogs
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
-                        Lang._Misc.NoKeepInstallIt,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._Misc.NoKeepInstallIt
             );
 
         public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content, string gamePath) =>
@@ -675,9 +670,7 @@ namespace CollapseLauncher.Dialogs
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
-                        Lang._Misc.NoKeepInstallIt,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._Misc.NoKeepInstallIt
             );
 
         public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content, string gamePath) =>
@@ -687,9 +680,7 @@ namespace CollapseLauncher.Dialogs
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
-                        Lang._Misc.NoKeepInstallIt,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._Misc.NoKeepInstallIt
             );
 
 
@@ -724,9 +715,7 @@ namespace CollapseLauncher.Dialogs
                 Content,
                 Lang._Misc.Cancel,
                 Lang._Misc.UseCurrentDir,
-                isHasOnlyMigrateOption ? null : Lang._Misc.MoveToDifferentDir,
-                ContentDialogButton.Primary,
-                ContentDialogTheme.Informational
+                isHasOnlyMigrateOption ? null : Lang._Misc.MoveToDifferentDir
             );
         }
         public static async Task<ContentDialogResult> Dialog_SteamConversionNoPermission(UIElement Content) =>
@@ -810,9 +799,7 @@ namespace CollapseLauncher.Dialogs
                         Content,
                         Lang._StartupPage.ChooseFolderDialogCancel,
                         Lang._StartupPage.ChooseFolderDialogPrimary,
-                        Lang._StartupPage.ChooseFolderDialogSecondary,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._StartupPage.ChooseFolderDialogSecondary
             );
 
         public static async Task<ContentDialogResult> Dialog_CannotUseAppLocationForGameDir(UIElement Content) =>
@@ -887,9 +874,7 @@ namespace CollapseLauncher.Dialogs
                         Content,
                         null,
                         Lang._Misc.YesRelocate,
-                        Lang._Misc.Cancel,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._Misc.Cancel
                 );
 
         public static async Task<ContentDialogResult> Dialog_UninstallGame(UIElement Content, string gameLocation, string region) =>
@@ -935,10 +920,7 @@ namespace CollapseLauncher.Dialogs
                         Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableDescription,
                         Content,
                         null,
-                        Lang._Misc.OkayHappy,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Informational
+                        Lang._Misc.OkayHappy
                 );
 
         public static async Task<ContentDialogResult> Dialog_InstallMediaPackageFinished(UIElement Content) =>
@@ -1086,9 +1068,6 @@ namespace CollapseLauncher.Dialogs
                 string exceptionContent = ErrorSender.ExceptionContent;
                 string title            = ErrorSender.ExceptionTitle;
                 string subtitle         = ErrorSender.ExceptionSubtitle;
-
-                bool isShowBackButton = (ErrorSender.ExceptionType == ErrorType.Connection) &&
-                                        (WindowUtility.CurrentWindow as MainWindow).rootFrame.CanGoBack;
 
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
@@ -1316,7 +1295,7 @@ namespace CollapseLauncher.Dialogs
             );
         }
 
-        private static IAsyncOperation<ContentDialogResult> CurrentSpawnedDialogTask = null;
+        private static IAsyncOperation<ContentDialogResult> CurrentSpawnedDialogTask;
 
         public static async ValueTask<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement Content,

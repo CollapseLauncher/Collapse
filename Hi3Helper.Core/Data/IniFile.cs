@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This code was originally ported from https://github.com/Enichan/Ini
  * Some changes have been made to adjust the usage to our main project, Collapse Launcher
  */
@@ -58,7 +58,8 @@ namespace Hi3Helper.Data
 
                 // If the value set is not null and the comparer is not equal,
                 // recreate the section to match the comparer
-                if (valueSet != null && valueSet.Comparer != CurrentStringComparer)
+                // ReSharper disable once PossibleUnintendedReferenceComparison
+                if (valueSet.Comparer != CurrentStringComparer)
                 {
                     valueSet = new IniSection(valueSet, CurrentStringComparer);
                 }
@@ -89,10 +90,7 @@ namespace Hi3Helper.Data
         public IniFile()
             : this(DefaultComparer) { }
 
-        public IniFile(IEqualityComparer<string>? stringComparer)
-            : this(stringComparer, true) { }
-
-        public IniFile(IEqualityComparer<string>? stringComparer, bool isSaveOrdered)
+        public IniFile(IEqualityComparer<string>? stringComparer, bool isSaveOrdered = true)
         {
             CurrentStringComparer = stringComparer ?? DefaultComparer;
             Sections = new Dictionary<string, IniSection?>(CurrentStringComparer);
@@ -102,28 +100,35 @@ namespace Hi3Helper.Data
         #endregion
 
         #region Load and Save Methods
-        public void Save(string path)
-        {
-            EnsureFolderExist(path);
+        public void Save(string filePath)
+            => Save(new FileInfo(filePath));
 
-            using FileStream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite, CreateStreamBufferSize, FileOptions.None);
-            using StreamWriter writer = new StreamWriter(stream, encoding: Encoding.UTF8, leaveOpen: false);
+        public void Save(FileInfo fileInfo)
+        {
+            // Throw if FileInfo is null
+            ArgumentNullException.ThrowIfNull(fileInfo, nameof(fileInfo));
+
+            // Ensure that the folder will always be exist
+            EnsureFolderExist(fileInfo);
+
+            // Load the stream and writer, then store the data
+            using FileStream stream = new FileStream(fileInfo.FullName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite, CreateStreamBufferSize, FileOptions.None);
+            using TextWriter writer = new StreamWriter(stream, encoding: Encoding.UTF8, leaveOpen: false);
             SaveInner(writer);
         }
 
         public void Save(Stream stream)
         {
-            using StreamWriter writer = new StreamWriter(stream, encoding: Encoding.UTF8, leaveOpen: true, bufferSize: WriteBufferSize);
+            // Stream cannot be null
+            ArgumentNullException.ThrowIfNull(stream, nameof(stream));
+
+            // Assign the writer
+            using TextWriter writer = new StreamWriter(stream, encoding: Encoding.UTF8, leaveOpen: true, bufferSize: WriteBufferSize);
             SaveInner(writer);
         }
 
-        private void SaveInner(StreamWriter writer)
+        private void SaveInner(TextWriter writer)
         {
-            // Get enumerable based on IsOrdered. If true, start from ascending ordered key
-            IEnumerable<KeyValuePair<string, IniSection?>> sectionEnumerable = IsSaveOrdered ?
-                Sections.OrderBy(x => x.Key) :
-                Sections;
-
             // Enumerate Ini sections
             foreach (KeyValuePair<string, IniSection?> iniSectionKvp in Sections)
             {
@@ -154,29 +159,78 @@ namespace Hi3Helper.Data
             }
         }
 
-        public void Load(string path, bool createIfNotExist = false)
+        public static IniFile LoadFrom(string filePath, IEqualityComparer<string>? stringComparer = null, bool isSaveOrdered = true, bool createIfNotExist = false)
+            => LoadFrom(new FileInfo(filePath), stringComparer, isSaveOrdered, createIfNotExist);
+
+        public static IniFile LoadFrom(FileInfo fileInfo, IEqualityComparer<string>? stringComparer = null, bool isSaveOrdered = true, bool createIfNotExist = false)
         {
+            // Throw if FileInfo is null
+            ArgumentNullException.ThrowIfNull(fileInfo, nameof(fileInfo));
+
+            // Create new instance
+            IniFile instance = new IniFile(stringComparer, isSaveOrdered);
+
+            // If the "create if not exist" flag is set to false and file is not exist,
+            // then ignore and create a new instance
+            if (!createIfNotExist && !fileInfo.Exists)
+            {
+                return instance;
+            }
+
+            // Load the file into instance
+            instance.Load(fileInfo, createIfNotExist);
+
+            // Return the instance
+            return instance;
+        }
+
+        public static IniFile LoadFrom(Stream stream, IEqualityComparer<string>? stringComparer = null, bool isSaveOrdered = true)
+        {
+            // Create a new instance
+            IniFile instance = new IniFile(stringComparer, isSaveOrdered);
+
+            // Load the stream of .ini file
+            instance.Load(stream);
+
+            // Return the instance
+            return instance;
+        }
+
+        public void Load(string filePath, bool createIfNotExist = false)
+            => Load(new FileInfo(filePath), createIfNotExist);
+
+        public void Load(FileInfo fileInfo, bool createIfNotExist = false)
+        {
+            // Throw if FileInfo is null
+            ArgumentNullException.ThrowIfNull(fileInfo, nameof(fileInfo));
+
+            // Assign the FileMode
             FileMode fileMode = createIfNotExist ? FileMode.OpenOrCreate : FileMode.Open;
             if (createIfNotExist)
             {
                 // Always ensure folder existence if createIfNotExist was toggled
-                EnsureFolderExist(path);
+                EnsureFolderExist(fileInfo);
             }
 
-            using FileStream stream = new FileStream(path, fileMode, FileAccess.Read, FileShare.ReadWrite, OpenStreamBufferSize, FileOptions.None);
-            using StreamReader reader = new StreamReader(stream, leaveOpen: false);
+            // Set the stream and reader
+            using FileStream stream = new FileStream(fileInfo.FullName, fileMode, FileAccess.Read, FileShare.ReadWrite, OpenStreamBufferSize, FileOptions.None);
+            using TextReader reader = new StreamReader(stream, leaveOpen: false);
             LoadInner(reader);
         }
 
         public void Load(Stream stream)
         {
+            // Stream cannot be null
+            ArgumentNullException.ThrowIfNull(stream, nameof(stream));
+
+            // Assign the stream to reader and leave it open after using it.
             using TextReader reader = new StreamReader(stream, leaveOpen: true);
             LoadInner(reader);
         }
 
         private void LoadInner(TextReader reader)
         {
-            string? currentSectionToReadName = null;
+            string? currentSectionToReadName;
             IniSection? currentSectionToRead = null;
 
             // Starting in this line, we don't use EndOfStream anymore as the reader.ReadLine()
@@ -213,7 +267,7 @@ namespace Hi3Helper.Data
                     // Get the section name
                     currentSectionToReadName = currentSectionNameInner.ToString();
 
-                    // Try get the section and if it's not exist yet, then add it
+                    // Try to get the section and if it's not exist yet, then add it
                     GetOrCreateSection(currentSectionToReadName, out currentSectionToRead);
 
                     // Read the next line
@@ -236,17 +290,16 @@ namespace Hi3Helper.Data
             }
         }
 
-        private void EnsureFolderExist(string filePath)
+        private void EnsureFolderExist(FileInfo fileInfo)
         {
             // Always create the directory if none of it exist
-            string? pathDirectory = Path.GetDirectoryName(filePath);
-            if (!string.IsNullOrEmpty(pathDirectory))
-                _ = Directory.CreateDirectory(pathDirectory);
+            if (fileInfo.Directory != null && !fileInfo.Directory.Exists)
+                fileInfo.Directory.Create();
         }
 
         private void GetOrCreateSection(string sectionName, [NotNull] out IniSection? iniSection)
         {
-            // Try get the section and if it's not exist yet, then add it
+            // Try to get the section and if it's not exist yet, then add it
             if (!Sections.TryGetValue(sectionName, out iniSection))
             {
                 // Create a new section, then add it to the dictionary

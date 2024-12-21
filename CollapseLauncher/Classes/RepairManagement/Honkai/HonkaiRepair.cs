@@ -15,18 +15,18 @@ namespace CollapseLauncher
     internal partial class HonkaiRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
-        private const string _assetBasePath = "BH3_Data/StreamingAssets/";
-        private readonly string[] _skippableAssets = new string[] { "CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic" };
-        private HonkaiCache _cacheUtil { get; init; }
-        private string _assetBaseURL { get; set; }
-        private string _blockBaseURL { get => ConverterTool.CombineURLFromString(_assetBaseURL, $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }
-        private string _blockAsbBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/asb"); }
-        private string _blockPatchBaseURL { get => ConverterTool.CombineURLFromString(_blockBaseURL, "/patch"); }
-        private string _blockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(_blockPatchBaseURL, "/{0}"); }
-        private string _blockPatchDiffPath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/Patch"); }
-        private string _blockBasePath { get => ConverterTool.CombineURLFromString(_assetBasePath, "Asb/pc/"); }
-        private bool _isOnlyRecoverMain { get; set; }
-        private KianaDispatch _gameServer { get; set; }
+        private const    string        _assetBasePath   = "BH3_Data/StreamingAssets/";
+        private readonly string[]      _skippableAssets = new[] { "CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic" };
+        private          HonkaiCache   _cacheUtil             { get; init; }
+        private          string        _assetBaseURL          { get; set; }
+        private          string        _blockBaseURL          { get => ConverterTool.CombineURLFromString(_assetBaseURL,      $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }
+        private          string        _blockAsbBaseURL       { get => ConverterTool.CombineURLFromString(_blockBaseURL,      "/asb"); }
+        private          string        _blockPatchBaseURL     { get => ConverterTool.CombineURLFromString(_blockBaseURL,      "/patch"); }
+        private          string        _blockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(_blockPatchBaseURL, "/{0}"); }
+        private          string        _blockPatchDiffPath    { get => ConverterTool.CombineURLFromString(_assetBasePath,     "Asb/pc/Patch"); }
+        private          string        _blockBasePath         { get => ConverterTool.CombineURLFromString(_assetBasePath,     "Asb/pc/"); }
+        private          bool          _isOnlyRecoverMain     { get; set; }
+        private          KianaDispatch _gameServer            { get; set; }
         #endregion
 
         #region ExtensionProperties
@@ -108,9 +108,6 @@ namespace CollapseLauncher
 
         private async Task<bool> RepairRoutine()
         {
-            // Restart Stopwatch
-            RestartStopwatch();
-
             // Assign repair task
             Task<bool> repairTask = Repair(_assetIndex, _token.Token);
 

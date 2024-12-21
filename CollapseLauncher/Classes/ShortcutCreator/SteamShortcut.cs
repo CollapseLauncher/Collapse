@@ -117,9 +117,11 @@ namespace CollapseLauncher.ShortcutUtils
         internal void MoveImages(string path, PresetConfig preset)
         {
             if (preset == null) return;
-
+            var parentDir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(parentDir)) Directory.CreateDirectory(parentDir);
+            
             path = Path.GetDirectoryName(path);
-            string gridPath = Path.Combine(path, "grid");
+            string gridPath = Path.Combine(path!, "grid");
             if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
             string iconName = ShortcutCreator.GetIconName(preset.GameType);
@@ -176,7 +178,6 @@ namespace CollapseLauncher.ShortcutUtils
             }
             
             LogWriteLine($"[SteamShortcut::GetImageFromUrl] After 3 tries, {cdnURL} could not be downloaded successfully.", LogType.Error);
-            return;
         }
 
         private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
