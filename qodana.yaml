@@ -47,3 +47,6 @@ dependencyIgnores:
   - name: "System.CommandLine.NamingConventionBinder"
   # huh?
   - name: "ThisAssembly.Constants"
+  - name: "Libsql.Client"
+  - name: "PolySharp"
+  - name: "DependencyPropertyGenerator"
