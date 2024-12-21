@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.CustomControls;
+using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
@@ -49,20 +49,20 @@ namespace CollapseLauncher.Pages
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         private int    _selectedAssetsCount;
-        private long   _assetTotalSize;
+        private long   _assetTotalSize = 0;
         private string _assetTotalSizeString = string.Empty;
         private long   _assetSelectedSize;
 
         public async Task InjectFileInfoSource(IEnumerable<LocalFileInfo> fileInfoList)
         {
+            #if DEBUG
             var s = new Stopwatch();
             s.Start();
+            #endif
             
             FileInfoSource.Clear();
             List<LocalFileInfo> backedFileInfoSourceList = ObservableCollectionExtension<LocalFileInfo>
                 .GetBackedCollectionList(FileInfoSource) as List<LocalFileInfo> ?? throw new InvalidCastException();
-
-            _assetTotalSize = 0;
 
             List<LocalFileInfo> localFileCollection = [..fileInfoList];
             int batchSize = Math.Clamp(localFileCollection.Count / Environment.ProcessorCount, 50, 5000);
@@ -80,44 +80,25 @@ namespace CollapseLauncher.Pages
             int b = 0;
             await Task.Run(() =>
                            {
-                               tasks.AddRange(batches.Select(batch => EnqueueOnDispatcherQueueAsync(() =>
-                                                                                                    {
-                                                                                                        var sI = new Stopwatch();
-                                                                                                        s.Start();
-                                                                                                        foreach (var fileInfoInner in batch)
-                                                                                                        {
-                                                                                                            FileInfoSource.Add(fileInfoInner);
-                                                                                                            localFileCollection.Remove(fileInfoInner);
-                                                                                                        }
+                               tasks.AddRange(batches.Select(batch => 
+                                 EnqueueOnDispatcherQueueAsync(() =>
+                                        {
+                                            var sI = new Stopwatch();
+                                            s.Start();
+                                            foreach (var fileInfoInner in batch)
+                                            {
+                                                backedFileInfoSourceList.Add(fileInfoInner);
+                                                localFileCollection.Remove(fileInfoInner);
+                                            }
 
-                                                                                                        sI.Stop();
-                                                                                                        Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " + $"Finished batch #{b} with {batch.Count} items after {sI.ElapsedMilliseconds} ms", LogType.Scheme);
-                                                                                                        Interlocked.Increment(ref b);
-                                                                                                    })));
+                                            sI.Stop();
+                                            Logger.LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " + 
+                                                                $"Finished batch #{b} with {batch.Count} items after {sI.ElapsedMilliseconds} ms", LogType.Scheme);
+                                            Interlocked.Increment(ref b);
+                                        })));
                            });
+            
             await Task.WhenAll(tasks);
-
-            if (localFileCollection.Count > 0)
-            {
-                await EnqueueOnDispatcherQueueAsync(() =>
-                {
-                    var i  = 0;
-                    var sI = new Stopwatch();
-                    sI.Start();
-                    while (localFileCollection.Count > 0)
-                    {
-                        backedFileInfoSourceList.Add(localFileCollection[0]);
-                        localFileCollection.RemoveAt(0);
-                        i++;
-                    }
-
-                    sI.Stop();
-                    Logger
-                    .LogWriteLine($"[FileCleanupPage::InjectFileInfoSource] " +
-                                  $"Finished last batch at #{b} after {i} items in {sI.ElapsedMilliseconds} ms",
-                                    LogType.Scheme);
-                });
-            }
 
             while (localFileCollection.Count != 0)
             {
@@ -129,8 +110,11 @@ namespace CollapseLauncher.Pages
 
             await Task.Run(() => _assetTotalSizeString = ConverterTool.SummarizeSizeSimple(_assetTotalSize));
             await DispatcherQueue.EnqueueAsync(() => UpdateUIOnCollectionChange(FileInfoSource, null));
+            
+            # if DEBUG
             s.Stop();
             Logger.LogWriteLine($"InjectFileInfoSource done after {s.ElapsedMilliseconds} ms", LogType.Scheme);
+            #endif
             await CheckAll();
         }
 
@@ -352,21 +336,20 @@ namespace CollapseLauncher.Pages
                     }
                     catch (OperationCanceledException)
                     {
-                        Logger.LogWriteLine($"The deletion to Recycle Bin was cancelled!",
+                        Logger.LogWriteLine("The deletion to Recycle Bin was cancelled!",
                                             LogType.Warning, true);
                         deletedItems.Clear();
                     }
                 }
                 else
                 {
-                    ConcurrentDictionary<LocalFileInfo, byte> processedFiles = new();
-
-                    var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                    var threadCount = Environment.ProcessorCount * 4;
+                    ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
+                    ThreadPool.SetMinThreads(Math.Max(workerThreads, threadCount),
+                                             Math.Max(completionPortThreads, threadCount));
+                    var options = new ParallelOptions { MaxDegreeOfParallelism = threadCount };
                     await Task.Run(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
                     {
-                        if (!processedFiles.TryAdd(fileInfo, 0))
-                            return;
-
                         try
                         {
                             FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
@@ -385,6 +368,7 @@ namespace CollapseLauncher.Pages
                                                 LogType.Error, true);
                         }
                     })).ConfigureAwait(false);
+                    ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
                 }
 
                 // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).
