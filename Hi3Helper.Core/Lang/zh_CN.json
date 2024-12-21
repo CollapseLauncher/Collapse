@@ -1451,6 +1451,8 @@
     "LoadingTitle": "处理中……",
     "LoadingSubtitle1": "正在计算现有文件（找到 {0} 个文件 - 总共 {1} 个）……",
     "LoadingSubtitle2": "正在检查 pkg_version 的可用性……",
+    "LoadingSubtitle3": "在此过程中，UI 可能会无响应...",
+    "DeleteSubtitle": "正在删除文件……",
     "BottomButtonDeleteAllFiles": "删除所有文件",
     "BottomButtonDeleteSelectedFiles": "删除 {0} 个选中的文件",
     "BottomCheckboxFilesSelected": "选中了 {0} 个文件（总计 {1}/{2}）",
