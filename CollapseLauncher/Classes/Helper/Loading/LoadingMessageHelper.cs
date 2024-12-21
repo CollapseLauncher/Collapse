@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -65,21 +66,32 @@ namespace CollapseLauncher.Helper.Loading
         /// </summary>
         internal static async void ShowLoadingFrame()
         {
+            if (currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccess)
+            {
+                await ShowLoadingFrameInner();
+                return;
+            }
+
+            await currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.EnqueueAsync(ShowLoadingFrameInner);
+        }
+
+        private static async Task ShowLoadingFrameInner()
+        {
             if (isCurrentlyShow) return;
 
-            isCurrentlyShow = true;
-            currentMainWindow!.LoadingStatusGrid!.Visibility = Visibility.Visible;
+            isCurrentlyShow                                            = true;
+            currentMainWindow!.LoadingStatusGrid!.Visibility           = Visibility.Visible;
             currentMainWindow!.LoadingStatusBackgroundGrid!.Visibility = Visibility.Visible;
 
             TimeSpan duration = TimeSpan.FromSeconds(0.25);
 
             await Task.WhenAll(
-                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
-                currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
-                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
-                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0,0,currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), currentMainWindow.LoadingStatusGrid.Translation.Z)),
-                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0))
-                );
+                               AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
+                                                              currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
+                               AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
+                                                              currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), currentMainWindow.LoadingStatusGrid.Translation.Z)),
+                                                              currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 1, 0))
+                              );
         }
 
         /// <summary>
@@ -87,20 +99,31 @@ namespace CollapseLauncher.Helper.Loading
         /// </summary>
         internal static async void HideLoadingFrame()
         {
+            if (currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccess)
+            {
+                await HideLoadingFrameInner();
+                return;
+            }
+
+            await currentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.EnqueueAsync(HideLoadingFrameInner);
+        }
+
+        private static async Task HideLoadingFrameInner()
+        {
             if (!isCurrentlyShow) return;
 
             isCurrentlyShow = false;
 
             TimeSpan duration = TimeSpan.FromSeconds(0.25);
             await Task.WhenAll(
-                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
-                currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
-                AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
-                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0,0,currentMainWindow.LoadingStatusGrid.Translation.Z)),
-                currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1))
-                );
+                               AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusBackgroundGrid, duration,
+                                                              currentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
+                               AnimationHelper.StartAnimation(currentMainWindow.LoadingStatusGrid, duration,
+                                                              currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(currentMainWindow.LoadingStatusGrid.ActualHeight + 16), currentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, 0, currentMainWindow.LoadingStatusGrid.Translation.Z)),
+                                                              currentMainWindow.LoadingStatusGrid.GetElementCompositor()!.CreateScalarKeyFrameAnimation("Opacity", 0, 1))
+                              );
 
-            currentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
+            currentMainWindow.LoadingStatusGrid.Visibility            = Visibility.Collapsed;
             currentMainWindow.LoadingStatusBackgroundGrid!.Visibility = Visibility.Collapsed;
             HideActionButton();
         }
