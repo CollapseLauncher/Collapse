@@ -156,7 +156,7 @@
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="ToggleCheckAllCheckBox"
                           Checked="ToggleCheckAll"
-                          IsChecked="True"
+                          IsChecked="False"
                           Unchecked="ToggleCheckAll" />
                 <Button x:Name="DeleteSelectedFiles"
                         Grid.Column="0"

@@ -50,12 +50,14 @@ namespace CollapseLauncher.Helper
         */
 
         internal static FileInfo EnsureNoReadOnly(this FileInfo fileInfo)
+            => fileInfo.EnsureNoReadOnly(out _);
+
+        internal static FileInfo EnsureNoReadOnly(this FileInfo fileInfo, out bool isFileExist)
         {
-            if (!fileInfo.Exists)
+            if (!(isFileExist = fileInfo.Exists))
                 return fileInfo;
 
             fileInfo.IsReadOnly = false;
-            fileInfo.Refresh();
 
             return fileInfo;
         }

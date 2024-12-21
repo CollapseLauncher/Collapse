@@ -101,8 +101,8 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual async ValueTask CleanUpGameFiles(bool withDialog = true)
         {
             // Get the unused file info asynchronously
-            List<LocalFileInfo> unusedFileInfo = await GetUnusedFileInfoList(withDialog);
-
+            (List<LocalFileInfo>, long) unusedFileInfo = await GetUnusedFileInfoList(withDialog);
+            
             // Spawn dialog if used
             if (withDialog)
             {
@@ -113,11 +113,13 @@ namespace CollapseLauncher.InstallManager.Base
                     mainWindow.overlayFrame.Navigate(typeof(FileCleanupPage), null,
                                                      new DrillInNavigationTransitionInfo());
                 }
-
+                
                 if (FileCleanupPage.Current == null)
                     return;
-
-                FileCleanupPage.Current.InjectFileInfoSource(unusedFileInfo);
+                await FileCleanupPage.Current.InjectFileInfoSource(unusedFileInfo.Item1, unusedFileInfo.Item2);
+                
+                LoadingMessageHelper.HideLoadingFrame();
+                
                 FileCleanupPage.Current.MenuExitButton.Click   += ExitFromOverlay;
                 FileCleanupPage.Current.MenuReScanButton.Click += ExitFromOverlay;
                 FileCleanupPage.Current.MenuReScanButton.Click += async (_, _) =>
@@ -130,7 +132,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Delete the file straight forward if dialog is not used
-            foreach (LocalFileInfo fileInfo in unusedFileInfo)
+            foreach (LocalFileInfo fileInfo in unusedFileInfo.Item1)
             {
                 TryDeleteReadOnlyFile(fileInfo.FullPath);
             }
@@ -147,7 +149,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async Task<List<LocalFileInfo>> GetUnusedFileInfoList(bool includeZipCheck)
+        protected virtual async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
         {
             LoadingMessageHelper.ShowLoadingFrame();
             try
@@ -170,9 +172,9 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // Initialize new proxy-aware HttpClient
                     using HttpClient httpClient = new HttpClientBuilder()
-                        .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
-                        .SetAllowedDecompression(DecompressionMethods.None)
-                        .Create();
+                                                 .UseLauncherConfig(_downloadThreadCount + _downloadThreadCountReserved)
+                                                 .SetAllowedDecompression(DecompressionMethods.None)
+                                                 .Create();
 
                     // Initialize and get game state, then get the latest package info
                     LoadingMessageHelper.SetMessage(
@@ -238,9 +240,10 @@ namespace CollapseLauncher.InstallManager.Base
                                      true);
                     }
                 }
-                
+
                 // Add pre-download zips into the ignored list 
-                RegionResourceVersion? packagePreDownloadList = _gameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
+                RegionResourceVersion? packagePreDownloadList =
+                    _gameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
                 if (packagePreDownloadList != null)
                 {
                     var preDownloadZips = new List<string>();
@@ -253,7 +256,7 @@ namespace CollapseLauncher.InstallManager.Base
                         preDownloadZips.AddRange(packagePreDownloadList.voice_packs
                                                                        .Select(audioRes =>
                                                                                    new GameInstallPackage(audioRes,
-                                                                                            _gamePath)
+                                                                                       _gamePath)
                                                                                    {
                                                                                        PackageType =
                                                                                            GameInstallPackageType.Audio
@@ -268,17 +271,18 @@ namespace CollapseLauncher.InstallManager.Base
                         ignoredFiles = ignoredFiles.Concat(preDownloadZips).ToArray();
                     }
                 }
-                
+
                 if (ignoredFiles.Length > 0)
                     LogWriteLine($"[GetUnusedFileInfoList] Final ignored file list:\r\n{string.Join(", ", ignoredFiles)}",
                                  LogType.Scheme, true);
-                
+
                 // Get the list of the local file paths
                 List<LocalFileInfo> localFileInfo = [];
                 await GetRelativeLocalFilePaths(localFileInfo, includeZipCheck, gameStateEnum, _token.Token);
 
                 // Get and filter the unused file from the pkg_versions and ignoredFiles
                 List<LocalFileInfo> unusedFileInfo = [];
+                long unusedFileSize = 0;
                 await Task.Run(() =>
                                    Parallel.ForEach(localFileInfo,
                                                     new ParallelOptions { CancellationToken = _token.Token },
@@ -290,14 +294,19 @@ namespace CollapseLauncher.InstallManager.Base
                                                                     ignoredFiles.ToList()))
                                                             return;
 
-                                                        lock (unusedFileInfo) unusedFileInfo.Add(asset);
+                                                        lock (unusedFileInfo)
+                                                        {
+                                                            Interlocked.Add(ref unusedFileSize, asset.FileSize);
+                                                            unusedFileInfo.Add(asset);
+                                                        }
                                                     }));
 
-                return unusedFileInfo;
+                return (unusedFileInfo, unusedFileSize);
             }
-            finally
+            catch (Exception ex)
             {
-                LoadingMessageHelper.HideLoadingFrame();
+                ErrorSender.SendException(ex);
+                return (new List<LocalFileInfo>(), 0);
             }
         }
 
@@ -465,14 +474,15 @@ namespace CollapseLauncher.InstallManager.Base
         {
             await Task.Run(() =>
                            {
-                               int           count     = 0;
-                               long          totalSize = 0;
-                               string        gamePath  = _gamePath;
-                               DirectoryInfo dirInfo   = new DirectoryInfo(gamePath);
+                               int           count          = 0;
+                               long          totalSize      = 0;
+                               string        gamePath       = _gamePath;
+                               DirectoryInfo dirInfo        = new DirectoryInfo(gamePath);
+                               int           updateInterval = 100; // Update UI every 100 files
+                               int           processedCount = 0;
 
                                // Do the do in parallel since it will be a really CPU expensive task due to janky checks here and there.
-                               Parallel.ForEach(dirInfo
-                                                   .EnumerateFiles("*", SearchOption.AllDirectories),
+                               Parallel.ForEach(dirInfo.EnumerateFiles("*", SearchOption.AllDirectories),
                                                 new ParallelOptions { CancellationToken = token },
                                                 (fileInfo, _) =>
                                                 {
@@ -481,23 +491,26 @@ namespace CollapseLauncher.InstallManager.Base
 
                                                     // Do the check within the lambda function to possibly check the file
                                                     // condition in multithread
-                                                    if (!IsCategorizedAsGameFile(fileInfo, gamePath, includeZipCheck,
-                                                                 gameState,
-                                                                 out LocalFileInfo localFileInfo))
+                                                    if (!IsCategorizedAsGameFile(fileInfo, gamePath, includeZipCheck, gameState, out LocalFileInfo localFileInfo))
                                                         return;
 
-                                                    Interlocked.Add(ref totalSize,
-                                                                    fileInfo.Exists ? fileInfo.Length : 0);
+                                                    Interlocked.Add(ref totalSize, fileInfo.Exists ? fileInfo.Length : 0);
                                                     Interlocked.Increment(ref count);
-                                                    _parentUI.DispatcherQueue.TryEnqueue(() =>
-                                                                     LoadingMessageHelper.SetMessage(
-                                                                          Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                                          string
-                                                                             .Format(Locale.Lang._FileCleanupPage.LoadingSubtitle1,
-                                                                                       count,
-                                                                                       ConverterTool
-                                                                                          .SummarizeSizeSimple(totalSize))
-                                                                         ));
+                                                    int currentCount = Interlocked.Increment(ref processedCount);
+
+                                                    if (currentCount % updateInterval == 0)
+                                                    {
+                                                        _parentUI.DispatcherQueue.TryEnqueue(() =>
+                                                        {
+                                                            LoadingMessageHelper.SetMessage(
+                                                                 Locale.Lang._FileCleanupPage.LoadingTitle,
+                                                                 string.Format(Locale.Lang._FileCleanupPage.LoadingSubtitle1,
+                                                                               count,
+                                                                               ConverterTool.SummarizeSizeSimple(totalSize))
+                                                                );
+                                                        });
+                                                    }
+
                                                     lock (localFileInfoList)
                                                     {
                                                         localFileInfoList.Add(localFileInfo);

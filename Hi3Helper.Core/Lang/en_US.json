@@ -1451,6 +1451,8 @@
     "LoadingTitle": "Processing",
     "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
     "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "LoadingSubtitle3": "UI might be unresponsive during this process...",
+    "DeleteSubtitle": "Deleting files...",
     "BottomButtonDeleteAllFiles": "Delete All Files",
     "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
     "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",
