@@ -55,7 +55,6 @@ namespace CollapseLauncher.Helper
                 return fileInfo;
 
             fileInfo.IsReadOnly = false;
-            fileInfo.Refresh();
 
             return fileInfo;
         }
