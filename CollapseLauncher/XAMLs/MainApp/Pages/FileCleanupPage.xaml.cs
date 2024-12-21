@@ -7,6 +7,7 @@ using CollapseLauncher.InstallManager.Base;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -19,7 +20,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -282,17 +282,18 @@ namespace CollapseLauncher.Pages
             }
 
             TextBlock textBlockMsg = new TextBlock
-                {
-                    TextAlignment = TextAlignment.Center,
-                    TextWrapping  = TextWrapping.WrapWholeWords
-                }.AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle1, true)
-                 .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle2, deletionSource.Count),
-                                   true, FontWeights.Medium)
-                 .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle3, true)
-                 .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle4, ConverterTool.SummarizeSizeSimple(totalSize)),
-                                   FontWeights.Medium)
-                 .AddTextBlockNewLine()
-                 .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle5);
+            {
+                TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.WrapWholeWords
+            }
+            .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle1, true)
+            .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle2, deletionSource.Count),
+                              true, FontWeights.Medium)
+            .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle3, true)
+            .AddTextBlockLine(string.Format(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle4, ConverterTool.SummarizeSizeSimple(totalSize)),
+                              FontWeights.Medium)
+            .AddTextBlockNewLine()
+            .AddTextBlockLine(Locale.Lang._FileCleanupPage.DialogDeletingFileSubtitle5);
 
             ContentDialogResult dialogResult = await SimpleDialogs.SpawnDialog(
                                                                                Locale.Lang._FileCleanupPage
@@ -307,7 +308,7 @@ namespace CollapseLauncher.Pages
                                                                                ContentDialogTheme.Warning);
 
             int deleteSuccess = 0;
-            int deleteFailed  = 0;
+            int deleteFailed = 0;
 
             bool isToRecycleBin = dialogResult == ContentDialogResult.Secondary;
             if (dialogResult == ContentDialogResult.None)
@@ -319,85 +320,110 @@ namespace CollapseLauncher.Pages
                                             Locale.Lang._FileCleanupPage.DeleteSubtitle);
             LoadingMessageHelper.ShowLoadingFrame();
 
-            List<LocalFileInfo> deletedItems = [];
-            if (isToRecycleBin)
+            try
             {
-                // Get the list of the file to be deleted and add it to the deletedItems List if it exists
-                List<string> toBeDeleted = await Task.Run(() => deletionSource
-                                          .Select(x =>
-                                                  {
-                                                      var localFileInfo = x.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
-                                                      if (!isFileExist)
-                                                      {
-                                                          return string.Empty;
-                                                      }
-
-                                                      deletedItems.Add(x);
-                                                      return localFileInfo.FullName;
-                                                  })
-                                          .Where(x => !string.IsNullOrEmpty(x))
-                                          .ToList()).ConfigureAwait(false);
-
-                // Execute the deletion process
-                await Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted)).ConfigureAwait(false);
-                deleteSuccess = toBeDeleted.Count;
-            }
-            else
-            {
-                ConcurrentDictionary<LocalFileInfo, byte> processedFiles = new();
-
-                var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
-                await Task.Run(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
+                List<LocalFileInfo> deletedItems = [];
+                if (isToRecycleBin)
                 {
-                    if (!processedFiles.TryAdd(fileInfo, 0))
-                        return;
+                    // Get the list of the file to be deleted and add it to the deletedItems List if it exists
+                    List<string> toBeDeleted = await Task.Run(() => deletionSource
+                                                                   .Select(x =>
+                                                                           {
+                                                                               var localFileInfo = x.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                                                                               if (!isFileExist)
+                                                                               {
+                                                                                   return string.Empty;
+                                                                               }
+
+                                                                               deletedItems.Add(x);
+                                                                               return localFileInfo.FullName;
+                                                                           })
+                                                                   .Where(x => !string.IsNullOrEmpty(x))
+                                                                   .ToList()).ConfigureAwait(false);
 
                     try
                     {
-                        FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
-                        if (isFileExist)
-                        {
-                            deletedItems.Add(fileInfo);
-                            fileInfoN.Delete();
-                        }
 
-                        Interlocked.Increment(ref deleteSuccess);
+                        // Execute the deletion process
+                        var recycleBinTask = Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted, true));
+                        await recycleBinTask.ConfigureAwait(false);
+
+                        deleteSuccess = toBeDeleted.Count;
                     }
-                    catch (Exception ex)
+                    catch (OperationCanceledException)
                     {
-                        Interlocked.Increment(ref deleteFailed);
-                        Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
-                                            LogType.Error, true);
+                        Logger.LogWriteLine($"The deletion to Recycle Bin was cancelled!",
+                                            LogType.Warning, true);
+                        toBeDeleted.Clear();
                     }
-                })).ConfigureAwait(false);
+                }
+                else
+                {
+                    ConcurrentDictionary<LocalFileInfo, byte> processedFiles = new();
+
+                    var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+                    await Task.Run(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
+                    {
+                        if (!processedFiles.TryAdd(fileInfo, 0))
+                            return;
+
+                        try
+                        {
+                            FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                            if (isFileExist)
+                            {
+                                deletedItems.Add(fileInfo);
+                                fileInfoN.Delete();
+                            }
+
+                            Interlocked.Increment(ref deleteSuccess);
+                        }
+                        catch (Exception ex)
+                        {
+                            Interlocked.Increment(ref deleteFailed);
+                            Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                                LogType.Error, true);
+                        }
+                    })).ConfigureAwait(false);
+                }
+
+                // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).
+                // For god sake, MSFT. We hope a better to delete all these items in one go.
+                // The current implementation is reaaaaallllyyyy slooowwwwwww.
+                await EnqueueOnDispatcherQueueAsync(() =>
+                    ObservableCollectionExtension<LocalFileInfo>
+                        .RemoveItemsFast(deletedItems, FileInfoSource));
+
+                string diagTitle = dialogResult == ContentDialogResult.Primary
+                    ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
+                    : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
+
+                await SimpleDialogs.SpawnDialog(diagTitle,
+                                                string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1,
+                                                              deleteSuccess)
+                                                + (deleteFailed == 0
+                                                    ? string.Empty
+                                                    : ' ' +
+                                                      string
+                                                         .Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2,
+                                                                 deleteFailed)),
+                                                this,
+                                                Locale.Lang._Misc.OkayHappy,
+                                                null,
+                                                null,
+                                                ContentDialogButton.Close,
+                                                ContentDialogTheme.Success);
             }
-
-            // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).
-            // For god sake, MSFT. We hope a better to delete all these items in one go.
-            // The current implementation is reaaaaallllyyyy slooowwwwwww.
-            await EnqueueOnDispatcherQueueAsync(() =>
-                ObservableCollectionExtension<LocalFileInfo>
-                    .RemoveItemsFast(deletedItems, FileInfoSource));
-
-            string diagTitle = dialogResult == ContentDialogResult.Primary
-                ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
-                : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
-
-            await SimpleDialogs.SpawnDialog(diagTitle,
-                                            string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1,
-                                                          deleteSuccess)
-                                            + (deleteFailed == 0
-                                                ? string.Empty
-                                                : ' ' +
-                                                  string
-                                                     .Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2,
-                                                             deleteFailed)),
-                                            this,
-                                            Locale.Lang._Misc.OkayHappy,
-                                            null,
-                                            null,
-                                            ContentDialogButton.Close,
-                                            ContentDialogTheme.Success);
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex);
+                Logger.LogWriteLine($"Failed while deleting to Recycle Bin: {ex}",
+                                    LogType.Error, true);
+            }
+            finally
+            {
+                LoadingMessageHelper.HideLoadingFrame();
+            }
         }
     }
 }
