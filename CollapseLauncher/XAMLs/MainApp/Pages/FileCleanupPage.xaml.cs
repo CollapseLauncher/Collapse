@@ -354,7 +354,7 @@ namespace CollapseLauncher.Pages
                     {
                         Logger.LogWriteLine($"The deletion to Recycle Bin was cancelled!",
                                             LogType.Warning, true);
-                        toBeDeleted.Clear();
+                        deletedItems.Clear();
                     }
                 }
                 else
