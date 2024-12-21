@@ -101,7 +101,7 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual async ValueTask CleanUpGameFiles(bool withDialog = true)
         {
             // Get the unused file info asynchronously
-            List<LocalFileInfo> unusedFileInfo = await GetUnusedFileInfoList(withDialog);
+            (List<LocalFileInfo>, long) unusedFileInfo = await GetUnusedFileInfoList(withDialog);
             
             // Spawn dialog if used
             if (withDialog)
@@ -116,7 +116,7 @@ namespace CollapseLauncher.InstallManager.Base
                 
                 if (FileCleanupPage.Current == null)
                     return;
-                await FileCleanupPage.Current.InjectFileInfoSource(unusedFileInfo);
+                await FileCleanupPage.Current.InjectFileInfoSource(unusedFileInfo.Item1, unusedFileInfo.Item2);
                 
                 LoadingMessageHelper.HideLoadingFrame();
                 
@@ -132,7 +132,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Delete the file straight forward if dialog is not used
-            foreach (LocalFileInfo fileInfo in unusedFileInfo)
+            foreach (LocalFileInfo fileInfo in unusedFileInfo.Item1)
             {
                 TryDeleteReadOnlyFile(fileInfo.FullPath);
             }
@@ -149,7 +149,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async Task<List<LocalFileInfo>> GetUnusedFileInfoList(bool includeZipCheck)
+        protected virtual async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
         {
             LoadingMessageHelper.ShowLoadingFrame();
             try
@@ -282,6 +282,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get and filter the unused file from the pkg_versions and ignoredFiles
                 List<LocalFileInfo> unusedFileInfo = [];
+                long unusedFileSize = 0;
                 await Task.Run(() =>
                                    Parallel.ForEach(localFileInfo,
                                                     new ParallelOptions { CancellationToken = _token.Token },
@@ -293,15 +294,19 @@ namespace CollapseLauncher.InstallManager.Base
                                                                     ignoredFiles.ToList()))
                                                             return;
 
-                                                        lock (unusedFileInfo) unusedFileInfo.Add(asset);
+                                                        lock (unusedFileInfo)
+                                                        {
+                                                            Interlocked.Add(ref unusedFileSize, asset.FileSize);
+                                                            unusedFileInfo.Add(asset);
+                                                        }
                                                     }));
 
-                return unusedFileInfo;
+                return (unusedFileInfo, unusedFileSize);
             }
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                return new List<LocalFileInfo>();
+                return (new List<LocalFileInfo>(), 0);
             }
         }
 

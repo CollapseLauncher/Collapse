@@ -49,18 +49,18 @@ namespace CollapseLauncher.Pages
         }
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-        private int    _selectedAssetsCount;
-        private long   _assetTotalSize = 0;
-        private string _assetTotalSizeString = string.Empty;
-        private long   _assetSelectedSize;
+        private int  _selectedAssetsCount;
+        private long _assetSelectedSize;
+        private long _assetTotalSize;
 
-        public async Task InjectFileInfoSource(IEnumerable<LocalFileInfo> fileInfoList)
+        public async Task InjectFileInfoSource(List<LocalFileInfo> fileInfoList, long assetTotalSize)
         {
             #if DEBUG
             var s = new Stopwatch();
             s.Start();
             #endif
             
+            _assetTotalSize = assetTotalSize;
             FileInfoSource.Clear();
             List<LocalFileInfo> backedFileInfoSourceList = ObservableCollectionExtension<LocalFileInfo>
                 .GetBackedCollectionList(FileInfoSource) as List<LocalFileInfo> ?? throw new InvalidCastException();
@@ -109,7 +109,6 @@ namespace CollapseLauncher.Pages
 
             ObservableCollectionExtension<LocalFileInfo>.RefreshAllEvents(FileInfoSource);
 
-            await Task.Run(() => _assetTotalSizeString = ConverterTool.SummarizeSizeSimple(_assetTotalSize));
             await DispatcherQueue.EnqueueAsync(() => UpdateUIOnCollectionChange(FileInfoSource, null));
             
             # if DEBUG
@@ -207,7 +206,7 @@ namespace CollapseLauncher.Pages
                                                                    Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
                                                                     _selectedAssetsCount,
                                                                     ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
-                                                                    _assetTotalSizeString);
+                                                                    ConverterTool.SummarizeSizeSimple(_assetTotalSize));
                 }
                 else
                 {
@@ -305,6 +304,7 @@ namespace CollapseLauncher.Pages
                                             Locale.Lang._FileCleanupPage.DeleteSubtitle);
             LoadingMessageHelper.ShowLoadingFrame();
 
+            Stopwatch s = Stopwatch.StartNew();
             try
             {
                 List<LocalFileInfo> deletedItems = [];
@@ -337,7 +337,7 @@ namespace CollapseLauncher.Pages
                     }
                     catch (OperationCanceledException)
                     {
-                        Logger.LogWriteLine("The deletion to Recycle Bin was cancelled!",
+                        Logger.LogWriteLine("[FileCleanupPage::PerformRemoval()] The deletion to Recycle Bin was cancelled!",
                                             LogType.Warning, true);
                         deletedItems.Clear();
                     }
@@ -356,11 +356,13 @@ namespace CollapseLauncher.Pages
                         TaskCreationOptions.DenyChildAttach,
                         TaskScheduler.Default);
 
-                    List<LocalFileInfo> failedList = new List<LocalFileInfo>();
+                    List<LocalFileInfo> failedList = [];
                     Lock failedListLock = new Lock();
 
-                    Task deleteFileTask = Task.Factory.StartNew(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
+                    Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
+                    await Task.Factory.StartNew(state =>
                     {
+                        LocalFileInfo fileInfo = (LocalFileInfo)state!;
                         try
                         {
                             FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
@@ -378,10 +380,14 @@ namespace CollapseLauncher.Pages
                             {
                                 failedList.Add(fileInfo);
                             }
-                            Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
-                                                LogType.Error, true);
+                            Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                LogType.Error, true);
                         }
-                    }));
+                    },
+                    fileInfoState,
+                    CancellationToken.None,
+                    TaskCreationOptions.DenyChildAttach,
+                    TaskScheduler.Default));
 
                     await Task.WhenAll(deleteListTask, deleteFileTask);
 
@@ -393,6 +399,11 @@ namespace CollapseLauncher.Pages
                         }
                     }
 
+                    long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
+                    _assetTotalSize -= totalDeleted;
+
+                    Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+
                     ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
                 }
 
@@ -402,26 +413,6 @@ namespace CollapseLauncher.Pages
                 await EnqueueOnDispatcherQueueAsync(() =>
                     ObservableCollectionExtension<LocalFileInfo>
                         .RemoveItemsFast(deletedItems, FileInfoSource));
-
-                string diagTitle = dialogResult == ContentDialogResult.Primary
-                    ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
-                    : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
-
-                await SimpleDialogs.SpawnDialog(diagTitle,
-                                                string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1,
-                                                              deleteSuccess)
-                                                + (deleteFailed == 0
-                                                    ? string.Empty
-                                                    : ' ' +
-                                                      string
-                                                         .Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2,
-                                                                 deleteFailed)),
-                                                this,
-                                                Locale.Lang._Misc.OkayHappy,
-                                                null,
-                                                null,
-                                                ContentDialogButton.Close,
-                                                ContentDialogTheme.Success);
             }
             catch (Exception ex)
             {
@@ -432,7 +423,29 @@ namespace CollapseLauncher.Pages
             finally
             {
                 LoadingMessageHelper.HideLoadingFrame();
+                s.Stop();
+                Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] The entire deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
             }
+
+            string diagTitle = dialogResult == ContentDialogResult.Primary
+                ? Locale.Lang._FileCleanupPage.DialogDeleteSuccessTitle
+                : Locale.Lang._FileCleanupPage.DialogTitleMovedToRecycleBin;
+
+            await SimpleDialogs.SpawnDialog(diagTitle,
+                                            string.Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle1,
+                                                          deleteSuccess)
+                                            + (deleteFailed == 0
+                                                ? string.Empty
+                                                : ' ' +
+                                                  string
+                                                     .Format(Locale.Lang._FileCleanupPage.DialogDeleteSuccessSubtitle2,
+                                                             deleteFailed)),
+                                            this,
+                                            Locale.Lang._Misc.OkayHappy,
+                                            null,
+                                            null,
+                                            ContentDialogButton.Close,
+                                            ContentDialogTheme.Success);
         }
     }
 }
