@@ -83,8 +83,7 @@ namespace CollapseLauncher.Pages
                                tasks.AddRange(batches.Select(batch => 
                                  EnqueueOnDispatcherQueueAsync(() =>
                                         {
-                                            var sI = new Stopwatch();
-                                            s.Start();
+                                            var sI = Stopwatch.StartNew();
                                             foreach (var fileInfoInner in batch)
                                             {
                                                 backedFileInfoSourceList.Add(fileInfoInner);
