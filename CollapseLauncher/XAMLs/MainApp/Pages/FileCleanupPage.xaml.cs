@@ -196,7 +196,7 @@ namespace CollapseLauncher.Pages
 
             if (isToRecycleBin)
             {
-                IList<string> toBeDeleted = new List<string>();
+                List<string> toBeDeleted = new List<string>();
 
                 foreach (LocalFileInfo fileInfo in deletionSource)
                 {
