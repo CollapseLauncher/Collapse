@@ -347,15 +347,15 @@ namespace CollapseLauncher.Pages
                 ConcurrentDictionary<LocalFileInfo, byte> processedFiles = new();
 
                 var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
-                await Parallel.ForEachAsync(deletionSource, options, async (fileInfo, _) =>
+                await Task.Run(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
                 {
                     if (!processedFiles.TryAdd(fileInfo, 0))
                         return;
 
                     try
                     {
-                        FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly();
-                        if (fileInfoN.Exists)
+                        FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                        if (isFileExist)
                         {
                             deletedItems.Add(fileInfo);
                             fileInfoN.Delete();
@@ -369,7 +369,7 @@ namespace CollapseLauncher.Pages
                         Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
                                             LogType.Error, true);
                     }
-                });
+                })).ConfigureAwait(false);
             }
 
             // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).
