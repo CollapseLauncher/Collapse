@@ -20,6 +20,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -347,15 +348,24 @@ namespace CollapseLauncher.Pages
                     ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
                     ThreadPool.SetMinThreads(Math.Max(workerThreads, threadCount),
                                              Math.Max(completionPortThreads, threadCount));
+
                     var options = new ParallelOptions { MaxDegreeOfParallelism = threadCount };
-                    await Task.Run(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
+                    Task deleteListTask = Task.Factory.StartNew(
+                        () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
+                        CancellationToken.None,
+                        TaskCreationOptions.DenyChildAttach,
+                        TaskScheduler.Default);
+
+                    List<LocalFileInfo> failedList = new List<LocalFileInfo>();
+                    Lock failedListLock = new Lock();
+
+                    Task deleteFileTask = Task.Factory.StartNew(() => Parallel.ForEach(deletionSource, options, (fileInfo, _) =>
                     {
                         try
                         {
                             FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
                             if (isFileExist)
                             {
-                                deletedItems.Add(fileInfo);
                                 fileInfoN.Delete();
                             }
 
@@ -364,10 +374,25 @@ namespace CollapseLauncher.Pages
                         catch (Exception ex)
                         {
                             Interlocked.Increment(ref deleteFailed);
+                            lock (failedListLock)
+                            {
+                                failedList.Add(fileInfo);
+                            }
                             Logger.LogWriteLine($"Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
                                                 LogType.Error, true);
                         }
-                    })).ConfigureAwait(false);
+                    }));
+
+                    await Task.WhenAll(deleteListTask, deleteFileTask);
+
+                    if (failedList.Count > 0)
+                    {
+                        foreach (LocalFileInfo failedFileInfo in failedList)
+                        {
+                            deletedItems.Remove(failedFileInfo);
+                        }
+                    }
+
                     ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
                 }
 
