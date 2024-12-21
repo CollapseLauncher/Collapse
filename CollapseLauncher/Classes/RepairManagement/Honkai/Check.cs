@@ -22,14 +22,11 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            if (_status != null)
-            {
-                _status.IsProgressAllIndetermined     = false;
-                _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressAllIndetermined     = false;
+            _status.IsProgressPerFileIndetermined = false;
 
-                // Show the asset entry panel
-                _status.IsAssetEntryPanelShow = true;
-            }
+            // Show the asset entry panel
+            _status.IsAssetEntryPanelShow = true;
 
             // Find unused assets
             CheckUnusedAsset(assetIndex, brokenAssetIndex);
@@ -124,10 +121,7 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeAudio(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            if (_status != null)
-            {
-                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
-            }
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -212,9 +206,9 @@ namespace CollapseLauncher
             {
                 // Increment/decrement the size of the file based on size differences
                 _progressAllSizeCurrent += sizeDifference;
+                // ReSharper disable PossibleInvalidOperationException
                 // Increment progress count and size
-                _progressAllSizeFound +=
-                    asset.IsPatchApplicable ? asset.AudioPatchInfo.Value.PatchFileSize : asset.S;
+                _progressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.Value!.PatchFileSize : asset.S;
                 _progressAllCountFound++;
 
                 // Add asset to Display
@@ -234,7 +228,7 @@ namespace CollapseLauncher
                               : asset.CRCArray
                          )
                     ));
-
+                // ReSharper restore PossibleInvalidOperationException
                 // Add asset into targetAssetIndex
                 targetAssetIndex.Add(asset);
 
@@ -247,10 +241,7 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeGeneric(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            if (_status != null)
-            {
-                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
-            }
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.N);
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -344,7 +335,7 @@ namespace CollapseLauncher
             // Iterate the skippable asset and do LINQ check
             foreach (string skippableAsset in _skippableAssets)
             {
-                // Try get the filename and the enum type
+                // Try to get the filename and the enum type
                 ReadOnlySpan<char> skippableNameSpan = skippableAsset.AsSpan();
                 _ = skippableNameSpan.Split(ranges, '$');
                 ReadOnlySpan<char> skippableName = skippableNameSpan[ranges[0]];
@@ -352,7 +343,7 @@ namespace CollapseLauncher
 
                 if (Enum.TryParse(skippableType, true, out FileType skippableFt))
                 {
-                    // Try get the IEnumerable to iterate the asset
+                    // Try to get the IEnumerable to iterate the asset
                     foreach (FilePropertiesRemote asset in assetIndex)
                     {
                         // If the asset name and type is equal, then add as removable
@@ -383,7 +374,7 @@ namespace CollapseLauncher
                 .Value.PatchPairs?
                 .Where(x => File.Exists(
                     Path.Combine(directory, x.OldHashStr) + ".wmv"
-                    ))?.FirstOrDefault();
+                    )).FirstOrDefault();
 
             if (!existingOldBlockPair.HasValue || string.IsNullOrEmpty(existingOldBlockPair.Value.PatchHashStr)) return null;
 
@@ -398,10 +389,7 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetTypeBlocks(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            if (_status != null)
-            {
-                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
-            }
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status5, asset.CRC);
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -429,10 +417,10 @@ namespace CollapseLauncher
                     byte[] localOldCRC = await CheckHashAsync(fileOldfs, MD5.Create(), token, false);
 
                     // If the hash matches, then add the patch
-                    if (IsArrayMatch(localOldCRC, patchInfo?.PatchPairs[0].OldHash))
+                    if (IsArrayMatch(localOldCRC, patchInfo.Value.PatchPairs[0].OldHash))
                     {
                         // Update the total progress and found counter
-                        _progressAllSizeFound += (long)patchInfo?.PatchPairs[0].PatchSize;
+                        _progressAllSizeFound += patchInfo.Value.PatchPairs[0].PatchSize;
                         _progressAllCountFound++;
 
                         // Set the per size progress
@@ -445,8 +433,8 @@ namespace CollapseLauncher
                             new AssetProperty<RepairAssetType>(
                                 Path.GetFileName(asset.N),
                                 RepairAssetType.BlockUpdate,
-                                Path.GetDirectoryName(asset.N) + $" (MetaVer: {string.Join('.', patchInfo?.PatchPairs[0].OldVersion)})",
-                                (long)patchInfo?.PatchPairs[0].PatchSize,
+                                Path.GetDirectoryName(asset.N) + $" (MetaVer: {string.Join('.', patchInfo.Value.PatchPairs[0].OldVersion)})",
+                                patchInfo.Value.PatchPairs[0].PatchSize,
                                 localOldCRC,
                                 asset.CRCArray
                             )
@@ -550,7 +538,7 @@ namespace CollapseLauncher
         #region UnusedAssetCheck
         private void CheckUnusedAsset(List<FilePropertiesRemote> assetIndex, List<FilePropertiesRemote> targetAssetIndex)
         {
-            // Build the list of existing files inside of the game folder
+            // Build the list of existing files inside the game folder
             // for comparison with asset index into catalog list
             List<string> catalog = new List<string>();
             BuildAssetIndexCatalog(catalog, assetIndex);

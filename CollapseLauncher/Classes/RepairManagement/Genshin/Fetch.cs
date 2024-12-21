@@ -28,11 +28,8 @@ namespace CollapseLauncher
         private async ValueTask<List<PkgVersionProperties>> Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            if (_status != null)
-            {
-                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
-                _status.IsProgressAllIndetermined = true;
-            }
+            _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+            _status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
 
@@ -582,15 +579,13 @@ namespace CollapseLauncher
         {
             // Update fetch status
             double speed = CalculateSpeed(read);
-            if (_status != null)
-            {
-                _status.IsProgressPerFileIndetermined = false;
-                _status.ActivityPerFile =
-                    string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
-            }
+            
+            _status.IsProgressPerFileIndetermined = false;
+            _status.ActivityPerFile =
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle3, SummarizeSizeSimple(speed));
 
             // Update fetch progress
-            if (_progress != null)
+            lock (_progress)
             {
                 _progress.ProgressPerFilePercentage =
                     GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);

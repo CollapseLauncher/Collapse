@@ -1752,18 +1752,18 @@ namespace CollapseLauncher.InstallManager.Base
                 await runningTask.ConfigureAwait(false);
             }
 
-            void StartWriteInner(byte[] buffer, FileStream outputStream, Stream entryStream, CancellationToken cancellationToken)
+            void StartWriteInner(byte[] bufferInner, FileStream outputStream, Stream entryStream, CancellationToken cancellationTokenInner)
             {
                 int read;
 
                 // Perform async read
-                while ((read = entryStream.Read(buffer, 0, buffer.Length)) > 0)
+                while ((read = entryStream.Read(bufferInner, 0, bufferInner.Length)) > 0)
                 {
                     // Throw if cancellation requested
-                    cancellationToken.ThrowIfCancellationRequested();
+                    cancellationTokenInner.ThrowIfCancellationRequested();
 
                     // Perform sync write
-                    outputStream.Write(buffer, 0, read);
+                    outputStream.Write(bufferInner, 0, read);
 
                     // Increment total size
                     _progressAllSizeCurrent     += read;

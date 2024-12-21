@@ -9,7 +9,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    public enum GenshinAudioLanguage : int
+    public enum GenshinAudioLanguage
     {
         English = 0,
         Chinese = 1,

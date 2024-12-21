@@ -640,7 +640,7 @@ namespace CollapseLauncher
                             // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
                             if (!_isOnlyRecoverMain)
                             {
-                                await using FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath)!, FileMode.Create, FileAccess.Write);
+                                await using FileStream fs2 = new FileStream(EnsureCreationOfDirectory(xmfPriPath), FileMode.Create, FileAccess.Write);
                                 fs1.Position = 0;
                                 await fs1.CopyToAsync(fs2);
                             }

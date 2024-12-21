@@ -22,13 +22,10 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            if (_status != null)
-            {
-                _status.ActivityStatus                = Lang._GameRepairPage.Status11;
-                _status.IsProgressAllIndetermined     = true;
-                _status.IsProgressPerFileIndetermined = true;
-            }
-
+            _status.ActivityStatus                = Lang._GameRepairPage.Status11;
+            _status.IsProgressAllIndetermined     = true;
+            _status.IsProgressPerFileIndetermined = true;
+            
             // Update status
             UpdateStatus();
 

@@ -65,11 +65,8 @@ namespace CollapseLauncher
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            if (_status != null)
-            {
-                _status.ActivityStatus            = Lang._GameRepairPage.Status2;
-                _status.IsProgressAllIndetermined = true;
-            }
+            _status.ActivityStatus            = Lang._GameRepairPage.Status2;
+            _status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
             StarRailRepairExtension.ClearHashtable();
@@ -376,7 +373,7 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValue = new string[] { fallbackCurrentLangname };
+                returnValue = new[] { fallbackCurrentLangname };
                 if (audioLangListPathStatic != null)
                 {
                     File.WriteAllLines(audioLangListPathStatic, returnValue);
@@ -389,7 +386,7 @@ namespace CollapseLauncher
             returnValue = File.ReadAllLines(audioLangListPathStatic);
             if (returnValue.Length == 0)
             {
-                returnValue = new string[] { fallbackCurrentLangname };
+                returnValue = new[] { fallbackCurrentLangname };
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
             }
             

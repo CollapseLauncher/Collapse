@@ -55,7 +55,7 @@ namespace CollapseLauncher
             // Get flag to only recover main assets
             _isOnlyRecoverMain = onlyRecoverMainAsset;
             _innerGameVersionManager = GameVersionManager as GameTypeStarRailVersion;
-            _execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager.GamePreset.GameExecutableName);
+            _execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager!.GamePreset.GameExecutableName);
         }
 
         ~StarRailRepair() => Dispose();

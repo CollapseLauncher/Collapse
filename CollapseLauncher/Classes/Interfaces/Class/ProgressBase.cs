@@ -201,22 +201,19 @@ namespace CollapseLauncher.Interfaces
                 double percentage = ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal);
 
                 // Update current progress percentages and speed
-                if (_progress != null)
+                lock (_progress)
                 {
                     _progress.ProgressAllPercentage = percentage;
                 }
 
                 // Update current activity status
-                if (_status != null)
-                {
-                    _status.IsProgressAllIndetermined = false;
-                    string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, timeLeftSpan);
-                    _status.ActivityAll = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressAllCountCurrent,
-                                                        _progressAllCountTotal)
-                                          + string.Format($"({Lang._Misc.SpeedPerSec})",
-                                                          ConverterTool.SummarizeSizeSimple(speedClamped))
-                                          + $" | {timeLeftString}";
-                }
+                _status.IsProgressAllIndetermined = false;
+                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, timeLeftSpan);
+                _status.ActivityAll = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressAllCountCurrent,
+                                                    _progressAllCountTotal)
+                                      + string.Format($"({Lang._Misc.SpeedPerSec})",
+                                                      ConverterTool.SummarizeSizeSimple(speedClamped))
+                                      + $" | {timeLeftString}";
 
                 // Trigger update
                 UpdateAll();
@@ -462,15 +459,12 @@ namespace CollapseLauncher.Interfaces
         protected void UpdateSophonDownloadStatus(SophonAsset asset)
         {
             Interlocked.Add(ref _progressAllCountCurrent, 1);
-            if (_status != null)
-            {
-                _status.ActivityStatus = string.Format("{0}: {1}",
-                                                       _isSophonInUpdateMode
-                                                           ? Lang._Misc.Updating
-                                                           : Lang._Misc.Downloading,
-                                                       string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent,
-                                                                     _progressAllCountTotal));
-            }
+            _status.ActivityStatus = string.Format("{0}: {1}",
+                                                   _isSophonInUpdateMode
+                                                       ? Lang._Misc.Updating
+                                                       : Lang._Misc.Downloading,
+                                                   string.Format(Lang._Misc.PerFromTo, _progressAllCountCurrent,
+                                                                 _progressAllCountTotal));
 
             UpdateStatus();
         }
@@ -884,17 +878,13 @@ namespace CollapseLauncher.Interfaces
             }
             finally
             {
-                // Define that the status is not running
-                if (_status != null)
+                // Clear the _assetIndex after that
+                if (_status is { IsCompleted: false })
                 {
-                    // Clear the _assetIndex after that
-                    if (_status is { IsCompleted: false })
-                    {
-                        _assetIndex.Clear();
-                    }
-
-                    _status.IsRunning = false;
+                    _assetIndex.Clear();
                 }
+
+                _status.IsRunning = false;
             }
         }
 

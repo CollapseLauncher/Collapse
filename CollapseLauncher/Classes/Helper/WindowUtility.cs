@@ -21,6 +21,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -285,13 +286,13 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        private static NotificationService? _currentToastNotificationService;
-        internal static NotificationService? CurrentToastNotificationService
+        [field: AllowNull, MaybeNull]
+        internal static NotificationService CurrentToastNotificationService
         {
             get
             {
                 // If toast notification service field is null, then initialize
-                if (_currentToastNotificationService == null)
+                if (field == null)
                 {
                     // Get Icon location paths
                     (string iconLocationStartMenu, _)
@@ -302,7 +303,7 @@ namespace CollapseLauncher.Helper
                             out _);
 
                     // Register notification service
-                    _currentToastNotificationService = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+                    field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
 
                     // Get AUMID name from Win32
                     PInvoke.GetProcessAumid(out string? appAumIdName);
@@ -314,19 +315,19 @@ namespace CollapseLauncher.Helper
                     if (!string.IsNullOrEmpty(appAumIdName))
                     {
                         // Initialize Toast Notification service
-                        _currentToastNotificationService.Initialize(
-                            appAumIdName,
-                            executablePath ?? "",
-                            iconLocationStartMenu,
-                            asElevatedUser: true
-                            );
+                        field.Initialize(
+                                         appAumIdName,
+                                         executablePath ?? "",
+                                         iconLocationStartMenu,
+                                         asElevatedUser: true
+                                        );
 
                         // Subscribe ToastCallback
-                        _currentToastNotificationService.ToastCallback += Service_ToastNotificationCallback;
+                        field.ToastCallback += Service_ToastNotificationCallback;
                     }
                 }
 
-                return _currentToastNotificationService;
+                return field;
             }
         }
 

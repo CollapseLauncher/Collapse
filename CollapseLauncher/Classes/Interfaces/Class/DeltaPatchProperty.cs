@@ -8,13 +8,13 @@ namespace CollapseLauncher
         internal DeltaPatchProperty(string PatchFile)
         {
             ReadOnlySpan<string> strings = Path.GetFileNameWithoutExtension(PatchFile).Split('_');
-            this.MD5hash = strings[5];
-            this.ZipHash = strings[4];
-            this.ProfileName = strings[0];
-            this.SourceVer = strings[1];
-            this.TargetVer = strings[2];
-            this.PatchCompr = strings[3];
-            this.PatchPath = PatchFile;
+            MD5hash = strings[5];
+            ZipHash = strings[4];
+            ProfileName = strings[0];
+            SourceVer = strings[1];
+            TargetVer = strings[2];
+            PatchCompr = strings[3];
+            PatchPath = PatchFile;
         }
 
         public string ZipHash { get; set; }
