@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This code was originally ported from https://github.com/Enichan/Ini
  * Some changes have been made to adjust the usage to our main project, Collapse Launcher
  */
@@ -58,7 +58,8 @@ namespace Hi3Helper.Data
 
                 // If the value set is not null and the comparer is not equal,
                 // recreate the section to match the comparer
-                if (valueSet != null && valueSet.Comparer != CurrentStringComparer)
+                // ReSharper disable once PossibleUnintendedReferenceComparison
+                if (valueSet.Comparer != CurrentStringComparer)
                 {
                     valueSet = new IniSection(valueSet, CurrentStringComparer);
                 }
@@ -128,11 +129,6 @@ namespace Hi3Helper.Data
 
         private void SaveInner(TextWriter writer)
         {
-            // Get enumerable based on IsOrdered. If true, start from ascending ordered key
-            IEnumerable<KeyValuePair<string, IniSection?>> sectionEnumerable = IsSaveOrdered ?
-                Sections.OrderBy(x => x.Key) :
-                Sections;
-
             // Enumerate Ini sections
             foreach (KeyValuePair<string, IniSection?> iniSectionKvp in Sections)
             {
@@ -234,7 +230,7 @@ namespace Hi3Helper.Data
 
         private void LoadInner(TextReader reader)
         {
-            string? currentSectionToReadName = null;
+            string? currentSectionToReadName;
             IniSection? currentSectionToRead = null;
 
             // Starting in this line, we don't use EndOfStream anymore as the reader.ReadLine()
@@ -271,7 +267,7 @@ namespace Hi3Helper.Data
                     // Get the section name
                     currentSectionToReadName = currentSectionNameInner.ToString();
 
-                    // Try get the section and if it's not exist yet, then add it
+                    // Try to get the section and if it's not exist yet, then add it
                     GetOrCreateSection(currentSectionToReadName, out currentSectionToRead);
 
                     // Read the next line
@@ -303,7 +299,7 @@ namespace Hi3Helper.Data
 
         private void GetOrCreateSection(string sectionName, [NotNull] out IniSection? iniSection)
         {
-            // Try get the section and if it's not exist yet, then add it
+            // Try to get the section and if it's not exist yet, then add it
             if (!Sections.TryGetValue(sectionName, out iniSection))
             {
                 // Create a new section, then add it to the dictionary

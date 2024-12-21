@@ -101,19 +101,19 @@ namespace CollapseLauncher.GameVersioning
         {
             get
             {
-                string path =
-                    ConverterTool
-                       .NormalizePath(Path.Combine(GameIniProfile[_defaultIniProfileSection]["game_install_path"].ToString(),
-                                                   "config.ini"));
-                return IsDiskPartitionExist(path)
-                    ? path
-                    : Path.Combine(GameConfigDirPath, GamePreset.GameDirectoryName ?? "Games", "config.ini");
+                var configPath  = GameIniProfile[_defaultIniProfileSection]["game_install_path"].ToString();
+                var defaultPath = Path.Combine(GameConfigDirPath, GamePreset.GameDirectoryName ?? "Games", "config.ini");
+
+                if (string.IsNullOrEmpty(configPath)) return defaultPath;
+                
+                string path = ConverterTool.NormalizePath(Path.Combine(configPath, "config.ini"));
+                return IsDiskPartitionExist(path) ? path : defaultPath;
             }
         }
 
 #nullable enable
-        public IniSection? GameIniVersionSection { get => GameIniVersion[_defaultIniVersionSection] ?? null; }
-        public IniSection? GameIniProfileSection { get => GameIniVersion[_defaultIniProfileSection] ?? null; }
+        public IniSection GameIniVersionSection { get => GameIniVersion[_defaultIniVersionSection]; }
+        public IniSection GameIniProfileSection { get => GameIniVersion[_defaultIniProfileSection]; }
 #nullable restore
 
         protected string             GameConfigDirPath { get; set; }

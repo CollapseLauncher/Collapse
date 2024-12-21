@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Microsoft.Win32;
 using System;
@@ -22,25 +23,22 @@ namespace CollapseLauncher
 
         public void MoveOperation(string source, string target)
         {
-            string pripath = Path.GetPathRoot(source).ToLower();
-            Console.WriteLine($"Using \"Cross-disk\" method while moving to target");
+            Logger.LogWriteLine("Using \"Cross-disk\" method while moving to target", LogType.Default, true);
             string[] fileList = Directory.GetFiles(source, "*", SearchOption.AllDirectories);
-            string basepath;
-            string targetpath;
 
             for (int i = 0; i < fileList.Length; i++)
             {
-                basepath = fileList[i].Substring(source.Length + 1);
-                targetpath = Path.Combine(target, basepath);
+                var basePath   = fileList[i].Substring(source.Length + 1);
+                var targetPath = Path.Combine(target, basePath);
 
-                if (!Directory.Exists(Path.GetDirectoryName(targetpath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(targetpath));
+                if (!Directory.Exists(Path.GetDirectoryName(targetPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
 
-                if (File.Exists(targetpath))
-                    File.Delete(targetpath);
+                if (File.Exists(targetPath))
+                    File.Delete(targetPath);
 
-                File.Move(fileList[i], targetpath);
-                Console.WriteLine($"\rMoving {i + 1}/{fileList.Length}: {basepath}");
+                File.Move(fileList[i], targetPath);
+                Logger.LogWriteLine($"\rMoving {i + 1}/{fileList.Length}: {basePath}", LogType.Default, true);
             }
         }
 
@@ -64,15 +62,15 @@ namespace CollapseLauncher
                         }
                     };
 
-                    Registry.CurrentUser.OpenSubKey(@"Software\Bp\Better HI3 Launcher", true)
+                    Registry.CurrentUser.OpenSubKey(@"Software\Bp\Better HI3 Launcher", true)!
                         .SetValue(registryName,
                         Encoding.UTF8.GetBytes(info.Serialize(InternalAppJSONContext.Default.BHI3LInfo)),
                         RegistryValueKind.Binary);
                 }
                 catch (Exception ex)
                 {
+                    Logger.LogWriteLine($"Failed when trying to move from BetterHi3Launcher {ex}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    Console.WriteLine($"{ex}");
                 }
             }
 
@@ -102,7 +100,7 @@ namespace CollapseLauncher
                 IniFile iniFile = IniFile.LoadFrom(configFilePath);
                 sourceGame = ConverterTool.NormalizePath(iniFile["launcher"]["game_install_path"].ToString());
                 targetGame = Path.Combine(target, Path.GetFileName(sourceGame));
-                Console.WriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}");
+                Logger.LogWriteLine($"Moving From:\r\n\t{source}\r\nTo Destination:\r\n\t{target}", LogType.Default, true);
                 try
                 {
                     MoveOperation(sourceGame, targetGame);

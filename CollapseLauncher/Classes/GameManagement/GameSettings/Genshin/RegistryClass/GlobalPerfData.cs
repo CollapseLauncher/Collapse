@@ -307,7 +307,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             else
             {
-                tempData = globalPerfJson.Deserialize(GenshinSettingsJSONContext.Default.GlobalPerfData) ?? new GlobalPerfData();
+                tempData = globalPerfJson?.Deserialize(GenshinSettingsJSONContext.Default.GlobalPerfData) ?? new GlobalPerfData();
             }
 
             // Initialize globalPerf with a preset
