@@ -1451,6 +1451,8 @@
     "LoadingTitle": "Procesando",
     "LoadingSubtitle1": "Calculando Archivos Existentes ({0} archivo(s) encontrados - {1} en total)...",
     "LoadingSubtitle2": "Comprobando disponibilidad de pkg_version...",
+    "LoadingSubtitle3": "Es posible que la interfaz no responda durante el proceso...",
+    "DeleteSubtitle": "Eliminando Archivos...",
     "BottomButtonDeleteAllFiles": "Eliminar todos los archivos",
     "BottomButtonDeleteSelectedFiles": "Eliminar {0} Archivo(s) seleccionado(s)",
     "BottomCheckboxFilesSelected": "{0} Archivo(s) seleccionado(s) ({1} / {2} Total)",
