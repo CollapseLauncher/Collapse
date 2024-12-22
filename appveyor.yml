@@ -137,17 +137,6 @@ for:
 
         echo.
 
-        echo Install InnoSetup
-
-        set innoinstall=%temp%\innosetup.exe
-
-        curl "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" --output %innoinstall%
-
-
-        cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
-
-        echo.
-
         echo Install dotnet sdk
 
         choco install dotnet-sdk --pre
@@ -170,15 +159,13 @@ for:
 
         set channel=stable
 
-        set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-
         echo.
 
         echo Build app...
 
         dotnet restore
 
-        dotnet publish CollapseLauncher -c Publish -p:PublishProfile=Publish-StableReleaseAOT -p:PublishDir=".\stable-build\"
+        dotnet publish CollapseLauncher -c Publish -p:PublishProfile=Publish-StableRelease -p:PublishDir=".\stable-build\"
 
 
         echo Getting app version...
@@ -204,13 +191,6 @@ for:
 
         curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
 
-
-        echo Making innosetup file...
-
-        mkdir InnoTarget
-
-        %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
-
         echo.
 
 
@@ -220,11 +200,7 @@ for:
 
         mkdir SignArtifact\BuildArtifact-%version%
 
-        mkdir SignArtifact\InnoInstaller
-
         xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
-
-        xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
 
         
     test: off
@@ -234,7 +210,7 @@ for:
 
     deploy:
     - provider: Webhook
-      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=aot-release
+      url: https://app.signpath.io/API/v1/6988fc60-19f4-4710-8eb7-e837c60c83b4/Integrations/AppVeyor?ProjectSlug=Collapse&SigningPolicySlug=release-signing&ArtifactConfigurationSlug=initial
       authorization:
         secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
       on:
