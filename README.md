@@ -227,7 +227,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.8/CollapseLauncher-preview-Setup.exe)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.8/CollapseLauncher-stable-Setup.exe)
 > **Note**: The version for this build is `1.82.8` (Released on: December 22nd, 2024).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.8-pre/CollapseLauncher-preview-Setup.exe)
