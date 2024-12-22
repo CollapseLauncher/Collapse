@@ -1737,10 +1737,10 @@ namespace CollapseLauncher.InstallManager.Base
                     continue;
                 }
 
-                string outputPath = EnsureCreationOfDirectory(Path.Combine(_gamePath, zipEntry.Key));
+                string outputPath = Path.Combine(_gamePath, zipEntry.Key);
+                FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
 
-                await using FileStream outputStream =
-                    new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Write);
+                await using FileStream outputStream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.Write);
                 await using Stream entryStream = zipEntry.OpenEntryStream();
 
                 Task runningTask = Task.Factory.StartNew(
