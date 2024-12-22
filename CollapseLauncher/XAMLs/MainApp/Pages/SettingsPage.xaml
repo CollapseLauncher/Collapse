@@ -1,4 +1,4 @@
-﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.SettingsPage"
@@ -1121,23 +1121,23 @@
                                      IsSpellCheckEnabled="False"
                                      PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url_Example}"
                                      Text="{x:Bind DbUrl, Mode=TwoWay}"
-                                     TextChanged="DbTextBox_OnTextChanged"/>
+                                     TextChanged="DbTextBox_OnTextChanged" />
                             <PasswordBox x:Name="DbTokenPasswordBox"
                                          Grid.Row="1"
-                                         Grid.ColumnSpan="2" 
                                          Grid.Column="0"
+                                         Grid.ColumnSpan="2"
                                          Margin="0,8,0,8"
                                          HorizontalAlignment="Stretch"
                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Token}"
                                          InputScope="Password"
                                          IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                          Password="{x:Bind DbToken, Mode=TwoWay}"
-                                         PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbTokenPasswordBox}"
-                                         PasswordChanged="DbTokenPasswordBox_OnPasswordChanged"/>
+                                         PasswordChanged="DbTokenPasswordBox_OnPasswordChanged"
+                                         PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbTokenPasswordBox}" />
                             <TextBox x:Name="DbUserIdTextBox"
                                      Grid.Row="2"
-                                     Grid.ColumnSpan="2" 
                                      Grid.Column="0"
+                                     Grid.ColumnSpan="2"
                                      Margin="0,8,0,8"
                                      HorizontalAlignment="Stretch"
                                      GotFocus="DbUserIdTextBox_GotFocus"
@@ -1147,7 +1147,7 @@
                                      LostFocus="DbUserIdTextBox_LostFocus"
                                      PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbUserIdTextBox}"
                                      Text="{x:Bind DbUserId, Mode=TwoWay}"
-                                     TextChanged="DbTextBox_OnTextChanged"/>
+                                     TextChanged="DbTextBox_OnTextChanged" />
                             <Button x:Name="GenerateGuidButton"
                                     Grid.Row="3"
                                     Grid.Column="0"
@@ -1580,6 +1580,37 @@
                         <Run Text="~neon-nyan" />
                     </TextBlock>
                 </StackPanel>
+                <Button x:Name="ButtonLinkWebsiteCollapse"
+                        Margin="0,8,0,8"
+                        Padding="16,12"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Click="ClickButtonLinkFromTag"
+                        CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonLinkWebsiteCollapse)}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Tag="https://collapselauncher.com">
+                    <Grid Margin="0,-2,0,0"
+                          HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid HorizontalAlignment="Left">
+                            <TextBlock HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Left"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.WebsiteBtn}" />
+                        </Grid>
+                        <FontIcon Grid.Column="1"
+                                  Margin="8,0,3,0"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Center"
+                                  FontFamily="{ThemeResource FontAwesomeSolid}"
+                                  FontSize="20"
+                                  Glyph="&#xF0AC;" />
+                    </Grid>
+                </Button>
                 <Button x:Name="ButtonLinkDiscordCollapse"
                         Margin="0,8,0,8"
                         Padding="16,12"
