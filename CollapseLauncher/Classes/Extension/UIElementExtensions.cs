@@ -18,7 +18,6 @@ using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Text;
 using Hi3Helper.SentryHelper;
-using System.Collections.ObjectModel;
 
 namespace CollapseLauncher.Extension
 {
