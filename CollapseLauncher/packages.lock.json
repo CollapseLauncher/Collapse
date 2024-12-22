@@ -101,15 +101,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.38.0, )",
-        "resolved": "0.38.0",
-        "contentHash": "zfi6kNm5QJnsCGm5a0hMG2qw8juYbOfsS4c1OuTcqkbYQUCdkam6d6Nt7nPIrbV4D+U7sHChidSQlg+ViiMPuw=="
-      },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0, )",
-        "resolved": "9.0.0",
-        "contentHash": "bbnlV2PbUmCQ8Ndpx0kJaicLyV28IU+4IzyctQLL57+DxrHurYr2qsJrC8+yD44Q0DyPfv2oM168c1Tk6Bxbmg=="
+        "requested": "[0.39.1, )",
+        "resolved": "0.39.1",
+        "contentHash": "/68yhkMdCWYv291WQdizR2n2nKSvk4wg58DLba9tSBil7g1EuaTrkw4XQLDZvHr2jG5oRwtrp8eMMROxsRF/Ow=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -128,11 +122,11 @@
       },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.3.0, )",
-        "resolved": "1.3.0",
-        "contentHash": "Jj5KSGhGjrzUNOt86CLKTvwI+Ez/OmpiwTn8X1Xf5h5Ek+UWV2PQCvFjmpJegeQi17KNVjCCQITPhuphJH31Hw==",
+        "requested": "[1.3.1, )",
+        "resolved": "1.3.1",
+        "contentHash": "7FLvK50wy9yakOh2ubvfTojjMENgiGRf0oIW4z04IFhsgQlPR7zUTcfIHJbhEYYAeynRm6zg9ixs2RPlPxlOow==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.6.240923002"
+          "Microsoft.WindowsAppSDK": "1.6.241114003"
         }
       },
       "Microsoft.NET.ILLink.Tasks": {
@@ -271,11 +265,11 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[0.0.942, )",
-        "resolved": "0.0.942",
-        "contentHash": "reyKfQK/d4WeFHjd9gi1tsWFh9X5JGGQ+PkvKFd9jKx5HocrFYF0bj1K8PgIk2GZezoadapFT36Fvv8/gCD5rA==",
+        "requested": "[0.0.1015, )",
+        "resolved": "0.0.1015",
+        "contentHash": "j+6sQfhJQOu/x3Rm4hSboDKdcrOdXFF7dNToz4bx1knUge3zCHJciDf4JUuTJHidzPTM//9IHCCAnDFbuMBfGA==",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "NuGet.Versioning": "6.12.1"
         }
       },
@@ -365,8 +359,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "4.13.0",
-        "contentHash": "Wfw3M1WpFcrYaGzPm7QyUTfIOYkVXQ1ry6p4WYjhbLz9fPwV23SGQZTFDpdox67NHM0V0g1aoQ4YKLm4ANtEEg=="
+        "resolved": "5.0.0",
+        "contentHash": "VCqGv7bE8rnEI4m8+lrxLFFGMrOMvOTArz51gj+1MID5Zzhi9KNoDIjJb1qLY2ys90Cr2YH5HSXcTg5mCG2beQ=="
       },
       "System.Drawing.Common": {
         "type": "Transitive",
@@ -442,7 +436,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[4.13.0, )"
+          "Sentry": "[5.0.0, )"
         }
       },
       "hi3helper.enctool": {
@@ -477,7 +471,7 @@
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.241112-preview1, )",
           "CommunityToolkit.WinUI.Media": "[8.2.241112-preview1, )",
-          "Microsoft.Graphics.Win2D": "[1.3.0, )",
+          "Microsoft.Graphics.Win2D": "[1.3.1, )",
           "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
@@ -522,22 +516,13 @@
         "resolved": "0.5.0",
         "contentHash": "5Tw6O9sBDAN1aV+kpOSVvqvFk6Ahk6bYz0TTx3808Dp40M45gKTtzTzI9SS1VeAkljE6BAOeKaykpPnG36oOgw=="
       },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.0, )",
-        "resolved": "9.0.0",
-        "contentHash": "bbnlV2PbUmCQ8Ndpx0kJaicLyV28IU+4IzyctQLL57+DxrHurYr2qsJrC8+yD44Q0DyPfv2oM168c1Tk6Bxbmg==",
-        "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.0"
-        }
-      },
       "Microsoft.Graphics.Win2D": {
         "type": "Direct",
-        "requested": "[1.3.0, )",
-        "resolved": "1.3.0",
-        "contentHash": "Jj5KSGhGjrzUNOt86CLKTvwI+Ez/OmpiwTn8X1Xf5h5Ek+UWV2PQCvFjmpJegeQi17KNVjCCQITPhuphJH31Hw==",
+        "requested": "[1.3.1, )",
+        "resolved": "1.3.1",
+        "contentHash": "7FLvK50wy9yakOh2ubvfTojjMENgiGRf0oIW4z04IFhsgQlPR7zUTcfIHJbhEYYAeynRm6zg9ixs2RPlPxlOow==",
         "dependencies": {
-          "Microsoft.WindowsAppSDK": "1.6.240923002"
+          "Microsoft.WindowsAppSDK": "1.6.241114003"
         }
       },
       "Microsoft.Web.WebView2": {

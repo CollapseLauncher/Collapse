@@ -34,7 +34,13 @@ namespace CollapseLauncher
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
 #else
 #nullable enable
-        public async Task DownloadFile(string url, string targetFile, Action<int> progress, string? authorization = null, string? accept = null, CancellationToken cancelToken = default)
+        public async Task DownloadFile(string url,
+                                       string targetFile,
+                                       Action<int> progress,
+                                       string? authorization = null,
+                                       string? accept = null,
+                                       double timeout = 30.0,
+                                       CancellationToken cancelToken = default)
 #endif
         {
             // Initialize new proxy-aware HttpClient
@@ -71,7 +77,7 @@ namespace CollapseLauncher
 #if !USEVELOPACK
         public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
 #else
-        public async Task<byte[]> DownloadBytes(string url, string? authorization = null, string? accept = null)
+        public async Task<byte[]> DownloadBytes(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
 #endif
         {
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
@@ -83,7 +89,7 @@ namespace CollapseLauncher
 #if !USEVELOPACK
         public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
 #else
-        public async Task<string> DownloadString(string url, string? authorization = null, string? accept = null)
+        public async Task<string> DownloadString(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
 #endif
         {
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
