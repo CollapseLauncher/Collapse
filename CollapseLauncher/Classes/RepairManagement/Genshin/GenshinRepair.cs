@@ -9,7 +9,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    public enum GenshinAudioLanguage : int
+    public enum GenshinAudioLanguage
     {
         English = 0,
         Chinese = 1,
@@ -90,9 +90,6 @@ namespace CollapseLauncher
 
         private async Task<bool> RepairRoutine()
         {
-            // Restart Stopwatch
-            RestartStopwatch();
-
             // Assign repair task
             Task<bool> repairTask = Repair(_assetIndex, _token.Token);
 
@@ -103,7 +100,7 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            _status!.IsCompleted = true;
+            _status.IsCompleted = true;
             _status.IsCanceled = false;
             _status.ActivityStatus = Lang._GameRepairPage.Status7;
 

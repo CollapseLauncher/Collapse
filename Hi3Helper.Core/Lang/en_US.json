@@ -538,7 +538,7 @@
     "Disclaimer1": "This app is not affiliated with",
     "Disclaimer2": "by any means",
     "Disclaimer3": "and completely open-sourced. Any contribution is welcomed.",
-
+    "WebsiteBtn": "Visit our Website",
     "DiscordBtn1": "Join our Armada Discord!",
     "DiscordBtn2": "Honkai Impact 3rd Discord",
     "DiscordBtn3": "Collapse's Official Discord!",
@@ -566,7 +566,7 @@
     "AppBehavior_LaunchOnStartup": "Automatically start Collapse when your computer boots up",
     "AppBehavior_StartupToTray": "Hide Collapse window when it started up automatically",
 
-    "Waifu2X_Toggle": "Use Waifu2X [Experimental]",
+    "Waifu2X_Toggle": "Use Waifu2X",
     "Waifu2X_Help": "Use Waifu2X to enlarge background images.\nWhen turned on, the image quality is significantly improved, but it will take a little more time to load the image for the first time.",
     "Waifu2X_Help2": "Only available for still images!",
     "Waifu2X_Warning_CpuMode": "WARNING: No available Vulkan GPU device was found and CPU mode will be used. This will greatly increase image processing time.",
@@ -1451,6 +1451,8 @@
     "LoadingTitle": "Processing",
     "LoadingSubtitle1": "Calculating Existing Files ({0} file(s) found - {1} in total)...",
     "LoadingSubtitle2": "Checking pkg_version's availability...",
+    "LoadingSubtitle3": "UI might be unresponsive during this process...",
+    "DeleteSubtitle": "Deleting files...",
     "BottomButtonDeleteAllFiles": "Delete All Files",
     "BottomButtonDeleteSelectedFiles": "Delete {0} Selected File(s)",
     "BottomCheckboxFilesSelected": "{0} File(s) Selected ({1} / {2} Total)",

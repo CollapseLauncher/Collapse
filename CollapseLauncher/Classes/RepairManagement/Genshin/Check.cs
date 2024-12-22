@@ -27,14 +27,11 @@ namespace CollapseLauncher
             List<PkgVersionProperties> brokenAssetIndex = new List<PkgVersionProperties>();
 
             // Set Indetermined status as false
-            _status!.IsProgressAllIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
             _status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
-
-            // Reset stopwatch
-            RestartStopwatch();
 
             // Ensure to delete the DXSetup files
             EnsureDeleteDXSetupFiles();
@@ -158,7 +155,7 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status!.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
 
             // Increment current total count
             _progressAllCountCurrent++;

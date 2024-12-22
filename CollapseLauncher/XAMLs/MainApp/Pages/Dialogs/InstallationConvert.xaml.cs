@@ -195,8 +195,7 @@ namespace CollapseLauncher.Dialogs
             if (!File.Exists(INIPath))
                 return false;
 
-            SourceIniFile = new IniFile();
-            SourceIniFile.Load(INIPath);
+            SourceIniFile = IniFile.LoadFrom(INIPath);
             try
             {
                 GamePath = NormalizePath(SourceIniFile["launcher"]["game_install_path"].ToString());
@@ -218,8 +217,7 @@ namespace CollapseLauncher.Dialogs
                 // Try load the Version INI file
                 string SourceINIVersionPath = Path.Combine(GamePath, "config.ini");
                 if (!File.Exists(SourceINIVersionPath)) return false;
-                IniFile SourceIniVersionFile = new IniFile();
-                SourceIniVersionFile.Load(SourceINIVersionPath);
+                IniFile SourceIniVersionFile = IniFile.LoadFrom(SourceINIVersionPath);
 
                 // Check if the version value exist and matches
                 if (!(SourceIniVersionFile.ContainsKey("General") && SourceIniVersionFile["General"].ContainsKey("game_version"))) return false;

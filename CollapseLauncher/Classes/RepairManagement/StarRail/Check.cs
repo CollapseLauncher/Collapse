@@ -70,21 +70,15 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
 
             // Set Indetermined status as false
-            if (_status != null)
-            {
-                _status.IsProgressAllIndetermined     = false;
-                _status.IsProgressPerFileIndetermined = false;
+            _status.IsProgressAllIndetermined     = false;
+            _status.IsProgressPerFileIndetermined = false;
 
-                // Show the asset entry panel
-                _status.IsAssetEntryPanelShow = true;
-            }
+            // Show the asset entry panel
+            _status.IsAssetEntryPanelShow = true;
 
             // Await the task for parallel processing
             try
             {
-                // Reset stopwatch
-                RestartStopwatch();
-
                 // Iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
@@ -122,11 +116,8 @@ namespace CollapseLauncher
         private async ValueTask CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            if (_status != null)
-            {
-                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
-                                                       StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
-            }
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
+                                                   StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
             _progressAllCountCurrent++;
@@ -221,11 +212,8 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            if (_status != null)
-            {
-                _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
-                                                       StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
-            }
+            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
+                                                   StarRailRepairExtension.GetFileRelativePath(asset.N, _gamePath));
 
             // Increment current total count
             _progressAllCountCurrent++;

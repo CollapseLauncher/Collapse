@@ -566,7 +566,7 @@
     "AppBehavior_LaunchOnStartup": "开机时自动启动 Collapse",
     "AppBehavior_StartupToTray": "自动启动时隐藏 Collapse 窗口",
 
-    "Waifu2X_Toggle": "使用 Waifu2X [实验性]",
+    "Waifu2X_Toggle": "使用 Waifu2X",
     "Waifu2X_Help": "使用 Waifu2X 放大背景图像。\n开启后，图像质量会有显著提升，但首次加载图像时会多花一些时间。",
     "Waifu2X_Help2": "仅对静态图像生效！",
     "Waifu2X_Warning_CpuMode": "警告：未找到可用的 Vulkan GPU 设备，将使用 CPU 模式。这将极大增加图像处理时间。",
@@ -1451,6 +1451,8 @@
     "LoadingTitle": "处理中……",
     "LoadingSubtitle1": "正在计算现有文件（找到 {0} 个文件 - 总共 {1} 个）……",
     "LoadingSubtitle2": "正在检查 pkg_version 的可用性……",
+    "LoadingSubtitle3": "在此过程中，UI 可能会无响应...",
+    "DeleteSubtitle": "正在删除文件……",
     "BottomButtonDeleteAllFiles": "删除所有文件",
     "BottomButtonDeleteSelectedFiles": "删除 {0} 个选中的文件",
     "BottomCheckboxFilesSelected": "选中了 {0} 个文件（总计 {1}/{2}）",

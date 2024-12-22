@@ -68,9 +68,6 @@ namespace CollapseLauncher
 
         private async Task<bool> UpdateRoutine()
         {
-            // Restart stopwatch
-            RestartStopwatch();
-
             // Assign update task
             Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex, _token.Token);
 

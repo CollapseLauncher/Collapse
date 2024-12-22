@@ -22,7 +22,6 @@ namespace CollapseLauncher
     {
         
     #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
-        public static string               UpdateChannelName = "stable";
         public static AppUpdateVersionProp UpdateProperty;
         public static bool                 isUpdateCooldownActive;
     #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value

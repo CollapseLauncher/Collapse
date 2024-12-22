@@ -28,9 +28,6 @@ namespace CollapseLauncher
             // Await the task for parallel processing
             try
             {
-                // Reset stopwatch
-                RestartStopwatch();
-
                 // Iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = _threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
@@ -38,18 +35,9 @@ namespace CollapseLauncher
                     switch (asset.FT)
                     {
                         case FileType.Generic:
-                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
-                            break;
                         case FileType.Block:
-                            // await CheckAssetType(asset, brokenAssetIndex, threadToken);
-                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
-                            break;
                         case FileType.Audio:
-                            // await CheckAssetType(asset, brokenAssetIndex, threadToken);
-                            await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
-                            break;
                         case FileType.Video:
-                            // await CheckAssetType(asset, brokenAssetIndex, threadToken);
                             await CheckGenericAssetType(asset, brokenAssetIndex, threadToken);
                             break;
                     }

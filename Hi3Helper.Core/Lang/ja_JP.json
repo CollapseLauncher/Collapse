@@ -566,7 +566,7 @@
     "AppBehavior_LaunchOnStartup": "Windows起動時にCollapseを自動で起動",
     "AppBehavior_StartupToTray": "自動で起動した場合はウィンドウを最小化する",
 
-    "Waifu2X_Toggle": "Waifu2Xを使う [実験的機能]",
+    "Waifu2X_Toggle": "Waifu2Xを使う",
     "Waifu2X_Help": "背景画像の拡大処理にWaifu2Xを使用します。\n有効にすると画質が大幅に向上しますが、画像の初回読み込みにかかる時間が少し長くなります。",
     "Waifu2X_Help2": "画像にのみ有効です！",
     "Waifu2X_Warning_CpuMode": "警告：有効なVulkan対応GPUが見つからないため、CPUモードを使用します。画像処理にかかる時間が大幅に長くなります。",

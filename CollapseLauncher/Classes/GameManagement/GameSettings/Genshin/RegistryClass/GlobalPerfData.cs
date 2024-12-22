@@ -120,6 +120,8 @@ namespace CollapseLauncher.GameSettings.Genshin
         // Generate the list of the FPSOption value and order by ascending it.
         public static readonly FPSOption[] FPSOptionsList = Enum.GetValues<FPSOption>().OrderBy(GetFPSOptionNumber).ToArray();
         // Generate the list of the FPS number to be displayed on FPS Combobox
+        // Queried in XAML, ReSharper fails to find it
+        // ReSharper disable once CollectionNeverQueried.Global
         public static readonly int[] FPSIndex = FPSOptionsList.Select(GetFPSOptionNumber).ToArray();
 
         private static int GetFPSOptionNumber(FPSOption value)
@@ -131,7 +133,9 @@ namespace CollapseLauncher.GameSettings.Genshin
             // Return the number
             return number;
         }
-
+        
+        // Queried in XAML, ReSharper fails to find it
+        // ReSharper disable once CollectionNeverQueried.Global
         public static readonly string[] RenderScaleValuesStr = DictionaryCategory.RenderResolutionOption.Keys.Select(x => x.ToString("0.0")).ToArray();
         public static readonly List<double> RenderScaleValues = DictionaryCategory.RenderResolutionOption.Keys.ToList();
         public static readonly List<int> RenderScaleIndex = DictionaryCategory.RenderResolutionOption.Values.ToList();
@@ -307,7 +311,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             else
             {
-                tempData = globalPerfJson.Deserialize(GenshinSettingsJSONContext.Default.GlobalPerfData) ?? new GlobalPerfData();
+                tempData = globalPerfJson?.Deserialize(GenshinSettingsJSONContext.Default.GlobalPerfData) ?? new GlobalPerfData();
             }
 
             // Initialize globalPerf with a preset

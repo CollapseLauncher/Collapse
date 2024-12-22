@@ -20,13 +20,10 @@ namespace CollapseLauncher
             List<SRAsset> returnAsset = new List<SRAsset>();
 
             // Set Indetermined status as false
-            _status!.IsProgressAllIndetermined = false;
+            _status.IsProgressAllIndetermined = false;
 
             // Show the asset entry panel
             _status.IsAssetEntryPanelShow = true;
-
-            // Reset stopwatch
-            RestartStopwatch();
 
             // Get persistent and streaming paths
             string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager!.GamePreset!.GameExecutableName);
@@ -77,7 +74,7 @@ namespace CollapseLauncher
             lock (this)
             {
                 _progressAllCountCurrent++;
-                _status!.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.AssetType, asset.LocalName);
+                _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.AssetType, asset.LocalName);
                 _status.ActivityAll = string.Format(Lang!._CachesPage!.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
             }
 
@@ -122,7 +119,7 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status!.IsProgressAllIndetermined = false;
+                _status.IsProgressAllIndetermined = false;
                 _progressAllCountFound++;
                 _progressAllSizeFound += asset!.Size;
             }
@@ -145,9 +142,6 @@ namespace CollapseLauncher
                     remoteCRC
                 ))
             );
-
-            // Update the progress and status
-            UpdateProgressCRC();
         }
     }
 }
