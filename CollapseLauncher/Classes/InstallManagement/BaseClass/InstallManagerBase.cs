@@ -2094,7 +2094,9 @@ namespace CollapseLauncher.InstallManager.Base
                 string appDataPath = _gameVersionManager.GameDirAppDataPath;
                 try
                 {
-                    Directory.Delete(appDataPath, true);
+                    if (Directory.Exists(appDataPath))
+                        Directory.Delete(appDataPath, true);
+
                     LogWriteLine($"Deleted {appDataPath}", LogType.Default, true);
                 }
                 catch (Exception ex)
