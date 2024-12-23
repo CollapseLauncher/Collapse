@@ -13,6 +13,7 @@
 [![pt](https://img.shields.io/badge/README-pt-red.svg)](Docs/README.localized/README.pt-pt.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](Docs/README.localized/README.fr-fr.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](Docs/README.localized/README.ru-ru.md)
+[![zh](https://img.shields.io/badge/README-zh-red.svg)](Docs/README.localized/README.zh-cn.md)
 
 **Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
@@ -30,7 +31,7 @@
 
 <p align="center">
     <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
-       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Crowdin" Width=280/>
+       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Transifex" Width=280/>
 	</a>
     &nbsp;
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">
@@ -333,3 +334,4 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
 
 [SignPath Foundation]:https://signpath.org
 [SignPath.io]:https://signpath.io
+[Sentry.io]:https://sentry.io

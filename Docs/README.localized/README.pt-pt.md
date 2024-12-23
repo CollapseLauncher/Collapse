@@ -11,6 +11,8 @@
 [![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
+[![zh](https://img.shields.io/badge/README-zh-red.svg)](README.zh-cn.md)
+
 O **Collapse** foi originalmente desenhado para **Honkai Impact 3rd**. No entanto, com a evolução do projeto, o launcher tornou-se numa aplicação para todos os **jogos da miHoYo/Hoyoverse** atualmente lançados.
 
 [![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
