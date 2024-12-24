@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+
 // ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Pages
@@ -285,18 +287,38 @@ namespace CollapseLauncher.Pages
             get
             {
                 int res = Settings.GeneralData?.ResolutionIndex ?? -1;
-                bool isFullscreen = res >= 0 && (res + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
-                IsFullscreenEnabled = isFullscreen;
+                if (res >= 0)
+                {
+                    bool isFullscreen = res >= 0 && (res + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
+                    IsFullscreenEnabled = isFullscreen;
+                    
+                    return res + 1;
+                }
 
-                return res;
+                return 0; // Return 0 if res value is -1 (default resolution)
             }
             set
             {
-                if (value < 0) return;
-                Settings.GeneralData.ResolutionIndex = value;
+                // NOTES!!!
+                // value is 0 based index
+                // -1 is default resolution
+                // but our method was 0 based index too without the default res
+                // so uh, yeah
+                
+                var innerValue = value - 1;
+                if (innerValue < 0) return;
+                Settings.GeneralData.ResolutionIndex = value - 1;
                 // ReSharper disable once SimplifyConditionalTernaryExpression
-                bool isFullscreen = (value + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[value] : false;
+                bool isFullscreen = (innerValue + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[innerValue] : false;
                 IsFullscreenEnabled = isFullscreen;
+
+                Settings.SettingsScreen.width =
+                    int.Parse(Regex.Replace(GameResolutionSelector.Items[value > 0 ? value : 1].ToString().Split('x')[0],
+                                            @"\D", ""));
+                
+                Settings.SettingsScreen.height =
+                    int.Parse(Regex.Replace(GameResolutionSelector.Items[value > 0 ? value : 1].ToString().Split('x')[1],
+                                            @"\D", ""));
             }
         }
         #endregion

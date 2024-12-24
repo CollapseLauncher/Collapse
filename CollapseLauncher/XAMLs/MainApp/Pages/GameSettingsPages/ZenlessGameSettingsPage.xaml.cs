@@ -161,6 +161,7 @@ namespace CollapseLauncher.Pages
                 BackgroundImgChanger.ToggleBackground(true);
 
                 var resList = new List<string>();
+                resList.Add(Lang._SettingsPage.AppThemes_Default);
                 List<string> resFullscreen = GetResPairs_Fullscreen();
                 List<string> resWindowed = GetResPairs_Windowed();
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resFullscreen.Count).Select(_ => true));
