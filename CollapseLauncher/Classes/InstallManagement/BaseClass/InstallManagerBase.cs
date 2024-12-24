@@ -1014,7 +1014,8 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
                     var processingInfoPair = new ConcurrentDictionary<SophonChunksInfo, byte>();
-                    foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
+                    var infoPairListCopy   = sophonInfoPairList.ToList(); 
+                    foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in infoPairListCopy)
                     {
                         if (!processingInfoPair.TryAdd(sophonDownloadInfoPair.ChunksInfo, 0))
                         {
