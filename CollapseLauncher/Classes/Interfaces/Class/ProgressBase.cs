@@ -751,7 +751,9 @@ namespace CollapseLauncher.Interfaces
             // Get the URL and get the remote stream of the zip file
             // Also buffer the stream to memory
             string?                          url            = _gameVersionManager.GameAPIProp.data.sdk.path;
-            using HttpResponseMessage        httpResponse   = await FallbackCDNUtil.GetURLHttpResponse(url, token);
+            if (url == null) throw new NullReferenceException();
+
+            HttpResponseMessage httpResponse = await FallbackCDNUtil.GetURLHttpResponse(url, token);
             await using BridgedNetworkStream httpStream     = await FallbackCDNUtil.GetHttpStreamFromResponse(httpResponse, token);
             await using MemoryStream         bufferedStream = await BufferSourceStreamToMemoryStream(httpStream, token);
             using ZipArchive                 zip            = new ZipArchive(bufferedStream, ZipArchiveMode.Read, true);

@@ -288,7 +288,7 @@ namespace CollapseLauncher
         {
             try
             {
-                // Get the URL Status then return boolean and and URLStatus
+                // Get the URL Status then return boolean and URLStatus
                 CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(cdnProp, relativeURL, token, isForceUncompressRequest);
 
                 // If URL status is false, then return null
@@ -433,14 +433,14 @@ namespace CollapseLauncher
                 LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
                 // Try check the status of the URL
-                HttpResponseMessage responseMessage = await GetURLHttpResponse(absoluteURL, token, isUncompressRequest);
+                var httpResponse = await GetURLHttpResponse(absoluteURL, token, isUncompressRequest);
 
                 // If it's not a successful code, log the information
-                if (!responseMessage.IsSuccessStatusCode)
-                    LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {responseMessage.StatusCode} ({(int)responseMessage.StatusCode})", LogType.Error, true);
+                if (!httpResponse.IsSuccessStatusCode)
+                    LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {httpResponse.StatusCode} ({(int)httpResponse.StatusCode})", LogType.Error, true);
 
                 // Then return the status code
-                return new CDNUtilHTTPStatus(responseMessage);
+                return new CDNUtilHTTPStatus(httpResponse);
             }
             catch (Exception ex)
             {
@@ -465,12 +465,48 @@ namespace CollapseLauncher
             // Return the CDN property as per index
             return CDNList[cdnIndex];
         }
+        
+        #nullable enable
+        public static async Task<HttpResponseMessage> GetURLHttpResponse(string Url,
+                                                                          CancellationToken token,
+                                                                          bool isForceUncompressRequest = false,
+                                                                          int maxRetries = 3,
+                                                                          int delayMilliseconds = 1000)
+        {
+            HttpResponseMessage hR;
+            int attempt = 0;
 
-        public static async Task<HttpResponseMessage> GetURLHttpResponse(string URL, CancellationToken token, bool isForceUncompressRequest = false)
-            => isForceUncompressRequest ? await _clientNoCompression.GetURLHttpResponse(URL, HttpMethod.Get, token)
-                                        : await _client.GetURLHttpResponse(URL, HttpMethod.Get, token);
+            while (attempt < maxRetries)
+            {
+                try
+                {
+                    if (isForceUncompressRequest)
+                    {
+                        hR = await _clientNoCompression.GetURLHttpResponse(Url, HttpMethod.Get, token);
+                    }
+                    else
+                    {
+                        hR = await _client.GetURLHttpResponse(Url, HttpMethod.Get, token);
+                    }
 
-#nullable enable
+                    return hR;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine("Failed to get URL response from: " + Url + "\r\n" + ex, LogType.Error, true);
+                    if (attempt >= maxRetries - 1)
+                    {
+                        throw;
+                    }
+                }
+
+                attempt++;
+                await Task.Delay(delayMilliseconds, token);
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        }
+
         public static async Task<T?> DownloadAsJSONType<T>(string? URL, JsonTypeInfo<T> typeInfo, CancellationToken token)
             => await _client.GetFromJsonAsync(URL, typeInfo, token);
 
@@ -489,7 +525,7 @@ namespace CollapseLauncher
 
         public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
-            HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
+            var responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
