@@ -126,7 +126,7 @@ namespace CollapseLauncher.Pages
                 return relativeFilePath;
             }).ToArray();
         }
-
+        
         private void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
@@ -153,6 +153,9 @@ namespace CollapseLauncher.Pages
                 ToggleRegistrySubscribe(true);
             }
         }
+        
+        private bool                HasWeirdResolution { get; set; }
+        private System.Drawing.Size SizeProp           { get; set; }
 
         private void InitializeSettings(object sender, RoutedEventArgs e)
         {
@@ -160,8 +163,9 @@ namespace CollapseLauncher.Pages
             {
                 BackgroundImgChanger.ToggleBackground(true);
 
-                var resList = new List<string>();
-                resList.Add(Lang._SettingsPage.AppThemes_Default);
+                var resList   = new List<string>();
+                SizeProp = WindowUtility.CurrentScreenProp.GetScreenSize();
+                //SizeProp = new System.Drawing.Size(2560, 1600);
                 List<string> resFullscreen = GetResPairs_Fullscreen();
                 List<string> resWindowed = GetResPairs_Windowed();
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resFullscreen.Count).Select(_ => true));
@@ -170,7 +174,14 @@ namespace CollapseLauncher.Pages
                 resList.AddRange(GetResPairs_Fullscreen());
                 resList.AddRange(GetResPairs_Windowed());
                 
-                GameResolutionSelector.ItemsSource = resList;
+                var nativeRes = $"{SizeProp.Width}x{SizeProp.Height}";
+                if (!resList[0].StartsWith(nativeRes))
+                {
+                    resList.Insert(0, $"{Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp1} {string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, SizeProp.Width, SizeProp.Height)}");
+                    HasWeirdResolution = true;
+                }
+                GameResolutionSelector.ItemsSource   = resList;
+                GameResolutionSelector.SelectedIndex = ResolutionIndexSelected; // Refresh
 
                 if (CurrentGameProperty.IsGameRunning)
                 {
@@ -209,11 +220,11 @@ namespace CollapseLauncher.Pages
         
         private List<string> GetResPairs_Fullscreen()
         {
-            var displayProp    = WindowUtility.CurrentScreenProp.GetScreenSize();
-            var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
+            var nativeAspRatio = (double)SizeProp.Width / SizeProp.Height;
             var acH            = acceptableHeight;
             
             acH.RemoveAll(h => h > WindowUtility.CurrentScreenProp.GetMaxHeight());
+            //acH.RemoveAll(h => h > 1600);
             
             List<string> resPairs = new List<string>();
 
@@ -228,19 +239,18 @@ namespace CollapseLauncher.Pages
 
         private List<string> GetResPairs_Windowed()
         {
-            var displayProp    = WindowUtility.CurrentScreenProp.GetScreenSize();
-            var nativeAspRatio = (double)displayProp.Width / displayProp.Height;
+            var nativeAspRatio = (double)SizeProp.Width / SizeProp.Height;
             var wideRatio      = (double)16 / 9;
             var ulWideRatio    = (double)21 / 9;
             var acH            = acceptableHeight;
             
             acH.RemoveAll(h => h > WindowUtility.CurrentScreenProp.GetMaxHeight());
-            
+            //acH.RemoveAll(h => h > 1600);
             List<string> resPairs = new List<string>();
 
             // If res is 21:9 then add proper native to the list
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
-                resPairs.Add($"{displayProp.Width}x{displayProp.Height}");
+                resPairs.Add($"{SizeProp.Width}x{SizeProp.Height}");
             
             foreach (var h in acH)
             {

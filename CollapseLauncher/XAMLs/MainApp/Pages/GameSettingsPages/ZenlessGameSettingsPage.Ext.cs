@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.Helper;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
@@ -287,16 +288,18 @@ namespace CollapseLauncher.Pages
             get
             {
                 int res = Settings.GeneralData?.ResolutionIndex ?? -1;
-                if (res > 0)
+                if (res < 0)
                 {
-                    // ReSharper disable once SimplifyConditionalTernaryExpression
-                    bool isFullscreen = res + 1 < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
-                    IsFullscreenEnabled = isFullscreen;
-                    
-                    return res + 1;
+                    IsFullscreenEnabled = true;
+                    return 0;
                 }
+                // ReSharper disable once SimplifyConditionalTernaryExpression
+                bool isFullscreen = res + 1 < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
+                IsFullscreenEnabled = isFullscreen;
+                
+                var retVal = res;
 
-                return 0; // Return 0 if res value is -1 (default resolution) or 0 (practically default)
+                return retVal;
             }
             set
             {
@@ -305,20 +308,29 @@ namespace CollapseLauncher.Pages
                 // -1 is default resolution
                 // but our method was 0 based index too without the default res
                 // so uh, yeah
+                if (HasWeirdResolution && value == 0)
+                {
+                    Settings.GeneralData.ResolutionIndex = -1;
+                    Settings.SettingsScreen.width        = SizeProp.Width;
+                    Settings.SettingsScreen.height       = SizeProp.Height;
+                    return;
+                }
                 
-                var innerValue = value - 1;
-                if (innerValue < 0) return;
-                Settings.GeneralData.ResolutionIndex = value - 1;
+                Settings.GeneralData.ResolutionIndex = value;
+                
+                var innerValue = value - (HasWeirdResolution ? 1 : 0);
+                if (innerValue < 0) innerValue = 0;
+                
                 // ReSharper disable once SimplifyConditionalTernaryExpression
                 bool isFullscreen = innerValue + 1 < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[innerValue] : false;
                 IsFullscreenEnabled = isFullscreen;
 
                 Settings.SettingsScreen.width =
-                    int.Parse(Regex.Replace(GameResolutionSelector.Items[value > 0 ? value : 1].ToString().Split('x')[0],
+                    int.Parse(Regex.Replace(GameResolutionSelector.Items[value].ToString().Split('x')[0],
                                             @"\D", ""));
                 
                 Settings.SettingsScreen.height =
-                    int.Parse(Regex.Replace(GameResolutionSelector.Items[value > 0 ? value : 1].ToString().Split('x')[1],
+                    int.Parse(Regex.Replace(GameResolutionSelector.Items[value].ToString().Split('x')[1],
                                             @"\D", ""));
             }
         }
