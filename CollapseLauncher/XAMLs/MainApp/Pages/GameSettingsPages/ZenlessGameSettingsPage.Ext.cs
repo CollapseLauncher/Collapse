@@ -39,7 +39,7 @@ namespace CollapseLauncher.Pages
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.High;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.High;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
@@ -56,7 +56,7 @@ namespace CollapseLauncher.Pages
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.Medium;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Medium;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
@@ -73,7 +73,7 @@ namespace CollapseLauncher.Pages
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Medium;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.Low;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Low;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
