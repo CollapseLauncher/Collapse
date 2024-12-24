@@ -169,14 +169,14 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            LogWriteLine($"[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been succesfully initialized", LogType.Default, true);
+            LogWriteLine($"[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
         }
 
         public static event EventHandler<DownloadEvent> DownloadProgress;
 
         public static async Task DownloadCDNFallbackContent(DownloadClient downloadClient, string outputPath, int parallelThread, string relativeURL, CancellationToken token)
         {
-            // Get the preferred CDN first and try get the content
+            // Get the preferred CDN first and try to get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
             bool isSuccess = await TryGetCDNContent(preferredCDN, downloadClient, outputPath, relativeURL, parallelThread, token);
 
@@ -214,7 +214,7 @@ namespace CollapseLauncher
             // Argument check
             PerformStreamCheckAndSeek(outputStream);
 
-            // Get the preferred CDN first and try get the content
+            // Get the preferred CDN first and try to get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
             bool isSuccess = await TryGetCDNContent(preferredCDN, downloadClient, outputStream, relativeURL, token);
 
@@ -247,7 +247,7 @@ namespace CollapseLauncher
 
         public static async Task<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
         {
-            // Get the preferred CDN first and try get the content
+            // Get the preferred CDN first and try to get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
             BridgedNetworkStream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
 
@@ -260,7 +260,7 @@ namespace CollapseLauncher
             // If not, then continue to get the content from another CDN
             foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
             {
-                // Reassign and try get the CDN stream
+                // Reassign and try to get the CDN stream
                 contentStream = await TryGetCDNContent(fallbackCDN, relativeURL, token, isForceUncompressRequest);
 
                 // If the stream returns a null, then continue
@@ -313,7 +313,7 @@ namespace CollapseLauncher
 
             try
             {
-                // Get the URL Status then return boolean and and URLStatus
+                // Get the URL Status then return boolean and URLStatus
                 (bool, string) urlStatus = await TryGetURLStatus(cdnProp, downloadClient, relativeURL, token);
 
                 // If URL status is false, then return false
@@ -371,7 +371,7 @@ namespace CollapseLauncher
                 if (!cdnProp.PartialDownloadSupport)
                 {
                     // If the CDN marked to not supporting the partial download, then use single thread mode download.
-                    using FileStream stream = File.Create(outputPath);
+                    await using FileStream stream = File.Create(outputPath);
                     await downloadClient.DownloadAsync(urlStatus.Item2, stream, false, HttpInstanceDownloadProgressAdapter, cancelToken:token);
                     return true;
                 }
@@ -473,13 +473,13 @@ namespace CollapseLauncher
                                                                           int maxRetries = 3,
                                                                           int delayMilliseconds = 1000)
         {
-            HttpResponseMessage hR;
             int attempt = 0;
 
             while (attempt < maxRetries)
             {
                 try
                 {
+                    HttpResponseMessage hR;
                     if (isForceUncompressRequest)
                     {
                         hR = await _clientNoCompression.GetURLHttpResponse(Url, HttpMethod.Get, token);
@@ -506,12 +506,40 @@ namespace CollapseLauncher
 
             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
         }
+        
+        public static async Task<HttpResponseMessage> GetURLHttpResponse(this HttpClient client,
+                                                                         string url,
+                                                                         HttpMethod? httpMethod = null,
+                                                                         CancellationToken token = default,
+                                                                         int maxRetries = 3,
+                                                                         int delayMilliseconds = 1000)
+        {
+            int attempt = 0;
+
+            while (attempt < maxRetries)
+            {
+                try
+                {
+                    return await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
+                }
+                catch (Exception ex) when (!(ex is OperationCanceledException))
+                {
+                    LogWriteLine("Failed to get URL response from: " + url + "\r\n" + ex, LogType.Error, true);
+                    if (attempt >= maxRetries - 1)
+                    {
+                        throw;
+                    }
+                }
+
+                attempt++;
+                await Task.Delay(delayMilliseconds, token);
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        }
 
         public static async Task<T?> DownloadAsJSONType<T>(string? URL, JsonTypeInfo<T> typeInfo, CancellationToken token)
             => await _client.GetFromJsonAsync(URL, typeInfo, token);
-
-        public static async Task<HttpResponseMessage> GetURLHttpResponse(this HttpClient client, string url, HttpMethod? httpMethod = null, CancellationToken token = default)
-            => await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
         public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
              => await _client.GetURLStatusCode(URL, token);
@@ -560,7 +588,7 @@ namespace CollapseLauncher
 
                         // Restart the stopwatch
                         stopwatch.Restart();
-                        // Get the URL Status then return boolean and and URLStatus
+                        // Get the URL Status then return boolean and URLStatus
                         CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
                         latencyAvgArr[j] = !(isSuccess = urlStatus.IsSuccessStatusCode && !urlStatus.IsInitializationError) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
                     }
