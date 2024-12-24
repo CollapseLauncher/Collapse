@@ -123,6 +123,13 @@ namespace CollapseLauncher.InstallManager.Base
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
         protected virtual int _gameVoiceLanguageID => int.MinValue;
 
+        protected virtual string[] _gameVoiceLanguageLocaleIdOrdered => [
+                "zh-cn",
+                "en-us",
+                "ja-jp",
+                "ko-kr"
+                ];
+
         protected virtual string _gameDataPath =>
             Path.Combine(_gamePath,
                          $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data");
@@ -882,8 +889,12 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Get the info pair based on info provided above (for main game file)
                     var sophonMainInfoPair = await
-                        SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game",
-                                                                         _token.Token);
+                        SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
+
+                    // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
+                    RearrangeSophonDataLocaleOrder(sophonMainInfoPair.OtherSophonData);
+
+                    // Add the manifest to the pair list
                     sophonInfoPairList.Add(sophonMainInfoPair);
 
                     List<string> voLanguageList =
@@ -928,6 +939,14 @@ namespace CollapseLauncher.InstallManager.Base
                         _status.IsProgressPerFileIndetermined = false;
                         _status.IsProgressAllIndetermined = false;
                         UpdateStatus();
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
                     }
                     catch (Exception e)
                     {
@@ -1271,11 +1290,13 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token)
-               .ConfigureAwait(false);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token);
             SophonChunkManifestInfoPair requestPairTo = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token)
-               .ConfigureAwait(false);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token);
+
+            // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
+            RearrangeSophonDataLocaleOrder(requestPairFrom.OtherSophonData);
+            RearrangeSophonDataLocaleOrder(requestPairTo.OtherSophonData);
 
             // Add asset to the list
             await foreach (SophonAsset sophonAsset in SophonUpdate
@@ -2593,24 +2614,6 @@ namespace CollapseLauncher.InstallManager.Base
             return Math.Max(0, index);
         }
 
-        protected virtual List<string> GetLanguageDisplayListFromVoicePackList(List<RegionResourceVersion> voicePacks)
-        {
-            List<string> value = [];
-            foreach (RegionResourceVersion Entry in voicePacks)
-            {
-                // Check the lang ID and add the translation of the language to the list
-                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
-                if (string.IsNullOrEmpty(languageDisplay))
-                {
-                    continue;
-                }
-
-                value.Add(languageDisplay);
-            }
-
-            return value;
-        }
-
         protected virtual Dictionary<string, string> GetLanguageDisplayDictFromVoicePackList(
             List<RegionResourceVersion> voicePacks)
         {
@@ -2653,6 +2656,54 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             return value;
+        }
+
+        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion regionResource)
+        {
+            // Rearrange the region resource list order based on matching field for the locale
+            RearrangeDataListLocaleOrder(regionResource.voice_packs, x => x.language);
+        }
+
+        protected virtual void RearrangeSophonDataLocaleOrder(SophonData sophonData)
+        {
+            // Rearrange the sophon data list order based on matching field for the locale
+            RearrangeDataListLocaleOrder(sophonData.ManifestIdentityList, x => x.MatchingField);
+        }
+
+        protected virtual void RearrangeDataListLocaleOrder<T>(List<T> assetDataList, Func<T, string> matchingFieldPredicate)
+        {
+            // Get ordered locale string
+            string[] localeStringOrder = _gameVoiceLanguageLocaleIdOrdered;
+
+            // Separate non-locale and locale manifest list
+            List<T> manifestListMain = assetDataList
+                .Where(x => !IsValidLocaleCode(matchingFieldPredicate(x)))
+                .ToList();
+            List<T> manifestListLocale = assetDataList.
+                Where(x => IsValidLocaleCode(matchingFieldPredicate(x)))
+                .ToList();
+
+            // SLOW: Order the locale manifest list by the localeStringOrder
+            for (int i = 0; i < localeStringOrder.Length; i++)
+            {
+                var localeFound = manifestListLocale.FirstOrDefault(x => matchingFieldPredicate(x).Equals(localeStringOrder[i], StringComparison.OrdinalIgnoreCase));
+                if (localeFound != null)
+                {
+                    // Move from main to locale
+                    manifestListMain.Add(localeFound);
+                    manifestListLocale.Remove(localeFound);
+                }
+            }
+
+            // Add the rest of the unknown locale if exist
+            if (manifestListLocale.Count != 0)
+            {
+                manifestListMain.AddRange(manifestListLocale);
+            }
+
+            // Rearrange by cleaning the list and re-add the sorted list
+            assetDataList.Clear();
+            assetDataList.AddRange(manifestListMain);
         }
 
         protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList,
@@ -3279,6 +3330,7 @@ namespace CollapseLauncher.InstallManager.Base
                         continue;
                     }
 
+                    RearrangeLegacyPackageLocaleOrder(asset);
                     await TryAddResourceVersionList(asset, packageList);
                 }
             }
