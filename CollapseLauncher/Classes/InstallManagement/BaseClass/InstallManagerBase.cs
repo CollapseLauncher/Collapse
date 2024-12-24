@@ -1791,9 +1791,9 @@ namespace CollapseLauncher.InstallManager.Base
                     // Increment total size
                     _progressAllSizeCurrent     += read;
                     _progressPerFileSizeCurrent += read;
-
+                    
                     // Calculate the speed
-                    _progress.ProgressAllSpeed = CalculateSpeed(read);
+                    lock (_progress) _progress.ProgressAllSpeed = CalculateSpeed(read);
 
                     if (!CheckIfNeedRefreshStopwatch())
                     {
@@ -1801,20 +1801,23 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Assign local sizes to progress
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                    lock (_progress)
+                    {
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                    // Calculate percentage
-                    _progress.ProgressAllPercentage =
-                        Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                    _progress.ProgressPerFilePercentage =
-                        Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-                    // Calculate the timelapse
-                    _progress.ProgressAllTimeLeft =
-                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                       .ToTimeSpanNormalized();
+                        // Calculate percentage
+                        _progress.ProgressAllPercentage =
+                            Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
+                        _progress.ProgressPerFilePercentage =
+                            Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
+                        // Calculate the timelapse
+                        _progress.ProgressAllTimeLeft =
+                            ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
+                           .ToTimeSpanNormalized();
+                    }
 
                     UpdateAll();
                 }
@@ -2318,10 +2321,13 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual async ValueTask ApplyHdiffListPatch()
         {
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
-
-            _progress.ProgressAllSizeTotal    = hdiffEntry.Sum(x => x.fileSize);
-            _progress.ProgressAllSizeCurrent   = 0;
             _status.IsIncludePerFileIndicator = false;
+
+            lock (_progress)
+            {
+                _progress.ProgressAllSizeTotal   = hdiffEntry.Sum(x => x.fileSize);
+                _progress.ProgressAllSizeCurrent = 0;
+            }
 
             _progressAllCountTotal = 1;
             _progressAllCountFound = hdiffEntry.Count;
@@ -2371,14 +2377,15 @@ namespace CollapseLauncher.InstallManager.Base
                     lock (_progress)
                     {
                         _progress.ProgressAllSizeCurrent += entry.fileSize;
-                    }
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                    _progress.ProgressAllSpeed = CalculateSpeed(entry.fileSize);
+                        _progress.ProgressAllPercentage =
+                            Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
+                        _progress.ProgressAllSpeed = CalculateSpeed(entry.fileSize);
 
-                    _progress.ProgressAllTimeLeft =
-                        ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
-                         _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                        _progress.ProgressAllTimeLeft =
+                            ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
+                             _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                    }
+
                     UpdateProgress();
                 }
                 finally
@@ -2433,13 +2440,16 @@ namespace CollapseLauncher.InstallManager.Base
             }
             if (CheckIfNeedRefreshStopwatch())
             {
-                _progress.ProgressAllPercentage =
-                    Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                _progress.ProgressAllSpeed = CalculateSpeed(e.Read);
+                lock (_progress)
+                {
+                    _progress.ProgressAllPercentage =
+                        Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
+                    _progress.ProgressAllSpeed = CalculateSpeed(e.Read);
 
-                _progress.ProgressAllTimeLeft =
-                    ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
-                     _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                    _progress.ProgressAllTimeLeft =
+                        ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
+                         _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                }
                 UpdateProgress();
             }
         }
@@ -4052,8 +4062,11 @@ namespace CollapseLauncher.InstallManager.Base
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
                     #endif
                     // HACK: Fix the progress not achieving 100% while completed
-                    _progress.ProgressAllPercentage     = 100f;
-                    _progress.ProgressPerFilePercentage = 100f;
+                    lock (_progress)
+                    {
+                        _progress.ProgressAllPercentage     = 100f;
+                        _progress.ProgressPerFilePercentage = 100f;
+                    }
                     break;
                 case CompletenessStatus.Cancelled:
                     IsRunning           = false;
@@ -4128,13 +4141,16 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected void DeltaPatchCheckProgress(object sender, PatchEvent e)
         {
-            _progress.ProgressAllPercentage = e.ProgressPercentage;
+            lock (_progress)
+            {
+                _progress.ProgressAllPercentage = e.ProgressPercentage;
 
-            _progress.ProgressAllTimeLeft = e.TimeLeft;
-            _progress.ProgressAllSpeed    = e.Speed;
+                _progress.ProgressAllTimeLeft = e.TimeLeft;
+                _progress.ProgressAllSpeed    = e.Speed;
 
-            _progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
-            _progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
+                _progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
+                _progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
+            }
 
             if (CheckIfNeedRefreshStopwatch())
             {
@@ -4172,14 +4188,17 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
-            _progress.ProgressAllPercentage =
-                e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
+            lock (_progress)
+            {
+                _progress.ProgressAllPercentage =
+                    e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
 
-            _progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
-            _progress.ProgressAllSpeed    = e.ProgressAllSpeed;
+                _progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
+                _progress.ProgressAllSpeed    = e.ProgressAllSpeed;
 
-            _progress.ProgressAllSizeTotal   = e.ProgressAllSizeTotal;
-            _progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
+                _progress.ProgressAllSizeTotal   = e.ProgressAllSizeTotal;
+                _progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
+            }
 
             if (CheckIfNeedRefreshStopwatch())
             {
@@ -4201,24 +4220,27 @@ namespace CollapseLauncher.InstallManager.Base
                 _progressPerFileSizeCurrent = (long)e.TotalRead;
                 _progressPerFileSizeTotal   = (long)e.TotalSize;
 
-                // Assign local sizes to progress
-                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                lock (_progress)
+                {
+                    // Assign local sizes to progress
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                // Calculate the speed
-                _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
+                    // Calculate the speed
+                    _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
 
-                // Calculate percentage
-                _progress.ProgressAllPercentage =
-                    Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                _progress.ProgressPerFilePercentage =
-                    Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-                // Calculate the timelapse
-                _progress.ProgressAllTimeLeft =
-                    ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                   .ToTimeSpanNormalized();
+                    // Calculate percentage
+                    _progress.ProgressAllPercentage =
+                        Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
+                    _progress.ProgressPerFilePercentage =
+                        Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
+                    // Calculate the timelapse
+                    _progress.ProgressAllTimeLeft =
+                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
+                       .ToTimeSpanNormalized();
+                }
 
                 UpdateAll();
             }
@@ -4250,31 +4272,35 @@ namespace CollapseLauncher.InstallManager.Base
 
             if (CheckIfNeedRefreshStopwatch())
             {
-                // Assign local sizes to progress
-                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
-                _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
-                _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
+                lock (_progress)
+                {
+                    // Assign local sizes to progress
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                // Assign speed with clamped value
-                double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                _progress.ProgressAllSpeed = speedClamped;
+                    // Assign speed with clamped value
+                    double speedClamped = speedAll.ClampLimitedSpeedNumber();
+                    _progress.ProgressAllSpeed = speedClamped;
 
-                // Calculate percentage
-                _progress.ProgressPerFilePercentage =
-                    Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
-                _progress.ProgressAllPercentage =
-                    Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                    // Calculate percentage
+                    _progress.ProgressPerFilePercentage =
+                        Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
+                    _progress.ProgressAllPercentage =
+                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
 
-                // Calculate the timelapse
-                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
-                _progress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
+                    // Calculate the timelapse
+                    double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
+                    _progress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
 
-                // Update the status of per file size and current progress from Http client
-                _progressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
-                _progressPerFileSizeTotal = downloadProgress.BytesTotal;
-                _progress.ProgressPerFilePercentage = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
-
+                    // Update the status of per file size and current progress from Http client
+                    _progressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
+                    _progressPerFileSizeTotal   = downloadProgress.BytesTotal;
+                    _progress.ProgressPerFilePercentage =
+                        ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded,
+                                                          downloadProgress.BytesTotal);
+                }
                 // Update the status
                 UpdateAll();
             }
@@ -4299,25 +4325,28 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 if (e.State != DownloadState.Merging)
                 {
-                    // Assign local sizes to progress
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                    lock (_progress)
+                    {
+                        // Assign local sizes to progress
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                    // Calculate the speed
-                    _progress.ProgressAllSpeed = speedAll;
+                        // Calculate the speed
+                        _progress.ProgressAllSpeed = speedAll;
 
-                    // Calculate percentage
-                    _progress.ProgressPerFilePercentage =
-                        Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                        // Calculate percentage
+                        _progress.ProgressPerFilePercentage =
+                            Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
+                        _progress.ProgressAllPercentage =
+                            Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
 
-                    // Calculate the timelapse
-                    _progress.ProgressAllTimeLeft =
-                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                       .ToTimeSpanNormalized();
+                        // Calculate the timelapse
+                        _progress.ProgressAllTimeLeft =
+                            ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
+                           .ToTimeSpanNormalized();
+                    }
                 }
                 else
                 {
@@ -4327,22 +4356,25 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // If status is merging, then use progress for speed and timelapse from Http client
                     // and set the rest from the base class
-                    _progress.ProgressAllTimeLeft        = e.TimeLeft;
+                    lock (_progress)
+                    {
+                        _progress.ProgressAllTimeLeft = e.TimeLeft;
 
-                    _progress.ProgressAllSpeed           = speedAll;
+                        _progress.ProgressAllSpeed = speedAll;
 
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                        _progress.ProgressAllPercentage =
+                            Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                    }
                 }
 
                 // Update the status of per file size and current progress from Http client
                 _progressPerFileSizeCurrent         = e.SizeDownloaded;
                 _progressPerFileSizeTotal           = e.SizeToBeDownloaded;
-                _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+                lock (_progress) _progress.ProgressPerFilePercentage = e.ProgressPercentage;
 
                 // Update the status
                 UpdateAll();

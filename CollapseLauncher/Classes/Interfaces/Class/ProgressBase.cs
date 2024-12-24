@@ -678,16 +678,18 @@ namespace CollapseLauncher.Interfaces
                 _status.IsCanceled            = false;
 
                 // Reset all total activity progress
-                _progress.ProgressPerFilePercentage    = 0;
-                _progress.ProgressAllPercentage         = 0;
-                _progress.ProgressPerFileSpeed          = 0;
-                _progress.ProgressAllSpeed              = 0;
+                lock (_progress)
+                {
+                    _progress.ProgressPerFilePercentage = 0;
+                    _progress.ProgressAllPercentage     = 0;
+                    _progress.ProgressPerFileSpeed      = 0;
+                    _progress.ProgressAllSpeed          = 0;
 
-                _progress.ProgressAllEntryCountCurrent      = 0;
-                _progress.ProgressAllEntryCountTotal        = 0;
-                _progress.ProgressPerFileEntryCountCurrent  = 0;
-                _progress.ProgressPerFileEntryCountTotal    = 0;
-
+                    _progress.ProgressAllEntryCountCurrent     = 0;
+                    _progress.ProgressAllEntryCountTotal       = 0;
+                    _progress.ProgressPerFileEntryCountCurrent = 0;
+                    _progress.ProgressPerFileEntryCountTotal   = 0;
+                }
                 // Reset all inner counter
                 _progressAllCountCurrent      = 0;
                 _progressAllCountTotal        = 0;
