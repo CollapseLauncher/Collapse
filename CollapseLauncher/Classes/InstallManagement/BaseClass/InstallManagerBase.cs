@@ -883,59 +883,56 @@ namespace CollapseLauncher.InstallManager.Base
                     // Get the info pair based on info provided above (for main game file)
                     var sophonMainInfoPair = await
                         SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game",
-                                                                         _token.Token)
-                        .ConfigureAwait(false);
+                                                                         _token.Token);
                     sophonInfoPairList.Add(sophonMainInfoPair);
 
                     List<string> voLanguageList =
                         GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
 
-                    // Using the new DispatchAsync to fix the method from detaching the current thread.
-                    await DispatchAsync(async void () =>
+                    // Get Audio Choices first
+                    (List<int> addedVO, int setAsDefaultVO) =
+                        await Dialog_ChooseAudioLanguageChoice(voLanguageList, GetSophonLocaleCodeIndex(sophonMainInfoPair.OtherSophonData, "ja-jp"));
+
+                    try
                     {
-                        try
+                        if (addedVO == null || setAsDefaultVO < 0)
                         {
-                            (List<int> addedVO, int setAsDefaultVO) =
-                                await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList);
-                            if (addedVO == null || setAsDefaultVO < 0)
-                            {
-                                throw new TaskCanceledException();
-                            }
-
-                            for (int i = 0; i < addedVO.Count; i++)
-                            {
-                                int    voLangIndex      = addedVO[i];
-                                string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-                                _sophonVOLanguageList?.Add(voLangLocaleCode);
-
-                                // Get the info pair based on info provided above (for the selected VO audio file)
-                                SophonChunkManifestInfoPair sophonSelectedVoLang =
-                                    sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
-                                sophonInfoPairList.Add(sophonSelectedVoLang);
-                            }
-
-                            // Set the voice language ID to value given
-                            _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
-
-                            // Get the remote total size and current total size
-                            _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                            _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                            _progressAllSizeCurrent = 0;
-
-                            // Set the display to Install Mode
-                            _isSophonInUpdateMode = false;
-
-                            // Set the progress bar to indetermined
-                            _status.IsIncludePerFileIndicator     = false;
-                            _status.IsProgressPerFileIndetermined = false;
-                            _status.IsProgressAllIndetermined     = false;
-                            UpdateStatus();
+                            throw new TaskCanceledException();
                         }
-                        catch (Exception e)
+
+                        for (int i = 0; i < addedVO.Count; i++)
                         {
-                            ErrorSender.SendException(e);
+                            int voLangIndex = addedVO[i];
+                            string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                            _sophonVOLanguageList?.Add(voLangLocaleCode);
+
+                            // Get the info pair based on info provided above (for the selected VO audio file)
+                            SophonChunkManifestInfoPair sophonSelectedVoLang =
+                                sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                            sophonInfoPairList.Add(sophonSelectedVoLang);
                         }
-                    });
+
+                        // Set the voice language ID to value given
+                        _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+
+                        // Get the remote total size and current total size
+                        _progressAllCountTotal = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                        _progressAllSizeTotal = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                        _progressAllSizeCurrent = 0;
+
+                        // Set the display to Install Mode
+                        _isSophonInUpdateMode = false;
+
+                        // Set the progress bar to indetermined
+                        _status.IsIncludePerFileIndicator = false;
+                        _status.IsProgressPerFileIndetermined = false;
+                        _status.IsProgressAllIndetermined = false;
+                        UpdateStatus();
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorSender.SendException(e);
+                    }
                     
                     // Get the parallel options
                     var parallelOptions = new ParallelOptions
@@ -2583,6 +2580,17 @@ namespace CollapseLauncher.InstallManager.Base
                            ? throw new NotSupportedException($"Locale code: {localeCode} is not supported!")
                            : null
                    };
+        }
+
+        protected virtual int GetSophonLocaleCodeIndex(SophonData sophonData, string lookupName)
+        {
+            List<string> localeList = sophonData.ManifestIdentityList
+                .Where(x => IsValidLocaleCode(x.MatchingField))
+                .Select(x => x.MatchingField.ToLower())
+                .ToList();
+
+            int index = localeList.IndexOf(lookupName);
+            return Math.Max(0, index);
         }
 
         protected virtual List<string> GetLanguageDisplayListFromVoicePackList(List<RegionResourceVersion> voicePacks)

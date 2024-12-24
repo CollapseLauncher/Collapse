@@ -1252,7 +1252,7 @@ namespace CollapseLauncher.Interfaces
         public void Dispatch(DispatcherQueueHandler handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
         {
             EnsureParentUINotNull();
-            _parentUI!.DispatcherQueue!.TryEnqueue(priority, handler);
+            _parentUI.DispatcherQueue.TryEnqueue(priority, handler);
         }
 
         public Task DispatchAsync(Action handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
