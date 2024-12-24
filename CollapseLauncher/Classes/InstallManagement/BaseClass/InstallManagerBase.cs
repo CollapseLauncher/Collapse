@@ -1018,9 +1018,6 @@ namespace CollapseLauncher.InstallManager.Base
                     // Unsubscribe the logger event
                     SophonLogger.LogHandler -= UpdateSophonLogHandler;
                     httpClient.Dispose();
-
-                    // Set the thread count to default
-                    ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
                 }
             }
 
