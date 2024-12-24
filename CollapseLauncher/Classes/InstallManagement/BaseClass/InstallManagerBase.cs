@@ -1016,7 +1016,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             return;
 
-            async Task RunTaskAction(HttpClient client, List<SophonChunkManifestInfoPair> sophonInfoPairList,
+            async Task RunTaskAction(HttpClient client, List<SophonChunkManifestInfoPair> sophonInfoPairListLocal,
                                      ParallelOptions parallelOptions,
                                      Func<SophonAsset, CancellationToken, ValueTask> actionDelegate)
             {
@@ -1027,7 +1027,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
                     var processingInfoPair = new ConcurrentDictionary<SophonChunksInfo, byte>();
-                    var infoPairListCopy   = sophonInfoPairList.ToList(); 
+                    var infoPairListCopy   = sophonInfoPairListLocal.ToList();
                     foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in infoPairListCopy)
                     {
                         if (!processingInfoPair.TryAdd(sophonDownloadInfoPair.ChunksInfo, 0))
