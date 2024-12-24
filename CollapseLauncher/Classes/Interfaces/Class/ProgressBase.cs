@@ -22,6 +22,7 @@ using System.IO.Compression;
 using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -1260,6 +1261,7 @@ namespace CollapseLauncher.Interfaces
             return _parentUI.DispatcherQueue.EnqueueAsync(handler, priority);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void EnsureParentUINotNull()
         {
             if (_parentUI == null)
