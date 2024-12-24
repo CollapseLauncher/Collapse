@@ -11,6 +11,7 @@
     using Microsoft.UI.Xaml;
     using Microsoft.UI.Xaml.Media;
     using Microsoft.Win32;
+    using Hi3Helper.Win32.Screen;
     using RegistryUtils;
     using System;
     using System.Collections.Generic;
@@ -23,7 +24,6 @@
     using static Hi3Helper.Logger;
     using static Hi3Helper.Shared.Region.LauncherConfig;
     using static CollapseLauncher.Statics.GamePropertyVault;
-using CollapseLauncher.Helper;
 
 namespace CollapseLauncher.Pages
 {
@@ -154,7 +154,6 @@ namespace CollapseLauncher.Pages
             }
         }
         
-        private bool                HasWeirdResolution { get; set; }
         private System.Drawing.Size SizeProp           { get; set; }
 
         private void InitializeSettings(object sender, RoutedEventArgs e)
@@ -164,22 +163,26 @@ namespace CollapseLauncher.Pages
                 BackgroundImgChanger.ToggleBackground(true);
 
                 var resList   = new List<string>();
-                SizeProp = WindowUtility.CurrentScreenProp.GetScreenSize();
+                SizeProp = ScreenProp.CurrentResolution;
                 //SizeProp = new System.Drawing.Size(2560, 1600);
+
+                // Get the native resolution first
+                var nativeResSize = GetNativeDefaultResolution();
+                var nativeResString = string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, nativeResSize.Width, nativeResSize.Height) + $" [{Lang._Misc.Default}]";
+
+                // Then get the rest of the list
                 List<string> resFullscreen = GetResPairs_Fullscreen();
                 List<string> resWindowed = GetResPairs_Windowed();
+
+                ScreenResolutionIsFullscreenIdx.Add(true); // Add first for the native resolution.
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resFullscreen.Count).Select(_ => true));
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resWindowed.Count).Select(_ => false));
 
-                resList.AddRange(GetResPairs_Fullscreen());
-                resList.AddRange(GetResPairs_Windowed());
-                
-                var nativeRes = $"{SizeProp.Width}x{SizeProp.Height}";
-                if (!resList[0].StartsWith(nativeRes))
-                {
-                    resList.Insert(0, $"{Lang._SettingsPage.FileDownloadSettings_BurstDownloadHelp1} {string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, SizeProp.Width, SizeProp.Height)}");
-                    HasWeirdResolution = true;
-                }
+                // Add native resolution string, other fullscreen resolutions, and windowed resolutions
+                resList.Add(nativeResString);
+                resList.AddRange(resFullscreen);
+                resList.AddRange(resWindowed);
+
                 GameResolutionSelector.ItemsSource   = resList;
                 GameResolutionSelector.SelectedIndex = ResolutionIndexSelected; // Refresh
 
@@ -217,13 +220,44 @@ namespace CollapseLauncher.Pages
         }
 
         private static readonly List<int> acceptableHeight = [4320, 2880, 2160, 1440, 1280, 1080, 900, 720];
+
+        private System.Drawing.Size GetNativeDefaultResolution()
+        {
+            const int maxAcceptedNativeW = 2560; // This is the maximum native resolution width that is accepted.
+                                                 // Tested on both 3840x2160 and 1920x1080 screen. The game keeps to only accept
+                                                 // the resolution where width <= 2560 as its default resolution.
+                                                 // In other scenario, if the screen has selection with width > 2569 but does
+                                                 // not have have one with width == 2560, the game will keep to use the
+                                                 // resolution that has the width of 2560, like.... WTF?????
+                                                 // HOYOOOOOOO!!!!!!!
+
+            // Get the list of available resolutions. Otherwise, throw an exception.
+            var currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList()
+                ?? throw new NullReferenceException("Cannot get screen resolution. Prolly the app cannot communicate with Win32 API???");
+            var maxAcceptedResW = currentAcceptedRes.Max(x => x.Width); // Find the maximum resolution width that can be accepted.
+
+            // If the max accepted resolution width is more than or equal to maxAcceptedNativeW,
+            // then clamp the resolution to the resolution that is equal to maxAcceptedNativeW.
+            if (maxAcceptedResW >= maxAcceptedNativeW)
+            {
+                var nativeAspRatio          = (double)SizeProp.Height / SizeProp.Width;
+                var nativeAspRationHeight   = (int)(maxAcceptedNativeW * nativeAspRatio);
+
+                System.Drawing.Size nativeRes = new System.Drawing.Size(maxAcceptedNativeW, nativeAspRationHeight);
+                return nativeRes;
+            }
+
+            // Otherwise, get the last resolution which always be the maximum for other less than width: 2560 (for example: 1920x1080).
+            return currentAcceptedRes.LastOrDefault(x => x.Width == maxAcceptedResW);
+        }
         
         private List<string> GetResPairs_Fullscreen()
         {
-            var nativeAspRatio = (double)SizeProp.Width / SizeProp.Height;
-            var acH            = acceptableHeight;
-            
-            acH.RemoveAll(h => h > WindowUtility.CurrentScreenProp.GetMaxHeight());
+            var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            var acH               = acceptableHeight;
+            var acceptedMaxHeight = ScreenProp.GetMaxHeight();
+
+            acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
             
             List<string> resPairs = new List<string>();
@@ -239,12 +273,13 @@ namespace CollapseLauncher.Pages
 
         private List<string> GetResPairs_Windowed()
         {
-            var nativeAspRatio = (double)SizeProp.Width / SizeProp.Height;
-            var wideRatio      = (double)16 / 9;
-            var ulWideRatio    = (double)21 / 9;
-            var acH            = acceptableHeight;
-            
-            acH.RemoveAll(h => h > WindowUtility.CurrentScreenProp.GetMaxHeight());
+            var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            var wideRatio         = (double)16 / 9;
+            var ulWideRatio       = (double)21 / 9;
+            var acH               = acceptableHeight;
+            var acceptedMaxHeight = ScreenProp.GetMaxHeight();
+
+            acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
             List<string> resPairs = new List<string>();
 
