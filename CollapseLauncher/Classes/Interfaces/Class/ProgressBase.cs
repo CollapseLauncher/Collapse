@@ -1246,7 +1246,25 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HandlerUpdaters
-        public void Dispatch(DispatcherQueueHandler handler) => _parentUI!.DispatcherQueue!.TryEnqueue(handler);
+        public Task Dispatch(DispatcherQueueHandler handler)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            
+            _parentUI!.DispatcherQueue!.TryEnqueue(() =>
+                                                   {
+                                                       try
+                                                       {
+                                                           handler.Invoke();
+                                                           tcs.SetResult(true);
+                                                       }
+                                                       catch (Exception ex)
+                                                       {
+                                                           LogWriteLine($"[ProgressBase::Dispatch] Error while dispatching" + ex, LogType.Error, true);
+                                                           tcs.SetException(ex);
+                                                       }
+                                                   });
+            return tcs.Task;
+        }
 
         #nullable enable
         protected virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)

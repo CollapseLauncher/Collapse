@@ -889,8 +889,9 @@ namespace CollapseLauncher.InstallManager.Base
 
                     List<string> voLanguageList =
                         GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
+                    var isDispatchFinished = false;
 
-                    Dispatch( async void () =>
+                    await Dispatch( async void () =>
                                    {
                                        try
                                        {
@@ -929,12 +930,24 @@ namespace CollapseLauncher.InstallManager.Base
                                            _status.IsProgressPerFileIndetermined = false;
                                            _status.IsProgressAllIndetermined     = false;
                                            UpdateStatus();
+
+                                           isDispatchFinished = true;
                                        }
                                        catch (Exception e)
                                        {
                                            ErrorSender.SendException(e);
                                        }
                                    });
+
+                    // This can be ignored because the reason this exist is to wait for the dispatch to finish
+                    // isDispatchFinished is only set to true when the dispatch is finished
+                    // Yes, this is quite the hacky way to do it, but I couldn't be arsed to change the entire Dispatch return type at the moment
+                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+                    while (!isDispatchFinished)
+                    {
+                        await Task.Delay(300);
+                        
+                    }
                     
                     // Get the parallel options
                     var parallelOptions = new ParallelOptions
