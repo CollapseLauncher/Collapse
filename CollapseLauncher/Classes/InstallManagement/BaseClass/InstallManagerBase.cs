@@ -889,65 +889,53 @@ namespace CollapseLauncher.InstallManager.Base
 
                     List<string> voLanguageList =
                         GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
-                    var isDispatchFinished = false;
 
-                    await Dispatch( async void () =>
-                                   {
-                                       try
-                                       {
-                                           (List<int> addedVO, int setAsDefaultVO) =
-                                               await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList);
-                                           if (addedVO == null || setAsDefaultVO < 0)
-                                           {
-                                               throw new TaskCanceledException();
-                                           }
-
-                                           for (int i = 0; i < addedVO.Count; i++)
-                                           {
-                                               int    voLangIndex      = addedVO[i];
-                                               string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-                                               _sophonVOLanguageList?.Add(voLangLocaleCode);
-
-                                               // Get the info pair based on info provided above (for the selected VO audio file)
-                                               SophonChunkManifestInfoPair sophonSelectedVoLang =
-                                                   sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
-                                               sophonInfoPairList.Add(sophonSelectedVoLang);
-                                           }
-
-                                           // Set the voice language ID to value given
-                                           _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
-
-                                           // Get the remote total size and current total size
-                                           _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                                           _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                                           _progressAllSizeCurrent = 0;
-
-                                           // Set the display to Install Mode
-                                           _isSophonInUpdateMode = false;
-
-                                           // Set the progress bar to indetermined
-                                           _status.IsIncludePerFileIndicator     = false;
-                                           _status.IsProgressPerFileIndetermined = false;
-                                           _status.IsProgressAllIndetermined     = false;
-                                           UpdateStatus();
-
-                                           isDispatchFinished = true;
-                                       }
-                                       catch (Exception e)
-                                       {
-                                           ErrorSender.SendException(e);
-                                       }
-                                   });
-
-                    // This can be ignored because the reason this exist is to wait for the dispatch to finish
-                    // isDispatchFinished is only set to true when the dispatch is finished
-                    // Yes, this is quite the hacky way to do it, but I couldn't be arsed to change the entire Dispatch return type at the moment
-                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                    while (!isDispatchFinished)
+                    // Using the new DispatchAsync to fix the method from detaching the current thread.
+                    await DispatchAsync(async void () =>
                     {
-                        await Task.Delay(300);
-                        
-                    }
+                        try
+                        {
+                            (List<int> addedVO, int setAsDefaultVO) =
+                                await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList);
+                            if (addedVO == null || setAsDefaultVO < 0)
+                            {
+                                throw new TaskCanceledException();
+                            }
+
+                            for (int i = 0; i < addedVO.Count; i++)
+                            {
+                                int    voLangIndex      = addedVO[i];
+                                string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                                _sophonVOLanguageList?.Add(voLangLocaleCode);
+
+                                // Get the info pair based on info provided above (for the selected VO audio file)
+                                SophonChunkManifestInfoPair sophonSelectedVoLang =
+                                    sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                                sophonInfoPairList.Add(sophonSelectedVoLang);
+                            }
+
+                            // Set the voice language ID to value given
+                            _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+
+                            // Get the remote total size and current total size
+                            _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                            _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                            _progressAllSizeCurrent = 0;
+
+                            // Set the display to Install Mode
+                            _isSophonInUpdateMode = false;
+
+                            // Set the progress bar to indetermined
+                            _status.IsIncludePerFileIndicator     = false;
+                            _status.IsProgressPerFileIndetermined = false;
+                            _status.IsProgressAllIndetermined     = false;
+                            UpdateStatus();
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorSender.SendException(e);
+                        }
+                    });
                     
                     // Get the parallel options
                     var parallelOptions = new ParallelOptions

@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -27,6 +28,7 @@ using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
@@ -1168,7 +1170,7 @@ namespace CollapseLauncher.Interfaces
         {
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x.GetAssetSize());
-            StackPanel content = UIElementExtensions.CreateStackPanel();
+            StackPanel content = CollapseUIExtension.CreateStackPanel();
 
             content.AddElementToStackPanel(new TextBlock()
             {
@@ -1177,7 +1179,7 @@ namespace CollapseLauncher.Interfaces
                 TextWrapping = TextWrapping.Wrap
             });
             Button showBrokenFilesButton = content.AddElementToStackPanel(
-                UIElementExtensions.CreateButtonWithIcon<Button>(
+                CollapseUIExtension.CreateButtonWithIcon<Button>(
                     Lang._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
                     "\uf550",
                     "FontAwesomeSolid",
@@ -1246,24 +1248,24 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HandlerUpdaters
-        public Task Dispatch(DispatcherQueueHandler handler)
+        public void Dispatch(DispatcherQueueHandler handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            
-            _parentUI!.DispatcherQueue!.TryEnqueue(() =>
-                                                   {
-                                                       try
-                                                       {
-                                                           handler.Invoke();
-                                                           tcs.SetResult(true);
-                                                       }
-                                                       catch (Exception ex)
-                                                       {
-                                                           LogWriteLine($"[ProgressBase::Dispatch] Error while dispatching" + ex, LogType.Error, true);
-                                                           tcs.SetException(ex);
-                                                       }
-                                                   });
-            return tcs.Task;
+            EnsureParentUINotNull();
+            _parentUI!.DispatcherQueue!.TryEnqueue(priority, handler);
+        }
+
+        public Task DispatchAsync(Action handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+        {
+            EnsureParentUINotNull();
+            return _parentUI.DispatcherQueue.EnqueueAsync(handler, priority);
+        }
+
+        private void EnsureParentUINotNull()
+        {
+            if (_parentUI == null)
+            {
+                throw new NullReferenceException("_parentUI cannot be null when the method is being called!");
+            }
         }
 
         #nullable enable

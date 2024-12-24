@@ -14,6 +14,7 @@ namespace CollapseLauncher.Interfaces
         bool IsRunning { get; }
         UIElement _parentUI { get; }
         void CancelRoutine();
-        Task Dispatch(DispatcherQueueHandler handler);
+        void Dispatch(DispatcherQueueHandler handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal);
+        Task DispatchAsync(Action handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal);
     }
 }
