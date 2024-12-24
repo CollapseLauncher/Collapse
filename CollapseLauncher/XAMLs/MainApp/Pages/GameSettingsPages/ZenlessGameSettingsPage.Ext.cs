@@ -287,15 +287,16 @@ namespace CollapseLauncher.Pages
             get
             {
                 int res = Settings.GeneralData?.ResolutionIndex ?? -1;
-                if (res >= 0)
+                if (res > 0)
                 {
-                    bool isFullscreen = res >= 0 && (res + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
+                    // ReSharper disable once SimplifyConditionalTernaryExpression
+                    bool isFullscreen = res + 1 < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
                     IsFullscreenEnabled = isFullscreen;
                     
                     return res + 1;
                 }
 
-                return 0; // Return 0 if res value is -1 (default resolution)
+                return 0; // Return 0 if res value is -1 (default resolution) or 0 (practically default)
             }
             set
             {
@@ -309,7 +310,7 @@ namespace CollapseLauncher.Pages
                 if (innerValue < 0) return;
                 Settings.GeneralData.ResolutionIndex = value - 1;
                 // ReSharper disable once SimplifyConditionalTernaryExpression
-                bool isFullscreen = (innerValue + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[innerValue] : false;
+                bool isFullscreen = innerValue + 1 < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[innerValue] : false;
                 IsFullscreenEnabled = isFullscreen;
 
                 Settings.SettingsScreen.width =
