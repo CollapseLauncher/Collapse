@@ -54,12 +54,19 @@ namespace CollapseLauncher.Helper
 
         internal static FileInfo EnsureNoReadOnly(this FileInfo fileInfo, out bool isFileExist)
         {
-            if (!(isFileExist = fileInfo.Exists))
+            try
+            {
+                if (!(isFileExist = fileInfo.Exists))
+                    return fileInfo;
+
+                fileInfo.IsReadOnly = false;
+
                 return fileInfo;
-
-            fileInfo.IsReadOnly = false;
-
-            return fileInfo;
+            }
+            finally
+            {
+                fileInfo.Refresh();
+            }
         }
 
         internal static IEnumerable<FileInfo> EnumerateNoReadOnly(this IEnumerable<FileInfo> enumeratedFileInfo)
@@ -111,10 +118,17 @@ namespace CollapseLauncher.Helper
             ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
             DirectoryInfo? directoryInfo = filePath.Directory;
 
-            if (directoryInfo is { Exists: false })
-                directoryInfo.Create();
+            try
+            {
+                if (directoryInfo is { Exists: false })
+                    directoryInfo.Create();
 
-            return filePath;
+                return filePath;
+            }
+            finally
+            {
+                filePath.Refresh();
+            }
         }
     }
 }

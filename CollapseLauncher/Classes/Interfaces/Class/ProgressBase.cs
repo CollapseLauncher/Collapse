@@ -520,33 +520,40 @@ namespace CollapseLauncher.Interfaces
         protected string EnsureCreationOfDirectory(FileInfo str)
             => str.EnsureCreationOfDirectory().FullName;
 
-        protected void TryUnassignReadOnlyFiles(string path)
+        protected void TryUnassignReadOnlyFiles(string dirPath)
         {
-            // Iterate every file and set the read-only flag to false
-            foreach (string file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+            DirectoryInfo directoryInfo = new DirectoryInfo(dirPath);
+            if (!directoryInfo.Exists)
             {
-                FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo is { Exists: true, IsReadOnly: true })
-                    fileInfo.IsReadOnly = false;
+                return;
+            }
+
+            // Iterate every file and set the read-only flag to false
+            foreach (FileInfo file in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                _ = file.EnsureNoReadOnly();
             }
         }
 
-        protected void TryUnassignReadOnlyFileSingle(string path)
+        protected void TryUnassignReadOnlyFileSingle(string filePath)
         {
-            FileInfo fileInfo = new FileInfo(path);
-            if (fileInfo is { Exists: true, IsReadOnly: true })
-                fileInfo.IsReadOnly = false;
+            FileInfo fileInfo = new FileInfo(filePath);
+            _ = fileInfo.EnsureNoReadOnly();
         }
 
         protected void TryDeleteReadOnlyDir(string dirPath)
         {
-            if (!Directory.Exists(dirPath)) return;
             DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
-            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+            if (!dirInfo.Exists)
+            {
+                return;
+            }
+
+            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories)
+                .EnumerateNoReadOnly())
             {
                 try
                 {
-                    files.IsReadOnly = false;
                     files.Delete();
                 }
                 catch (Exception ex)
@@ -555,8 +562,10 @@ namespace CollapseLauncher.Interfaces
                     LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
                 } // Suppress errors
             }
+
             try
             {
+                dirInfo.Refresh();
                 dirInfo.Delete(true);
             }
             catch (Exception ex)
@@ -566,21 +575,20 @@ namespace CollapseLauncher.Interfaces
             } // Suppress errors
         }
 
-        protected void TryDeleteReadOnlyFile(string path)
+        protected void TryDeleteReadOnlyFile(string filePath)
         {
-            if (!File.Exists(path)) return;
+            FileInfo fileInfo = new FileInfo(filePath)
+                .EnsureNoReadOnly(out bool isFileExist);
+            if (!isFileExist) return;
+
             try
             {
-                FileInfo file = new FileInfo(path)
-                {
-                    IsReadOnly = false
-                };
-                file.Delete();
+                fileInfo.Delete();
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed to delete file: {path}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to delete file: {fileInfo.FullName}\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -595,28 +603,30 @@ namespace CollapseLauncher.Interfaces
             bool    errorOccured = false;
 
             // Enumerate files inside of source path
-            foreach (string filePath in Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories))
+            DirectoryInfo directoryInfoSource = new DirectoryInfo(sourcePath);
+            if (!directoryInfoSource.Exists)
+            {
+                throw new DirectoryNotFoundException($"Cannot find source directory on this path: {sourcePath}");
+            }
+            foreach (FileInfo fileInfo in directoryInfoSource.EnumerateFiles("*", SearchOption.AllDirectories)
+                .EnumerateNoReadOnly())
             {
                 // Get the relative path of the file from source path
-                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(dirLength);
+                ReadOnlySpan<char> relativePath = fileInfo.FullName.AsSpan().Slice(dirLength);
                 // Get the absolute path for destination
                 destFilePath = Path.Combine(destPath, relativePath.ToString());
                 // Get folder path for destination
                 destFolderPath = Path.GetDirectoryName(destFilePath);
 
                 // Create the destination folder if not exist
-                if (!Directory.Exists(destFolderPath))
-                    Directory.CreateDirectory(destFolderPath!);
+                if (!string.IsNullOrEmpty(destFolderPath))
+                    _ = Directory.CreateDirectory(destFolderPath);
 
                 try
                 {
                     // Try moving the file
                     LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
-                    FileInfo filePathInfo = new FileInfo(filePath)
-                    {
-                        IsReadOnly = false
-                    };
-                    filePathInfo.MoveTo(destFilePath, true);
+                    fileInfo.MoveTo(destFilePath, true);
                 }
                 catch (Exception ex)
                 {
@@ -629,7 +639,20 @@ namespace CollapseLauncher.Interfaces
 
             // If no error occurred, then delete the source folder
             if (!errorOccured)
-                Directory.Delete(sourcePath, true);
+            {
+                try
+                {
+                    directoryInfoSource.Refresh();
+                    directoryInfoSource.Delete(true);
+                }
+                catch (Exception ex)
+                {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                    // If failed, flag ErrorOccured as true and skip the source directory deletion 
+                    LogWriteLine($"Error while deleting source directory \"{directoryInfoSource.FullName}\"\r\nException: {ex}", LogType.Error, true);
+                    errorOccured = true;
+                }
+            }
         }
 
         protected virtual void ResetStatusAndProgress()
