@@ -538,9 +538,9 @@
     "Disclaimer1": "当ランチャーは",
     "Disclaimer2": "とは何の関係もありません。",
     "Disclaimer3": "完全にオープンソースです。どんな貢献も歓迎します。",
-
+    "WebsiteBtn": "Collapse Launcher公式サイト",
     "DiscordBtn1": "開発者の艦隊Discord(SEA鯖)",
-    "DiscordBtn2": "崩壊3rd公式Discord(英語)",
+    "DiscordBtn2": "崩壊3rd公式Discord",
     "DiscordBtn3": "Collapse Launcher公式Discord",
 
     "AppChangeReleaseChannel": "{0} リリースチャンネルに変更",
@@ -1451,6 +1451,8 @@
     "LoadingTitle": "読み込み中",
     "LoadingSubtitle1": "既存のファイルを計算しています({0}個のファイルを検出 - 合計{1})…",
     "LoadingSubtitle2": "pkg_versionの可用性をチェックしています…",
+    "LoadingSubtitle3": "プロセス実行中にUIがフリーズする可能性があります…",
+    "DeleteSubtitle": "ファイルを削除しています…",
     "BottomButtonDeleteAllFiles": "全てのファイルを削除",
     "BottomButtonDeleteSelectedFiles": "{0}個の選択したファイルを削除",
     "BottomCheckboxFilesSelected": "{0}個のファイルを選択中({1} / 合計{2})",

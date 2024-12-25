@@ -1,9 +1,9 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Honkai.Context;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Win32.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
@@ -18,11 +18,11 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class ScreenSettingData : BaseScreenSettingData, IGameSettingsValue<ScreenSettingData>
     {
         #region Fields
-        private const string _ValueName = "GENERAL_DATA_V2_ScreenSettingData_h1916288658";
+        private const string _ValueName                        = "GENERAL_DATA_V2_ScreenSettingData_h1916288658";
         private const string _ValueNameScreenManagerFullscreen = "Screenmanager Is Fullscreen mode_h3981298716";
-        private const string _ValueNameScreenManagerWidth = "Screenmanager Resolution Width_h182942802";
-        private const string _ValueNameScreenManagerHeight = "Screenmanager Resolution Height_h2627697771";
-        private static Size currentRes = WindowUtility.CurrentScreenProp.CurrentResolution;
+        private const string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
+        private const string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
+        private static Size currentRes                         = ScreenProp.CurrentResolution;
         #endregion
 
         #region Properties

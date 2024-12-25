@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -21,12 +22,14 @@ using System.IO.Compression;
 using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
@@ -675,16 +678,18 @@ namespace CollapseLauncher.Interfaces
                 _status.IsCanceled            = false;
 
                 // Reset all total activity progress
-                _progress.ProgressPerFilePercentage    = 0;
-                _progress.ProgressAllPercentage         = 0;
-                _progress.ProgressPerFileSpeed          = 0;
-                _progress.ProgressAllSpeed              = 0;
+                lock (_progress)
+                {
+                    _progress.ProgressPerFilePercentage = 0;
+                    _progress.ProgressAllPercentage     = 0;
+                    _progress.ProgressPerFileSpeed      = 0;
+                    _progress.ProgressAllSpeed          = 0;
 
-                _progress.ProgressAllEntryCountCurrent      = 0;
-                _progress.ProgressAllEntryCountTotal        = 0;
-                _progress.ProgressPerFileEntryCountCurrent  = 0;
-                _progress.ProgressPerFileEntryCountTotal    = 0;
-
+                    _progress.ProgressAllEntryCountCurrent     = 0;
+                    _progress.ProgressAllEntryCountTotal       = 0;
+                    _progress.ProgressPerFileEntryCountCurrent = 0;
+                    _progress.ProgressPerFileEntryCountTotal   = 0;
+                }
                 // Reset all inner counter
                 _progressAllCountCurrent      = 0;
                 _progressAllCountTotal        = 0;
@@ -748,7 +753,9 @@ namespace CollapseLauncher.Interfaces
             // Get the URL and get the remote stream of the zip file
             // Also buffer the stream to memory
             string?                          url            = _gameVersionManager.GameAPIProp.data.sdk.path;
-            using HttpResponseMessage        httpResponse   = await FallbackCDNUtil.GetURLHttpResponse(url, token);
+            if (url == null) throw new NullReferenceException();
+
+            HttpResponseMessage httpResponse = await FallbackCDNUtil.GetURLHttpResponse(url, token);
             await using BridgedNetworkStream httpStream     = await FallbackCDNUtil.GetHttpStreamFromResponse(httpResponse, token);
             await using MemoryStream         bufferedStream = await BufferSourceStreamToMemoryStream(httpStream, token);
             using ZipArchive                 zip            = new ZipArchive(bufferedStream, ZipArchiveMode.Read, true);
@@ -1168,7 +1175,7 @@ namespace CollapseLauncher.Interfaces
         {
             ArgumentNullException.ThrowIfNull(assetIndex);
             long totalSize = assetIndex.Sum(x => x.GetAssetSize());
-            StackPanel content = UIElementExtensions.CreateStackPanel();
+            StackPanel content = CollapseUIExtension.CreateStackPanel();
 
             content.AddElementToStackPanel(new TextBlock()
             {
@@ -1177,7 +1184,7 @@ namespace CollapseLauncher.Interfaces
                 TextWrapping = TextWrapping.Wrap
             });
             Button showBrokenFilesButton = content.AddElementToStackPanel(
-                UIElementExtensions.CreateButtonWithIcon<Button>(
+                CollapseUIExtension.CreateButtonWithIcon<Button>(
                     Lang._InstallMgmt!.RepairFilesRequiredShowFilesBtn,
                     "\uf550",
                     "FontAwesomeSolid",
@@ -1246,7 +1253,26 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HandlerUpdaters
-        public void Dispatch(DispatcherQueueHandler handler) => _parentUI!.DispatcherQueue!.TryEnqueue(handler);
+        public void Dispatch(DispatcherQueueHandler handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+        {
+            EnsureParentUINotNull();
+            _parentUI.DispatcherQueue.TryEnqueue(priority, handler);
+        }
+
+        public Task DispatchAsync(Action handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
+        {
+            EnsureParentUINotNull();
+            return _parentUI.DispatcherQueue.EnqueueAsync(handler, priority);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void EnsureParentUINotNull()
+        {
+            if (_parentUI == null)
+            {
+                throw new NullReferenceException("_parentUI cannot be null when the method is being called!");
+            }
+        }
 
         #nullable enable
         protected virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)

@@ -538,7 +538,7 @@
     "Disclaimer1": "本程序与",
     "Disclaimer2": "没有任何关系",
     "Disclaimer3": "并完全开放源代码。我们欢迎任何贡献。",
-
+    "WebsiteBtn": "访问我们的网站",
     "DiscordBtn1": "加入我们的舰团 Discord！",
     "DiscordBtn2": "崩坏3 Discord",
     "DiscordBtn3": "Collapse 的官方 Discord！",
@@ -843,7 +843,7 @@
     "ExtremeGraphicsSettingsWarnTitle": "您选择了“非常高”的设置预设！",
     "ExtremeGraphicsSettingsWarnSubtitle": "您将把设置预设调整为非常高！\n非常高的设置预设基本上是 1.6 倍的渲染精度，并启用了 MSAA，而且没有启用优化！\n\n您确定您要使用这个设置吗？",
     "MigrateExistingMoveDirectoryTitle": "移动已存在的安装到：{0}",
-    "MigrateExistingInstallChoiceTitle": "在 {0} 检测到到已存在的安装！",
+    "MigrateExistingInstallChoiceTitle": "检测到 {0} 的现有安装！",
     "MigrateExistingInstallChoiceSubtitle1": "您已经在这个目录中存在一个使用 {0} 安装了的游戏：",
     "MigrateExistingInstallChoiceSubtitle2": "您可以选择将现有游戏数据移动到另一个目录或使用当前目录作为现有目录。建议您使用当前目录作为已安装的目录，以确保您仍然可以使用 {0} 启动游戏。",
     "ExistingInstallTitle": "检测到现有安装！",

@@ -93,6 +93,7 @@ namespace Hi3Helper
                 public string LocateExecutable     { get; set; } = LangFallback?._Misc.LocateExecutable;
                 public string OpenDownloadPage     { get; set; } = LangFallback?._Misc.OpenDownloadPage;
                 public string UseAsDefault         { get; set; } = LangFallback?._Misc.UseAsDefault;
+                public string Default              { get; set; } = LangFallback?._Misc.Default;
 
                 public string CDNDescription_Github          { get; set; } = LangFallback?._Misc.CDNDescription_Github;
                 public string CDNDescription_Cloudflare      { get; set; } = LangFallback?._Misc.CDNDescription_Cloudflare;
