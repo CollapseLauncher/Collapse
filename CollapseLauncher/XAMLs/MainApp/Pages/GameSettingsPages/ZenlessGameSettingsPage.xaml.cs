@@ -227,13 +227,14 @@ namespace CollapseLauncher.Pages
                                                  // Tested on both 3840x2160 and 1920x1080 screen. The game keeps to only accept
                                                  // the resolution where width <= 2560 as its default resolution.
                                                  // In other scenario, if the screen has selection with width > 2569 but does
-                                                 // not have have one with width == 2560, the game will keep to use the
+                                                 // not have one with width == 2560, the game will keep to use the
                                                  // resolution that has the width of 2560, like.... WTF?????
                                                  // HOYOOOOOOO!!!!!!!
 
             // Get the list of available resolutions. Otherwise, throw an exception.
-            var currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList()
-                ?? throw new NullReferenceException("Cannot get screen resolution. Prolly the app cannot communicate with Win32 API???");
+            var currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList();
+            if (currentAcceptedRes.Count == 0)
+                throw new NullReferenceException("Cannot get screen resolution. Prolly the app cannot communicate with Win32 API???");
             var maxAcceptedResW = currentAcceptedRes.Max(x => x.Width); // Find the maximum resolution width that can be accepted.
 
             // If the max accepted resolution width is more than or equal to maxAcceptedNativeW,
