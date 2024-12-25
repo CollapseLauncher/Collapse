@@ -461,12 +461,12 @@ namespace CollapseLauncher
         public  long   EndSize      { get; private set; }
         public  int    StartCount   { get; private set; }
         public  int    EndCount     { get; private set; }
-        public double Percentage => UseCountUnit ? Math.Round((StartCount / (double)EndCount) * 100, 2) :
-                                                   Math.Round((StartSize / (double)EndSize) * 100, 2);
-        public long ProgressSpeed => (long)(StartSize / _TimeSecond);
-        public TimeSpan RemainingTime => UseCountUnit ? TimeSpan.FromSeconds(0f) :
-                                                        ((EndSize - StartSize) / Unzeroed(ProgressSpeed)).ToTimeSpanNormalized();
-        private double Unzeroed(double i) => i == 0 ? 1 : i;
+        public double Percentage => UseCountUnit ? ToPercentage(EndCount, StartCount) :
+                                                   ToPercentage(EndSize, StartSize);
+        public double ProgressSpeed => StartSize / _TimeSecond;
+        public TimeSpan RemainingTime => UseCountUnit ? TimeSpan.Zero :
+                                                        ToTimeSpanRemain(EndSize, StartSize, ProgressSpeed);
+
         public string ProgressStatus => _StatusMsg;
         public string ProgressDetail => string.Format(
                         "[{0}] ({1})\r\n{2}...",

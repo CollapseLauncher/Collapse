@@ -9,31 +9,22 @@ namespace CollapseLauncher
 {
     internal class TotalPerFileProgress
     {
-        private double  _progressPerFilePercentage;
-        private double  _progressPerFileSpeed;
-        private double  _progressAllPercentage;
-        private double  _progressAllSpeed;
-        private long    _progressPerFileEntryCountCurrent;
-        private long    _progressPerFileEntryCountTotal;
-        private long    _progressAllEntryCountCurrent;
-        private long    _progressAllEntryCountTotal;
+        public double ProgressPerFilePercentage;
+        public double ProgressPerFileSpeed;
+        public double ProgressAllPercentage;
+        public double ProgressAllSpeed;
 
-        public double ProgressPerFilePercentage { get => _progressPerFilePercentage; set => _progressPerFilePercentage = value.UnNaNInfinity(); }
-        public double ProgressPerFileSpeed { get => _progressPerFileSpeed; set => _progressPerFileSpeed = value.UnNaNInfinity(); }
-        public double ProgressAllPercentage { get => _progressAllPercentage; set => _progressAllPercentage = value.UnNaNInfinity(); }
-        public double ProgressAllSpeed { get => _progressAllSpeed; set => _progressAllSpeed = value.UnNaNInfinity(); }
-
-        public long ProgressPerFileEntryCountCurrent { get => _progressPerFileEntryCountCurrent; set => _progressPerFileEntryCountCurrent = value; }
-        public long ProgressPerFileEntryCountTotal { get => _progressPerFileEntryCountTotal; set => _progressPerFileEntryCountTotal = value; }
-        public long ProgressAllEntryCountCurrent { get => _progressAllEntryCountCurrent; set => _progressAllEntryCountCurrent = value; }
-        public long ProgressAllEntryCountTotal { get => _progressAllEntryCountTotal; set => _progressAllEntryCountTotal = value; }
+        public long ProgressPerFileEntryCountCurrent;
+        public long ProgressPerFileEntryCountTotal;
+        public long ProgressAllEntryCountCurrent;
+        public long ProgressAllEntryCountTotal;
 
         // Extension for IGameInstallManager
-        public double ProgressPerFileSizeCurrent { get; set; }
-        public double ProgressPerFileSizeTotal { get; set; }
-        public double ProgressAllSizeCurrent { get; set; }
-        public double ProgressAllSizeTotal { get; set; }
-        public TimeSpan ProgressAllTimeLeft { get; set; }
+        public long ProgressPerFileSizeCurrent;
+        public long ProgressPerFileSizeTotal;
+        public long ProgressAllSizeCurrent;
+        public long ProgressAllSizeTotal;
+        public TimeSpan ProgressAllTimeLeft;
     }
 
     internal class TotalPerFileStatus

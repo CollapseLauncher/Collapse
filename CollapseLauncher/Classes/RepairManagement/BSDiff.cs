@@ -414,7 +414,7 @@ namespace CollapseLauncher
 
         public void UpdatePatchEvent(long sizePatched, long sizeToBePatched, long read, double totalSecond)
         {
-            this.Speed = (sizePatched / totalSecond);
+            this.Speed = sizePatched / totalSecond;
             this.SizePatched = sizePatched;
             this.SizeToBePatched = sizeToBePatched;
             this.Read = read;
@@ -422,9 +422,9 @@ namespace CollapseLauncher
 
         public long SizePatched { get; private set; }
         public long SizeToBePatched { get; private set; }
-        public double ProgressPercentage => Math.Round((SizePatched / (double)SizeToBePatched) * 100, 2);
+        public double ProgressPercentage => ConverterTool.ToPercentage(SizeToBePatched, SizePatched);
         public long Read { get; private set; }
         public double Speed { get; private set; }
-        public TimeSpan TimeLeft => checked(((SizeToBePatched - SizePatched) / Speed.Unzeroed()).ToTimeSpanNormalized());
+        public TimeSpan TimeLeft => ConverterTool.ToTimeSpanRemain(SizeToBePatched, SizePatched, Speed);
     }
 }

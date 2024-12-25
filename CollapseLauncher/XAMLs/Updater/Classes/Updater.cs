@@ -415,7 +415,9 @@ public partial class Updater : IDisposable
 
             var elapsedMin = (float)currentStopwatch.ElapsedMilliseconds / 1000 / 60;
             var minLeft    = elapsedMin / counter * (counterGoal - counter);
-            TimeLeft = TimeSpan.FromMinutes(minLeft.UnNaNInfinity());
+            TimeLeft       = double.IsNaN(minLeft) || double.IsInfinity(minLeft) ?
+                TimeSpan.Zero :
+                TimeSpan.FromMinutes(minLeft);
 
             ProgressPercentage = counter;
         }
