@@ -44,6 +44,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -2541,6 +2542,7 @@ namespace CollapseLauncher.InstallManager.Base
             return _out;
         }
 
+#nullable enable
         protected virtual string GetLanguageLocaleCodeByID(int id)
         {
             return id switch
@@ -2553,7 +2555,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual int GetIDByLanguageLocaleCode(string localeCode)
+        protected virtual int GetIDByLanguageLocaleCode([NotNull] string? localeCode)
         {
             return localeCode switch
                    {
@@ -2565,7 +2567,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageStringByLocaleCode(string localeCode)
+        protected virtual string GetLanguageStringByLocaleCode([NotNull] string? localeCode)
         {
             return localeCode switch
                    {
@@ -2589,7 +2591,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageLocaleCodeByLanguageString(string langString)
+        protected virtual string GetLanguageLocaleCodeByLanguageString([NotNull] string? langString)
         {
             return langString switch
                    {
@@ -2602,7 +2604,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageDisplayByLocaleCode(string localeCode, bool throwIfInvalid = true)
+        protected virtual string? GetLanguageDisplayByLocaleCode([NotNullIfNotNull(nameof(localeCode))] string? localeCode, bool throwIfInvalid = true)
         {
             return localeCode switch
                    {
@@ -2634,7 +2636,7 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (RegionResourceVersion Entry in voicePacks)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
+                string? languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
                 if (string.IsNullOrEmpty(languageDisplay))
                 {
                     continue;
@@ -2658,7 +2660,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string localeCode = identity.MatchingField.ToLower();
                 if (IsValidLocaleCode(localeCode))
                 {
-                    string languageDisplay = GetLanguageDisplayByLocaleCode(localeCode, false);
+                    string? languageDisplay = GetLanguageDisplayByLocaleCode(localeCode, false);
                     if (string.IsNullOrEmpty(languageDisplay))
                     {
                         continue;
@@ -2671,20 +2673,26 @@ namespace CollapseLauncher.InstallManager.Base
             return value;
         }
 
-        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion regionResource)
+        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion? regionResource)
         {
             // Rearrange the region resource list order based on matching field for the locale
-            RearrangeDataListLocaleOrder(regionResource.voice_packs, x => x.language);
+            RearrangeDataListLocaleOrder(regionResource?.voice_packs, x => x.language);
         }
 
-        protected virtual void RearrangeSophonDataLocaleOrder(SophonData sophonData)
+        protected virtual void RearrangeSophonDataLocaleOrder(SophonData? sophonData)
         {
             // Rearrange the sophon data list order based on matching field for the locale
-            RearrangeDataListLocaleOrder(sophonData.ManifestIdentityList, x => x.MatchingField);
+            RearrangeDataListLocaleOrder(sophonData?.ManifestIdentityList, x => x.MatchingField);
         }
 
-        protected virtual void RearrangeDataListLocaleOrder<T>(List<T> assetDataList, Func<T, string> matchingFieldPredicate)
+        protected virtual void RearrangeDataListLocaleOrder<T>(List<T>? assetDataList, Func<T, string?> matchingFieldPredicate)
         {
+            // If the asset list is null or empty, return
+            if (assetDataList == null || assetDataList.Count == 0)
+            {
+                return;
+            }
+
             // Get ordered locale string
             string[] localeStringOrder = _gameVoiceLanguageLocaleIdOrdered;
 
@@ -2692,14 +2700,14 @@ namespace CollapseLauncher.InstallManager.Base
             List<T> manifestListMain = assetDataList
                 .Where(x => !IsValidLocaleCode(matchingFieldPredicate(x)))
                 .ToList();
-            List<T> manifestListLocale = assetDataList.
-                Where(x => IsValidLocaleCode(matchingFieldPredicate(x)))
+            List<T> manifestListLocale = assetDataList
+                .Where(x => IsValidLocaleCode(matchingFieldPredicate(x)))
                 .ToList();
 
             // SLOW: Order the locale manifest list by the localeStringOrder
             for (int i = 0; i < localeStringOrder.Length; i++)
             {
-                var localeFound = manifestListLocale.FirstOrDefault(x => matchingFieldPredicate(x).Equals(localeStringOrder[i], StringComparison.OrdinalIgnoreCase));
+                var localeFound = manifestListLocale.FirstOrDefault(x => matchingFieldPredicate(x)?.Equals(localeStringOrder[i], StringComparison.OrdinalIgnoreCase) ?? false);
                 if (localeFound != null)
                 {
                     // Move from main to locale
@@ -2720,7 +2728,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList,
-                                                                   string localeCode, out RegionResourceVersion outRes)
+                                                                   string localeCode, [NotNullWhen(true)] out RegionResourceVersion? outRes)
         {
             outRes = null;
             // Sanitation check: Check if the localeId argument is null or have no content
@@ -2736,8 +2744,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Try find the asset and if it's null, return false
-            outRes = verResList.FirstOrDefault(x => x.language != null &&
-                                                    x.language.Equals(localeCode, StringComparison.OrdinalIgnoreCase));
+            outRes = verResList.FirstOrDefault(x => x.language?.Equals(localeCode, StringComparison.OrdinalIgnoreCase) ?? false);
             if (outRes == null)
             {
                 return false;
@@ -2746,6 +2753,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Otherwise, return true
             return true;
         }
+#nullable restore
 
         protected virtual bool IsValidLocaleCode(ReadOnlySpan<char> localeCode)
         {
