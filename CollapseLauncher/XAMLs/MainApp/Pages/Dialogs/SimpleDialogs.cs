@@ -663,24 +663,24 @@ namespace CollapseLauncher.Dialogs
                         Lang._Misc.NoKeepInstallIt
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content, string gamePath) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement Content, string gamePath, bool isHasOnlyMigrateOption) =>
             await SpawnDialog(
                         Lang._Dialogs.ExistingInstallBHI3LTitle,
                         string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, gamePath),
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
-                        Lang._Misc.NoKeepInstallIt
+                        isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt
             );
 
-        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content, string gamePath) =>
+        public static async Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement Content, string gamePath, bool isHasOnlyMigrateOption) =>
             await SpawnDialog(
                         Lang._Dialogs.ExistingInstallSteamTitle,
                         string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, gamePath),
                         Content,
                         Lang._Misc.Cancel,
                         Lang._Misc.YesMigrateIt,
-                        Lang._Misc.NoKeepInstallIt
+                        isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt
             );
 
 
@@ -692,9 +692,9 @@ namespace CollapseLauncher.Dialogs
                 switch (migrateFromLauncherType)
                 {
                     case MigrateFromLauncherType.BetterHi3Launcher:
-                        return await Dialog_ExistingInstallationBetterLauncher(Content, existingGamePath);
+                        return await Dialog_ExistingInstallationBetterLauncher(Content, existingGamePath, isHasOnlyMigrateOption);
                     case MigrateFromLauncherType.Steam:
-                        return await Dialog_ExistingInstallationSteam(Content, existingGamePath);
+                        return await Dialog_ExistingInstallationSteam(Content, existingGamePath, isHasOnlyMigrateOption);
                     default:
                         throw new InvalidOperationException($"Dialog is not supported for unknown migration!");
                 }
