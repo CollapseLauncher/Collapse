@@ -22,6 +22,8 @@ exclude:
   - name: InvalidXmlDocComment
 include:
   - name: CheckDependencyLicenses
+  - name: VulnerableLibrariesGlobal
+  - name: RiderSecurityErrorsInspection
 licenseRules:
   - keys:
       - "MIT"

@@ -2,7 +2,7 @@
 using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.Honkai.Enums;
-using CollapseLauncher.Helper;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
@@ -158,7 +158,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
+                Size size = ScreenProp.CurrentResolution;
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -228,7 +228,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
+                    Size size = ScreenProp.CurrentResolution;
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
@@ -17,7 +18,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Text;
-using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher.Extension
 {

@@ -81,8 +81,7 @@ namespace CollapseLauncher
                 // Set AUMID
                 PInvoke.SetProcessAumid(aumid).ThrowOnFailure();
 
-                WindowUtility.CurrentScreenProp = new ScreenProp();
-                InitAppPreset(WindowUtility.CurrentScreenProp);
+                InitAppPreset();
                 var logPath = AppGameLogsFolder;
                 _log = IsConsoleEnabled
                     ? new LoggerConsole(logPath, Encoding.UTF8)

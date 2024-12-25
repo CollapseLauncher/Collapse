@@ -1,9 +1,9 @@
 using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Microsoft.Win32;
+using Hi3Helper.Win32.Screen;
 using System;
 using System.Drawing;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
@@ -17,7 +17,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         private const  string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
         private const  string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
         private const  string _ValueNameScreenManagerFullscreen = "Screenmanager Is Fullscreen mode_h3981298716";
-        private static Size   currentRes                        = WindowUtility.CurrentScreenProp.CurrentResolution;
+        private static Size   currentRes                        = ScreenProp.CurrentResolution;
         #endregion
 
         #region Properties

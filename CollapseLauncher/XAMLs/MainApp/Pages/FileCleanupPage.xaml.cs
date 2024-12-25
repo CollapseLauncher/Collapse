@@ -342,67 +342,63 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    var threadCount = Environment.ProcessorCount * 4;
-                    ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
-                    ThreadPool.SetMinThreads(Math.Max(workerThreads, threadCount),
-                                             Math.Max(completionPortThreads, threadCount));
+                    using (ThreadPoolThrottle threadThrottle = ThreadPoolThrottle.Start())
+                    {
+                        var options = new ParallelOptions { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
+                        Task deleteListTask = Task.Factory.StartNew(
+                            () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
+                            CancellationToken.None,
+                            TaskCreationOptions.DenyChildAttach,
+                            TaskScheduler.Default);
 
-                    var options = new ParallelOptions { MaxDegreeOfParallelism = threadCount };
-                    Task deleteListTask = Task.Factory.StartNew(
-                        () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
+                        List<LocalFileInfo> failedList = [];
+                        Lock failedListLock = new Lock();
+
+                        Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
+                        await Task.Factory.StartNew(state =>
+                        {
+                            LocalFileInfo fileInfo = (LocalFileInfo)state!;
+                            try
+                            {
+                                FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                                if (isFileExist)
+                                {
+                                    fileInfoN.Delete();
+                                }
+
+                                Interlocked.Increment(ref deleteSuccess);
+                            }
+                            catch (Exception ex)
+                            {
+                                Interlocked.Increment(ref deleteFailed);
+                                lock (failedListLock)
+                                {
+                                    failedList.Add(fileInfo);
+                                }
+                                Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                    LogType.Error, true);
+                            }
+                        },
+                        fileInfoState,
                         CancellationToken.None,
                         TaskCreationOptions.DenyChildAttach,
-                        TaskScheduler.Default);
+                        TaskScheduler.Default));
 
-                    List<LocalFileInfo> failedList = [];
-                    Lock failedListLock = new Lock();
+                        await Task.WhenAll(deleteListTask, deleteFileTask);
 
-                    Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
-                    await Task.Factory.StartNew(state =>
-                    {
-                        LocalFileInfo fileInfo = (LocalFileInfo)state!;
-                        try
+                        if (failedList.Count > 0)
                         {
-                            FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
-                            if (isFileExist)
+                            foreach (LocalFileInfo failedFileInfo in failedList)
                             {
-                                fileInfoN.Delete();
+                                deletedItems.Remove(failedFileInfo);
                             }
-
-                            Interlocked.Increment(ref deleteSuccess);
                         }
-                        catch (Exception ex)
-                        {
-                            Interlocked.Increment(ref deleteFailed);
-                            lock (failedListLock)
-                            {
-                                failedList.Add(fileInfo);
-                            }
-                            Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
-                                LogType.Error, true);
-                        }
-                    },
-                    fileInfoState,
-                    CancellationToken.None,
-                    TaskCreationOptions.DenyChildAttach,
-                    TaskScheduler.Default));
 
-                    await Task.WhenAll(deleteListTask, deleteFileTask);
+                        long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
+                        _assetTotalSize -= totalDeleted;
 
-                    if (failedList.Count > 0)
-                    {
-                        foreach (LocalFileInfo failedFileInfo in failedList)
-                        {
-                            deletedItems.Remove(failedFileInfo);
-                        }
+                        Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
                     }
-
-                    long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
-                    _assetTotalSize -= totalDeleted;
-
-                    Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
-
-                    ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
                 }
 
                 // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).

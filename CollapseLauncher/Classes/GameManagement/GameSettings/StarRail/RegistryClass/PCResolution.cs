@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.StarRail.Context;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -10,6 +9,7 @@ using System.Drawing;
 using System.Text;
 using System.Text.Json.Serialization;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.Screen;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 
@@ -18,11 +18,11 @@ namespace CollapseLauncher.GameSettings.StarRail
     internal class PCResolution : BaseScreenSettingData, IGameSettingsValue<PCResolution>
     {
         #region Fields
-        private const string _ValueName = "GraphicsSettings_PCResolution_h431323223";
-        private const string _ValueNameScreenManagerWidth = "Screenmanager Resolution Width_h182942802";
-        private const string _ValueNameScreenManagerHeight = "Screenmanager Resolution Height_h2627697771";
+        private const string _ValueName                        = "GraphicsSettings_PCResolution_h431323223";
+        private const string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
+        private const string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
         private const string _ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
-        private static Size currentRes = WindowUtility.CurrentScreenProp.CurrentResolution;
+        private static Size currentRes                         = ScreenProp.CurrentResolution;
         #endregion
 
         #region Properties

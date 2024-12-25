@@ -123,6 +123,13 @@ namespace CollapseLauncher.InstallManager.Base
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
         protected virtual int _gameVoiceLanguageID => int.MinValue;
 
+        protected virtual string[] _gameVoiceLanguageLocaleIdOrdered => [
+                "zh-cn",
+                "en-us",
+                "ja-jp",
+                "ko-kr"
+                ];
+
         protected virtual string _gameDataPath =>
             Path.Combine(_gamePath,
                          $"{Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName)}_Data");
@@ -805,205 +812,218 @@ namespace CollapseLauncher.InstallManager.Base
                 .UseLauncherConfig(maxHttpHandler)
                 .Create();
 
-            try
+            using (ThreadPoolThrottle.Start())
             {
-                // Reset status and progress properties
-                ResetStatusAndProgress();
-
-                // Clear the VO language list
-                _sophonVOLanguageList?.Clear();
-
-                // Subscribe the logger event
-                SophonLogger.LogHandler += UpdateSophonLogHandler;
-
-                // Get the requested URL and version based on current state.
-                if (_gameVersionManager.GamePreset
-                                       .LauncherResourceChunksURL != null)
+                try
                 {
-                #nullable enable
-                    // Reassociate the URL if branch url exist
-                    string? branchUrl = _gameVersionManager.GamePreset
-                                                           .LauncherResourceChunksURL
-                                                           .BranchUrl;
-                    if (!string.IsNullOrEmpty(branchUrl)
-                        && !string.IsNullOrEmpty(_gameVersionManager.GamePreset.LauncherBizName))
+                    // Reset status and progress properties
+                    ResetStatusAndProgress();
+
+                    // Clear the VO language list
+                    _sophonVOLanguageList?.Clear();
+
+                    // Subscribe the logger event
+                    SophonLogger.LogHandler += UpdateSophonLogHandler;
+
+                    // Get the requested URL and version based on current state.
+                    if (_gameVersionManager.GamePreset
+                                           .LauncherResourceChunksURL != null)
                     {
-                        await _gameVersionManager.GamePreset
-                                                 .LauncherResourceChunksURL
-                                                 .EnsureReassociated(
-                                                                     httpClient,
-                                                                     branchUrl,
-                                                                     _gameVersionManager.GamePreset.LauncherBizName,
-                                                                     _token.Token);
+#nullable enable
+                        // Reassociate the URL if branch url exist
+                        string? branchUrl = _gameVersionManager.GamePreset
+                                                               .LauncherResourceChunksURL
+                                                               .BranchUrl;
+                        if (!string.IsNullOrEmpty(branchUrl)
+                            && !string.IsNullOrEmpty(_gameVersionManager.GamePreset.LauncherBizName))
+                        {
+                            await _gameVersionManager.GamePreset
+                                                     .LauncherResourceChunksURL
+                                                     .EnsureReassociated(
+                                                                         httpClient,
+                                                                         branchUrl,
+                                                                         _gameVersionManager.GamePreset.LauncherBizName,
+                                                                         _token.Token);
+                        }
+#nullable restore
+
+#if SIMULATEAPPLYPRELOAD
+                         string requestedUrl = gameState switch
+                         {
+                             GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                                .LauncherResourceChunksURL.PreloadUrl,
+                             _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                         };
+                         GameVersion? requestedVersion = gameState switch
+                         {
+                             GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                                .GetGameVersionAPIPreload(),
+                             _ => _gameVersionManager!.GetGameVersionAPIPreload()
+                         } ?? _gameVersionManager!.GetGameVersionAPI();
+#else
+                        string requestedUrl = gameState switch
+                        {
+                            GameInstallStateEnum.InstalledHavePreload => _gameVersionManager
+                               .GamePreset
+                               .LauncherResourceChunksURL.PreloadUrl,
+                            _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                        };
+                        GameVersion? requestedVersion = gameState switch
+                        {
+                            GameInstallStateEnum.InstalledHavePreload =>
+                                _gameVersionManager!
+                                   .GetGameVersionAPIPreload(),
+                            _ => _gameVersionManager!.GetGameVersionAPI()
+                        } ?? _gameVersionManager!.GetGameVersionAPI();
+
+                        // Add the tag query to the Url
+                        requestedUrl += $"&tag={requestedVersion.ToString()}";
+#endif
+
+                        // Set the progress bar to indetermined
+                        _status.IsIncludePerFileIndicator = false;
+                        _status.IsProgressPerFileIndetermined = false;
+                        _status.IsProgressAllIndetermined = true;
+                        UpdateStatus();
+
+                        // Initialize the info pair list
+                        var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
+
+                        // Get the info pair based on info provided above (for main game file)
+                        var sophonMainInfoPair = await
+                            SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game", _token.Token);
+
+                        // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
+                        RearrangeSophonDataLocaleOrder(sophonMainInfoPair.OtherSophonData);
+
+                        // Add the manifest to the pair list
+                        sophonInfoPairList.Add(sophonMainInfoPair);
+
+                        List<string> voLanguageList =
+                            GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
+
+                        // Get Audio Choices first
+                        (List<int> addedVO, int setAsDefaultVO) =
+                            await Dialog_ChooseAudioLanguageChoice(voLanguageList, GetSophonLocaleCodeIndex(sophonMainInfoPair.OtherSophonData, "ja-jp"));
+
+                        try
+                        {
+                            if (addedVO == null || setAsDefaultVO < 0)
+                            {
+                                throw new TaskCanceledException();
+                            }
+
+                            for (int i = 0; i < addedVO.Count; i++)
+                            {
+                                int voLangIndex = addedVO[i];
+                                string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                                _sophonVOLanguageList?.Add(voLangLocaleCode);
+
+                                // Get the info pair based on info provided above (for the selected VO audio file)
+                                SophonChunkManifestInfoPair sophonSelectedVoLang =
+                                    sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                                sophonInfoPairList.Add(sophonSelectedVoLang);
+                            }
+
+                            // Set the voice language ID to value given
+                            _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
+
+                            // Get the remote total size and current total size
+                            _progressAllCountTotal = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                            _progressAllSizeTotal = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                            _progressAllSizeCurrent = 0;
+
+                            // Set the display to Install Mode
+                            _isSophonInUpdateMode = false;
+
+                            // Set the progress bar to indetermined
+                            _status.IsIncludePerFileIndicator = false;
+                            _status.IsProgressPerFileIndetermined = false;
+                            _status.IsProgressAllIndetermined = false;
+                            UpdateStatus();
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            throw;
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            throw;
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorSender.SendException(e);
+                        }
+
+                        // Get the parallel options
+                        var parallelOptions = new ParallelOptions
+                        {
+                            MaxDegreeOfParallelism = maxThread,
+                            CancellationToken = _token.Token
+                        };
+                        var parallelChunksOptions = new ParallelOptions
+                        {
+                            MaxDegreeOfParallelism = maxChunksThread,
+                            CancellationToken = _token.Token
+                        };
+
+                        // Declare the download delegate
+                        async ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
+                        {
+                            // ReSharper disable once AccessToDisposedClosure
+                            await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
+                        }
+
+                        // Declare the rename temp file delegate
+                        async ValueTask DelegateAssetRenameTempFile(SophonAsset asset, CancellationToken token)
+                        {
+                            await Task.Run(() =>
+                            {
+                                // If the asset is a dictionary, then return
+                                if (asset.IsDirectory)
+                                {
+                                    return;
+                                }
+
+                                // Get the file path and start the write process
+                                var assetName = asset.AssetName;
+                                var filePath = new FileInfo(
+                                    EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
+                                    "_tempSophon").EnsureNoReadOnly();
+                                var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly();
+
+                                if (filePath.Exists)
+                                {
+                                    filePath.MoveTo(origFilePath.FullName, true);
+                                    filePath.Refresh();
+                                    origFilePath.Refresh();
+                                }
+                            }, token);
+                        }
+
+                        // Enumerate the asset in parallel and start the download process
+                        await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, DelegateAssetDownload);
+
+                        // Rename temporary files
+                        await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, DelegateAssetRenameTempFile);
+
+                        // Remove sophon verified files
+                        CleanupTempSophonVerifiedFiles();
                     }
-                #nullable restore
 
-                #if SIMULATEAPPLYPRELOAD
-                    string requestedUrl = gameState switch
-                    {
-                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
-                           .LauncherResourceChunksURL.PreloadUrl,
-                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
-                    };
-                    GameVersion? requestedVersion = gameState switch
-                    {
-                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
-                           .GetGameVersionAPIPreload(),
-                        _ => _gameVersionManager!.GetGameVersionAPIPreload()
-                    } ?? _gameVersionManager!.GetGameVersionAPI();
-                #else
-                    string requestedUrl = gameState switch
-                                          {
-                                              GameInstallStateEnum.InstalledHavePreload => _gameVersionManager
-                                                 .GamePreset
-                                                 .LauncherResourceChunksURL.PreloadUrl,
-                                              _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
-                                          };
-                    GameVersion? requestedVersion = gameState switch
-                                                    {
-                                                        GameInstallStateEnum.InstalledHavePreload =>
-                                                            _gameVersionManager!
-                                                               .GetGameVersionAPIPreload(),
-                                                        _ => _gameVersionManager!.GetGameVersionAPI()
-                                                    } ?? _gameVersionManager!.GetGameVersionAPI();
-
-                    // Add the tag query to the Url
-                    requestedUrl += $"&tag={requestedVersion.ToString()}";
-                #endif
-
-                    // Set the progress bar to indetermined
-                    _status.IsIncludePerFileIndicator     = false;
-                    _status.IsProgressPerFileIndetermined = false;
-                    _status.IsProgressAllIndetermined     = true;
-                    UpdateStatus();
-
-                    // Initialize the info pair list
-                    var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
-
-                    // Get the info pair based on info provided above (for main game file)
-                    var sophonMainInfoPair = await
-                        SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game",
-                                                                         _token.Token)
-                        .ConfigureAwait(false);
-                    sophonInfoPairList.Add(sophonMainInfoPair);
-
-                    List<string> voLanguageList =
-                        GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
-
-                    Dispatch( async void () =>
-                                   {
-                                       try
-                                       {
-                                           (List<int> addedVO, int setAsDefaultVO) =
-                                               await Dialog_ChooseAudioLanguageChoice(_parentUI, voLanguageList);
-                                           if (addedVO == null || setAsDefaultVO < 0)
-                                           {
-                                               throw new TaskCanceledException();
-                                           }
-
-                                           for (int i = 0; i < addedVO.Count; i++)
-                                           {
-                                               int    voLangIndex      = addedVO[i];
-                                               string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-                                               _sophonVOLanguageList?.Add(voLangLocaleCode);
-
-                                               // Get the info pair based on info provided above (for the selected VO audio file)
-                                               SophonChunkManifestInfoPair sophonSelectedVoLang =
-                                                   sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
-                                               sophonInfoPairList.Add(sophonSelectedVoLang);
-                                           }
-
-                                           // Set the voice language ID to value given
-                                           _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVO);
-
-                                           // Get the remote total size and current total size
-                                           _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                                           _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                                           _progressAllSizeCurrent = 0;
-
-                                           // Set the display to Install Mode
-                                           _isSophonInUpdateMode = false;
-
-                                           // Set the progress bar to indetermined
-                                           _status.IsIncludePerFileIndicator     = false;
-                                           _status.IsProgressPerFileIndetermined = false;
-                                           _status.IsProgressAllIndetermined     = false;
-                                           UpdateStatus();
-                                       }
-                                       catch (Exception e)
-                                       {
-                                           ErrorSender.SendException(e);
-                                       }
-                                   });
-                    
-                    // Get the parallel options
-                    var parallelOptions = new ParallelOptions
-                    {
-                        MaxDegreeOfParallelism = maxThread,
-                        CancellationToken      = _token.Token
-                    };
-                    var parallelChunksOptions = new ParallelOptions
-                    {
-                        MaxDegreeOfParallelism = maxChunksThread,
-                        CancellationToken      = _token.Token
-                    };
-                    
-                    // Declare the download delegate
-                    async ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
-                    {
-                        // ReSharper disable once AccessToDisposedClosure
-                        await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
-                    }
-
-                    // Declare the rename temp file delegate
-                    async ValueTask DelegateAssetRenameTempFile(SophonAsset asset, CancellationToken token)
-                    {
-                        await Task.Run(() =>
-                                       {
-                                           // If the asset is a dictionary, then return
-                                           if (asset.IsDirectory)
-                                           {
-                                               return;
-                                           }
-
-                                           // Get the file path and start the write process
-                                           var assetName = asset.AssetName;
-                                           var filePath = new FileInfo(
-                                               EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
-                                               "_tempSophon").EnsureNoReadOnly();
-                                           var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly();
-
-                                           if (filePath.Exists)
-                                           {
-                                               filePath.MoveTo(origFilePath.FullName, true);
-                                               filePath.Refresh();
-                                               origFilePath.Refresh();
-                                           }
-                                       }, token);
-                    }
-
-                    // Enumerate the asset in parallel and start the download process
-                    await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, DelegateAssetDownload);
-
-                    // Rename temporary files
-                    await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, DelegateAssetRenameTempFile);
-
-                    // Remove sophon verified files
-                    CleanupTempSophonVerifiedFiles();
+                    _isSophonDownloadCompleted = true;
                 }
-
-                _isSophonDownloadCompleted = true;
-            }
-            finally
-            {
-                // Unsubscribe the logger event
-                SophonLogger.LogHandler -= UpdateSophonLogHandler;
-                httpClient.Dispose();
+                finally
+                {
+                    // Unsubscribe the logger event
+                    SophonLogger.LogHandler -= UpdateSophonLogHandler;
+                    httpClient.Dispose();
+                }
             }
 
             return;
 
-            async Task RunTaskAction(HttpClient client, List<SophonChunkManifestInfoPair> sophonInfoPairList,
+            async Task RunTaskAction(HttpClient client, List<SophonChunkManifestInfoPair> sophonInfoPairListLocal,
                                      ParallelOptions parallelOptions,
                                      Func<SophonAsset, CancellationToken, ValueTask> actionDelegate)
             {
@@ -1014,7 +1034,8 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
                     var processingInfoPair = new ConcurrentDictionary<SophonChunksInfo, byte>();
-                    foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairList)
+                    var infoPairListCopy   = sophonInfoPairListLocal.ToList();
+                    foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in infoPairListCopy)
                     {
                         if (!processingInfoPair.TryAdd(sophonDownloadInfoPair.ChunksInfo, 0))
                         {
@@ -1272,11 +1293,13 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token)
-               .ConfigureAwait(false);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, _token.Token);
             SophonChunkManifestInfoPair requestPairTo = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token)
-               .ConfigureAwait(false);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, _token.Token);
+
+            // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
+            RearrangeSophonDataLocaleOrder(requestPairFrom.OtherSophonData);
+            RearrangeSophonDataLocaleOrder(requestPairTo.OtherSophonData);
 
             // Add asset to the list
             await foreach (SophonAsset sophonAsset in SophonUpdate
@@ -1737,10 +1760,10 @@ namespace CollapseLauncher.InstallManager.Base
                     continue;
                 }
 
-                string outputPath = EnsureCreationOfDirectory(Path.Combine(_gamePath, zipEntry.Key));
+                string outputPath = Path.Combine(_gamePath, zipEntry.Key);
+                FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
 
-                await using FileStream outputStream =
-                    new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Write);
+                await using FileStream outputStream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.Write);
                 await using Stream entryStream = zipEntry.OpenEntryStream();
 
                 Task runningTask = Task.Factory.StartNew(
@@ -1768,9 +1791,9 @@ namespace CollapseLauncher.InstallManager.Base
                     // Increment total size
                     _progressAllSizeCurrent     += read;
                     _progressPerFileSizeCurrent += read;
-
+                    
                     // Calculate the speed
-                    _progress.ProgressAllSpeed = CalculateSpeed(read);
+                    lock (_progress) _progress.ProgressAllSpeed = CalculateSpeed(read);
 
                     if (!CheckIfNeedRefreshStopwatch())
                     {
@@ -1778,20 +1801,23 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Assign local sizes to progress
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                    lock (_progress)
+                    {
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                    // Calculate percentage
-                    _progress.ProgressAllPercentage =
-                        Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                    _progress.ProgressPerFilePercentage =
-                        Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-                    // Calculate the timelapse
-                    _progress.ProgressAllTimeLeft =
-                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                       .ToTimeSpanNormalized();
+                        // Calculate percentage
+                        _progress.ProgressAllPercentage =
+                            Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
+                        _progress.ProgressPerFilePercentage =
+                            Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
+                        // Calculate the timelapse
+                        _progress.ProgressAllTimeLeft =
+                            ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
+                           .ToTimeSpanNormalized();
+                    }
 
                     UpdateAll();
                 }
@@ -2094,7 +2120,9 @@ namespace CollapseLauncher.InstallManager.Base
                 string appDataPath = _gameVersionManager.GameDirAppDataPath;
                 try
                 {
-                    Directory.Delete(appDataPath, true);
+                    if (Directory.Exists(appDataPath))
+                        Directory.Delete(appDataPath, true);
+
                     LogWriteLine($"Deleted {appDataPath}", LogType.Default, true);
                 }
                 catch (Exception ex)
@@ -2293,10 +2321,13 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual async ValueTask ApplyHdiffListPatch()
         {
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
-
-            _progress.ProgressAllSizeTotal    = hdiffEntry.Sum(x => x.fileSize);
-            _progress.ProgressAllSizeCurrent   = 0;
             _status.IsIncludePerFileIndicator = false;
+
+            lock (_progress)
+            {
+                _progress.ProgressAllSizeTotal   = hdiffEntry.Sum(x => x.fileSize);
+                _progress.ProgressAllSizeCurrent = 0;
+            }
 
             _progressAllCountTotal = 1;
             _progressAllCountFound = hdiffEntry.Count;
@@ -2346,14 +2377,15 @@ namespace CollapseLauncher.InstallManager.Base
                     lock (_progress)
                     {
                         _progress.ProgressAllSizeCurrent += entry.fileSize;
-                    }
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                    _progress.ProgressAllSpeed = CalculateSpeed(entry.fileSize);
+                        _progress.ProgressAllPercentage =
+                            Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
+                        _progress.ProgressAllSpeed = CalculateSpeed(entry.fileSize);
 
-                    _progress.ProgressAllTimeLeft =
-                        ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
-                         _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                        _progress.ProgressAllTimeLeft =
+                            ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
+                             _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                    }
+
                     UpdateProgress();
                 }
                 finally
@@ -2408,13 +2440,16 @@ namespace CollapseLauncher.InstallManager.Base
             }
             if (CheckIfNeedRefreshStopwatch())
             {
-                _progress.ProgressAllPercentage =
-                    Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                _progress.ProgressAllSpeed = CalculateSpeed(e.Read);
+                lock (_progress)
+                {
+                    _progress.ProgressAllPercentage =
+                        Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
+                    _progress.ProgressAllSpeed = CalculateSpeed(e.Read);
 
-                _progress.ProgressAllTimeLeft =
-                    ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
-                     _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                    _progress.ProgressAllTimeLeft =
+                        ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
+                         _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                }
                 UpdateProgress();
             }
         }
@@ -2581,22 +2616,15 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual List<string> GetLanguageDisplayListFromVoicePackList(List<RegionResourceVersion> voicePacks)
+        protected virtual int GetSophonLocaleCodeIndex(SophonData sophonData, string lookupName)
         {
-            List<string> value = [];
-            foreach (RegionResourceVersion Entry in voicePacks)
-            {
-                // Check the lang ID and add the translation of the language to the list
-                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
-                if (string.IsNullOrEmpty(languageDisplay))
-                {
-                    continue;
-                }
+            List<string> localeList = sophonData.ManifestIdentityList
+                .Where(x => IsValidLocaleCode(x.MatchingField))
+                .Select(x => x.MatchingField.ToLower())
+                .ToList();
 
-                value.Add(languageDisplay);
-            }
-
-            return value;
+            int index = localeList.IndexOf(lookupName);
+            return Math.Max(0, index);
         }
 
         protected virtual Dictionary<string, string> GetLanguageDisplayDictFromVoicePackList(
@@ -2641,6 +2669,54 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             return value;
+        }
+
+        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion regionResource)
+        {
+            // Rearrange the region resource list order based on matching field for the locale
+            RearrangeDataListLocaleOrder(regionResource.voice_packs, x => x.language);
+        }
+
+        protected virtual void RearrangeSophonDataLocaleOrder(SophonData sophonData)
+        {
+            // Rearrange the sophon data list order based on matching field for the locale
+            RearrangeDataListLocaleOrder(sophonData.ManifestIdentityList, x => x.MatchingField);
+        }
+
+        protected virtual void RearrangeDataListLocaleOrder<T>(List<T> assetDataList, Func<T, string> matchingFieldPredicate)
+        {
+            // Get ordered locale string
+            string[] localeStringOrder = _gameVoiceLanguageLocaleIdOrdered;
+
+            // Separate non-locale and locale manifest list
+            List<T> manifestListMain = assetDataList
+                .Where(x => !IsValidLocaleCode(matchingFieldPredicate(x)))
+                .ToList();
+            List<T> manifestListLocale = assetDataList.
+                Where(x => IsValidLocaleCode(matchingFieldPredicate(x)))
+                .ToList();
+
+            // SLOW: Order the locale manifest list by the localeStringOrder
+            for (int i = 0; i < localeStringOrder.Length; i++)
+            {
+                var localeFound = manifestListLocale.FirstOrDefault(x => matchingFieldPredicate(x).Equals(localeStringOrder[i], StringComparison.OrdinalIgnoreCase));
+                if (localeFound != null)
+                {
+                    // Move from main to locale
+                    manifestListMain.Add(localeFound);
+                    manifestListLocale.Remove(localeFound);
+                }
+            }
+
+            // Add the rest of the unknown locale if exist
+            if (manifestListLocale.Count != 0)
+            {
+                manifestListMain.AddRange(manifestListLocale);
+            }
+
+            // Rearrange by cleaning the list and re-add the sorted list
+            assetDataList.Clear();
+            assetDataList.AddRange(manifestListMain);
         }
 
         protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList,
@@ -3267,6 +3343,7 @@ namespace CollapseLauncher.InstallManager.Base
                         continue;
                     }
 
+                    RearrangeLegacyPackageLocaleOrder(asset);
                     await TryAddResourceVersionList(asset, packageList);
                 }
             }
@@ -3985,8 +4062,11 @@ namespace CollapseLauncher.InstallManager.Base
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
                     #endif
                     // HACK: Fix the progress not achieving 100% while completed
-                    _progress.ProgressAllPercentage     = 100f;
-                    _progress.ProgressPerFilePercentage = 100f;
+                    lock (_progress)
+                    {
+                        _progress.ProgressAllPercentage     = 100f;
+                        _progress.ProgressPerFilePercentage = 100f;
+                    }
                     break;
                 case CompletenessStatus.Cancelled:
                     IsRunning           = false;
@@ -4061,13 +4141,16 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected void DeltaPatchCheckProgress(object sender, PatchEvent e)
         {
-            _progress.ProgressAllPercentage = e.ProgressPercentage;
+            lock (_progress)
+            {
+                _progress.ProgressAllPercentage = e.ProgressPercentage;
 
-            _progress.ProgressAllTimeLeft = e.TimeLeft;
-            _progress.ProgressAllSpeed    = e.Speed;
+                _progress.ProgressAllTimeLeft = e.TimeLeft;
+                _progress.ProgressAllSpeed    = e.Speed;
 
-            _progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
-            _progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
+                _progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
+                _progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
+            }
 
             if (CheckIfNeedRefreshStopwatch())
             {
@@ -4105,14 +4188,17 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
-            _progress.ProgressAllPercentage =
-                e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
+            lock (_progress)
+            {
+                _progress.ProgressAllPercentage =
+                    e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
 
-            _progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
-            _progress.ProgressAllSpeed    = e.ProgressAllSpeed;
+                _progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
+                _progress.ProgressAllSpeed    = e.ProgressAllSpeed;
 
-            _progress.ProgressAllSizeTotal   = e.ProgressAllSizeTotal;
-            _progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
+                _progress.ProgressAllSizeTotal   = e.ProgressAllSizeTotal;
+                _progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
+            }
 
             if (CheckIfNeedRefreshStopwatch())
             {
@@ -4134,24 +4220,27 @@ namespace CollapseLauncher.InstallManager.Base
                 _progressPerFileSizeCurrent = (long)e.TotalRead;
                 _progressPerFileSizeTotal   = (long)e.TotalSize;
 
-                // Assign local sizes to progress
-                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                lock (_progress)
+                {
+                    // Assign local sizes to progress
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                // Calculate the speed
-                _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
+                    // Calculate the speed
+                    _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
 
-                // Calculate percentage
-                _progress.ProgressAllPercentage =
-                    Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                _progress.ProgressPerFilePercentage =
-                    Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-                // Calculate the timelapse
-                _progress.ProgressAllTimeLeft =
-                    ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                   .ToTimeSpanNormalized();
+                    // Calculate percentage
+                    _progress.ProgressAllPercentage =
+                        Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
+                    _progress.ProgressPerFilePercentage =
+                        Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
+                    // Calculate the timelapse
+                    _progress.ProgressAllTimeLeft =
+                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
+                       .ToTimeSpanNormalized();
+                }
 
                 UpdateAll();
             }
@@ -4183,31 +4272,35 @@ namespace CollapseLauncher.InstallManager.Base
 
             if (CheckIfNeedRefreshStopwatch())
             {
-                // Assign local sizes to progress
-                _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
-                _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
-                _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
+                lock (_progress)
+                {
+                    // Assign local sizes to progress
+                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                // Assign speed with clamped value
-                double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                _progress.ProgressAllSpeed = speedClamped;
+                    // Assign speed with clamped value
+                    double speedClamped = speedAll.ClampLimitedSpeedNumber();
+                    _progress.ProgressAllSpeed = speedClamped;
 
-                // Calculate percentage
-                _progress.ProgressPerFilePercentage =
-                    Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
-                _progress.ProgressAllPercentage =
-                    Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                    // Calculate percentage
+                    _progress.ProgressPerFilePercentage =
+                        Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
+                    _progress.ProgressAllPercentage =
+                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
 
-                // Calculate the timelapse
-                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
-                _progress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
+                    // Calculate the timelapse
+                    double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
+                    _progress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
 
-                // Update the status of per file size and current progress from Http client
-                _progressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
-                _progressPerFileSizeTotal = downloadProgress.BytesTotal;
-                _progress.ProgressPerFilePercentage = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
-
+                    // Update the status of per file size and current progress from Http client
+                    _progressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
+                    _progressPerFileSizeTotal   = downloadProgress.BytesTotal;
+                    _progress.ProgressPerFilePercentage =
+                        ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded,
+                                                          downloadProgress.BytesTotal);
+                }
                 // Update the status
                 UpdateAll();
             }
@@ -4232,25 +4325,28 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 if (e.State != DownloadState.Merging)
                 {
-                    // Assign local sizes to progress
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                    lock (_progress)
+                    {
+                        // Assign local sizes to progress
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
-                    // Calculate the speed
-                    _progress.ProgressAllSpeed = speedAll;
+                        // Calculate the speed
+                        _progress.ProgressAllSpeed = speedAll;
 
-                    // Calculate percentage
-                    _progress.ProgressPerFilePercentage =
-                        Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                        // Calculate percentage
+                        _progress.ProgressPerFilePercentage =
+                            Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
+                        _progress.ProgressAllPercentage =
+                            Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
 
-                    // Calculate the timelapse
-                    _progress.ProgressAllTimeLeft =
-                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                       .ToTimeSpanNormalized();
+                        // Calculate the timelapse
+                        _progress.ProgressAllTimeLeft =
+                            ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
+                           .ToTimeSpanNormalized();
+                    }
                 }
                 else
                 {
@@ -4260,22 +4356,25 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // If status is merging, then use progress for speed and timelapse from Http client
                     // and set the rest from the base class
-                    _progress.ProgressAllTimeLeft        = e.TimeLeft;
+                    lock (_progress)
+                    {
+                        _progress.ProgressAllTimeLeft = e.TimeLeft;
 
-                    _progress.ProgressAllSpeed           = speedAll;
+                        _progress.ProgressAllSpeed = speedAll;
 
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                        _progress.ProgressAllPercentage =
+                            Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                    }
                 }
 
                 // Update the status of per file size and current progress from Http client
                 _progressPerFileSizeCurrent         = e.SizeDownloaded;
                 _progressPerFileSizeTotal           = e.SizeToBeDownloaded;
-                _progress.ProgressPerFilePercentage = e.ProgressPercentage;
+                lock (_progress) _progress.ProgressPerFilePercentage = e.ProgressPercentage;
 
                 // Update the status
                 UpdateAll();

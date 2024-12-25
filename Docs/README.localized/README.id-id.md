@@ -11,6 +11,7 @@
 [![pt](https://img.shields.io/badge/README-pt-red.svg)](README.pt-pt.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](README.fr-fr.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](README.ru-ru.md)
+[![zh](https://img.shields.io/badge/README-zh-red.svg)](README.zh-cn.md)
 
 Pada saat pertama kali diciptakan, **Collapse** ditujukan hanya untuk **Honkai Impact 3rd**. Namun seiring dengan berjalannya waktu dan kemajuan dalam project ini, akhirnya launcher ini dapat digunakan untuk semua **Game miHoYo** yang saat ini sudah tersedia.
 
@@ -25,7 +26,7 @@ Pada saat pertama kali diciptakan, **Collapse** ditujukan hanya untuk **Honkai I
 
 <p align="center">
     <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
-       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Crowdin" Width=280/>
+       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Transifex" Width=280/>
 	</a>
     &nbsp;
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">

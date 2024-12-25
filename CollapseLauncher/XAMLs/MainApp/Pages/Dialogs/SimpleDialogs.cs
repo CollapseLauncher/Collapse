@@ -204,7 +204,7 @@ namespace CollapseLauncher.Dialogs
                 radioButton.Checked += (sender, _) =>
                 {
                     RadioButton radioButtonLocal = sender as RadioButton;
-                    choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
+                    choiceAsDefault = (int)(radioButtonLocal?.Tag ?? 0);
                     checkBox.IsChecked = true;
 
                     TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
@@ -315,7 +315,7 @@ namespace CollapseLauncher.Dialogs
             return (returnDictionary, localecodelist[choiceAsDefault]);
         }
 
-        public static async Task<(List<int>, int)> Dialog_ChooseAudioLanguageChoice(UIElement Content, List<string> langlist, int defaultIndex = 2)
+        public static async Task<Tuple<List<int>, int>> Dialog_ChooseAudioLanguageChoice(List<string> langlist, int defaultIndex = 2)
         {
             bool[] choices = new bool[langlist.Count];
             int choiceAsDefault = defaultIndex;
@@ -346,7 +346,7 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = null,
                 DefaultButton = ContentDialogButton.Primary,
                 Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : Content.XamlRoot
+                XamlRoot = (WindowUtility.CurrentWindow is MainWindow mainWindow) ? mainWindow.Content.XamlRoot : throw new NullReferenceException($"WindowUtility.CurrentWindow cannot be null!")
             };
 
             InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
@@ -504,7 +504,7 @@ namespace CollapseLauncher.Dialogs
 
             ContentDialogResult dialogResult = await dialog.ShowAsync();
             if (dialogResult == ContentDialogResult.None)
-                return (null, -1);
+                return new(null, -1);
 
             List<int> returnList = new List<int>();
             for (int i = 0; i < choices.Length; i++)
@@ -513,7 +513,7 @@ namespace CollapseLauncher.Dialogs
                     returnList.Add(i);
             }
 
-            return (returnList, choiceAsDefault);
+            return new(returnList, choiceAsDefault);
         }
 
         public static async Task<ContentDialogResult> Dialog_GraphicsVeryHighWarning(UIElement Content) =>

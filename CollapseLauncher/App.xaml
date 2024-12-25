@@ -385,13 +385,13 @@
                             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled"
                                              Color="#00000000" />
                             <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPointerOver"
-                                             Color="#10FFFFFF" />
+                                             Color="#60000000" />
                             <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPressed"
                                              Color="#22222222" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClose"
-                                             Color="#A0C00000" />
+                                             Color="#00E00000" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClosePointerOver"
-                                             Color="#FFD00000" />
+                                             Color="#FFE00000" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClosePressed"
                                              Color="#A0B00000" />
                         </ResourceDictionary>
@@ -744,9 +744,9 @@
                             <SolidColorBrush x:Key="WindowCaptionButtonBackgroundPressed"
                                              Color="#40FFFFFF" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClose"
-                                             Color="#90FF6666" />
+                                             Color="#00FF6666" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClosePointerOver"
-                                             Color="#C0FF0000" />
+                                             Color="#FFFF0000" />
                             <SolidColorBrush x:Key="WindowCaptionBackgroundClosePressed"
                                              Color="#90FF2222" />
                         </ResourceDictionary>

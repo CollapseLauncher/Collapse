@@ -25,6 +25,7 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
 using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
@@ -37,6 +38,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
 using PhotoSauce.MagicScaler;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -48,7 +50,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Media;
-using System.Collections.Concurrent;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
@@ -1920,7 +1921,10 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
+                    {
+                        var size = ScreenProp.CurrentResolution;
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", size.Width, size.Height);
+                    }
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -1990,7 +1994,10 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
+                    {
+                        var size = ScreenProp.CurrentResolution;
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", size.Width, size.Height);
+                    }
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }
@@ -2018,7 +2025,10 @@ namespace CollapseLauncher.Pages
                 {
                     LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", WindowUtility.CurrentScreenProp?.GetScreenSize().Width, WindowUtility.CurrentScreenProp?.GetScreenSize().Height);
+                    {
+                        var size = ScreenProp.CurrentResolution;
+                        parameter.AppendFormat("-screen-width {0} -screen-height {1} ", size.Width, size.Height);
+                    }
                     else
                         parameter.AppendFormat("-screen-width {0} -screen-height {1} ", screenSize.Width, screenSize.Height);
                 }

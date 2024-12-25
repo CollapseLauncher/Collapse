@@ -13,13 +13,15 @@
 [![pt](https://img.shields.io/badge/README-pt-red.svg)](Docs/README.localized/README.pt-pt.md)
 [![fr](https://img.shields.io/badge/README-fr-red.svg)](Docs/README.localized/README.fr-fr.md)
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](Docs/README.localized/README.ru-ru.md)
+[![zh](https://img.shields.io/badge/README-zh-red.svg)](Docs/README.localized/README.zh-cn.md)
 
 **Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
 
-[![Build-Canary](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/neon-nyan/Collapse/actions/workflows/build.yml)
+[![Build-Canary](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml)
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
 [![Sync to GitLab](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-gitlab.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-gitlab.yml)
-[![Upload to R2](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/neon-nyan/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
+[![Sync to Coding](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-coding.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/sync-to-coding.yml)
+[![Upload to R2](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml/badge.svg)](https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/actions/workflows/upload-to-r2.yml)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2FCollapseLauncher%2FCollapse?ref=badge_shield&issueType=security)
 
@@ -30,7 +32,7 @@
 
 <p align="center">
     <a href="https://explore.transifex.com/collapse-launcher/collapse-mainapp/" target="_blank">
-       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Crowdin" Width=280/>
+       <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Transifex_logo.svg" alt="Collapse Launcher Localization at Transifex" Width=280/>
 	</a>
     &nbsp;
     <a href="https://discord.gg/vJd2exaS7j" target="_blank">
@@ -227,7 +229,7 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 > > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.8/CollapseLauncher-preview-Setup.exe)
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.8/CollapseLauncher-stable-Setup.exe)
 > **Note**: The version for this build is `1.82.8` (Released on: December 22nd, 2024).
 
 [<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.8-pre/CollapseLauncher-preview-Setup.exe)
@@ -333,3 +335,4 @@ Made by all captains around the world with ❤️. Fight for all that is beautif
 
 [SignPath Foundation]:https://signpath.org
 [SignPath.io]:https://signpath.io
+[Sentry.io]:https://sentry.io

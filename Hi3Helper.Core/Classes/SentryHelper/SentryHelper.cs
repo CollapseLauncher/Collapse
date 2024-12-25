@@ -141,7 +141,7 @@ namespace Hi3Helper.SentryHelper
                                  o.SendDefaultPii    = false;
                                  o.MaxAttachmentSize = SentryMaxAttachmentSize;
                                  o.DeduplicateMode   = DeduplicateMode.All;
-                                 o.Environment       = Debugger.IsAttached ? "debug" : "non-debug";
+                                 o.Environment       = Debugger.IsAttached ? "debug" : IsPreview ? "non-debug" : "stable";
                              });
             SentrySdk.ConfigureScope(s =>
                                      {

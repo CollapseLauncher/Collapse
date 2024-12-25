@@ -54,7 +54,6 @@ namespace CollapseLauncher.Helper
         internal static AppWindow? CurrentAppWindow;
         internal static WindowId? CurrentWindowId;
         internal static OverlappedPresenter? CurrentOverlappedPresenter;
-        internal static ScreenProp? CurrentScreenProp;
 
         internal static DisplayArea? CurrentWindowDisplayArea
         {
@@ -665,7 +664,7 @@ namespace CollapseLauncher.Helper
 
         internal static void SetWindowSize(int width, int height)
         {
-            if (CurrentScreenProp == null || CurrentWindowPtr == nint.Zero)
+            if (CurrentWindowPtr == nint.Zero)
                 return;
 
             // Get the scale factor and calculate the size and offset
@@ -673,7 +672,7 @@ namespace CollapseLauncher.Helper
             int lastWindowWidth = (int)(width * scaleFactor);
             int lastWindowHeight = (int)(height * scaleFactor);
 
-            Size desktopSize = CurrentScreenProp.GetScreenSize();
+            Size desktopSize = ScreenProp.CurrentResolution;
             int xOff = desktopSize.Width / 2 - lastWindowWidth / 2;
             int yOff = desktopSize.Height / 2 - lastWindowHeight / 2;
 
