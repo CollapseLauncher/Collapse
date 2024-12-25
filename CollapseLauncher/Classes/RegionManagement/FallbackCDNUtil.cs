@@ -54,10 +54,11 @@ namespace CollapseLauncher
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
+                string relativePath = GetRelativePathOnly(url);
                 await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread,
-                                                                 GetRelativePathOnly(url),
+                                                                 relativePath,
                                                              #if !USEVELOPACK
-                    default
+                                                                 default
                                                              #else
                                                                  cancelToken
                                                              #endif
@@ -80,7 +81,8 @@ namespace CollapseLauncher
         public async Task<byte[]> DownloadBytes(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
 #endif
         {
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
+            string relativePath = GetRelativePathOnly(url);
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default, true);
             byte[] buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return buffer;
@@ -92,16 +94,33 @@ namespace CollapseLauncher
         public async Task<string> DownloadString(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
 #endif
         {
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(GetRelativePathOnly(url), default, true);
+            string relativePath = GetRelativePathOnly(url);
+            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default, true);
             byte[] buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return Encoding.UTF8.GetString(buffer);
         }
 
+        private string[]? CdnBaseUrls;
         private string GetRelativePathOnly(string url)
         {
-            string toCompare = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
-            return url.AsSpan(toCompare.Length).ToString();
+            // Populate the CDN Base URLs if the field is null
+            CdnBaseUrls ??= CDNList.Select(x => x.URLPrefix).ToArray();
+
+            // Get URL span and iterate through the CDN Base URLs
+            ReadOnlySpan<char> urlSpan = url.AsSpan();
+            for (int i = 0; i < CdnBaseUrls.Length; i++)
+            {
+                // Get the index of the base URL. If not found (-1), then continue
+                int indexOf = urlSpan.IndexOf(CdnBaseUrls[i], StringComparison.OrdinalIgnoreCase);
+                if (indexOf < 0) continue;
+
+                // Otherwise, slice the urlSpan based on the index and return the sliced relative URL.
+                return urlSpan.Slice(indexOf + CdnBaseUrls[i].Length).ToString();
+            }
+
+            // If it's not a CDN-based url, return it anyway.
+            return url;
         }
     }
 
