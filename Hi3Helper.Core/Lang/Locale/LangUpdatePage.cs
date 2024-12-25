@@ -61,6 +61,10 @@ namespace Hi3Helper
 
                 public string ApplyUpdateErrCollapseRunTitle { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrCollapseRunTitle;
                 public string ApplyUpdateErrCollapseRunSubtitle { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrCollapseRunSubtitle;
+                public string ApplyUpdateErrCollapseRunTitleWarnBox { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrCollapseRunTitleWarnBox;
+                public string ApplyUpdateErrCollapseRunSubtitleWarnBox { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrCollapseRunSubtitleWarnBox;
+                public string ApplyUpdateErrVelopackStateBrokenTitleWarnBox { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrVelopackStateBrokenTitleWarnBox;
+                public string ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox;
                 public string ApplyUpdateErrReleaseFileNotFoundTitle { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrReleaseFileNotFoundTitle;
                 public string ApplyUpdateErrReleaseFileNotFoundSubtitle { get; set; } = LangFallback?._UpdatePage.ApplyUpdateErrReleaseFileNotFoundSubtitle;
 
@@ -69,7 +73,7 @@ namespace Hi3Helper
                 public string ApplyUpdateDownloadSpeedPlaceholder { get; set; } = LangFallback?._UpdatePage.ApplyUpdateDownloadSpeedPlaceholder;
                 public string ApplyUpdateDownloadTimeEst { get; set; } = LangFallback?._UpdatePage.ApplyUpdateDownloadTimeEst;
                 public string ApplyUpdateDownloadTimeEstPlaceholder { get; set; } = LangFallback?._UpdatePage.ApplyUpdateDownloadTimeEstPlaceholder;
-                
+
                 public string ApplyUpdateTaskLegacyVerFoundTitle { get; set; } = LangFallback?._UpdatePage.ApplyUpdateTaskLegacyVerFoundTitle;
                 public string ApplyUpdateTaskLegacyVerFoundSubtitle1 { get; set; } = LangFallback?._UpdatePage.ApplyUpdateTaskLegacyVerFoundSubtitle1;
                 public string ApplyUpdateTaskLegacyVerFoundSubtitle2 { get; set; } = LangFallback?._UpdatePage.ApplyUpdateTaskLegacyVerFoundSubtitle2;
