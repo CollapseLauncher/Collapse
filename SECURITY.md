@@ -6,7 +6,7 @@ Additionally, due to major rework in Collapse update infrastructure, any version
 
 | Version  | Supported          |
 |----------| ------------------ |
-| >=1.80.0 | :white_check_mark: |
+| >=1.82.0 | :white_check_mark: |
 | < 1.0.73 | :x:                |
 
 

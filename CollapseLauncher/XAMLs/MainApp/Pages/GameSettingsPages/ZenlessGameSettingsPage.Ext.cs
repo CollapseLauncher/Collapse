@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.GameSettings.Zenless.Enums;
-using CollapseLauncher.Helper;
+using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+
 // ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Pages
@@ -39,7 +40,7 @@ namespace CollapseLauncher.Pages
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.High;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.High;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
@@ -56,7 +57,7 @@ namespace CollapseLauncher.Pages
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.Medium;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Medium;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
@@ -73,7 +74,7 @@ namespace CollapseLauncher.Pages
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
                     GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Medium;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption3.Low;
+                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Low;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
@@ -185,7 +186,7 @@ namespace CollapseLauncher.Pages
                 GameResolutionFullscreenExclusive.IsEnabled = IsFullscreenEnabled;
                 GameResolutionSelector.IsEnabled = true;
 
-                Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
+                Size size = ScreenProp.CurrentResolution;
                 GameResolutionSelector.SelectedItem = $"{size.Width}x{size.Height}";
             }
         }
@@ -272,7 +273,7 @@ namespace CollapseLauncher.Pages
                 string res = Settings.SettingsScreen.sizeResString;
                 if (string.IsNullOrEmpty(res))
                 {
-                    Size size = WindowUtility.CurrentScreenProp.GetScreenSize();
+                    Size size = ScreenProp.CurrentResolution;
                     return $"{size.Width}x{size.Height}";
                 }
                 return res;
@@ -284,19 +285,37 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int res = Settings.GeneralData?.ResolutionIndex ?? -1;
-                bool isFullscreen = res >= 0 && (res + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[res] : false;
-                IsFullscreenEnabled = isFullscreen;
+                // Set the resolution index to 0 if the list is empty
+                if (ScreenResolutionIsFullscreenIdx.Count == 0)
+                {
+                    return 0;
+                }
 
-                return res;
+                // Get index of the resolution and clamp it to the valid index if possible (to default as 0).
+                // [Added from @bagusnl docs] Usually, the game will use -1 as its arbitrary value (SMH)
+                int res = Settings.GeneralData?.ResolutionIndex ?? 0;
+                int indexRes = ScreenResolutionIsFullscreenIdx.Count < res || res < 0 ? 0 : res;
+
+                // Get the value from Fullscreen index of the resolution
+                IsFullscreenEnabled = ScreenResolutionIsFullscreenIdx[indexRes];
+
+                // Return the index to the ComboBox
+                return indexRes;
             }
             set
             {
-                if (value < 0) return;
-                Settings.GeneralData.ResolutionIndex = value;
-                // ReSharper disable once SimplifyConditionalTernaryExpression
-                bool isFullscreen = (value + 1) < ScreenResolutionIsFullscreenIdx.Count ? ScreenResolutionIsFullscreenIdx[value] : false;
+                // Clamp first and set to 0 (default resolution) if out of bound
+                if (ScreenResolutionIsFullscreenIdx.Count < value || value < 0)
+                {
+                    value = 0;
+                }
+
+                // Get the fullscreen value
+                bool isFullscreen = ScreenResolutionIsFullscreenIdx[value];
                 IsFullscreenEnabled = isFullscreen;
+
+                // Set the resolution index
+                Settings.GeneralData.ResolutionIndex = value;
             }
         }
         #endregion

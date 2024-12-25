@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.8</Version>
+        <Version>1.82.9</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -137,12 +137,6 @@
         -->
 		<NativeLibrary Include="StaticLib\libsharpyuv_msvc-release.lib" />
 		<NativeLibrary Include="StaticLib\libwebpdecoder_msvc-release.lib" />
-
-        <!-- Region: Sentry -->
-        <DirectPInvoke Include="sentry-native" />
-        <NativeLibrary Include="$(NugetPackageRoot)\sentry\4.13.0\sentry-native\win-x64\sentry-native.lib" />
-        <NativeLibrary Include="dbghelp.lib" />
-        <NativeLibrary Include="winhttp.lib" />
     </ItemGroup>
 
     <ItemGroup>

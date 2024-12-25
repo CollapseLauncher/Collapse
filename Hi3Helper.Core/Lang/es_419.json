@@ -538,7 +538,7 @@
     "Disclaimer1": "Esta aplicación no está afiliada con",
     "Disclaimer2": "de ninguna forma",
     "Disclaimer3": "y es completamente de código abierto. Cualquier contribución es bienvenida.",
-
+    "WebsiteBtn": "Visite nuestro sitio web",
     "DiscordBtn1": "¡Únete a nuestro Discord Armada!",
     "DiscordBtn2": "Discord de Honkai Impact 3rd",
     "DiscordBtn3": "¡Discord Oficial de Collapse!",
@@ -747,6 +747,7 @@
     "Disabled": "Deshabilitado",
     "Enabled": "Habilitado",
     "UseAsDefault": "Usar como Predeterminado",
+    "Default": "Predeterminado",
 
     "BuildChannelPreview": "Version Preview",
     "BuildChannelStable": "Estable",
@@ -792,7 +793,7 @@
     "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= Sin Límite",
     "IsBytesNotANumber": "= NaN",
-    
+
     "MissingVcRedist": "Falta el Visual C/C++ Redistributable",
     "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema."
   },
