@@ -472,6 +472,16 @@ namespace CollapseLauncher.Dialogs
                     Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
                     if (thisIconText != null)
                         thisIconText.Opacity = 1;
+
+                    RadioButton thisRadioButton = thisCheckBox.Parent as RadioButton;
+                    TextBlock textBlockLocal = thisRadioButton?.FindDescendant("UseAsDefaultLabel") as TextBlock;
+                    if (thisRadioButton != null && textBlockLocal != null)
+                    {
+                        if (thisIndex != defaultChoiceRadioButton.SelectedIndex)
+                        {
+                            textBlockLocal.Opacity = 0.5;
+                        }
+                    }
                 };
                 checkBox.Unchecked += (sender, _) =>
                 {
