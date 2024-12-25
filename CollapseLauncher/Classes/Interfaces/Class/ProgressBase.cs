@@ -286,13 +286,17 @@ namespace CollapseLauncher.Interfaces
                 _progress.ProgressAllSpeed = speedAll;
 
                 // Calculate the timelapse
-                _progress.ProgressAllTimeLeft = ((_progressAllSizeTotal - _progressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
+                _progress.ProgressAllTimeLeft = Math.Min((_progressAllSizeTotal - _progressAllSizeCurrent) /
+                                                         ConverterTool.Unzeroed(_progress.ProgressAllSpeed),
+                                                         TimeSpan.MaxValue.TotalSeconds).ToTimeSpanNormalized();
             }
 
             lock (_status)
             {
                 // Set time estimation string
-                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
+                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, ConverterTool.Unzeroed(Math.Min(
+                                                          _progress.ProgressAllTimeLeft.TotalSeconds,
+                                                          TimeSpan.MaxValue.Seconds)).ToTimeSpanNormalized());
 
                 // Update current activity status
                 _status.ActivityPerFile = string.Format(Lang._Misc.Speed!, ConverterTool.SummarizeSizeSimple(_progress.ProgressAllSpeed));
