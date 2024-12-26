@@ -644,16 +644,15 @@
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
                       Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
-                    <Pivot Margin="0,-18,-16,0"
-                           HorizontalAlignment="Left"
+                    <Pivot HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind DefaultPostPanelIndex}">
                         <Pivot.Resources>
                             <Style BasedOn="{StaticResource MinScrollBarStyle}"
                                    TargetType="ScrollBar" />
                         </Pivot.Resources>
-                        <PivotItem>
+                        <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-12"
+                                <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
                                            Loaded="SetHandCursor"
@@ -726,9 +725,9 @@
                                 </StackPanel>
                             </Grid>
                         </PivotItem>
-                        <PivotItem>
+                        <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-12"
+                                <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
                                            Loaded="SetHandCursor"
@@ -801,9 +800,9 @@
                                 </StackPanel>
                             </Grid>
                         </PivotItem>
-                        <PivotItem>
+                        <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-12"
+                                <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
                                            Loaded="SetHandCursor"

@@ -5133,6 +5133,13 @@
                         </Setter>
                     </Style>
                     <Style BasedOn="{StaticResource DefaultPipsPagerStyle}" TargetType="controls:PipsPager" />
+
+                    <!--  Pivot styles  -->
+                    <Style x:Key="ThinPivotHeaderItemStyle" TargetType="PivotHeaderItem" BasedOn="{StaticResource DefaultPivotHeaderItemStyle}">
+                        <Setter Property="Height" Value="30" />
+                    </Style>
+                    <Style BasedOn="{StaticResource ThinPivotHeaderItemStyle}" TargetType="PivotHeaderItem" />
+                    <Thickness x:Key="PivotNavButtonMargin">0,-6,0,0</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <!--  Font families  -->
