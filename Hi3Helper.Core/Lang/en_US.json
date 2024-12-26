@@ -1149,6 +1149,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "Please close Collapse before applying the update!",
     "ApplyUpdateErrCollapseRunSubtitle": "Waiting for Collapse to close...",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "An Instance of Collapse Launcher is Still Running!",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "We detected an instance of Collapse Launcher is running in the background. To forcely close the launcher, click \"Yes\". To wait until you manually close it, click \"No\".",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "Broken Existing Installation Detected!",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "We detected that you have a broken existing installation.\r\n\r\nClick on \"Yes\" to repair the installation before installing updates or Click \"No\" to just run the update installation.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\n\"release\" file doesn't have \"stable\" or \"preview\" string in it",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Please check your \"release\" file and try again.",
 

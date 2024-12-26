@@ -44,6 +44,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -1793,7 +1794,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _progressPerFileSizeCurrent += read;
                     
                     // Calculate the speed
-                    lock (_progress) _progress.ProgressAllSpeed = CalculateSpeed(read);
+                    double speed = CalculateSpeed(read);
 
                     if (!CheckIfNeedRefreshStopwatch())
                     {
@@ -1807,16 +1808,13 @@ namespace CollapseLauncher.InstallManager.Base
                         _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                         _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                         _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                        _progress.ProgressAllSpeed           = speed;
 
                         // Calculate percentage
-                        _progress.ProgressAllPercentage =
-                            Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                        _progress.ProgressPerFilePercentage =
-                            Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
+                        _progress.ProgressAllPercentage     = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
+                        _progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(_progressPerFileSizeTotal, _progressPerFileSizeCurrent);
                         // Calculate the timelapse
-                        _progress.ProgressAllTimeLeft =
-                            ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                           .ToTimeSpanNormalized();
+                        _progress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speed);
                     }
 
                     UpdateAll();
@@ -2377,13 +2375,9 @@ namespace CollapseLauncher.InstallManager.Base
                     lock (_progress)
                     {
                         _progress.ProgressAllSizeCurrent += entry.fileSize;
-                        _progress.ProgressAllPercentage =
-                            Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
+                        _progress.ProgressAllPercentage = ConverterTool.ToPercentage(_progress.ProgressAllSizeTotal, _progress.ProgressAllSizeCurrent);
                         _progress.ProgressAllSpeed = CalculateSpeed(entry.fileSize);
-
-                        _progress.ProgressAllTimeLeft =
-                            ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
-                             _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                        _progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(_progress.ProgressAllSizeTotal, _progress.ProgressAllSizeCurrent, _progress.ProgressAllSpeed);
                     }
 
                     UpdateProgress();
@@ -2434,21 +2428,16 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            lock (_progress)
-            {
-                _progress.ProgressAllSizeCurrent += e.Read;
-            }
+            Interlocked.Add(ref _progress.ProgressAllSizeCurrent, e.Read);
+            double speed = CalculateSpeed(e.Read);
+
             if (CheckIfNeedRefreshStopwatch())
             {
                 lock (_progress)
                 {
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progress.ProgressAllSizeCurrent / _progress.ProgressAllSizeTotal * 100, 2);
-                    _progress.ProgressAllSpeed = CalculateSpeed(e.Read);
-
-                    _progress.ProgressAllTimeLeft =
-                        ((_progress.ProgressAllSizeTotal - _progress.ProgressAllSizeCurrent) /
-                         _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                    _progress.ProgressAllSpeed      = speed;
+                    _progress.ProgressAllPercentage = ConverterTool.ToPercentage(_progress.ProgressAllSizeTotal, _progress.ProgressAllSizeCurrent);
+                    _progress.ProgressAllTimeLeft   = ConverterTool.ToTimeSpanRemain(_progress.ProgressAllSizeTotal, _progress.ProgressAllSizeCurrent, _progress.ProgressAllSpeed);
                 }
                 UpdateProgress();
             }
@@ -2541,6 +2530,7 @@ namespace CollapseLauncher.InstallManager.Base
             return _out;
         }
 
+#nullable enable
         protected virtual string GetLanguageLocaleCodeByID(int id)
         {
             return id switch
@@ -2553,7 +2543,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual int GetIDByLanguageLocaleCode(string localeCode)
+        protected virtual int GetIDByLanguageLocaleCode([NotNull] string? localeCode)
         {
             return localeCode switch
                    {
@@ -2565,7 +2555,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageStringByLocaleCode(string localeCode)
+        protected virtual string GetLanguageStringByLocaleCode([NotNull] string? localeCode)
         {
             return localeCode switch
                    {
@@ -2589,7 +2579,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageLocaleCodeByLanguageString(string langString)
+        protected virtual string GetLanguageLocaleCodeByLanguageString([NotNull] string? langString)
         {
             return langString switch
                    {
@@ -2602,7 +2592,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageDisplayByLocaleCode(string localeCode, bool throwIfInvalid = true)
+        protected virtual string? GetLanguageDisplayByLocaleCode([NotNullIfNotNull(nameof(localeCode))] string? localeCode, bool throwIfInvalid = true)
         {
             return localeCode switch
                    {
@@ -2634,7 +2624,7 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (RegionResourceVersion Entry in voicePacks)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
+                string? languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
                 if (string.IsNullOrEmpty(languageDisplay))
                 {
                     continue;
@@ -2658,7 +2648,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string localeCode = identity.MatchingField.ToLower();
                 if (IsValidLocaleCode(localeCode))
                 {
-                    string languageDisplay = GetLanguageDisplayByLocaleCode(localeCode, false);
+                    string? languageDisplay = GetLanguageDisplayByLocaleCode(localeCode, false);
                     if (string.IsNullOrEmpty(languageDisplay))
                     {
                         continue;
@@ -2671,20 +2661,26 @@ namespace CollapseLauncher.InstallManager.Base
             return value;
         }
 
-        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion regionResource)
+        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion? regionResource)
         {
             // Rearrange the region resource list order based on matching field for the locale
-            RearrangeDataListLocaleOrder(regionResource.voice_packs, x => x.language);
+            RearrangeDataListLocaleOrder(regionResource?.voice_packs, x => x.language);
         }
 
-        protected virtual void RearrangeSophonDataLocaleOrder(SophonData sophonData)
+        protected virtual void RearrangeSophonDataLocaleOrder(SophonData? sophonData)
         {
             // Rearrange the sophon data list order based on matching field for the locale
-            RearrangeDataListLocaleOrder(sophonData.ManifestIdentityList, x => x.MatchingField);
+            RearrangeDataListLocaleOrder(sophonData?.ManifestIdentityList, x => x.MatchingField);
         }
 
-        protected virtual void RearrangeDataListLocaleOrder<T>(List<T> assetDataList, Func<T, string> matchingFieldPredicate)
+        protected virtual void RearrangeDataListLocaleOrder<T>(List<T>? assetDataList, Func<T, string?> matchingFieldPredicate)
         {
+            // If the asset list is null or empty, return
+            if (assetDataList == null || assetDataList.Count == 0)
+            {
+                return;
+            }
+
             // Get ordered locale string
             string[] localeStringOrder = _gameVoiceLanguageLocaleIdOrdered;
 
@@ -2692,14 +2688,14 @@ namespace CollapseLauncher.InstallManager.Base
             List<T> manifestListMain = assetDataList
                 .Where(x => !IsValidLocaleCode(matchingFieldPredicate(x)))
                 .ToList();
-            List<T> manifestListLocale = assetDataList.
-                Where(x => IsValidLocaleCode(matchingFieldPredicate(x)))
+            List<T> manifestListLocale = assetDataList
+                .Where(x => IsValidLocaleCode(matchingFieldPredicate(x)))
                 .ToList();
 
             // SLOW: Order the locale manifest list by the localeStringOrder
             for (int i = 0; i < localeStringOrder.Length; i++)
             {
-                var localeFound = manifestListLocale.FirstOrDefault(x => matchingFieldPredicate(x).Equals(localeStringOrder[i], StringComparison.OrdinalIgnoreCase));
+                var localeFound = manifestListLocale.FirstOrDefault(x => matchingFieldPredicate(x)?.Equals(localeStringOrder[i], StringComparison.OrdinalIgnoreCase) ?? false);
                 if (localeFound != null)
                 {
                     // Move from main to locale
@@ -2720,7 +2716,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList,
-                                                                   string localeCode, out RegionResourceVersion outRes)
+                                                                   string localeCode, [NotNullWhen(true)] out RegionResourceVersion? outRes)
         {
             outRes = null;
             // Sanitation check: Check if the localeId argument is null or have no content
@@ -2736,8 +2732,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Try find the asset and if it's null, return false
-            outRes = verResList.FirstOrDefault(x => x.language != null &&
-                                                    x.language.Equals(localeCode, StringComparison.OrdinalIgnoreCase));
+            outRes = verResList.FirstOrDefault(x => x.language?.Equals(localeCode, StringComparison.OrdinalIgnoreCase) ?? false);
             if (outRes == null)
             {
                 return false;
@@ -2746,6 +2741,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Otherwise, return true
             return true;
         }
+#nullable restore
 
         protected virtual bool IsValidLocaleCode(ReadOnlySpan<char> localeCode)
         {
@@ -4210,39 +4206,39 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void ZipProgressAdapter(object sender, ExtractProgressProp e)
         {
-            if (CheckIfNeedRefreshStopwatch())
+            // Increment current total size
+            lock (_progress)
             {
-                // Incrment current total size
                 long lastSize = GetLastSize((long)e.TotalRead);
+                double speed = CalculateSpeed(lastSize);
                 _progressAllSizeCurrent += lastSize;
 
-                // Assign per file size
-                _progressPerFileSizeCurrent = (long)e.TotalRead;
-                _progressPerFileSizeTotal   = (long)e.TotalSize;
-
-                lock (_progress)
+                if (CheckIfNeedRefreshStopwatch())
                 {
-                    // Assign local sizes to progress
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                    // Assign per file size
+                    _progressPerFileSizeCurrent = (long)e.TotalRead;
+                    _progressPerFileSizeTotal = (long)e.TotalSize;
 
-                    // Calculate the speed
-                    _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
+                    lock (_progress)
+                    {
+                        // Assign local sizes to progress
+                        _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
+                        _progress.ProgressPerFileSizeTotal = _progressPerFileSizeTotal;
+                        _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
+                        _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
 
-                    // Calculate percentage
-                    _progress.ProgressAllPercentage =
-                        Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-                    _progress.ProgressPerFilePercentage =
-                        Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-                    // Calculate the timelapse
-                    _progress.ProgressAllTimeLeft =
-                        ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                       .ToTimeSpanNormalized();
+                        // Calculate the speed
+                        _progress.ProgressAllSpeed = CalculateSpeed(lastSize);
+
+                        // Calculate percentage
+                        _progress.ProgressAllPercentage = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
+                        _progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(_progressPerFileSizeTotal, _progressPerFileSizeCurrent);
+                        // Calculate the timelapse
+                        _progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speed);
+                    }
+
+                    UpdateAll();
                 }
-
-                UpdateAll();
             }
         }
 
@@ -4274,32 +4270,21 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 lock (_progress)
                 {
-                    // Assign local sizes to progress
-                    _progress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
-                    _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
-                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
-
                     // Assign speed with clamped value
                     double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                    _progress.ProgressAllSpeed = speedClamped;
 
-                    // Calculate percentage
-                    _progress.ProgressPerFilePercentage =
-                        Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
-                    _progress.ProgressAllPercentage =
-                        Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
-
-                    // Calculate the timelapse
-                    double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
-                    _progress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
+                    // Assign local sizes to progress
+                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
+                    _progress.ProgressAllSpeed           = speedClamped;
+                    _progress.ProgressAllPercentage      = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
+                    _progress.ProgressAllTimeLeft        = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speedClamped);
 
                     // Update the status of per file size and current progress from Http client
-                    _progressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
-                    _progressPerFileSizeTotal   = downloadProgress.BytesTotal;
-                    _progress.ProgressPerFilePercentage =
-                        ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded,
-                                                          downloadProgress.BytesTotal);
+                    _progress.ProgressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
+                    _progress.ProgressPerFileSizeTotal   = downloadProgress.BytesTotal;
+                    _progress.ProgressPerFileSpeed       = speedClamped;
+                    _progress.ProgressPerFilePercentage  = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
                 }
                 // Update the status
                 UpdateAll();
@@ -4337,15 +4322,10 @@ namespace CollapseLauncher.InstallManager.Base
                         _progress.ProgressAllSpeed = speedAll;
 
                         // Calculate percentage
-                        _progress.ProgressPerFilePercentage =
-                            Math.Round(_progressPerFileSizeCurrent / (double)_progressPerFileSizeTotal * 100, 2);
-                        _progress.ProgressAllPercentage =
-                            Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
-
+                        _progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(_progressPerFileSizeTotal, _progressPerFileSizeCurrent);
+                        _progress.ProgressAllPercentage     = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
                         // Calculate the timelapse
-                        _progress.ProgressAllTimeLeft =
-                            ((_progressAllSizeTotal - _progressAllSizeCurrent) / _progress.ProgressAllSpeed.Unzeroed())
-                           .ToTimeSpanNormalized();
+                        _progress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speedAll);
                     }
                 }
                 else
@@ -4366,8 +4346,7 @@ namespace CollapseLauncher.InstallManager.Base
                         _progress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
                         _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
                         _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
-                        _progress.ProgressAllPercentage =
-                            Math.Round(_progressAllSizeCurrent / (double)_progressAllSizeTotal * 100, 2);
+                        _progress.ProgressAllPercentage      = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
                     }
                 }
 

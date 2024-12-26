@@ -125,8 +125,8 @@ public sealed partial class UpdaterWindow
 
     private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
     {
-        double speed = e.SizeDownloaded / CurrentStopwatch.Elapsed.TotalSeconds;
-        TimeSpan timeLeft = ((e.SizeToBeDownloaded - e.SizeDownloaded) / speed).ToTimeSpanNormalized();
+        double speed      = e.SizeDownloaded / CurrentStopwatch.Elapsed.TotalSeconds;
+        TimeSpan timeLeft = ToTimeSpanRemain(e.SizeToBeDownloaded, e.SizeDownloaded, speed);
 
         DispatcherQueue?.TryEnqueue(() =>
                                     {
