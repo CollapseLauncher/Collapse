@@ -72,6 +72,8 @@ namespace CollapseLauncher.Pages
         private CancellationTokenSourceWrapper PageToken { get; set; }
         private CancellationTokenSourceWrapper CarouselToken { get; set; }
 
+        private Button lastSocMedButton;
+
         private int barWidth;
         private int consoleWidth;
 
@@ -600,6 +602,10 @@ namespace CollapseLauncher.Pages
             ToolTip tooltip = sender as ToolTip;
             if (tooltip?.Tag is Button button)
             {
+                if (!button.IsPointerOver && lastSocMedButton == button)
+                    return;
+                lastSocMedButton = button;
+
                 Flyout flyout = button.Flyout as Flyout;
                 if (flyout != null)
                 {
@@ -612,10 +618,9 @@ namespace CollapseLauncher.Pages
                         }
                     }
                 }
+
+                FlyoutBase.ShowAttachedFlyout(button);
             }
-
-
-            FlyoutBase.ShowAttachedFlyout(tooltip?.Tag as FrameworkElement);
         }
 
         private void HideSocMedFlyout(object sender, RoutedEventArgs e)
