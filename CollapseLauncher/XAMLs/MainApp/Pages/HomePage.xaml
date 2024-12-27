@@ -437,7 +437,9 @@
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}">
+                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}"
+                              TabFocusNavigation="Once"
+                              IsTabStop="False">
                     <ItemsControl.Transitions>
                         <PopupThemeTransition />
                     </ItemsControl.Transitions>
@@ -663,7 +665,9 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostEventPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}" IsTabStop="False">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}"
+                                                      IsTabStop="False"
+                                                      TabFocusNavigation="Once">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -738,7 +742,9 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}" IsTabStop="False">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}"
+                                                      IsTabStop="False"
+                                                      TabFocusNavigation="Once">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -813,7 +819,9 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}" IsTabStop="False">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}"
+                                                      IsTabStop="False"
+                                                      TabFocusNavigation="Once">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
