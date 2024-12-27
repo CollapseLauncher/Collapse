@@ -588,7 +588,7 @@ namespace CollapseLauncher
             lock (_progress)
             {
                 _progress.ProgressPerFilePercentage =
-                    GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
+                    ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
             }
 
             // Push status and progress update

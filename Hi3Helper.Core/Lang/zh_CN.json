@@ -747,6 +747,7 @@
     "Disabled": "关闭",
     "Enabled": "开启",
     "UseAsDefault": "设为默认",
+    "Default": "默认",
 
     "BuildChannelPreview": "预览版",
     "BuildChannelStable": "正式版",
@@ -792,7 +793,7 @@
     "IsBytesMoreThanBytes": "= {0} 字节 (-/+ {1})",
     "IsBytesUnlimited": "= 无限制",
     "IsBytesNotANumber": "= NaN",
-    
+
     "MissingVcRedist": "缺少 Visual C/C++ 可再发行程序包",
     "MissingVcRedistSubtitle": "您需要安装 Visual C/C++ 可再发行程序包才能运行此功能。您现在要下载吗？\n注意：这将打开一个浏览器窗口，并从微软下载一个文件。请下载后运行安装程序，然后重新启动 Collapse 并重试。\n如果您已经安装过了但仍然报错，请在 GitHub 上给我们提交一个 issue。"
   },
@@ -1148,6 +1149,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "请在应用更新前关闭 Collapse！",
     "ApplyUpdateErrCollapseRunSubtitle": "等待 Collapse 关闭……",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "另一个 Collapse 启动器实例仍在运行中！",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "我们检测到在后台有一个正在运行中的 Collapse 启动器实例。要强制关闭这个启动器，点击“是”；若要等待手动关闭，点击“否”。",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "检测到损坏的现有安装！",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "我们检测到您有一个损坏的现有的安装。\n\n点击“是”以在安装更新前修复安装，或点击“否”直接安装更新。",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "错误：\r\n\"release\" 文件中没有 \"stable\" 或 \"preview\" 字符串",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "请检查您的 \"release\" 文件并重试。",
 

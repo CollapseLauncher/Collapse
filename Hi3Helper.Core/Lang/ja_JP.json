@@ -747,6 +747,7 @@
     "Disabled": "無効",
     "Enabled": "有効",
     "UseAsDefault": "デフォルトとして使用",
+    "Default": "デフォルト",
 
     "BuildChannelPreview": "プレビュー版",
     "BuildChannelStable": "安定版",
@@ -792,7 +793,7 @@
     "IsBytesMoreThanBytes": "= {0} バイト (-/+ {1})",
     "IsBytesUnlimited": "= 無制限",
     "IsBytesNotANumber": "= 不正な数値",
-    
+
     "MissingVcRedist": "Visual C/C++ 再頒布可能パッケージが見つかりません",
     "MissingVcRedistSubtitle": "この関数を実行するには、Visual C/C++ 再頒布可能パッケージをインストールする必要があります。今すぐダウンロードしますか?\r\n注：ブラウザを起動してMicrosoftからパッケージをダウンロードします。ダウンロード後にインストーラーを実行し、Collapseを再起動してから再度お試しください。\nインストール済みなのにエラーが解決しない場合は、Githubでissueを送信してください。"
   },
@@ -1148,6 +1149,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "アップデートを適用するにはCollapseを閉じてください！",
     "ApplyUpdateErrCollapseRunSubtitle": "Collapseが閉じられるのを待っています…",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "Collapse Launcherは既に起動されています！",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "バックグラウンドで動作中のCollapse Launcherを検出しました。ランチャーを強制終了させたい場合は\"はい\"を押して、手動で閉じたい場合は\"いいえ\"を押してください。",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "破損した既存のインストールが検出されした！",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "破損した既存のインストールを検出しました。\r\n\r\n\"はい\"を押すと既存のインストールを修復してからアップデートを行い、\"いいえ\"を押すとアップデートをそのまま実行します。",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "エラー：\r\n\"release\"ファイルに\"stable\"か\"preview\"の記述がありません",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "\"release\"ファイルを確認してから再試行してください。",
 

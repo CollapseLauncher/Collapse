@@ -85,27 +85,26 @@ namespace CollapseLauncher.Interfaces
             {
                 // Calculate the clamped speed and timelapse
                 double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                double progressTimeAvg = (downloadProgress.BytesTotal - downloadProgress.BytesDownloaded) / speedClamped;
 
-                TimeSpan timeLeftSpan = progressTimeAvg.ToTimeSpanNormalized();
-                double percentage = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
+                TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded, speedClamped);
+                double percentage = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
 
                 lock (_status)
                 {
                     // Update fetch status
                     _status.IsProgressPerFileIndetermined = false;
-                    _status.IsProgressAllIndetermined = false;
-                    _status.ActivityPerFile = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle3!, ConverterTool.SummarizeSizeSimple(speedClamped));
+                    _status.IsProgressAllIndetermined     = false;
+                    _status.ActivityPerFile               = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle3!, ConverterTool.SummarizeSizeSimple(speedClamped));
                 }
 
                 lock (_progress)
                 {
                     // Update fetch progress
                     _progress.ProgressPerFilePercentage = percentage;
-                    _progress.ProgressAllSizeCurrent = downloadProgress.BytesDownloaded;
-                    _progress.ProgressAllSizeTotal = downloadProgress.BytesTotal;
-                    _progress.ProgressAllSpeed = speedClamped;
-                    _progress.ProgressAllTimeLeft = timeLeftSpan;
+                    _progress.ProgressAllSizeCurrent    = downloadProgress.BytesDownloaded;
+                    _progress.ProgressAllSizeTotal      = downloadProgress.BytesTotal;
+                    _progress.ProgressAllSpeed          = speedClamped;
+                    _progress.ProgressAllTimeLeft       = timeLeftSpan;
                 }
 
                 // Push status and progress update
@@ -128,42 +127,41 @@ namespace CollapseLauncher.Interfaces
             {
                 // Calculate the clamped speed and timelapse
                 double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
 
-                TimeSpan timeLeftSpan = progressTimeAvg.ToTimeSpanNormalized();
-                double percentagePerFile = ConverterTool.GetPercentageNumber(downloadProgress.BytesDownloaded, downloadProgress.BytesTotal);
+                TimeSpan timeLeftSpan    = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speedClamped);
+                double percentagePerFile = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
 
                 lock (_progress)
                 {
-                    _progress.ProgressPerFilePercentage = percentagePerFile;
+                    _progress.ProgressPerFilePercentage  = percentagePerFile;
                     _progress.ProgressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
-                    _progress.ProgressPerFileSizeTotal = downloadProgress.BytesTotal;
-                    _progress.ProgressAllSizeCurrent = _progressAllSizeCurrent;
-                    _progress.ProgressAllSizeTotal = _progressAllSizeTotal;
+                    _progress.ProgressPerFileSizeTotal   = downloadProgress.BytesTotal;
+                    _progress.ProgressAllSizeCurrent     = _progressAllSizeCurrent;
+                    _progress.ProgressAllSizeTotal       = _progressAllSizeTotal;
 
                     // Calculate speed
-                    _progress.ProgressAllSpeed = speedClamped;
+                    _progress.ProgressAllSpeed    = speedClamped;
                     _progress.ProgressAllTimeLeft = timeLeftSpan;
 
                     // Update current progress percentages
                     _progress.ProgressAllPercentage = _progressAllSizeCurrent != 0 ?
-                        ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal) :
+                        ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent) :
                         0;
                 }
 
                 lock (_status)
                 {
                     // Update current activity status
-                    _status.IsProgressAllIndetermined = false;
+                    _status.IsProgressAllIndetermined     = false;
                     _status.IsProgressPerFileIndetermined = false;
 
                     // Set time estimation string
                     string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
 
                     _status.ActivityPerFile = string.Format(Lang._Misc.Speed!, ConverterTool.SummarizeSizeSimple(_progress.ProgressAllSpeed));
-                    _status.ActivityAll = string.Format(Lang._GameRepairPage!.PerProgressSubtitle2!,
-                                                          ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent),
-                                                          ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}";
+                    _status.ActivityAll     = string.Format(Lang._GameRepairPage!.PerProgressSubtitle2!,
+                                                ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent),
+                                                ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}";
 
                     // Trigger update
                     UpdateAll();
@@ -197,11 +195,9 @@ namespace CollapseLauncher.Interfaces
             if (CheckIfNeedRefreshStopwatch())
             {
                 // Calculate the clamped speed and timelapse
-                double speedClamped = speedAll.ClampLimitedSpeedNumber();
-                double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedClamped;
-
-                TimeSpan timeLeftSpan = progressTimeAvg.ToTimeSpanNormalized();
-                double percentage = ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal);
+                double speedClamped   = speedAll.ClampLimitedSpeedNumber();
+                TimeSpan timeLeftSpan = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speedClamped);
+                double percentage     = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
 
                 // Update current progress percentages and speed
                 lock (_progress)
@@ -211,12 +207,12 @@ namespace CollapseLauncher.Interfaces
 
                 // Update current activity status
                 _status.IsProgressAllIndetermined = false;
-                string timeLeftString = string.Format(Lang._Misc.TimeRemainHMSFormat, timeLeftSpan);
-                _status.ActivityAll = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressAllCountCurrent,
-                                                    _progressAllCountTotal)
-                                      + string.Format($"({Lang._Misc.SpeedPerSec})",
-                                                      ConverterTool.SummarizeSizeSimple(speedClamped))
-                                      + $" | {timeLeftString}";
+                string timeLeftString             = string.Format(Lang._Misc.TimeRemainHMSFormat, timeLeftSpan);
+                _status.ActivityAll               = string.Format(Lang._Misc.Downloading + ": {0}/{1} ", _progressAllCountCurrent,
+                                                                _progressAllCountTotal)
+                                                  + string.Format($"({Lang._Misc.SpeedPerSec})",
+                                                                ConverterTool.SummarizeSizeSimple(speedClamped))
+                                                  + $" | {timeLeftString}";
 
                 // Trigger update
                 UpdateAll();
@@ -234,7 +230,7 @@ namespace CollapseLauncher.Interfaces
 
                 // Update current progress percentages
                 _progress.ProgressAllPercentage = _progressAllSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal) :
+                    ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent) :
                     0;
             }
 
@@ -243,10 +239,13 @@ namespace CollapseLauncher.Interfaces
                 lock (_status)
                 {
                     // Update current activity status
-                    _status.IsProgressAllIndetermined = false;
+                    _status.IsProgressAllIndetermined     = false;
                     _status.IsProgressPerFileIndetermined = false;
-                    _status.ActivityPerFile = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle5!, ConverterTool.SummarizeSizeSimple(_progress.ProgressAllSpeed));
-                    _status.ActivityAll = string.Format(Lang._GameRepairPage.PerProgressSubtitle2!, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal));
+                    _status.ActivityPerFile               = string.Format(Lang!._GameRepairPage!.PerProgressSubtitle5!,
+                        ConverterTool.SummarizeSizeSimple(_progress.ProgressAllSpeed));
+                    _status.ActivityAll                   = string.Format(Lang._GameRepairPage.PerProgressSubtitle2!,
+                        ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent),
+                        ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal));
                 }
 
                 // Trigger update
@@ -270,10 +269,10 @@ namespace CollapseLauncher.Interfaces
             {
                 // Update current progress percentages
                 _progress.ProgressPerFilePercentage = _progressPerFileSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressPerFileSizeCurrent, _progressPerFileSizeTotal) :
+                    ConverterTool.ToPercentage(_progressPerFileSizeTotal, _progressPerFileSizeCurrent) :
                     0;
                 _progress.ProgressAllPercentage = _progressAllSizeCurrent != 0 ?
-                    ConverterTool.GetPercentageNumber(_progressAllSizeCurrent, _progressAllSizeTotal) :
+                    ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent) :
                     0;
 
                 // Update the progress of total size
@@ -286,7 +285,7 @@ namespace CollapseLauncher.Interfaces
                 _progress.ProgressAllSpeed = speedAll;
 
                 // Calculate the timelapse
-                _progress.ProgressAllTimeLeft = ((_progressAllSizeTotal - _progressAllSizeCurrent) / ConverterTool.Unzeroed(_progress.ProgressAllSpeed)).ToTimeSpanNormalized();
+                _progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speedAll);
             }
 
             lock (_status)
@@ -317,17 +316,17 @@ namespace CollapseLauncher.Interfaces
                 lock (_progress)
                 {
                     // Update current progress percentages
-                    _progress.ProgressPerFilePercentage = ConverterTool.GetPercentageNumber(currentPosition, totalReadSize);
+                    _progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(totalReadSize, currentPosition);
 
                     // Update the progress of total size
                     _progress.ProgressPerFileSizeCurrent = currentPosition;
-                    _progress.ProgressPerFileSizeTotal = totalReadSize;
+                    _progress.ProgressPerFileSizeTotal   = totalReadSize;
 
                     // Calculate current speed and update the status and progress speed
                     _progress.ProgressAllSpeed = speedAll;
 
                     // Calculate the timelapse
-                    _progress.ProgressAllTimeLeft = ((totalReadSize - currentPosition) / _progress.ProgressAllSpeed.Unzeroed()).ToTimeSpanNormalized();
+                    _progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(totalReadSize, currentPosition, speedAll);
                 }
 
                 lock (_status)
@@ -337,7 +336,7 @@ namespace CollapseLauncher.Interfaces
 
                     // Update current activity status
                     _status.ActivityPerFile = string.Format(Lang._Misc.Speed!, ConverterTool.SummarizeSizeSimple(_progress.ProgressAllSpeed));
-                    _status.ActivityAll = string.Format(Lang._GameRepairPage!.PerProgressSubtitle2!, 
+                    _status.ActivityAll     = string.Format(Lang._GameRepairPage!.PerProgressSubtitle2!, 
                                                           ConverterTool.SummarizeSizeSimple(currentPosition), 
                                                           ConverterTool.SummarizeSizeSimple(totalReadSize)) + $" | {timeLeftString}";
                 }
@@ -427,8 +426,6 @@ namespace CollapseLauncher.Interfaces
             _sophonProgress.ProgressPerFileSizeCurrent = _progressPerFileSizeCurrent;
             _sophonProgress.ProgressPerFileSizeTotal   = _progressPerFileSizeTotal;
 
-            double progressTimeAvg = (_progressAllSizeTotal - _progressAllSizeCurrent) / speedAll;
-
             _sophonProgress.ProgressAllSpeed     = speedAll;
             _sophonProgress.ProgressPerFileSpeed = speedDownloadClamped;
 
@@ -442,12 +439,9 @@ namespace CollapseLauncher.Interfaces
             StatusChanged?.Invoke(this, _status);
 
             // Calculate percentage
-            _sophonProgress.ProgressAllPercentage =
-                Math.Round((double)_progressAllSizeCurrent / _progressAllSizeTotal * 100, 2);
-            _sophonProgress.ProgressPerFilePercentage =
-                Math.Round((double)_progressPerFileSizeCurrent / _progressPerFileSizeTotal * 100, 2);
-
-            _sophonProgress.ProgressAllTimeLeft = progressTimeAvg.ToTimeSpanNormalized();
+            _sophonProgress.ProgressAllPercentage     = ConverterTool.ToPercentage(_progressAllSizeTotal, _progressAllSizeCurrent);
+            _sophonProgress.ProgressPerFilePercentage = ConverterTool.ToPercentage(_progressPerFileSizeTotal, _progressPerFileSizeCurrent);
+            _sophonProgress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(_progressAllSizeTotal, _progressAllSizeCurrent, speedAll);
 
             // Update progress
             ProgressChanged?.Invoke(this, _sophonProgress);
@@ -526,33 +520,40 @@ namespace CollapseLauncher.Interfaces
         protected string EnsureCreationOfDirectory(FileInfo str)
             => str.EnsureCreationOfDirectory().FullName;
 
-        protected void TryUnassignReadOnlyFiles(string path)
+        protected void TryUnassignReadOnlyFiles(string dirPath)
         {
-            // Iterate every file and set the read-only flag to false
-            foreach (string file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+            DirectoryInfo directoryInfo = new DirectoryInfo(dirPath);
+            if (!directoryInfo.Exists)
             {
-                FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo is { Exists: true, IsReadOnly: true })
-                    fileInfo.IsReadOnly = false;
+                return;
+            }
+
+            // Iterate every file and set the read-only flag to false
+            foreach (FileInfo file in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+            {
+                _ = file.EnsureNoReadOnly();
             }
         }
 
-        protected void TryUnassignReadOnlyFileSingle(string path)
+        protected void TryUnassignReadOnlyFileSingle(string filePath)
         {
-            FileInfo fileInfo = new FileInfo(path);
-            if (fileInfo is { Exists: true, IsReadOnly: true })
-                fileInfo.IsReadOnly = false;
+            FileInfo fileInfo = new FileInfo(filePath);
+            _ = fileInfo.EnsureNoReadOnly();
         }
 
         protected void TryDeleteReadOnlyDir(string dirPath)
         {
-            if (!Directory.Exists(dirPath)) return;
             DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
-            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+            if (!dirInfo.Exists)
+            {
+                return;
+            }
+
+            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories)
+                .EnumerateNoReadOnly())
             {
                 try
                 {
-                    files.IsReadOnly = false;
                     files.Delete();
                 }
                 catch (Exception ex)
@@ -561,8 +562,10 @@ namespace CollapseLauncher.Interfaces
                     LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
                 } // Suppress errors
             }
+
             try
             {
+                dirInfo.Refresh();
                 dirInfo.Delete(true);
             }
             catch (Exception ex)
@@ -572,21 +575,20 @@ namespace CollapseLauncher.Interfaces
             } // Suppress errors
         }
 
-        protected void TryDeleteReadOnlyFile(string path)
+        protected void TryDeleteReadOnlyFile(string filePath)
         {
-            if (!File.Exists(path)) return;
+            FileInfo fileInfo = new FileInfo(filePath)
+                .EnsureNoReadOnly(out bool isFileExist);
+            if (!isFileExist) return;
+
             try
             {
-                FileInfo file = new FileInfo(path)
-                {
-                    IsReadOnly = false
-                };
-                file.Delete();
+                fileInfo.Delete();
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed to delete file: {path}\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to delete file: {fileInfo.FullName}\r\n{ex}", LogType.Error, true);
             }
         }
 
@@ -601,28 +603,30 @@ namespace CollapseLauncher.Interfaces
             bool    errorOccured = false;
 
             // Enumerate files inside of source path
-            foreach (string filePath in Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories))
+            DirectoryInfo directoryInfoSource = new DirectoryInfo(sourcePath);
+            if (!directoryInfoSource.Exists)
+            {
+                throw new DirectoryNotFoundException($"Cannot find source directory on this path: {sourcePath}");
+            }
+            foreach (FileInfo fileInfo in directoryInfoSource.EnumerateFiles("*", SearchOption.AllDirectories)
+                .EnumerateNoReadOnly())
             {
                 // Get the relative path of the file from source path
-                ReadOnlySpan<char> relativePath = filePath.AsSpan().Slice(dirLength);
+                ReadOnlySpan<char> relativePath = fileInfo.FullName.AsSpan().Slice(dirLength);
                 // Get the absolute path for destination
                 destFilePath = Path.Combine(destPath, relativePath.ToString());
                 // Get folder path for destination
                 destFolderPath = Path.GetDirectoryName(destFilePath);
 
                 // Create the destination folder if not exist
-                if (!Directory.Exists(destFolderPath))
-                    Directory.CreateDirectory(destFolderPath!);
+                if (!string.IsNullOrEmpty(destFolderPath))
+                    _ = Directory.CreateDirectory(destFolderPath);
 
                 try
                 {
                     // Try moving the file
                     LogWriteLine($"Moving \"{relativePath.ToString()}\" to \"{destFolderPath}\"", LogType.Default, true);
-                    FileInfo filePathInfo = new FileInfo(filePath)
-                    {
-                        IsReadOnly = false
-                    };
-                    filePathInfo.MoveTo(destFilePath, true);
+                    fileInfo.MoveTo(destFilePath, true);
                 }
                 catch (Exception ex)
                 {
@@ -635,7 +639,20 @@ namespace CollapseLauncher.Interfaces
 
             // If no error occurred, then delete the source folder
             if (!errorOccured)
-                Directory.Delete(sourcePath, true);
+            {
+                try
+                {
+                    directoryInfoSource.Refresh();
+                    directoryInfoSource.Delete(true);
+                }
+                catch (Exception ex)
+                {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                    // If failed, flag ErrorOccured as true and skip the source directory deletion 
+                    LogWriteLine($"Error while deleting source directory \"{directoryInfoSource.FullName}\"\r\nException: {ex}", LogType.Error, true);
+                    errorOccured = true;
+                }
+            }
         }
 
         protected virtual void ResetStatusAndProgress()

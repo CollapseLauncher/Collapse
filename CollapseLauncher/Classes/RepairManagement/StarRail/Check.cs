@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -389,10 +390,18 @@ namespace CollapseLauncher
             basePath = Path.GetDirectoryName(filePath);
             baseName = Path.GetFileNameWithoutExtension(filePath);
 
-            // Enumerate any possible existing hash path and delete it
-            foreach (string existingPath in Directory.EnumerateFiles(basePath!, $"{baseName}_*.hash"))
+            // Get directory base info. If it doesn't exist, return
+            DirectoryInfo basePathDirInfo = new DirectoryInfo(basePath);
+            if (!basePathDirInfo.Exists)
             {
-                File.Delete(existingPath);
+                return;
+            }
+
+            // Enumerate any possible existing hash path and delete it
+            foreach (FileInfo existingPath in basePathDirInfo.EnumerateFiles($"{baseName}_*.hash")
+                .EnumerateNoReadOnly())
+            {
+                existingPath.Delete();
             }
         }
         #endregion
