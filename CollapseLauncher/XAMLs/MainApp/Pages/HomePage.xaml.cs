@@ -406,7 +406,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        public async Task StartCarouselAutoScroll(int delaySeconds = 5)
+
+        private async Task StartCarouselAutoScroll(int delaySeconds = 5)
         {
             if (!IsCarouselPanelAvailable) return;
             if (delaySeconds < 5) delaySeconds = 5;
@@ -427,7 +428,10 @@ namespace CollapseLauncher.Pages
                     else
                         for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
-                            ImageCarousel.SelectedIndex = i - 1;
+                            if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
+                            {
+                                ImageCarousel.SelectedIndex = i - 1;
+                            }
                             if (CarouselToken is { IsDisposed: false, IsCancellationRequested: false })
                             {
                                 await Task.Delay(100, CarouselToken.Token);
@@ -441,8 +445,8 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
+                _ = CarouselRestartScroll();
             }
         }
 
