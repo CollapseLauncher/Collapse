@@ -1074,13 +1074,14 @@ namespace CollapseLauncher.Pages
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
                             StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            DateTime fromActivityOffset = currentGameProcess.StartTime;
+                            var fromActivityOffset = currentGameProcess.StartTime;
+                            var gameSettings       = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
+                            var gamePreset         = CurrentGameProperty._GamePreset;
+                            
 #if !DISABLEDISCORD
-                            AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+                            if (ToggleRegionPlayingRpc)
+                                AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
 #endif
-
-                            IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
-                            PresetConfig gamePreset = CurrentGameProperty._GamePreset;
 
                             CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess);
 
@@ -3249,6 +3250,20 @@ namespace CollapseLauncher.Pages
                                                                       PreloadDialogBox.Translation.Z)),
                 compositor.CreateVector3KeyFrameAnimation("Translation", PreloadDialogBox.Translation, toTranslate)
                 );
+        }
+
+        private bool? _regionPlayingRpc;
+        private bool ToggleRegionPlayingRpc
+        {
+            get => _regionPlayingRpc ??= CurrentGameProperty._GameSettings.AsIGameSettingsUniversal()
+                                                            .SettingsCollapseMisc.IsPlayingRpc;
+            set
+            {
+                CurrentGameProperty._GameSettings.AsIGameSettingsUniversal()
+                                    .SettingsCollapseMisc.IsPlayingRpc = value;
+                _regionPlayingRpc = value;
+                CurrentGameProperty._GameSettings.SaveSettings();
+            }
         }
     }
 }
