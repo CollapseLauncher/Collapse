@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using System;
 using System.Collections.Generic;
@@ -57,19 +58,31 @@ namespace CollapseLauncher
 
         private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
         {
-            // Iterate the file contained in the _gamePath
-            foreach (string filePath in Directory.EnumerateFiles(_gamePath!, "*", SearchOption.AllDirectories))
+            // Directory info and if the directory doesn't exist, return
+            DirectoryInfo directoryInfo = new DirectoryInfo(_gamePath);
+            if (!directoryInfo.Exists)
             {
-                if (!filePath.Contains("output_log") && !filePath.Contains("Crashes")
-                 && !filePath.Contains("Verify.txt") && !filePath.Contains("APM")
-                 && !filePath.Contains("FBData") && !filePath.Contains("asb.dat")
-                 && !assetIndex!.Exists(x => x!.ConcatPath == filePath))
+                return;
+            }
+
+            // Iterate the file contained in the _gamePath
+            foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories)
+                .EnumerateNoReadOnly())
+            {
+                string filePath = fileInfo.FullName;
+
+                if (!filePath.Contains("output_log", StringComparison.OrdinalIgnoreCase)
+                 && !filePath.Contains("Crashes", StringComparison.OrdinalIgnoreCase)
+                 && !filePath.Contains("Verify.txt", StringComparison.OrdinalIgnoreCase)
+                 && !filePath.Contains("APM", StringComparison.OrdinalIgnoreCase)
+                 && !filePath.Contains("FBData", StringComparison.OrdinalIgnoreCase)
+                 && !filePath.Contains("asb.dat", StringComparison.OrdinalIgnoreCase)
+                 && !assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
                 {
                     // Increment the total found count
                     _progressAllCountFound++;
 
                     // Add asset to the returnAsset
-                    FileInfo fileInfo = new FileInfo(filePath);
                     CacheAsset asset = new CacheAsset()
                     {
                         BasePath = Path.GetDirectoryName(filePath),
@@ -106,10 +119,10 @@ namespace CollapseLauncher
             _status.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
 
             // Assign the file info.
-            FileInfo fileInfo = new FileInfo(asset.ConcatPath!);
+            FileInfo fileInfo = new FileInfo(asset.ConcatPath).EnsureNoReadOnly(out bool isExist);
 
             // Check if the file exist. If not, then add it to asset index.
-            if (!fileInfo.Exists)
+            if (!isExist)
             {
                 AddGenericCheckAsset(asset, CacheAssetStatus.New, returnAsset, null, asset.CRCArray);
                 return;

@@ -17,13 +17,13 @@ namespace CollapseLauncher
         {
             int bufferSize = 1 << 18; // 256 kB Buffer
 
-            if (inputFile!.Length < bufferSize)
+            if (inputFile.Length < bufferSize)
                 bufferSize = (int)inputFile.Length;
 
             byte[] buffer = new byte[bufferSize];
 
             await using (FileStream inputStream = inputFile.OpenRead())
-                await using (FileStream outputStream = outputFile!.Exists && outputFile.Length <= inputFile.Length ?
+                await using (FileStream outputStream = outputFile.Exists && outputFile.Length <= inputFile.Length ?
                                  outputFile.Open(FileMode.Open) : outputFile.Create())
                 {
                     // Set the output file size to inputStream's if the length is more than inputStream

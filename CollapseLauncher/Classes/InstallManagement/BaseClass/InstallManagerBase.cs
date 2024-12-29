@@ -991,9 +991,9 @@ namespace CollapseLauncher.InstallManager.Base
                                 var filePath = new FileInfo(
                                     EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
                                     "_tempSophon").EnsureNoReadOnly();
-                                var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly();
+                                var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly(out bool isExist);
 
-                                if (filePath.Exists)
+                                if (isExist)
                                 {
                                     filePath.MoveTo(origFilePath.FullName, true);
                                     filePath.Refresh();

@@ -90,20 +90,21 @@ namespace CollapseLauncher
 
         private async Task<string> MoveFile(FileMigrationProcessUIRef uiRef)
         {
-            FileInfo inputPathInfo = new FileInfo(this.inputPath!);
-            FileInfo outputPathInfo = new FileInfo(this.outputPath!);
+            FileInfo inputPathInfo = new FileInfo(inputPath);
+            FileInfo outputPathInfo = new FileInfo(outputPath);
 
             string inputPathDir = Path.GetDirectoryName(inputPathInfo.FullName);
             string outputPathDir = Path.GetDirectoryName(outputPathInfo.FullName);
 
-            if (!Directory.Exists(outputPathDir))
-                Directory.CreateDirectory(outputPathDir!);
+            DirectoryInfo inputPathDirInfo = new DirectoryInfo(inputPathDir);
+            DirectoryInfo outputPathDirInfo = new DirectoryInfo(inputPathDir);
+            outputPathDirInfo.Create();
 
             // Update path display
             string inputFileBasePath = inputPathInfo.FullName.Substring(inputPathDir!.Length + 1);
             UpdateCountProcessed(uiRef, inputFileBasePath);
 
-            if (this.IsSameOutputDrive)
+            if (IsSameOutputDrive)
             {
                 Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file in the same drive from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
                 inputPathInfo.MoveTo(outputPathInfo.FullName, true);
@@ -112,7 +113,7 @@ namespace CollapseLauncher
             else
             {
                 Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file across different drives from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
-                await MoveWriteFile(uiRef, inputPathInfo, outputPathInfo, this.tokenSource == null ? default : this.tokenSource.Token);
+                await MoveWriteFile(uiRef, inputPathInfo, outputPathInfo, tokenSource == null ? default : tokenSource.Token);
             }
 
             return outputPathInfo.FullName;
@@ -120,21 +121,19 @@ namespace CollapseLauncher
 
         private async Task<string> MoveDirectory(FileMigrationProcessUIRef uiRef)
         {
-            DirectoryInfo inputPathInfo = new DirectoryInfo(this.inputPath!);
-            if (!Directory.Exists(this.outputPath))
-                Directory.CreateDirectory(this.outputPath!);
-
-            DirectoryInfo outputPathInfo = new DirectoryInfo(this.outputPath);
+            DirectoryInfo inputPathInfo = new DirectoryInfo(inputPath);
+            DirectoryInfo outputPathInfo = new DirectoryInfo(outputPath);
+            outputPathInfo.Create();
 
             int parentInputPathLength = inputPathInfo.Parent!.FullName.Length + 1;
             string outputDirBaseNamePath = inputPathInfo.FullName.Substring(parentInputPathLength);
-            string outputDirPath = Path.Combine(this.outputPath, outputDirBaseNamePath);
+            string outputDirPath = Path.Combine(outputPath, outputDirBaseNamePath);
 
             await Parallel.ForEachAsync(
                 inputPathInfo.EnumerateFiles("*", SearchOption.AllDirectories),
                 new ParallelOptions
                 {
-                    CancellationToken = this.tokenSource?.Token ?? default,
+                    CancellationToken = tokenSource?.Token ?? default,
                     MaxDegreeOfParallelism = LauncherConfig.AppCurrentThread
                 },
                 async (inputFileInfo, cancellationToken) =>
@@ -147,9 +146,8 @@ namespace CollapseLauncher
 
                     string outputTargetPath = Path.Combine(outputPathInfo.FullName, inputFileBasePath);
                     string outputTargetDirPath = Path.GetDirectoryName(outputTargetPath);
-
-                    if (!Directory.Exists(outputTargetDirPath))
-                        Directory.CreateDirectory(outputTargetDirPath!);
+                    DirectoryInfo outputTargetDirInfo = new DirectoryInfo(outputTargetDirPath);
+                    outputTargetDirInfo.Create();
 
                     if (this.IsSameOutputDrive)
                     {
