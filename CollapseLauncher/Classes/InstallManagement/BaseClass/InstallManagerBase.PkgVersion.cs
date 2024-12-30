@@ -98,6 +98,11 @@ namespace CollapseLauncher.InstallManager.Base
     {
         [StringSyntax("Regex")]
         protected const string NonGameFileRegexPattern = @"(\.\d\d\d|(zip|7z)|patch)|\.$";
+
+        [GeneratedRegex(NonGameFileRegexPattern, RegexOptions.NonBacktracking)]
+        private static partial Regex GetNonGameFileRegex();
+        private static Regex NonGameFileRegex = GetNonGameFileRegex();
+
         public virtual async ValueTask CleanUpGameFiles(bool withDialog = true)
         {
             // Get the unused file info asynchronously
@@ -452,11 +457,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // 8th check: Ensure that the file is one of package files
-            if (includeZipCheck && Regex.IsMatch(fileName,
-                                                 NonGameFileRegexPattern,
-                                                 RegexOptions.Compiled |
-                                                 RegexOptions.NonBacktracking
-                                                ))
+            if (includeZipCheck && NonGameFileRegex.IsMatch(fileName))
             {
                 return true;
             }
