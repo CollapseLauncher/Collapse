@@ -242,16 +242,6 @@ namespace CollapseLauncher.InstallManager.Base
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
-        /*
-        ~InstallManagerBase()
-        {
-#if DEBUG
-            LogWriteLine($"[~InstallManagerBase()] Deconstructor getting called in {_gameVersionManager}", LogType.Warning, true);
-#endif
-            Dispose();
-        }
-        */
-
         protected void ResetToken()
         {
             _token = new CancellationTokenSourceWrapper();
@@ -1312,17 +1302,17 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient                 httpClient,
-                                                                 string                     requestedUrlFrom,
-                                                                 string                     requestedUrlTo,
-                                                                 List<SophonAsset>          sophonPreloadAssetList,
-                                                                 SophonDownloadSpeedLimiter downloadSpeedLimiter)
+        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient httpClient,
+                                                         string requestedUrlFrom,
+                                                         string requestedUrlTo,
+                                                         List<SophonAsset> sophonPreloadAssetList,
+                                                         SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             // Get the main VO language name from Id
             string mainLangId = GetLanguageLocaleCodeByID(_gameVoiceLanguageID);
             // Get the manifest pair for both previous (from) and next (to) version for the main VO
-            await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                            sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
+            await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo,
+                                            sophonPreloadAssetList, mainLangId, downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
             FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).EnsureNoReadOnly();
@@ -1331,20 +1321,21 @@ namespace CollapseLauncher.InstallManager.Base
                 // Use stream reader to read the list one-by-one
                 using StreamReader reader = new StreamReader(_gameAudioLangListPath);
                 // Read until EOF
-                while (!reader.EndOfStream)
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
                 {
-                    // Read line and if the line is equal, then skip
-                    string line = await reader.ReadLineAsync();
-                    if (line != null && line.Equals(mainLangId, StringComparison.OrdinalIgnoreCase))
+                    // Get other lang Id, pass it and try add to the list
+                    string otherLangId = GetLanguageLocaleCodeByLanguageString(line);
+
+                    // Check if the voice pack is actually the same as default.
+                    if (otherLangId != null && otherLangId.Equals(mainLangId, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
-                    // Get other lang Id, pass it and try add to the list
-                    string otherLangId = GetLanguageLocaleCodeByLanguageString(line);
                     // Get the manifest pair for both previous (from) and next (to) version for other VOs
-                    await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                                    sophonPreloadAssetList, otherLangId,      downloadSpeedLimiter);
+                    await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo,
+                                                    sophonPreloadAssetList, otherLangId, downloadSpeedLimiter);
                 }
             }
         }
