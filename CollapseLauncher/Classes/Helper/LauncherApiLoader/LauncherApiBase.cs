@@ -11,15 +11,18 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+using System.Net.Http;
+using System.Net;
+using System.Net.Http.Json;
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
 {
-    internal delegate void OnLoadAction(CancellationToken token);
+    public delegate void OnLoadAction(CancellationToken token);
 
-    internal delegate void ErrorLoadRoutineDelegate(Exception ex);
+    public delegate void ErrorLoadRoutineDelegate(Exception ex);
 
-    internal class LauncherApiBase
+    internal class LauncherApiBase : ILauncherApi
     {
         public const int           ExecutionTimeout        = 10;
         public const int           ExecutionTimeoutStep    = 5;
@@ -41,12 +44,65 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public virtual RegionResourceProp?    LauncherGameResource  { get; protected set; }
         public virtual LauncherGameNews?      LauncherGameNews      { get; protected set; }
         public virtual HoYoPlayGameInfoField? LauncherGameInfoField { get; protected set; }
+        public virtual HttpClient?            ApiGeneralHttpClient  { get => field; init => field = value; }
+        public virtual HttpClient?            ApiResourceHttpClient { get => field; init => field = value; }
+
+        public void Dispose()
+        {
+            ApiGeneralHttpClient?.Dispose();
+            ApiResourceHttpClient?.Dispose();
+        }
+
+        ~LauncherApiBase()
+        {
+            Dispose();
+        }
 
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion)
+            : this(presetConfig, gameName, gameRegion, false) { }
+
+        protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion, bool isIgnoreBaseHttpClientInit)
         {
             PresetConfig = presetConfig;
             GameName     = gameName;
             GameRegion   = gameRegion;
+
+            EnsurePresetConfigNotNull();
+
+            if (!isIgnoreBaseHttpClientInit)
+            {
+                // Create generic HttpClientBuilder
+                HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
+                    .UseLauncherConfig()
+                    .AllowUntrustedCert()
+                    .SetAllowedDecompression()
+                    .SetHttpVersion(HttpVersion.Version30, HttpVersionPolicy.RequestVersionOrLower);
+
+                // Create resource HttpClientBuilder
+                HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
+                    .UseLauncherConfig()
+                    .AllowUntrustedCert()
+                    .SetAllowedDecompression(DecompressionMethods.None)
+                    .SetHttpVersion(HttpVersion.Version30, HttpVersionPolicy.RequestVersionOrLower);
+
+                // If the metadata has user-agent defined, set the resource's HttpClient user-agent
+                if (!string.IsNullOrEmpty(presetConfig.ApiGeneralUserAgent))
+                {
+                    apiGeneralHttpBuilder.SetUserAgent(presetConfig.ApiGeneralUserAgent);
+                }
+                if (!string.IsNullOrEmpty(presetConfig.ApiResourceUserAgent))
+                {
+                    apiResourceHttpBuilder.SetUserAgent(string.Format(presetConfig.ApiResourceUserAgent, InnerLauncherConfig.m_isWindows11 ? "11" : "10"));
+                }
+
+                // Add other API general and resource headers from the metadata configuration
+                presetConfig.AddApiGeneralAdditionalHeaders((key, value) => apiGeneralHttpBuilder.AddHeader(key, value));
+                presetConfig.AddApiResourceAdditionalHeaders((key, value) => apiResourceHttpBuilder.AddHeader(key, value));
+
+                // Create HttpClient instances for both General and Resource APIs.
+                ApiGeneralHttpClient  = apiGeneralHttpBuilder.Create();
+                ApiResourceHttpClient = apiResourceHttpBuilder.Create();
+            }
         }
 
         public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,
@@ -93,7 +149,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
                 async innerToken =>
-                    await FallbackCDNUtil.DownloadAsJSONType(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, innerToken);
+                    await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, innerToken);
 
             Task[] tasks = [
                 launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
@@ -107,7 +163,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                     async innerToken =>
-                        await FallbackCDNUtil.DownloadAsJSONType(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default.RegionResourceProp, innerToken);
+                        await ApiGeneralHttpClient!.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default.RegionResourceProp, innerToken);
 
                 tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine, token)
@@ -258,7 +314,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                     await LoadLauncherNewsInner(true, localeFallback, PresetConfig, onTimeoutRoutine, token);
             }
 
-            regionResourceProp?.Content?.InjectDownloadableItemCancelToken(token);
+            regionResourceProp?.Content?.InjectDownloadableItemCancelToken(this, token);
             LauncherGameNews = regionResourceProp;
         }
 
@@ -271,7 +327,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             LauncherGameInfoField = new HoYoPlayGameInfoField();
         }
 
-        private static async ValueTask<LauncherGameNews?> LoadLauncherNewsInner(
+        private async ValueTask<LauncherGameNews?> LoadLauncherNewsInner(
             bool isMultiLang, string lang, PresetConfig presetConfig, ActionOnTimeOutRetry? onTimeoutRoutine,
             CancellationToken token)
         {
@@ -291,18 +347,16 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                                                  onTimeoutRoutine, token);
         }
 
-        private static async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
+        private async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
             string launcherSpriteUrl, CancellationToken token)
         {
-            return await FallbackCDNUtil.DownloadAsJSONType(launcherSpriteUrl, InternalAppJSONContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient!.GetFromJsonAsync(launcherSpriteUrl, InternalAppJSONContext.Default.LauncherGameNews, token);
         }
 
-        private static async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
+        private async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
                                                                                CancellationToken token)
         {
-            return await
-                FallbackCDNUtil
-                   .DownloadAsJSONType(string.Format(launcherSpriteUrl, lang), InternalAppJSONContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient!.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), InternalAppJSONContext.Default.LauncherGameNews, token);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)

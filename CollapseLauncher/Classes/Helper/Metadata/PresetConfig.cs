@@ -879,5 +879,31 @@ namespace CollapseLauncher.Helper.Metadata
         }
 
         #endregion
+
+        #region API General and Resource Headers
+        public string? ApiResourceUserAgent { get; set; }
+        public string? ApiGeneralUserAgent { get; set; }
+
+        public Dictionary<string, string?>? ApiGeneralAdditionalHeaders { get; set; }
+        public Dictionary<string, string?>? ApiResourceAdditionalHeaders { get; set; }
+
+        public void AddApiGeneralAdditionalHeaders(Action<string, string?> addHandler)
+            => AddAdditionalHeadersFromDict(ApiGeneralAdditionalHeaders, addHandler);
+
+        public void AddApiResourceAdditionalHeaders(Action<string, string?> addHandler)
+            => AddAdditionalHeadersFromDict(ApiResourceAdditionalHeaders, addHandler);
+
+        private void AddAdditionalHeadersFromDict(Dictionary<string, string?>? dict, Action<string, string?> addHandler)
+        {
+            if (dict == null || dict.Count == 0)
+            {
+                return;
+            }
+            foreach (KeyValuePair<string, string?> header in dict)
+            {
+                addHandler(header.Key, header.Value);
+            }
+        }
+        #endregion
     }
 }

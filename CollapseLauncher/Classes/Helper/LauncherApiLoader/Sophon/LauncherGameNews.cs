@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using System.Threading;
 using WinRT;
@@ -30,6 +31,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
     public interface ILauncherGameNewsDataTokenized
     {
         public CancellationToken? InnerToken { get; set; }
+        public ILauncherApi? LauncherApi { get; set; }
     }
 
     public class LauncherGameNews
@@ -137,13 +139,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
             }
         }
 
-        public void InjectDownloadableItemCancelToken(CancellationToken token)
+        public void InjectDownloadableItemCancelToken(ILauncherApi? launcherApi, CancellationToken token)
         {
-            InjectDownloadableItemCancelTokenInner(NewsCarousel, token);
-            InjectDownloadableItemCancelTokenInner(SocialMedia,  token);
+            InjectDownloadableItemCancelTokenInner(NewsCarousel, launcherApi, token);
+            InjectDownloadableItemCancelTokenInner(SocialMedia,  launcherApi, token);
         }
 
-        private void InjectDownloadableItemCancelTokenInner<T>(IEnumerable<T>? prop, CancellationToken token)
+        private void InjectDownloadableItemCancelTokenInner<T>(IEnumerable<T>? prop, ILauncherApi? launcherApi, CancellationToken token)
             where T : ILauncherGameNewsDataTokenized
         {
             if (prop == null)
@@ -153,11 +155,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 
             foreach (T? propValue in prop)
             {
-                InjectDownloadableItemCancelTokenInner(propValue, token);
+                InjectDownloadableItemCancelTokenInner(propValue, launcherApi, token);
             }
         }
 
-        private static void InjectDownloadableItemCancelTokenInner<T>(T? prop, CancellationToken token)
+        private static void InjectDownloadableItemCancelTokenInner<T>(T? prop, ILauncherApi? launcherApi, CancellationToken token)
             where T : ILauncherGameNewsDataTokenized
         {
             if (prop == null)
@@ -165,6 +167,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
                 return;
             }
 
+            prop.LauncherApi = launcherApi;
             prop.InnerToken = token;
         }
     }
@@ -191,7 +194,23 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         public string? FeaturedEventIconBtnUrl { get; set; }
     }
 
-    public class LauncherGameNewsCarousel : ILauncherGameNewsDataTokenized
+    public class LauncherUIResourceBase
+    {
+        public LauncherUIResourceBase()
+        { }
+
+        public LauncherUIResourceBase(ILauncherApi? launcherApi)
+        {
+            LauncherApi = launcherApi;
+        }
+
+        public ILauncherApi? LauncherApi { get; set; }
+
+        private HttpClient? _httpClient;
+        public HttpClient? CurrentHttpClient { get => _httpClient ??= LauncherApi?.ApiResourceHttpClient; }
+    }
+
+    public class LauncherGameNewsCarousel : LauncherUIResourceBase, ILauncherGameNewsDataTokenized
     {
         private readonly string? _carouselImg;
 
@@ -207,7 +226,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? CarouselImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(_carouselImg, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, _carouselImg, InnerToken ?? default);
             init => _carouselImg = value;
         }
 
@@ -223,7 +242,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
     }
 
     [GeneratedBindableCustomProperty]
-    public partial class LauncherGameNewsSocialMedia : ILauncherGameNewsDataTokenized
+    public partial class LauncherGameNewsSocialMedia : LauncherUIResourceBase, ILauncherGameNewsDataTokenized
     {
         private readonly string? _qrImg;
         private readonly List<LauncherGameNewsSocialMediaQrLinks>? _qrLinks;
@@ -240,7 +259,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? IconImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(_iconImg, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, _iconImg, InnerToken ?? default);
             init => _iconImg = value;
         }
 
@@ -248,7 +267,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? IconImgHover
         {
-            get => ImageLoaderHelper.GetCachedSprites(_iconImgHover, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, _iconImgHover, InnerToken ?? default);
             init => _iconImgHover = value;
         }
 
@@ -275,7 +294,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? QrImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(_qrImg, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, _qrImg, InnerToken ?? default);
             init => _qrImg = value;
         }
 

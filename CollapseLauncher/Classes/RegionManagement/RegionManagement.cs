@@ -171,7 +171,7 @@ namespace CollapseLauncher
                 new FileInfo(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
 
             // Start downloading the background image
-            var isDownloaded = await ImageLoaderHelper.DownloadAndEnsureCompleteness(imgFileInfo, true);
+            var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
 
             if (isDownloaded)
             {
@@ -213,8 +213,8 @@ namespace CollapseLauncher
                                                                  IsFirstStartup = false;
                                                                  ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
                                                              }, false, false, true);
-            await ImageLoaderHelper.TryDownloadToCompleteness(
-                                                              LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
+            await ImageLoaderHelper.TryDownloadToCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
+                                                              LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
                                                               imgFileInfo,
                                                               Token);
             BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
