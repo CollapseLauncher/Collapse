@@ -439,7 +439,8 @@
                           VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}"
                               TabFocusNavigation="Once"
-                              IsTabStop="False">
+                              IsTabStop="False"
+                              XYFocusKeyboardNavigation="Enabled">
                     <ItemsControl.Transitions>
                         <PopupThemeTransition />
                     </ItemsControl.Transitions>
@@ -667,7 +668,8 @@
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}"
                                                       IsTabStop="False"
-                                                      TabFocusNavigation="Once">
+                                                      TabFocusNavigation="Once"
+                                                      XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -744,7 +746,8 @@
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}"
                                                       IsTabStop="False"
-                                                      TabFocusNavigation="Once">
+                                                      TabFocusNavigation="Once"
+                                                      XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -821,7 +824,8 @@
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}"
                                                       IsTabStop="False"
-                                                      TabFocusNavigation="Once">
+                                                      TabFocusNavigation="Once"
+                                                      XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
