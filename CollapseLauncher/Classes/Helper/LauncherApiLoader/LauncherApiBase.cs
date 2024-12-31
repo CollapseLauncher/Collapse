@@ -144,7 +144,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 LoadLauncherGameResource(onTimeoutRoutine, token),
                 LoadLauncherNews(onTimeoutRoutine, token),
                 LoadLauncherGameInfo(onTimeoutRoutine, token)
-                ]).ConfigureAwait(false);
+                ]);
         }
 
         protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
@@ -176,7 +176,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                                                      .AsTaskAndDoAction((result) => pluginProp = result);
             }
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await Task.WhenAll(tasks);
 
             if (LauncherGameResource == null)
             {

@@ -122,7 +122,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             };
 
             // Await all callbacks
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await Task.WhenAll(tasks);
 
             ConvertPluginResources(ref sophonResourceData, hypPluginResource);
             ConvertSdkResources(ref sophonResourceData, hypSdkResource);

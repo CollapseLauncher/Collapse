@@ -309,7 +309,7 @@ namespace CollapseLauncher.Pages
                 if (isToRecycleBin)
                 {
                     // Get the list of the file to be deleted and add it to the deletedItems List if it exists
-                    List<string> toBeDeleted = await Task.Run(() => deletionSource
+                    List<string> toBeDeleted = await Task.Factory.StartNew(() => deletionSource
                                                                    .Select(x =>
                                                                            {
                                                                                var localFileInfo = x.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
@@ -322,14 +322,14 @@ namespace CollapseLauncher.Pages
                                                                                return localFileInfo.FullName;
                                                                            })
                                                                    .Where(x => !string.IsNullOrEmpty(x))
-                                                                   .ToList()).ConfigureAwait(false);
+                                                                   .ToList());
 
                     try
                     {
 
                         // Execute the deletion process
-                        var recycleBinTask = Task.Run(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted, true));
-                        await recycleBinTask.ConfigureAwait(false);
+                        var recycleBinTask = Task.Factory.StartNew(() => RecycleBin.MoveFileToRecycleBin(toBeDeleted, true));
+                        await recycleBinTask;
 
                         deleteSuccess = toBeDeleted.Count;
                     }
