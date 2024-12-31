@@ -28,7 +28,7 @@ for:
     - cmd: >-
         echo Init submodules
         
-        git submodule update --init --force --depth=20 --recursive
+        git submodule update --init --force --depth=20 --recursive --jobs=4
           
         echo Install dotnet sdk
         
@@ -133,7 +133,7 @@ for:
     - cmd: >-
         echo Init submodules
 
-        git submodule update --init --force --depth=20 --recursive
+        git submodule update --init --force --depth=20 --recursive --jobs=4
 
         echo.
 

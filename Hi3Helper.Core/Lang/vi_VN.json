@@ -114,7 +114,7 @@
     "PageTitle": "Trình khởi chạy",
     "PreloadTitle": "Tải về trước đã sẵn sàng",
     "PreloadNotifTitle": "Tải trước phiên bản v{0} đã sẵn sàng!",
-    "PreloadNotifDeltaDetectTitle": "Gói tải trước ở định dạng bản vá tạm thời của phiên bản v{0} đã được xác định!",
+    "PreloadNotifDeltaDetectTitle": "Gói tải trước ở định dạng bản vá tạm thờibản vá tạm thời của phiên bản v{0} đã được xác định!",
     "PreloadNotifSubtitle": "Ấn \"Tải trò chơi\" để bắt đầu tải trong nền.",
     "PreloadNotifDeltaDetectSubtitle": "Bạn đã thành công tải gói tài nguyên tải trước ở định dạng là bản vá tạm thời. Gói tải trước này sẽ được dùng để cập nhật trò chơi của bạn sau này.",
     "PreloadNotifCompleteTitle": "Gói tải trước đã tải xong!",
@@ -150,13 +150,16 @@
     "GameSettings_Panel2MoveGameLocationGame": "Chuyển vị trí thư mục Game",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "Không thể di chuyển trò chơi vào gốc ổ đỉa!\r\nVui lòng tạo thư mục mới và thử lại.",
     "GameSettings_Panel2StopGame": "Buộc đóng trò chơi",
+    "GameSettings_Panel3RegionalSettings": "Cài Đặt Vùng",
     "GameSettings_Panel3": "Tuỳ chọn khởi động cho trò chơi",
+    "GameSettings_Panel3RegionRpc": "Hiển thị Trạng thái đang chơi trên Discord",
     "GameSettings_Panel3CustomBGRegion": "Đổi nền của vùng",
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Hình nền tùy chỉnh cho vùng",
-    "GameSettings_Panel4": "Cài đặt khác",
+    "GameSettings_Panel4": "Toàn Cầu - Khác",
     "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
     "GameSettings_Panel4ShowSocialMediaPanel": "Hiển thị bảng mạng xã hội",
     "GameSettings_Panel4ShowPlaytimeButton": "Hiển thị thời gian chơi",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Đồng bộ thời gian chơi vào cơ sở dử liệu",
     "GameSettings_Panel4CreateShortcutBtn": "Tạo lối tắt",
     "GameSettings_Panel4AddToSteamBtn": "Thêm vào Steam",
 
@@ -165,15 +168,25 @@
     "GamePlaytime_Idle_Panel1Minutes": "Phút",
     "GamePlaytime_Idle_ResetBtn": "Đặt lại",
     "GamePlaytime_Idle_ChangeBtn": "Thay đổi",
+    "GamePlaytime_Idle_SyncDb": "Đồng bộ",
+    "GamePlaytime_Idle_SyncDbSyncing": "Đang Đồng Bộ",
     "GamePlaytime_Running_Info1": "Tiến trình của trò chơi này hiện đang chạy, do đó không thể chỉnh sửa thời gian chơi.",
-    "GamePlaytime_Running_Info2": "Xin lưu ý rằng việc đóng hoàn toàn Collapse sẽ tạm dừng theo dõi thời gian chơi (thời gian chơi cho đến thời điểm đóng lại) & Collapse sẽ tiếp tục theo dõi khi được mở lại.",
+    "GamePlaytime_Running_Info2": "Lưu ý rằng việc đóng hoàn toàn Collapse sẽ ngừng theo dõi thời gian chơi (lưu thời gian đã chơi cho đến thời điểm đó).",
     "GamePlaytime_Display": "{0}h {1}m",
-    "GamePlaytime_DateDisplay": "{3:00}:{4:00} {0:00}/{1:00}/{2:0000}",
+    "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Thống kê thời gian Chơi",
+    "GamePlaytime_Stats_NeverPlayed": "Chưa bao giờ chơi",
+    "GamePlaytime_Stats_LastSession": "Lần chơi cuối cùng",
+    "GamePlaytime_Stats_LastSession_StartTime": "Thời gian bắt đầu",
+    "GamePlaytime_Stats_LastSession_Duration": "Khoảng thời gian",
+    "GamePlaytime_Stats_Daily": "Hôm nay",
+    "GamePlaytime_Stats_Weekly": "Tuần",
+    "GamePlaytime_Stats_Monthly": "Tháng",
 
     "PostPanel_Events": "Sự kiện",
     "PostPanel_Notices": "Thông báo",
     "PostPanel_Info": "Thông tin",
-    "PostPanel_NoNews": "Gì?\nKhông có bản tin mới trong ngày hôm nay?",
+    "PostPanel_NoNews": "\nKhông có bản tin mới trong ngày hôm nay?",
 
     "CommunityToolsBtn": "Công cụ cộng đồng",
     "CommunityToolsBtn_OfficialText": "Công cụ chính thức",
@@ -278,7 +291,7 @@
   },
 
   "_CutscenesPage": {
-    "PageTitle": "Hoạt Cảnh"
+    "PageTitle": "Cutscenes"
   },
 
   "_GameSettingsPage": {
@@ -387,14 +400,14 @@
     "CustomArgs_Title": "Cấu hình tham số khởi động (Nâng cao)",
     "CustomArgs_Subtitle": "Tham số khởi động",
     "CustomArgs_Footer1": "Về các tham số khởi động, vui lòng xem tại",
-    "CustomArgs_Footer2": "Tùy chọn dòng lệnh cho Unity Standalone Player",
+    "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
     "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
     "MobileLayout": "Sử dụng Layout Cảm Ứng",
 
     "Advanced_Title": "Cài đặt Nâng cao",
-    "Advanced_Subtitle1": "Nhóm Collapse Launcher",
+    "Advanced_Subtitle1": "Collapse Launcher Team",
     "Advanced_Subtitle2": "KHÔNG CHỊU TRÁCH NHIỆM",
     "Advanced_Subtitle3": "cho bất kỳ điều gì xảy đến với trò chơi, tài khoản hay hệ thống của bạn khi sử dụng thiết đặt này! Cân nhắc khi sử dụng.",
     "Advanced_GLC_WarningAdmin": "CẢNH BÁO: Lệnh được điền vào sẽ được chạy với quyền quản trị!",
@@ -412,6 +425,8 @@
     "Debug": "Cài đặt bổ sung",
     "Debug_Console": "Hiển thị console (cmd)",
     "Debug_IncludeGameLogs": "Lưu nhật ký trò chơi vào Collapse (có thể chứa dữ liệu nhạy cảm)",
+    "Debug_SendRemoteCrashData": "Gửi báo cáo sự cố ẩn danh cho nhà phát triển",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "Cài đặt này bị tắt do biến môi trường 'DISABLE_SENTRY' được đặt thành true.",
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
 
     "ChangeRegionWarning_Toggle": "Hiển thị thông báo thay đổi vùng",
@@ -444,7 +459,7 @@
     "AppThreads": "Tải về",
     "AppThreads_Download": "Số lượng tải về",
     "AppThreads_Extract": "Số lượng giải nén",
-    "AppThreads_Help1": "Tuỳ chọn này sẽ chọn số lượng tệp mà trình khởi chạy sẽ tải về. Cách thức của nó giống IDM hoặc Parallel download trên Chrome",
+    "AppThreads_Help1": "Tuỳ chọn này sẽ chọn số lượng tệp mà trình khởi chạy sẽ tải về. Cách thức của nó giống IDM hoặc Parallel download trên chrome",
     "AppThreads_Help2": "Giá trị mặc định:",
     "AppThreads_Help3": "Khoảng giá trị:",
     "AppThreads_Help4": "0 (Tự động)",
@@ -464,6 +479,8 @@
     "SophonHttpNumberBox": "Số lượng kết nối HTTP tối đa",
     "SophonHelp_Http": "Tùy chọn này kiểm soát số lượng kết nối được thiết lập bởi Collapse tới máy chủ cặp nhật của HoYoVerse để có thể tải những khối dữ liệu nhỏ.",
     "SophonToggle": "Kích hoạt Sophon cho những vùng hỗ trợ",
+    "SophonPredownPerfMode_Toggle": "[THỬ NGHIỆM] Sử dụng tất cả nhân CPU khi áp dụng Cài đặt Trước",
+    "SophonPredownPerfMode_Tooltip": "Kích hoạt tính năng này sẽ dùng tất cả luồng CPU có trong hệ thống. Vô hiệu hóa tính năng này nếu có vấn đề",
 
     "AppThreads_Attention": "Chú ý",
     "AppThreads_Attention1": "Trước khi bạn thay đổi giá trị",
@@ -480,8 +497,10 @@
     "DiscordRPC_GameStatusToggle": "Hiện trò chơi hiện tại trên trạng thái của Discord",
     "DiscordRPC_IdleStatusToggle": "Hiện RPC khi ở trạng thái chờ",
 
+    "ImageBackground": "Cài đặt ảnh nền",
     "VideoBackground": "Cài đặt video",
     "VideoBackground_IsEnableAudio": "Bật âm thanh",
+    "VideoBackground_IsEnableAcrylicBackground": "Sử dụng hiệu ứng Acrylic khi sử dụng Video nền",
     "VideoBackground_AudioVolume": "Âm lượng",
 
     "Update": "Cập nhật",
@@ -521,7 +540,7 @@
     "Disclaimer1": "trình khởi chạy này không thuộc về",
     "Disclaimer2": "với bất kì điều nào",
     "Disclaimer3": "và hoàn toàn là mã nguồn mở. Chúng tôi luôn vui lòng với bất kì sự đóng góp nào đến từ bạn.",
-
+    "WebsiteBtn": "Truy cập trang web của chúng tôi",
     "DiscordBtn1": "Tham gia Armada Discord của chúng tôi",
     "DiscordBtn2": "Xem qua Discord Honkai Impact 3rd",
     "DiscordBtn3": "Discord Chính thức của Collapse!",
@@ -530,6 +549,7 @@
 
     "EnableAcrylicEffect": "Dùng hiệu ứng làm mờ",
     "EnableDownloadChunksMerging": "Gộp các gói đã tải xuống",
+    "Enforce7ZipExtract": "Luôn sử dụng 7-zip cho cài đặt trò chơi/cặp nhật",
     "UseExternalBrowser": "Luôn dùng trình duyệt bên ngoài",
 
     "LowerCollapsePrioOnGameLaunch": "Giảm mức sử dụng tài nguyên sử dụng của Collapse khi trò chơi được khởi động",
@@ -548,7 +568,7 @@
     "AppBehavior_LaunchOnStartup": "Luôn mở Collapse lúc máy tính của bạn khởi động",
     "AppBehavior_StartupToTray": "Ẩn cửa sổ Collapse lúc nó tự mở",
 
-    "Waifu2X_Toggle": "Dùng Waifu2X [Thử nghiệm]",
+    "Waifu2X_Toggle": "Dùng Waifu2X",
     "Waifu2X_Help": "Dùng Waifu2X để phóng lớn ảnh nền.\nKhi bật, chất lượng ảnh sẽ được cải thiện đáng kể, nhưng sẽ mất thêm một ít thời gian để tải ảnh lần đầu.",
     "Waifu2X_Help2": "Chỉ khả dụng cho ảnh tĩnh!",
     "Waifu2X_Warning_CpuMode": "CẢNH BÁO: Không tìm thấy thiết bị GPU Vulcan có sẵn và sẽ sử dụng chế độ CPU. Điều này sẽ làm tăng đáng kể thời gian xử lý hình ảnh.",
@@ -622,7 +642,25 @@
     "FileDownloadSettings_BurstDownloadHelp4": "chạy song song để làm cho trình tải xuống hiệu quả hơn.",
     "FileDownloadSettings_BurstDownloadHelp5": "Khi vô hiệu hóa, trình tải xuống cho tính năng",
     "FileDownloadSettings_BurstDownloadHelp6": "và",
-    "FileDownloadSettings_BurstDownloadHelp7": "dùng trình tải xuống nối tiếp."
+    "FileDownloadSettings_BurstDownloadHelp7": "dùng trình tải xuống nối tiếp.",
+
+    "Database_Title": "Cơ sở dữ liệu có thể đồng bọ hóa của người dùng",
+    "Database_ConnectionOk": "Đã kết nối cơ sở dữ liệu",
+    "Database_ConnectFail": "Không thể kết nối với cơ sở dữ liệu, xem (các) lỗi bên dưới:",
+    "Database_Toggle": "Bật Cở Sở Dử Liệu Trực tuyến",
+    "Database_Url": "URL Cở sở Dử liệu",
+    "Database_Url_Example": "Ví dụ: https://db-collapse.turso.io",
+    "Database_Token": "Mã Token",
+    "Database_UserId": "ID Người dùng",
+    "Database_GenerateGuid": "Tạo UID",
+    "Database_Validate": "Xác thực và lưu cài đặt",
+    "Database_Error_EmptyUri": "URL Cơ sở Dử liệu không được để trống",
+    "Database_Error_EmptyToken": "Mã token không được để trống",
+    "Database_Error_InvalidGuid": "ID người dùng không đúng với GUID!",
+    "Database_Warning_PropertyChanged": "Cơ sở dữ liệu đã thay đổi",
+    "Database_ValidationChecking": "Xác thực cài đặt",
+    "Database_Placeholder_DbUserIdTextBox": "Ví dụ về GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Nhập token của trình xác thực tại đây"
   },
 
   "_Misc": {
@@ -642,6 +680,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "Tất cả OK!",
     "Cancel": "Huỷ",
     "Close": "Đóng",
     "UseCurrentDir": "Dùng thư mục hiện tại",
@@ -710,6 +749,7 @@
     "Disabled": "Tắt",
     "Enabled": "Bật",
     "UseAsDefault": "Đặt Làm Mặc Định",
+    "Default": "Mặc định",
 
     "BuildChannelPreview": "Xem trước",
     "BuildChannelStable": "Ổn định",
@@ -754,7 +794,10 @@
 
     "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= Không giới hạn",
-    "IsBytesNotANumber": "= NaN"
+    "IsBytesNotANumber": "= NaN",
+
+    "MissingVcRedist": "Thiếu Visual C/C++ Redistributable",
+    "MissingVcRedistSubtitle": "Bạn cần phải tải Visual C/C++ Redistributable để có thể chạy tính năng này. Bạn có muốn tải ngay bây giờ không?\r\nLưu ý: Thao tác này sẽ mở một cửa sổ trình duyệt và tải xuống tệp từ Microsoft. Vui lòng chạy trình cài đặt sau khi tải xuống rồi khởi động lại Collapse và thử lại.\r\nNếu bạn đã cài đặt nó nhưng vẫn còn lỗi, vui lòng gửi phản hồi về vấn đề này cho chúng tôi."
   },
 
   "_BackgroundNotification": {
@@ -801,7 +844,7 @@
     "RepairCompletedSubtitle": "{0} tệp đã được sửa.",
     "RepairCompletedSubtitleNoBroken": "Không có tệp nào lỗi.",
     "ExtremeGraphicsSettingsWarnTitle": "Đã chọn tuỳ chọn đồ hoạ cao nhất!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Bạn đã đặt độ hoạ ở mức rất cao!\r\nĐồ hoạ cao cũng đồng nghĩa số lần render cao gấp đôi với MSAA được bật và nó CHƯA ĐƯỢC TỐI ƯU! (trừ khi bạn sài siêu máy tính của NASA).\r\n\r\nBạn có muốn tiếp tục chứ?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Bạn sặp đặt cài đặt cài sẵn thành Rất Cao!\r\nCài đặt Rất Cao về cơ bản là cài đặt cài sẵn chỉnh tỉ lệ kết xuất lên 1.6 lần với MSAA kích hoạt và RẤT KHÔNG TỐI ƯU!\r\n\r\nBạn có chắc là bạn muốn làm điều này?",
     "MigrateExistingMoveDirectoryTitle": "Di chuyển Cài đặt Hiện tại cho: {0}",
     "MigrateExistingInstallChoiceTitle": "Một Cài đặt Hiện tại của {0} đã được Phát hiện!",
     "MigrateExistingInstallChoiceSubtitle1": "Bạn có một phiên bản cài đặt hiện tại của trò chơi sử dụng {0} trong thư mục này:",
@@ -866,7 +909,7 @@
     "ChangePlaytimeTitle": "Bạn có chắc chắn muốn thay đổi thời gian chơi của mình không?",
     "ChangePlaytimeSubtitle": "Thay đổi thời gian chơi của bạn sẽ ghi đè giá trị hiện tại bằng giá trị bạn vừa nhập.\n\nBạn có muốn tiếp tục?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn có thể thay đổi lại giá trị này bất kỳ lúc nào khi không chơi trò chơi.",
     "ResetPlaytimeTitle": "Bạn có chắc muốn đặt lại thời gian chơi?",
-    "ResetPlaytimeSubtitle": "Đặt lại thời gian chơi sẽ đặt bộ đếm thời gian về 0. Đây là ",
+    "ResetPlaytimeSubtitle": "Đặt lại thời gian chơi của là đặt lại bộ đếm thời gian chơi và thống kê liên quan về lại 0. Đây là một",
     "ResetPlaytimeSubtitle2": "phá hoại",
     "ResetPlaytimeSubtitle3": " hành động, nghĩa là bạn không thể hoàn tác thao tác này sau khi đã xác nhận. \n\nBạn có muốn tiếp tục?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn có thể thay đổi lại giá trị này bất kỳ lúc nào khi không chơi trò chơi.",
     "InvalidPlaytimeTitle": "Đã có lỗi khi lưu thời gian chơi của lần chơi này",
@@ -879,6 +922,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "Thư mục không hợp lệ!",
     "CannotUseAppLocationForGameDirSubtitle": "Bạn không thể sử dụng thư mục này vì nó đang được sử dụng làm thư mục hệ thống hoặc được sử dụng để thực thi chính của ứng dụng. Vui lòng chọn thư mục khác!",
+    "InvalidGameDirNewTitleFormat": "Đường dẫn sai: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Đã chọn đường dẫn:",
+    "InvalidGameDirNewSubtitleSelectOther": "Hãy chọn thư mục/vị trí khác:",
+    "InvalidGameDirNew1Title": "Thư mục không hợp lệ!",
+    "InvalidGameDirNew1Subtitle": "Bạn không thể sử dụng thư mục này vì nó đang được sử dụng làm thư mục hệ thống hoặc được sử dụng để thực thi chính cho ứng dụng. Vui lòng chọn thư mục khác!",
+    "InvalidGameDirNew2Title": "Không thể truy cập vào thư mục được chọn",
+    "InvalidGameDirNew2Subtitle": "Trình khởi chạy không có quyền truy cập vào thư mục này",
+    "InvalidGameDirNew3Title": "Không thể chọn thư mục gốc",
+    "InvalidGameDirNew3Subtitle": "Bạn đã chọn một đường dẫn trên thư mục gốc, và điều này bị cấm!",
+    "InvalidGameDirNew4Title": "Không thể chọn thư mục Windows",
+    "InvalidGameDirNew4Subtitle": "Bạn không thể sử dụng thư mục Windows làm vị trí cài đặt trò chơi để tránh mọi điều không cần thiết có thể xảy ra.",
+    "InvalidGameDirNew5Title": "Không thể chọn thư mục Program Data",
+    "InvalidGameDirNew5Subtitle": "Bạn không thể sử dụng thư mục Program Data làm vị trí cài đặt trò chơi để tránh mọi điều không cần thiết có thể xảy ra.",
+    "InvalidGameDirNew6Title": "Không thể chọn thư mục Program Files hay Program Files (x86)",
+    "InvalidGameDirNew6Subtitle": "Bạn không thể sử dụng thư mục Program Files hay Program Files (x86) làm vị trí cài đặt trò chơi để tránh mọi điều không cần thiết có thể xảy ra.",
+    "FolderDialogTitle1": "Chọn vị trí cài trò chơi",
 
     "StopGameTitle": "Buộc dừng trò chơi",
     "StopGameSubtitle": "Bạn có chắc chắn muốn buộc dừng trò chơi đang chạy hiện tại không?\nBạn có thể mất một số tiến trình trong trò chơi.",
@@ -933,7 +992,10 @@
     "DownloadSettingsOption1": "Khởi động trò chơi sau khi cài đặt",
 
     "OpenInExternalBrowser": "Mở trong trình duyệt",
-    "CloseOverlay": "Đóng cửa sổ phủ"
+    "CloseOverlay": "Đóng cửa sổ phủ",
+
+    "DbGenerateUid_Title": "Bạn có chắc là bạn có muốn đổi ID người dùng không?",
+    "DbGenerateUid_Content": "Việc thay đổi ID người dùng hiện tại sẽ khiến dữ liệu liên quan bị mất nếu bạn làm mất."
   },
 
   "_FileMigrationProcess": {
@@ -1089,6 +1151,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "Vui lòng đóng Collapse trước khi áp dụng cập nhật!",
     "ApplyUpdateErrCollapseRunSubtitle": "Đang chờ Collapse đóng...",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "Một phiên bản của Collapse Launcher vẫn đang chạy!",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "Chúng tôi đã phát hiện một phiên bản của Collapse Launcher đang chạy trong nền. Để buộc đóng trình khởi chạy, hãy nhấp vào \"Có\". Để đợi cho đến khi bạn đóng nó theo cách thủ công, hãy nhấp vào \"Không\".",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "Đã phát hiện cài đặt hiện có bị hỏng!",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "Chúng tôi đã phát hiện ra rằng bạn có một cài đặt hiện có bị hỏng.\r\n\r\nNhấp vào \"Có\" để sửa chữa cài đặt trước khi cài đặt bản cập nhật hoặc Nhấp vào \"Không\" để chỉ chạy cài đặt cập nhật.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "LỖI:\r\ntệp \"release\" không có string \"stable\" hay \"preview\" trong nó",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Vui lòng kiểm tra tệp \"release\" của bạn và thử lại.",
 
@@ -1299,7 +1365,7 @@
 
     "Audio_Output_Surround": "Âm thanh vòm",
     "Audio_DynamicRange": "Đầy Đủ Dynamic Range",
-    "Audio_MuteOnMinimize": "Tắt âm thanh khi ẩn",
+    "Audio_MuteOnMinimize": "Mute Audio When Minimized",
 
     "Language": "Cài Đặt Ngôn Ngữ",
     "Language_Help1": "Collapse hiện không thể tải trực tiếp gói ngôn ngữ.",
@@ -1392,6 +1458,8 @@
     "LoadingTitle": "Đang xử lý",
     "LoadingSubtitle1": "Tính toán các tập hiện có (tìm thấy {0} tệp - tổng cộng {1})",
     "LoadingSubtitle2": "Kiểm tra tính khả dụng của pkg_version",
+    "LoadingSubtitle3": "Giao diện có thể không phản hồi trong quá trình này...",
+    "DeleteSubtitle": "Đang xoá tập tin",
     "BottomButtonDeleteAllFiles": "Xóa tất cả tệp",
     "BottomButtonDeleteSelectedFiles": "Xóa {0} (các) tệp đã chọn",
     "BottomCheckboxFilesSelected": "{0} tệp đã chọn (Tổng cộng {1} / {2})",
@@ -1453,6 +1521,7 @@
     "Graphics_EffectsQ": "Chất lượng hiệu ứng",
     "Graphics_ShadingQ": "Chất lượng bóng",
     "Graphics_Distortion": "Bóp méo",
+    "Graphics_HighPrecisionCharacterAnimation": "Hoạt Ảnh Nhân Vật có độ chính xác cao",
     "Audio_PlaybackDev": "Thiết bị phát",
     "Audio_PlaybackDev_Headphones": "Tai Nghe",
     "Audio_PlaybackDev_Speakers": "Loa",
@@ -1485,6 +1554,12 @@
     "CacheUpdateDownloadCompleted_Title": "Tải xuống tệp Cache đã hoàn tất.",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} tệp cache đã được cập nhật thành công.",
 
-    "GenericClickNotifToGoBack_Subtitle": "Nhấn vào thông báo này để quay lại trình khởi chạy trò chơi."
+    "GenericClickNotifToGoBack_Subtitle": "Nhấn vào thông báo này để quay lại trình khởi chạy trò chơi.",
+
+    "OOBE_WelcomeTitle": "Chào mừng bạn tới Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "Bạn hiện đang chọn {0} - {1} là trò chơi của bạn. Còn rất nhiều trò chơi đợi bạn, khám phá thêm!",
+
+    "LauncherUpdated_NotifTitle": "Trình khởi chạy của bạn đã được cập nhật!",
+    "LauncherUpdated_NotifSubtitle": "Trình khởi chạy của bạn đã được cập nhật đến phiên bản: {0}. Hãy vào {1} và chọn {2} để xem những gì đẫ thay đổi."
   }
 }

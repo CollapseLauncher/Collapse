@@ -1834,6 +1834,23 @@
                                         </Grid>
                                     </Button.Content>
                                 </Button>
+                                <Rectangle Height="1"
+                                           HorizontalAlignment="Stretch"
+                                           Fill="Gray" />
+                                <TextBlock MinWidth="200"
+                                           Margin="0,8,0,0"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionalSettings}" />
+                                <StackPanel>
+                                    <TextBlock MinWidth="200"
+                                               Margin="0,8,0,0"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionRpc}" />
+                                    <ToggleSwitch x:Name="RegionRpcToggle"
+                                                  IsOn="{x:Bind ToggleRegionPlayingRpc, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
                                             Visibility="Visible">
@@ -1890,6 +1907,10 @@
                                              Text="{x:Bind CustomArgsValue, Mode=TwoWay}"
                                              TextWrapping="Wrap" />
                                 </StackPanel>
+                                <Rectangle Height="1"
+                                           Margin="0,8,0,0"
+                                           HorizontalAlignment="Stretch"
+                                           Fill="Gray" />
                                 <StackPanel x:Name="MiscPanel">
                                     <TextBlock Margin="0,8,0,8"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -1925,6 +1946,9 @@
                                                   IsOn="{x:Bind IsPlaytimeSyncDb, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <Rectangle Height="1"
+                                               HorizontalAlignment="Stretch"
+                                               Fill="Gray" />
                                     <Button x:Name="ShortcutButton"
                                             Margin="0,8"
                                             HorizontalAlignment="Stretch"
@@ -2474,15 +2498,15 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="1"
-                                                  x:Name="SyncDbPlaytimeBtnGlyph"
+                                        <FontIcon x:Name="SyncDbPlaytimeBtnGlyph"
+                                                  Grid.Column="1"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                                   FontSize="12"
                                                   Glyph="" />
-                                        <TextBlock Grid.Column="0"
-                                                   x:Name="SyncDbPlaytimeBtnText"
+                                        <TextBlock x:Name="SyncDbPlaytimeBtnText"
+                                                   Grid.Column="0"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"

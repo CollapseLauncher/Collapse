@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.Update;
 using Hi3Helper.Shared.Region;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -17,21 +18,22 @@ namespace CollapseLauncher.Helper
         private const int _maxConnectionsDefault = 32;
         private const double _httpTimeoutDefault = 90; // in Seconds
 
-        private bool IsUseProxy { get; set; } = true;
-        private bool IsUseSystemProxy { get; set; } = true;
+        private bool IsUseProxy              { get; set; } = true;
+        private bool IsUseSystemProxy        { get; set; } = true;
         private bool IsAllowHttpRedirections { get; set; }
-        private bool IsAllowHttpCookies { get; set; }
-        private bool IsAllowUntrustedCert { get; set; }
+        private bool IsAllowHttpCookies      { get; set; }
+        private bool IsAllowUntrustedCert    { get; set; }
 
-        private int                  MaxConnections      { get; set; } = _maxConnectionsDefault;
-        private DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
-        private WebProxy?            ExternalProxy       { get; set; }
-        private Version              HttpProtocolVersion { get; set; } = HttpVersion.Version30;
-        private string?              HttpUserAgent       { get; set; } = GetDefaultUserAgent();
-        private string?              HttpAuthHeader      { get; set; }
-        private HttpVersionPolicy HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
-        private TimeSpan          HttpTimeout               { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
-        private Uri?              HttpBaseUri               { get; set; }
+        private int                         MaxConnections            { get; set; } = _maxConnectionsDefault;
+        private DecompressionMethods        DecompressionMethod       { get; set; } = DecompressionMethods.All;
+        private WebProxy?                   ExternalProxy             { get; set; }
+        private Version                     HttpProtocolVersion       { get; set; } = HttpVersion.Version30;
+        private string?                     HttpUserAgent             { get; set; } = GetDefaultUserAgent();
+        private string?                     HttpAuthHeader            { get; set; }
+        private HttpVersionPolicy           HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
+        private TimeSpan                    HttpTimeout               { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
+        private Uri?                        HttpBaseUri               { get; set; }
+        private Dictionary<string, string?> HttpHeaders               { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
         public HttpClientBuilder<THandler> UseProxy(bool isUseSystemProxy = true)
         {
@@ -191,6 +193,34 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
+        public HttpClientBuilder<THandler> AddHeader(string key, string? value)
+        {
+            // Throw if the key is null or empty
+            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+
+            // Try check if the key is user-agent. If the user-agent has already
+            // been set, then override the value from HttpUserAgent property
+            if (key.Equals("User-Agent", StringComparison.OrdinalIgnoreCase))
+            {
+                HttpUserAgent = null;
+            }
+
+            // If the key already exist, then override the previous one.
+            // Otherwise, add the new key-value pair
+            // ReSharper disable once RedundantDictionaryContainsKeyBeforeAdding
+            if (HttpHeaders.ContainsKey(key))
+            {
+                HttpHeaders[key] = value;
+            }
+            else
+            {
+                HttpHeaders.Add(key, value);
+            }
+
+            // Return the instance of the builder
+            return this;
+        }
+
         public HttpClient Create()
         {
             // Create the instance of the handler
@@ -272,6 +302,12 @@ namespace CollapseLauncher.Helper
             // Add Http Auth Header
             if (!string.IsNullOrEmpty(HttpAuthHeader))
                 client.DefaultRequestHeaders.Add("Authorization", HttpAuthHeader);
+
+            // Add other headers
+            foreach (KeyValuePair<string, string?> header in HttpHeaders)
+            {
+                _ = client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+            }
 
             return client;
         }

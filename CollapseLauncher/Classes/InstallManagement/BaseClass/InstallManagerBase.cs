@@ -242,16 +242,6 @@ namespace CollapseLauncher.InstallManager.Base
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
-        /*
-        ~InstallManagerBase()
-        {
-#if DEBUG
-            LogWriteLine($"[~InstallManagerBase()] Deconstructor getting called in {_gameVersionManager}", LogType.Warning, true);
-#endif
-            Dispose();
-        }
-        */
-
         protected void ResetToken()
         {
             _token = new CancellationTokenSourceWrapper();
@@ -991,9 +981,9 @@ namespace CollapseLauncher.InstallManager.Base
                                 var filePath = new FileInfo(
                                     EnsureCreationOfDirectory(Path.Combine(_gamePath, assetName)) +
                                     "_tempSophon").EnsureNoReadOnly();
-                                var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly();
+                                var origFilePath = new FileInfo(Path.Combine(_gamePath, assetName)).EnsureNoReadOnly(out bool isExist);
 
-                                if (filePath.Exists)
+                                if (isExist)
                                 {
                                     filePath.MoveTo(origFilePath.FullName, true);
                                     filePath.Refresh();
@@ -1136,7 +1126,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         // Add existing voice-over diff data
                         await AddSophonAdditionalVODiffAssetsToList(httpClient,         requestedBaseUrlFrom,
-                                                                    requestedBaseUrlTo, sophonUpdateAssetList,
+                                                                    requestedBaseUrlTo!, sophonUpdateAssetList,
                                                                     downloadSpeedLimiter);
                     }
                 }
@@ -1312,17 +1302,18 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient                 httpClient,
-                                                                 string                     requestedUrlFrom,
-                                                                 string                     requestedUrlTo,
-                                                                 List<SophonAsset>          sophonPreloadAssetList,
-                                                                 SophonDownloadSpeedLimiter downloadSpeedLimiter)
+#nullable enable
+        private async Task AddSophonAdditionalVODiffAssetsToList(HttpClient httpClient,
+                                                         string requestedUrlFrom,
+                                                         string requestedUrlTo,
+                                                         List<SophonAsset> sophonPreloadAssetList,
+                                                         SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             // Get the main VO language name from Id
             string mainLangId = GetLanguageLocaleCodeByID(_gameVoiceLanguageID);
             // Get the manifest pair for both previous (from) and next (to) version for the main VO
-            await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                            sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
+            await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo,
+                                            sophonPreloadAssetList, mainLangId, downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
             FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).EnsureNoReadOnly();
@@ -1331,23 +1322,29 @@ namespace CollapseLauncher.InstallManager.Base
                 // Use stream reader to read the list one-by-one
                 using StreamReader reader = new StreamReader(_gameAudioLangListPath);
                 // Read until EOF
-                while (!reader.EndOfStream)
+                string? line;
+                while ((line = await reader.ReadLineAsync()) != null)
                 {
-                    // Read line and if the line is equal, then skip
-                    string line = await reader.ReadLineAsync();
-                    if (line != null && line.Equals(mainLangId, StringComparison.OrdinalIgnoreCase))
+                    // Get other lang Id, pass it and try add to the list
+                    string? otherLangId = GetLanguageLocaleCodeByLanguageString(line
+#if !DEBUG
+                        , false
+#endif
+                        );
+
+                    // Check if the voice pack is actually the same as default.
+                    if (!string.IsNullOrEmpty(otherLangId) && otherLangId.Equals(mainLangId, StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
-                    // Get other lang Id, pass it and try add to the list
-                    string otherLangId = GetLanguageLocaleCodeByLanguageString(line);
                     // Get the manifest pair for both previous (from) and next (to) version for other VOs
-                    await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                                    sophonPreloadAssetList, otherLangId,      downloadSpeedLimiter);
+                    await AddSophonDiffAssetsToList(httpClient, requestedUrlFrom, requestedUrlTo,
+                                                    sophonPreloadAssetList, otherLangId, downloadSpeedLimiter);
                 }
             }
         }
+#nullable restore
 
         private async ValueTask RunSophonAssetDownloadThread(HttpClient      client, SophonAsset asset,
                                                              ParallelOptions parallelOptions)
@@ -2579,7 +2576,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageLocaleCodeByLanguageString([NotNull] string? langString)
+        protected virtual string? GetLanguageLocaleCodeByLanguageString([NotNullIfNotNull(nameof(langString))] string? langString, bool throwIfInvalid = true)
         {
             return langString switch
                    {
@@ -2588,7 +2585,9 @@ namespace CollapseLauncher.InstallManager.Base
                        "English(US)" => "en-us",
                        "Korean" => "ko-kr",
                        "Japanese" => "ja-jp",
-                       _ => throw new NotSupportedException($"This language string: {langString} is not supported")
+                       _ => throwIfInvalid
+                           ? throw new NotSupportedException($"This language string: {langString} is not supported")
+                           : null
                    };
         }
 
@@ -2715,7 +2714,7 @@ namespace CollapseLauncher.InstallManager.Base
             assetDataList.AddRange(manifestListMain);
         }
 
-        protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList,
+        protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion>? verResList,
                                                                    string localeCode, [NotNullWhen(true)] out RegionResourceVersion? outRes)
         {
             outRes = null;
@@ -3597,11 +3596,22 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Start read the file
             using StreamReader sw = new StreamReader(_gameAudioLangListPath);
-            while (!sw.EndOfStream)
+#nullable enable
+            string? langStr;
+            while ((langStr = await sw.ReadLineAsync()) != null)
             {
                 // Get the line and get the language locale code by language string
-                string langStr    = await sw.ReadLineAsync();
-                string localeCode = GetLanguageLocaleCodeByLanguageString(langStr);
+                string? localeCode = GetLanguageLocaleCodeByLanguageString(langStr
+#if !DEBUG
+                    , false
+#endif
+                    );
+
+                if (string.IsNullOrEmpty(localeCode))
+                {
+                    continue;
+                }
+#nullable restore
 
                 // Try get the voice over resource
                 if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    internal delegate Task<TResult?> ActionTimeoutValueTaskCallback<TResult>(CancellationToken token);
-    internal delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
+    public delegate Task<TResult?> ActionTimeoutValueTaskCallback<TResult>(CancellationToken token);
+    public delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
     internal static class TaskExtensions
     {
         internal const int DefaultTimeoutSec = 10;

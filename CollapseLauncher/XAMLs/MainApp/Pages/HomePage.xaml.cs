@@ -408,7 +408,8 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Carousel
-        public async Task StartCarouselAutoScroll(int delaySeconds = 5)
+
+        private async Task StartCarouselAutoScroll(int delaySeconds = 5)
         {
             if (!IsCarouselPanelAvailable) return;
             if (delaySeconds < 5) delaySeconds = 5;
@@ -429,7 +430,10 @@ namespace CollapseLauncher.Pages
                     else
                         for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
                         {
-                            ImageCarousel.SelectedIndex = i - 1;
+                            if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
+                            {
+                                ImageCarousel.SelectedIndex = i - 1;
+                            }
                             if (CarouselToken is { IsDisposed: false, IsCancellationRequested: false })
                             {
                                 await Task.Delay(100, CarouselToken.Token);
@@ -443,8 +447,8 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[HomePage::StartCarouselAutoScroll] Task returns error!\r\n{ex}", LogType.Error, true);
+                _ = CarouselRestartScroll();
             }
         }
 
@@ -1079,13 +1083,14 @@ namespace CollapseLauncher.Pages
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
                             StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            DateTime fromActivityOffset = currentGameProcess.StartTime;
+                            var fromActivityOffset = currentGameProcess.StartTime;
+                            var gameSettings       = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
+                            var gamePreset         = CurrentGameProperty._GamePreset;
+                            
 #if !DISABLEDISCORD
-                            AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+                            if (ToggleRegionPlayingRpc)
+                                AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
 #endif
-
-                            IGameSettingsUniversal gameSettings = CurrentGameProperty!._GameSettings!.AsIGameSettingsUniversal();
-                            PresetConfig gamePreset = CurrentGameProperty._GamePreset;
 
                             CurrentGameProperty!._GamePlaytime!.StartSession(currentGameProcess);
 
@@ -3254,6 +3259,20 @@ namespace CollapseLauncher.Pages
                                                                       PreloadDialogBox.Translation.Z)),
                 compositor.CreateVector3KeyFrameAnimation("Translation", PreloadDialogBox.Translation, toTranslate)
                 );
+        }
+
+        private bool? _regionPlayingRpc;
+        private bool ToggleRegionPlayingRpc
+        {
+            get => _regionPlayingRpc ??= CurrentGameProperty._GameSettings.AsIGameSettingsUniversal()
+                                                            .SettingsCollapseMisc.IsPlayingRpc;
+            set
+            {
+                CurrentGameProperty._GameSettings.AsIGameSettingsUniversal()
+                                    .SettingsCollapseMisc.IsPlayingRpc = value;
+                _regionPlayingRpc = value;
+                CurrentGameProperty._GameSettings.SaveSettings();
+            }
         }
     }
 }

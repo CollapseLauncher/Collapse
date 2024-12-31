@@ -116,6 +116,11 @@ namespace CollapseLauncher.GameSettings.Universal
         /// Determines if the game playtime should be synced to the database
         /// </summary>
         public bool IsSyncPlaytimeToDatabase { get; set; } = true;
+        
+        /// <summary>
+        /// Set per-region Discord Rich Presence setting for playing status
+        /// </summary>
+        public bool IsPlayingRpc { get; set; } = true;
 
         #endregion
 

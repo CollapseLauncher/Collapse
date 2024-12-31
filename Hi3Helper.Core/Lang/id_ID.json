@@ -150,10 +150,12 @@
     "GameSettings_Panel2MoveGameLocationGame": "Pindah Lokasi Game",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "Kamu tidak bisa memilih lokasi root dari drivemu!\r\nMohon buat folder baru dan coba lagi.",
     "GameSettings_Panel2StopGame": "Tutup Paksa Game",
+    "GameSettings_Panel3RegionalSettings": "Pengaturan Regional",
     "GameSettings_Panel3": "Penyesuaian Argumen Pemulaian",
+    "GameSettings_Panel3RegionRpc": "Munculkan Status Bermain di Discord",
     "GameSettings_Panel3CustomBGRegion": "Ubah Latar Belakang Regional",
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Latar Belakang Lainnya untuk Region",
-    "GameSettings_Panel4": "Lainnya",
+    "GameSettings_Panel4": "Global - Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
     "GameSettings_Panel4ShowPlaytimeButton": "Munculkan Tombol \"Waktu Main\"",
@@ -436,7 +438,7 @@
     "AppLang_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan bahasa ini.",
 
     "AppThemes": "Tema",
-    "AppThemes_Default": "Asal (Menggunakan pengaturan sistem)",
+    "AppThemes_Default": "Bawaan (Menggunakan pengaturan sistem)",
     "AppThemes_Light": "Terang",
     "AppThemes_Dark": "Gelap",
     "AppThemes_ApplyNeedRestart": "*Kamu perlu memulai ulang launcher untuk menerapkan tema ini.",
@@ -458,7 +460,7 @@
     "AppThreads_Download": "Utas Unduhan",
     "AppThreads_Extract": "Utas Ekstrak",
     "AppThreads_Help1": "Utas ini akan bertanggungjawab untuk menentukan berapa banyak potongan yang akan dibagi pada saat mengunduh file. Mekanisme ini mirip dengan apa yang IDM dan aria2c lakukan.",
-    "AppThreads_Help2": "Nilai asal:",
+    "AppThreads_Help2": "Nilai bawaan:",
     "AppThreads_Help3": "Rentang nilai:",
     "AppThreads_Help4": "0 (Deteksi otomatis)",
     "AppThreads_Help5": "Utas ini akan bertanggungjawab untuk menangani utas-utas untuk proses ekstrak/verifikasi pada saat memasang/memulihkan game.",
@@ -538,7 +540,7 @@
     "Disclaimer1": "Aplikasi ini tidak berkaitan dengan",
     "Disclaimer2": "dengan cara apapun",
     "Disclaimer3": "dan sepenuhnya \"Open-Source\". Kontribusi apapun dipersilahkan.",
-
+    "WebsiteBtn": "Kunjungi Website Kami",
     "DiscordBtn1": "Gabung Discord Armada Kami",
     "DiscordBtn2": "Kunjungi Discord Honkai Impact 3rd",
     "DiscordBtn3": "Discord Resmi Collapse!",
@@ -747,6 +749,7 @@
     "Disabled": "Mati",
     "Enabled": "Nyala",
     "UseAsDefault": "Gunakan sebagai Bawaan",
+    "Default": "Bawaan",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -792,7 +795,7 @@
     "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
     "IsBytesUnlimited": "= Tidak Terbatas",
     "IsBytesNotANumber": "= Bukan Nomor",
-    
+
     "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
     "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami."
   },
@@ -1148,6 +1151,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "Mohon tutup Collapse sebelum menerapkan pembaruan!",
     "ApplyUpdateErrCollapseRunSubtitle": "Menunggu Collapse untuk ditutup...",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "Sebuah Instance Collapse Launcher Masih Berjalan!",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "Kami menemukan sebuah instance Collapse Launcher masih berjalan di belakang. Untuk menutup secara paksa, klik \"Yes\". Untuk menunggu launcher untuk ditutup secara manual, klik \"No\".",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "Instalasi Rusak yang Sudah Ada Telah Terdeteksi!",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "Kami mendeteksi adanya kerusakan pada instalasi kamu yang sudah ada.\r\n\r\nKlik \"Yes\" untuk memperbaiki instalasi sebelum melakukan update, atau klik \"No\" untuk langsung menjalankan update.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\nfile \"release\" tidak memiliki string \"stable\" atau \"preview\" didalamnya",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Mohon periksa file \"release\" dan coba lagi.",
 
