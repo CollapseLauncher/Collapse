@@ -1126,7 +1126,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         // Add existing voice-over diff data
                         await AddSophonAdditionalVODiffAssetsToList(httpClient,         requestedBaseUrlFrom,
-                                                                    requestedBaseUrlTo, sophonUpdateAssetList,
+                                                                    requestedBaseUrlTo!, sophonUpdateAssetList,
                                                                     downloadSpeedLimiter);
                     }
                 }
@@ -2714,7 +2714,7 @@ namespace CollapseLauncher.InstallManager.Base
             assetDataList.AddRange(manifestListMain);
         }
 
-        protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion> verResList,
+        protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion>? verResList,
                                                                    string localeCode, [NotNullWhen(true)] out RegionResourceVersion? outRes)
         {
             outRes = null;
