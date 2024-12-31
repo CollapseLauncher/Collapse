@@ -547,20 +547,20 @@ namespace CollapseLauncher
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             bool isAPIBackgroundAvailable =
                 !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
-            
+
             var posterBg = currentGameProperty?._GameVersion.GameType switch
                            {
                                GameNameType.Honkai => Path.Combine(AppFolder,
-                                                                   @"Assets\Images\GamePoster\poster_honkai.png"),
+                                                                   @"Assets\Images\GameBackground\honkai.webp"),
                                GameNameType.Genshin => Path.Combine(AppFolder,
-                                                                    @"Assets\Images\GamePoster\poster_genshin.png"),
+                                                                    @"Assets\Images\GameBackground\genshin.webp"),
                                GameNameType.StarRail => Path.Combine(AppFolder,
-                                                                     @"Assets\Images\GamePoster\poster_starrail.png"),
+                                                                     @"Assets\Images\GameBackground\starrail.webp"),
                                GameNameType.Zenless => Path.Combine(AppFolder,
-                                                                    @"Assets\Images\GamePoster\poster_zzz.png"),
+                                                                    @"Assets\Images\GameBackground\zzz.webp"),
                                _ => AppDefaultBG
                            };
-            
+
             // Check if Regional Custom BG is enabled and available
             if (isUseCustomPerRegionBg)
             {
