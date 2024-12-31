@@ -213,16 +213,18 @@ namespace CollapseLauncher
                                                                  IsFirstStartup = false;
                                                                  ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
                                                              }, false, false, true);
-            await ImageLoaderHelper.TryDownloadToCompleteness(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
-                                                              LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
-                                                              imgFileInfo,
-                                                              Token);
-            BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                        {
-                                                                            IsFirstStartup = false;
-                                                                            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                        }, false, true, true);
-            SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
+            if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
+                                                                       LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
+                                                                       imgFileInfo,
+                                                                       Token))
+            {
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
+                {
+                    IsFirstStartup = false;
+                    ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                }, false, true, true);
+                SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
+            }
         #nullable disable
         }
 
