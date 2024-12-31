@@ -93,10 +93,14 @@ namespace CollapseLauncher
             FileInfo inputPathInfo = new FileInfo(inputPath);
             FileInfo outputPathInfo = new FileInfo(outputPath);
 
-            string inputPathDir = Path.GetDirectoryName(inputPathInfo.FullName);
-            string outputPathDir = Path.GetDirectoryName(outputPathInfo.FullName);
+            var inputPathDir = FileDialogHelper.IsRootPath(inputPath)
+                ? Path.GetPathRoot(inputPath)
+                : Path.GetDirectoryName(inputPathInfo.FullName);
 
-            DirectoryInfo inputPathDirInfo = new DirectoryInfo(inputPathDir);
+            if (string.IsNullOrEmpty(inputPathDir))
+                throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                                                                  inputPath));
+            
             DirectoryInfo outputPathDirInfo = new DirectoryInfo(inputPathDir);
             outputPathDirInfo.Create();
 
@@ -145,7 +149,12 @@ namespace CollapseLauncher
                     UpdateCountProcessed(uiRef, inputFileBasePath);
 
                     string outputTargetPath = Path.Combine(outputPathInfo.FullName, inputFileBasePath);
-                    string outputTargetDirPath = Path.GetDirectoryName(outputTargetPath);
+                    string outputTargetDirPath = Path.GetDirectoryName(outputTargetPath) ?? Path.GetPathRoot(outputTargetPath);
+
+                    if (string.IsNullOrEmpty(outputTargetDirPath)) 
+                        throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                                                                          inputPath));
+                    
                     DirectoryInfo outputTargetDirInfo = new DirectoryInfo(outputTargetDirPath);
                     outputTargetDirInfo.Create();
 
