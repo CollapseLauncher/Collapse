@@ -466,7 +466,7 @@ namespace CollapseLauncher.Interfaces
             UpdateStatus();
         }
 
-        protected void UpdateSophonLogHandler(object sender, LogStruct e)
+        protected void UpdateSophonLogHandler(object? sender, LogStruct e)
         {
 #if !DEBUG
             if (e.LogLevel == LogLevel.Debug) return;
