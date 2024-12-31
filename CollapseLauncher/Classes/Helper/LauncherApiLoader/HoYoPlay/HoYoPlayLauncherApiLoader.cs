@@ -18,13 +18,15 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
-    internal class HoYoPlayLauncherApiLoader : LauncherApiBase
+    internal partial class HoYoPlayLauncherApiLoader : LauncherApiBase
     {
         private HttpClient? _apiGeneralHttpClient;
         private HttpClient? _apiResourceHttpClient;
 
-        public override HttpClient? ApiGeneralHttpClient  { get => _apiGeneralHttpClient;  init => _apiGeneralHttpClient  = value; }
-        public override HttpClient? ApiResourceHttpClient { get => _apiResourceHttpClient; init => _apiResourceHttpClient = value; }
+        public sealed override        HttpClient? ApiGeneralHttpClient  { get => _apiGeneralHttpClient;
+            protected set => _apiGeneralHttpClient  = value; }
+        public sealed override HttpClient? ApiResourceHttpClient { get => _apiResourceHttpClient;
+            protected set => _apiResourceHttpClient = value; }
 
         private HoYoPlayLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion, true)
@@ -33,7 +35,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
                 .UseLauncherConfig()
                 .AllowUntrustedCert()
-                .SetHttpVersion(HttpVersion.Version30, HttpVersionPolicy.RequestVersionOrLower)
+                .SetHttpVersion(HttpVersion.Version30)
                 .SetAllowedDecompression()
                 .AddHeader("x-rpc-device_id", GetDeviceId(presetConfig));
 
@@ -41,7 +43,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
                 .UseLauncherConfig()
                 .AllowUntrustedCert()
-                .SetHttpVersion(HttpVersion.Version30, HttpVersionPolicy.RequestVersionOrLower)
+                .SetHttpVersion(HttpVersion.Version30)
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .AddHeader("x-rpc-device_id", GetDeviceId(presetConfig));
 
@@ -559,10 +561,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         #endregion
 
         #region GetDeviceId override
-        protected override string GetDeviceId(PresetConfig preset)
+        protected sealed override string GetDeviceId(PresetConfig preset)
         {
             // Determine if the client is a mainland client based on the zone name
-            bool isMainlandClient = (preset?.ZoneName?.Equals("Mainland China") ?? false) || (preset?.ZoneName?.Equals("Bilibili") ?? false);
+            bool isMainlandClient = (preset.ZoneName?.Equals("Mainland China") ?? false) || (preset.ZoneName?.Equals("Bilibili") ?? false);
 
             // Set the publisher name based on the client type
             string publisherName = isMainlandClient ? "miHoYo" : "Cognosphere";
@@ -608,11 +610,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 }
 
                 // Open or create the subkey for the default version based on the client type
-                using RegistryKey? subRegistryKey = rootRegistryKey.OpenSubKey(isMainlandClient ? HYPVerDefaultCN : HYPVerDefaultGlb, true)
+                using RegistryKey subRegistryKey = rootRegistryKey.OpenSubKey(isMainlandClient ? HYPVerDefaultCN : HYPVerDefaultGlb, true)
                     ?? rootRegistryKey.CreateSubKey(isMainlandClient ? HYPVerDefaultCN : HYPVerDefaultGlb, true);
 
                 // Generate a new HYP device ID
-                string? newHypDeviceId = CreateNewDeviceId();
+                string newHypDeviceId = CreateNewDeviceId();
                 // Set the new HYP device ID in the subkey
                 subRegistryKey.SetValue("HYPDeviceId", newHypDeviceId, RegistryValueKind.String);
 
