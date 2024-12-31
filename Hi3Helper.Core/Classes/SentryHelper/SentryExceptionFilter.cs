@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Sentry.Extensibility;
 using System;
 using System.Collections.Generic;
