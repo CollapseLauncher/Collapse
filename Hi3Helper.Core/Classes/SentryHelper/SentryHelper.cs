@@ -502,12 +502,6 @@ namespace Hi3Helper.SentryHelper
                                                   ExceptionType.UnhandledOther => methodName ?? ex.Source ?? "Application.UnhandledException",
                                                   _ => methodName ?? ex.Source ?? "Application.HandledException"
                                               };
-
-            var translatedMessage = SentryExceptionLocale.TranslateExceptionMessage(ex);
-            if (translatedMessage != null)
-            {
-                ex.AddSentryTag("ExceptionMessage", translatedMessage);
-            }
             
         #pragma warning disable CS0162 // Unreachable code detected
             if (SentryUploadLog) // Upload log file if enabled
