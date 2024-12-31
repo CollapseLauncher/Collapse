@@ -6,6 +6,7 @@ using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
 using Sentry.Infrastructure;
 using Sentry.Protocol;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -252,8 +253,8 @@ namespace Hi3Helper.SentryHelper
                 return;
             }
 
-            ExceptionHandler(ex, exT);
-
+            await Task.Run(() => ExceptionHandler(ex, exT));
+            await Task.Delay(250); // Delay to ensure that the exception is uploaded
             await Task.Run(async () => await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10)));
         }
 
@@ -315,7 +316,7 @@ namespace Hi3Helper.SentryHelper
             _loopToken     = new CancellationTokenSource(); // Create new token
             _exHLoopLastEx = ex;
             ExHLoopLastEx_AutoClean(); // Start auto clean loop
-            ExceptionHandlerInner(ex, exT);
+            await Task.Run(() => ExceptionHandlerInner(ex, exT));
         }
 
         #region Breadcrumbs Data
@@ -457,12 +458,33 @@ namespace Hi3Helper.SentryHelper
 
         #endregion
         
-        private static void ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        private static Task ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             SentrySdk.AddBreadcrumb(BuildInfo);
             SentrySdk.AddBreadcrumb(GameInfo);
             SentrySdk.AddBreadcrumb(CpuInfo);
             SentrySdk.AddBreadcrumb(GpuInfo);
+
+            var loadedModules = Process.GetCurrentProcess().Modules;
+            var modulesInfo   = new ConcurrentDictionary<string, string>();
+
+            Parallel.ForEach(loadedModules.Cast<ProcessModule>(), module =>
+            {
+                try
+                {
+                    var name = module.ModuleName;
+                    var ver  = module.FileVersionInfo.FileVersion;
+                    var path = module.FileName;
+                    _ = modulesInfo.TryAdd(name, $"{ver} ({path})");
+                }
+                catch (Exception exI)
+                {
+                    Logger.LogWriteLine($"Failed to get module info: {exI.Message}", LogType.Error, true);
+                }
+            });
+
+            SentrySdk.AddBreadcrumb("Loaded Modules", "AppInfo", 
+                                    "system.module", modulesInfo.ToDictionary());
             
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 
@@ -481,6 +503,12 @@ namespace Hi3Helper.SentryHelper
                                                   _ => methodName ?? ex.Source ?? "Application.HandledException"
                                               };
 
+            var translatedMessage = SentryExceptionLocale.TranslateExceptionMessage(ex);
+            if (translatedMessage != null)
+            {
+                ex.AddSentryTag("ExceptionMessage", translatedMessage);
+            }
+            
         #pragma warning disable CS0162 // Unreachable code detected
             if (SentryUploadLog) // Upload log file if enabled
                 // ReSharper disable once HeuristicUnreachableCode
@@ -498,6 +526,7 @@ namespace Hi3Helper.SentryHelper
                 SentrySdk.CaptureException(ex);
             }
         #pragma warning restore CS0162 // Unreachable code detected
+            return Task.CompletedTask;
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]
