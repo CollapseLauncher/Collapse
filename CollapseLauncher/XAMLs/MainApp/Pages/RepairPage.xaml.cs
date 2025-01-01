@@ -182,7 +182,15 @@ namespace CollapseLauncher.Pages
 
         private void _repairTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
-            DispatcherQueue?.TryEnqueue(() =>
+            if (!DispatcherQueue.HasThreadAccess)
+            {
+                DispatcherQueue?.TryEnqueue(Update);
+                return;
+            }
+
+            Update();
+            return;
+            void Update()
             {
                 RepairDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
                 RepairStatus.Text = e.ActivityStatus;
@@ -191,16 +199,24 @@ namespace CollapseLauncher.Pages
                 RepairTotalStatus.Text = e.ActivityAll;
                 RepairTotalProgressBar.IsIndeterminate = e.IsProgressAllIndetermined;
                 RepairPerFileProgressBar.IsIndeterminate = e.IsProgressPerFileIndetermined;
-            });
+            };
         }
 
         private void _repairTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
-            DispatcherQueue?.TryEnqueue(() =>
+            if (!DispatcherQueue.HasThreadAccess)
+            {
+                DispatcherQueue?.TryEnqueue(Update);
+                return;
+            }
+
+            Update();
+            return;
+            void Update()
             {
                 RepairPerFileProgressBar.Value = Math.Min(e.ProgressPerFilePercentage, 100);
-                RepairTotalProgressBar.Value   = Math.Min(e.ProgressPerFilePercentage, 100);
-            });
+                RepairTotalProgressBar.Value   = Math.Min(e.ProgressAllPercentage, 100);
+            };
         }
 
         private void ResetStatusAndButtonState()
