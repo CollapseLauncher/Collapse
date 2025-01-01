@@ -135,6 +135,13 @@ namespace CollapseLauncher.InstallManager.Base
                 // Reset status and progress properties
                 ResetStatusAndProgress();
 
+                // Set the progress bar to indetermined
+                _isSophonInUpdateMode                 = false;
+                _status.IsIncludePerFileIndicator     = false;
+                _status.IsProgressPerFileIndetermined = true;
+                _status.IsProgressAllIndetermined     = true;
+                UpdateStatus();
+
                 // Clear the VO language list
                 _sophonVOLanguageList.Clear();
 
@@ -194,12 +201,6 @@ namespace CollapseLauncher.InstallManager.Base
                     requestedUrl += $"&tag={requestedVersion.ToString()}";
                 #endif
 
-                    // Set the progress bar to indetermined
-                    _status.IsIncludePerFileIndicator     = false;
-                    _status.IsProgressPerFileIndetermined = false;
-                    _status.IsProgressAllIndetermined     = true;
-                    UpdateStatus();
-
                     // Initialize the info pair list
                     var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
 
@@ -257,7 +258,6 @@ namespace CollapseLauncher.InstallManager.Base
                         _progressAllSizeCurrent = 0;
 
                         // Set the display to Install Mode
-                        _isSophonInUpdateMode = false;
                         UpdateStatus();
 
                         // Get game install path and create directory if not exist
@@ -383,18 +383,6 @@ namespace CollapseLauncher.InstallManager.Base
 
                         _isSophonDownloadCompleted = true;
                     }
-                    catch (TaskCanceledException)
-                    {
-                        throw;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        throw;
-                    }
-                    catch (Exception e)
-                    {
-                        ErrorSender.SendException(e);
-                    }
                     finally
                     {
                         // Unsubscribe the logger event
@@ -473,6 +461,13 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Reset status and progress properties
                 ResetStatusAndProgress();
+
+                // Set the progress bar to indetermined
+                _isSophonInUpdateMode                 = !isPreloadMode;
+                _status.IsIncludePerFileIndicator     = !isPreloadMode;
+                _status.IsProgressPerFileIndetermined = true;
+                _status.IsProgressAllIndetermined     = true;
+                UpdateStatus();
 
                 // Clear the VO language list
                 _sophonVOLanguageList.Clear();
@@ -555,11 +550,6 @@ namespace CollapseLauncher.InstallManager.Base
                     CancellationToken      = _token.Token
                 };
 
-                // Set the progress bar to indetermined
-                _isSophonInUpdateMode             = !isPreloadMode;
-                _status.IsIncludePerFileIndicator = !isPreloadMode;
-                UpdateStatus();
-
                 // Get the update source and destination, also where the staging chunk files will be stored
                 string chunkPath = _gameSophonChunkDir;
                 string gamePath  = _gamePath;
@@ -597,7 +587,10 @@ namespace CollapseLauncher.InstallManager.Base
                                                       chunkPath,
                                                       sophonUpdateAssetList,
                                                       async (x, ctx) =>
-                                                          await x.GetDownloadedPreloadSize(chunkPath, isPreloadMode,
+                                                          await x.GetDownloadedPreloadSize(
+                                                              chunkPath,
+                                                              gamePath,
+                                                              isPreloadMode,
                                                               ctx),
                                                       _token.Token);
 
