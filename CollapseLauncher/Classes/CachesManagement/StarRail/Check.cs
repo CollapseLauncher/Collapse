@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using System;
 using System.Collections.Generic;
@@ -79,12 +80,12 @@ namespace CollapseLauncher
             }
 
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!));
-            FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreaming!, asset.LocalName!));
+            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!)).EnsureNoReadOnly(out bool isPersistentExist);
+            FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreaming!, asset.LocalName!)).EnsureNoReadOnly(out bool isStreamingExist);
 
-            bool UsePersistent = !fileInfoStreaming.Exists;
-            bool IsPersistentExist = fileInfoPersistent.Exists && fileInfoPersistent.Length == asset.Size;
-            bool IsStreamingExist = fileInfoStreaming.Exists && fileInfoStreaming.Length == asset.Size;
+            bool UsePersistent = !isStreamingExist;
+            bool IsPersistentExist = isPersistentExist && fileInfoPersistent.Length == asset.Size;
+            bool IsStreamingExist = isStreamingExist && fileInfoStreaming.Length == asset.Size;
             asset.LocalName = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
             // Check if the file exist. If not, then add it to asset index.

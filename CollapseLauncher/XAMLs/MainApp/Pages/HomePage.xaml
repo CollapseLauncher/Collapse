@@ -437,7 +437,10 @@
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}">
+                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}"
+                              TabFocusNavigation="Once"
+                              IsTabStop="False"
+                              XYFocusKeyboardNavigation="Enabled">
                     <ItemsControl.Transitions>
                         <PopupThemeTransition />
                     </ItemsControl.Transitions>
@@ -644,16 +647,15 @@
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
                       Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
-                    <Pivot Margin="0,-18,-16,0"
-                           HorizontalAlignment="Left"
+                    <Pivot HorizontalAlignment="Left"
                            SelectedIndex="{x:Bind DefaultPostPanelIndex}">
                         <Pivot.Resources>
                             <Style BasedOn="{StaticResource MinScrollBarStyle}"
                                    TargetType="ScrollBar" />
                         </Pivot.Resources>
-                        <PivotItem>
+                        <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-12"
+                                <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
                                            Loaded="SetHandCursor"
@@ -664,7 +666,10 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostEventPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}"
+                                                      IsTabStop="False"
+                                                      TabFocusNavigation="Once"
+                                                      XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -726,9 +731,9 @@
                                 </StackPanel>
                             </Grid>
                         </PivotItem>
-                        <PivotItem>
+                        <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-12"
+                                <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
                                            Loaded="SetHandCursor"
@@ -739,7 +744,10 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}"
+                                                      IsTabStop="False"
+                                                      TabFocusNavigation="Once"
+                                                      XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -801,9 +809,9 @@
                                 </StackPanel>
                             </Grid>
                         </PivotItem>
-                        <PivotItem>
+                        <PivotItem Margin="12,0,-2,0">
                             <PivotItem.Header>
-                                <TextBlock Margin="0,0,0,-12"
+                                <TextBlock Margin="0,0,0,6"
                                            FontSize="13"
                                            FontWeight="Bold"
                                            Loaded="SetHandCursor"
@@ -814,7 +822,10 @@
                                               VerticalScrollMode="Auto"
                                               Visibility="{x:Bind IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}">
+                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}"
+                                                      IsTabStop="False"
+                                                      TabFocusNavigation="Once"
+                                                      XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
                                                     <Button HorizontalAlignment="Stretch"
@@ -1827,6 +1838,23 @@
                                         </Grid>
                                     </Button.Content>
                                 </Button>
+                                <Rectangle Height="1"
+                                           HorizontalAlignment="Stretch"
+                                           Fill="Gray" />
+                                <TextBlock MinWidth="200"
+                                           Margin="0,8,0,0"
+                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                           Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionalSettings}" />
+                                <StackPanel>
+                                    <TextBlock MinWidth="200"
+                                               Margin="0,8,0,0"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel3RegionRpc}" />
+                                    <ToggleSwitch x:Name="RegionRpcToggle"
+                                                  IsOn="{x:Bind ToggleRegionPlayingRpc, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
                                             Visibility="Visible">
@@ -1883,6 +1911,10 @@
                                              Text="{x:Bind CustomArgsValue, Mode=TwoWay}"
                                              TextWrapping="Wrap" />
                                 </StackPanel>
+                                <Rectangle Height="1"
+                                           Margin="0,8,0,0"
+                                           HorizontalAlignment="Stretch"
+                                           Fill="Gray" />
                                 <StackPanel x:Name="MiscPanel">
                                     <TextBlock Margin="0,8,0,8"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -1918,6 +1950,9 @@
                                                   IsOn="{x:Bind IsPlaytimeSyncDb, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <Rectangle Height="1"
+                                               HorizontalAlignment="Stretch"
+                                               Fill="Gray" />
                                     <Button x:Name="ShortcutButton"
                                             Margin="0,8"
                                             HorizontalAlignment="Stretch"
@@ -2467,15 +2502,15 @@
                                             <ColumnDefinition />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="1"
-                                                  x:Name="SyncDbPlaytimeBtnGlyph"
+                                        <FontIcon x:Name="SyncDbPlaytimeBtnGlyph"
+                                                  Grid.Column="1"
                                                   HorizontalAlignment="Right"
                                                   VerticalAlignment="Center"
                                                   FontFamily="{ThemeResource FontAwesomeSolid}"
                                                   FontSize="12"
                                                   Glyph="" />
-                                        <TextBlock Grid.Column="0"
-                                                   x:Name="SyncDbPlaytimeBtnText"
+                                        <TextBlock x:Name="SyncDbPlaytimeBtnText"
+                                                   Grid.Column="0"
                                                    HorizontalAlignment="Left"
                                                    VerticalAlignment="Center"
                                                    FontWeight="SemiBold"

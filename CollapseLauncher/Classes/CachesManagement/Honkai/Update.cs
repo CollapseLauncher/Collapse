@@ -126,12 +126,12 @@ namespace CollapseLauncher
 
             FileInfo fileInfo = new FileInfo(asset.AssetIndex.ConcatPath!)
                                .EnsureCreationOfDirectory()
-                               .EnsureNoReadOnly();
+                               .EnsureNoReadOnly(out bool isExist);
 
             // This is a action for Unused asset.
             if (asset.AssetIndex.DataType == CacheAssetType.Unused)
             {
-                if (fileInfo.Exists)
+                if (isExist)
                     fileInfo.Delete();
 
                 LogWriteLine($"Deleted unused file: {fileInfo.FullName}", LogType.Default, true);

@@ -545,8 +545,22 @@ namespace CollapseLauncher
             bool isUseCustomPerRegionBg = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
 
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
-            bool isAPIBackgroundAvailable = !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
-            
+            bool isAPIBackgroundAvailable =
+                !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
+
+            var posterBg = currentGameProperty?._GameVersion.GameType switch
+                           {
+                               GameNameType.Honkai => Path.Combine(AppFolder,
+                                                                   @"Assets\Images\GameBackground\honkai.webp"),
+                               GameNameType.Genshin => Path.Combine(AppFolder,
+                                                                    @"Assets\Images\GameBackground\genshin.webp"),
+                               GameNameType.StarRail => Path.Combine(AppFolder,
+                                                                     @"Assets\Images\GameBackground\starrail.webp"),
+                               GameNameType.Zenless => Path.Combine(AppFolder,
+                                                                    @"Assets\Images\GameBackground\zzz.webp"),
+                               _ => AppDefaultBG
+                           };
+
             // Check if Regional Custom BG is enabled and available
             if (isUseCustomPerRegionBg)
             {
@@ -585,16 +599,16 @@ namespace CollapseLauncher
                         LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                     }
                 }
-                // IF ITS STILL NOT THERE, then use paimon cute deadge pic :)
+                // IF ITS STILL NOT THERE, then use fallback game poster, IF ITS STILL NOT THEREEEE!! use paimon cute deadge pic :)
                 else
                 {
-                    gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    gameLauncherApi.GameBackgroundImgLocal = posterBg;
                 }
             }
             
             // Use default background if the API background is empty (in-case HoYo did something catchy)
             if (!isAPIBackgroundAvailable && !IsCustomBG && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal ??= posterBg;
             
             // If the custom per region is enabled, then execute below
             BackgroundImgChanger.ChangeBackground(gameLauncherApi.GameBackgroundImgLocal,

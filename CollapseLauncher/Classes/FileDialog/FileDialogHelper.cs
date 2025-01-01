@@ -162,7 +162,7 @@ namespace CollapseLauncher.FileDialogCOM
         /// </summary>
         /// <param name="path">Path to check</param>
         /// <returns>True if path is root of the drive</returns>
-        internal static bool IsRootPath(ReadOnlySpan<char> path)
+        public static bool IsRootPath(ReadOnlySpan<char> path)
         {
             ReadOnlySpan<char> rootPath = Path.GetPathRoot(path);
             return rootPath.SequenceEqual(path);

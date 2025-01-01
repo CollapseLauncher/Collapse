@@ -180,22 +180,38 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
-            DispatcherQueue?.TryEnqueue(() =>
+            if (!DispatcherQueue.HasThreadAccess)
+            {
+                DispatcherQueue?.TryEnqueue(Update);
+                return;
+            }
+
+            Update();
+            return;
+            void Update()
             {
                 CachesDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
-                CachesStatus.Text = e.ActivityStatus;
+                CachesStatus.Text              = e.ActivityStatus;
 
-                CachesTotalStatus.Text = e.ActivityAll;
+                CachesTotalStatus.Text                 = e.ActivityAll;
                 CachesTotalProgressBar.IsIndeterminate = e.IsProgressAllIndetermined;
-            });
+            }
         }
 
         private void _cacheTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
-            DispatcherQueue?.TryEnqueue(() =>
+            if (!DispatcherQueue.HasThreadAccess)
+            {
+                DispatcherQueue?.TryEnqueue(Update);
+                return;
+            }
+
+            Update();
+            return;
+            void Update()
             {
                 CachesTotalProgressBar.Value = e.ProgressAllPercentage;
-            });
+            }
         }
 
         private void ResetStatusAndButtonState()

@@ -15,12 +15,13 @@ using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class RepairPage : Page
     {
-        private GamePresetProperty CurrentGameProperty { get; set; }
+        private GamePresetProperty CurrentGameProperty { get; }
         public RepairPage()
         {
             BackgroundImgChanger.ToggleBackground(true);
@@ -103,12 +104,12 @@ namespace CollapseLauncher.Pages
 
         private async void StartGameRepair(object sender, RoutedEventArgs e)
         {
-            Sleep.PreventSleep(ILoggerHelper.GetILogger());
-            RepairFilesBtn.IsEnabled = false;
-            CancelBtn.IsEnabled = true;
-
             try
             {
+                Sleep.PreventSleep(ILoggerHelper.GetILogger());
+                RepairFilesBtn.IsEnabled = false;
+                CancelBtn.IsEnabled = true;
+
                 AddEvent();
 
                 int assetCount = CurrentGameProperty._GameRepair.AssetEntry.Count;
@@ -182,7 +183,15 @@ namespace CollapseLauncher.Pages
 
         private void _repairTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
-            DispatcherQueue?.TryEnqueue(() =>
+            if (!DispatcherQueue.HasThreadAccess)
+            {
+                DispatcherQueue?.TryEnqueue(Update);
+                return;
+            }
+
+            Update();
+            return;
+            void Update()
             {
                 RepairDataTableGrid.Visibility = e.IsAssetEntryPanelShow ? Visibility.Visible : Visibility.Collapsed;
                 RepairStatus.Text = e.ActivityStatus;
@@ -191,16 +200,24 @@ namespace CollapseLauncher.Pages
                 RepairTotalStatus.Text = e.ActivityAll;
                 RepairTotalProgressBar.IsIndeterminate = e.IsProgressAllIndetermined;
                 RepairPerFileProgressBar.IsIndeterminate = e.IsProgressPerFileIndetermined;
-            });
+            }
         }
 
         private void _repairTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
-            DispatcherQueue?.TryEnqueue(() =>
+            if (!DispatcherQueue.HasThreadAccess)
             {
-                RepairPerFileProgressBar.Value = e.ProgressPerFilePercentage;
-                RepairTotalProgressBar.Value = e.ProgressAllPercentage;
-            });
+                DispatcherQueue?.TryEnqueue(Update);
+                return;
+            }
+
+            Update();
+            return;
+            void Update()
+            {
+                RepairPerFileProgressBar.Value = Math.Min(e.ProgressPerFilePercentage, 100);
+                RepairTotalProgressBar.Value   = Math.Min(e.ProgressAllPercentage, 100);
+            }
         }
 
         private void ResetStatusAndButtonState()
@@ -244,12 +261,12 @@ namespace CollapseLauncher.Pages
                 OverlayTitle.Text = Lang._GameRepairPage.OverlayGameRunningTitle;
                 OverlaySubtitle.Text = Lang._GameRepairPage.OverlayGameRunningSubtitle;
             }
+        #if !DISABLEDISCORD
             else
             {
-#if !DISABLEDISCORD
                 InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Repair);
-#endif
             }
+        #endif
         }
     }
 }
