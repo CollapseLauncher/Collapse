@@ -16,12 +16,12 @@ using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Infos;
 using Hi3Helper.Sophon.Structs;
 using System;
-using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
@@ -31,6 +31,9 @@ using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
 {
+    internal delegate ValueTask<TResult> SignedValueTaskSelectorAsync<in TFrom, TResult>(TFrom item, CancellationToken ctx)
+        where TResult : struct, ISignedNumber<TResult>;
+
     internal partial class InstallManagerBase
     {
         #region Protected Properties
@@ -482,59 +485,6 @@ namespace CollapseLauncher.InstallManager.Base
                 string chunkPath = _gameSophonChunkDir;
                 string gamePath  = _gamePath;
 
-                // Check for disk space if on preload mode
-                if (isPreloadMode)
-                {
-                    // Allocate array for the sizes later
-                    int    assetCount           = sophonUpdateAssetList.Count;
-                    long[] downloadedChunkSizes = ArrayPool<long>.Shared.Rent(assetCount);
-
-                    // Ensure to clear the allocated array first
-                    Array.Clear(downloadedChunkSizes);
-                    try
-                    {
-                        // Get the sizes in parallel
-                        await Parallel.ForAsync(0, assetCount,
-                                                async (i, ctx) =>
-                                                    downloadedChunkSizes[i] = await sophonUpdateAssetList[i]
-                                                       .GetDownloadedPreloadSize(chunkPath, ctx));
-
-                        // Get SIMD'ed total sizes
-                        long downloadedChunkSize    = downloadedChunkSizes.Sum();
-                        long sizeRemainedToDownload = _progressPerFileSizeTotal - downloadedChunkSize;
-
-                        // Push log regarding size
-                        Logger.LogWriteLine($"Total free space required for preload: {ConverterTool.SummarizeSizeSimple(_progressPerFileSizeTotal)}"
-                                            + $" and {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} remained to be downloaded.",
-                                            LogType.Default, true);
-
-                        // Get the information about the disk
-                        DriveInfo driveInfo = new DriveInfo(_gamePath);
-
-                        // Push log regarding disk space
-                        Logger.LogWriteLine($"Total free space remained on disk: {driveInfo.Name}: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}.",
-                                            LogType.Default, true);
-
-                        // If the space is insufficient, then show the dialog and throw
-                        if (sizeRemainedToDownload > driveInfo.TotalFreeSpace)
-                        {
-                            string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
-                                            $"(Free space: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} (Total: {ConverterTool.SummarizeSizeSimple(_progressPerFileSizeTotal)}), " +
-                                            $"Drive: {driveInfo.Name})";
-                            await SimpleDialogs.Dialog_InsufficientDriveSpace(_parentUI, driveInfo.TotalFreeSpace,
-                                                                              sizeRemainedToDownload, driveInfo.Name);
-
-                            // Push log for the disk space error
-                            Logger.LogWriteLine(errStr, LogType.Error, true);
-                            throw new TaskCanceledException(errStr);
-                        }
-                    }
-                    finally
-                    {
-                        ArrayPool<long>.Shared.Return(downloadedChunkSizes);
-                    }
-                }
-
                 // If the chunk directory is not exist, then create one.
                 if (!Directory.Exists(chunkPath) && chunkPath != null)
                 {
@@ -561,6 +511,13 @@ namespace CollapseLauncher.InstallManager.Base
                         CancellationToken      = _token.Token
                     };
                 }
+
+                // Test the disk space requirement first and ensure that the space is sufficient
+                await EnsureDiskSpaceSufficiencyAsync(
+                    _progressPerFileSizeTotal,
+                    sophonUpdateAssetList,
+                    async (x, ctx) => await x.GetDownloadedPreloadSize(chunkPath, isPreloadMode, ctx),
+                    _token.Token);
 
                 var processingAsset = new ConcurrentDictionary<SophonAsset, byte>();
 
@@ -664,6 +621,46 @@ namespace CollapseLauncher.InstallManager.Base
                                            UpdateSophonFileDownloadProgress,
                                            UpdateSophonDownloadStatus
                                           );
+        }
+
+        private async Task EnsureDiskSpaceSufficiencyAsync<TFrom>(
+            long sizeToCompare,
+            List<TFrom> assetList,
+            SignedValueTaskSelectorAsync<TFrom, long> sizeSelector,
+            CancellationToken token)
+        {
+            // Get SIMD'ed total sizes
+            long downloadedSize = await assetList.SumParallelAsync(
+                async (x, ctx) => await sizeSelector(x, ctx),
+                token);
+
+            long sizeRemainedToDownload = sizeToCompare - downloadedSize;
+
+            // Push log regarding size
+            Logger.LogWriteLine($"Total free space required to download: {ConverterTool.SummarizeSizeSimple(sizeToCompare)}"
+                                + $" and {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} remained to be downloaded.",
+                                LogType.Default, true);
+
+            // Get the information about the disk
+            DriveInfo driveInfo = new DriveInfo(_gamePath);
+
+            // Push log regarding disk space
+            Logger.LogWriteLine($"Total free space remained on disk: {driveInfo.Name}: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}.",
+                                LogType.Default, true);
+
+            // If the space is insufficient, then show the dialog and throw
+            if (sizeRemainedToDownload > driveInfo.TotalFreeSpace)
+            {
+                string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
+                                $"(Free space: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} (Total: {ConverterTool.SummarizeSizeSimple(sizeToCompare)}), " +
+                                $"Drive: {driveInfo.Name})";
+                await SimpleDialogs.Dialog_InsufficientDriveSpace(_parentUI, driveInfo.TotalFreeSpace,
+                                                                  sizeRemainedToDownload, driveInfo.Name);
+
+                // Push log for the disk space error
+                Logger.LogWriteLine(errStr, LogType.Error, true);
+                throw new TaskCanceledException(errStr);
+            }
         }
 
         #endregion

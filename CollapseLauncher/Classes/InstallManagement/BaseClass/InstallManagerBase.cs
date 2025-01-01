@@ -3258,15 +3258,15 @@ namespace CollapseLauncher.InstallManager.Base
             await Parallel.ForEachAsync(packageList, new ParallelOptions
             {
                 CancellationToken = token
-            }, async (package, _) =>
+            }, async (package, innerToken) =>
             {
                 if (package.Segments != null)
                 {
-                    await TryGetSegmentedPackageRemoteSize(package, token);
+                    await TryGetSegmentedPackageRemoteSize(package, innerToken);
                     return;
                 }
 
-                await TryGetPackageRemoteSize(package, token);
+                await TryGetPackageRemoteSize(package, innerToken);
             });
         }
 
