@@ -1156,6 +1156,7 @@
                                     HorizontalContentAlignment="Stretch"
                                     Click="GenerateGuidButton_Click"
                                     CornerRadius="14"
+                                    IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                     Style="{ThemeResource AccentButtonStyle}">
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
@@ -1181,6 +1182,7 @@
                                     HorizontalContentAlignment="Stretch"
                                     Click="ValidateAndSaveDbButton_Click"
                                     CornerRadius="14"
+                                    IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
                                     Style="{ThemeResource AccentButtonStyle}">
                                 <Grid ColumnSpacing="12">
                                     <Grid.ColumnDefinitions>
