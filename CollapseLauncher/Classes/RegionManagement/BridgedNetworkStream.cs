@@ -14,7 +14,7 @@ namespace CollapseLauncher
 
         internal static async ValueTask<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
         {
-            Stream networkStream = await networkResponse?.Content.ReadAsStreamAsync(token);
+            Stream networkStream = await networkResponse.Content.ReadAsStreamAsync(token);
             return new BridgedNetworkStream(networkResponse, networkStream);
         }
 
