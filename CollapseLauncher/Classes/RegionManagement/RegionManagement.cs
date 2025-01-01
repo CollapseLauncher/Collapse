@@ -171,7 +171,7 @@ namespace CollapseLauncher
                 new FileInfo(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
 
             // Start downloading the background image
-            var isDownloaded = await ImageLoaderHelper.DownloadAndEnsureCompleteness(imgFileInfo, true);
+            var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
 
             if (isDownloaded)
             {
@@ -202,10 +202,10 @@ namespace CollapseLauncher
             var currentGameType = GamePropertyVault.GetCurrentGameProperty()._GameVersion.GameType;
             tempImage ??= currentGameType switch
             {
-                GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GamePoster\poster_honkai.png"),
-                GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_genshin.png"),
-                GameNameType.StarRail => Path.Combine(AppFolder, @"Assets\Images\GamePoster\poster_starrail.png"),
-                GameNameType.Zenless => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_zzz.png"),
+                GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GameBackground\honkai.webp"),
+                GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GameBackground\genshin.webp"),
+                GameNameType.StarRail => Path.Combine(AppFolder, @"Assets\Images\GameBackground\starrail.webp"),
+                GameNameType.Zenless => Path.Combine(AppFolder,  @"Assets\Images\GameBackground\zzz.webp"),
                 _ => AppDefaultBG
             };
             BackgroundImgChanger.ChangeBackground(tempImage, () =>
@@ -213,16 +213,18 @@ namespace CollapseLauncher
                                                                  IsFirstStartup = false;
                                                                  ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
                                                              }, false, false, true);
-            await ImageLoaderHelper.TryDownloadToCompleteness(
-                                                              LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
-                                                              imgFileInfo,
-                                                              Token);
-            BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                        {
-                                                                            IsFirstStartup = false;
-                                                                            ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                        }, false, true, true);
-            SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
+            if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
+                                                                       LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
+                                                                       imgFileInfo,
+                                                                       Token))
+            {
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
+                {
+                    IsFirstStartup = false;
+                    ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                }, false, true, true);
+                SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
+            }
         #nullable disable
         }
 

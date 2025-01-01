@@ -150,10 +150,12 @@
     "GameSettings_Panel2MoveGameLocationGame": "ゲームの位置を移動",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "ゲームをドライブのルートフォルダーに移動させることはできません！\r\nフォルダーを作成してから再度お試しください。",
     "GameSettings_Panel2StopGame": "ゲームを強制終了",
+    "GameSettings_Panel3RegionalSettings": "ゲームごとの設定",
     "GameSettings_Panel3": "カスタム起動引数",
+    "GameSettings_Panel3RegionRpc": "Discordのステータスに表示",
     "GameSettings_Panel3CustomBGRegion": "カスタム背景を選択",
     "GameSettings_Panel3CustomBGRegionSectionTitle": "カスタム背景をゲームごとに変更",
-    "GameSettings_Panel4": "その他",
+    "GameSettings_Panel4": "共通設定 - その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
@@ -747,6 +749,7 @@
     "Disabled": "無効",
     "Enabled": "有効",
     "UseAsDefault": "デフォルトとして使用",
+    "Default": "デフォルト",
 
     "BuildChannelPreview": "プレビュー版",
     "BuildChannelStable": "安定版",
@@ -792,7 +795,7 @@
     "IsBytesMoreThanBytes": "= {0} バイト (-/+ {1})",
     "IsBytesUnlimited": "= 無制限",
     "IsBytesNotANumber": "= 不正な数値",
-    
+
     "MissingVcRedist": "Visual C/C++ 再頒布可能パッケージが見つかりません",
     "MissingVcRedistSubtitle": "この関数を実行するには、Visual C/C++ 再頒布可能パッケージをインストールする必要があります。今すぐダウンロードしますか?\r\n注：ブラウザを起動してMicrosoftからパッケージをダウンロードします。ダウンロード後にインストーラーを実行し、Collapseを再起動してから再度お試しください。\nインストール済みなのにエラーが解決しない場合は、Githubでissueを送信してください。"
   },
@@ -1148,6 +1151,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "アップデートを適用するにはCollapseを閉じてください！",
     "ApplyUpdateErrCollapseRunSubtitle": "Collapseが閉じられるのを待っています…",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "Collapse Launcherは既に起動されています！",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "バックグラウンドで動作中のCollapse Launcherを検出しました。ランチャーを強制終了させたい場合は\"はい\"を押して、手動で閉じたい場合は\"いいえ\"を押してください。",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "破損した既存のインストールが検出されした！",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "破損した既存のインストールを検出しました。\r\n\r\n\"はい\"を押すと既存のインストールを修復してからアップデートを行い、\"いいえ\"を押すとアップデートをそのまま実行します。",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "エラー：\r\n\"release\"ファイルに\"stable\"か\"preview\"の記述がありません",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "\"release\"ファイルを確認してから再試行してください。",
 

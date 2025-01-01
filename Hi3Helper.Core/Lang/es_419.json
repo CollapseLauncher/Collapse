@@ -150,10 +150,12 @@
     "GameSettings_Panel2MoveGameLocationGame": "Mover Carpeta del Juego",
     "GameSettings_Panel2MoveGameLocationGame_SamePath": "¡No se puede mover el juego a la carpeta raíz de tu disco!\r\nPor favor, crea una carpeta e inténtalo de nuevo.",
     "GameSettings_Panel2StopGame": "Forzar el cierre del juego",
+    "GameSettings_Panel3RegionalSettings": "Ajustes regionales",
     "GameSettings_Panel3": "Argumentos Personalizados de Arranque",
+    "GameSettings_Panel3RegionRpc": "Mostrar estado de juego en Discord",
     "GameSettings_Panel3CustomBGRegion": "Cambiar Fondo de región",
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Fondo Personalizado por Región",
-    "GameSettings_Panel4": "Otros",
+    "GameSettings_Panel4": "Global - Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
@@ -322,7 +324,7 @@
     "Graphics_APIHelp2": "Aviso:",
     "Graphics_APIHelp3": "Usar DirectX 12 puede causar fallos en algunos escenarios, ya que el juego no fue compilado nativamente con la API de DirectX 12",
 
-    "Graphics_SpecPanel": "Configuración Global de Gráficos",
+    "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "Graphics_Preset": "Ajustes Gráficos Predefinidos",
     "Graphics_Render": "Calidad de Renderizado",
     "Graphics_Shadow": "Calidad de Sombras",
@@ -335,7 +337,7 @@
     "Graphics_FXAA": "FXAA",
     "Graphics_FXDistort": "Distorción",
 
-    "Graphics_APHO2Panel": "Configuración Gráfica para APHO2 y Nuevos Capítulos",
+    "Graphics_APHO2Panel": "Ajustes gráficos para APHO2 y capítulos nuevos",
     "Graphics_APHO2GI": "Iluminación Global",
     "Graphics_APHO2VL": "Iluminación Volumétrica",
     "Graphics_APHO2AO": "Oclusión Ambiental",
@@ -420,7 +422,7 @@
   "_SettingsPage": {
     "PageTitle": "Ajustes de la Aplicación",
 
-    "Debug": "Configuraciones adicionales",
+    "Debug": "Ajustes adicionales",
     "Debug_Console": "Mostrar Consola",
     "Debug_IncludeGameLogs": "Guardar registros de juego en Collapse (podría contener datos sensibles)",
     "Debug_SendRemoteCrashData": "Enviar anónimamente informes de errores a los desarrolladores",
@@ -883,7 +885,7 @@
     "InstallingMediaPackTitle": "Instalando Paquete de Características Multimedia",
     "InstallingMediaPackSubtitle": "Esperando a que que se complete la instalación...",
     "InstallingMediaPackSubtitleFinished": "Finalizado",
-    "GameConfigBrokenTitle1": "Configuración del Juego Roto",
+    "GameConfigBrokenTitle1": "Configuración corrupta del Juego",
     "GameConfigBrokenSubtitle1": "La configuración del Launcher esta corrupta. Por favor selecciona la ubicación del juego manualmente.",
     "GameConfigBrokenSubtitle2": "\r\nAsegúrate de que la ubicación del juego no esté en el mismo directorio en el que está el archivo `config.ini` de tu launcher, que se encuentra en:\r\n\r\n{0}\r\n\r\n",
     "GameConfigBrokenSubtitle3": "Si lo anterior es válido, por favor mueve todos los archivos del juego a otra ubicación, luego haz clic en \"Ubicar Directorio\" para elegir la ruta.",
@@ -1149,6 +1151,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "¡Por favor, cierra Collapse antes de actualizar! ",
     "ApplyUpdateErrCollapseRunSubtitle": "Esperando que Collapse se cierre...",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "¡Una instancia de Collapse Launcher sigue funcionando!",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "Hemos detectado que una instancia del Launcher esta funcionando en el fondo. Para forzar el cierre, haz clic en \"Si\". Para esperar hasta que lo cierres manualmente, haz clic en \"No\".",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "¡Instalación Corrupta Detectada!",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "Hemos detectado que tienes una instalación corrupta.\r\n\r\nHaz clic en \"Si\" para comenzar la reparación antes de instalar la actualización o clic en \"No\" para solo instalar la actualización.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ERROR:\r\nEl archivo \"release\" no tiene el string \"stable\" o \"preview\" en él",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Por favor verifica el archivo \"release\" e intenta de nuevo",
 
@@ -1201,7 +1207,7 @@
   "_StarRailGameSettingsPage": {
     "PageTitle": "Ajustes del Juego",
 
-    "Graphics_Title": "Configuración Gráfica",
+    "Graphics_Title": "Ajustes Gráficos",
     "Graphics_ResolutionPanel": "Resolución del Juego",
     "Graphics_Fullscreen": "Pantalla Completa",
     "Graphics_ExclusiveFullscreen": "Pantalla Completa Exclusiva",
@@ -1229,7 +1235,7 @@
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
 
-    "Graphics_SpecPanel": "Configuración Grafica Global",
+    "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "SpecEnabled": "Habilitado",
     "SpecDisabled": "Desactivado",
     "SpecVeryLow": "Muy Bajo",
@@ -1254,14 +1260,14 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver mas parámetros.",
 
-    "Audio_Title": "Configuración de Audio",
+    "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Principal",
     "Audio_BGM": "Volumen BGM",
     "Audio_SFX": "Volumen Efectos de Sonido",
     "Audio_VO": "Volumen Voces",
     "Audio_Mute": "Silenciar Audio",
 
-    "Language": "Configuración de Idioma",
+    "Language": "Ajustes de Idioma",
     "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
     "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
     "LanguageAudio": "Voces",
@@ -1275,7 +1281,7 @@
   "_GenshinGameSettingsPage": {
     "PageTitle": "Ajustes del Juego",
 
-    "Graphics_Title": "Configuración Gráfica",
+    "Graphics_Title": "Ajustes Gráficos",
     "Graphics_ResolutionPanel": "Resolución del juego",
     "Graphics_Fullscreen": "Pantalla Completa",
     "Graphics_ExclusiveFullscreen": "Usar Pantalla Completa Exclusiva",
@@ -1324,7 +1330,7 @@
     "Graphics_HDR_SceneBrightness": "Brillo del paisaje",
     "Graphics_HDR_SceneBrightness_Help": "Controla qué tan brillante debería ser un paisaje.",
 
-    "Graphics_SpecPanel": "Configuración Grafica Global",
+    "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "SpecEnabled": "Activado",
     "SpecDisabled": "Desactivado",
     "SpecVeryLow": "Muy Bajo",
@@ -1351,7 +1357,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver mas parámetros.",
 
-    "Audio_Title": "Configuración de Audio",
+    "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Principal",
     "Audio_BGM": "Volumen BGM",
     "Audio_SFX": "Volumen Efectos de Sonido",
@@ -1361,7 +1367,7 @@
     "Audio_DynamicRange": "Rango Dinámico completo",
     "Audio_MuteOnMinimize": "Silenciar Audio al Minimizar",
 
-    "Language": "Configuración de Idioma",
+    "Language": "Ajustes de Idioma",
     "Language_Help1": "Por el momento Collapse no puede descargar el paquete de audio.",
     "Language_Help2": "El paquete de audio se descargará dentro del juego la próxima vez que se inicie.",
     "LanguageAudio": "Voces",

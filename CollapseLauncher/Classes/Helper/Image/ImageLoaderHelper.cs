@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -387,12 +388,22 @@ namespace CollapseLauncher.Helper.Image
         /// <param name="fileInfo">FileInfo of the image to store</param>
         /// <param name="checkIsHashable">Is it hashed?</param>
         /// <returns>true if downloaded, false if not</returns>
-        public static ValueTask<bool> DownloadAndEnsureCompleteness(FileInfo fileInfo, bool checkIsHashable)
+        public static Task<bool> IsFileCompletelyDownloadedAsync(FileInfo fileInfo, bool checkIsHashable)
         {
             // Check if the file exist
-            return ValueTask.FromResult(IsFileCompletelyDownloaded(fileInfo, checkIsHashable));
+            return Task<bool>.Factory.StartNew(
+                () => IsFileCompletelyDownloaded(fileInfo, checkIsHashable),
+                CancellationToken.None,
+                TaskCreationOptions.DenyChildAttach,
+                TaskScheduler.Default);
         }
 
+        /// <summary>
+        /// Check if background image is downloaded
+        /// </summary>
+        /// <param name="fileInfo">FileInfo of the image to store</param>
+        /// <param name="checkIsHashable">Is it hashed?</param>
+        /// <returns>true if downloaded, false if not</returns>
         public static bool IsFileCompletelyDownloaded(FileInfo fileInfo, bool checkIsHashable)
         {
             // Get the parent path and file name
@@ -475,21 +486,25 @@ namespace CollapseLauncher.Helper.Image
             // Return true as it's a valid MD5 hash
             return true;
         }
-#nullable restore
 
         private static HashSet<FileInfo> _processingFiles = new();
         private static HashSet<string> _processingUrls = new();
-    
-        public static async void TryDownloadToCompletenessAsync(string url, FileInfo fileInfo, CancellationToken token)
-            => await TryDownloadToCompleteness(url, fileInfo, token);
 
-        public static async ValueTask TryDownloadToCompleteness(string url, FileInfo fileInfo, CancellationToken token)
+        public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
+            => _ = await TryDownloadToCompletenessAsync(url, useHttpClient, fileInfo, token);
+
+        public static async Task<bool> TryDownloadToCompletenessAsync(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
         {
+            if (string.IsNullOrEmpty(url))
+            {
+                return false;
+            }
+
             if (_processingFiles.Contains(fileInfo) || _processingUrls.Contains(url))
             {
                 Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
-                return;
+                return false;
             }
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
@@ -505,49 +520,81 @@ namespace CollapseLauncher.Helper.Image
                 if (fileInfo.Exists)
                     fileInfo.Delete();
 
-                // Try to get the remote stream and download the file
-                await using (Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token))
+                int writeAttempt = 5;
+
+                while (writeAttempt > 0)
                 {
-                    await using (FileStream outStream = new FileStream(fileInfoTemp.FullName, FileMode.Create, 
-                                                                       FileAccess.ReadWrite, FileShare.ReadWrite))
+                    // Try to get the remote stream and download the file
+                    await using (Stream netStream = await GetFallbackStreamUrl(useHttpClient, url, token))
                     {
-                        // Get the file length
-                        fileLength = netStream.Length;
-
-                        // Create the prop file for download completeness checking
-                        string outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
-                        string outputFilename   = Path.GetFileName(fileInfoTemp.FullName);
-                        if (outputParentPath != null)
+                        await using (FileStream outStream = new FileStream(fileInfoTemp.FullName, FileMode.Create,
+                                                                           FileAccess.ReadWrite, FileShare.ReadWrite))
                         {
-                            string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
-                            await using (FileStream _ = new FileStream(propFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Delete))
-                            {
-                                // Just create the file
-                            }
-                        }
+                            // Get the file length
+                            fileLength = netStream.Length;
 
-                        // Copy (and download) the remote streams to local
-                        int read;
-                        while ((read = await netStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
-                            await outStream.WriteAsync(buffer, 0, read, token);
+                            // Create the prop file for download completeness checking
+                            string? outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
+                            string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                            if (outputParentPath != null)
+                            {
+                                string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
+                                await using (FileStream _ = new FileStream(propFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Delete))
+                                {
+                                    // Just create the file
+                                }
+                            }
+
+                            // Copy (and download) the remote streams to local
+                            int read;
+                            while ((read = await netStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
+                                await outStream.WriteAsync(buffer, 0, read, token);
+                        }
                     }
+
+                    if (await IsFileCompletelyDownloadedAsync(fileInfoTemp, true))
+                    {
+                        // Move to its original filename
+                        fileInfoTemp.Refresh();
+                        fileInfoTemp.MoveTo(fileInfo.FullName, true);
+
+                        Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
+                            + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+
+                        // Break from the loop and return true
+                        return true;
+                    }
+
+                    Logger.LogWriteLine($"Failed to download resource from: {url} while trying to store into:"
+                        + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)"
+                        + $". Remained attempt: {writeAttempt}", LogType.Warning, true);
+
+                    // Decrement the write attempt
+                    writeAttempt--;
                 }
 
-                // Move to its original filename
-                fileInfoTemp.Refresh();
-                fileInfoTemp.MoveTo(fileInfo.FullName, true);
-
-                Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
-                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+                // Throw as timeout
+                throw new TimeoutException($"The url: {url} keeps returning invalid data while trying to store into: {fileInfo.FullName}. Failing...");
             }
             // Ignore cancellation exceptions
-            catch (TaskCanceledException) { }
-            catch (OperationCanceledException) { }
+            catch (TaskCanceledException)
+            {
+                // Return false as Cancelled
+                return false;
+            }
+            catch (OperationCanceledException)
+            {
+                // Return false as Cancelled
+                return false;
+            }
             catch (Exception ex)
             {
                 // ErrorSender.SendException(ex, ErrorType.Connection);
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"Error has occured while downloading in background for: {url}\r\n{ex}", LogType.Error, true);
+
+                // Return false as failed
+                return false;
             }
             finally
             {
@@ -557,7 +604,17 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
-        public static string GetCachedSprites(string URL, CancellationToken token)
+        private static async Task<Stream> GetFallbackStreamUrl(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
+        {
+            if (client == null)
+                return await FallbackCDNUtil.GetHttpStreamFromResponse(urlLocal, tokenLocal);
+
+            return await BridgedNetworkStream.CreateStream(
+                await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
+                tokenLocal);
+        }
+
+        public static string? GetCachedSprites(HttpClient? httpClient, string? URL, CancellationToken token)
         {
             if (string.IsNullOrEmpty(URL)) return URL;
             if (token.IsCancellationRequested) return URL;
@@ -572,12 +629,15 @@ namespace CollapseLauncher.Helper.Image
                 return cachePath;
             }
 
-            TryDownloadToCompletenessAsync(URL, fInfo, token);
+            TryDownloadToCompletenessDetached(URL, httpClient, fInfo, token);
             return URL;
 
         }
 
-        public static async ValueTask<string> GetCachedSpritesAsync(string URL, CancellationToken token)
+        public static async Task<string?> GetCachedSpritesAsync(string? URL, CancellationToken token)
+            => await GetCachedSpritesAsync(null, URL, token);
+
+        public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? URL, CancellationToken token)
         {
             if (string.IsNullOrEmpty(URL)) return URL;
 
@@ -586,9 +646,12 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (!IsFileCompletelyDownloaded(fInfo, true))
+            if (!await IsFileCompletelyDownloadedAsync(fInfo, true))
             {
-                await TryDownloadToCompleteness(URL, fInfo, token);
+                if (!await TryDownloadToCompletenessAsync(URL, httpClient, fInfo, token))
+                {
+                    return URL;
+                }
             }
             return cachePath;
         }

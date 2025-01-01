@@ -724,7 +724,8 @@
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{x:Bind VolumetricFog, Mode=TwoWay}">
-                                                <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}"
+                                                <TextBlock Padding="0,0,8,0"
+                                                           Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>
                                         </Grid>
@@ -735,7 +736,8 @@
                                                   HorizontalAlignment="Left"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{x:Bind Reflections, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ReflectionQuality}"
+                                            <TextBlock Padding="0,0,8,0"
+                                                       Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ReflectionQuality}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -745,7 +747,8 @@
                                                   HorizontalAlignment="Left"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{x:Bind Bloom, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_BloomQuality}"
+                                            <TextBlock Padding="0,0,8,0"
+                                                       Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_BloomQuality}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -764,7 +767,8 @@
                                                   HorizontalAlignment="Left"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{x:Bind TeamPageBackground, Mode=TwoWay}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_TeamPageBackground}"
+                                            <TextBlock Padding="0,0,8,0"
+                                                       Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_TeamPageBackground}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -775,7 +779,8 @@
                                                   VerticalAlignment="Center"
                                                   IsChecked="{x:Bind DynamicCharacterResolution, Mode=TwoWay}"
                                                   ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution_Tooltip}">
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution}"
+                                            <TextBlock Padding="0,0,8,0"
+                                                       Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_DynamicCharacterResolution}"
                                                        TextWrapping="Wrap" />
                                         </CheckBox>
                                     </StackPanel>
@@ -863,38 +868,39 @@
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <Grid Margin="0,0,0,8">
-                        <controls:UniformGrid HorizontalAlignment="Left"
-                                              Columns="3">
-                            <StackPanel Grid.Column="0">
-                                <CheckBox x:Name="AudioDynamicRangeToggle"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Center"
-                                          IsChecked="{x:Bind Audio_DynamicRange, Mode=TwoWay}">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_DynamicRange}"
-                                               TextWrapping="Wrap" />
-                                </CheckBox>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <CheckBox x:Name="AudioSurroundToggle"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Center"
-                                          IsChecked="{x:Bind Audio_Surround, Mode=TwoWay}">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_Output_Surround}"
-                                               TextWrapping="Wrap" />
-                                </CheckBox>
-                            </StackPanel>
-                            <StackPanel Grid.Column="2">
-                                <CheckBox x:Name="AudioMuteOnMinimizeToggle"
-                                          MinWidth="250"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Center"
-                                          IsChecked="{x:Bind Audio_MuteOnMinimized, Mode=TwoWay}">
-                                    <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
-                                               TextWrapping="Wrap" />
-                                </CheckBox>
-                            </StackPanel>
-                        </controls:UniformGrid>
+                    <Grid Margin="0,0,0,8"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Top"
+                          ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="AudioDynamicRangeToggle"
+                                  Grid.Column="0"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Top"
+                                  IsChecked="{x:Bind Audio_DynamicRange, Mode=TwoWay}">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_DynamicRange}"
+                                       TextWrapping="Wrap" />
+                        </CheckBox>
+                        <CheckBox x:Name="AudioSurroundToggle"
+                                  Grid.Column="1"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Top"
+                                  IsChecked="{x:Bind Audio_Surround, Mode=TwoWay}">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_Output_Surround}"
+                                       TextWrapping="Wrap" />
+                        </CheckBox>
+                        <CheckBox x:Name="AudioMuteOnMinimizeToggle"
+                                  Grid.Column="2"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Top"
+                                  IsChecked="{x:Bind Audio_MuteOnMinimized, Mode=TwoWay}">
+                            <TextBlock Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Audio_MuteOnMinimize}"
+                                       TextWrapping="Wrap" />
+                        </CheckBox>
                     </Grid>
                     <MenuFlyoutSeparator Margin="0,4,0,8" />
                     <StackPanel>
