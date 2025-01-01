@@ -4,6 +4,7 @@
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable GrammarMistakeInComment
 
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Helper;
@@ -13,7 +14,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
-using Hi3Helper.Sophon.Infos;
 using Hi3Helper.Sophon.Structs;
 using System;
 using System.Collections.Concurrent;
@@ -26,21 +26,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using SophonLogger = Hi3Helper.Sophon.Helper.Logger;
 
-// ReSharper disable GrammarMistakeInComment
-
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
 {
-    internal delegate ValueTask<TResult> SignedValueTaskSelectorAsync<in TFrom, TResult>(TFrom item, CancellationToken ctx)
+    internal delegate ValueTask<TResult> SignedValueTaskSelectorAsync<in TFrom, TResult>(
+        TFrom item, CancellationToken ctx)
         where TResult : struct, ISignedNumber<TResult>;
 
     internal partial class InstallManagerBase
     {
+        #region Protected Virtual Properties
+        protected virtual string _gameSophonChunkDir => Path.Combine(_gamePath, "chunk_collapse");
+        #endregion
+
         #region Protected Properties
-
-        protected bool _isSophonDownloadCompleted { get; set; }
-
-        protected bool _isSophonPreloadCompleted
+        protected List<string> _sophonVOLanguageList      { get; set; } = [];
+        protected bool         _isSophonDownloadCompleted { get; set; }
+        protected bool         _isSophonPreloadCompleted
         {
             get => File.Exists(Path.Combine(_gameSophonChunkDir, PreloadVerifiedFileName));
             set
@@ -70,31 +72,42 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
         }
-
-        protected List<string> _sophonVOLanguageList { get; set; } = [];
-
-        #endregion
-
-        #region Protected Virtual Properties
-
-        protected virtual string _gameSophonChunkDir => Path.Combine(_gamePath, "chunk_collapse");
-
         #endregion
 
         #region Public Virtual Properties
-
         public virtual bool IsUseSophon =>
             _gameVersionManager.GamePreset.LauncherResourceChunksURL != null
             && !File.Exists(Path.Combine(_gamePath, "@DisableSophon"))
             && !_canDeltaPatch && !_forceIgnoreDeltaPatch
             && LauncherConfig.GetAppConfigValue("IsEnableSophon").ToBool();
-
         public virtual bool IsSophonInUpdateMode => _isSophonInUpdateMode;
+        #endregion
 
+        #region Sophon Verification Methods
+        protected virtual void CleanupTempSophonVerifiedFiles()
+        {
+            DirectoryInfo dirPath = new(_gameSophonChunkDir);
+            try
+            {
+                if (!dirPath.Exists)
+                {
+                    return;
+                }
+
+                foreach (FileInfo file in dirPath.EnumerateFiles("*.verified", SearchOption.TopDirectoryOnly)
+                                                 .EnumerateNoReadOnly())
+                {
+                    file.Delete();
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+        }
         #endregion
 
         #region Sophon Download and Install/Update/Preload Methods
-
         public virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState)
         {
             // Set the flag to false
@@ -119,160 +132,152 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonDownloadSpeedLimiter downloadSpeedLimiter =
                     SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
 
-                try
+                // Reset status and progress properties
+                ResetStatusAndProgress();
+
+                // Clear the VO language list
+                _sophonVOLanguageList.Clear();
+
+                // Subscribe the logger event
+                SophonLogger.LogHandler += UpdateSophonLogHandler;
+
+                // Get the requested URL and version based on current state.
+                if (_gameVersionManager.GamePreset
+                                       .LauncherResourceChunksURL != null)
                 {
-                    // Reset status and progress properties
-                    ResetStatusAndProgress();
-
-                    // Clear the VO language list
-                    _sophonVOLanguageList.Clear();
-
-                    // Subscribe the logger event
-                    SophonLogger.LogHandler += UpdateSophonLogHandler;
-
-                    // Get the requested URL and version based on current state.
-                    if (_gameVersionManager.GamePreset
-                                           .LauncherResourceChunksURL != null)
+                    // Reassociate the URL if branch url exist
+                    string? branchUrl = _gameVersionManager.GamePreset
+                                                           .LauncherResourceChunksURL
+                                                           .BranchUrl;
+                    if (!string.IsNullOrEmpty(branchUrl)
+                        && !string.IsNullOrEmpty(_gameVersionManager.GamePreset.LauncherBizName))
                     {
-                        // Reassociate the URL if branch url exist
-                        string? branchUrl = _gameVersionManager.GamePreset
-                                                               .LauncherResourceChunksURL
-                                                               .BranchUrl;
-                        if (!string.IsNullOrEmpty(branchUrl)
-                            && !string.IsNullOrEmpty(_gameVersionManager.GamePreset.LauncherBizName))
-                        {
-                            await _gameVersionManager.GamePreset
-                                                     .LauncherResourceChunksURL
-                                                     .EnsureReassociated(
+                        await _gameVersionManager.GamePreset
+                                                 .LauncherResourceChunksURL
+                                                 .EnsureReassociated(
+                                                                     httpClient,
+                                                                     branchUrl,
+                                                                     _gameVersionManager.GamePreset.LauncherBizName,
+                                                                     _token.Token);
+                    }
+
+                #if SIMULATEAPPLYPRELOAD
+                    string requestedUrl = gameState switch
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                           .LauncherResourceChunksURL.PreloadUrl,
+                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                    };
+                    GameVersion? requestedVersion = gameState switch
+                    {
+                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
+                           .GetGameVersionAPIPreload(),
+                        _ => _gameVersionManager!.GetGameVersionAPIPreload()
+                    } ?? _gameVersionManager!.GetGameVersionAPI();
+                #else
+                    string? requestedUrl = gameState switch
+                                           {
+                                               GameInstallStateEnum.InstalledHavePreload => _gameVersionManager
+                                                  .GamePreset
+                                                  .LauncherResourceChunksURL.PreloadUrl,
+                                               _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                                           };
+                    GameVersion? requestedVersion = gameState switch
+                                                    {
+                                                        GameInstallStateEnum.InstalledHavePreload =>
+                                                            _gameVersionManager!
+                                                               .GetGameVersionAPIPreload(),
+                                                        _ => _gameVersionManager!.GetGameVersionAPI()
+                                                    } ?? _gameVersionManager!.GetGameVersionAPI();
+
+                    // Add the tag query to the Url
+                    requestedUrl += $"&tag={requestedVersion.ToString()}";
+                #endif
+
+                    // Set the progress bar to indetermined
+                    _status.IsIncludePerFileIndicator     = false;
+                    _status.IsProgressPerFileIndetermined = false;
+                    _status.IsProgressAllIndetermined     = true;
+                    UpdateStatus();
+
+                    // Initialize the info pair list
+                    var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
+
+                    // Get the info pair based on info provided above (for main game file)
+                    var sophonMainInfoPair = await
+                        SophonManifest.CreateSophonChunkManifestInfoPair(
                                                                          httpClient,
-                                                                         branchUrl,
-                                                                         _gameVersionManager.GamePreset.LauncherBizName,
+                                                                         requestedUrl,
+                                                                         "game",
                                                                          _token.Token);
+
+                    // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
+                    RearrangeSophonDataLocaleOrder(sophonMainInfoPair.OtherSophonData);
+
+                    // Add the manifest to the pair list
+                    sophonInfoPairList.Add(sophonMainInfoPair);
+
+                    List<string> voLanguageList =
+                        GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
+
+                    // Get Audio Choices first
+                    (List<int> addedVo, int setAsDefaultVo) =
+                        await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
+                                                                             voLanguageList,
+                                                                             GetSophonLocaleCodeIndex(
+                                                                                  sophonMainInfoPair.OtherSophonData,
+                                                                                  "ja-jp"
+                                                                                 ));
+
+                    try
+                    {
+                        if (addedVo == null || setAsDefaultVo < 0)
+                        {
+                            throw new TaskCanceledException();
                         }
 
-                    #if SIMULATEAPPLYPRELOAD
-                         string requestedUrl = gameState switch
-                         {
-                             GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
-                                .LauncherResourceChunksURL.PreloadUrl,
-                             _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
-                         };
-                         GameVersion? requestedVersion = gameState switch
-                         {
-                             GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
-                                .GetGameVersionAPIPreload(),
-                             _ => _gameVersionManager!.GetGameVersionAPIPreload()
-                         } ?? _gameVersionManager!.GetGameVersionAPI();
-                    #else
-                        string? requestedUrl = gameState switch
-                                               {
-                                                   GameInstallStateEnum.InstalledHavePreload => _gameVersionManager
-                                                      .GamePreset
-                                                      .LauncherResourceChunksURL.PreloadUrl,
-                                                   _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
-                                               };
-                        GameVersion? requestedVersion = gameState switch
-                                                        {
-                                                            GameInstallStateEnum.InstalledHavePreload =>
-                                                                _gameVersionManager!
-                                                                   .GetGameVersionAPIPreload(),
-                                                            _ => _gameVersionManager!.GetGameVersionAPI()
-                                                        } ?? _gameVersionManager!.GetGameVersionAPI();
+                        for (int i = 0; i < addedVo.Count; i++)
+                        {
+                            int    voLangIndex      = addedVo[i];
+                            string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
+                            _sophonVOLanguageList?.Add(voLangLocaleCode);
 
-                        // Add the tag query to the Url
-                        requestedUrl += $"&tag={requestedVersion.ToString()}";
-                    #endif
+                            // Get the info pair based on info provided above (for the selected VO audio file)
+                            SophonChunkManifestInfoPair sophonSelectedVoLang =
+                                sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
+                            sophonInfoPairList.Add(sophonSelectedVoLang);
+                        }
 
-                        // Set the progress bar to indetermined
-                        _status.IsIncludePerFileIndicator     = false;
-                        _status.IsProgressPerFileIndetermined = false;
-                        _status.IsProgressAllIndetermined     = true;
+                        // Set the voice language ID to value given
+                        _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
+
+                        // Get the remote total size and current total size
+                        _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                        _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                        _progressAllSizeCurrent = 0;
+
+                        // Set the display to Install Mode
+                        _isSophonInUpdateMode = false;
                         UpdateStatus();
 
-                        // Initialize the info pair list
-                        var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
-
-                        // Get the info pair based on info provided above (for main game file)
-                        var sophonMainInfoPair = await
-                            SophonManifest.CreateSophonChunkManifestInfoPair(httpClient, requestedUrl, "game",
-                                                                             _token.Token);
-
-                        // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
-                        RearrangeSophonDataLocaleOrder(sophonMainInfoPair.OtherSophonData);
-
-                        // Add the manifest to the pair list
-                        sophonInfoPairList.Add(sophonMainInfoPair);
-
-                        List<string> voLanguageList =
-                            GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
-
-                        // Get Audio Choices first
-                        (List<int> addedVo, int setAsDefaultVo) =
-                            await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
-                             voLanguageList,
-                             GetSophonLocaleCodeIndex(sophonMainInfoPair.OtherSophonData, "ja-jp"));
-
-                        try
-                        {
-                            if (addedVo == null || setAsDefaultVo < 0)
-                            {
-                                throw new TaskCanceledException();
-                            }
-
-                            for (int i = 0; i < addedVo.Count; i++)
-                            {
-                                int    voLangIndex      = addedVo[i];
-                                string voLangLocaleCode = GetLanguageLocaleCodeByID(voLangIndex);
-                                _sophonVOLanguageList?.Add(voLangLocaleCode);
-
-                                // Get the info pair based on info provided above (for the selected VO audio file)
-                                SophonChunkManifestInfoPair sophonSelectedVoLang =
-                                    sophonMainInfoPair.GetOtherManifestInfoPair(voLangLocaleCode);
-                                sophonInfoPairList.Add(sophonSelectedVoLang);
-                            }
-
-                            // Set the voice language ID to value given
-                            _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
-
-                            // Get the remote total size and current total size
-                            _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                            _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                            _progressAllSizeCurrent = 0;
-
-                            // Set the display to Install Mode
-                            _isSophonInUpdateMode = false;
-
-                            // Set the progress bar to indetermined
-                            _status.IsIncludePerFileIndicator     = false;
-                            _status.IsProgressPerFileIndetermined = false;
-                            _status.IsProgressAllIndetermined     = false;
-                            UpdateStatus();
-                        }
-                        catch (TaskCanceledException)
-                        {
-                            throw;
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            throw;
-                        }
-                        catch (Exception e)
-                        {
-                            ErrorSender.SendException(e);
-                        }
-
+                        // Get game install path and create directory if not exist
                         string gameInstallPath = _gamePath;
+                        if (!string.IsNullOrEmpty(gameInstallPath))
+                        {
+                            Directory.CreateDirectory(gameInstallPath);
+                        }
 
                         // Get the list of the Sophon Assets first
                         List<SophonAsset> sophonAssetList = await GetSophonAssetListFromPair(
-                                                             httpClient,
-                                                             sophonInfoPairList,
-                                                             downloadSpeedLimiter,
-                                                             _token.Token);
+                            httpClient,
+                            sophonInfoPairList,
+                            downloadSpeedLimiter,
+                            _token.Token);
 
                         // Check for the disk space requirement first and ensure that the space is sufficient
                         await EnsureDiskSpaceSufficiencyAsync(
                             _progressAllSizeTotal,
+                            gameInstallPath,
                             sophonAssetList,
                             async (sophonAsset, ctx) =>
                             {
@@ -284,24 +289,26 @@ namespace CollapseLauncher.InstallManager.Base
                                     long     sophonAssetLen = sophonAsset.AssetSize;
                                     FileInfo filePath       = new FileInfo(assetFullPath + "_tempSophon");
                                     FileInfo origFilePath   = new FileInfo(assetFullPath);
-
+                            
                                     // If the original file path exist and the length is the same as the asset size
                                     // (means the file has already been downloaded, then return 0)
                                     if (origFilePath.Exists && origFilePath.Length == sophonAssetLen)
                                     {
                                         return 0L;
                                     }
-
+                            
                                     // If the temp file path exist and the length is the same as the asset size
                                     // (means the file has already been downloaded, then return 0)
                                     if (filePath.Exists && filePath.Length == sophonAssetLen)
                                     {
                                         return 0L;
                                     }
-
+                            
                                     // If both orig and temp file don't exist or has different size, then return the asset size
                                     return sophonAsset.AssetSize;
-                                }, ctx, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+                                }, ctx,
+                                TaskCreationOptions.DenyChildAttach,
+                                TaskScheduler.Default);
                             }, _token.Token);
 
                         // Get the parallel options
@@ -316,19 +323,29 @@ namespace CollapseLauncher.InstallManager.Base
                             CancellationToken      = _token.Token
                         };
 
+                        // Set the progress bar to indetermined
+                        _status.IsIncludePerFileIndicator     = false;
+                        _status.IsProgressPerFileIndetermined = false;
+                        _status.IsProgressAllIndetermined     = false;
+                        UpdateStatus();
+
                         // Enumerate the asset in parallel and start the download process
-                        await Parallel.ForEachAsync(sophonAssetList, parallelOptions, DelegateAssetDownload).ConfigureAwait(false);
+                        await Parallel.ForEachAsync(sophonAssetList, parallelOptions, DelegateAssetDownload)
+                                      .ConfigureAwait(false);
 
                         // Rename temporary files
-                        await Parallel.ForEachAsync(sophonAssetList, parallelOptions, DelegateAssetRenameTempFile).ConfigureAwait(false);
+                        await Parallel.ForEachAsync(sophonAssetList, parallelOptions, DelegateAssetRenameTempFile)
+                                      .ConfigureAwait(false);
 
                         // Remove sophon verified files
                         CleanupTempSophonVerifiedFiles();
 
                         // Declare the download delegate
                         ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
-                            // ReSharper disable once AccessToDisposedClosure
-                            => RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
+                        // ReSharper disable once AccessToDisposedClosure
+                        {
+                            return RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
+                        }
 
                         // Declare the rename temp file delegate
                         async ValueTask DelegateAssetRenameTempFile(SophonAsset asset, CancellationToken token)
@@ -345,13 +362,13 @@ namespace CollapseLauncher.InstallManager.Base
                                 token.ThrowIfCancellationRequested();
 
                                 // Get the file path and start the write process
-                                var assetName     = asset.AssetName;
-                                var assetFullPath = Path.Combine(gameInstallPath, assetName);
-                                var filePath = new FileInfo(assetFullPath + "_tempSophon")
-                                       .EnsureCreationOfDirectory()
-                                       .EnsureNoReadOnly();
-                                var origFilePath = new FileInfo(assetFullPath)
-                                       .EnsureNoReadOnly(out bool isExist);
+                                string   assetName     = asset.AssetName;
+                                string   assetFullPath = Path.Combine(gameInstallPath, assetName);
+                                FileInfo filePath      = new FileInfo(assetFullPath + "_tempSophon")
+                                                            .EnsureCreationOfDirectory()
+                                                            .EnsureNoReadOnly();
+                                FileInfo origFilePath  = new FileInfo(assetFullPath)
+                                                            .EnsureNoReadOnly(out bool isExist);
 
                                 if (!isExist)
                                 {
@@ -363,18 +380,30 @@ namespace CollapseLauncher.InstallManager.Base
                                 origFilePath.Refresh();
                             }, token);
                         }
+
+                        _isSophonDownloadCompleted = true;
                     }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorSender.SendException(e);
+                    }
+                    finally
+                    {
+                        // Unsubscribe the logger event
+                        SophonLogger.LogHandler -= UpdateSophonLogHandler;
+                        httpClient.Dispose();
 
-                    _isSophonDownloadCompleted = true;
-                }
-                finally
-                {
-                    // Unsubscribe the logger event
-                    SophonLogger.LogHandler -= UpdateSophonLogHandler;
-                    httpClient.Dispose();
-
-                    // Unsubscribe download limiter
-                    LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
+                        // Unsubscribe download limiter
+                        LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
+                    }
                 }
             }
         }
@@ -391,10 +420,10 @@ namespace CollapseLauncher.InstallManager.Base
             HashSet<string> currentlyProcessedPair = [];
             foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairs)
             {
-                // Try add and if the hashset already contains the same URL registered, then skip
-                if (!currentlyProcessedPair.Add(sophonDownloadInfoPair.ChunksInfo.ChunksBaseUrl))
+                // Try add and if the hashset already contains the same Manifest ID registered, then skip
+                if (!currentlyProcessedPair.Add(sophonDownloadInfoPair.ManifestInfo.ManifestId))
                 {
-                    Logger.LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ChunksInfo.ChunksBaseUrl}! Skipping...",
+                    Logger.LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ManifestInfo.ManifestId}! Skipping...",
                                         LogType.Warning, true);
                     continue;
                 }
@@ -402,10 +431,10 @@ namespace CollapseLauncher.InstallManager.Base
                 // Register to hashset to avoid duplication
                 // Enumerate the pair to get the SophonAsset
                 await foreach (SophonAsset sophonAsset in SophonManifest.EnumerateAsync(
-                    client,
-                    sophonDownloadInfoPair,
-                    downloadSpeedLimiter,
-                    token))
+                                client,
+                                sophonDownloadInfoPair,
+                                downloadSpeedLimiter,
+                                token))
                 {
                     // If the asset is a directory, skip
                     if (sophonAsset.IsDirectory)
@@ -416,10 +445,11 @@ namespace CollapseLauncher.InstallManager.Base
                     sophonAssetList.Add(sophonAsset);
                 }
             }
-            
+
             // Return the list
             return sophonAssetList;
         }
+
 
         public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
         {
@@ -526,14 +556,8 @@ namespace CollapseLauncher.InstallManager.Base
                 };
 
                 // Set the progress bar to indetermined
-                _isSophonInUpdateMode                 = !isPreloadMode;
-                _status.IsIncludePerFileIndicator     = !isPreloadMode;
-                _status.IsProgressPerFileIndetermined = false;
-                _status.IsProgressAllIndetermined     = false;
-                _status.ActivityStatus = $"{(_isSophonInUpdateMode && !isPreloadMode
-                    ? Locale.Lang._Misc.UpdatingAndApplying
-                    : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, _progressAllCountCurrent,
-                                                                      _progressAllCountTotal)}";
+                _isSophonInUpdateMode             = !isPreloadMode;
+                _status.IsIncludePerFileIndicator = !isPreloadMode;
                 UpdateStatus();
 
                 // Get the update source and destination, also where the staging chunk files will be stored
@@ -541,7 +565,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string gamePath  = _gamePath;
 
                 // If the chunk directory is not exist, then create one.
-                if (!Directory.Exists(chunkPath) && chunkPath != null)
+                if (!string.IsNullOrEmpty(chunkPath))
                 {
                     Directory.CreateDirectory(chunkPath);
                 }
@@ -569,10 +593,21 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Test the disk space requirement first and ensure that the space is sufficient
                 await EnsureDiskSpaceSufficiencyAsync(
-                    _progressPerFileSizeTotal,
-                    sophonUpdateAssetList,
-                    async (x, ctx) => await x.GetDownloadedPreloadSize(chunkPath, isPreloadMode, ctx),
-                    _token.Token);
+                                                      _progressPerFileSizeTotal,
+                                                      chunkPath,
+                                                      sophonUpdateAssetList,
+                                                      async (x, ctx) =>
+                                                          await x.GetDownloadedPreloadSize(chunkPath, isPreloadMode,
+                                                              ctx),
+                                                      _token.Token);
+
+                _status.IsProgressPerFileIndetermined = false;
+                _status.IsProgressAllIndetermined     = false;
+                _status.ActivityStatus = $"{(_isSophonInUpdateMode && !isPreloadMode
+                    ? Locale.Lang._Misc.UpdatingAndApplying
+                    : Locale.Lang._Misc.Downloading)}: {string.Format(Locale.Lang._Misc.PerFromTo, _progressAllCountCurrent,
+                                                                      _progressAllCountTotal)}";
+                UpdateStatus();
 
                 var processingAsset = new ConcurrentDictionary<SophonAsset, byte>();
 
@@ -636,7 +671,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         private ValueTask RunSophonAssetDownloadThread(HttpClient      client, SophonAsset asset,
-                                                        ParallelOptions parallelOptions)
+                                                       ParallelOptions parallelOptions)
         {
             // If the asset is a dictionary, then return
             if (asset.IsDirectory)
@@ -668,26 +703,27 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             return asset.WriteToStreamAsync(
-                   client,
-                   () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                                        FileShare.ReadWrite),
-                   parallelOptions,
-                   UpdateSophonFileTotalProgress,
-                   UpdateSophonFileDownloadProgress,
-                   UpdateSophonDownloadStatus
-                   );
+                                            client,
+                                            () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                                                                 FileShare.ReadWrite),
+                                            parallelOptions,
+                                            UpdateSophonFileTotalProgress,
+                                            UpdateSophonFileDownloadProgress,
+                                            UpdateSophonDownloadStatus
+                                           );
         }
 
         private async Task EnsureDiskSpaceSufficiencyAsync<TFrom>(
-            long sizeToCompare,
-            List<TFrom> assetList,
+            long                                      sizeToCompare,
+            string                                    gamePath,
+            List<TFrom>                               assetList,
             SignedValueTaskSelectorAsync<TFrom, long> sizeSelector,
-            CancellationToken token)
+            CancellationToken                         token)
         {
             // Get SIMD'ed total sizes
             long downloadedSize = await assetList.SumParallelAsync(
-                async (x, ctx) => await sizeSelector(x, ctx),
-                token);
+                                                                   async (x, ctx) => await sizeSelector(x, ctx),
+                                                                   token);
 
             long sizeRemainedToDownload = sizeToCompare - downloadedSize;
 
@@ -697,7 +733,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 LogType.Default, true);
 
             // Get the information about the disk
-            DriveInfo driveInfo = new DriveInfo(_gamePath);
+            DriveInfo driveInfo = new DriveInfo(gamePath);
 
             // Push log regarding disk space
             Logger.LogWriteLine($"Total free space remained on disk: {driveInfo.Name}: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}.",
@@ -788,32 +824,6 @@ namespace CollapseLauncher.InstallManager.Base
                     await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
                                                     sophonPreloadAssetList, otherLangId,      downloadSpeedLimiter);
                 }
-            }
-        }
-
-        #endregion
-
-        #region Sophon Verification Methods
-
-        protected virtual void CleanupTempSophonVerifiedFiles()
-        {
-            DirectoryInfo dirPath = new(_gameSophonChunkDir);
-            try
-            {
-                if (!dirPath.Exists)
-                {
-                    return;
-                }
-
-                foreach (FileInfo file in dirPath.EnumerateFiles("*.verified", SearchOption.TopDirectoryOnly)
-                                                 .EnumerateNoReadOnly())
-                {
-                    file.Delete();
-                }
-            }
-            catch
-            {
-                // ignored
             }
         }
 
