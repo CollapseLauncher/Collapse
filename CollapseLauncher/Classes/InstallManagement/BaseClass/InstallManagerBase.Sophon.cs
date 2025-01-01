@@ -115,6 +115,10 @@ namespace CollapseLauncher.InstallManager.Base
 
             using (ThreadPoolThrottle.Start())
             {
+                // Create a sophon download speed limiter instance
+                SophonDownloadSpeedLimiter downloadSpeedLimiter =
+                    SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
+
                 try
                 {
                     // Reset status and progress properties
@@ -257,6 +261,49 @@ namespace CollapseLauncher.InstallManager.Base
                             ErrorSender.SendException(e);
                         }
 
+                        string gameInstallPath = _gamePath;
+
+                        // Get the list of the Sophon Assets first
+                        List<SophonAsset> sophonAssetList = await GetSophonAssetListFromPair(
+                                                             httpClient,
+                                                             sophonInfoPairList,
+                                                             downloadSpeedLimiter,
+                                                             _token.Token);
+
+                        // Check for the disk space requirement first and ensure that the space is sufficient
+                        await EnsureDiskSpaceSufficiencyAsync(
+                            _progressAllSizeTotal,
+                            sophonAssetList,
+                            async (sophonAsset, ctx) =>
+                            {
+                                return await Task<long>.Factory.StartNew(() =>
+                                {
+                                    // Get the file path and start the write process
+                                    string   assetName      = sophonAsset.AssetName;
+                                    string   assetFullPath  = Path.Combine(gameInstallPath, assetName);
+                                    long     sophonAssetLen = sophonAsset.AssetSize;
+                                    FileInfo filePath       = new FileInfo(assetFullPath + "_tempSophon");
+                                    FileInfo origFilePath   = new FileInfo(assetFullPath);
+
+                                    // If the original file path exist and the length is the same as the asset size
+                                    // (means the file has already been downloaded, then return 0)
+                                    if (origFilePath.Exists && origFilePath.Length == sophonAssetLen)
+                                    {
+                                        return 0L;
+                                    }
+
+                                    // If the temp file path exist and the length is the same as the asset size
+                                    // (means the file has already been downloaded, then return 0)
+                                    if (filePath.Exists && filePath.Length == sophonAssetLen)
+                                    {
+                                        return 0L;
+                                    }
+
+                                    // If both orig and temp file don't exist or has different size, then return the asset size
+                                    return sophonAsset.AssetSize;
+                                }, ctx, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
+                            }, _token.Token);
+
                         // Get the parallel options
                         var parallelOptions = new ParallelOptions
                         {
@@ -269,52 +316,53 @@ namespace CollapseLauncher.InstallManager.Base
                             CancellationToken      = _token.Token
                         };
 
+                        // Enumerate the asset in parallel and start the download process
+                        await Parallel.ForEachAsync(sophonAssetList, parallelOptions, DelegateAssetDownload).ConfigureAwait(false);
+
+                        // Rename temporary files
+                        await Parallel.ForEachAsync(sophonAssetList, parallelOptions, DelegateAssetRenameTempFile).ConfigureAwait(false);
+
+                        // Remove sophon verified files
+                        CleanupTempSophonVerifiedFiles();
+
                         // Declare the download delegate
-                        async ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
-                        {
+                        ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
                             // ReSharper disable once AccessToDisposedClosure
-                            await RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
-                        }
+                            => RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
 
                         // Declare the rename temp file delegate
                         async ValueTask DelegateAssetRenameTempFile(SophonAsset asset, CancellationToken token)
                         {
                             await Task.Run(() =>
-                                           {
-                                               // If the asset is a dictionary, then return
-                                               if (asset.IsDirectory)
-                                               {
-                                                   return;
-                                               }
+                            {
+                                // If the asset is a dictionary, then return
+                                if (asset.IsDirectory)
+                                {
+                                    return;
+                                }
 
-                                               // Get the file path and start the write process
-                                               var assetName = asset.AssetName;
-                                               var filePath = new FileInfo(
-                                                                           EnsureCreationOfDirectory(Path
-                                                                              .Combine(_gamePath, assetName)) +
-                                                                           "_tempSophon").EnsureNoReadOnly();
-                                               var origFilePath =
-                                                   new FileInfo(Path.Combine(_gamePath, assetName))
-                                                      .EnsureNoReadOnly(out bool isExist);
+                                // Throw if the token cancellation requested
+                                token.ThrowIfCancellationRequested();
 
-                                               if (isExist)
-                                               {
-                                                   filePath.MoveTo(origFilePath.FullName, true);
-                                                   filePath.Refresh();
-                                                   origFilePath.Refresh();
-                                               }
-                                           }, token);
+                                // Get the file path and start the write process
+                                var assetName     = asset.AssetName;
+                                var assetFullPath = Path.Combine(gameInstallPath, assetName);
+                                var filePath = new FileInfo(assetFullPath + "_tempSophon")
+                                       .EnsureCreationOfDirectory()
+                                       .EnsureNoReadOnly();
+                                var origFilePath = new FileInfo(assetFullPath)
+                                       .EnsureNoReadOnly(out bool isExist);
+
+                                if (!isExist)
+                                {
+                                    return;
+                                }
+
+                                filePath.MoveTo(origFilePath.FullName, true);
+                                filePath.Refresh();
+                                origFilePath.Refresh();
+                            }, token);
                         }
-
-                        // Enumerate the asset in parallel and start the download process
-                        await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions, DelegateAssetDownload);
-
-                        // Rename temporary files
-                        await RunTaskAction(httpClient, sophonInfoPairList, parallelOptions,
-                                            DelegateAssetRenameTempFile);
-
-                        // Remove sophon verified files
-                        CleanupTempSophonVerifiedFiles();
                     }
 
                     _isSophonDownloadCompleted = true;
@@ -324,46 +372,53 @@ namespace CollapseLauncher.InstallManager.Base
                     // Unsubscribe the logger event
                     SophonLogger.LogHandler -= UpdateSophonLogHandler;
                     httpClient.Dispose();
-                }
-            }
 
-            return;
-
-            async Task RunTaskAction(HttpClient client, List<SophonChunkManifestInfoPair> sophonInfoPairListLocal,
-                                     ParallelOptions parallelOptions,
-                                     Func<SophonAsset, CancellationToken, ValueTask> actionDelegate)
-            {
-                // Create a sophon download speed limiter instance
-                SophonDownloadSpeedLimiter downloadSpeedLimiter =
-                    SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
-
-                try
-                {
-                    LauncherConfig.DownloadSpeedLimitChanged += downloadSpeedLimiter.GetListener();
-                    var processingInfoPair = new ConcurrentDictionary<SophonChunksInfo, byte>();
-                    var infoPairListCopy   = sophonInfoPairListLocal.ToList();
-                    foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in infoPairListCopy)
-                    {
-                        if (!processingInfoPair.TryAdd(sophonDownloadInfoPair.ChunksInfo, 0))
-                        {
-                            Logger.LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ChunksInfo.ChunksBaseUrl}! Skipping...",
-                                                LogType.Warning, true);
-                            continue;
-                        }
-
-                        // Enumerate in parallel and process the assets
-                        await Parallel.ForEachAsync(SophonManifest.EnumerateAsync(client, sophonDownloadInfoPair,
-                                                        downloadSpeedLimiter),
-                                                    parallelOptions,
-                                                    actionDelegate).ConfigureAwait(false);
-                        processingInfoPair.Remove(sophonDownloadInfoPair.ChunksInfo, out _);
-                    }
-                }
-                finally
-                {
+                    // Unsubscribe download limiter
                     LauncherConfig.DownloadSpeedLimitChanged -= downloadSpeedLimiter.GetListener();
                 }
             }
+        }
+
+        private async Task<List<SophonAsset>> GetSophonAssetListFromPair(
+            HttpClient                               client,
+            IEnumerable<SophonChunkManifestInfoPair> sophonInfoPairs,
+            SophonDownloadSpeedLimiter               downloadSpeedLimiter,
+            CancellationToken                        token)
+        {
+            List<SophonAsset> sophonAssetList = [];
+
+            // Avoid duplicates by using HashSet of the url
+            HashSet<string> currentlyProcessedPair = [];
+            foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairs)
+            {
+                // Try add and if the hashset already contains the same URL registered, then skip
+                if (!currentlyProcessedPair.Add(sophonDownloadInfoPair.ChunksInfo.ChunksBaseUrl))
+                {
+                    Logger.LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ChunksInfo.ChunksBaseUrl}! Skipping...",
+                                        LogType.Warning, true);
+                    continue;
+                }
+
+                // Register to hashset to avoid duplication
+                // Enumerate the pair to get the SophonAsset
+                await foreach (SophonAsset sophonAsset in SophonManifest.EnumerateAsync(
+                    client,
+                    sophonDownloadInfoPair,
+                    downloadSpeedLimiter,
+                    token))
+                {
+                    // If the asset is a directory, skip
+                    if (sophonAsset.IsDirectory)
+                    {
+                        continue;
+                    }
+
+                    sophonAssetList.Add(sophonAsset);
+                }
+            }
+            
+            // Return the list
+            return sophonAssetList;
         }
 
         public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
@@ -580,13 +635,13 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private async ValueTask RunSophonAssetDownloadThread(HttpClient      client, SophonAsset asset,
-                                                             ParallelOptions parallelOptions)
+        private ValueTask RunSophonAssetDownloadThread(HttpClient      client, SophonAsset asset,
+                                                        ParallelOptions parallelOptions)
         {
             // If the asset is a dictionary, then return
             if (asset.IsDirectory)
             {
-                return;
+                return ValueTask.CompletedTask;
             }
 
             // Get the file path and start the write process
@@ -612,15 +667,15 @@ namespace CollapseLauncher.InstallManager.Base
                 sophonFileInfo.Delete();
             }
 
-            await asset.WriteToStreamAsync(
-                                           client,
-                                           () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                                                                FileShare.ReadWrite),
-                                           parallelOptions,
-                                           UpdateSophonFileTotalProgress,
-                                           UpdateSophonFileDownloadProgress,
-                                           UpdateSophonDownloadStatus
-                                          );
+            return asset.WriteToStreamAsync(
+                   client,
+                   () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                                        FileShare.ReadWrite),
+                   parallelOptions,
+                   UpdateSophonFileTotalProgress,
+                   UpdateSophonFileDownloadProgress,
+                   UpdateSophonDownloadStatus
+                   );
         }
 
         private async Task EnsureDiskSpaceSufficiencyAsync<TFrom>(
