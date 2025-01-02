@@ -486,7 +486,7 @@ namespace CollapseLauncher.InstallManager.Base
             _progressAllCountCurrent = 1;
 
             // Start the verification routine
-            foreach (GameInstallPackage asset in gamePackage)
+            foreach (GameInstallPackage asset in gamePackage.ToList())
             {
                 switch (await RunPackageVerificationRoutine(asset, _token!.Token))
                 {
@@ -677,7 +677,7 @@ namespace CollapseLauncher.InstallManager.Base
             _status.IsProgressAllIndetermined     = false;
 
             // Iterate the asset
-            foreach (GameInstallPackage asset in gamePackage)
+            foreach (GameInstallPackage asset in gamePackage.ToList())
             {
                 int returnCode;
 
@@ -854,7 +854,7 @@ namespace CollapseLauncher.InstallManager.Base
             TryRemoveRedundantHDiffList();
 
             // Enumerate the installation package
-            foreach (GameInstallPackage asset in gamePackage)
+            foreach (GameInstallPackage asset in gamePackage.ToList())
             {
                 // Update the status
                 _status.ActivityStatus =
@@ -2804,7 +2804,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Write to log if the package has segments (Example: Genshin Impact)
                 if (package.Segments != null)
                 {
-                    foreach (GameInstallPackage segment in package.Segments)
+                    foreach (GameInstallPackage segment in package.Segments.ToList())
                     {
                         LogWriteLine($"Adding segmented package: {segment.Name} to the list (Hash: {segment.HashString})",
                                      LogType.Default, true);
@@ -2964,7 +2964,7 @@ namespace CollapseLauncher.InstallManager.Base
             try
             {
                 // Iterate the package list
-                foreach (GameInstallPackage package in packageList)
+                foreach (GameInstallPackage package in packageList.ToList())
                 {
                     // If the package is segmented, then iterate and run the routine for segmented packages
                     if (package.Segments != null)
