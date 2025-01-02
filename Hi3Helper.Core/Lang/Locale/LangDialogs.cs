@@ -177,6 +177,11 @@ namespace Hi3Helper
 
                 public string DbGenerateUid_Title   { get; set; } = LangFallback?._Dialogs.DbGenerateUid_Title;
                 public string DbGenerateUid_Content { get; set; } = LangFallback?._Dialogs.DbGenerateUid_Content;
+                public string SophonIncrementUpdateUnavailTitle { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailTitle;
+                public string SophonIncrementUpdateUnavailSubtitle1 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle1;
+                public string SophonIncrementUpdateUnavailSubtitle2 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle2;
+                public string SophonIncrementUpdateUnavailSubtitle3 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle3;
+                public string SophonIncrementUpdateUnavailSubtitle4 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle4;
             }
         }
         #endregion

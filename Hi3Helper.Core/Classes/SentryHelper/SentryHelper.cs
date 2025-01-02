@@ -9,7 +9,9 @@ using Sentry.Protocol;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -483,8 +485,11 @@ namespace Hi3Helper.SentryHelper
                 }
             });
 
-            SentrySdk.AddBreadcrumb("Loaded Modules", "AppInfo", 
-                                    "system.module", modulesInfo.ToDictionary());
+            var sbModulesInfo = new StringBuilder();
+            foreach (var (key, value) in modulesInfo)
+            {
+                sbModulesInfo.AppendLine($"{key}: {value}");
+            }
             
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 
@@ -513,6 +518,9 @@ namespace Hi3Helper.SentryHelper
                     SentrySdk.CaptureException(ex, s =>
                                                    {
                                                        s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
+                                                       s.AddAttachment(new MemoryStream(Encoding.UTF8.GetBytes(sbModulesInfo.ToString())),
+                                                                       "LoadedModules.txt", AttachmentType.Default,
+                                                                       "text/plain");
                                                    });
             }
             else

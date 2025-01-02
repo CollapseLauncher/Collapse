@@ -301,9 +301,8 @@ namespace CollapseLauncher
             get
             {
                 double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                RectInt32[] rect = new RectInt32[2]
+                RectInt32[] rect = new[]
                 {
-
                     new RectInt32((int)(TitleBarDrag1.ActualOffset.X * scaleFactor),
                                   0,
                                   (int)(TitleBarDrag1.ActualWidth * scaleFactor),
@@ -324,7 +323,7 @@ namespace CollapseLauncher
                 Rect currentWindowPos = WindowUtility.CurrentWindowPosition;
                 double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
 
-                RectInt32[] rect = new RectInt32[1]
+                RectInt32[] rect = new[]
                 {
                     new RectInt32(0,
                                   0,
@@ -364,7 +363,7 @@ namespace CollapseLauncher
             switch (e.Template)
             {
                 case DragAreaTemplate.None:
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new RectInt32[]
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new[]
                     {
                         GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
                     });
@@ -374,7 +373,7 @@ namespace CollapseLauncher
                     break;
                 case DragAreaTemplate.Default:
                     nonClientInputSrc.ClearAllRegionRects();
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new RectInt32[]
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new[]
                     {
                         GetElementPos(GridBG_RegionGrid),
                         GetElementPos(GridBG_IconGrid),
@@ -815,7 +814,7 @@ namespace CollapseLauncher
         {
             TypedEventHandler<InfoBar, object> ClickCloseAction;
             if (NotificationData?.AppPush == null) return;
-            foreach (NotificationProp Entry in NotificationData.AppPush)
+            foreach (NotificationProp Entry in NotificationData.AppPush.ToList())
             {
                 // Check for Close Action for certain MsgIds
                 switch (Entry.MsgId)
@@ -926,25 +925,36 @@ namespace CollapseLauncher
 
                         // Create notification
                         NotificationContent toastContent = NotificationContent.Create()
-                            .SetTitle(Lang._NotificationToast.LauncherUpdated_NotifTitle)
-                            .SetContent(
-                                string.Format(Lang._NotificationToast.LauncherUpdated_NotifSubtitle,
-                                    VerString + (IsPreview ? "-preview" : ""),
-                                    Lang._SettingsPage.PageTitle,
-                                    Lang._SettingsPage.Update_SeeChangelog)
-                                )
-                            .AddAppHeroImagePath(heroImage);
+                                                                              .SetTitle(Lang._NotificationToast
+                                                                                  .LauncherUpdated_NotifTitle)
+                                                                              .SetContent(
+                                                                                    string
+                                                                                       .Format(Lang._NotificationToast.LauncherUpdated_NotifSubtitle,
+                                                                                            VerString + (IsPreview
+                                                                                                ? "-preview"
+                                                                                                : ""),
+                                                                                            Lang._SettingsPage
+                                                                                               .PageTitle,
+                                                                                            Lang._SettingsPage
+                                                                                               .Update_SeeChangelog)
+                                                                                   )
+                                                                              .AddAppHeroImagePath(heroImage);
 
                         // Get notification service
                         Windows.UI.Notifications.ToastNotification notificationService =
-                            WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
+                            WindowUtility.CurrentToastNotificationService.CreateToastNotification(toastContent);
 
                         // Spawn notification service
                         Windows.UI.Notifications.ToastNotifier notifier =
-                            WindowUtility.CurrentToastNotificationService?.CreateToastNotifier();
+                            WindowUtility.CurrentToastNotificationService.CreateToastNotifier();
                         notifier.Show(notificationService);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"[SpawnAppUpdatedNotification] Failed to spawn toast notification!\r\n{ex}",
+                                     LogType.Error, true);
+                        SentryHelper.ExceptionHandler(ex);
+                    }
                 }
             }
             catch
@@ -1950,7 +1960,7 @@ namespace CollapseLauncher
             List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
             _ = LauncherMetadataHelper.GetGameRegionCollection(gameName);
 
-            var indexCategory                    = gameNameCollection?.IndexOf(gameName!) ?? -1;
+            var indexCategory                    = gameNameCollection?.IndexOf(gameName) ?? -1;
             if (indexCategory < 0) indexCategory = 0;
 
             var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
