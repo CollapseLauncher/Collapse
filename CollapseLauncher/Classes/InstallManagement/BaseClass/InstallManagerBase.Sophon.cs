@@ -289,23 +289,18 @@ namespace CollapseLauncher.InstallManager.Base
                                     long     sophonAssetLen = sophonAsset.AssetSize;
                                     FileInfo filePath       = new FileInfo(assetFullPath + "_tempSophon");
                                     FileInfo origFilePath   = new FileInfo(assetFullPath);
-                            
+
                                     // If the original file path exist and the length is the same as the asset size
-                                    // (means the file has already been downloaded, then return 0)
-                                    if (origFilePath.Exists && origFilePath.Length == sophonAssetLen)
+                                    // or if the temp file path exist and the length is the same as the asset size
+                                    // (means the file has already been downloaded, then return sophonAssetLen)
+                                    if ((origFilePath.Exists && origFilePath.Length == sophonAssetLen)
+                                     || (filePath.Exists     && filePath.Length     == sophonAssetLen))
                                     {
-                                        return 0L;
+                                        return sophonAssetLen;
                                     }
                             
-                                    // If the temp file path exist and the length is the same as the asset size
-                                    // (means the file has already been downloaded, then return 0)
-                                    if (filePath.Exists && filePath.Length == sophonAssetLen)
-                                    {
-                                        return 0L;
-                                    }
-                            
-                                    // If both orig and temp file don't exist or has different size, then return the asset size
-                                    return sophonAsset.AssetSize;
+                                    // If both orig and temp file don't exist or has different size, then return 0 as it doesn't exist
+                                    return 0L;
                                 }, ctx,
                                 TaskCreationOptions.DenyChildAttach,
                                 TaskScheduler.Default);
@@ -362,21 +357,25 @@ namespace CollapseLauncher.InstallManager.Base
                                 token.ThrowIfCancellationRequested();
 
                                 // Get the file path and start the write process
-                                string   assetName     = asset.AssetName;
-                                string   assetFullPath = Path.Combine(gameInstallPath, assetName);
-                                FileInfo filePath      = new FileInfo(assetFullPath + "_tempSophon")
-                                                            .EnsureCreationOfDirectory()
-                                                            .EnsureNoReadOnly();
-                                FileInfo origFilePath  = new FileInfo(assetFullPath)
-                                                            .EnsureNoReadOnly(out bool isExist);
+                                var assetName     = asset.AssetName;
+                                var assetFullPath = Path.Combine(gameInstallPath, assetName);
+                                var tempFilePath  = new FileInfo(assetFullPath + "_tempSophon")
+                                                   .EnsureCreationOfDirectory()
+                                                   .EnsureNoReadOnly(out bool isExistTemp);
 
-                                if (!isExist)
+                                // If the temp file is not exist, then return (ignore)
+                                if (!isExistTemp)
                                 {
                                     return;
                                 }
 
-                                filePath.MoveTo(origFilePath.FullName, true);
-                                filePath.Refresh();
+                                // Get the original file path, ensure the existing file is not read only,
+                                // then move the temp file to the original file path
+                                var origFilePath  = new FileInfo(assetFullPath)
+                                                   .EnsureNoReadOnly();
+
+                                // Move the thing
+                                tempFilePath.MoveTo(origFilePath.FullName, true);
                                 origFilePath.Refresh();
                             }, token);
                         }
