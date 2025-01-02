@@ -995,7 +995,13 @@
     "CloseOverlay": "Close Overlay",
 
     "DbGenerateUid_Title": "Are you sure you wish to change your user ID?",
-    "DbGenerateUid_Content": "Changing the current user ID will cause the associated data to be lost if you lose it."
+    "DbGenerateUid_Content": "Changing the current user ID will cause the associated data to be lost if you lose it.",
+
+    "SophonIncrementUpdateUnavailTitle": "Incremental Update is Unavailable: Version is Too Obsolete!",
+    "SophonIncrementUpdateUnavailSubtitle1": "Your game version: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": " is too obsolete",
+    "SophonIncrementUpdateUnavailSubtitle3": " and incremental update for your version is not available. However, you could still update your game by re-downloading the entire thing from scratch.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Click \"{0}\" to continue updating the entire thing or click \"{1}\" to cancel the process"
   },
 
   "_FileMigrationProcess": {
