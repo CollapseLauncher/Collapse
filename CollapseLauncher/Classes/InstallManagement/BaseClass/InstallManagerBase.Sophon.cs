@@ -250,7 +250,7 @@ namespace CollapseLauncher.InstallManager.Base
                                         voLang
 #if DEBUG
                                         , true
-                                        #endif
+#endif
                                         );
 
                                     if (string.IsNullOrEmpty(voLocaleId))
