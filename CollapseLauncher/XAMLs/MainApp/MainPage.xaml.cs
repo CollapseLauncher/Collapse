@@ -942,12 +942,12 @@ namespace CollapseLauncher
 
                         // Get notification service
                         Windows.UI.Notifications.ToastNotification notificationService =
-                            WindowUtility.CurrentToastNotificationService.CreateToastNotification(toastContent);
+                            WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
 
                         // Spawn notification service
                         Windows.UI.Notifications.ToastNotifier notifier =
-                            WindowUtility.CurrentToastNotificationService.CreateToastNotifier();
-                        notifier.Show(notificationService);
+                            WindowUtility.CurrentToastNotificationService?.CreateToastNotifier();
+                        notifier?.Show(notificationService);
                     }
                     catch (Exception ex)
                     {

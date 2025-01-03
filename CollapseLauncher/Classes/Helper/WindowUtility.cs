@@ -285,44 +285,64 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        [field: AllowNull, MaybeNull]
-        internal static NotificationService CurrentToastNotificationService
+        internal static Guid? CurrentAumidInGuid
+        {
+            get;
+            set;
+        }
+
+        private static string? _currentAumid;
+        internal static string? CurrentAumid
+        {
+            get => _currentAumid;
+            set => _currentAumid ??= value;
+        }
+
+        internal static NotificationService? CurrentToastNotificationService
         {
             get
             {
                 // If toast notification service field is null, then initialize
                 if (field == null)
                 {
-                    // Get Icon location paths
-                    (string iconLocationStartMenu, _)
-                        = TaskSchedulerHelper.GetIconLocationPaths(
-                            out string? appAumIdNameAlternative,
-                            out _,
-                            out string? executablePath,
-                            out _);
-
-                    // Register notification service
-                    field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
-
-                    // Get AUMID name from Win32
-                    PInvoke.GetProcessAumid(out string? appAumIdName);
-
-                    // If it's empty due to an error, set the alternative AUMID
-                    appAumIdName ??= appAumIdNameAlternative;
-
-                    // Get string for AumId registration
-                    if (!string.IsNullOrEmpty(appAumIdName))
+                    try
                     {
-                        // Initialize Toast Notification service
-                        field.Initialize(
-                                         appAumIdName,
-                                         executablePath ?? "",
-                                         iconLocationStartMenu,
-                                         asElevatedUser: true
-                                        );
+                        // Get Icon location paths
+                        (string iconLocationStartMenu, _)
+                            = TaskSchedulerHelper.GetIconLocationPaths(
+                                                                       out string? appAumIdNameAlternative,
+                                                                       out _,
+                                                                       out string? executablePath,
+                                                                       out _);
 
-                        // Subscribe ToastCallback
-                        field.ToastCallback += Service_ToastNotificationCallback;
+                        // Register notification service
+                        field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+
+                        // Get AUMID name from Win32
+                        PInvoke.GetProcessAumid(out _currentAumid);
+
+                        // If it's empty due to an error, set the alternative AUMID
+                        CurrentAumid ??= appAumIdNameAlternative;
+
+                        // Get string for AumId registration
+                        if (!string.IsNullOrEmpty(CurrentAumid))
+                        {
+                            // Initialize Toast Notification service
+                            CurrentAumidInGuid = field.Initialize(
+                                                                  CurrentAumid,
+                                                                  executablePath ?? "",
+                                                                  iconLocationStartMenu,
+                                                                  asElevatedUser: true
+                                                                 );
+
+                            // Subscribe ToastCallback
+                            field.ToastCallback += Service_ToastNotificationCallback;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWriteLine($"Notification service initialization has failed, ignoring!\r\n{ex}", LogType.Error, true);
+                        return null;
                     }
                 }
 
