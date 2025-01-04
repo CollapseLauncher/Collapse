@@ -10,6 +10,7 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
+using Hi3Helper.Win32.TaskbarListCOM;
 using Hi3Helper.Win32.ToastCOM.Notification;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
@@ -21,7 +22,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -54,6 +54,8 @@ namespace CollapseLauncher.Helper
         internal static AppWindow? CurrentAppWindow;
         internal static WindowId? CurrentWindowId;
         internal static OverlappedPresenter? CurrentOverlappedPresenter;
+
+        private static readonly TaskbarList Taskbar = new();
 
         internal static DisplayArea? CurrentWindowDisplayArea
         {
@@ -855,6 +857,18 @@ namespace CollapseLauncher.Helper
             window._TrayIcon?.ToggleAllVisibility();
 
             // TODO: Make the callback actually usable on elevated app
+        }
+        #endregion
+
+        #region Taskbar Methods
+        public static int SetTaskBarState(nint hwnd, TaskbarState state)
+        {
+            return Taskbar.SetProgressState(hwnd, state);
+        }
+
+        public static int SetProgressValue(nint hwnd, ulong completed, ulong total)
+        {
+            return Taskbar.SetProgressValue(hwnd, completed, total);
         }
         #endregion
     }
