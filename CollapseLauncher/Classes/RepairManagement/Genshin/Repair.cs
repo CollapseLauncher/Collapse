@@ -98,7 +98,7 @@ namespace CollapseLauncher
             // Set repair activity status
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status8, asset.AssetIndex.remoteName),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, _progressAllCountCurrent, _progressAllCountTotal),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
                 true);
 
             string   assetPath     = ConverterTool.NormalizePath(asset.AssetIndex.localName);
