@@ -513,15 +513,19 @@ namespace CollapseLauncher.Helper
                         const int HTCLIENT = 1;
                         const int HTCAPTION = 2;
                         const int HTMINBUTTON = 8;
+                        const int HTMAXBUTTON = 9;
                         const int HTRIGHT = 11;
                         const int HTTOP = 12;
                         const int HTTOPRIGHT = 14;
+                        const int HTCLOSE = 20;
 
                         var result = PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                         {
-                            // Fix "Ghost Minimize Button" issue
+                            // Hide all system buttons
                             HTMINBUTTON => HTCLIENT,
+                            HTMAXBUTTON => HTCLIENT,
+                            HTCLOSE => HTCLIENT,
                             // Fix "Caption Resize" issue
                             HTRIGHT => HTCAPTION,
                             HTTOP => HTCAPTION,
