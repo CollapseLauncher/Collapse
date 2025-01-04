@@ -96,9 +96,10 @@ namespace CollapseLauncher
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
+            string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
             UpdateRepairStatus(
                 string.Format(Lang._GameRepairPage.Status8, asset.AssetIndex.remoteName),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
             string   assetPath     = ConverterTool.NormalizePath(asset.AssetIndex.localName);
