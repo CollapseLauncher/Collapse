@@ -94,10 +94,10 @@ namespace CollapseLauncher.Pages.OOBE
                 
                 _gamePosterPath = config.GameType switch
                                 {
-                                    GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GamePoster\poster_honkai.png"),
-                                    GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_genshin.png"),
-                                    GameNameType.StarRail => Path.Combine(AppFolder, @"Assets\Images\GamePoster\poster_starrail.png"),
-                                    GameNameType.Zenless => Path.Combine(AppFolder,  @"Assets\Images\GamePoster\poster_zzz.png"),
+                                    GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GamePoster\poster_honkai.png"),
+                                    GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
+                                    GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
+                                    GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
                                     _ => AppDefaultBG
                                 };
 
@@ -105,11 +105,15 @@ namespace CollapseLauncher.Pages.OOBE
                 //_gamePosterPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
                 _gameLogoPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), default);
 
-                using (IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream())
+                if (_gameLogoPath == null)
                 {
-                    _gameLogoBitmapImage = await ImageLoaderHelper.Stream2BitmapImage(fs2);
-                    (_gamePosterBitmap, _gamePosterBitmapImage) = await ImageLoaderHelper.GetResizedBitmapNew(_gamePosterPath);
+                    LogWriteLine($"Failed while loading poster image as _gameLogoPath returns null!", LogType.Error, true);
+                    return IsSuccess = false;
                 }
+
+                using IRandomAccessStream fs2 = new FileStream(_gameLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read).AsRandomAccessStream();
+                _gameLogoBitmapImage                        = await ImageLoaderHelper.Stream2BitmapImage(fs2);
+                (_gamePosterBitmap, _gamePosterBitmapImage) = await ImageLoaderHelper.GetResizedBitmapNew(_gamePosterPath);
             }
             catch (Exception ex)
             {

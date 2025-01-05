@@ -995,7 +995,13 @@
     "CloseOverlay": "关闭",
 
     "DbGenerateUid_Title": "您确定要更改用户 ID 吗？",
-    "DbGenerateUid_Content": "更改用户 ID 后，如果遗失了用户 ID，与之相关的数据将会丢失。"
+    "DbGenerateUid_Content": "更改用户 ID 后，如果遗失了用户 ID，与之相关的数据将会丢失。",
+
+    "SophonIncrementUpdateUnavailTitle": "增量更新不可用： 版本过旧！",
+    "SophonIncrementUpdateUnavailSubtitle1": "您的游戏版本：{0}",
+    "SophonIncrementUpdateUnavailSubtitle2": "过旧",
+    "SophonIncrementUpdateUnavailSubtitle3": "且该版本的增量更新不可用。不过，您仍然可以通过重新下载整个游戏来更新您的游戏。",
+    "SophonIncrementUpdateUnavailSubtitle4": "点击“{0}”继续更新整个游戏，或点击“{1}”取消更新过程"
   },
 
   "_FileMigrationProcess": {

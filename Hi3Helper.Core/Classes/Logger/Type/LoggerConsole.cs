@@ -2,7 +2,6 @@
 using Hi3Helper.Win32.Native.ManagedTools;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using System.Text;
 #if !APPLYUPDATE
 using static Hi3Helper.Shared.Region.LauncherConfig;

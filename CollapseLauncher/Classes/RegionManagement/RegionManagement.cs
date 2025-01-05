@@ -202,10 +202,10 @@ namespace CollapseLauncher
             var currentGameType = GamePropertyVault.GetCurrentGameProperty()._GameVersion.GameType;
             tempImage ??= currentGameType switch
             {
-                GameNameType.Honkai => Path.Combine(AppFolder,   @"Assets\Images\GameBackground\honkai.webp"),
-                GameNameType.Genshin => Path.Combine(AppFolder,  @"Assets\Images\GameBackground\genshin.webp"),
-                GameNameType.StarRail => Path.Combine(AppFolder, @"Assets\Images\GameBackground\starrail.webp"),
-                GameNameType.Zenless => Path.Combine(AppFolder,  @"Assets\Images\GameBackground\zzz.webp"),
+                GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
+                GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
+                GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
+                GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
                 _ => AppDefaultBG
             };
             BackgroundImgChanger.ChangeBackground(tempImage, () =>

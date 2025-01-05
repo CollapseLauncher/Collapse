@@ -156,7 +156,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
             if (!_isImageLoadingStarted)
             {
                 var eventHandler = new TypedEventHandler<LoadedImageSurface, LoadedImageSourceLoadCompletedEventArgs>(HandleLoadCompleted);
-                _image_image_0 = LoadedImageSurface.StartLoadFromStream(File.OpenRead(Path.Combine(LauncherConfig.AppFolder, @"Assets\CollapseLauncherLogo.png")).AsRandomAccessStream());
+                _image_image_0 = LoadedImageSurface.StartLoadFromStream(File.OpenRead(Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\CollapseLauncherLogo.png")).AsRandomAccessStream());
                 _image_image_0.LoadCompleted += eventHandler;
                 _isImageLoadingStarted = true;
             }

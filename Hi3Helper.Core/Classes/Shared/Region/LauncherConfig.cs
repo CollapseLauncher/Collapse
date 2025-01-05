@@ -9,18 +9,28 @@ using System.IO;
 using System.Numerics;
 using System.Text;
 using static Hi3Helper.Locale;
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+#pragma warning disable CA2211
 
+#nullable enable
 namespace Hi3Helper.Shared.Region
 {
     #region CDN Property
-    public struct CDNURLProperty : IEquatable<CDNURLProperty>
+
+    public readonly struct CDNURLProperty : IEquatable<CDNURLProperty>
     {
-        public string URLPrefix { get; init; }
-        public string Name { get; init; }
-        public string Description { get; init; }
-        public bool PartialDownloadSupport { get; init; }
-        public bool Equals(CDNURLProperty other) => URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
+        public string URLPrefix              { get; init; }
+        public string Name                   { get; init; }
+        public string Description            { get; init; }
+        public bool   PartialDownloadSupport { get; init; }
+
+        public bool Equals(CDNURLProperty other)
+        {
+            return URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
+        }
     }
+
     #endregion
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -28,47 +38,51 @@ namespace Hi3Helper.Shared.Region
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
+
         public static void InitAppPreset()
         {
             // Initialize resolution settings first and assign AppConfigFile to ProfilePath
             InitScreenResSettings();
-            appIni.ProfilePath = AppConfigFile;
+            AppConfigProperty.ProfilePath = AppConfigFile;
 
             // Set user permission check to its default and check for the existence of config file.
-            bool IsConfigFileExist = File.Exists(appIni.ProfilePath);
+            bool IsConfigFileExist = File.Exists(AppConfigProperty.ProfilePath);
 
             // If the config file is exist, then continue to load the file
-            appIni.Profile = IniFile.LoadFrom(appIni.ProfilePath);
+            if (IsConfigFileExist)
+            {
+                LoadAppConfig();
+            }
 
             // If the section doesn't exist, then add the section template
-            if (!appIni.Profile.ContainsKey(SectionName))
+            if (!AppConfigProperty.Profile.ContainsKey(SectionName))
             {
-                appIni.Profile.Add(SectionName, AppSettingsTemplate);
+                AppConfigProperty.Profile.Add(SectionName, AppSettingsTemplate);
             }
 
             // Check and assign default for the null and non-existence values.
             CheckAndSetDefaultConfigValue();
 
             // Set the startup background path and GameFolder to check if user has permission.
-            startupBackgroundPath = GetAppConfigValue("CurrentBackground").ToString();
-            string GameFolder = GetAppConfigValue("GameFolder").ToString();
+            string? gameFolder = GetAppConfigValue("GameFolder").ToString();
 
-            // Check if the drive is exist. If not, then reset the GameFolder variable and set IsFirstInstall to true;
-            if (!IsDriveExist(GameFolder))
+            // Check if the drive exist. If not, then reset the GameFolder variable and set IsFirstInstall to true;
+            if (!string.IsNullOrEmpty(gameFolder) && !IsDriveExist(gameFolder))
             {
                 IsFirstInstall = true;
 
                 // Reset GameFolder to default value
-                SetAppConfigValue("GameFolder", AppSettingsTemplate!["GameFolder"]);
+                SetAppConfigValue("GameFolder", AppSettingsTemplate["GameFolder"]);
 
                 // Force enable Console Log and return
-                Logger._log = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
-                Logger.LogWriteLine($"Game App Folder path: {GameFolder} doesn't exist! The launcher will be reinitialize the setup.", LogType.Error, true);
+                Logger.CurrentLogger = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
+                                    LogType.Error, true);
                 return;
             }
 
             // Check if user has permission
-            bool IsUserHasPermission = ConverterTool.IsUserHasPermission(GameFolder);
+            bool IsUserHasPermission = ConverterTool.IsUserHasPermission(gameFolder);
 
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
             IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
@@ -78,36 +92,61 @@ namespace Hi3Helper.Shared.Region
             _ = DownloadSpeedLimit;
         }
 
-        public static bool IsConfigKeyExist(string key) => appIni.Profile![SectionName!]!.ContainsKey(key!);
-        public static IniValue GetAppConfigValue(string key) => appIni.Profile![SectionName]![key!];
+        public static bool IsConfigKeyExist(string key)
+        {
+            return AppConfigProperty.Profile[SectionName].ContainsKey(key);
+        }
+
+        public static IniValue GetAppConfigValue(string key)
+        {
+            return AppConfigProperty.Profile[SectionName][key];
+        }
+
         public static void SetAndSaveConfigValue(string key, IniValue value, bool doNotLog = false)
         {
             SetAppConfigValue(key, value);
             SaveAppConfig();
-            #if DEBUG
+        #if DEBUG
             if (!doNotLog)
                 Logger.LogWriteLine($"SetAndSaveConfigValue::Key[{key}]::Value[{value}]", LogType.Debug);
-            #endif
+        #endif
         }
-        public static void SetAppConfigValue(string key, IniValue value) => appIni.Profile![SectionName]![key!] = value;
 
-        public static void LoadAppConfig() => appIni.Profile!.Load(appIni.ProfilePath, true);
-        public static void SaveAppConfig() => appIni.Profile!.Save(appIni.ProfilePath);
+        public static void SetAppConfigValue(string key, IniValue value)
+        {
+            AppConfigProperty.Profile[SectionName][key] = value;
+        }
+
+        public static void LoadAppConfig()
+        {
+            AppConfigProperty.Profile.Load(AppConfigProperty.ProfilePath);
+        }
+
+        public static void SaveAppConfig()
+        {
+            AppConfigProperty.Profile.Save(AppConfigProperty.ProfilePath);
+        }
 
         public static void CheckAndSetDefaultConfigValue()
         {
-            foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate!)
+            foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate)
             {
-                if (!appIni.Profile![SectionName]!.ContainsKey(Entry.Key!) || appIni.Profile[SectionName][Entry.Key].IsEmpty)
+                if (!AppConfigProperty.Profile[SectionName].ContainsKey(Entry.Key) ||
+                    AppConfigProperty.Profile[SectionName][Entry.Key].IsEmpty)
                 {
                     SetAppConfigValue(Entry.Key, Entry.Value);
                 }
             }
         }
+
         #endregion
 
         #region Misc Methods
-        public static void LoadGamePreset() => AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder")!);
+
+        public static void LoadGamePreset()
+        {
+            AppGameFolder = Path.Combine(GetAppConfigValue("GameFolder")!);
+        }
 
         private static bool IsDriveExist(string path)
         {
@@ -117,138 +156,163 @@ namespace Hi3Helper.Shared.Region
         private static void InitScreenResSettings()
         {
             foreach (var res in ScreenProp.EnumerateScreenSizes())
+            {
                 ScreenResolutionsList.Add($"{res.Width}x{res.Height}");
+            }
         }
+
         #endregion
 
         #region CDN List
-        public static List<CDNURLProperty> CDNList => new()
-          {
-              new CDNURLProperty
-              {
-                  Name = "GitHub",
-                  URLPrefix = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
-                  Description = Lang!._Misc!.CDNDescription_Github,
-                  PartialDownloadSupport = true
-              },
-              new CDNURLProperty
-              {
-                  Name = "Cloudflare",
-                  URLPrefix = "https://r2.bagelnl.my.id/cl-cdn",
-                  Description = Lang!._Misc!.CDNDescription_Cloudflare,
-                  PartialDownloadSupport = true
-              },
-              new CDNURLProperty
-              {
-                  Name = "GitLab",
-                  URLPrefix = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/",
-                  Description = Lang!._Misc!.CDNDescription_GitLab
-              },
-              new CDNURLProperty
-              {
-                  Name = "Coding",
-                  URLPrefix = "https://ohly-generic.pkg.coding.net/collapse/release/",
-                  Description = Lang!._Misc!.CDNDescription_Coding
-              },
-          };
 
-        public static CDNURLProperty GetCurrentCDN() => CDNList![GetAppConfigValue("CurrentCDN")];
+        public static List<CDNURLProperty> CDNList =>
+        [
+            new()
+            {
+                Name                   = "GitHub",
+                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
+                Description            = Lang._Misc!.CDNDescription_Github,
+                PartialDownloadSupport = true
+            },
+
+            new()
+            {
+                Name                   = "Cloudflare",
+                URLPrefix              = "https://r2.bagelnl.my.id/cl-cdn",
+                Description            = Lang._Misc!.CDNDescription_Cloudflare,
+                PartialDownloadSupport = true
+            },
+
+            new()
+            {
+                Name        = "GitLab",
+                URLPrefix   = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/",
+                Description = Lang._Misc!.CDNDescription_GitLab
+            },
+
+            new()
+            {
+                Name        = "Coding",
+                URLPrefix   = "https://ohly-generic.pkg.coding.net/collapse/release/",
+                Description = Lang._Misc!.CDNDescription_Coding
+            }
+        ];
+
         #endregion
 
         #region Misc Fields
+
         public static Vector3 Shadow16 = new(0, 0, 16);
         public static Vector3 Shadow32 = new(0, 0, 32);
         public static Vector3 Shadow48 = new(0, 0, 48);
-        // Format in milliseconds
-        public static int RefreshTime = 250;
 
-        const         string       SectionName = "app";
-        public static string       startupBackgroundPath;
-        public static List<string> ScreenResolutionsList = new();
+
+        public const           string       AppNotifURLPrefix           = "/notification_{0}.json";
+        public const           string       AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
+        public const           string       AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";
+        private const          string       SectionName                 = "app";
+        public static readonly List<string> ScreenResolutionsList       = [];
 
         public const long AppDiscordApplicationID     = 1138126643592970251;
         public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
         public const long AppDiscordApplicationID_GI  = 1124137436650426509;
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
         public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
-      
-        public const string AppNotifURLPrefix           = "/notification_{0}.json";
-        public const string AppGameConfigV2URLPrefix    = "/metadata/metadatav2_{0}.json";
-        public const string AppGameRepairIndexURLPrefix = "/metadata/repair_indexes/{0}/{1}/index";
-        public const string AppGameRepoIndexURLPrefix   = "/metadata/repair_indexes/{0}/repo";
 
         public static IntPtr AppIconLarge;
         public static IntPtr AppIconSmall;
+
         #endregion
 
         #region App Config Definitions
-        public static AppIniStruct appIni;
-        
-        public static readonly string AppFolder = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule!.FileName);
-        public static readonly string AppDefaultBG = Path.Combine(AppFolder!, "Assets", "Images", "PageBackground", "default.png");
-        
-        public static readonly string AppLangFolder = Path.Combine(AppFolder, "Lang");
-        public static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
-        
-        public static string AppImagesFolder = Path.Combine(AppFolder, "Assets", "Images");
-        public static string AppGameFolder
-        {
-            get => GetAppConfigValue("GameFolder");
-            set => SetAppConfigValue("GameFolder", value);
-        }
-        public static string[] AppCurrentArgument;
-        private static string _appExecutablePath;
+        public static AppIniProperty AppConfigProperty  { get; set; } = new();
+        public static List<string>   AppCurrentArgument { get; set; } = [];
+
+        [field: AllowNull, MaybeNull]
+        public static Process AppCurrentProcess           { get => field ??= Process.GetCurrentProcess(); }
+        public static int     AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
+        public static string  AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+
+
+        [field: AllowNull, MaybeNull]
         public static string AppExecutablePath
         {
             get
             {
-                if (string.IsNullOrEmpty(_appExecutablePath))
+                if (field != null)
                 {
-                    using Process currentProcess = Process.GetCurrentProcess();
-                    string execName = Path.GetFileNameWithoutExtension(currentProcess.MainModule?.FileName);
-                    string dirPath = AppFolder;
-                    return _appExecutablePath = Path.Combine(dirPath!, execName + ".exe");
+                    return field;
                 }
-                return _appExecutablePath;
+
+                string        execPath       = AppCurrentProcess.MainModule?.FileName ?? "";
+                return field = execPath;
             }
         }
-        public static string AppExecutableName       { get => Path.GetFileName(AppExecutablePath); }
-        public static string AppGameImgFolder        { get => Path.Combine(AppGameFolder!,    "_img"); }
-        public static string AppGameImgCachedFolder  { get => Path.Combine(AppGameImgFolder!, "cached"); }
-        public static string AppGameLogsFolder       { get => Path.Combine(AppGameFolder!,    "_logs"); }
 
-        private static string _appCurrentVersionString;
-        public static string AppCurrentVersionString
+        public static string AppGameFolder
+        {
+            get => GetAppConfigValue("GameFolder").Value ?? "";
+            set => SetAppConfigValue("GameFolder", value);
+        }
+
+        [field: AllowNull, MaybeNull]
+        public static  string  AppExecutableName => field ??= Path.GetFileName(AppExecutablePath);
+        [field: AllowNull, MaybeNull]
+        public static  string  AppExecutableDir => field ??= Path.GetDirectoryName(AppExecutablePath) ?? "";
+        public static  string  AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
+        public static  string  AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
+        public static  string  AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
+
+        [field: AllowNull, MaybeNull]
+        public static Version AppCurrentVersion
         {
             get
             {
-                if (string.IsNullOrEmpty(_appCurrentVersionString))
+                if (field != null)
                 {
-                    string executablePath = AppExecutablePath;
-                    if (string.IsNullOrEmpty(executablePath))
-                        return "Unknown";
-
-                    try
-                    {
-                        FileVersionInfo verInfo = FileVersionInfo.GetVersionInfo(executablePath);
-                        string version = $"{verInfo.FileMajorPart}.{verInfo.FileMinorPart}.{verInfo.FileBuildPart}";
-                        return _appCurrentVersionString = version;
-                    }
-                    catch (Exception ex)
-                    {
-                        SentryHelper.SentryHelper.ExceptionHandler(ex);
-                        return "Unknown";
-                    }
+                    return field;
                 }
-                return _appCurrentVersionString;
+
+                if (string.IsNullOrEmpty(AppExecutablePath))
+                {
+                    return field = new Version();
+                }
+
+                FileVersionInfo verInfo = FileVersionInfo.GetVersionInfo(AppExecutablePath);
+                return field = verInfo.FileVersion != null ? new Version(verInfo.FileMajorPart, verInfo.FileMinorPart, verInfo.FileBuildPart) : new Version();
             }
         }
 
-        public static readonly string AppConfigFile      = Path.Combine(AppDataFolder!, "config.ini");
-        public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder,  "ignore_notif_ids.json");
-        
-        public static string GamePathOnSteam;
-        public static long   AppGameConfigLastUpdate;
+        [field: AllowNull, MaybeNull]
+        public static string AppCurrentVersionString =>
+            field ??= $"{AppCurrentVersion.Major}.{AppCurrentVersion.Minor}.{AppCurrentVersion.Build}";
+
+        [field: AllowNull, MaybeNull]
+        public static Version WindowsAppSdkVersion
+        {
+            get
+            {
+                if (field != null)
+                {
+                    return field;
+                }
+
+                if (string.IsNullOrEmpty(AppExecutablePath))
+                {
+                    return field = new Version();
+                }
+
+                string dllPath = Path.Combine(AppExecutableDir, "Microsoft.ui.xaml.dll");
+                if (!File.Exists(dllPath))
+                {
+                    return field = new Version();
+                }
+
+                FileVersionInfo verInfo = FileVersionInfo.GetVersionInfo(dllPath);
+                return field = verInfo.FileVersion != null ? new Version(verInfo.FileMajorPart, verInfo.FileMinorPart, verInfo.FileBuildPart) : new Version();
+            }
+        }
+
         public static int AppCurrentThread
         {
             get
@@ -257,16 +321,21 @@ namespace Hi3Helper.Shared.Region
                 return val <= 0 ? Environment.ProcessorCount : val;
             }
         }
-        public static int AppCurrentDownloadThread => GetAppConfigValue("DownloadThread");
-        public static string AppGameConfigMetadataFolder { get => Path.Combine(AppGameFolder!, "_metadatav3"); }
-
-        public static readonly bool IsAppLangNeedRestart    = false;
 
         public static bool IsPreview                        = false;
-        public static bool IsAppThemeNeedRestart            = false;
-        public static bool IsChangeRegionWarningNeedRestart = false;
-        public static bool IsInstantRegionNeedRestart       = false;
         public static bool IsFirstInstall                   = false;
+        public static bool IsAppLangNeedRestart             = false;
+        public static bool IsChangeRegionWarningNeedRestart = false;
+        public static bool IsAppThemeNeedRestart            = false;
+        public static bool IsInstantRegionNeedRestart       = false;
+
+        public static readonly string AppDefaultBG       = Path.Combine(AppExecutableDir, "Assets", "Images", "PageBackground", "default.png");
+        public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
+        public static readonly string AppDataFolder      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
+        public static readonly string AppImagesFolder    = Path.Combine(AppExecutableDir, "Assets", "Images");
+        public static readonly string AppConfigFile      = Path.Combine(AppDataFolder, "config.ini");
+        public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
+
         public static bool IsConsoleEnabled
         {
             get => GetAppConfigValue("EnableConsole");
@@ -355,22 +424,20 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("EnforceToUse7zipOnExtract", value);
         }
 
-        private static long _downloadSpeedLimitCached = 0; // Default: 0 == Unlimited
         public static long DownloadSpeedLimitCached
         {
-            get => _downloadSpeedLimitCached;
+            get;
             set
             {
-                _downloadSpeedLimitCached = IsUseDownloadSpeedLimiter ? value : 0;
-                DownloadSpeedLimitChanged?.Invoke(null, _downloadSpeedLimitCached);
+                field = IsUseDownloadSpeedLimiter ? value : 0;
+                DownloadSpeedLimitChanged?.Invoke(null, field);
             }
         }
 
-#nullable enable
         public static event EventHandler<long>? DownloadSpeedLimitChanged;
-#nullable restore
 
         private static bool? _cachedIsInstantRegionChange = null;
+
         public static bool IsInstantRegionChange
         {
             get
@@ -393,23 +460,29 @@ namespace Hi3Helper.Shared.Region
                 SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
                 return g;
             }
+
             return guidString;
         }
+
         #endregion
 
         #region App Settings Template
-        public static Dictionary<string, IniValue> AppSettingsTemplate = new Dictionary<string, IniValue>
+
+        public static Dictionary<string, IniValue> AppSettingsTemplate = new()
         {
             { "CurrentBackground", "ms-appx:///Assets/Images/default.png" },
             { "DownloadThread", 4 },
             { "ExtractionThread", 0 },
             { "GameFolder", Path.Combine(AppDataFolder, "GameFolder") },
-            { "UserAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.0.0" },
-            #if DEBUG
+            {
+                "UserAgent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.0.0"
+            },
+        #if DEBUG
             { "EnableConsole", true },
-            #else
+        #else
             { "EnableConsole", false },
-            #endif
+        #endif
             { "SendRemoteCrashData", true },
             { "EnableMultipleInstance", false },
             { "DontAskUpdate", false },
@@ -419,17 +492,17 @@ namespace Hi3Helper.Shared.Region
             { "IsUseVideoBGDynamicColorUpdate", false },
             { "ShowEventsPanel", true },
             { "ShowSocialMediaPanel", true },
-            { "ShowGamePlaytime", true},
+            { "ShowGamePlaytime", true },
             { "CustomBGPath", "" },
             { "GameCategory", "Honkai Impact 3rd" },
             { "WindowSizeProfile", "Normal" },
             { "CurrentCDN", 0 },
             { "ShowRegionChangeWarning", false },
-            #if !DISABLEDISCORD
+        #if !DISABLEDISCORD
             { "EnableDiscordRPC", false },
             { "EnableDiscordGameStatus", true },
-            { "EnableDiscordIdleStatus", true},
-            #endif
+            { "EnableDiscordIdleStatus", true },
+        #endif
             { "EnableAcrylicEffect", true },
             { "IncludeGameLogs", false },
             { "UseDownloadChunksMerging", false },
@@ -445,9 +518,9 @@ namespace Hi3Helper.Shared.Region
             { "BackgroundAudioIsMute", true },
             { "UseInstantRegionChange", true },
             { "IsIntroEnabled", true },
-            { "IsEnableSophon", true},
-            { "SophonCpuThread", 0},
-            { "SophonHttpConnInt", 0},
+            { "IsEnableSophon", true },
+            { "SophonCpuThread", 0 },
+            { "SophonHttpConnInt", 0 },
             { "SophonPreloadApplyPerfMode", false },
 
             { "EnforceToUse7zipOnExtract", false },
@@ -466,6 +539,7 @@ namespace Hi3Helper.Shared.Region
             { "HttpProxyPassword", string.Empty },
             { "HttpClientTimeout", 90 }
         };
+
         #endregion
     }
 }

@@ -105,9 +105,10 @@ namespace CollapseLauncher
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
+            string timeLeftString = string.Format(Locale.Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
             UpdateRepairStatus(
                 string.Format(Locale.Lang._GameRepairPage.Status8, Path.GetFileName(asset.AssetIndex.N)),
-                string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
             FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).EnsureNoReadOnly();

@@ -7,6 +7,7 @@ using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Http;
 using Hi3Helper.UABT;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
 namespace CollapseLauncher
 {
@@ -41,34 +43,39 @@ namespace CollapseLauncher
             await BuildGameRepoURL(downloadClient, token);
 
             // Iterate type and do fetch
-            foreach (CacheAssetType type in Enum.GetValues<CacheAssetType>())
-            {
-                // Skip for unused type
-                switch (type)
+            await Parallel.ForEachAsync(
+                Enum.GetValues<CacheAssetType>(),
+                new ParallelOptions
                 {
-                    case CacheAssetType.Unused:
-                    case CacheAssetType.Dispatcher:
-                    case CacheAssetType.Gateway:
-                    case CacheAssetType.General:
-                    case CacheAssetType.IFix:
-                    case CacheAssetType.DesignData:
-                    case CacheAssetType.Lua:
-                        continue;
-                }
+                    MaxDegreeOfParallelism = _threadCount,
+                    CancellationToken      = token
+                },
+                async (type, ctx) =>
+                {
+                    switch (type)
+                    {
+                        case CacheAssetType.Data:
+                        case CacheAssetType.Event:
+                        case CacheAssetType.AI:
+                            {
+                                // uint = Count of the assets available
+                                // long = Total size of the assets available
+                                (int, long) count = await FetchByType(type, downloadClient, returnAsset, ctx);
 
-                // uint = Count of the assets available
-                // long = Total size of the assets available
-                (int, long) count = await FetchByType(type, downloadClient, returnAsset, token);
+                                // Write a log about the metadata
+                                LogWriteLine($"Cache Metadata [T: {type}]:",                         LogType.Default, true);
+                                LogWriteLine($"    Cache Count = {count.Item1}",                     LogType.NoTag,   true);
+                                LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag,   true);
 
-                // Write a log about the metadata
-                LogWriteLine($"Cache Metadata [T: {type}]:", LogType.Default, true);
-                LogWriteLine($"    Cache Count = {count.Item1}", LogType.NoTag, true);
-                LogWriteLine($"    Cache Size = {SummarizeSizeSimple(count.Item2)}", LogType.NoTag, true);
-
-                // Increment the Total Size and Count
-                _progressAllCountTotal += count.Item1;
-                _progressAllSizeTotal += count.Item2;
-            }
+                                // Increment the Total Size and Count
+                                Interlocked.Add(ref _progressAllCountTotal, count.Item1);
+                                Interlocked.Add(ref _progressAllSizeTotal,  count.Item2);
+                            }
+                            break;
+                        default:
+                            return;
+                    }
+                });
 
             // Return asset index
             return returnAsset;
@@ -230,7 +237,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask<(int, long)> BuildAssetIndex(CacheAssetType type, string baseURL, Stream stream,
+        private async ValueTask<ValueTuple<int, long>> BuildAssetIndex(CacheAssetType type, string baseURL, Stream stream,
                                             List<CacheAsset> assetIndex, CancellationToken token)
         {
             int count = 0;
@@ -258,6 +265,9 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
+            // Use ConcurrentQueue for adding assets in parallel.
+            ConcurrentQueue<CacheAsset> assetQueue = [];
+
             // Iterate lines of the TextAsset in parallel
             await Parallel.ForEachAsync(EnumerateCacheTextAsset(type, dataTextAsset.GetStringList(), baseURL),
                 new ParallelOptions
@@ -283,8 +293,17 @@ namespace CollapseLauncher
                         if (!urlStatus.IsSuccessStatusCode) return;
                     }
 
-                    assetIndex.Add(content);
+                    // Append the content to the queue
+                    assetQueue.Enqueue(content);
+
+                    // Increment the count and size
+                    Interlocked.Increment(ref count);
+                    Interlocked.Add(ref size, content.CS);
                 });
+
+            // Take out from the ConcurrentQueue
+            assetIndex.AddRange(assetQueue);
+            assetQueue.Clear();
 
             // Return the count and the size
             return (count, size);

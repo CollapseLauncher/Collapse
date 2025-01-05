@@ -27,7 +27,7 @@
     "ChooseFolderDialogTitle": "Localiser le dossier",
     "FolderInsufficientPermission": "Permissions refusées ! Merci de choisir un autre dossier.",
     "FolderNotSelected": "Aucun dossier choisi. Merci de sélectionner un dossier !",
-    "OverlayPrepareFolderSubtitle": "Application des permissions nécessaires…",
+    "OverlayPrepareFolderSubtitle": "Application de la/des permission(s) nécessaire(s)...",
     "OverlayPrepareFolderTitle": "Préparation du dossier d'application",
     "PageTitle": "Page de démarrage",
     "Pg1LoadingSubitle1": "Préparation d'une liste des jeux supportés pour vous…",
@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "Le jeu s'est arrêté de façon inattendue avec les détails d'erreur ci-dessous :",
     "UnhandledTitle4": "Avertissement",
     "UnhandledSubtitle4": "Ce n'est pas un problème majeur, mais nous pensons que nous devrions vous le faire savoir :\r\nEn raison de tests A/B de miHoYo, Collapse ne supporte pas la lecture de la clé suivante : App_Settings_h2319593470.\r\nNous nous excusons pour la gêne occasionnée et vous remercions de votre compréhension.",
+    "UnhandledTitleDiskCrc": "Corruption du disque détectée !",
+    "UnhandledSubDiskCrc": "Une corruption du disque a été détectée en tentant d'accéder à un fichier. Veuillez effectuer une vérification de votre disque en utilisant CHKDSK.",
     "CopyClipboardBtn1": "Tout copier dans le presse-papier",
     "CopyClipboardBtn2": "Copié dans le presse-papier !",
     "GoBackPageBtn1": "Retourner à la page précédente"
@@ -146,12 +148,18 @@
     "GameSettings_Panel2UninstallGame": "Désinstaller le jeu",
     "GameSettings_Panel2ConvertVersion": "Convertir la version du jeu",
     "GameSettings_Panel2MoveGameLocationGame": "Déplacer le jeu",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Impossible de déplacer le jeu à la racine de votre disque !\r\nVeuillez créer un nouveau dossier et réessayez.",
     "GameSettings_Panel2StopGame": "Forcer la fermeture du jeu",
+    "GameSettings_Panel3RegionalSettings": "Paramètres régionaux",
     "GameSettings_Panel3": "Arguments de démarrage personnalisés",
-    "GameSettings_Panel4": "Divers",
+    "GameSettings_Panel3RegionRpc": "Afficher le statut en jeu sur Discord",
+    "GameSettings_Panel3CustomBGRegion": "Modifier l'arrière-plan",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Arrière-plan régional personnalisé",
+    "GameSettings_Panel4": "Global - Divers",
     "GameSettings_Panel4ShowEventsPanel": "Afficher le panneau des évènements",
     "GameSettings_Panel4ShowSocialMediaPanel": "Afficher le panneau des médias sociaux",
     "GameSettings_Panel4ShowPlaytimeButton": "Afficher le compteur de temps de jeu",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Synchroniser le temps de jeu avec la base de données",
     "GameSettings_Panel4CreateShortcutBtn": "Créer le raccourci",
     "GameSettings_Panel4AddToSteamBtn": "Ajouter à Steam",
 
@@ -160,10 +168,20 @@
     "GamePlaytime_Idle_Panel1Minutes": "Minutes",
     "GamePlaytime_Idle_ResetBtn": "Réinitialiser",
     "GamePlaytime_Idle_ChangeBtn": "Modifier",
+    "GamePlaytime_Idle_SyncDb": "Synchroniser",
+    "GamePlaytime_Idle_SyncDbSyncing": "Synchronisation…",
     "GamePlaytime_Running_Info1": "Une instance de ce jeu est actuellement en cours, la durée de jeu ne peut donc pas être modifiée.",
-    "GamePlaytime_Running_Info2": "Veuillez noter que la fermeture complète de Collapse arrêtera le suivi du temps de jeu (en sauvegardant ce qui a été joué jusqu'à maintenant) et que seules les sessions commencées à l'aide de Collapse seront suivies.",
+    "GamePlaytime_Running_Info2": "Sachez que la fermeture complète de Collapse interrompt le suivi de la durée de jeu (sauvegarde de ce qui a été joué jusqu'à ce point).",
     "GamePlaytime_Display": "{0} h {1:00} min",
     "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Statistiques de temps de jeu",
+    "GamePlaytime_Stats_NeverPlayed": "Jamais joué",
+    "GamePlaytime_Stats_LastSession": "Dernière session",
+    "GamePlaytime_Stats_LastSession_StartTime": "Date",
+    "GamePlaytime_Stats_LastSession_Duration": "Durée",
+    "GamePlaytime_Stats_Daily": "Ajourd'hui",
+    "GamePlaytime_Stats_Weekly": "Semaine",
+    "GamePlaytime_Stats_Monthly": "Mois",
 
     "PostPanel_Events": "Évènements",
     "PostPanel_Notices": "Annonces",
@@ -192,7 +210,10 @@
     "GameStateInvalidFixed_Subtitle1": "Les propriétés des fichiers du jeu ont été corrigées pour la région :",
     "GameStateInvalidFixed_Subtitle2": "Veuillez effectuer une « ",
     "GameStateInvalidFixed_Subtitle3": " » dans le menu « ",
-    "GameStateInvalidFixed_Subtitle4": " » afin de s'assurer que les fichiers sont valides."
+    "GameStateInvalidFixed_Subtitle4": " » afin de s'assurer que les fichiers sont valides.",
+
+    "InstallFolderRootTitle": "Racine du disque fournie !",
+    "InstallFolderRootSubtitle": "Impossible d'installer le jeu à la racine de votre disque ! Veuillez créer un nouveau dossier et réessayez."
   },
 
   "_GameRepairPage": {
@@ -404,6 +425,8 @@
     "Debug": "Paramètres supplémentaires",
     "Debug_Console": "Afficher la console",
     "Debug_IncludeGameLogs": "Sauvegarder les journaux de jeu dans Collapse (peut contenir des données sensibles)",
+    "Debug_SendRemoteCrashData": "Envoyer des rapports de plantage anonymes aux développeurs",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "Ce paramètre est désactivé en raison de la variable d'environnement « DISABLE_SENTRY » définie sur « true ».",
     "Debug_MultipleInstance": "Permettre l'exécution de plusieurs instances de Collapse",
 
     "ChangeRegionWarning_Toggle": "Afficher un avertissement lors d'un changement de région",
@@ -431,6 +454,7 @@
     "AppBG": "Arrière-plan",
     "AppBG_Checkbox": "Utiliser une image d'arrière-plan personnalisée",
     "AppBG_Note": "Formats acceptés :\r\nImage : {0}\r\nVidéo : {1}",
+    "AppBG_Note_Regional": "Le paramètre d'arrière-plan spécifique à chaque région se trouve dans le bouton « Réglages rapides » sur la page principale.",
 
     "AppThreads": "Threads d'application",
     "AppThreads_Download": "Threads de téléchargement",
@@ -455,6 +479,8 @@
     "SophonHttpNumberBox": "Nombre de connexions HTTP maximum",
     "SophonHelp_Http": "Cette option contrôle le nombre maximium de connexions réseau que Collapse peut établir vers les serveurs de mise à jour de HoYoverse afin de télécharger les fragments.",
     "SophonToggle": "Activer le mode Sophon sur les régions supportées",
+    "SophonPredownPerfMode_Toggle": "[EXPÉRIMENTAL] Utiliser tous les cœurs CPU pour appliquer le paquet de préchargement",
+    "SophonPredownPerfMode_Tooltip": "L'activation de cette option définira les threads du processeur au maximum disponible pour votre système. Si vous rencontrez des problèmes, désactivez cette option.",
 
     "AppThreads_Attention": "Attention",
     "AppThreads_Attention1": "Avant de modifier la valeur «",
@@ -463,14 +489,18 @@
     "AppThreads_Attention4": "la valeur si vous avez un téléchargement existant car cela pourrait provoquer",
     "AppThreads_Attention5": "UN RETÉLÉCHARGEMENT AU COMPLET",
     "AppThreads_Attention6": "en raison du nombre de sessions nécessaires au téléchargement qui ne correspondrait pas.",
+    "AppThreads_AttentionTop1": "Les problèmes ci-dessous ne se produiront plus si le paramètre «",
+    "AppThreads_AttentionTop2": "» est activé.",
 
     "DiscordRPC": "Statut enrichi Discord",
     "DiscordRPC_Toggle": "Afficher le statut enrichi sur Discord",
     "DiscordRPC_GameStatusToggle": "Afficher le jeu en cours sur Discord",
     "DiscordRPC_IdleStatusToggle": "Afficher le statut enrichi lorsque vous êtes inactif",
 
+    "ImageBackground": "Paramètres de l'image d'arrière-plan",
     "VideoBackground": "Paramètres de l'arrière-plan vidéo",
     "VideoBackground_IsEnableAudio": "Activer l'audio",
+    "VideoBackground_IsEnableAcrylicBackground": "Activer les effets Acrylic lors de l'utilisation d'un arrière-plan vidéo",
     "VideoBackground_AudioVolume": "Volume de l'audio",
 
     "Update": "État des mises à jour",
@@ -510,7 +540,7 @@
     "Disclaimer1": "Cette application n'est pas affiliée à",
     "Disclaimer2": "d'aucune sorte",
     "Disclaimer3": "et est complètement Open Source. Toute contribution est la bienvenue.",
-
+    "WebsiteBtn": "Visiter le site Web",
     "DiscordBtn1": "Discord de notre armada (HI3)",
     "DiscordBtn2": "Discord Honkai Impact 3rd",
     "DiscordBtn3": "Discord officiel de Collapse",
@@ -519,6 +549,7 @@
 
     "EnableAcrylicEffect": "Utiliser les effets de flou Acrylic",
     "EnableDownloadChunksMerging": "Fusionner les paquets téléchargés",
+    "Enforce7ZipExtract": "Toujours utiliser 7-Zip pour l'installation/mise à jour du jeu",
     "UseExternalBrowser": "Toujours utiliser un navigateur externe",
 
     "LowerCollapsePrioOnGameLaunch": "Réduire l'utilisation en ressources de Collapse lorsqu'un jeu est lancé",
@@ -537,7 +568,7 @@
     "AppBehavior_LaunchOnStartup": "Démarrer automatiquement Collapse au démarrage de l'ordinateur",
     "AppBehavior_StartupToTray": "Démarrer en mode réduit (dans la barre d'état système)",
 
-    "Waifu2X_Toggle": "Utiliser Waifu2X [Expérimental]",
+    "Waifu2X_Toggle": "Utiliser Waifu2X",
     "Waifu2X_Help": "Utiliser Waifu2X pour agrandir les images d'arrière-plan.\r\nLorsque cette option est activée, la qualité de l'image sera significativement améliorée, mais cela peut causer un temps de chargement accru de l'image lors du chargement initial.",
     "Waifu2X_Help2": "Uniquement disponible pour les images fixes !",
     "Waifu2X_Warning_CpuMode": "AVERTISSEMENT : Aucun GPU compatible Vulkan disponible n'a été trouvé et le mode CPU sera utilisé. Cela augmentera considérablement le temps de traitement de l’image.",
@@ -578,7 +609,58 @@
     "NetworkSettings_Http_Redirect": "Autoriser la redirection HTTP",
     "NetworkSettings_Http_SimulateCookies": "Autoriser la simulation de cookies HTTP",
     "NetworkSettings_Http_UntrustedHttps": "Autoriser l'utilisation de certificats HTTPS « non fiables »",
-    "NetworkSettings_Http_Timeout": "Délai d'attente du client HTTP (en secondes)"
+    "NetworkSettings_Http_Timeout": "Délai d'attente du client HTTP (en secondes)",
+
+    "FileDownloadSettings_Title": "Paramètres de téléchargement des fichiers",
+    "FileDownloadSettings_SpeedLimit_Title": "Limiter la vitesse de téléchargement",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Limite de vitesse (en Mio)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Valeur par défaut :",
+    "FileDownloadSettings_SpeedLimitHelp2": "Plage de valeurs :",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 Mio/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limite l'utilisation maximale de la bande passante pour le téléchargement. Le paramètre «",
+    "FileDownloadSettings_SpeedLimitHelp5": "» ne peut être utilisé si la limitation de bande passante est activée.",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "Nouveau téléchargeur avec préallocation",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "Uniquement pour l'installation, la réparation et la mise à jour des caches du jeu.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Taille des fragments (en Mio)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Valeur par défaut :",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Plage de valeurs :",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 Mio",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "Lorsque ce paramètre est activé, le téléchargeur va préallouer dynamiquement la taille du fichier pendant que celui-ci le télécharge.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "Cela permet au téléchargeur de directement écrire les fragments de données du fichier sans le scinder en plusieurs fichiers distincts.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "Lorsque ce paramètre est désactivé, le launcher utilisera l'ancienne méthode où les fragments seront écrits dans des fichiers séparés. Les paramètres «",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "» et «",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "» seront également désactivés.",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Note :",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "Cette fonctionnalité est uniquement disponible pour l'installation (incluant l'installation initiale, la mise à jour et le préchargement), la réparation et la mise à jour des caches du jeu.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Mode de téléchargement en parallèle",
+    "FileDownloadSettings_BurstDownload_Subtitle": "Uniquement pour la réparation et la mise à jour des caches du jeu.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Valeur par défaut :",
+    "FileDownloadSettings_BurstDownloadHelp2": "Lorsque ce paramètre est activé, cette fonctionnalité permettra au processus de téléchargement des fonctions «",
+    "FileDownloadSettings_BurstDownloadHelp3": "» et «",
+    "FileDownloadSettings_BurstDownloadHelp4": "» de fonctionner en parallèle afin d'accélérer le processus de téléchargement.",
+    "FileDownloadSettings_BurstDownloadHelp5": "Lorsque ce paramètre est désactivé, le processus de téléchargement des fonctions «",
+    "FileDownloadSettings_BurstDownloadHelp6": "» et «",
+    "FileDownloadSettings_BurstDownloadHelp7": "» utilisera un processus de téléchargement séquentiel.",
+
+    "Database_Title": "Base de données synchronisable utilisateur",
+    "Database_ConnectionOk": "Base de données connectée avec succès !",
+    "Database_ConnectFail": "Échec de la connexion à la base de données. Voir les erreurs ci-dessous :",
+    "Database_Toggle": "Activer la base de données en ligne",
+    "Database_Url": "URL de la base de données",
+    "Database_Url_Example": "Exemple : https://db-collapse.turso.io",
+    "Database_Token": "Jeton",
+    "Database_UserId": "ID utilisateur",
+    "Database_GenerateGuid": "Générer un nouvel UID",
+    "Database_Validate": "Valider et sauvegarder",
+    "Database_Error_EmptyUri": "L'URL de la base de données ne peut être vide !",
+    "Database_Error_EmptyToken": "Le jeton de la base de données ne peut être vide !",
+    "Database_Error_InvalidGuid": "L'ID utilisateur n'est pas un GUID valide !",
+    "Database_Warning_PropertyChanged": "Les paramètres de la base de données ont changé",
+    "Database_ValidationChecking": "Validation des paramètres…",
+    "Database_Placeholder_DbUserIdTextBox": "Exemple de GUID : ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici"
   },
 
   "_Misc": {
@@ -598,6 +680,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "Tout est en ordre !",
     "Cancel": "Annuler",
     "Close": "Fermer",
     "UseCurrentDir": "Utiliser le dossier actuel",
@@ -666,6 +749,7 @@
     "Disabled": "Désactivé",
     "Enabled": "Activé",
     "UseAsDefault": "Utiliser par défaut",
+    "Default": "Par défaut",
 
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
@@ -706,7 +790,14 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Nom du launcher inconnu)",
 
-    "ImageCropperTitle": "Rogner l'image"
+    "ImageCropperTitle": "Rogner l'image",
+
+    "IsBytesMoreThanBytes": "= {0} octets (~{1})",
+    "IsBytesUnlimited": "= Illimité",
+    "IsBytesNotANumber": "= NaN",
+
+    "MissingVcRedist": "Redistribuable Visual C/C++ manquant",
+    "MissingVcRedistSubtitle": "Vous devez installer le redistribuable Visual C/C++ pour exécuter cette fonction. Voulez-vous le télécharger maintenant ?\r\nRemarque : Cela ouvrira une fenêtre de navigateur et téléchargera un fichier depuis le site de Microsoft. Veuillez exécuter le programme d'installation après l'avoir téléchargé, puis redémarrez Collapse et réessayez.\r\nSi l'erreur persiste malgré l'installation du redistribuable, veuillez soumettre un rapport de bug."
   },
 
   "_BackgroundNotification": {
@@ -753,7 +844,7 @@
     "RepairCompletedSubtitle": "{0} fichier(s) ont été réparés.",
     "RepairCompletedSubtitleNoBroken": "Aucun fichier cassé n'a été trouvé.",
     "ExtremeGraphicsSettingsWarnTitle": "Préréglage « Très élevé » sélectionné !",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Vous êtes sur le point de définir le préréglage « Très élevé ».\r\nLe préréglage « Très élevé » est essentiellement une échelle de rendu 2x avec MSAA activé, et est TRÈS MAL OPTIMISÉ !\r\n\r\nÊtes-vous sûr de vouloir utiliser ce réglage ?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "Vous êtes sur le point de définir le préréglage « Très élevé ».\r\nLe préréglage « Très élevé » est essentiellement une échelle de rendu 1,6x avec MSAA activé, et est TRÈS MAL OPTIMISÉ !\r\n\r\nÊtes-vous sûr de vouloir utiliser ce réglage ?",
     "MigrateExistingMoveDirectoryTitle": "Déplacement de l'installation existante pour : {0}",
     "MigrateExistingInstallChoiceTitle": "Une installation existante de {0} a été détectée !",
     "MigrateExistingInstallChoiceSubtitle1": "Vous avez une installation existante du jeu utilisant {0} à cet emplacement :",
@@ -818,7 +909,7 @@
     "ChangePlaytimeTitle": "Modifier le temps de jeu ?",
     "ChangePlaytimeSubtitle": "Modifier votre temps de jeu signifie remplacer la valeur actuelle par celle que vous venez de saisir.\r\n\r\nVoulez-vous poursuivre ?\r\n\r\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous n'êtes pas en jeu.",
     "ResetPlaytimeTitle": "Réinitialisation du temps de jeu",
-    "ResetPlaytimeSubtitle": "Réinitialiser votre temps de jeu signifie remettre le compteur de temps de jeu à 0. Il s'agit d'une action ",
+    "ResetPlaytimeSubtitle": "Réinitialiser votre temps de jeu signifie remettre à 0 le compteur de temps de jeu et toutes les statistiques associées. ",
     "ResetPlaytimeSubtitle2": "destructrice",
     "ResetPlaytimeSubtitle3": ", ce qui signifie que vous ne pouvez pas revenir en arrière une fois confirmée.\r\n\r\nVoulez-vous poursuivre ?\r\n\r\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous n'êtes pas en jeu.",
     "InvalidPlaytimeTitle": "Un problème est survenu lors de l'enregistrement du temps de jeu de cette session",
@@ -831,6 +922,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "Dossier invalide !",
     "CannotUseAppLocationForGameDirSubtitle": "Vous ne pouvez pas utiliser ce dossier car il est utilisé comme dossier système ou pour l'exécutable principal de l'application. Veuillez choisir un autre emplacement !",
+    "InvalidGameDirNewTitleFormat": "Chemin invalide : {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Chemin sélectionné :",
+    "InvalidGameDirNewSubtitleSelectOther": "Veuillez sélectionner un autre dossier/emplacement !",
+    "InvalidGameDirNew1Title": "Dossier invalide !",
+    "InvalidGameDirNew1Subtitle": "Vous ne pouvez pas utiliser ce dossier car il est utilisé comme dossier système ou par l'exécutable principal de l'application. Veuillez choisir un autre emplacement !",
+    "InvalidGameDirNew2Title": "Impossible d'accéder au dossier sélectionné",
+    "InvalidGameDirNew2Subtitle": "Le launcher n'a pas la permission d'accéder à ce dossier !",
+    "InvalidGameDirNew3Title": "Impossible de sélectionner la racine du disque",
+    "InvalidGameDirNew3Subtitle": "Vous avez sélectionné un emplacement à la racine du disque, ce qui est interdit !",
+    "InvalidGameDirNew4Title": "Impossible de sélectionner le dossier « Windows »",
+    "InvalidGameDirNew4Subtitle": "Vous ne pouvez pas utiliser le dossier « Windows » comme dossier d'installation afin d'éviter tout problème qui pourrait en résulter.",
+    "InvalidGameDirNew5Title": "Impossible de sélectionner le dossier « ProgramData »",
+    "InvalidGameDirNew5Subtitle": "Vous ne pouvez pas utiliser le dossier « ProgramData » comme dossier d'installation afin d'éviter tout problème qui pourrait en résulter.",
+    "InvalidGameDirNew6Title": "Impossible de sélectionner le dossier « Programmes » ou « Programmes (x86) »",
+    "InvalidGameDirNew6Subtitle": "Vous ne pouvez pas utiliser le dossier « Programmes » ou « Programmes (x86) » comme dossier d'installation afin d'éviter tout problème qui pourrait en résulter.",
+    "FolderDialogTitle1": "Sélection du dossier d'installation du jeu",
 
     "StopGameTitle": "Forcer l'arrêt du jeu",
     "StopGameSubtitle": "Êtes-vous sûr de vouloir forcer l'arrêt du jeu en cours ?\r\nIl se peut que vous perdiez une partie de votre progression en jeu.",
@@ -883,9 +990,18 @@
 
     "DownloadSettingsTitle": "Paramètres de téléchargement",
     "DownloadSettingsOption1": "Démarrer le jeu après l'installation",
-    
+
     "OpenInExternalBrowser": "Ouvrir dans un navigateur externe",
-    "CloseOverlay": "Fermer l'overlay"
+    "CloseOverlay": "Fermer l'overlay",
+
+    "DbGenerateUid_Title": "Êtes-vous sûr de vouloir modifier votre ID utilisateur ?",
+    "DbGenerateUid_Content": "Modifier l'ID utilisateur actuel peut entraîner une perte des données associées si vous le perdez.",
+
+    "SophonIncrementUpdateUnavailTitle": "Mise à jour incrémentielle indisponible : Version trop ancienne !",
+    "SophonIncrementUpdateUnavailSubtitle1": "La version de votre jeu: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": "est trop ancienne",
+    "SophonIncrementUpdateUnavailSubtitle3": " et la mise à jour incrémentielle à partir de celle-ci n'est pas disponible. Il est cependant possible de mettre à jour le jeu en effectuant un nouveau téléchargement au complet de celui-ci.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Cliquez sur « {0} » pour procéder à la mise à jour complète ou sur « {1} » pour annuler le processus."
   },
 
   "_FileMigrationProcess": {
@@ -1041,6 +1157,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "Veuillez fermer Collapse avant d'appliquer la mise à jour !",
     "ApplyUpdateErrCollapseRunSubtitle": "En l'attente de la fermeture de Collapse…",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "Une instance de Collapse Launcher est toujours en cours d'exécution !",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "Nous avons détecté qu'une instance de Collapse Launcher s'exécute en arrière-plan. Pour forcer la fermeture, cliquez sur « Oui ». Pour mettre en attente jusqu'à la fermeture manuelle, cliquez sur « Non ».",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "Installation existante défectueuse détectée !",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "Nous avons détecté que votre installation actuelle est défectueuse.\r\n\r\nCliquez sur « Oui » pour lancer une réparation de l'installation avant de la mettre à jour ou sur « Non » pour simplement effectuer la mise à jour.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ERREUR :\r\nLe fichier « release » ne contient pas de chaîne « stable » ou « preview »",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Veuillez vérifier votre fichier « release » et réessayez.",
 
@@ -1344,6 +1464,8 @@
     "LoadingTitle": "Traitement",
     "LoadingSubtitle1": "Calcul des fichiers existants ({0} fichier(s) trouvé(s) - {1} au total)…",
     "LoadingSubtitle2": "Vérification de la disponibilité de « pkg_version »…",
+    "LoadingSubtitle3": "L'interface utilisateur peut ne plus répondre durant ce processus…",
+    "DeleteSubtitle": "Suppression des fichiers…",
     "BottomButtonDeleteAllFiles": "Tout supprimer",
     "BottomButtonDeleteSelectedFiles": "Supprimer {0} fichier(s) sélectionné(s)",
     "BottomCheckboxFilesSelected": "{0} fichier(s) sélectionné(s) ({1} / {2} au total)",
@@ -1405,9 +1527,45 @@
     "Graphics_EffectsQ": "Qualité des effets",
     "Graphics_ShadingQ": "Qualité des ombres",
     "Graphics_Distortion": "Distorsion",
+    "Graphics_HighPrecisionCharacterAnimation": "Animation des personnages de haute précision",
     "Audio_PlaybackDev": "Périphérique de sortie audio",
     "Audio_PlaybackDev_Headphones": "Casque",
     "Audio_PlaybackDev_Speakers": "Haut-parleurs",
     "Audio_PlaybackDev_TV": "Téléviseur"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher est actuellement minimisé",
+    "WindowHiddenToTray_Subtitle": "Le launcher s'exécute désormais en arrière-plan.\r\nCliquez sur cette notification ou l'icône de la zone de notification pour restaurer la fenêtre.",
+
+    "GameInstallCompleted_Title": "{0} · Installation terminée",
+    "GameInstallCompleted_Subtitle": "{0} a été installé avec succès !",
+
+    "GameUpdateCompleted_Title": "{0} · Mise à jour terminée",
+    "GameUpdateCompleted_Subtitle": "{0} a été mis à jour vers la v{1} !",
+
+    "GamePreloadCompleted_Title": "{0} · Préchargement terminé",
+
+    "GameRepairCheckCompleted_Title": "Vérification des ressources du jeu terminée",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} fichier(s) a/ont besoin d'être réparé(s)/mis à jour. Cliquez sur cette notification pour revenir au launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "Aucun fichier ne nécessite de réparation/mise à jour.",
+
+    "GameRepairDownloadCompleted_Title": "Réparation des ressources terminée",
+    "GameRepairDownloadCompleted_Subtitle": "{0} fichier(s) a/ont été réparé(s)/mis à jour avec succès.",
+
+    "CacheUpdateCheckCompleted_Title": "Vérification des mises à jour des caches terminée",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} fichier(s) de cache doit/doivent être mis à jour. Cliquez sur cette notification pour revenir au launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "Aucun fichier de cache n'a besoin d'être mis à jour.",
+
+    "CacheUpdateDownloadCompleted_Title": "Téléchargement de la mise à jour des caches terminée",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} fichier(s) de cache a/ont été mis à jour avec succès.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Cliquez sur cette notification pour revenir au launcher.",
+
+    "OOBE_WelcomeTitle": "Bienvenue sur Collapse Launcher !",
+    "OOBE_WelcomeSubtitle": "Vous sélectionnez actuellement {0} - {1} comme jeu. D'autres jeux vous attendent, découvrez-en plus !",
+
+    "LauncherUpdated_NotifTitle": "Votre launcher est à jour !",
+    "LauncherUpdated_NotifSubtitle": "Votre launcher a été mis à jour vers la v{0}. Allez dans « {1} » et cliquez sur « {2} » pour afficher les derniers changements."
   }
 }

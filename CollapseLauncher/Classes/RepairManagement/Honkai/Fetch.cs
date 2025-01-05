@@ -14,6 +14,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.Win32;
 using System;
 using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -319,9 +320,18 @@ namespace CollapseLauncher
             // Get the base URL
             string baseURL = CombineURLFromString((GetAppConfigValue("EnableHTTPRepairOverride").ToBool() ? "http://" : "https://") + assetBundleURL, "/Video/");
 
+            // Get FileInfo of the version.txt file
+            FileInfo fileInfo = new FileInfo(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"))
+                .EnsureCreationOfDirectory()
+                .EnsureNoReadOnly();
+
             // Build video versioning file
-            await using StreamWriter sw = new StreamWriter(Path.Combine(_gamePath!, NormalizePath(_videoBaseLocalPath)!, "Version.txt"), false);
-            // Iterate the metadata to be converted into asset index in parallel
+            await using TextWriter sw = fileInfo.CreateText();
+
+            // Initialize concurrent queue for video metadata
+            ConcurrentDictionary<string, CGMetadata> videoMetadataQueue = new ConcurrentDictionary<string, CGMetadata>();
+
+            // Iterate the metadata to be converted into asset index
             await Parallel.ForEachAsync(enumEntry!, new ParallelOptions
             {
                 CancellationToken      = token,
@@ -333,14 +343,6 @@ namespace CollapseLauncher
                    // Starting from 7.1, the CGs that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
                    bool isCGAvailable = await IsCGFileAvailable(metadata, baseURL, tokenInternal);
                    bool isCGIgnored   = ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata!.CgSubCategory);
-                   if (!metadata.InStreamingAssets)
-                   {
-                       lock (sw)
-                       {
-                           // Append the versioning list
-                           sw.WriteLine("Video/" + (_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN) + ".usm\t1");
-                       }
-                   }
 
                #if DEBUG
                    if (isCGIgnored)
@@ -350,18 +352,26 @@ namespace CollapseLauncher
                    if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
                    {
                        string name = (_audioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN) + ".usm";
-                       lock (assetIndex)
-                       {
-                           assetIndex.Add(new FilePropertiesRemote
-                           {
-                               N  = CombineURLFromString(_videoBaseLocalPath, name),
-                               RN = CombineURLFromString(baseURL,             name),
-                               S  = _audioLanguage == AudioLanguageType.Japanese ? metadata.FileSizeHighBitrateJP : metadata.FileSizeHighBitrateCN,
-                               FT = FileType.Video
-                           });
-                       }
+                       _ = videoMetadataQueue.TryAdd(name, metadata);
                    }
                });
+
+            foreach (KeyValuePair<string, CGMetadata> metadata in videoMetadataQueue)
+            {
+                assetIndex.Add(new FilePropertiesRemote
+                {
+                    N = CombineURLFromString(_videoBaseLocalPath, metadata.Key),
+                    RN = CombineURLFromString(baseURL, metadata.Key),
+                    S = _audioLanguage == AudioLanguageType.Japanese ? metadata.Value.FileSizeHighBitrateJP : metadata.Value.FileSizeHighBitrateCN,
+                    FT = FileType.Video
+                });
+
+                if (!metadata.Value.InStreamingAssets)
+                {
+                    // Append the versioning list
+                    await sw.WriteLineAsync("Video/" + (_audioLanguage == AudioLanguageType.Japanese ? metadata.Value.CgPathHighBitrateJP : metadata.Value.CgPathHighBitrateCN) + ".usm\t1");
+                }
+            }
         }
 
         private async ValueTask<bool> IsCGFileAvailable(CGMetadata cgInfo, string baseURL, CancellationToken token)

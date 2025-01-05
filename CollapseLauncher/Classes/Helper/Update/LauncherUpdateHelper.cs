@@ -5,6 +5,8 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
+
 #if !USEVELOPACK
 using Squirrel;
 using Squirrel.Sources;
@@ -20,26 +22,13 @@ namespace CollapseLauncher.Helper.Update
 {
     internal static class LauncherUpdateHelper
     {
-        static LauncherUpdateHelper()
-        {
-            string? versionString = LauncherConfig.AppCurrentVersionString;
-            if (string.IsNullOrEmpty(versionString))
-                throw new NullReferenceException("App cannot retrieve the current version of the executable!");
-
-            _launcherCurrentVersion = new GameVersion(versionString);
-            _launcherCurrentVersionString = _launcherCurrentVersion.VersionString;
-        }
-
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
         internal static bool IsLauncherUpdateAvailable;
 
-        private static readonly GameVersion _launcherCurrentVersion;
-        internal static GameVersion? LauncherCurrentVersion
-            => _launcherCurrentVersion;
+        internal static GameVersion? LauncherCurrentVersion => field ??= new(LauncherConfig.AppCurrentVersionString);
 
-        private static readonly string _launcherCurrentVersionString;
-        internal static string LauncherCurrentVersionString
-            => _launcherCurrentVersionString;
+        [field: AllowNull, MaybeNull]
+        internal static string LauncherCurrentVersionString => field = LauncherConfig.AppCurrentVersionString;
 
         internal static async Task RunUpdateCheckDetached()
         {

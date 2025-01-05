@@ -287,11 +287,11 @@ public partial class Updater : IDisposable
     private bool IsCurrentHasLatestVersion(string latestVersionString)
     {
         // Check legacy version first
-        var filePath = Path.Combine(AppFolder, $@"..\app-{latestVersionString}\{Path.GetFileName(AppExecutablePath)}");
+        var filePath = Path.Combine(AppExecutableDir, $@"..\app-{latestVersionString}\{Path.GetFileName(AppExecutablePath)}");
         if (File.Exists(filePath)) return true;
 
         // If none does not exist, then check the latest version
-        filePath = Path.Combine(AppFolder, $@"..\current\{Path.GetFileName(AppExecutablePath)}");
+        filePath = Path.Combine(AppExecutableDir, $@"..\current\{Path.GetFileName(AppExecutablePath)}");
         if (!Version.TryParse(latestVersionString, out Version latestVersion))
         {
             Logger.LogWriteLine($"[Updater::DoesLatestVersionExist] latestVersionString is not valid! {latestVersionString}", LogType.Error, true);
@@ -356,7 +356,7 @@ public partial class Updater : IDisposable
         {
             try
             {
-                string currentAppPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "current");
+                string currentAppPath = Path.Combine(Path.GetDirectoryName(AppExecutableDir) ?? string.Empty, "current");
                 if (!Directory.Exists(currentAppPath))
                     Directory.CreateDirectory(currentAppPath);
 

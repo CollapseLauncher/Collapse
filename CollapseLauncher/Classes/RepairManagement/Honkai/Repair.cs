@@ -141,9 +141,10 @@ namespace CollapseLauncher
                 string outputFilePath = inputFilePath + "_tmp";
 
                 // Set downloading patch status
+                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
                 UpdateRepairStatus(
                                    string.Format(Lang._GameRepairPage.Status12,             asset.AssetIndex.N),
-                                   string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                                   string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}",
                                    true);
 
                 // Run patching task
@@ -164,9 +165,10 @@ namespace CollapseLauncher
             // Increment total count current
             _progressAllCountCurrent++;
             // Set repair activity status
+            string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
             UpdateRepairStatus(
                 string.Format(asset.AssetIndex.FT == FileType.Block ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
             // Set URL of the asset
@@ -239,9 +241,10 @@ namespace CollapseLauncher
                 string outputFilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
 
                 // Set downloading patch status
+                string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, _progress.ProgressAllTimeLeft);
                 UpdateRepairStatus(
                                    string.Format(Lang._GameRepairPage.Status13,             asset.AssetIndex.CRC),
-                                   string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)),
+                                   string.Format(Lang._GameRepairPage.PerProgressSubtitle4, ConverterTool.SummarizeSizeSimple(_progressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(_progressAllSizeTotal)) + $" | {timeLeftString}",
                                    true);
 
                 // Run patching task

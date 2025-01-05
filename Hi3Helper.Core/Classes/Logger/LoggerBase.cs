@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+
 #if !APPLYUPDATE
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.ManagedTools;
@@ -9,29 +11,28 @@ using Hi3Helper.Win32.Native.ManagedTools;
 
 namespace Hi3Helper
 {
-    public class LoggerBase
+    public abstract class LoggerBase
     {
         #region Properties
-        private FileStream _logStream { get; set; }
-        private StreamWriter _logWriter { get; set; }
-        private bool _isWriterOnDispose { get; set; }
-        private object _lockObject = new object();
-        private string _logFolder { get; set; }
+        private FileStream    LogStream         { get; set; }
+        private StreamWriter  LogWriter         { get; set; }
+        private bool          IsWriterOnDispose { get; set; }
+        private Lock          LockObject = new();
+        private StringBuilder StringBuilder { get; }
+        private string        LogFolder     { get; set; }
 #if !APPLYUPDATE
-        private string _logPath { get; set; }
         public static string LogPath { get; set; }
 #endif
-        private StringBuilder _stringBuilder { get; set; }
         #endregion
 
         #region Statics
         public static string GetCurrentTime(string format) => DateTime.Now.ToLocalTime().ToString(format);
         #endregion
 
-        public LoggerBase(string logFolder, Encoding logEncoding)
+        protected LoggerBase(string logFolder, Encoding logEncoding)
         {
             // Initialize the writer and _stringBuilder
-            _stringBuilder = new StringBuilder();
+            StringBuilder = new StringBuilder();
             SetFolderPathAndInitialize(logFolder, logEncoding);
         }
 
@@ -39,17 +40,17 @@ namespace Hi3Helper
         public void SetFolderPathAndInitialize(string folderPath, Encoding logEncoding)
         {
             // Set the folder path of the stored log
-            _logFolder = folderPath;
+            LogFolder = folderPath;
 
 #if !APPLYUPDATE
             // Check if the directory exist. If not, then create.
-            if (!string.IsNullOrEmpty(_logFolder) && !Directory.Exists(_logFolder))
+            if (!string.IsNullOrEmpty(LogFolder) && !Directory.Exists(LogFolder))
             {
-                Directory.CreateDirectory(_logFolder);
+                Directory.CreateDirectory(LogFolder);
             }
 #endif
 
-            lock (_lockObject)
+            lock (LockObject)
             {
                 // Try dispose the _logWriter even though it's not initialized.
                 // This will be used if the program need to change the log folder to another location.
@@ -74,22 +75,22 @@ namespace Hi3Helper
 #nullable enable
         public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
         {
-            lock (_lockObject)
+            lock (LockObject)
             {
                 DisposeBase();
 
-                if (!string.IsNullOrEmpty(_logFolder) && Directory.Exists(_logFolder))
-                    DeleteLogFilesInner(_logFolder);
+                if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
+                    DeleteLogFilesInner(LogFolder);
 
                 if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
                     Directory.CreateDirectory(reloadToPath);
 
                 if (!string.IsNullOrEmpty(reloadToPath))
-                    _logFolder = reloadToPath;
+                    LogFolder = reloadToPath;
 
                 encoding ??= Encoding.UTF8;
 
-                SetFolderPathAndInitialize(_logFolder, encoding);
+                SetFolderPathAndInitialize(LogFolder, encoding);
             }
         }
 
@@ -112,25 +113,24 @@ namespace Hi3Helper
         }
 #nullable restore
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async void LogWriteLine() { }
+        public abstract void LogWriteLine();
         // ReSharper disable MethodOverloadWithOptionalParameter
-        public virtual async void LogWriteLine(string line = null) { }
+        public abstract void LogWriteLine(string line = null);
         // ReSharper restore MethodOverloadWithOptionalParameter
-        public virtual async void LogWriteLine(string line, LogType type) { }
-        public virtual async void LogWriteLine(string line, LogType type, bool writeToLog) { }
-        public virtual async void LogWrite(string line, LogType type, bool writeToLog, bool fromStart) { }
+        public abstract void LogWriteLine(string line, LogType type);
+        public abstract void LogWriteLine(string line, LogType type, bool writeToLog);
+        public abstract void LogWrite(string     line, LogType type, bool writeToLog, bool fromStart);
         public void WriteLog(string line, LogType type)
         {
             // Always seek to the end of the file.
-            lock(_lockObject)
+            lock(LockObject)
             {
                 try
                 {
-                    if (_isWriterOnDispose) return;
+                    if (IsWriterOnDispose) return;
 
-                    _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
-                    _logWriter?.WriteLine(GetLine(line, type, false, true));
+                    LogWriter?.BaseStream.Seek(0, SeekOrigin.End);
+                    LogWriter?.WriteLine(GetLine(line, type, false, true));
                 }
                 catch (IOException ex) when (ex.HResult == unchecked((int)0x80070070)) // Disk full? Delete all logs <:
                 {
@@ -139,10 +139,10 @@ namespace Hi3Helper
                     // Rewrite log
                     try
                     {
-                        Logger._log?.ResetLogFiles(LauncherConfig.AppGameLogsFolder, Encoding.UTF8);
+                        Logger.CurrentLogger?.ResetLogFiles(LauncherConfig.AppGameLogsFolder, Encoding.UTF8);
                         // Attempt to write the log again after resetting
-                        _logWriter?.BaseStream.Seek(0, SeekOrigin.End);
-                        _logWriter?.WriteLine(GetLine(line, type, false, true));
+                        LogWriter?.BaseStream.Seek(0, SeekOrigin.End);
+                        LogWriter?.WriteLine(GetLine(line, type, false, true));
                     }
                     catch (Exception retryEx)
                     {
@@ -158,7 +158,6 @@ namespace Hi3Helper
                 }
             }
         }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 #endregion
 
         #region ProtectedMethods
@@ -172,19 +171,19 @@ namespace Hi3Helper
         /// <returns>Decorated line with colored type or timestamp according to the parameters</returns>
         protected string GetLine(string line, LogType type, bool coloredType, bool withTimeStamp)
         {
-            lock (_stringBuilder)
+            lock (StringBuilder)
             {
                 // Clear the _stringBuilder
-                _stringBuilder.Clear();
+                StringBuilder.Clear();
 
                 // Colorize the log type
                 if (coloredType)
                 {
-                    _stringBuilder.Append(GetColorizedString(type) + GetLabelString(type) + "\u001b[0m");
+                    StringBuilder.Append(GetColorizedString(type) + GetLabelString(type) + "\u001b[0m");
                 }
                 else
                 {
-                    _stringBuilder.Append(GetLabelString(type));
+                    StringBuilder.Append(GetLabelString(type));
                 }
 
                 // Append timestamp
@@ -192,27 +191,27 @@ namespace Hi3Helper
                 {
                     if (type != LogType.NoTag)
                     {
-                        _stringBuilder.Append($" [{GetCurrentTime("HH:mm:ss.fff")}]");
+                        StringBuilder.Append($" [{GetCurrentTime("HH:mm:ss.fff")}]");
                     }
                     else
                     {
-                        _stringBuilder.Append(new string(' ', 15));
+                        StringBuilder.Append(new string(' ', 15));
                     }
                 }
 
                 // Append spaces between labels and text
-                _stringBuilder.Append("  ");
-                _stringBuilder.Append(line);
+                StringBuilder.Append("  ");
+                StringBuilder.Append(line);
 
-                return _stringBuilder.ToString();
+                return StringBuilder.ToString();
             }
         }
 
         protected void DisposeBase()
         {
-            _isWriterOnDispose = true;
-            _logWriter?.Dispose();
-            _logStream?.Dispose();
+            IsWriterOnDispose = true;
+            LogWriter?.Dispose();
+            LogStream?.Dispose();
         }
         #endregion
 
@@ -229,20 +228,19 @@ namespace Hi3Helper
             fallbackString += LauncherConfig.AppCurrentVersionString;
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
-            _logPath = Path.Combine(_logFolder, $"log-{dateString + fallbackString}-{GetCurrentTime("HH-mm-ss")}.log");
-            Console.WriteLine("\u001b[37;44m[LOGGER]\u001b[0m Log will be written to: " + _logPath);
-            LogPath = _logPath;
+            LogPath = Path.Combine(LogFolder, $"log-{dateString + fallbackString}-{GetCurrentTime("HH-mm-ss")}.log");
+            Console.WriteLine("\u001b[37;44m[LOGGER]\u001b[0m Log will be written to: " + LogPath);
 
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
             // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
-            _logStream = new FileStream(_logPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            LogStream = new FileStream(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             // Seek the file to the EOF
-            _logStream.Seek(0, SeekOrigin.End);
+            LogStream.Seek(0, SeekOrigin.End);
 
             // Initialize the StreamWriter
-            _logWriter = new StreamWriter(_logStream, logEncoding) { AutoFlush = true };
-            _isWriterOnDispose = false;
+            LogWriter         = new StreamWriter(LogStream, logEncoding) { AutoFlush = true };
+            IsWriterOnDispose = false;
         }
 
         private int GetTotalInstance() => ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());

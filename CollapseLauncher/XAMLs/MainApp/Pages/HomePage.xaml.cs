@@ -2143,7 +2143,7 @@ namespace CollapseLauncher.Pages
 
             LogWriteLine($"Media pack is not installed!\r\n\t" +
                         $"If you encounter the 'cry_ware_unity' error, run this script as an administrator:\r\n\t" +
-                        $"{Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd")}", LogType.Warning, true);
+                        $"{Path.Combine(AppExecutableDir, "Misc", "InstallMediaPack.cmd")}", LogType.Warning, true);
 
             // Skip dialog if user asked before
             if (GetAppConfigValue("HI3IgnoreMediaPack").ToBool())
@@ -2165,11 +2165,11 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                Process proc = new Process()
+                Process proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = Path.Combine(AppFolder, "Misc", "InstallMediaPack.cmd"),
+                        FileName = Path.Combine(AppExecutableDir, "Misc", "InstallMediaPack.cmd"),
                         UseShellExecute = true,
                         Verb = "runas"
                     }
