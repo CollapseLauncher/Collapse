@@ -147,8 +147,11 @@ namespace CollapseLauncher.InstallManager.Base
                 // Clear the VO language list
                 _sophonVOLanguageList.Clear();
 
-                // Subscribe the logger event
-                SophonLogger.LogHandler += UpdateSophonLogHandler;
+                // Subscribe the logger event if fallback is not used
+                if (!fallbackFromUpdate)
+                {
+                    SophonLogger.LogHandler += UpdateSophonLogHandler;
+                }
 
                 // Get the requested URL and version based on current state.
                 if (_gameVersionManager.GamePreset
@@ -437,8 +440,11 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     finally
                     {
-                        // Unsubscribe the logger event
-                        SophonLogger.LogHandler -= UpdateSophonLogHandler;
+                        // Unsubscribe the logger event if fallback is not used
+                        if (!fallbackFromUpdate)
+                        {
+                            SophonLogger.LogHandler -= UpdateSophonLogHandler;
+                        }
                         httpClient.Dispose();
 
                         // Unsubscribe download limiter
