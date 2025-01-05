@@ -428,6 +428,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 // Get the original file path, ensure the existing file is not read only,
                                 // then move the temp file to the original file path
                                 var origFilePath  = new FileInfo(assetFullPath)
+                                                   .EnsureCreationOfDirectory()
                                                    .EnsureNoReadOnly();
 
                                 // Move the thing
