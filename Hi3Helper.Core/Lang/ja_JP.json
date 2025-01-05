@@ -995,7 +995,13 @@
     "CloseOverlay": "閉じる",
 
     "DbGenerateUid_Title": "本当にユーザーIDを変更しますか？",
-    "DbGenerateUid_Content": "現在のユーザーIDを変更すると、ユーザーIDを紛失した場合にその関連データも失われます。"
+    "DbGenerateUid_Content": "現在のユーザーIDを変更すると、ユーザーIDを紛失した場合にその関連データも失われます。",
+
+    "SophonIncrementUpdateUnavailTitle": "バージョンが古すぎるため、差分更新式アップデートができません！",
+    "SophonIncrementUpdateUnavailSubtitle1": "現在お使いのVer{0}は",
+    "SophonIncrementUpdateUnavailSubtitle2": "古すぎる",
+    "SophonIncrementUpdateUnavailSubtitle3": "ため、差分更新式アップデートができません。ゲームをアップデートするには、ゲーム全体の再ダウンロードが必要です。",
+    "SophonIncrementUpdateUnavailSubtitle4": "\"{0}\"を押すと全体の再ダウンロードを実行し、\"{1}\"を押すとアップデートをキャンセルします。"
   },
 
   "_FileMigrationProcess": {

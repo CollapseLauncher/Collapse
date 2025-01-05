@@ -147,8 +147,11 @@ namespace CollapseLauncher.InstallManager.Base
                 // Clear the VO language list
                 _sophonVOLanguageList.Clear();
 
-                // Subscribe the logger event
-                SophonLogger.LogHandler += UpdateSophonLogHandler;
+                // Subscribe the logger event if fallback is not used
+                if (!fallbackFromUpdate)
+                {
+                    SophonLogger.LogHandler += UpdateSophonLogHandler;
+                }
 
                 // Get the requested URL and version based on current state.
                 if (_gameVersionManager.GamePreset
@@ -250,7 +253,7 @@ namespace CollapseLauncher.InstallManager.Base
                                         voLang
 #if DEBUG
                                         , true
-                                        #endif
+#endif
                                         );
 
                                     if (string.IsNullOrEmpty(voLocaleId))
@@ -300,9 +303,15 @@ namespace CollapseLauncher.InstallManager.Base
                         _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
 
                         // Get the remote total size and current total size
-                        _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                        _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                        _progressAllSizeCurrent = 0;
+                        _progressAllCountTotal    = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                        _progressAllSizeTotal     = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                        _progressAllSizeCurrent   = 0;
+
+                        // If the fallback is used from update, use the same display as All Size for Per File progress.
+                        if (fallbackFromUpdate)
+                        {
+                            _progressPerFileSizeTotal = _progressAllSizeTotal;
+                        }
 
                         // Set the display to Install Mode
                         UpdateStatus();
@@ -419,6 +428,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 // Get the original file path, ensure the existing file is not read only,
                                 // then move the temp file to the original file path
                                 var origFilePath  = new FileInfo(assetFullPath)
+                                                   .EnsureCreationOfDirectory()
                                                    .EnsureNoReadOnly();
 
                                 // Move the thing
@@ -431,8 +441,11 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     finally
                     {
-                        // Unsubscribe the logger event
-                        SophonLogger.LogHandler -= UpdateSophonLogHandler;
+                        // Unsubscribe the logger event if fallback is not used
+                        if (!fallbackFromUpdate)
+                        {
+                            SophonLogger.LogHandler -= UpdateSophonLogHandler;
+                        }
                         httpClient.Dispose();
 
                         // Unsubscribe download limiter

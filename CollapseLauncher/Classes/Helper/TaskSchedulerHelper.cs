@@ -233,7 +233,7 @@ namespace CollapseLauncher.Helper
             const string retValMark = "RETURNVAL_";
 
             // Get the applet path and check if the file exist
-            string appletPath = Path.Combine(LauncherConfig.AppFolder, "Lib", "win-x64", "Hi3Helper.TaskScheduler.exe");
+            string appletPath = Path.Combine(LauncherConfig.AppExecutableDir, "Lib", "win-x64", "Hi3Helper.TaskScheduler.exe");
             if (!File.Exists(appletPath))
             {
                 Logger.LogWriteLine($"Task Scheduler Applet does not exist in this path: {appletPath}", LogType.Error, true);

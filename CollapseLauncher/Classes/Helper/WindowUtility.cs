@@ -10,6 +10,8 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
+using Hi3Helper.Win32.TaskbarListCOM;
+using Hi3Helper.Win32.ToastCOM;
 using Hi3Helper.Win32.ToastCOM.Notification;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
@@ -21,7 +23,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -54,6 +55,8 @@ namespace CollapseLauncher.Helper
         internal static AppWindow? CurrentAppWindow;
         internal static WindowId? CurrentWindowId;
         internal static OverlappedPresenter? CurrentOverlappedPresenter;
+
+        private static readonly TaskbarList Taskbar = new();
 
         internal static DisplayArea? CurrentWindowDisplayArea
         {
@@ -285,44 +288,78 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        [field: AllowNull, MaybeNull]
-        internal static NotificationService CurrentToastNotificationService
+        internal static Guid? CurrentAumidInGuid
+        {
+            get => field ??= Extensions.GetGuidFromString(CurrentAumid ?? "");
+            set;
+        }
+
+        internal static string? CurrentAumid
+        {
+            get
+            {
+                if (field == null)
+                {
+                    PInvoke.GetProcessAumid(out field);
+                }
+
+                return field;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                field = value;
+                PInvoke.SetProcessAumid(value);
+                CurrentAumidInGuid = Extensions.GetGuidFromString(value);
+            }
+        }
+
+        internal static NotificationService? CurrentToastNotificationService
         {
             get
             {
                 // If toast notification service field is null, then initialize
                 if (field == null)
                 {
-                    // Get Icon location paths
-                    (string iconLocationStartMenu, _)
-                        = TaskSchedulerHelper.GetIconLocationPaths(
-                            out string? appAumIdNameAlternative,
-                            out _,
-                            out string? executablePath,
-                            out _);
-
-                    // Register notification service
-                    field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
-
-                    // Get AUMID name from Win32
-                    PInvoke.GetProcessAumid(out string? appAumIdName);
-
-                    // If it's empty due to an error, set the alternative AUMID
-                    appAumIdName ??= appAumIdNameAlternative;
-
-                    // Get string for AumId registration
-                    if (!string.IsNullOrEmpty(appAumIdName))
+                    try
                     {
-                        // Initialize Toast Notification service
-                        field.Initialize(
-                                         appAumIdName,
-                                         executablePath ?? "",
-                                         iconLocationStartMenu,
-                                         asElevatedUser: true
-                                        );
+                        // Get Icon location paths
+                        (string iconLocationStartMenu, _)
+                            = TaskSchedulerHelper.GetIconLocationPaths(
+                                                                       out string? appAumIdNameAlternative,
+                                                                       out _,
+                                                                       out string? executablePath,
+                                                                       out _);
 
-                        // Subscribe ToastCallback
-                        field.ToastCallback += Service_ToastNotificationCallback;
+                        // Register notification service
+                        field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+
+                        // Get AumId to use
+                        string? currentAumId = CurrentAumid ??= appAumIdNameAlternative;
+
+                        // Get string for AumId registration
+                        if (!string.IsNullOrEmpty(currentAumId))
+                        {
+                            // Initialize Toast Notification service
+                            CurrentAumidInGuid = field.Initialize(
+                                                                  currentAumId,
+                                                                  executablePath ?? "",
+                                                                  iconLocationStartMenu,
+                                                                  asElevatedUser: true
+                                                                 );
+
+                            // Subscribe ToastCallback
+                            field.ToastCallback += Service_ToastNotificationCallback;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogWriteLine($"Notification service initialization has failed, ignoring!\r\n{ex}", LogType.Error, true);
+                        return null;
                     }
                 }
 
@@ -493,15 +530,19 @@ namespace CollapseLauncher.Helper
                         const int HTCLIENT = 1;
                         const int HTCAPTION = 2;
                         const int HTMINBUTTON = 8;
+                        const int HTMAXBUTTON = 9;
                         const int HTRIGHT = 11;
                         const int HTTOP = 12;
                         const int HTTOPRIGHT = 14;
+                        const int HTCLOSE = 20;
 
                         var result = PInvoke.CallWindowProc(OldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                         {
-                            // Fix "Ghost Minimize Button" issue
+                            // Hide all system buttons
                             HTMINBUTTON => HTCLIENT,
+                            HTMAXBUTTON => HTCLIENT,
+                            HTCLOSE => HTCLIENT,
                             // Fix "Caption Resize" issue
                             HTRIGHT => HTCAPTION,
                             HTTOP => HTCAPTION,
@@ -831,6 +872,18 @@ namespace CollapseLauncher.Helper
             window._TrayIcon?.ToggleAllVisibility();
 
             // TODO: Make the callback actually usable on elevated app
+        }
+        #endregion
+
+        #region Taskbar Methods
+        public static int SetTaskBarState(nint hwnd, TaskbarState state)
+        {
+            return Taskbar.SetProgressState(hwnd, state);
+        }
+
+        public static int SetProgressValue(nint hwnd, ulong completed, ulong total)
+        {
+            return Taskbar.SetProgressValue(hwnd, completed, total);
         }
         #endregion
     }

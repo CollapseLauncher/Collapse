@@ -89,8 +89,8 @@ namespace CollapseLauncher.Helper.Image
             {
                 waifu2X.SetParam(Param.Noise, -1);
                 waifu2X.SetParam(Param.Scale, 2);
-                waifu2X.Load(Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
-                    Path.Combine(AppFolder!, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
+                waifu2X.Load(Path.Combine(AppExecutableDir, @"Assets\Waifu2X_Models\scale2.0x_model.param.bin"),
+                    Path.Combine(AppExecutableDir, @"Assets\Waifu2X_Models\scale2.0x_model.bin"));
                 _cachedStatus = waifu2X.Status;
             }
             return waifu2X;
@@ -179,7 +179,7 @@ namespace CollapseLauncher.Helper.Image
             imageCropper.Opacity = 0;
 
             // Path of image
-            Uri overlayImageUri = new Uri(Path.Combine(AppFolder!, @"Assets\Images\ImageCropperOverlay",
+            Uri overlayImageUri = new Uri(Path.Combine(AppExecutableDir, @"Assets\Images\ImageCropperOverlay",
                                                        GetAppConfigValue("WindowSizeProfile").ToString() == "Small" ? "small.png" : "normal.png"));
 
             // Why not use ImageBrush?

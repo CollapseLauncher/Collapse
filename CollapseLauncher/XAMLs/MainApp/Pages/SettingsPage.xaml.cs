@@ -184,8 +184,8 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
-                        var collapsePath = Process.GetCurrentProcess().MainModule?.FileName;
-                        if (collapsePath == null) return;
+                        var collapsePath = AppExecutablePath;
+                        if (string.IsNullOrEmpty(collapsePath)) return;
                         Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
                         Process.Start(collapsePath);
                         (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
@@ -241,7 +241,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                _log?.ResetLogFiles(AppGameLogsFolder, Encoding.UTF8);
+                CurrentLogger?.ResetLogFiles(AppGameLogsFolder, Encoding.UTF8);
                 (sender as Button).IsEnabled = false;
             }
             catch (Exception ex)
@@ -560,15 +560,15 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                _log.Dispose();
+                CurrentLogger.Dispose();
                 if (value)
                 {
-                    _log = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                    CurrentLogger                    = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
                     ToggleIncludeGameLogs.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    _log = new LoggerNull(AppGameLogsFolder, Encoding.UTF8);
+                    CurrentLogger                    = new LoggerNull(AppGameLogsFolder, Encoding.UTF8);
                     ToggleIncludeGameLogs.Visibility = Visibility.Collapsed;
                 }
                 SetAndSaveConfigValue("EnableConsole", value);

@@ -68,7 +68,7 @@ namespace CollapseLauncher.GameSettings
         /// <returns>The instance of preset</returns>
         public static Preset<T1, TObjectType> LoadPreset(GameNameType gameType, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
-            string presetPath = Path.Combine(AppFolder, $"Assets\\Presets\\{gameType}\\", $"{typeof(T1).Name}.json");
+            string presetPath = Path.Combine(AppExecutableDir, $"Assets\\Presets\\{gameType}\\", $"{typeof(T1).Name}.json");
             return new Preset<T1, TObjectType>(presetPath, jsonType);
         }
 

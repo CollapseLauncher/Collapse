@@ -164,17 +164,17 @@ namespace CollapseLauncher.Pages
 
                 var resList   = new List<string>();
                 SizeProp = ScreenProp.CurrentResolution;
-                //SizeProp = new System.Drawing.Size(2560, 1600);
 
                 // Get the native resolution first
                 var nativeResSize = GetNativeDefaultResolution();
                 var nativeResString = string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, nativeResSize.Width, nativeResSize.Height) + $" [{Lang._Misc.Default}]";
 
                 // Then get the rest of the list
-                List<string> resFullscreen = GetResPairs_Fullscreen();
-                List<string> resWindowed = GetResPairs_Windowed();
+                List<string> resFullscreen = GetResPairs_Fullscreen(nativeResSize);
+                List<string> resWindowed   = GetResPairs_Windowed();
 
-                ScreenResolutionIsFullscreenIdx.Add(true); // Add first for the native resolution.
+                // Add the index of fullscreen and windowed resolution booleans
+                ScreenResolutionIsFullscreenIdx.Add(true);
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resFullscreen.Count).Select(_ => true));
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resWindowed.Count).Select(_ => false));
 
@@ -188,12 +188,12 @@ namespace CollapseLauncher.Pages
 
                 if (CurrentGameProperty.IsGameRunning)
                 {
-                    #if !GSPBYPASSGAMERUNNING
+                #if !GSPBYPASSGAMERUNNING
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
-                    #endif
+                #endif
                 }
                 else if (GameInstallationState == GameInstallStateEnum.NotInstalled
                       || GameInstallationState == GameInstallStateEnum.NeedsUpdate
@@ -207,9 +207,9 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-#if !DISABLEDISCORD
+                #if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.GameSettings);
-#endif
+                #endif
                 }
             }
             catch (Exception ex)
@@ -252,7 +252,7 @@ namespace CollapseLauncher.Pages
             return currentAcceptedRes.LastOrDefault(x => x.Width == maxAcceptedResW);
         }
         
-        private List<string> GetResPairs_Fullscreen()
+        private List<string> GetResPairs_Fullscreen(System.Drawing.Size defaultResolution)
         {
             var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
             var acH               = acceptableHeight;
@@ -260,13 +260,29 @@ namespace CollapseLauncher.Pages
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
-            
-            List<string> resPairs = new List<string>();
 
-            foreach (var h in acH)
+            // Get the resolution pairs and initialize default resolution index
+            List<string> resPairs = new List<string>();
+            int indexOfDefaultRes = -1;
+
+            for (int i = 0; i < acH.Count; i++)
             {
-                int w = (int)(h * nativeAspRatio);
+                // Get height and calculate width
+                int h = acH[i];
+                int w = (int)Math.Round(h * nativeAspRatio);
+
+                // If the resolution is the same as default, set the index
+                if (h == defaultResolution.Height && w == defaultResolution.Width)
+                    indexOfDefaultRes = i;
+
+                // Add the resolution pair to the list
                 resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixFullscreen, w, h));
+            }
+
+            // If the index of default resolution is found, remove it from the list
+            if (indexOfDefaultRes != -1)
+            {
+                resPairs.RemoveAt(indexOfDefaultRes);
             }
 
             return resPairs;
@@ -287,10 +303,14 @@ namespace CollapseLauncher.Pages
             // If res is 21:9 then add proper native to the list
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
                 resPairs.Add($"{SizeProp.Width}x{SizeProp.Height}");
-            
-            foreach (var h in acH)
+
+            for (int i = 0; i < acH.Count; i++)
             {
-                int w = (int)(h * wideRatio);
+                // Get height and calculate width
+                int h = acH[i];
+                int w = (int)Math.Round(h * wideRatio);
+
+                // Add the resolution pair to the list
                 resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixWindowed, w, h));
             }
 

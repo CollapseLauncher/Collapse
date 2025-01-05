@@ -995,7 +995,13 @@
     "CloseOverlay": "Cerrar Superposición (Overlay)",
 
     "DbGenerateUid_Title": "¿Estas seguro que quieres cambiar tu ID de Usuario?",
-    "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes."
+    "DbGenerateUid_Content": "Si cambias el ID de usuario actual, se perderán los datos asociados si lo pierdes.",
+
+    "SophonIncrementUpdateUnavailTitle": "Actualización incremental no disponible: ¡La versión es demasiado obsoleta!",
+    "SophonIncrementUpdateUnavailSubtitle1": "Tu versión del juego: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": " es muy obsoleta",
+    "SophonIncrementUpdateUnavailSubtitle3": " y la actualización incremental no está disponible para tu versión. Sin embargo, aún podrías actualizar tu juego volviendo a descargarlo desde cero.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso"
   },
 
   "_FileMigrationProcess": {
