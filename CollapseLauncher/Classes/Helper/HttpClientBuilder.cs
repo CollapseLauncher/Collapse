@@ -2,7 +2,6 @@
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
@@ -15,8 +14,8 @@ namespace CollapseLauncher.Helper
 
     public class HttpClientBuilder<THandler> where THandler : HttpMessageHandler, new()
     {
-        private const int _maxConnectionsDefault = 32;
-        private const double _httpTimeoutDefault = 90; // in Seconds
+        private const int MaxConnectionsDefault = 32;
+        private const double HttpTimeoutDefault = 90; // in Seconds
 
         private bool IsUseProxy              { get; set; } = true;
         private bool IsUseSystemProxy        { get; set; } = true;
@@ -24,14 +23,14 @@ namespace CollapseLauncher.Helper
         private bool IsAllowHttpCookies      { get; set; }
         private bool IsAllowUntrustedCert    { get; set; }
 
-        private int                         MaxConnections            { get; set; } = _maxConnectionsDefault;
+        private int                         MaxConnections            { get; set; } = MaxConnectionsDefault;
         private DecompressionMethods        DecompressionMethod       { get; set; } = DecompressionMethods.All;
         private WebProxy?                   ExternalProxy             { get; set; }
         private Version                     HttpProtocolVersion       { get; set; } = HttpVersion.Version30;
         private string?                     HttpUserAgent             { get; set; } = GetDefaultUserAgent();
         private string?                     HttpAuthHeader            { get; set; }
         private HttpVersionPolicy           HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
-        private TimeSpan                    HttpTimeout               { get; set; } = TimeSpan.FromSeconds(_httpTimeoutDefault);
+        private TimeSpan                    HttpTimeout               { get; set; } = TimeSpan.FromSeconds(HttpTimeoutDefault);
         private Uri?                        HttpBaseUri               { get; set; }
         private Dictionary<string, string?> HttpHeaders               { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
@@ -80,7 +79,7 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
-        public HttpClientBuilder<THandler> UseLauncherConfig(int maxConnections = _maxConnectionsDefault)
+        public HttpClientBuilder<THandler> UseLauncherConfig(int maxConnections = MaxConnectionsDefault)
         {
             bool lIsUseProxy = LauncherConfig.GetAppConfigValue("IsUseProxy").ToBool();
             bool lIsAllowHttpRedirections = LauncherConfig.GetAppConfigValue("IsAllowHttpRedirections").ToBool();
@@ -111,7 +110,7 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
-        public HttpClientBuilder<THandler> SetMaxConnection(int maxConnections = _maxConnectionsDefault)
+        public HttpClientBuilder<THandler> SetMaxConnection(int maxConnections = MaxConnectionsDefault)
         {
             if (maxConnections < 2)
                 maxConnections = 2;
@@ -159,18 +158,18 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
-        public HttpClientBuilder<THandler> SetTimeout(double fromSeconds = _httpTimeoutDefault)
+        public HttpClientBuilder<THandler> SetTimeout(double fromSeconds = HttpTimeoutDefault)
         {
             if (double.IsNaN(fromSeconds) || double.IsInfinity(fromSeconds))
-                fromSeconds = _httpTimeoutDefault;
+                fromSeconds = HttpTimeoutDefault;
 
             return SetTimeout(TimeSpan.FromSeconds(fromSeconds));
         }
 
         public HttpClientBuilder<THandler> SetTimeout(TimeSpan? timeout = null)
         {
-            timeout ??= TimeSpan.FromSeconds(_httpTimeoutDefault);
-            HttpTimeout = timeout.Value;
+            timeout     ??= TimeSpan.FromSeconds(HttpTimeoutDefault);
+            HttpTimeout =   timeout.Value;
             return this;
         }
 

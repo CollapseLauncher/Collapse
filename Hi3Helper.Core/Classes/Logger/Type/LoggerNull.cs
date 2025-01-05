@@ -1,4 +1,5 @@
 ﻿using System.Text;
+// ReSharper disable MethodOverloadWithOptionalParameter
 
 namespace Hi3Helper
 {
@@ -9,7 +10,7 @@ namespace Hi3Helper
         #region Methods
         public void Dispose() => DisposeBase();
         public override void LogWriteLine() { }
-        public override void LogWriteLine(string _ = null) { }
+        public override void LogWriteLine(string line = null) { }
         public override void LogWriteLine(string line, LogType type) { }
         public override void LogWriteLine(string line, LogType type, bool writeToLog)
         {
