@@ -11,6 +11,7 @@ using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
 using Hi3Helper.Win32.TaskbarListCOM;
+using Hi3Helper.Win32.ToastCOM;
 using Hi3Helper.Win32.ToastCOM.Notification;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
@@ -289,15 +290,32 @@ namespace CollapseLauncher.Helper
 
         internal static Guid? CurrentAumidInGuid
         {
-            get;
+            get => field ??= Extensions.GetGuidFromString(CurrentAumid ?? "");
             set;
         }
 
-        private static string? _currentAumid;
         internal static string? CurrentAumid
         {
-            get => _currentAumid;
-            set => _currentAumid ??= value;
+            get
+            {
+                if (field == null)
+                {
+                    PInvoke.GetProcessAumid(out field);
+                }
+
+                return field;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                field = value;
+                PInvoke.SetProcessAumid(value);
+                CurrentAumidInGuid = Extensions.GetGuidFromString(value);
+            }
         }
 
         internal static NotificationService? CurrentToastNotificationService
@@ -320,18 +338,15 @@ namespace CollapseLauncher.Helper
                         // Register notification service
                         field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
 
-                        // Get AUMID name from Win32
-                        PInvoke.GetProcessAumid(out _currentAumid);
-
-                        // If it's empty due to an error, set the alternative AUMID
-                        CurrentAumid ??= appAumIdNameAlternative;
+                        // Get AumId to use
+                        string? currentAumId = CurrentAumid ??= appAumIdNameAlternative;
 
                         // Get string for AumId registration
-                        if (!string.IsNullOrEmpty(CurrentAumid))
+                        if (!string.IsNullOrEmpty(currentAumId))
                         {
                             // Initialize Toast Notification service
                             CurrentAumidInGuid = field.Initialize(
-                                                                  CurrentAumid,
+                                                                  currentAumId,
                                                                   executablePath ?? "",
                                                                   iconLocationStartMenu,
                                                                   asElevatedUser: true
