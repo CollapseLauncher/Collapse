@@ -174,6 +174,7 @@ namespace CollapseLauncher.Pages
                 List<string> resWindowed   = GetResPairs_Windowed();
 
                 // Add the index of fullscreen and windowed resolution booleans
+                ScreenResolutionIsFullscreenIdx.Add(true);
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resFullscreen.Count).Select(_ => true));
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resWindowed.Count).Select(_ => false));
 
@@ -268,7 +269,7 @@ namespace CollapseLauncher.Pages
             {
                 // Get height and calculate width
                 int h = acH[i];
-                int w = (int)(h * nativeAspRatio);
+                int w = (int)Math.Round(h * nativeAspRatio);
 
                 // If the resolution is the same as default, set the index
                 if (h == defaultResolution.Height && w == defaultResolution.Width)
@@ -302,10 +303,14 @@ namespace CollapseLauncher.Pages
             // If res is 21:9 then add proper native to the list
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
                 resPairs.Add($"{SizeProp.Width}x{SizeProp.Height}");
-            
-            foreach (var h in acH)
+
+            for (int i = 0; i < acH.Count; i++)
             {
-                int w = (int)(h * wideRatio);
+                // Get height and calculate width
+                int h = acH[i];
+                int w = (int)Math.Round(h * wideRatio);
+
+                // Add the resolution pair to the list
                 resPairs.Add(string.Format(Lang._GameSettingsPage.Graphics_ResPrefixWindowed, w, h));
             }
 
