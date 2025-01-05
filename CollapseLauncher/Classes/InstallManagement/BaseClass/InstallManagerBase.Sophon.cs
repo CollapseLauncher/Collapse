@@ -300,9 +300,15 @@ namespace CollapseLauncher.InstallManager.Base
                         _gameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
 
                         // Get the remote total size and current total size
-                        _progressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                        _progressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                        _progressAllSizeCurrent = 0;
+                        _progressAllCountTotal    = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                        _progressAllSizeTotal     = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                        _progressAllSizeCurrent   = 0;
+
+                        // If the fallback is used from update, use the same display as All Size for Per File progress.
+                        if (fallbackFromUpdate)
+                        {
+                            _progressPerFileSizeTotal = _progressAllSizeTotal;
+                        }
 
                         // Set the display to Install Mode
                         UpdateStatus();
