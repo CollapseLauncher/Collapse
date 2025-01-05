@@ -150,7 +150,7 @@ namespace CollapseLauncher.FileDialogCOM
 
         private static bool IsCollapseProgramPath(ReadOnlySpan<char> path)
         {
-            string collapseProgramPath = LauncherConfig.AppFolder;
+            string collapseProgramPath = LauncherConfig.AppExecutableDir;
             if (path.StartsWith(collapseProgramPath))
                 return true;
 

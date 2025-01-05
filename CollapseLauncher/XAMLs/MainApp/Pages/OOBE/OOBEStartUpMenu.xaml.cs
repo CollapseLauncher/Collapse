@@ -843,7 +843,7 @@ namespace CollapseLauncher.Pages.OOBE
                         AppGameFolder = folder;
                         SetAppConfigValue("GameFolder", AppGameFolder);
                         selected = true;
-                        _log?.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
+                        CurrentLogger?.SetFolderPathAndInitialize(AppGameLogsFolder, Encoding.UTF8);
                     }
                     else
                     {

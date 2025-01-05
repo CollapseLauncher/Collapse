@@ -418,7 +418,7 @@ namespace CollapseLauncher
                                     UseShellExecute = true,
                                     Verb = "runas",
                                     FileName = AppExecutablePath,
-                                    WorkingDirectory = AppFolder,
+                                    WorkingDirectory = AppExecutableDir,
                                     Arguments = string.Join(' ', AppCurrentArgument)
                                 }
                             };
@@ -549,13 +549,13 @@ namespace CollapseLauncher
 
             var posterBg = currentGameProperty?._GameVersion.GameType switch
                            {
-                               GameNameType.Honkai => Path.Combine(AppFolder,
+                               GameNameType.Honkai => Path.Combine(AppExecutableDir,
                                                                    @"Assets\Images\GameBackground\honkai.webp"),
-                               GameNameType.Genshin => Path.Combine(AppFolder,
+                               GameNameType.Genshin => Path.Combine(AppExecutableDir,
                                                                     @"Assets\Images\GameBackground\genshin.webp"),
-                               GameNameType.StarRail => Path.Combine(AppFolder,
+                               GameNameType.StarRail => Path.Combine(AppExecutableDir,
                                                                      @"Assets\Images\GameBackground\starrail.webp"),
-                               GameNameType.Zenless => Path.Combine(AppFolder,
+                               GameNameType.Zenless => Path.Combine(AppExecutableDir,
                                                                     @"Assets\Images\GameBackground\zzz.webp"),
                                _ => AppDefaultBG
                            };
@@ -869,7 +869,7 @@ namespace CollapseLauncher
                 {
                     try
                     {
-                        string InnoLogPath = Path.Combine(Path.GetDirectoryName(AppFolder) ?? string.Empty, "unins000.dat");
+                        string InnoLogPath = Path.Combine(Path.GetDirectoryName(AppExecutableDir) ?? string.Empty, "unins000.dat");
                         if (File.Exists(InnoLogPath)) InnoSetupLogUpdate.UpdateInnoSetupLog(InnoLogPath);
                         File.Delete(NeedInnoUpdateFile);
                     }
@@ -899,14 +899,14 @@ namespace CollapseLauncher
                         );
 
                     string target;
-                    string fold = Path.Combine(AppFolder, "_Temp");
+                    string fold = Path.Combine(AppExecutableDir, "_Temp");
                     if (Directory.Exists(fold))
                     {
                         foreach (string file in Directory.EnumerateFiles(fold))
                         {
                             if (Path.GetFileNameWithoutExtension(file).Contains("ApplyUpdate"))
                             {
-                                target = Path.Combine(AppFolder, Path.GetFileName(file));
+                                target = Path.Combine(AppExecutableDir, Path.GetFileName(file));
                                 File.Move(file, target, true);
                             }
                         }

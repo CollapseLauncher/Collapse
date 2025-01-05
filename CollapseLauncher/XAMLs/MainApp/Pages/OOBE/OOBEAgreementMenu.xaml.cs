@@ -10,7 +10,7 @@ namespace CollapseLauncher.Pages.OOBE
     {
         internal AgreementProperty(string title, string filePath)
         {
-            this.filePath = Path.Combine(LauncherConfig.AppFolder, filePath);
+            this.filePath = Path.Combine(LauncherConfig.AppExecutableDir, filePath);
             this.title = title;
         }
 

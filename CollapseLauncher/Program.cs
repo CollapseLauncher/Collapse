@@ -6,9 +6,9 @@ using Hi3Helper.Data;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
-using Hi3Helper.Win32.Screen;
 using Hi3Helper.Win32.ShellLinkCOM;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
@@ -46,22 +46,19 @@ namespace CollapseLauncher
     #nullable enable
         public static int       InstanceCount;
         public static App?      CurrentAppInstance;
-        public static string[]? LastArgs;
     #nullable restore
 
         [STAThread]
         public static void Main(params string[] args)
         {
-            LastArgs = args;
+            AppCurrentArgument = args.ToList();
         #if PREVIEW
             IsPreview = true;
         #endif
             try
             {
-                AppCurrentArgument = args;
-
                 // Extract icons from the executable file
-                string mainModulePath = Process.GetCurrentProcess().MainModule?.FileName ?? "";
+                string mainModulePath = AppExecutablePath;
                 var    iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
                 if (iconCount > 0)
                 {
@@ -79,20 +76,20 @@ namespace CollapseLauncher
                 StartUpdaterHook(aumid);
 
                 // Set AUMID
-                PInvoke.SetProcessAumid(aumid).ThrowOnFailure();
+                WindowUtility.CurrentAumid = aumid;
 
                 InitAppPreset();
                 var logPath = AppGameLogsFolder;
-                _log = IsConsoleEnabled
+                CurrentLogger = IsConsoleEnabled
                     ? new LoggerConsole(logPath, Encoding.UTF8)
                     : new LoggerNull(logPath, Encoding.UTF8);
 
-                if (Directory.GetCurrentDirectory() != AppFolder)
+                if (Directory.GetCurrentDirectory() != AppExecutableDir)
                 {
                     LogWriteLine(
-                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppFolder}!",
+                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
                                  LogType.Warning, true);
-                    Directory.SetCurrentDirectory(AppFolder);
+                    Directory.SetCurrentDirectory(AppExecutableDir);
                 }
 
                 InitializeAppSettings();
@@ -130,10 +127,9 @@ namespace CollapseLauncher
                                        #endif
                                            IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
-                var winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
             #pragma warning disable CS0618 // Type or member is obsolete
                 LogWriteLine(
-                             $"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {winAppSDKVer.ProductVersion}",
+                             $"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
                              LogType.Scheme, true);
                 LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
@@ -256,23 +252,24 @@ namespace CollapseLauncher
                                     "Press any key to exit or Press 'R' to restart the main thread app...");
 
         #if !DEBUG
-        if (ConsoleKey.R == Console.ReadKey().Key)
-        {
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            if (ConsoleKey.R == Console.ReadKey().Key)
             {
-                FileName = Process.GetCurrentProcess().MainModule?.FileName,
-                UseShellExecute = false
-            };
-            foreach (string arg in LastArgs)
-            {
-                startInfo.ArgumentList.Add(arg);
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = AppExecutablePath,
+                    UseShellExecute = false
+                };
+
+                foreach (string arg in AppCurrentArgument)
+                {
+                    startInfo.ArgumentList.Add(arg);
+                }
+                Process process = new Process()
+                {
+                    StartInfo = startInfo
+                };
+                process.Start();
             }
-            Process process = new Process()
-            {
-                StartInfo = startInfo
-            };
-            process.Start();
-        }
         #endif
         }
 
@@ -372,7 +369,7 @@ namespace CollapseLauncher
     #if USEVELOPACK
         public static void TryCleanupFallbackUpdate(SemanticVersion newVersion)
         {
-            string currentExecutedAppFolder = AppFolder.TrimEnd('\\');
+            string currentExecutedAppFolder = AppExecutableDir.TrimEnd('\\');
             string currentExecutedPath      = AppExecutablePath;
 
             // If the path is not actually running under "current" velopack folder, then return
@@ -591,7 +588,7 @@ namespace CollapseLauncher
 </metadata>
 </package>";
             string currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
-            string xmlPath        = Path.Combine(AppFolder, "sq.version");
+            string xmlPath        = Path.Combine(AppExecutableDir, "sq.version");
             string xmlContent     = string.Format(XmlTemplate, currentVersion, IsPreview ? "preview" : "stable", aumid);
             File.WriteAllText(xmlPath, xmlContent.ReplaceLineEndings("\n"));
             LogWriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);

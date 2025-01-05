@@ -28,7 +28,7 @@ namespace CollapseLauncher.Helper.Image
 
         private static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         {
-            appDirPath ??= LauncherConfig.AppFolder;
+            appDirPath ??= LauncherConfig.AppExecutableDir;
 
             if (DllImportSearchPath.AssemblyDirectory != searchPath
              && DllImportSearchPath.ApplicationDirectory != searchPath)

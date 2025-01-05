@@ -46,8 +46,6 @@ namespace CollapseLauncher
         public static AppMode                   m_appMode;
         public static Arguments                 m_arguments = new();
         public static bool                      m_isWindows11;
-        public static IntPtr                    m_oldWndProc;
-        public static Delegate?                 m_newWndProcDelegate;
         public static ConsoleControlHandler?    m_consoleCtrlHandler;
         public static MainPage?                 m_mainPage;
         public static HomePage?                 m_homePage;

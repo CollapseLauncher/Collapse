@@ -45,12 +45,11 @@ namespace CollapseLauncher.Helper
         private static string GetDefaultUserAgent()
         {
             Version operatingSystemVer = Environment.OSVersion.Version;
-            FileVersionInfo winAppSDKVer = FileVersionInfo.GetVersionInfo("Microsoft.ui.xaml.dll");
 
             return $"Mozilla/5.0 (Windows NT {operatingSystemVer}; Win64; x64) "
                 + $"{RuntimeInformation.FrameworkDescription.Replace(' ', '/')} (KHTML, like Gecko) "
                 + $"Collapse/{LauncherUpdateHelper.LauncherCurrentVersionString}-{(LauncherConfig.IsPreview ? "Preview" : "Stable")} "
-                + $"WinAppSDK/{winAppSDKVer.ProductVersion}";
+                + $"WinAppSDK/{LauncherConfig.WindowsAppSdkVersion}";
         }
 
         public HttpClientBuilder<THandler> UseExternalProxy(string host, string? username = null, string? password = null)

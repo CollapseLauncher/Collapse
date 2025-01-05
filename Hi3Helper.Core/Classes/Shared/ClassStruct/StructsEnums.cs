@@ -1,13 +1,11 @@
 ﻿using Hi3Helper.Data;
-using System.IO;
 
 namespace Hi3Helper.Shared.ClassStruct
 {
-    public struct AppIniStruct
+    public class AppIniProperty
     {
-        public IniFile Profile;
-        public Stream ProfileStream;
-        public string ProfilePath;
+        public IniFile Profile { get; set; } = new();
+        public string ProfilePath { get; set; }
     }
 
     public enum AppThemeMode
