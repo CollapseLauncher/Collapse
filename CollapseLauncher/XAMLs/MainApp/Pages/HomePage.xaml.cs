@@ -2563,33 +2563,24 @@ namespace CollapseLauncher.Pages
 
         private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)
         {
-            ToolTip tooltip = sender as ToolTip;
-            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+            FlyoutBase.ShowAttachedFlyout(PlaytimeStatsToolTip.Tag as FrameworkElement);
         }
 
         private void HidePlaytimeStatsFlyout(object sender, PointerRoutedEventArgs e)
         {
-            FrameworkElement senderAsFrameworkElement = sender as FrameworkElement;
+            PlaytimeStatsFlyout.Hide();
+            PlaytimeStatsToolTip.IsOpen = false;
+        }
 
-            /* This fix an issue where the flyout spawns right on top of the button
-             * instead of on top of the button in its 1st frame.
-             * 
-             * If this method is called even within its button's range, then just
-             * ignore the call and do not hide the flyout.
-             */
-            PointerPoint pointerPoint = e.GetCurrentPoint(senderAsFrameworkElement);
-            Point currentCursorPosition = pointerPoint.Position;
-            if (currentCursorPosition.X > 0
-              && currentCursorPosition.Y > 0
-              && currentCursorPosition.X <= senderAsFrameworkElement!.ActualWidth
-              && currentCursorPosition.Y <= senderAsFrameworkElement!.ActualHeight)
+        private void PlaytimeStatsFlyout_OnOpened(object sender, object e)
+        {
+            // Match PlaytimeStatsFlyout and set it's transition animation offset to 0 (but keep animation itself)
+            var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(PlaytimeBtn.XamlRoot);
+            foreach (var popup in popups.Where(x => x.Child is FlyoutPresenter {Content: Grid {Tag: "PlaytimeStatsFlyoutGrid"}}))
             {
-                return;
+                var transition = popup.ChildTransitions[0] as PopupThemeTransition;
+                transition!.FromVerticalOffset = 0;
             }
-
-            // Otherwise, hide the flyout
-            Flyout flyout = senderAsFrameworkElement!.Tag as Flyout;
-            flyout!.Hide();
         }
 #nullable restore
         #endregion

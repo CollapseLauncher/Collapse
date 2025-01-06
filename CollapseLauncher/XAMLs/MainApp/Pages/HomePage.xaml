@@ -2281,12 +2281,19 @@
                     Shadow="{ThemeResource SharedShadow}"
                     Tag="{x:Bind PlaytimeStatsFlyout}"
                     Translation="0,0,32">
+                <ToolTipService.ToolTip>
+                    <ToolTip x:Name="PlaytimeStatsToolTip"
+                             Opened="ShowPlaytimeStatsFlyout"
+                             Tag="{x:Bind PlaytimeBtn}"
+                             Visibility="Collapsed" />
+                </ToolTipService.ToolTip>
                 <FlyoutBase.AttachedFlyout>
                     <Flyout x:Name="PlaytimeStatsFlyout"
-                            LightDismissOverlayMode="On"
+                            LightDismissOverlayMode="Off"
                             OverlayInputPassThroughElement="{x:Bind PlaytimeBtn}"
-                            Placement="Top">
-                        <Grid ColumnSpacing="8">
+                            Placement="Top"
+                            Opened="PlaytimeStatsFlyout_OnOpened">
+                        <Grid ColumnSpacing="8" Tag="PlaytimeStatsFlyoutGrid">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
@@ -2534,11 +2541,6 @@
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
-                <ToolTipService.ToolTip>
-                    <ToolTip Opened="ShowPlaytimeStatsFlyout"
-                             Tag="{x:Bind PlaytimeBtn}"
-                             Visibility="Collapsed" />
-                </ToolTipService.ToolTip>
             </Button>
         </StackPanel>
     </Grid>
