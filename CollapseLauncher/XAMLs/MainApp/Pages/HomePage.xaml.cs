@@ -2466,6 +2466,7 @@ namespace CollapseLauncher.Pages
             if (_cachedIsGameRunning) return;
 
             UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
+            PlaytimeFlyout.ShowAt(PlaytimeBtn);
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
@@ -2563,7 +2564,7 @@ namespace CollapseLauncher.Pages
 
         private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)
         {
-            FlyoutBase.ShowAttachedFlyout(PlaytimeStatsToolTip.Tag as FrameworkElement);
+            FlyoutBase.ShowAttachedFlyout(PlaytimeBtn);
         }
 
         private void HidePlaytimeStatsFlyout(object sender, PointerRoutedEventArgs e)

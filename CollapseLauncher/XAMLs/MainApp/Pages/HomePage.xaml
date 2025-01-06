@@ -2284,7 +2284,6 @@
                 <ToolTipService.ToolTip>
                     <ToolTip x:Name="PlaytimeStatsToolTip"
                              Opened="ShowPlaytimeStatsFlyout"
-                             Tag="{x:Bind PlaytimeBtn}"
                              Visibility="Collapsed" />
                 </ToolTipService.ToolTip>
                 <FlyoutBase.AttachedFlyout>
