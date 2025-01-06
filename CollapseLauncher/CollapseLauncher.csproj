@@ -361,12 +361,10 @@
 		
 		<!-- Trim unused files and debug symbols -->
 		<ItemGroup>
-			<FilesToDelete Include="$(PublishDir)*.pdb;" />
 			<FilesToDelete Include="$(PublishDir)*.winmd;" />
 			<FilesToDelete Include="$(PublishDir)*.xml;" />
 		</ItemGroup>
 		<Delete Files="@(FilesToDelete)" />
-		<Delete Files="$(PublishDir)CollapseLauncher.pdb" />
 		<Delete Files="$(PublishDir)DwmSceneI.dll" />
 		<Delete Files="$(PublishDir)DWriteCore.dll" />
 		<Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
