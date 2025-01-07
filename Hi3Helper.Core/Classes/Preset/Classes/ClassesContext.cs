@@ -17,5 +17,6 @@ namespace Hi3Helper
 
     [JsonSourceGenerationOptions(IncludeFields = true, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(LocalizationParams))]
+    [JsonSerializable(typeof(LocalizationParamsBase))]
     internal sealed partial class CoreLibraryFieldsJSONContext : JsonSerializerContext;
 }

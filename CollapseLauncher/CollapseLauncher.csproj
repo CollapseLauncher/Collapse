@@ -47,6 +47,7 @@
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+        <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     </PropertyGroup>
 
     <PropertyGroup>
