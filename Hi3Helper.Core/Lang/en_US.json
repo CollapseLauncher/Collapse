@@ -403,7 +403,7 @@
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
     "CustomArgs_Footer3": "to see more parameters.",
 
-    "GameBoost": "Boost Game Priority [Experimental]",
+    "GameBoost": "Boost Game Priority",
     "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Advanced Settings",
@@ -1238,8 +1238,15 @@
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_DLSSQualityMode": "Nvidia DLSS Mode",
     "Graphics_SelfShadow": "Character Shadow in Map Exploration",
     "Graphics_HalfResTransparent": "Half Resolution Transparency",
+    
+    "Graphics_DLSS_UHP": "Ultra High Perf.",
+    "Graphics_DLSS_Perf": "Performance",
+    "Graphics_DLSS_Balanced": "Balanced",
+    "Graphics_DLSS_Quality": "Quality",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",

@@ -65,6 +65,7 @@ namespace Hi3Helper
                 public string Graphics_BloomQuality         { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_BloomQuality;
                 public string Graphics_SFXQuality           { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SFXQuality;
                 public string Graphics_AAMode               { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_AAMode;
+                public string Graphics_DLSSQualityMode      { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSSQualityMode;
                 public string Graphics_SpecPanel            { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SpecPanel;
                 public string Graphics_SelfShadow           { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SelfShadow;
                 public string Graphics_HalfResTransparent   { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_HalfResTransparent;
@@ -75,6 +76,11 @@ namespace Hi3Helper
                 public string SpecMedium                    { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecMedium;
                 public string SpecHigh                      { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecHigh;
                 public string SpecVeryHigh                  { get; set; } = LangFallback?._StarRailGameSettingsPage.SpecVeryHigh;
+                public string Graphics_DLSS_UHP             { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSS_UHP;
+                public string Graphics_DLSS_Perf            { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSS_Perf;
+                public string Graphics_DLSS_Balanced        { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSS_Balanced;
+                public string Graphics_DLSS_Quality         { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSS_Quality;
+                public string Graphics_DLSS_DLAA            { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSS_DLAA;
             }
         }
         #endregion
