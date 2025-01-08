@@ -198,7 +198,7 @@ namespace CollapseLauncher.ShortcutUtils
             newShortcut.Devkit = boolRes[4];
             newShortcut.DevkitOverrideAppID = boolRes[5];
 
-            newShortcut.preliminaryAppID = SteamShortcut.GenerateAppId(newShortcut.Exe, newShortcut.AppName).ToString();
+            newShortcut.preliminaryAppID = SteamShortcut.GenerateAppId(newShortcut.Exe, newShortcut.AppName);
 
             return newShortcut;
         }

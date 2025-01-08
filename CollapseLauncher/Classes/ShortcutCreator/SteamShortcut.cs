@@ -21,7 +21,7 @@ namespace CollapseLauncher.ShortcutUtils
         /// Source:
         /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
 
-        public string preliminaryAppID = "";
+        public uint preliminaryAppID;
 
         #region Shortcut fields
         public string entryID = "";
@@ -54,10 +54,8 @@ namespace CollapseLauncher.ShortcutUtils
             Exe = $"\"{stubPath}\"";
             StartDir = $"\"{Path.GetDirectoryName(stubPath)}\"";
 
-            var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
-            appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
-
-            preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
+            preliminaryAppID = GenerateAppId(Exe, AppName);
+            appid = SteamShortcutParser.ANSI.GetString(BitConverter.GetBytes(preliminaryAppID));
 
             LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
             if (play) LaunchOptions += " -p";
@@ -87,31 +85,14 @@ namespace CollapseLauncher.ShortcutUtils
                     + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
         }
 
-
-        private static uint GeneratePreliminaryId(string exe, string appname)
+        public static uint GenerateAppId(string exe, string appname)
         {
             string key = exe + appname;
 
             var crc32 = new Crc32();
             crc32.Append(SteamShortcutParser.ANSI.GetBytes(key));
 
-            uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
-
-            return (top << 32) | 0x02000000;
-        }
-
-        public static uint GenerateAppId(string exe, string appname)
-        {
-            uint appId = GeneratePreliminaryId(exe, appname);
-
-            return appId >> 32;
-        }
-
-        private static uint GenerateGridId(string exe, string appname)
-        {
-            uint appId = GeneratePreliminaryId(exe, appname);
-
-            return (appId >> 32) - 0x10000000;
+            return BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
         }
 
         internal void MoveImages(string path, PresetConfig preset)
