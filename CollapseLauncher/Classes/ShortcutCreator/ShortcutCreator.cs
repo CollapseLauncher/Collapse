@@ -23,7 +23,13 @@ namespace CollapseLauncher.ShortcutUtils
 
         internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
-            string shortcutName = $"{preset.GameName} ({preset.ZoneName}) - Collapse Launcher.url".Replace(":", "");
+            string translatedGameTitle =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
+                                                                        Locale.Lang._GameClientTitles)!;
+            string translatedGameRegion =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
+                                                                        Locale.Lang._GameClientRegions);
+            string shortcutName = $"{translatedGameTitle} ({translatedGameRegion}) - Collapse Launcher.url".Replace(":", "");
             string url = $"collapse://open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
 
             if (play) url += " -p";
