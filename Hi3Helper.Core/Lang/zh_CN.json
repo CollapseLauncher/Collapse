@@ -403,7 +403,7 @@
     "CustomArgs_Footer2": "Unity Standalone Player 命令行文档",
     "CustomArgs_Footer3": "以了解更多命令行参数。",
 
-    "GameBoost": "提升游戏优先级［实验性］",
+    "GameBoost": "提升游戏优先级",
     "MobileLayout": "使用移动端布局",
 
     "Advanced_Title": "高级设置",
@@ -1238,8 +1238,15 @@
     "Graphics_BloomQuality": "泛光效果（Bloom）",
     "Graphics_AAMode": "抗锯齿模式",
     "Graphics_SFXQuality": "特效质量",
+    "Graphics_DLSSQualityMode": "Nvidia DLSS 模式",
     "Graphics_SelfShadow": "地图探索中角色实时阴影",
     "Graphics_HalfResTransparent": "半分辨率透明",
+    
+    "Graphics_DLSS_UHP": "超高性能",
+    "Graphics_DLSS_Perf": "性能",
+    "Graphics_DLSS_Balanced": "平衡",
+    "Graphics_DLSS_Quality": "质量",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "全局图形设置",
     "SpecEnabled": "启用",
