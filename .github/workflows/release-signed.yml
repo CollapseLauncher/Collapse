@@ -1,0 +1,148 @@
+# Credits to @Scighost from Starward for his contributions!
+name: Publish Signed Builds
+#run-name: Canary Build for ${{ github.ref }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Specify branch name (preview/stable/github-signpath-test)'
+        required: true
+        default: 'github-signpath-test'
+
+env:
+ BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+ SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+ DOTNET_INSTALL_DIR: '.\.dotnet' 
+ DOTNET_VERSION: '9.x'
+ DOTNET_QUALITY: 'ga'
+ NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+ SIGNPATH_ARTIFACT_SLUG: 'initial' # change this to 'aot-release' when releasing with AOT
+
+#  schedule:
+#    - cron: '0 0 * * 0' # At 00:00 on Sunday
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x64]
+        framework: [net9.0-windows10.0.22621.0]
+
+    env:
+      CONFIGURATION_STRATEGY: ""
+      PUBLISH_PROFILE: ""
+      SIGNING_POLICY_SLUG: ""
+      VERSION: ""
+      Platform: ${{ matrix.platform }}
+
+
+    steps:
+    - name: Set Configuration and Environment Variables
+      id: set_env
+      run: |
+        if ($env:GITHUB_EVENT_NAME -eq "workflow_dispatch") {
+          $branch = $env:GITHUB_EVENT_INPUTS_BRANCH
+        } else {
+          $branch = $env:GITHUB_REF_NAME
+        }
+
+        if ($branch -eq "preview") {
+          echo "CONFIGURATION_STRATEGY=Release" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PUBLISH_PROFILE=Publish-PreviewRelease" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "SIGNING_POLICY_SLUG=release-signing" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        } elseif ($branch -eq "stable") {
+          echo "CONFIGURATION_STRATEGY=Publish" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PUBLISH_PROFILE=Publish-StableRelease" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "SIGNING_POLICY_SLUG=release-signing" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        } elseif ($branch -eq "github-signpath-test") {
+          echo "CONFIGURATION_STRATEGY=Debug" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PUBLISH_PROFILE=Publish-DebugCIRelease" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "SIGNING_POLICY_SLUG=test-signing" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        } else {
+          Write-Error "Unknown branch or input: $branch"
+          exit 1
+        }
+
+    - name: Print env
+      run: |
+          echo Configuration Strategy: $env:CONFIGURATION_STRATEGY
+          echo Publish Profile: $env:PUBLISH_PROFILE
+          echo Signing Policy: $env:SIGNING_POLICY_SLUG
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-quality: ${{ env.DOTNET_QUALITY }}
+        cache: true
+        cache-dependency-path: CollapseLauncher/packages.lock.json
+
+    - name: Build
+      run: |
+        dotnet publish CollapseLauncher -c ${{ env.CONFIGURATION_STRATEGY }} -p:PublishProfile=${{ env.PUBLISH_PROFILE }} -p:PublishDir=".\build\"
+
+    - name: Prepare publish artifacts
+      run: |
+        .\build\CollapseLauncher.exe generatevelopackmetadata
+        $version = ((Get-Item .\build\CollapseLauncher.exe).VersionInfo.FileVersion).TrimEnd(".0")
+        echo Build version: $version
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        mkdir SignArtifact
+        mkdir SignArtifact\BuildArtifact-$version
+        xcopy .\build\ "SignArtifact\BuildArtifact-$version\" /E /K /Y /I
+          
+    - name: Upload Artifact (unsigned)
+      id: upload-unsigned-artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: collapse_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
+          path: ./CollapseLauncher/SignArtifact
+          compression-level: 9
+
+    - name: Sign Build Artifact with SignPath
+      uses: signpath/github-action-submit-signing-request@v1.1
+      with:
+        api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+        organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
+        project-slug: 'Collapse'
+        signing-policy-slug: ${{ env.SIGNING_POLICY_SLUG }}
+        github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
+        wait-for-completion: true
+        output-artifact-directory: '/SignedArtifact/'
+
+    - name: Process Signed Build
+      run: |
+        $buildDir = '\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
+        echo Re-checking build version
+        echo ((Get-Item $buildDir\CollapseLauncher.exe).VersionInfo.FileVersion).TrimEnd(".0")
+
+    - name: Re-upload Signed Artifact to GitHub
+      uses: actions/upload-artifact@v4
+      with:
+          name: (SIGNED)collapse_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
+          path: /SignedArtifact
+          compression-level: 9
+
+  notify-discord:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [build]
+    steps:
+    - name: Notify Discord
+      uses: sarisia/actions-status-discord@v1.15.1
+      if: always()
+      continue-on-error: true
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
+        title: Collapse Launcher CI build is complete!
+        status: ${{ job.status }}
+        description: |
+          Commit `${{ github.sha }}` by ${{ github.actor }}
+          Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
