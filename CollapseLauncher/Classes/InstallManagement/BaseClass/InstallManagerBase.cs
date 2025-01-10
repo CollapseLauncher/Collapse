@@ -35,6 +35,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using SevenZipExtractor;
+using SevenZipExtractor.Event;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
@@ -1132,39 +1133,38 @@ namespace CollapseLauncher.InstallManager.Base
         }
     #endif
 
-        private Task ExtractUsing7zip(GameInstallPackage asset)
+        private async Task ExtractUsing7zip(GameInstallPackage asset)
         {
             // Start Async Thread
             // Since the ArchiveFile (especially with the callbacks) can't run under
             // different thread, so the async call will be called at the start
-            return Task.Run(() =>
-                            {
-                                Stream      stream      = null;
-                                ArchiveFile archiveFile = null;
-                                try
-                                {
-                                    // Load the zip
-                                    stream      = GetSingleOrSegmentedDownloadStream(asset);
-                                    archiveFile = new ArchiveFile(stream!);
+            Stream      stream      = null;
+            ArchiveFile archiveFile = null;
 
-                                    // Start extraction
-                                    archiveFile.ExtractProgress += ZipProgressAdapter;
-                                    archiveFile.Extract(e => Path.Combine(_gamePath, e!.FileName!), _token!.Token);
-                                }
-                                finally
-                                {
-                                    if (archiveFile != null)
-                                    {
-                                        archiveFile.ExtractProgress -= ZipProgressAdapter;
-                                        archiveFile.Dispose();
-                                    }
+            try
+            {
+                // Load the zip
+                stream      = GetSingleOrSegmentedDownloadStream(asset);
+                archiveFile = new ArchiveFile(stream!);
 
-                                    if (stream != null)
-                                    {
-                                        stream.Dispose();
-                                    }
-                                }
-                            });
+                // Start extraction
+                archiveFile.ExtractProgress += ZipProgressAdapter;
+                await archiveFile.ExtractAsync(e => Path.Combine(_gamePath, e!.FileName!), true, _token!.Token)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                if (archiveFile != null)
+                {
+                    archiveFile.ExtractProgress -= ZipProgressAdapter;
+                    archiveFile.Dispose();
+                }
+
+                if (stream != null)
+                {
+                    await stream.DisposeAsync();
+                }
+            }
         }
 
         public virtual void ApplyGameConfig(bool forceUpdateToLatest = false)
