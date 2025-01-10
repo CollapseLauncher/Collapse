@@ -121,19 +121,19 @@ jobs:
           path: /SignedArtifact
           compression-level: 9
 
-  notify-discord:
-    runs-on: ubuntu-latest
-    if: always()
-    needs: [build]
-    steps:
-    - name: Notify Discord
-      uses: sarisia/actions-status-discord@v1.15.1
-      if: always()
-      continue-on-error: true
-      with:
-        webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
-        title: Collapse Launcher CI build is complete!
-        status: ${{ job.status }}
-        description: |
-          Commit `${{ github.sha }}` by ${{ github.actor }}
-          Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
+  # notify-discord:
+  #   runs-on: ubuntu-latest
+  #   if: always()
+  #   needs: [build]
+  #   steps:
+  #   - name: Notify Discord
+  #     uses: sarisia/actions-status-discord@v1.15.1
+  #     if: always()
+  #     continue-on-error: true
+  #     with:
+  #       webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
+  #       title: Collapse Launcher CI build is complete!
+  #       status: ${{ job.status }}
+  #       description: |
+  #         Commit `${{ github.sha }}` by ${{ github.actor }}
+  #         Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
