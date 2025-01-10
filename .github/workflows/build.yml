@@ -60,11 +60,9 @@ jobs:
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
     - name: Update .NET workload
-      working-directory: CollapseLauncher
       run: dotnet workload update
 
     - name: Build
-      working-directory: CollapseLauncher
       run: |
         dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
           
@@ -102,7 +100,6 @@ jobs:
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
     - name: Update .NET workload
-      working-directory: CollapseLauncher
       run: dotnet workload update
         
     - name: Build
