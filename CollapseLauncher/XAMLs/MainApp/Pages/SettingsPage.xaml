@@ -1453,6 +1453,7 @@
                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" />
                 </TextBlock>
                 <TextBlock IsTextSelectionEnabled="True"
+                           HorizontalAlignment="Left"
                            Style="{ThemeResource BodyTextBlockStyle}"
                            TextWrapping="Wrap">
                     <Hyperlink x:Name="GitVersionIndicatorHyperlink"

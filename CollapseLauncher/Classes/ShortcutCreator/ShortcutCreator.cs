@@ -72,24 +72,6 @@ namespace CollapseLauncher.ShortcutUtils
             return true;
         }
 
-        internal static bool IsAddedToSteam(PresetConfig preset)
-        {
-            var paths = GetShortcutsPath();
-
-            if (paths == null || paths.Length == 0)
-                return false;
-
-            foreach (string path in paths)
-            {
-                SteamShortcutParser parser = new SteamShortcutParser(path);
-
-                if (!parser.Contains(new SteamShortcut(preset)))
-                    return false;
-            }
-
-            return true;
-        }
-
         private static string[] GetShortcutsPath()
         {
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam", false);

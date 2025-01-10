@@ -3,9 +3,9 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.MainEntryPoint;
@@ -16,107 +16,74 @@ namespace CollapseLauncher.ShortcutUtils
 {
     public sealed class SteamShortcut
     {
-        /// Based on CorporalQuesadilla's documentation on Steam Shortcuts.
-        /// 
-        /// Source:
-        /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
-
-        public uint preliminaryAppID;
-
         #region Shortcut fields
-        public string entryID = "";
-        public string appid = "";
-        public string AppName = "";
-        public string Exe = "";
-        public string StartDir = "";
-        public string icon = "";
-        public string ShortcutPath = "";
-        public string LaunchOptions = "";
-        public bool IsHidden = false;
-        public bool AllowDesktopConfig = true;
-        public bool AllowOverlay = true;
-        public bool OpenVR = false;
-        public bool Devkit = false;
-        public string DevkitGameID = "";
-        public bool DevkitOverrideAppID = false;
-        public string LastPlayTime = "\x00\x00\x00\x00";
-        public string FlatpakAppID = "";
-        public string tags = "";
+        // We don't care about any other fields.
+        public readonly uint AppID;
+        public readonly string AppName;
+        public readonly string Exe;
+        public readonly string StartDir;
+        public readonly string Icon;
+        public readonly string LaunchOptions;
         #endregion
 
-        internal SteamShortcut() { }
+        private readonly string _path;
+        private readonly PresetConfig _preset;
 
-        internal SteamShortcut(PresetConfig preset, bool play = false)
+        internal SteamShortcut(string path, PresetConfig preset, bool play = false)
         {
-            AppName = $"{preset.GameName} - {preset.ZoneName}";
-            
-            string stubPath = FindCollapseStubPath();
-            Exe = $"\"{stubPath}\"";
-            StartDir = $"\"{Path.GetDirectoryName(stubPath)}\"";
+            _path = Path.GetDirectoryName(path);
+            _preset = preset;
 
-            preliminaryAppID = GenerateAppId(Exe, AppName);
-            appid = SteamShortcutParser.ANSI.GetString(BitConverter.GetBytes(preliminaryAppID));
+            var translatedGameTitle =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
+                                                                        Locale.Lang._GameClientTitles)!;
+            var translatedGameRegion =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
+                                                                        Locale.Lang._GameClientRegions);
+            AppName = $"{translatedGameTitle} - {translatedGameRegion}";
+
+            var stubPath = FindCollapseStubPath();
+            Exe = $"\"{stubPath}\"";
+            StartDir = $"{Path.GetDirectoryName(stubPath)}";
+
+            var appNameInternal = $"{preset.GameName} - {preset.ZoneName}";
+            AppID = GenerateAppId(Exe, appNameInternal);
+
+            var gridPath = Path.Combine(_path!, "grid");
+            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
+            Icon = Path.Combine(gridPath, iconName);
 
             LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
             if (play) LaunchOptions += " -p";
         }
 
-        private static char BoolToByte(bool b) => b ? '\x01' : '\x00';
-
-        public string ToEntry(int id = -1)
+        private static uint GenerateAppId(string exe, string appname)
         {
-            return '\x00' + (id >= 0 ? id.ToString() : entryID) + '\x00'
-                    + '\x02' + "appid" + '\x00' + appid
-                    + '\x01' + "AppName" + '\x00' + AppName + '\x00'
-                    + '\x01' + "Exe" + '\x00' + Exe + '\x00'
-                    + '\x01' + "StartDir" + '\x00' + StartDir + '\x00'
-                    + '\x01' + "icon" + '\x00' + icon + '\x00'
-                    + '\x01' + "ShortcutPath" + '\x00' + ShortcutPath + '\x00'
-                    + '\x01' + "LaunchOptions" + '\x00' + LaunchOptions + '\x00'
-                    + '\x02' + "IsHidden" + '\x00' + BoolToByte(IsHidden) + "\x00\x00\x00"
-                    + '\x02' + "AllowDesktopConfig" + '\x00' + BoolToByte(AllowDesktopConfig) + "\x00\x00\x00"
-                    + '\x02' + "AllowOverlay" + '\x00' + BoolToByte(AllowOverlay) + "\x00\x00\x00"
-                    + '\x02' + "OpenVR" + '\x00' + BoolToByte(OpenVR) + "\x00\x00\x00"
-                    + '\x02' + "Devkit" + '\x00' + BoolToByte(Devkit) + "\x00\x00\x00"
-                    + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
-                    + '\x02' + "DevkitOverrideAppID" + '\x00' + BoolToByte(DevkitOverrideAppID) + "\x00\x00\x00"
-                    + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime
-                    + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
-                    + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
-        }
-
-        public static uint GenerateAppId(string exe, string appname)
-        {
-            string key = exe + appname;
-
+            // Actually the appid generation algorithm for custom apps has been changed.
+            // It's now a completely random number instead of the crc32.
+            // But to be able to track the target app, we still use crc32 as appid.
             var crc32 = new Crc32();
-            crc32.Append(SteamShortcutParser.ANSI.GetBytes(key));
-
+            crc32.Append(Encoding.UTF8.GetBytes(exe + appname));
             return BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
         }
 
-        internal void MoveImages(string path, PresetConfig preset)
+        internal void MoveImages()
         {
-            if (preset == null) return;
-            var parentDir = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(parentDir)) Directory.CreateDirectory(parentDir);
-            
-            path = Path.GetDirectoryName(path);
-            string gridPath = Path.Combine(path!, "grid");
+            if (!string.IsNullOrEmpty(_path)) Directory.CreateDirectory(_path);
+
+            var gridPath = Path.Combine(_path!, "grid");
             if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
-            string iconName = ShortcutCreator.GetIconName(preset.GameType);
+            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
+            var iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, "Assets\\Images\\GameIcon\\" + iconName);
 
-            icon = Path.Combine(gridPath, iconName);
-            string iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, "Assets\\Images\\GameIcon\\" + iconName);
-
-            if (!Path.Exists(icon) && Path.Exists(iconAssetPath))
+            if (!Path.Exists(Icon) && Path.Exists(iconAssetPath))
             {
-                File.Copy(iconAssetPath, icon);
-                LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {icon}.");
+                File.Copy(iconAssetPath, Icon);
+                LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {Icon}.");
             }
 
-            Dictionary<string, SteamGameProp> assets = preset.ZoneSteamAssets;
+            var assets = _preset.ZoneSteamAssets;
             if (assets == null) return;
 
             // Game background
@@ -136,7 +103,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         private async void GetImageFromUrl(string gridPath, SteamGameProp asset, string steamSuffix)
         {
-            string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
+            string steamPath = Path.Combine(gridPath, AppID + steamSuffix + ".png");
 
             string hash = MD5Hash(steamPath);
 
