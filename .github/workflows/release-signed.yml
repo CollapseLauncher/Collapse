@@ -82,6 +82,7 @@ jobs:
 
     - name: Prepare publish artifacts
       run: |
+        cd CollapseLauncher
         .\build\CollapseLauncher.exe generatevelopackmetadata
         $version = ((Get-Item .\build\CollapseLauncher.exe).VersionInfo.FileVersion).TrimEnd(".0")
         echo Build version: $version
