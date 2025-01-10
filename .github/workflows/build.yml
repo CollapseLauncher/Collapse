@@ -25,6 +25,12 @@ on:
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday
 
+env:
+  DOTNET_INSTALL_DIR: '.\.dotnet' 
+  DOTNET_VERSION: '9.x'
+  DOTNET_QUALITY: 'ga'
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
 jobs:
   build:
     # runs-on: [self-hosted, linux]
@@ -38,10 +44,6 @@ jobs:
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
-      DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.x'
-      DOTNET_QUALITY: 'ga'
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout
@@ -57,7 +59,12 @@ jobs:
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
+    - name: Update .NET workload
+      working-directory: CollapseLauncher
+      run: dotnet workload update
+
     - name: Build
+      working-directory: CollapseLauncher
       run: |
         dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIRelease -p:PublishDir=".\debug-build\"
           
@@ -79,10 +86,6 @@ jobs:
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
-      DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.x'
-      DOTNET_QUALITY: 'ga'
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout
@@ -98,27 +101,31 @@ jobs:
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
-    # - name: Restore
-      # run: dotnet restore CollapseLauncher --locked-mode
-      # Don't need to do restore explicitly, should be done on Build time
-
+    - name: Update .NET workload
+      working-directory: CollapseLauncher
+      run: dotnet workload update
+        
     - name: Build
       run: |
         dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
-          
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-          name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
-          path: ./CollapseLauncher/debug-aot-build/
-          exclude: '**/*.pdb'
-          compression-level: 9
+    
     - name: Upload debug symbols
       uses: actions/upload-artifact@v4
       with:
         name: aot-experimental-symbols_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
         path: ./CollapseLauncher/debug-aot-build/**/*.pdb
         compression-level: 9
+      
+    - name: Remove debug symbols
+      run: |
+        Remove-Item -Path "./CollapseLauncher/debug-aot-build/*.pdb" -Recurse -Force
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+            name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
+            path: ./CollapseLauncher/debug-aot-build/
+            compression-level: 9
         
   notify-discord:
     runs-on: ubuntu-latest
