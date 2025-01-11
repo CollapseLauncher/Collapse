@@ -218,7 +218,7 @@ namespace CollapseLauncher.ShortcutUtils
                              + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)",
                              LogType.Default, true);
             }
-            catch (TaskCanceledException _)
+            catch (TaskCanceledException)
             {
                 // ignored
             }
