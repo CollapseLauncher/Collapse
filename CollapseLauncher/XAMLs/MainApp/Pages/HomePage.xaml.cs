@@ -3000,12 +3000,14 @@ namespace CollapseLauncher.Pages
         #region Shortcut Creation
         private async void AddToSteamButton_Click(object sender, RoutedEventArgs e)
         {
+            GameStartupSettingFlyout.Hide();
+
             Tuple<ContentDialogResult, bool> result = await Dialog_SteamShortcutCreationConfirm(this);
 
             if (result.Item1 != ContentDialogResult.Primary)
                 return;
 
-            if (ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
+            if (await ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
             {
                 await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
                 return;
