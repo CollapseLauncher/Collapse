@@ -1149,8 +1149,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Start extraction
                 archiveFile.ExtractProgress += ZipProgressAdapter;
-                await archiveFile.ExtractAsync(e => Path.Combine(_gamePath, e!.FileName!), true, _token!.Token)
-                    .ConfigureAwait(false);
+                await archiveFile.ExtractAsync(e => Path.Combine(_gamePath, e!.FileName!), true, _token!.Token);
             }
             finally
             {
