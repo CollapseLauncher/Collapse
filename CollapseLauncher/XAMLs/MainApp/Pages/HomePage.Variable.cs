@@ -67,6 +67,19 @@ namespace CollapseLauncher.Pages
             }
         }
 
+        public bool IsEventsPanelScaleUp
+        {
+            get
+            {
+                bool ret = GetAppConfigValue("ScaleUpEventsPanel").ToBoolNullable() ?? true;
+                return ret;
+            }
+            set
+            {
+                SetAndSaveConfigValue("ScaleUpEventsPanel", value);
+            }
+        }
+
         public bool IsSocMedPanelShow
         {
             get
