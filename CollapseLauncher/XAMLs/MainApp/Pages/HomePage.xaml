@@ -1618,7 +1618,8 @@
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
-                    <Flyout Placement="TopEdgeAlignedRight">
+                    <Flyout x:Name="GameStartupSettingFlyout"
+                            Placement="TopEdgeAlignedRight">
                         <ScrollViewer MaxHeight="474"
                                       Margin="-16,-16"
                                       VerticalScrollBarVisibility="Auto"

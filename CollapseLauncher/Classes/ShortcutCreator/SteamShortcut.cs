@@ -1,14 +1,17 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.MainEntryPoint;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -36,10 +39,10 @@ namespace CollapseLauncher.ShortcutUtils
 
             var translatedGameTitle =
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
-                                                                        Locale.Lang._GameClientTitles)!;
+                                                                        Lang._GameClientTitles)!;
             var translatedGameRegion =
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
-                                                                        Locale.Lang._GameClientRegions);
+                                                                        Lang._GameClientRegions);
             AppName = $"{translatedGameTitle} - {translatedGameRegion}";
 
             var stubPath = FindCollapseStubPath();
@@ -67,7 +70,7 @@ namespace CollapseLauncher.ShortcutUtils
             return BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
         }
 
-        internal void MoveImages()
+        internal async Task MoveImages(CancellationToken token)
         {
             if (!string.IsNullOrEmpty(_path)) Directory.CreateDirectory(_path);
 
@@ -83,59 +86,119 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {Icon}.");
             }
 
-            var assets = _preset.ZoneSteamAssets;
-            if (assets == null) return;
+            await CacheImages(token);
+            if (token.IsCancellationRequested) return;
 
             // Game background
-            GetImageFromUrl(gridPath, assets["Hero"], "_hero");
+            CopyImageFromCache(gridPath, "_hero");
 
             // Game logo
-            GetImageFromUrl(gridPath, assets["Logo"], "_logo");
+            CopyImageFromCache(gridPath, "_logo");
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            GetImageFromUrl(gridPath, assets["Banner"], "p");
+            CopyImageFromCache(gridPath, "p");
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            GetImageFromUrl(gridPath, assets["Preview"], "");
+            CopyImageFromCache(gridPath, "");
         }
 
-        private async void GetImageFromUrl(string gridPath, SteamGameProp asset, string steamSuffix)
+        private void CopyImageFromCache(string gridPath, string steamSuffix)
         {
-            string steamPath = Path.Combine(gridPath, AppID + steamSuffix + ".png");
+            try
+            {
+                File.Copy(Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix),
+                          Path.Combine(gridPath, AppID + steamSuffix + ".png"), true);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
 
-            string hash = MD5Hash(steamPath);
+        private async Task CacheImages(CancellationToken token)
+        {
+            var assets = _preset.ZoneSteamAssets;
+            if (assets == null) return;
 
+            var images = new[]
+            {
+                ("Hero", "_hero"),
+                ("Logo", "_logo"),
+                ("Banner", "p"),
+                ("Preview", "")
+            };
+            var cacheImageList = new List<(string, string)>();
+
+            foreach (var image in images)
+            {
+                var asset = assets[image.Item1];
+                var steamSuffix = image.Item2;
+
+                var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
+                var hash = MD5Hash(cachePath);
+                if (hash.ToLower() != asset.MD5)
+                    cacheImageList.Add(image);
+            }
+
+            if (cacheImageList.Count == 0) return;
+
+            LoadingMessageHelper.ShowLoadingFrame();
+
+            for (var i = 0; i < cacheImageList.Count; i++)
+            {
+                var image = cacheImageList[i];
+                var progressString = string.Format(Lang._Dialogs.SteamShortcutDownloadingImages, i + 1, cacheImageList.Count);
+                LoadingMessageHelper.SetMessage(Lang._Dialogs.SteamShortcutTitle, progressString);
+                await CacheImageFromUrl(assets[image.Item1], image.Item2, token);
+            }
+
+            LoadingMessageHelper.HideLoadingFrame();
+        }
+
+        private async Task CacheImageFromUrl(SteamGameProp asset, string steamSuffix, CancellationToken token)
+        {
+            if (token.IsCancellationRequested) return;
+
+            var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
+
+            var hash = MD5Hash(cachePath);
             if (hash.ToLower() == asset.MD5) return;
 
-            string cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
+            var cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
 
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                FileInfo info = new FileInfo(steamPath);
-                await DownloadImage(info, cdnURL, new CancellationToken());
+                var info = new FileInfo(cachePath);
+                await DownloadImage(info, cdnURL, token);
 
-                hash = MD5Hash(steamPath);
+                if (token.IsCancellationRequested)
+                {
+                    File.Delete(cachePath);
+                    return;
+                }
+
+                hash = MD5Hash(cachePath);
 
                 if (hash.ToLower() == asset.MD5) return;
 
-                File.Delete(steamPath);
+                File.Delete(cachePath);
 
-                LogWriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {steamPath}! {hash} does not match {asset.MD5}.", LogType.Error);
+                LogWriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {cachePath}! {hash} does not match {asset.MD5}.", LogType.Error);
             }
-            
+
             LogWriteLine($"[SteamShortcut::GetImageFromUrl] After 3 tries, {cdnURL} could not be downloaded successfully.", LogType.Error);
         }
 
         private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
         {
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+            var buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
                 // Try to get the remote stream and download the file
-                using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
-                using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                await using Stream outStream = fileInfo.Open(new FileStreamOptions()
                 {
                     Access = FileAccess.Write,
                     Mode = FileMode.Create,
@@ -143,7 +206,7 @@ namespace CollapseLauncher.ShortcutUtils
                 });
 
                 // Get the file length
-                long fileLength = netStream.Length;
+                var fileLength = netStream.Length;
 
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
@@ -152,7 +215,12 @@ namespace CollapseLauncher.ShortcutUtils
                     await outStream.WriteAsync(buffer, 0, read, token);
 
                 LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
-                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+                             + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)",
+                             LogType.Default, true);
+            }
+            catch (TaskCanceledException _)
+            {
+                // ignored
             }
             catch (Exception ex)
             {

@@ -28,7 +28,7 @@ namespace CollapseLauncher.ShortcutUtils
             });
         }
 
-        internal void Insert(PresetConfig preset, bool play = false)
+        internal SteamShortcut Insert(PresetConfig preset, bool play = false)
         {
             var shortcut = new SteamShortcut(_path, preset, play);
             var index = FindIndex(shortcut);
@@ -76,7 +76,7 @@ namespace CollapseLauncher.ShortcutUtils
                 shortcutDic["LaunchOptions"] = shortcut.LaunchOptions;
             }
 
-            shortcut.MoveImages();
+            return shortcut;
         }
 
         private void Load()

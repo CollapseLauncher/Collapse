@@ -984,9 +984,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
     "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
-
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
+    "SteamShortcutTitle": "Steam Shortcut",
+    "SteamShortcutDownloadingImages": "Downloading Steam Grid Images ({0}/{1})",
 
     "DownloadSettingsTitle": "Download Settings",
     "DownloadSettingsOption1": "Start game after install",
