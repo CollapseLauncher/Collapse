@@ -984,9 +984,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • 新的快捷方式仅在 Steam 重新加载后才会显示。",
     "SteamShortcutCreationSuccessSubtitle6": " • 要使用 Steam 叠加层，Steam 需要以管理员身份运行，而且 Collapse 必须完全关闭或在设置中启用“允许开启多个 Collapse”选项。",
     "SteamShortcutCreationSuccessSubtitle7": " • 如果游戏未安装/更新，Collapse 会尝试安装/更新。请注意，与这些过程相关的对话框仍会显示。",
-
     "SteamShortcutCreationFailureTitle": "无效的 Steam 数据文件夹",
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。",
+    "SteamShortcutTitle": "Steam 快捷方式",
+    "SteamShortcutDownloadingImages": "正在下载 Steam 网格图像（{0}/{1}）",
 
     "DownloadSettingsTitle": "下载设置",
     "DownloadSettingsOption1": "安装后启动游戏",
