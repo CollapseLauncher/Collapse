@@ -281,6 +281,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
 
+        private bool _isAllowResolutionIndexChanged = false;
         public int ResolutionIndexSelected
         {
             get
@@ -304,6 +305,12 @@ namespace CollapseLauncher.Pages
             }
             set
             {
+                // If resolution change isn't ready, then return
+                if (!_isAllowResolutionIndexChanged)
+                {
+                    return;
+                }
+
                 // Clamp first and set to 0 (default resolution) if out of bound
                 if (ScreenResolutionIsFullscreenIdx.Count < value || value < 0)
                 {

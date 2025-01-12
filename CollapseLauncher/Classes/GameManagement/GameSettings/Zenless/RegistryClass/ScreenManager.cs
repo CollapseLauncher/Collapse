@@ -9,6 +9,7 @@ using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable NonReadonlyMemberInGetHashCode
+// ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.GameSettings.Zenless
 {
@@ -41,11 +42,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         /// </summary>
         public override Size sizeRes
         {
-            get => new(Width, Height);
+            get => new(width, height);
             set
             {
-                Width = value.Width < 64 ? CurrentRes.Width : value.Width;
-                Height = value.Height < 64 ? CurrentRes.Height : value.Height;
+                width  = value.Width < 64 ? CurrentRes.Width : value.Width;
+                height = value.Height < 64 ? CurrentRes.Height : value.Height;
             }
         }
 
@@ -56,19 +57,19 @@ namespace CollapseLauncher.GameSettings.Zenless
         /// </summary>
         public override string sizeResString
         {
-            get => $"{Width}x{Height}";
+            get => $"{width}x{height}";
             set
             {
                 string[] size = value.Split('x');
                 if (!int.TryParse(size[0], out var w) || !int.TryParse(size[1], out var h))
                 {
-                    Width = CurrentRes.Width;
-                    Height = CurrentRes.Height;
+                    width  = CurrentRes.Width;
+                    height = CurrentRes.Height;
                 }
                 else
                 {
-                    Width = w;
-                    Height = h;
+                    width  = w;
+                    height = h;
                 }
             }
         }
@@ -78,34 +79,34 @@ namespace CollapseLauncher.GameSettings.Zenless
         /// Range: 0 - int.MaxValue<br/>
         /// Default: Your screen width
         /// </summary>
-        public int Width { get; set; } = CurrentRes.Width;
+        public override int width { get; set; } = CurrentRes.Width;
 
         /// <summary>
         /// This defines "<c>Game Resolution</c>'s Height" combobox In-game settings -> Video.<br/><br/>
         /// Range: 0 - int.MaxValue<br/>
         /// Default: Your screen Height
         /// </summary>
-        public int Height { get; set; } = CurrentRes.Height;
+        public override int height { get; set; } = CurrentRes.Height;
 
         /// <summary>
         /// This defines "<c>Fullscreen</c>" checkbox In-game settings -> Video.<br/><br/>
         /// Range: 0 - 1
         /// Default: 1
         /// </summary>
-        public FullScreenMode Fullscreen { get; set; } = FullScreenMode.Fullscreen;
+        public FullScreenMode fullscreen { get; set; } = FullScreenMode.Fullscreen;
 
         public override bool isfullScreen
         {
-            get => Fullscreen switch
-            {
-                FullScreenMode.Fullscreen => true,
-                _ => false,
-            };
-            set => Fullscreen = value switch
-            {
-                true => FullScreenMode.Fullscreen,
-                false => FullScreenMode.Windowed,
-            };
+            get => fullscreen switch
+                   {
+                       FullScreenMode.Fullscreen => true,
+                       _ => false,
+                   };
+            set => fullscreen = value switch
+                   {
+                       true => FullScreenMode.Fullscreen,
+                       false => FullScreenMode.Windowed,
+                   };
         }
         #endregion
 
@@ -115,7 +116,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load Zenless Screen Manager settings as RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException("Cannot load Zenless Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
                 object? valueWidth = RegistryRoot.GetValue(ValueNameScreenManagerWidth, null);
                 object? valueHeight = RegistryRoot.GetValue(ValueNameScreenManagerHeight, null);
@@ -131,7 +132,7 @@ namespace CollapseLauncher.GameSettings.Zenless
                                  $"{ValueNameScreenManagerHeight} : {height}\r\n\t" +
                                  $"{ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
 #endif
-                    return new ScreenManager { Width = width, Height = height, Fullscreen = fullscreen };
+                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
                 }
             }
             catch (Exception ex)
@@ -153,11 +154,11 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             try
             {
-                RegistryRoot?.SetValue(ValueNameScreenManagerFullscreen, Fullscreen, RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerWidth, Width, RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerWidthDef, Width, RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerHeight, Height, RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerHeightDef, Height, RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(ValueNameScreenManagerWidth,      width,      RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(ValueNameScreenManagerWidthDef,   width,      RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(ValueNameScreenManagerHeight,     height,     RegistryValueKind.DWord);
+                RegistryRoot?.SetValue(ValueNameScreenManagerHeightDef,  height,     RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Zenless Settings:\r\n\t" +
                              $"{ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(ValueNameScreenManagerFullscreen, null)}\r\n\t" +
@@ -177,7 +178,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         {
             if (comparedTo is ScreenManager compared)
             {
-                return compared.Width == Width && compared.Height == Height && compared.Fullscreen == Fullscreen;
+                return compared.width == width && compared.height == height && compared.fullscreen == fullscreen;
             }
 
             return false;
@@ -185,7 +186,7 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Width, Height, (int)Fullscreen);
+            return HashCode.Combine(width, height, (int)fullscreen);
         }
     }
 }
