@@ -10,7 +10,7 @@
 
     namespace CollapseLauncher.GameSettings.Zenless
     {
-        internal partial class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
+        internal class GeneralData : MagicNodeBaseValues<GeneralData>, IDisposable
         {
             #region Disposer
 

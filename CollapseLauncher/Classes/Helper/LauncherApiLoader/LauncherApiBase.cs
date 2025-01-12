@@ -22,7 +22,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
     public delegate void ErrorLoadRoutineDelegate(Exception ex);
 
-    internal partial class LauncherApiBase : ILauncherApi
+    internal class LauncherApiBase : ILauncherApi
     {
         public const int           ExecutionTimeout        = 10;
         public const int           ExecutionTimeoutStep    = 5;

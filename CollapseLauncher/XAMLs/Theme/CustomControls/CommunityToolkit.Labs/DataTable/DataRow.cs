@@ -11,6 +11,7 @@ using Windows.Foundation;
 using TreeView = Microsoft.UI.Xaml.Controls.TreeView;
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
+// ReSharper disable All
 
 public partial class DataRow : Panel
 {

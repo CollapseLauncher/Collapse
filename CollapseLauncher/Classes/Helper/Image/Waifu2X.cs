@@ -109,7 +109,7 @@ namespace CollapseLauncher.Helper.Image
     }
     #endregion
 
-    public partial class Waifu2X : IDisposable
+    public class Waifu2X : IDisposable
     {
         #region Enums
         public enum Param

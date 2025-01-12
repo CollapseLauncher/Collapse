@@ -10,7 +10,11 @@ using System.Collections.Generic;
 using System.Text;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.StarRail
 {
 
@@ -372,7 +376,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             }
         }
 
-        public bool Equals(Model? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is Model toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher
@@ -22,7 +23,7 @@ namespace CollapseLauncher
     [JsonSourceGenerationOptions(AllowOutOfOrderMetadataProperties = true, AllowTrailingCommas = true)]
     internal partial class ZenlessManifestContext : JsonSerializerContext { }
 
-    internal partial class ZenlessManifestInterceptStream : Stream
+    internal sealed class ZenlessManifestInterceptStream : Stream
     {
         private readonly Stream _redirectStream;
         private readonly Stream _innerStream;

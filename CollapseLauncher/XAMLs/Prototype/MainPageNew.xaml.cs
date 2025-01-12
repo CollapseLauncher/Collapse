@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Prototype
 {

@@ -6,7 +6,7 @@ namespace CollapseLauncher.Helper
     /// <summary>
     /// Manages the thread pool settings to throttle the number of threads.
     /// </summary>
-    internal partial class ThreadPoolThrottle : IDisposable
+    internal sealed class ThreadPoolThrottle : IDisposable
     {
         private  readonly int PreviousThreadCount;
         private  readonly int PreviousCompletionPortThreadCount;

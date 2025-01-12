@@ -391,6 +391,11 @@ namespace CollapseLauncher
             baseName = Path.GetFileNameWithoutExtension(filePath);
 
             // Get directory base info. If it doesn't exist, return
+            if (string.IsNullOrEmpty(basePath))
+            {
+                return;
+            }
+
             DirectoryInfo basePathDirInfo = new DirectoryInfo(basePath);
             if (!basePathDirInfo.Exists)
             {

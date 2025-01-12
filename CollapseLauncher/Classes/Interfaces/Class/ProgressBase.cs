@@ -30,6 +30,7 @@ using Hi3Helper.SentryHelper;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
+// ReSharper disable InconsistentlySynchronizedField
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
@@ -650,7 +651,6 @@ namespace CollapseLauncher.Interfaces
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     // If failed, flag ErrorOccured as true and skip the source directory deletion 
                     LogWriteLine($"Error while deleting source directory \"{directoryInfoSource.FullName}\"\r\nException: {ex}", LogType.Error, true);
-                    errorOccured = true;
                 }
             }
         }

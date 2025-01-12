@@ -22,7 +22,7 @@ using static Hi3Helper.Logger;
 
 namespace RegistryUtils
 {
-    public partial class RegistryMonitor : IDisposable
+    public sealed class RegistryMonitor : IDisposable
     {
         #region Event handling
 
@@ -43,7 +43,7 @@ namespace RegistryUtils
         /// the base class's <see cref="OnRegChanged"/> method.
         /// </note>
         /// </remarks>
-        protected virtual void OnRegChanged()
+        private void OnRegChanged()
         {
             EventHandler handler = RegChanged;
             handler?.Invoke(this, null!);
@@ -67,7 +67,7 @@ namespace RegistryUtils
         /// the base class's <see cref="OnError"/> method.
         /// </note>
         /// </remarks>
-        protected virtual void OnError(Exception e)
+        private void OnError(Exception e)
         {
             SentryHelper.ExceptionHandler(e, SentryHelper.ExceptionType.UnhandledOther);
             ErrorEventHandler handler = Error;
@@ -106,8 +106,8 @@ namespace RegistryUtils
         /// <param name="name">The name.</param>
         public RegistryMonitor(string name)
         {
-            if (name == null || name.Length == 0)
-                throw new ArgumentNullException("name");
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
 
             InitRegistryKey(name);
         }

@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.Statics
 {
-    internal partial class GamePresetProperty : IDisposable
+    internal class GamePresetProperty : IDisposable
     {
         internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {

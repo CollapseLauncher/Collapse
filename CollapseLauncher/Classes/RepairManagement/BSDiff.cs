@@ -208,7 +208,7 @@ namespace CollapseLauncher
         }
             */
 
-        private long[] ReadControlNumbers(Stream source, long newPosition, long newSize)
+        private long[] ReadControlNumbers(Stream source, long newPosition)
         {
             Span<byte> buffer = stackalloc byte[8];
             long[] controls = new long[3];
@@ -276,7 +276,7 @@ namespace CollapseLauncher
                                     while (newPosition < _newSize)
                                     {
                                         // Get the control array
-                                        control = ReadControlNumbers(controlStream, newPosition, _newSize);
+                                        control = ReadControlNumbers(controlStream, newPosition);
 
                                         // Get the size to copy
                                         long bytesToCopy = control[0];

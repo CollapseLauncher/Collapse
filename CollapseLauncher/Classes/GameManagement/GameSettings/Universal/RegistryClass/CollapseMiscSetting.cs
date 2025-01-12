@@ -9,7 +9,10 @@ using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
 {
     internal class CollapseMiscSetting : IGameSettingsValue<CollapseMiscSetting>
@@ -177,7 +180,7 @@ namespace CollapseLauncher.GameSettings.Universal
             }
         }
 
-        public bool Equals(CollapseMiscSetting? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is CollapseMiscSetting toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

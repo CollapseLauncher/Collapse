@@ -8,7 +8,11 @@ using System.Text;
 using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Honkai
 {
     internal class PersonalAudioSettingVolume : IGameSettingsValue<PersonalAudioSettingVolume>
@@ -120,7 +124,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
         }
 
-        public bool Equals(PersonalAudioSettingVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is PersonalAudioSettingVolume toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

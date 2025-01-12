@@ -6,7 +6,11 @@ using System;
 using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.StarRail
 {
     internal class SFXVolume : IGameSettingsValue<SFXVolume>
@@ -75,7 +79,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         }
 
-        public bool Equals(SFXVolume? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is SFXVolume toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

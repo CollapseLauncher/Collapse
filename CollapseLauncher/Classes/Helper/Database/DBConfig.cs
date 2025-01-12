@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 
 namespace CollapseLauncher.Helper.Database
 {
@@ -53,7 +52,7 @@ namespace CollapseLauncher.Helper.Database
             }
         }
 
-        private static void Load(CancellationToken token = default)
+        private static void Load()
         {
             if (File.Exists(_configPath))
             {
@@ -61,7 +60,7 @@ namespace CollapseLauncher.Helper.Database
             }
         }
 
-        private static void Save(CancellationToken token = default) => _config.Save(_configPath);
+        private static void Save() => _config.Save(_configPath);
         
         public static IniValue GetConfig(string key) => _config[DbSectionName][key];
 

@@ -33,7 +33,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal partial class MediaPlayerLoader : IBackgroundMediaLoader
+    internal class MediaPlayerLoader : IBackgroundMediaLoader
     {
     #pragma warning disable CS0169 // Field is never used
         private bool _isFocusChangeRunning;

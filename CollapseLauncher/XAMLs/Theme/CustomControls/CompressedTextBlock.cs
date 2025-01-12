@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.CustomControls
 {

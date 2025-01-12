@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Pages
 {

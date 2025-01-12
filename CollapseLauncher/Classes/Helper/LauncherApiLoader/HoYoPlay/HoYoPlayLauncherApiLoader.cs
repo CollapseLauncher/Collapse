@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
-    internal partial class HoYoPlayLauncherApiLoader : LauncherApiBase
+    internal class HoYoPlayLauncherApiLoader : LauncherApiBase
     {
         private HttpClient? _apiGeneralHttpClient;
         private HttpClient? _apiResourceHttpClient;

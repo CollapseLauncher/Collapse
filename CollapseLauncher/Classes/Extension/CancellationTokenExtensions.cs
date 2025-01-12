@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace CollapseLauncher.Extension
 {
-    public partial class CancellationTokenSourceWrapper : CancellationTokenSource
+    public class CancellationTokenSourceWrapper : CancellationTokenSource
     {
         public bool IsDisposed;
         public bool IsCancelled;

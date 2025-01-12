@@ -1885,8 +1885,8 @@ namespace CollapseLauncher.Pages
                 {
                     case GameNameType.Zenless:
                         var screenManagerZ = GameSettings.Zenless.ScreenManager.Load();
-                        screenManagerZ.width  = width;
-                        screenManagerZ.height = height;
+                        screenManagerZ.Width  = width;
+                        screenManagerZ.Height = height;
                         screenManagerZ.Save();
                         break;
                     

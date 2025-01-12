@@ -24,7 +24,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public partial class GameConversionManagement : IDisposable
+    public sealed class GameConversionManagement : IDisposable
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 

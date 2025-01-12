@@ -12,7 +12,11 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Screen;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.StarRail
 {
     internal class PCResolution : BaseScreenSettingData, IGameSettingsValue<PCResolution>
@@ -168,7 +172,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 #endif
         }
 
-        public bool Equals(PCResolution? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is PCResolution toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

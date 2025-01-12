@@ -24,7 +24,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
-    internal partial class GenshinInstall : InstallManagerBase
+    internal sealed class GenshinInstall : InstallManagerBase
     {
         #region Override Properties
 
@@ -129,7 +129,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             await ApplyDeleteFileActionAsync(_token.Token);
         }
 
-        protected void EnsureMoveOldToNewAudioDirectory()
+        private void EnsureMoveOldToNewAudioDirectory()
         {
             // Return if the old path doesn't exist
             if (!Directory.Exists(_gameAudioOldPath))

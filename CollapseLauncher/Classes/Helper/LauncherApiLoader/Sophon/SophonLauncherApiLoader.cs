@@ -3,7 +3,7 @@
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
 {
-    internal class SophonLauncherApiLoader : LauncherApiBase, ILauncherApi
+    internal sealed class SophonLauncherApiLoader : LauncherApiBase
     {
         private SophonLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion) { }

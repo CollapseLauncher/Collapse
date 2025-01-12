@@ -27,7 +27,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Honkai
 {
-    internal partial class HonkaiInstall : InstallManagerBase
+    internal sealed class HonkaiInstall : InstallManagerBase
     {
         #region Override Properties
 

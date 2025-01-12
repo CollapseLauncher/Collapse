@@ -22,18 +22,32 @@ namespace CollapseLauncher
         /// <summary>
         /// Parameters for the MarkdownFramePage.
         /// Use either MarkdownUri, MarkdownText, or MarkdownUriCdn.
-        /// <param name="MarkdownUri">URL of the markdown you want to load</param>
-        /// <param name="WebUri">(Optional) URL of the web page you want to open by pressing the "Open in External Browser" button.</param>
-        /// <param name="MarkdownText">Raw markdown you want to show</param>
-        /// <param name="MarkdownUriCdn">Relative path of Collapse's CDN you want to use for the markdown</param>
-        /// <param name="Title">(Optional) Title of the overlay</param>
         /// </summary>
         public class MarkdownFramePageParams
         {
+            /// <summary>
+            /// URL of the markdown you want to load
+            /// </summary>
             public string? MarkdownUri    { get; set; }
+
+            /// <summary>
+            /// (Optional) URL of the web page you want to open by pressing the "Open in External Browser" button.
+            /// </summary>
             public string? WebUri         { get; set; }
+
+            /// <summary>
+            /// Raw markdown you want to show
+            /// </summary>
             public string? MarkdownText   { get; set; }
+
+            /// <summary>
+            /// Relative path of Collapse's CDN you want to use for the markdown
+            /// </summary>
             public string? MarkdownUriCdn { get; set; }
+
+            /// <summary>
+            /// (Optional) Title of the overlay
+            /// </summary>
             public string? Title          { get; set; }
         }
 
