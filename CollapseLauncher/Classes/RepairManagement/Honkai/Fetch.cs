@@ -715,7 +715,7 @@ namespace CollapseLauncher
             // Get the version provided by the XMF
             int[]? gameVersion = XMFUtility.GetXMFVersion(xmfStream);
             // Initialize and parse the manifest, then return the Patch Asset
-            return gameVersion == null ? null : new BlockPatchManifest(mfs, gameVersion);
+            return gameVersion == null ? null : new BlockPatchManifest(mfs);
         }
 
         private void BuildBlockIndex(List<FilePropertiesRemote> assetIndex, BlockPatchManifest? patchInfo, string xmfPath, Stream xmfStream, bool isMeta)
