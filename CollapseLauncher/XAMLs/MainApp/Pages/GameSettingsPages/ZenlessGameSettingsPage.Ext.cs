@@ -281,7 +281,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsScreen.sizeResString = value;
         }
 
-        private bool _isAllowResolutionIndexChanged = false;
+        private bool _isAllowResolutionIndexChanged;
         public int ResolutionIndexSelected
         {
             get
