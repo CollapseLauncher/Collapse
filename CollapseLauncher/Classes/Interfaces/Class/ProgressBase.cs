@@ -27,6 +27,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.TaskbarListCOM;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
@@ -446,6 +447,21 @@ namespace CollapseLauncher.Interfaces
 
             // Update progress
             ProgressChanged?.Invoke(this, _sophonProgress);
+
+            // Update taskbar progress
+            if (_status.IsProgressAllIndetermined)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
+            }
+            else if (_status.IsCompleted || _status.IsCanceled)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Normal);
+                WindowUtility.SetProgressValue((ulong)(_sophonProgress.ProgressAllPercentage * 10), 1000);
+            }
         }
 
         protected void UpdateSophonFileDownloadProgress(long downloadedWrite, long currentWrite)
@@ -1334,8 +1350,34 @@ namespace CollapseLauncher.Interfaces
             UpdateProgress();
         }
 
-        protected virtual void UpdateProgress() => ProgressChanged?.Invoke(this, _progress);
-        protected virtual void UpdateStatus() => StatusChanged?.Invoke(this, _status);
+        protected virtual void UpdateProgress()
+        {
+            ProgressChanged?.Invoke(this, _progress);
+
+            if (_status is {IsProgressAllIndetermined: false, IsCompleted: false, IsCanceled: false})
+            {
+                WindowUtility.SetProgressValue((ulong)(_progress.ProgressAllPercentage * 10), 1000);
+            }
+        }
+
+        protected virtual void UpdateStatus()
+        {
+            StatusChanged?.Invoke(this, _status);
+
+            if (_status.IsProgressAllIndetermined)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
+            }
+            else if (_status.IsCompleted || _status.IsCanceled)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Normal);
+            }
+        }
+
         #endregion
     }
 }
