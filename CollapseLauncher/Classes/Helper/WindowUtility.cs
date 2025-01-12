@@ -885,6 +885,16 @@ namespace CollapseLauncher.Helper
         {
             return Taskbar.SetProgressValue(hwnd, completed, total);
         }
+
+        public static int SetTaskBarState(TaskbarState state)
+        {
+            return Taskbar.SetProgressState(CurrentWindowPtr, state);
+        }
+
+        public static int SetProgressValue(ulong completed, ulong total)
+        {
+            return Taskbar.SetProgressValue(CurrentWindowPtr, completed, total);
+        }
         #endregion
     }
 }
