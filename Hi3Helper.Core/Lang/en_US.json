@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Custom Background for Region",
     "GameSettings_Panel4": "Global - Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Scale Up Events Panel on Hover",
     "GameSettings_Panel4ShowSocialMediaPanel": "Show Social Media Panel",
     "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sync Playtime with Database",

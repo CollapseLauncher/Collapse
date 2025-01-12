@@ -1927,6 +1927,13 @@
                                                   IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ScaleUpEventsPanel}"
+                                               TextWrapping="Wrap" />
+                                    <ToggleSwitch x:Name="ScaleUpEventsPanelToggle"
+                                                  IsEnabled="False"
+                                                  IsOn="{x:Bind IsEventsPanelScaleUp, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <TextBlock Margin="0,8,0,0"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
                                                TextWrapping="Wrap" />

@@ -194,6 +194,7 @@ namespace CollapseLauncher.Pages
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
 
                     ShowEventsPanelToggle.IsEnabled = true;
+                    ScaleUpEventsPanelToggle.IsEnabled = true;
                     PostPanel.Visibility = Visibility.Visible;
                     PostPanel.Translation += Shadow48;
                 }
@@ -3085,6 +3086,8 @@ namespace CollapseLauncher.Pages
 
         private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            if (!IsEventsPanelScaleUp) return;
+
             IsPointerInsideSidePanel = true;
             if (sender is FrameworkElement elementPanel)
             {
@@ -3133,6 +3136,8 @@ namespace CollapseLauncher.Pages
 
         private async void SidePanelScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
         {
+            if (!IsEventsPanelScaleUp) return;
+
             IsPointerInsideSidePanel = false;
             if (sender is FrameworkElement elementPanel)
             {
