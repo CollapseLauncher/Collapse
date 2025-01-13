@@ -1,8 +1,6 @@
 version: "1.0"
 ide: QDNET
-bootstrap: |+
-dotnet workload update
-dotnet build CollapseLauncher -c Release
+bootstrap: dotnet build CollapseLauncher -c Release
 dotnet:
   solution: CollapseLauncher.sln
 exclude:
