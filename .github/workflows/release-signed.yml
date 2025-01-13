@@ -119,8 +119,8 @@ jobs:
     - name: Re-upload Signed Artifact to GitHub
       uses: actions/upload-artifact@v4
       with:
-          name: (SIGNED)collapse_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
-          path: /SignedArtifact
+          name: SIGNED_collapse_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
+          path: ./SignedArtifact
           compression-level: 9
 
   # notify-discord:
