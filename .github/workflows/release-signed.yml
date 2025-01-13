@@ -112,7 +112,7 @@ jobs:
 
     - name: Process Signed Build
       run: |
-        $buildDir = '\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
+        $buildDir = '..\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
         echo Re-checking build version
         echo ((Get-Item $buildDir\CollapseLauncher.exe).VersionInfo.FileVersion).TrimEnd(".0")
 
