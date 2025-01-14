@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Helper
 {
     /// <summary>
     /// Manages the thread pool settings to throttle the number of threads.
     /// </summary>
-    internal sealed class ThreadPoolThrottle : IDisposable
+    internal sealed partial class ThreadPoolThrottle : IDisposable
     {
-        private  readonly int PreviousThreadCount;
-        private  readonly int PreviousCompletionPortThreadCount;
+        private  readonly int _previousThreadCount;
+        private  readonly int _previousCompletionPortThreadCount;
         internal readonly int MultipliedThreadCount;
 
         /// <summary>
@@ -20,8 +21,8 @@ namespace CollapseLauncher.Helper
         /// <param name="multipliedThreadCount">The multiplied thread count.</param>
         private ThreadPoolThrottle(int previousThreadCount, int previousCompletionPortThreadCount, int multipliedThreadCount)
         {
-            PreviousThreadCount = previousThreadCount;
-            PreviousCompletionPortThreadCount = previousCompletionPortThreadCount;
+            _previousThreadCount = previousThreadCount;
+            _previousCompletionPortThreadCount = previousCompletionPortThreadCount;
             MultipliedThreadCount = multipliedThreadCount;
         }
 
@@ -44,7 +45,7 @@ namespace CollapseLauncher.Helper
         /// </summary>
         public void Dispose()
         {
-            ThreadPool.SetMaxThreads(PreviousThreadCount, PreviousCompletionPortThreadCount);
+            ThreadPool.SetMaxThreads(_previousThreadCount, _previousCompletionPortThreadCount);
         }
     }
 }

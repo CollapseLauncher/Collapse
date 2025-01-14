@@ -4,11 +4,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.StreamUtility
 {
-    internal sealed class JsonFieldToEnumerableStream : Stream
+    internal sealed partial class JsonFieldToEnumerableStream : Stream
     {
         private readonly Stream _redirectStream;
         private readonly Stream _innerStream;

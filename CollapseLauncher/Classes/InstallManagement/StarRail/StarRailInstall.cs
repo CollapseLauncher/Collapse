@@ -17,7 +17,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.InstallManager.StarRail
 {
-    internal sealed class StarRailInstall : InstallManagerBase
+    internal sealed partial class StarRailInstall : InstallManagerBase
     {
         #region Override Properties
 

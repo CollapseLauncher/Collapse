@@ -12,10 +12,11 @@ using System.Timers;
 using static Hi3Helper.Logger;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.GamePlaytime
 {
-    internal class Playtime : IGamePlaytime
+    internal sealed partial class Playtime : IGamePlaytime
     {
         #region Properties
         public event EventHandler<CollapsePlaytime> PlaytimeUpdated;

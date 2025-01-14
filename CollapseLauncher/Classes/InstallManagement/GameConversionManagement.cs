@@ -21,10 +21,11 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher
 {
-    public sealed class GameConversionManagement : IDisposable
+    public sealed partial class GameConversionManagement : IDisposable
     {
         public event EventHandler<ConvertProgress> ProgressChanged;
 

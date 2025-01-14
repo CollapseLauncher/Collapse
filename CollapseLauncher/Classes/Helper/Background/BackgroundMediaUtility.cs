@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -20,7 +21,7 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal class BackgroundMediaUtility : IDisposable
+    internal sealed partial class BackgroundMediaUtility : IDisposable
     {
         internal enum MediaType
         {

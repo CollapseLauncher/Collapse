@@ -1655,12 +1655,14 @@ namespace CollapseLauncher.InstallManager.Base
                     Access  = FileAccess.Read,
                     Options = FileOptions.DeleteOnClose
                 });
+#nullable enable
                 HDiffMap? currentDeserialize = await JsonSerializer.DeserializeAsync(hdiffMapStream, HDiffMapEntryJsonContext.Default.HDiffMap, _token.Token);
 
                 if (currentDeserialize?.Entries != null)
                 {
                     hDiffMapEntries.AddRange(currentDeserialize.Entries);
                 }
+#nullable restore
             }
 
             if (hDiffMapEntries.Count == 0)

@@ -27,7 +27,7 @@
 
         #endregion
 
-        public class DiscordPresenceManager : IDisposable
+        public sealed partial class DiscordPresenceManager : IDisposable
         {
             #region Properties
 

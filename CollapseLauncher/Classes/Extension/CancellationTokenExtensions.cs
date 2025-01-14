@@ -1,9 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Extension
 {
-    public class CancellationTokenSourceWrapper : CancellationTokenSource
+    public sealed partial class CancellationTokenSourceWrapper : CancellationTokenSource
     {
         public bool IsDisposed;
         public bool IsCancelled;

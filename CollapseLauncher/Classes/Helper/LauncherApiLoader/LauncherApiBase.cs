@@ -14,6 +14,7 @@ using Hi3Helper.SentryHelper;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -22,7 +23,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
     public delegate void ErrorLoadRoutineDelegate(Exception ex);
 
-    internal class LauncherApiBase : ILauncherApi
+    internal partial class LauncherApiBase : ILauncherApi
     {
         public const int           ExecutionTimeout        = 10;
         public const int           ExecutionTimeoutStep    = 5;

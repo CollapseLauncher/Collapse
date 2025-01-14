@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -24,7 +24,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
-    internal sealed class GenshinInstall : InstallManagerBase
+    internal sealed partial class GenshinInstall : InstallManagerBase
     {
         #region Override Properties
 

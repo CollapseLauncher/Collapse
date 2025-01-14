@@ -19,10 +19,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using static Hi3Helper.Logger;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace RegistryUtils
 {
-    public sealed class RegistryMonitor : IDisposable
+    public sealed partial class RegistryMonitor : IDisposable
     {
         #region Event handling
 

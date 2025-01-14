@@ -3,10 +3,11 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher
 {
-    internal sealed class BridgedNetworkStream(HttpResponseMessage networkResponse, Stream networkStream) : Stream
+    internal sealed partial class BridgedNetworkStream(HttpResponseMessage networkResponse, Stream networkStream) : Stream
     {
         internal static async ValueTask<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
         {
