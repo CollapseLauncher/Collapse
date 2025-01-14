@@ -1693,10 +1693,16 @@ namespace CollapseLauncher.InstallManager.Base
                         $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal,
                                                                 _progressAllCountFound)}";
 
-                    bool isUseSameName          = string.IsNullOrEmpty(entry.SourceFileName);
-                    bool isSourceTargetSameName = entry.SourceFileName?.Equals(entry.TargetFileName, StringComparison.OrdinalIgnoreCase) ?? false;
+                    bool isSourceUseSameNameAsTarget = string.IsNullOrEmpty(entry.SourceFileName);
+                    bool isSourceTargetSameName      = entry.SourceFileName?.Equals(entry.TargetFileName, StringComparison.OrdinalIgnoreCase) ?? false;
+
+                    if (isSourceTargetSameName)
+                    {
+                        LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Patch will be applied directly into the file for: {entry.SourceFileName}", LogType.Default, true);
+                    }
+
                     bool isSuccess              = false;
-                    string sourceFileNameToUse  = (isUseSameName ? entry.SourceFileName : entry.TargetFileName) ?? "";
+                    string sourceFileNameToUse  = (isSourceUseSameNameAsTarget ? entry.TargetFileName : entry.SourceFileName) ?? "";
 
                     FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, sourceFileNameToUse))
                                              .EnsureNoReadOnly(out bool isSourceExist);
