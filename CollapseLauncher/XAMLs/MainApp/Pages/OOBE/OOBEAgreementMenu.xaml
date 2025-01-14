@@ -24,7 +24,7 @@
         <FlipView x:Name="AgreementCarousel"
                   Grid.RowSpan="2"
                   Background="Transparent"
-                  ItemsSource="{x:Bind markdownFileList}"
+                  ItemsSource="{x:Bind MarkdownFileList}"
                   Style="{ThemeResource CollapseFlipViewStyle}">
             <FlipView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -45,7 +45,7 @@
                             <Run Text="{x:Bind helper:Locale.Lang._OOBEAgreementMenu.AgreementTitle}" />
                             <Run x:Name="AgreementTitle"
                                  FontWeight="Bold"
-                                 Text="{x:Bind title}" />
+                                 Text="{x:Bind Title}" />
                         </TextBlock>
                         <Grid Grid.Row="1"
                               Margin="0,16">
@@ -54,9 +54,9 @@
                             <ScrollViewer>
                                 <Grid>
                                     <markdown:MarkdownTextBlock Margin="24"
-                                                                Config="{x:Bind markdownConfig}"
+                                                                Config="{x:Bind MarkdownConfig}"
                                                                 TabNavigation="Once"
-                                                                Text="{x:Bind text}" />
+                                                                Text="{x:Bind Text}" />
                                 </Grid>
                             </ScrollViewer>
                         </Grid>

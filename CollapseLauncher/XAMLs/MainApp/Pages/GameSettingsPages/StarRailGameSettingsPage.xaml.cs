@@ -4,7 +4,6 @@
     using CollapseLauncher.Dialogs;
     using CollapseLauncher.GameSettings.StarRail;
     using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Interfaces;
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
@@ -221,11 +220,11 @@
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -234,7 +233,7 @@
         {
             get
             {
-                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+                bool value = CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments;
 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;
@@ -243,7 +242,7 @@
             }
             set
             {
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
                 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;

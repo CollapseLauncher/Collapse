@@ -39,7 +39,7 @@ namespace CollapseLauncher.Pages
 
         private void StartCachesCheck(object sender, RoutedEventArgs e)
         {
-            string tag = (string)(sender as ButtonBase).Tag;
+            string tag = (string)(sender as ButtonBase)?.Tag;
             bool isFast = tag == "Fast";
 
             RunCheckRoutine(sender, isFast, false);
@@ -47,35 +47,35 @@ namespace CollapseLauncher.Pages
 
         public async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
-            CheckUpdateBtn.Flyout.Hide();
-            CheckUpdateBtn.IsEnabled = false;
-            CancelBtn.IsEnabled = true;
-
-            if (!isMainButton)
-            {
-                SetMainCheckUpdateBtnProperty(sender);
-            }
-
             try
             {
+                CheckUpdateBtn.Flyout.Hide();
+                CheckUpdateBtn.IsEnabled = false;
+                CancelBtn.IsEnabled      = true;
+
+                if (!isMainButton)
+                {
+                    SetMainCheckUpdateBtnProperty(sender);
+                }
+
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
-                bool IsNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
+                bool isNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
 
-                UpdateCachesBtn.IsEnabled = IsNeedUpdate;
-                CheckUpdateBtn.IsEnabled = !IsNeedUpdate;
+                UpdateCachesBtn.IsEnabled = isNeedUpdate;
+                CheckUpdateBtn.IsEnabled = !isNeedUpdate;
                 CancelBtn.IsEnabled = false;
 
-                UpdateCachesBtn.Visibility = IsNeedUpdate ? Visibility.Visible : Visibility.Collapsed;
-                CheckUpdateBtn.Visibility = IsNeedUpdate ? Visibility.Collapsed : Visibility.Visible;
+                UpdateCachesBtn.Visibility = isNeedUpdate ? Visibility.Visible : Visibility.Collapsed;
+                CheckUpdateBtn.Visibility = isNeedUpdate ? Visibility.Collapsed : Visibility.Visible;
 
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     WindowUtility.Tray_ShowNotification(
                         Lang._NotificationToast.CacheUpdateCheckCompleted_Title,
-                        IsNeedUpdate ?
+                        isNeedUpdate ?
                             string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty._GameCache.AssetEntry.Count) :
                             Lang._NotificationToast.CacheUpdateCheckCompletedNotFound_Subtitle
                         );
@@ -103,11 +103,11 @@ namespace CollapseLauncher.Pages
 
         public async void StartCachesUpdate(object sender, RoutedEventArgs e)
         {
-            UpdateCachesBtn.IsEnabled = false;
-            CancelBtn.IsEnabled = true;
-
             try
             {
+                UpdateCachesBtn.IsEnabled = false;
+                CancelBtn.IsEnabled       = true;
+
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
@@ -253,9 +253,9 @@ namespace CollapseLauncher.Pages
             }
             else
             {
-#if !DISABLEDISCORD
-                AppDiscordPresence.SetActivity(ActivityType.Cache);
-#endif
+            #if !DISABLEDISCORD
+                AppDiscordPresence?.SetActivity(ActivityType.Cache);
+            #endif
             }
         }
 

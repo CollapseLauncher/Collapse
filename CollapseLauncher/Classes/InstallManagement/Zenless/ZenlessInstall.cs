@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.InstallManager.Zenless
 {
-    internal partial class ZenlessInstall : InstallManagerBase
+    internal sealed class ZenlessInstall : InstallManagerBase
     {
         #region Private Properties
         private ZenlessSettings? ZenlessSettings          { get; }

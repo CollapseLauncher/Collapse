@@ -1,13 +1,12 @@
 ﻿using CollapseLauncher.GameSettings.Base;
-using System;
 using System.Diagnostics;
 using System.Text.Json.Serialization.Metadata;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameSettingsValue<T> : IEquatable<T>
+    internal interface IGameSettingsValue<T>
     {
-        abstract static T Load();
+        static abstract T Load();
         void Save();
     }
 
@@ -17,6 +16,6 @@ namespace CollapseLauncher.Interfaces
         byte[] Magic { get; }
 
 #nullable enable
-        abstract static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo);
+        static abstract T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo);
     }
 }

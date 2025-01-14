@@ -7,6 +7,7 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher
 {

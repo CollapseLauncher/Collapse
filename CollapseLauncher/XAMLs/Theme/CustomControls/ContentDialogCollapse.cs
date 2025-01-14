@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
 using NColor = Windows.UI.Color;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.CustomControls
 {

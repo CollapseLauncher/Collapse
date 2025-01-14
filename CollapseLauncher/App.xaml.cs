@@ -6,12 +6,11 @@ using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI;
+using Microsoft.UI.Private.Media;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.NativeCodecs.Libwebp;
 using System;
-using System.Linq;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
@@ -150,27 +149,7 @@ namespace CollapseLauncher
 
         public static void ToggleBlurBackdrop(bool useBackdrop = true)
         {
-            // Enumerate the dictionary (MergedDictionaries)
-            foreach (ResourceDictionary resource in Current!.Resources!.MergedDictionaries!)
-            {
-                // Parse the dictionary (ThemeDictionaries) and read the type of KeyValuePair<object, object>,
-                // then select the value, get the type of ResourceDictionary, then enumerate it
-                foreach (ResourceDictionary list in resource!
-                    .ThemeDictionaries!
-                    .Select(x => x.Value)
-                    .OfType<ResourceDictionary>())
-                {
-                    // Parse the dictionary as type of KeyValuePair<object, object>,
-                    // and get the value which has type of AcrylicBrush only, then enumerate it
-                    foreach (AcrylicBrush theme in list
-                        .Select(x => x.Value)
-                        .OfType<AcrylicBrush>())
-                    {
-                        // Set the theme AlwaysUseFallback as per toggle from useBackdrop.
-                        theme.AlwaysUseFallback = !useBackdrop;
-                    }
-                }
-            }
+            MaterialHelperTestApi.SimulateDisabledByPolicy = !useBackdrop;
         }
     }
 }

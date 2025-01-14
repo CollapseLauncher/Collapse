@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Custom Background for Region",
     "GameSettings_Panel4": "Global - Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Show Events Panel",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Scale Up Events Panel on Hover",
     "GameSettings_Panel4ShowSocialMediaPanel": "Show Social Media Panel",
     "GameSettings_Panel4ShowPlaytimeButton": "Show Game Playtime",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sync Playtime with Database",
@@ -403,7 +404,7 @@
     "CustomArgs_Footer2": "Unity Standalone Player command line documentation",
     "CustomArgs_Footer3": "to see more parameters.",
 
-    "GameBoost": "Boost Game Priority [Experimental]",
+    "GameBoost": "Boost Game Priority",
     "MobileLayout": "Use Mobile Layout",
 
     "Advanced_Title": "Advanced Settings",
@@ -984,9 +985,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • New shortcuts will only be shown after Steam is reloaded.",
     "SteamShortcutCreationSuccessSubtitle6": " • In order to use the Steam overlay, Steam needs to be run as administrator and Collapse must either be fully closed or have the \"Multiple Instances\" option enabled in the settings.",
     "SteamShortcutCreationSuccessSubtitle7": " • If the game is not installed/updated, Collapse will try to install/update it. Please note that dialogs related to these processes will still be shown.",
-
     "SteamShortcutCreationFailureTitle": "Invalid Steam data folder",
     "SteamShortcutCreationFailureSubtitle": "It was not possible to find a valid userdata folder.\n\nPlease be sure to login at least once to the Steam client before trying to use this functionality.",
+    "SteamShortcutTitle": "Steam Shortcut",
+    "SteamShortcutDownloadingImages": "Downloading Steam Grid Images ({0}/{1})",
 
     "DownloadSettingsTitle": "Download Settings",
     "DownloadSettingsOption1": "Start game after install",
@@ -1238,8 +1240,15 @@
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Character Shadow in Map Exploration",
     "Graphics_HalfResTransparent": "Half Resolution Transparency",
+    
+    "Graphics_DLSS_UHP": "Ultra Performance",
+    "Graphics_DLSS_Perf": "Performance",
+    "Graphics_DLSS_Balanced": "Balanced",
+    "Graphics_DLSS_Quality": "Quality",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Global Graphics Settings",
     "SpecEnabled": "Enabled",

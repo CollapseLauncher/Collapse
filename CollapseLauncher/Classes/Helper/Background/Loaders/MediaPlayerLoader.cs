@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI.Animations;
 #if USEFFMPEGFORVIDEOBG
 using FFmpegInteropX;
@@ -26,6 +27,7 @@ using Windows.UI;
 using Hi3Helper.SentryHelper;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 using static Hi3Helper.Logger;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -33,7 +35,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal partial class MediaPlayerLoader : IBackgroundMediaLoader
+    internal sealed partial class MediaPlayerLoader : IBackgroundMediaLoader
     {
     #pragma warning disable CS0169 // Field is never used
         private bool _isFocusChangeRunning;
@@ -137,7 +139,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                 await GetPreviewAsColorPalette(filePath);
 
-                CurrentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamUtility.FileStreamOpenReadOpt);
+                CurrentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamExtension.FileStreamOpenReadOpt);
 
 #if !USEFFMPEGFORVIDEOBG
                 EnsureIfFormatIsDashOrUnsupported(CurrentMediaStream);

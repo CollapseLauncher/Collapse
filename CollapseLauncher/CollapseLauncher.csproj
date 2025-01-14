@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.13</Version>
+        <Version>1.82.14</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -47,6 +47,7 @@
         <ShouldComputeInputPris>true</ShouldComputeInputPris>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+        <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -82,6 +83,7 @@
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
 		<TrimMode>full</TrimMode>
+		<CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
 	</PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <!-- !! IMPORTANT !!-->
@@ -149,7 +151,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-		<PackageReference Include="Velopack" Version="0.0.1015" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+		<PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -167,8 +169,8 @@
         <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         
         <PackageReference Include="GitInfo" Version="3.5.0" PrivateAssets="all" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
-        <PackageReference Include="Markdig.Signed" Version="0.39.1" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+        <PackageReference Include="Markdig.Signed" Version="0.40.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.1" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2950-prerelease" />
@@ -361,12 +363,10 @@
 		
 		<!-- Trim unused files and debug symbols -->
 		<ItemGroup>
-			<FilesToDelete Include="$(PublishDir)*.pdb;" />
 			<FilesToDelete Include="$(PublishDir)*.winmd;" />
 			<FilesToDelete Include="$(PublishDir)*.xml;" />
 		</ItemGroup>
 		<Delete Files="@(FilesToDelete)" />
-		<Delete Files="$(PublishDir)CollapseLauncher.pdb" />
 		<Delete Files="$(PublishDir)DwmSceneI.dll" />
 		<Delete Files="$(PublishDir)DWriteCore.dll" />
 		<Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />

@@ -493,6 +493,27 @@
                                                           Visibility="Collapsed" />
                                         </ComboBox>
                                     </StackPanel>
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Bottom">
+                                        <TextBlock MaxWidth="128"
+                                                   Margin="0,8,0,8"
+                                                   HorizontalAlignment="Left"
+                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DlssQuality}"
+                                                   TextWrapping="Wrap" />
+                                        <ComboBox x:Name="DlssQualitySelector"
+                                                  Margin="0,0,16,8"
+                                                  HorizontalAlignment="Stretch"
+                                                  CornerRadius="14"
+                                                  SelectedIndex="{x:Bind DlssQuality, Mode=TwoWay}">
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_UHP}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_Perf}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_Balanced}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_Quality}" />
+                                            <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_DLAA}" />
+                                        </ComboBox>
+                                    </StackPanel>
                                 </Grid>
                             </StackPanel>
                             <StackPanel>

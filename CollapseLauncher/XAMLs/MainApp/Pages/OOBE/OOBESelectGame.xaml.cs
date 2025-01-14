@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
-using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Win32.ToastCOM.Notification;
@@ -54,7 +53,7 @@ namespace CollapseLauncher.Pages.OOBE
             SpawnGreetingsToastNotification(categorySelected, regionSelected);
         }
 
-        private void SpawnGreetingsToastNotification(string? gameName, string? regionName)
+        private static void SpawnGreetingsToastNotification(string? gameName, string? regionName)
         {
             if (!string.IsNullOrEmpty(gameName)
              && !string.IsNullOrEmpty(regionName))

@@ -11,6 +11,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Hi3Helper.SentryHelper;
+// ReSharper disable NonReadonlyMemberInGetHashCode
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
@@ -410,6 +411,16 @@ namespace CollapseLauncher.GameSettings.Base
             string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false);
             Sleepy.WriteString(filePath, jsonString, Magic);
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is T other)
+                return Equals(other);
+
+            return false;
+        }
+
+        public override int GetHashCode() => SettingsJsonNode?.GetHashCode() ?? 0;
 
         public bool Equals(T? other) => JsonNode.DeepEquals(this.SettingsJsonNode, other?.SettingsJsonNode);
 

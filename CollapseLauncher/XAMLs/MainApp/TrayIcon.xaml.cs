@@ -11,7 +11,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
 using Microsoft.Extensions.Logging;
-using Microsoft.UI.Xaml.Markup;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;

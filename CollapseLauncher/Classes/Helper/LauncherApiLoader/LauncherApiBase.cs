@@ -14,6 +14,7 @@ using Hi3Helper.SentryHelper;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader

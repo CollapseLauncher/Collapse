@@ -89,9 +89,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.71, )",
-        "resolved": "1.11.71",
-        "contentHash": "HlEThQBnob4/29DIiyrPSYlGXXSZUtOH7571PRev+yu8FW8n5pdxqHyun+PMm17cp3ovCrxFhXedC+1HUSdRMA=="
+        "requested": "[1.11.72, )",
+        "resolved": "1.11.72",
+        "contentHash": "RNLgXxTFdIGFI+o5l8c2aJ2L5StIRn9Uv8HKR76p7QP4ZUL26wzpWUCWh08xWUdkL2kocl+Xhv6VUu0rA1npVg=="
       },
       "Libsql.Client": {
         "type": "Direct",
@@ -101,9 +101,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.39.1, )",
-        "resolved": "0.39.1",
-        "contentHash": "/68yhkMdCWYv291WQdizR2n2nKSvk4wg58DLba9tSBil7g1EuaTrkw4XQLDZvHr2jG5oRwtrp8eMMROxsRF/Ow=="
+        "requested": "[0.40.0, )",
+        "resolved": "0.40.0",
+        "contentHash": "tuoVAXkGYdXyqIq+wkqFFn1LpJzsAuxghqi+MxDc+CrHdQWCMtCsycXMkNcsgsjJeUpFYHqcSBUUzZXEsN9ejQ=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -265,9 +265,9 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[0.0.1015, )",
-        "resolved": "0.0.1015",
-        "contentHash": "j+6sQfhJQOu/x3Rm4hSboDKdcrOdXFF7dNToz4bx1knUge3zCHJciDf4JUuTJHidzPTM//9IHCCAnDFbuMBfGA==",
+        "requested": "[0.0.1053, )",
+        "resolved": "0.0.1053",
+        "contentHash": "hbSFBfwAAEg5GGKkocDPiyYA+FxyrkXo2pJJCcrgOv1xnSupINpYXk2l9M/M7LEjKiH42pq+NmcG/+CwQvTbvA==",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
           "NuGet.Versioning": "6.12.1"
@@ -302,8 +302,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.29.1",
-        "contentHash": "kDFLP72bPu4GwquVN7HtFnfqxhQs4CLbUEyOc/0yV48HB0Pxf7tDK7zIx6ifaQwGp+RSoLY1sz1CXqoAEAu+AQ=="
+        "resolved": "3.29.3",
+        "contentHash": "t7nZFFUFwigCwZ+nIXHDLweXvwIpsOXi+P7J7smPT/QjI3EKxnCzTQOhBqyEh6XEzc/pNH+bCFOOSjatrPt6Tw=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -359,8 +359,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.0.0",
-        "contentHash": "VCqGv7bE8rnEI4m8+lrxLFFGMrOMvOTArz51gj+1MID5Zzhi9KNoDIjJb1qLY2ys90Cr2YH5HSXcTg5mCG2beQ=="
+        "resolved": "5.0.1",
+        "contentHash": "h1rKFYXx58dUtAcsWpTlJGHhG1bpy0JjGh8b2sRKw2wdk3NKCGd8KTLSWnzIqIjjZP2PNeUZFUyDeWVKs8Dk2A=="
       },
       "System.Drawing.Common": {
         "type": "Transitive",
@@ -436,13 +436,13 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[5.0.0, )"
+          "Sentry": "[5.0.1, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.29.1, )",
+          "Google.Protobuf": "[3.29.3, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[9.0.0, )"
@@ -454,9 +454,9 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.29.1, )",
+          "Google.Protobuf": "[*, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "System.IO.Hashing": "[9.0.0, )"
+          "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {

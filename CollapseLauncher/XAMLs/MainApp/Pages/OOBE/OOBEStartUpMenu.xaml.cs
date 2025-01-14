@@ -40,6 +40,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable CollectionNeverQueried.Local
 // ReSharper disable InconsistentNaming
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -113,68 +114,82 @@ namespace CollapseLauncher.Pages.OOBE
 
         private async void RunIntroSequence()
         {
-            await Task.Delay(250);
-            TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
-            CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
-
-            IAnimatedVisualSource2? newIntro = new NewLogoTitleIntro();
+            try
             {
-                WelcomeLogoIntro.Source = newIntro;
-                WelcomeLogoIntro.AnimationOptimization = PlayerAnimationOptimization.Resources;
+                await Task.Delay(250);
+                TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
+                CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
 
-                await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
-
-                // Adding delay and make sure the CDN recommendation has already been loaded
-                // before hiding the intro sequence
-                while (_isLoadingCDNRecommendation)
+                IAnimatedVisualSource2 newIntro = new NewLogoTitleIntro();
                 {
-                    await Task.Delay(250);
+                    WelcomeLogoIntro.Source                = newIntro;
+                    WelcomeLogoIntro.AnimationOptimization = PlayerAnimationOptimization.Resources;
+
+                    await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
+
+                    // Adding delay and make sure the CDN recommendation has already been loaded
+                    // before hiding the intro sequence
+                    while (_isLoadingCDNRecommendation)
+                    {
+                        await Task.Delay(250);
+                    }
+                    await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
+                    WelcomeLogoIntro.Stop();
+                    await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                          currentCompositor.CreateVector3KeyFrameAnimation(
+                                                               "Translation",
+                                                               new Vector3(0, -138, 0),
+                                                               WelcomeLogoIntro.Translation
+                                                              ));
+                    await SpawnWelcomeText();
+
+                    await Task.Delay(1000);
+
+                    await SpawnWelcomeText(true);
+                    await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                          currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
+                                                          currentCompositor.CreateVector3KeyFrameAnimation(
+                                                               "Translation",
+                                                               new Vector3(0, -32, 0),
+                                                               WelcomeLogoIntro.Translation
+                                                              ));
+
+                    OOBEAgreementMenuExtensions.OobeStartParentUI = this;
+                    OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
+                    WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
+                    WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
                 }
-                await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
-                WelcomeLogoIntro.Stop();
-                await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
-                                                      currentCompositor.CreateVector3KeyFrameAnimation(
-                                                        "Translation",
-                                                        new Vector3(0, -138, 0),
-                                                        WelcomeLogoIntro.Translation
-                                                      ));
-                await SpawnWelcomeText();
-
-                await Task.Delay(1000);
-
-                await SpawnWelcomeText(true);
-                await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
-                                                      currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
-                                                      currentCompositor.CreateVector3KeyFrameAnimation(
-                                                        "Translation",
-                                                        new Vector3(0, -32, 0),
-                                                        WelcomeLogoIntro.Translation
-                                                      ));
-
-                OOBEAgreementMenuExtensions.oobeStartParentUI = this;
-                OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
-                WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
-                WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
+                WelcomeLogoIntro.Source = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
-            WelcomeLogoIntro.Source = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            catch
+            {
+                // ignored
+            }
         }
 
         public async void StartLauncherConfiguration()
         {
-            OverlayFrame.Navigate(typeof(BlankPage), null, new DrillInNavigationTransitionInfo());
-            MainUI.Visibility = Visibility.Visible;
+            try
+            {
+                OverlayFrame.Navigate(typeof(BlankPage), null, new DrillInNavigationTransitionInfo());
+                MainUI.Visibility = Visibility.Visible;
 
-            TimeSpan mainUIAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
-            await MainUI.StartAnimation(mainUIAnimAppearanceDuration,
-                                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
-                                        currentCompositor.CreateVector3KeyFrameAnimation(
-                                         "Translation",
-                                         new Vector3(0, 0,  0),
-                                         new Vector3(0, 32, 0)));
+                TimeSpan mainUIAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
+                await MainUI.StartAnimation(mainUIAnimAppearanceDuration,
+                                            currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
+                                            currentCompositor.CreateVector3KeyFrameAnimation(
+                                                 "Translation",
+                                                 new Vector3(0, 0,  0),
+                                                 new Vector3(0, 32, 0)));
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private async ValueTask SpawnWelcomeText(bool isHide = false)

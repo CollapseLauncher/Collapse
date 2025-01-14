@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
 using System;
@@ -6,9 +7,11 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.MainEntryPoint;
+using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
@@ -16,178 +19,186 @@ namespace CollapseLauncher.ShortcutUtils
 {
     public sealed class SteamShortcut
     {
-        /// Based on CorporalQuesadilla's documentation on Steam Shortcuts.
-        /// 
-        /// Source:
-        /// https://github.com/CorporalQuesadilla/Steam-Shortcut-Manager/wiki/Steam-Shortcuts-Documentation
-
-        public string preliminaryAppID = "";
-
         #region Shortcut fields
-        public string entryID = "";
-        public string appid = "";
-        public string AppName = "";
-        public string Exe = "";
-        public string StartDir = "";
-        public string icon = "";
-        public string ShortcutPath = "";
-        public string LaunchOptions = "";
-        public bool IsHidden = false;
-        public bool AllowDesktopConfig = true;
-        public bool AllowOverlay = true;
-        public bool OpenVR = false;
-        public bool Devkit = false;
-        public string DevkitGameID = "";
-        public bool DevkitOverrideAppID = false;
-        public string LastPlayTime = "\x00\x00\x00\x00";
-        public string FlatpakAppID = "";
-        public string tags = "";
+        // We don't care about any other fields.
+        public readonly uint AppID;
+        public readonly string AppName;
+        public readonly string Exe;
+        public readonly string StartDir;
+        public readonly string Icon;
+        public readonly string LaunchOptions;
         #endregion
 
-        internal SteamShortcut() { }
+        private readonly string _path;
+        private readonly PresetConfig _preset;
 
-        internal SteamShortcut(PresetConfig preset, bool play = false)
+        internal SteamShortcut(string path, PresetConfig preset, bool play = false)
         {
-            AppName = $"{preset.GameName} - {preset.ZoneName}";
-            
-            string stubPath = FindCollapseStubPath();
+            _path = Path.GetDirectoryName(path);
+            _preset = preset;
+
+            var translatedGameTitle =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.GameName,
+                                                                        Lang._GameClientTitles)!;
+            var translatedGameRegion =
+                InnerLauncherConfig.GetGameTitleRegionTranslationString(preset.ZoneName,
+                                                                        Lang._GameClientRegions);
+            AppName = $"{translatedGameTitle} - {translatedGameRegion}";
+
+            var stubPath = FindCollapseStubPath();
             Exe = $"\"{stubPath}\"";
-            StartDir = $"\"{Path.GetDirectoryName(stubPath)}\"";
+            StartDir = $"{Path.GetDirectoryName(stubPath)}";
 
-            var id = BitConverter.GetBytes(GenerateAppId(Exe, AppName));
-            appid = SteamShortcutParser.ANSI.GetString(id, 0, id.Length);
+            var appNameInternal = $"{preset.GameName} - {preset.ZoneName}";
+            AppID = GenerateAppId(Exe, appNameInternal);
 
-            preliminaryAppID = GeneratePreliminaryId(Exe, AppName).ToString();
+            var gridPath = Path.Combine(_path!, "grid");
+            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
+            Icon = Path.Combine(gridPath, iconName);
 
             LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
             if (play) LaunchOptions += " -p";
         }
 
-        private static char BoolToByte(bool b) => b ? '\x01' : '\x00';
-
-        public string ToEntry(int id = -1)
+        private static uint GenerateAppId(string exe, string appname)
         {
-            return '\x00' + (id >= 0 ? id.ToString() : entryID) + '\x00'
-                    + '\x02' + "appid" + '\x00' + appid
-                    + '\x01' + "AppName" + '\x00' + AppName + '\x00'
-                    + '\x01' + "Exe" + '\x00' + Exe + '\x00'
-                    + '\x01' + "StartDir" + '\x00' + StartDir + '\x00'
-                    + '\x01' + "icon" + '\x00' + icon + '\x00'
-                    + '\x01' + "ShortcutPath" + '\x00' + ShortcutPath + '\x00'
-                    + '\x01' + "LaunchOptions" + '\x00' + LaunchOptions + '\x00'
-                    + '\x02' + "IsHidden" + '\x00' + BoolToByte(IsHidden) + "\x00\x00\x00"
-                    + '\x02' + "AllowDesktopConfig" + '\x00' + BoolToByte(AllowDesktopConfig) + "\x00\x00\x00"
-                    + '\x02' + "AllowOverlay" + '\x00' + BoolToByte(AllowOverlay) + "\x00\x00\x00"
-                    + '\x02' + "OpenVR" + '\x00' + BoolToByte(OpenVR) + "\x00\x00\x00"
-                    + '\x02' + "Devkit" + '\x00' + BoolToByte(Devkit) + "\x00\x00\x00"
-                    + '\x01' + "DevkitGameID" + '\x00' + DevkitGameID + '\x00'
-                    + '\x02' + "DevkitOverrideAppID" + '\x00' + BoolToByte(DevkitOverrideAppID) + "\x00\x00\x00"
-                    + '\x02' + "LastPlayTime" + '\x00' + LastPlayTime
-                    + '\x01' + "FlatpakAppID" + '\x00' + FlatpakAppID + '\x00'
-                    + '\x00' + "tags" + '\x00' + tags + "\x08\x08";
-        }
-
-
-        private static uint GeneratePreliminaryId(string exe, string appname)
-        {
-            string key = exe + appname;
-
+            // Actually the appid generation algorithm for custom apps has been changed.
+            // It's now a completely random number instead of the crc32.
+            // But to be able to track the target app, we still use crc32 as appid.
             var crc32 = new Crc32();
-            crc32.Append(SteamShortcutParser.ANSI.GetBytes(key));
-
-            uint top = BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
-
-            return (top << 32) | 0x02000000;
+            crc32.Append(Encoding.UTF8.GetBytes(exe + appname));
+            return BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
         }
 
-        public static uint GenerateAppId(string exe, string appname)
+        internal async Task MoveImages(CancellationToken token)
         {
-            uint appId = GeneratePreliminaryId(exe, appname);
+            if (!string.IsNullOrEmpty(_path)) Directory.CreateDirectory(_path);
 
-            return appId >> 32;
-        }
-
-        private static uint GenerateGridId(string exe, string appname)
-        {
-            uint appId = GeneratePreliminaryId(exe, appname);
-
-            return (appId >> 32) - 0x10000000;
-        }
-
-        internal void MoveImages(string path, PresetConfig preset)
-        {
-            if (preset == null) return;
-            var parentDir = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(parentDir)) Directory.CreateDirectory(parentDir);
-            
-            path = Path.GetDirectoryName(path);
-            string gridPath = Path.Combine(path!, "grid");
+            var gridPath = Path.Combine(_path!, "grid");
             if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
-            string iconName = ShortcutCreator.GetIconName(preset.GameType);
+            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
+            var iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, "Assets\\Images\\GameIcon\\" + iconName);
 
-            icon = Path.Combine(gridPath, iconName);
-            string iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, "Assets\\Images\\GameIcon\\" + iconName);
-
-            if (!Path.Exists(icon) && Path.Exists(iconAssetPath))
+            if (!Path.Exists(Icon) && Path.Exists(iconAssetPath))
             {
-                File.Copy(iconAssetPath, icon);
-                LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {icon}.");
+                File.Copy(iconAssetPath, Icon);
+                LogWriteLine($"[SteamShortcut::MoveImages] Copied icon from {iconAssetPath} to {Icon}.");
             }
 
-            Dictionary<string, SteamGameProp> assets = preset.ZoneSteamAssets;
-            if (assets == null) return;
+            await CacheImages(token);
+            if (token.IsCancellationRequested) return;
 
             // Game background
-            GetImageFromUrl(gridPath, assets["Hero"], "_hero");
+            CopyImageFromCache(gridPath, "_hero");
 
             // Game logo
-            GetImageFromUrl(gridPath, assets["Logo"], "_logo");
+            CopyImageFromCache(gridPath, "_logo");
 
             // Vertical banner
             // Shows when viewing all games of category or in the Home page
-            GetImageFromUrl(gridPath, assets["Banner"], "p");
+            CopyImageFromCache(gridPath, "p");
 
             // Horizontal banner
             // Appears in Big Picture mode when the game is the most recently played
-            GetImageFromUrl(gridPath, assets["Preview"], "");
+            CopyImageFromCache(gridPath, "");
         }
 
-        private async void GetImageFromUrl(string gridPath, SteamGameProp asset, string steamSuffix)
+        private void CopyImageFromCache(string gridPath, string steamSuffix)
         {
-            string steamPath = Path.Combine(gridPath, preliminaryAppID + steamSuffix + ".png");
+            try
+            {
+                File.Copy(Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix),
+                          Path.Combine(gridPath, AppID + steamSuffix + ".png"), true);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
 
-            string hash = MD5Hash(steamPath);
+        private async Task CacheImages(CancellationToken token)
+        {
+            var assets = _preset.ZoneSteamAssets;
+            if (assets == null) return;
 
+            var images = new[]
+            {
+                ("Hero", "_hero"),
+                ("Logo", "_logo"),
+                ("Banner", "p"),
+                ("Preview", "")
+            };
+            var cacheImageList = new List<(string, string)>();
+
+            foreach (var image in images)
+            {
+                var asset = assets[image.Item1];
+                var steamSuffix = image.Item2;
+
+                var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
+                var hash = MD5Hash(cachePath);
+                if (hash.ToLower() != asset.MD5)
+                    cacheImageList.Add(image);
+            }
+
+            if (cacheImageList.Count == 0) return;
+
+            LoadingMessageHelper.ShowLoadingFrame();
+
+            for (var i = 0; i < cacheImageList.Count; i++)
+            {
+                var image = cacheImageList[i];
+                var progressString = string.Format(Lang._Dialogs.SteamShortcutDownloadingImages, i + 1, cacheImageList.Count);
+                LoadingMessageHelper.SetMessage(Lang._Dialogs.SteamShortcutTitle, progressString);
+                await CacheImageFromUrl(assets[image.Item1], image.Item2, token);
+            }
+
+            LoadingMessageHelper.HideLoadingFrame();
+        }
+
+        private async Task CacheImageFromUrl(SteamGameProp asset, string steamSuffix, CancellationToken token)
+        {
+            if (token.IsCancellationRequested) return;
+
+            var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
+
+            var hash = MD5Hash(cachePath);
             if (hash.ToLower() == asset.MD5) return;
 
-            string cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
+            var cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
 
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                FileInfo info = new FileInfo(steamPath);
-                await DownloadImage(info, cdnURL, new CancellationToken());
+                var info = new FileInfo(cachePath);
+                await DownloadImage(info, cdnURL, token);
 
-                hash = MD5Hash(steamPath);
+                if (token.IsCancellationRequested)
+                {
+                    File.Delete(cachePath);
+                    return;
+                }
+
+                hash = MD5Hash(cachePath);
 
                 if (hash.ToLower() == asset.MD5) return;
 
-                File.Delete(steamPath);
+                File.Delete(cachePath);
 
-                LogWriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {steamPath}! {hash} does not match {asset.MD5}.", LogType.Error);
+                LogWriteLine($"[SteamShortcut::GetImageFromUrl] Invalid checksum for file {cachePath}! {hash} does not match {asset.MD5}.", LogType.Error);
             }
-            
+
             LogWriteLine($"[SteamShortcut::GetImageFromUrl] After 3 tries, {cdnURL} could not be downloaded successfully.", LogType.Error);
         }
 
         private static async ValueTask DownloadImage(FileInfo fileInfo, string url, CancellationToken token)
         {
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+            var buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
                 // Try to get the remote stream and download the file
-                using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
-                using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                await using Stream outStream = fileInfo.Open(new FileStreamOptions()
                 {
                     Access = FileAccess.Write,
                     Mode = FileMode.Create,
@@ -195,7 +206,7 @@ namespace CollapseLauncher.ShortcutUtils
                 });
 
                 // Get the file length
-                long fileLength = netStream.Length;
+                var fileLength = netStream.Length;
 
                 // Copy (and download) the remote streams to local
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
@@ -204,7 +215,12 @@ namespace CollapseLauncher.ShortcutUtils
                     await outStream.WriteAsync(buffer, 0, read, token);
 
                 LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
-                    + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+                             + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)",
+                             LogType.Default, true);
+            }
+            catch (TaskCanceledException)
+            {
+                // ignored
             }
             catch (Exception ex)
             {

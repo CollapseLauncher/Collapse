@@ -12,7 +12,11 @@ using System.Text.Json.Serialization;
 using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Honkai
 {
     internal class ScreenSettingData : BaseScreenSettingData, IGameSettingsValue<ScreenSettingData>
@@ -153,7 +157,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             RegistryRoot?.SetValue(_ValueNameScreenManagerHeight, height, RegistryValueKind.DWord);
         }
 
-        public bool Equals(ScreenSettingData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is ScreenSettingData toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

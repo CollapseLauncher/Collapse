@@ -17,6 +17,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:s="using:CommunityToolkit.WinUI"
       xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Sophon"
+      xmlns:pages="using:CollapseLauncher.Pages"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       CacheMode="BitmapCache"
@@ -46,9 +47,9 @@
         </Grid.ColumnDefinitions>
         <Grid x:Name="ImageEventImgGrid"
               Grid.Row="{x:Bind CurrentBannerIconRow}"
-              Grid.RowSpan="{x:Bind CurrentBannerIconRowSpan}"
+              Grid.RowSpan="{x:Bind pages:HomePage.CurrentBannerIconRowSpan}"
               Grid.Column="{x:Bind CurrentBannerIconColumn}"
-              Grid.ColumnSpan="{x:Bind CurrentBannerIconColumnSpan}"
+              Grid.ColumnSpan="{x:Bind pages:HomePage.CurrentBannerIconColumnSpan}"
               Width="{x:Bind CurrentBannerIconWidth}"
               Margin="{x:Bind CurrentBannerIconMargin}"
               HorizontalAlignment="{x:Bind CurrentBannerIconHorizontalAlign}"
@@ -437,7 +438,7 @@
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}"
+                <ItemsControl ItemsSource="{x:Bind pages:HomePage.GameNewsData.SocialMedia}"
                               TabFocusNavigation="Once"
                               IsTabStop="False"
                               XYFocusKeyboardNavigation="Enabled">
@@ -622,7 +623,7 @@
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
                               HorizontalAlignment="Stretch"
                               CornerRadius="4"
-                              ItemsSource="{x:Bind GameNewsData.NewsCarousel}"
+                              ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsCarousel}"
                               Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource CollapseFlipViewStyle}"
                               Translation="0,0,12">
@@ -646,9 +647,9 @@
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
-                      Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
+                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty}">
                     <Pivot HorizontalAlignment="Left"
-                           SelectedIndex="{x:Bind DefaultPostPanelIndex}">
+                           SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex}">
                         <Pivot.Resources>
                             <Style BasedOn="{StaticResource MinScrollBarStyle}"
                                    TargetType="ScrollBar" />
@@ -664,9 +665,9 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind IsPostEventPanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostEventPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}"
+                                        <ItemsControl ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeActivity}"
                                                       IsTabStop="False"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
@@ -710,9 +711,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsPostEventPanelEmpty}">
+                                            Visibility="{x:Bind pages:HomePage.IsPostEventPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -742,9 +743,9 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind IsPostNoticePanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}"
+                                        <ItemsControl ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeAnnouncement}"
                                                       IsTabStop="False"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
@@ -788,9 +789,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsPostNoticePanelEmpty}">
+                                            Visibility="{x:Bind pages:HomePage.IsPostNoticePanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -820,9 +821,9 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind IsPostInfoPanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}"
+                                        <ItemsControl ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeInfo}"
                                                       IsTabStop="False"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
@@ -866,9 +867,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsPostInfoPanelEmpty}">
+                                            Visibility="{x:Bind pages:HomePage.IsPostInfoPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -900,7 +901,7 @@
                       Translation="0,0,16">
                     <PipsPager VerticalAlignment="Center"
                                NextButtonVisibility="Collapsed"
-                               NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
+                               NumberOfPages="{x:Bind pages:HomePage.GameNewsData.NewsCarousel.Count}"
                                Orientation="Horizontal"
                                PreviousButtonVisibility="Collapsed"
                                SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
@@ -1618,7 +1619,8 @@
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
-                    <Flyout Placement="TopEdgeAlignedRight">
+                    <Flyout x:Name="GameStartupSettingFlyout"
+                            Placement="TopEdgeAlignedRight">
                         <ScrollViewer MaxHeight="474"
                                       Margin="-16,-16"
                                       VerticalScrollBarVisibility="Auto"
@@ -1926,6 +1928,13 @@
                                                   IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <TextBlock Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ScaleUpEventsPanel}"
+                                               TextWrapping="Wrap" />
+                                    <ToggleSwitch x:Name="ScaleUpEventsPanelToggle"
+                                                  IsEnabled="False"
+                                                  IsOn="{x:Bind pages:HomePage.IsEventsPanelScaleUp, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <TextBlock Margin="0,8,0,0"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
                                                TextWrapping="Wrap" />
@@ -2056,7 +2065,7 @@
                             Click="OpenButtonLinkFromTag"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
                             Style="{ThemeResource AccentButtonStyle}"
-                            Tag="{x:Bind GamePreRegisterLink}"
+                            Tag="{x:Bind pages:HomePage.GamePreRegisterLink}"
                             Visibility="Collapsed">
                         <Button.Content>
                             <Grid Margin="8,0">
@@ -2281,12 +2290,18 @@
                     Shadow="{ThemeResource SharedShadow}"
                     Tag="{x:Bind PlaytimeStatsFlyout}"
                     Translation="0,0,32">
+                <ToolTipService.ToolTip>
+                    <ToolTip x:Name="PlaytimeStatsToolTip"
+                             Opened="ShowPlaytimeStatsFlyout"
+                             Visibility="Collapsed" />
+                </ToolTipService.ToolTip>
                 <FlyoutBase.AttachedFlyout>
                     <Flyout x:Name="PlaytimeStatsFlyout"
-                            LightDismissOverlayMode="On"
+                            LightDismissOverlayMode="Off"
                             OverlayInputPassThroughElement="{x:Bind PlaytimeBtn}"
-                            Placement="Top">
-                        <Grid ColumnSpacing="8">
+                            Placement="Top"
+                            Opened="PlaytimeStatsFlyout_OnOpened">
+                        <Grid ColumnSpacing="8" Tag="PlaytimeStatsFlyoutGrid">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />
@@ -2534,11 +2549,6 @@
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
-                <ToolTipService.ToolTip>
-                    <ToolTip Opened="ShowPlaytimeStatsFlyout"
-                             Tag="{x:Bind PlaytimeBtn}"
-                             Visibility="Collapsed" />
-                </ToolTipService.ToolTip>
             </Button>
         </StackPanel>
     </Grid>

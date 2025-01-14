@@ -7,6 +7,7 @@
     using System.Threading.Tasks.Dataflow;
     using static Hi3Helper.Locale;
     using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable PartialTypeWithSinglePart
 
     namespace CollapseLauncher.DiscordPresence
     {
@@ -26,7 +27,7 @@
 
         #endregion
 
-        public partial class DiscordPresenceManager : IDisposable
+        public sealed partial class DiscordPresenceManager : IDisposable
         {
             #region Properties
 

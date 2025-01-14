@@ -66,8 +66,7 @@ public sealed partial class UpdaterWindow
             await using var metadataStream =
                 await
                     FallbackCDNUtil
-                       .TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json",
-                                                default);
+                       .TryGetCDNFallbackStream($"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/fileindex.json");
             var updateInfo =
                 await metadataStream.DeserializeAsync(InternalAppJSONContext.Default.AppUpdateVersionProp, default);
             NewVersionLabel.Text = updateInfo!.VersionString;

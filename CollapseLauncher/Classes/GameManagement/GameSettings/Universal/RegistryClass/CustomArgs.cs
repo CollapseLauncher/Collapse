@@ -4,7 +4,11 @@ using Hi3Helper;
 using Microsoft.Win32;
 using System;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
 {
     public class CustomArgs : IGameSettingsValue<CustomArgs>
@@ -64,12 +68,12 @@ namespace CollapseLauncher.GameSettings.Universal
             }
         }
 
-        public bool Equals(CustomArgs? comparedTo)
+        public override bool Equals(object? comparedTo)
         {
             if (ReferenceEquals(this, comparedTo)) return true;
-            if (comparedTo == null) return false;
+            if (comparedTo is not CustomArgs customArgsCompare) return false;
 
-            return comparedTo.CustomArgumentValue == this.CustomArgumentValue;
+            return customArgsCompare.CustomArgumentValue == CustomArgumentValue;
         }
         #endregion
     }

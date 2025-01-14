@@ -162,6 +162,8 @@ namespace Hi3Helper
                 public string SteamShortcutCreationSuccessSubtitle7 { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationSuccessSubtitle7;
                 public string SteamShortcutCreationFailureTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureTitle;
                 public string SteamShortcutCreationFailureSubtitle { get; set; } = LangFallback?._Dialogs.SteamShortcutCreationFailureSubtitle;
+                public string SteamShortcutTitle { get; set; } = LangFallback?._Dialogs.SteamShortcutTitle;
+                public string SteamShortcutDownloadingImages { get; set; } = LangFallback?._Dialogs.SteamShortcutDownloadingImages;
                 public string OperationErrorDiskSpaceInsufficientTitle { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientTitle;
                 public string OperationErrorDiskSpaceInsufficientMsg { get; set; } = LangFallback?._Dialogs.OperationErrorDiskSpaceInsufficientMsg;
                 public string OperationWarningNotCancellableTitle { get; set; } = LangFallback?._Dialogs.OperationWarningNotCancellableTitle;

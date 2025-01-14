@@ -14,19 +14,16 @@ using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable IdentifierTypo
 // ReSharper disable once CheckNamespace
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
-    internal partial class HoYoPlayLauncherApiLoader : LauncherApiBase
+    internal sealed partial class HoYoPlayLauncherApiLoader : LauncherApiBase
     {
-        private HttpClient? _apiGeneralHttpClient;
-        private HttpClient? _apiResourceHttpClient;
+        public override HttpClient? ApiGeneralHttpClient { get; protected set; }
 
-        public sealed override        HttpClient? ApiGeneralHttpClient  { get => _apiGeneralHttpClient;
-            protected set => _apiGeneralHttpClient  = value; }
-        public sealed override HttpClient? ApiResourceHttpClient { get => _apiResourceHttpClient;
-            protected set => _apiResourceHttpClient = value; }
+        public override HttpClient? ApiResourceHttpClient { get; protected set; }
 
         private HoYoPlayLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion, true)

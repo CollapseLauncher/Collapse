@@ -1,39 +1,39 @@
 ﻿#if !DISABLEDISCORD
-    using CollapseLauncher.DiscordPresence;
+using CollapseLauncher.DiscordPresence;
 #endif
-    using CollapseLauncher.GameSettings.Zenless;
-    using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Interfaces;
-    using CollapseLauncher.Statics;
-    using Hi3Helper;
-    using Hi3Helper.Data;
-    using Hi3Helper.Shared.ClassStruct;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Media;
-    using Microsoft.Win32;
-    using Hi3Helper.Win32.Screen;
-    using RegistryUtils;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Linq;
-    using System.Numerics;
-    using Windows.UI;
-    using static Hi3Helper.Locale;
-    using static Hi3Helper.Logger;
-    using static Hi3Helper.Shared.Region.LauncherConfig;
-    using static CollapseLauncher.Statics.GamePropertyVault;
+using CollapseLauncher.GameSettings.Zenless;
+using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Statics;
+using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.Win32;
+using Hi3Helper.Win32.Screen;
+using RegistryUtils;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using Windows.UI;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.Statics.GamePropertyVault;
 
 namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class ZenlessGameSettingsPage
     {
-        private GamePresetProperty CurrentGameProperty   { get; set; }
-        private ZenlessSettings    Settings              { get; set; }
-        private Brush              InheritApplyTextColor { get; set; }
-        private RegistryMonitor    RegistryWatcher       { get; set; }
+        private GamePresetProperty           CurrentGameProperty   { get; }
+        private ZenlessSettings              Settings              { get; }
+        private Brush                        InheritApplyTextColor { get; set; }
+        private RegistryMonitor              RegistryWatcher       { get; set; }
 
         private bool IsNoReload = false;
         
@@ -162,7 +162,6 @@ namespace CollapseLauncher.Pages
             {
                 BackgroundImgChanger.ToggleBackground(true);
 
-                var resList   = new List<string>();
                 SizeProp = ScreenProp.CurrentResolution;
 
                 // Get the native resolution first
@@ -179,11 +178,15 @@ namespace CollapseLauncher.Pages
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resWindowed.Count).Select(_ => false));
 
                 // Add native resolution string, other fullscreen resolutions, and windowed resolutions
-                resList.Add(nativeResString);
-                resList.AddRange(resFullscreen);
-                resList.AddRange(resWindowed);
+                List<string> resolutionList =
+                [
+                    nativeResString
+                ];
+                resolutionList.AddRange(resFullscreen);
+                resolutionList.AddRange(resWindowed);
 
-                GameResolutionSelector.ItemsSource   = resList;
+                GameResolutionSelector.ItemsSource   = resolutionList;
+                _isAllowResolutionIndexChanged       = true; // Unlock resolution change
                 GameResolutionSelector.SelectedIndex = ResolutionIndexSelected; // Refresh
 
                 if (CurrentGameProperty.IsGameRunning)
@@ -341,11 +344,11 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -354,7 +357,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+                bool value = CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments;
 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;
@@ -363,7 +366,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
                 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;

@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -27,7 +27,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Honkai
 {
-    internal partial class HonkaiInstall : InstallManagerBase
+    internal sealed partial class HonkaiInstall : InstallManagerBase
     {
         #region Override Properties
 

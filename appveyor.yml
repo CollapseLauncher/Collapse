@@ -243,15 +243,6 @@ for:
           
           echo.
           
-          echo Install InnoSetup
-          
-          set innoinstall=%temp%\innosetup.exe
-          
-          curl "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe" --output %innoinstall%
-          
-          
-          cmd /c start /wait %innoinstall% /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
-          
           echo.
           
           echo Install dotnet sdk
@@ -276,20 +267,18 @@ for:
           
           set channel=preview
           
-          set inno="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-          
           echo.
           
           echo Build app...
           
           dotnet restore
           
-          dotnet publish CollapseLauncher -c Release -p:PublishProfile=Publish-PreviewReleaseAOT -p:PublishDir=".\preview-build\"
+          dotnet publish CollapseLauncher -c Release -p:PublishProfile=Publish-PreviewReleaseAOT -p:PublishDir=".\%channel%-build\"
           
           
           echo Getting app version...
           
-          for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\preview-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
+          for /f "tokens=2 delims==" %%I in ('wmic datafile where "name='C:\\projects\\collapse\\CollapseLauncher\\%channel%-build\\CollapseLauncher.exe'" get Version /value ^| find "Version"') do set "version_untrim=%%I"
           
           set "version=%version_untrim:~0,-2%"
           
@@ -300,25 +289,13 @@ for:
           
           echo Setting up Deployable Resources...
           
-          mkdir DeployResource
-          
-          mkdir DeployResource\current
-          
           CollapseLauncher\%channel%-build\CollapseLauncher.exe generatevelopackmetadata
-          
-          xcopy "CollapseLauncher\%channel%-build\*" "DeployResource\current\" /E /K /Y /I
-          
-          curl "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/refs/heads/main/Update.exe" --output DeployResource\update.exe
-          
-          
-          echo Making innosetup file...
-          
-          mkdir InnoTarget
-          
-          %inno% /O+ /O "InstallerProp\DeployInstaller-%channel%-AppVeyor.iss"
           
           echo.
           
+          echo Archiving PDB files
+          
+          7z a debug-sym.zip CollapseLauncher\%channel%-build\*.pdb
           
           echo Moving all the files into artifact to be pushed to SignPath
           
@@ -326,18 +303,14 @@ for:
           
           mkdir SignArtifact\BuildArtifact-%version%
           
-          mkdir SignArtifact\InnoInstaller
-          
           xcopy "CollapseLauncher\%channel%-build\*" "SignArtifact\BuildArtifact-%version%\" /E /K /Y /I
-          
-          xcopy "InnoTarget\*" "SignArtifact\InnoInstaller\" /E /K /Y /I
-    
-    
     
     test: off
     artifacts:
       - path: SignArtifact\
         name: SignArtifact-Preview
+      - path: debug-sym.zip
+        name: DebugSymbols
 
     deploy:
       - provider: Webhook
@@ -346,6 +319,10 @@ for:
           secure: B8zpDU6wkKuCBRz65VfTFxUCxY7HniWmRbJP/E3tE40kGmHKdaFnMCDSURQFWwR1pCcXHqbkJd3YX76tnTXQow==
         on:
           branch: nativeaot-test
+          
+      - provider: environment
+        name: GH_AppVeyorTestDeployTarget_Releases-Files
+
     notifications:
       - provider: Email
         to:

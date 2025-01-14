@@ -13,6 +13,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -20,7 +21,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal partial class StillImageLoader : IBackgroundMediaLoader
+    internal sealed partial class StillImageLoader : IBackgroundMediaLoader
     {
         private FrameworkElement ParentUI            { get; }
         private Compositor       CurrentCompositor   { get; }

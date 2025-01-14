@@ -194,6 +194,7 @@ namespace CollapseLauncher.Pages
                     ImageCarouselPipsPager.Visibility = Visibility.Visible;
 
                     ShowEventsPanelToggle.IsEnabled = true;
+                    ScaleUpEventsPanelToggle.IsEnabled = true;
                     PostPanel.Visibility = Visibility.Visible;
                     PostPanel.Translation += Shadow48;
                 }
@@ -2466,6 +2467,7 @@ namespace CollapseLauncher.Pages
             if (_cachedIsGameRunning) return;
 
             UpdatePlaytime(null, CurrentGameProperty._GamePlaytime.CollapsePlaytime);
+            PlaytimeFlyout.ShowAt(PlaytimeBtn);
         }
 
         private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
@@ -2563,33 +2565,24 @@ namespace CollapseLauncher.Pages
 
         private void ShowPlaytimeStatsFlyout(object sender, RoutedEventArgs e)
         {
-            ToolTip tooltip = sender as ToolTip;
-            FlyoutBase.ShowAttachedFlyout(tooltip!.Tag as FrameworkElement);
+            FlyoutBase.ShowAttachedFlyout(PlaytimeBtn);
         }
 
         private void HidePlaytimeStatsFlyout(object sender, PointerRoutedEventArgs e)
         {
-            FrameworkElement senderAsFrameworkElement = sender as FrameworkElement;
+            PlaytimeStatsFlyout.Hide();
+            PlaytimeStatsToolTip.IsOpen = false;
+        }
 
-            /* This fix an issue where the flyout spawns right on top of the button
-             * instead of on top of the button in its 1st frame.
-             * 
-             * If this method is called even within its button's range, then just
-             * ignore the call and do not hide the flyout.
-             */
-            PointerPoint pointerPoint = e.GetCurrentPoint(senderAsFrameworkElement);
-            Point currentCursorPosition = pointerPoint.Position;
-            if (currentCursorPosition.X > 0
-              && currentCursorPosition.Y > 0
-              && currentCursorPosition.X <= senderAsFrameworkElement!.ActualWidth
-              && currentCursorPosition.Y <= senderAsFrameworkElement!.ActualHeight)
+        private void PlaytimeStatsFlyout_OnOpened(object sender, object e)
+        {
+            // Match PlaytimeStatsFlyout and set it's transition animation offset to 0 (but keep animation itself)
+            var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(PlaytimeBtn.XamlRoot);
+            foreach (var popup in popups.Where(x => x.Child is FlyoutPresenter {Content: Grid {Tag: "PlaytimeStatsFlyoutGrid"}}))
             {
-                return;
+                var transition = popup.ChildTransitions[0] as PopupThemeTransition;
+                transition!.FromVerticalOffset = 0;
             }
-
-            // Otherwise, hide the flyout
-            Flyout flyout = senderAsFrameworkElement!.Tag as Flyout;
-            flyout!.Hide();
         }
 #nullable restore
         #endregion
@@ -3008,12 +3001,14 @@ namespace CollapseLauncher.Pages
         #region Shortcut Creation
         private async void AddToSteamButton_Click(object sender, RoutedEventArgs e)
         {
+            GameStartupSettingFlyout.Hide();
+
             Tuple<ContentDialogResult, bool> result = await Dialog_SteamShortcutCreationConfirm(this);
 
             if (result.Item1 != ContentDialogResult.Primary)
                 return;
 
-            if (ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
+            if (await ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty()._GamePreset, result.Item2))
             {
                 await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
                 return;
@@ -3091,6 +3086,8 @@ namespace CollapseLauncher.Pages
 
         private async void SidePanelScaleOutHoveredPointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            if (!IsEventsPanelScaleUp) return;
+
             IsPointerInsideSidePanel = true;
             if (sender is FrameworkElement elementPanel)
             {
@@ -3139,6 +3136,8 @@ namespace CollapseLauncher.Pages
 
         private async void SidePanelScaleInHoveredPointerExited(object sender, PointerRoutedEventArgs e)
         {
+            if (!IsEventsPanelScaleUp) return;
+
             IsPointerInsideSidePanel = false;
             if (sender is FrameworkElement elementPanel)
             {

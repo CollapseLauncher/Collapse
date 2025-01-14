@@ -30,7 +30,7 @@ namespace Hi3Helper
 
             try
             {
-                _ = LoadLang(filePath);
+                _ = LoadLangBase(filePath);
                 LogWriteLine($"Locale file: {langRelativePath} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
             }
             catch (Exception ex)
@@ -72,20 +72,20 @@ namespace Hi3Helper
 #endif
         }
 
-        public LocalizationParams LoadLang(string langPath)
+        public LocalizationParamsBase LoadLangBase(string langPath)
         {
             using (Stream s = new FileStream(langPath!, FileMode.Open, FileAccess.Read))
             {
-                return LoadLang(s);
+                return LoadLangBase(s);
             }
         }
 
 #if APPLYUPDATE
-        public LocalizationParams LoadLang(Uri langUri)
+        public LocalizationParamsBase LoadLangBase(Uri langUri)
         {
             using (Stream s = AssetLoader.Open(langUri))
             {
-                return LoadLang(s);
+                return LoadLangBase(s);
             }
         }
 #endif
@@ -93,6 +93,17 @@ namespace Hi3Helper
         public LocalizationParams LoadLang(Stream langStream)
         {
             LocalizationParams _langData = JsonSerializer.Deserialize(langStream!, CoreLibraryFieldsJSONContext.Default.LocalizationParams);
+            this.LangAuthor = _langData!.Author;
+            this.LangID = _langData.LanguageID.ToLower();
+            this.LangName = _langData.LanguageName;
+            this.LangIsLoaded = true;
+
+            return _langData;
+        }
+
+        public LocalizationParamsBase LoadLangBase(Stream langStream)
+        {
+            LocalizationParamsBase _langData = JsonSerializer.Deserialize(langStream!, CoreLibraryFieldsJSONContext.Default.LocalizationParamsBase);
             this.LangAuthor = _langData!.Author;
             this.LangID = _langData.LanguageID.ToLower();
             this.LangName = _langData.LanguageName;
@@ -234,12 +245,15 @@ namespace Hi3Helper
         public static LocalizationParams? LangFallback;
 
         [GeneratedBindableCustomProperty]
-        public sealed partial class LocalizationParams
+        public partial class LocalizationParamsBase
         {
             public string LanguageName { get; set; } = "";
             public string LanguageID { get; set; } = "";
             public string Author { get; set; } = "Unknown";
         }
+
+        [GeneratedBindableCustomProperty]
+        public sealed partial class LocalizationParams : LocalizationParamsBase;
     }
 
     public class LocalizationNotFoundException : Exception
