@@ -1,6 +1,7 @@
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
+using Hi3Helper;
 using System;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;

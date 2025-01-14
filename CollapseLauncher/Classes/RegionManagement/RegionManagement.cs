@@ -311,8 +311,8 @@ namespace CollapseLauncher
             long? beginDateTime = Entry.TimeBegin?.ToLocalTime().ToFileTime() ?? 0;
             long? endDateTime = Entry.TimeEnd?.ToLocalTime().ToFileTime() ?? 0;
 
-            bool isBeginValid = Entry.TimeBegin.HasValue ? beginDateTime < nowDateTime : true;
-            bool isEndValid = Entry.TimeEnd.HasValue ? endDateTime > nowDateTime : true;
+            bool isBeginValid = !Entry.TimeBegin.HasValue || beginDateTime < nowDateTime;
+            bool isEndValid   = !Entry.TimeEnd.HasValue || endDateTime > nowDateTime;
 
             return isBeginValid && isEndValid;
         }
