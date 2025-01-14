@@ -1724,11 +1724,9 @@ namespace CollapseLauncher.InstallManager.Base
                         $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal,
                                                                 _progressAllCountFound)}";
 
-                    bool isSourceUseSameNameAsTarget = string.IsNullOrEmpty(entry.SourceFileName);
                     bool isSuccess = false;
-                    string sourceFileNameToUse = (isSourceUseSameNameAsTarget ? entry.TargetFileName : entry.SourceFileName) ?? "";
 
-                    FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, sourceFileNameToUse))
+                    FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, entry.SourceFileName ?? ""))
                                              .EnsureNoReadOnly(out bool isSourceExist);
                     FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
                                              .EnsureNoReadOnly(out bool isPatchExist);
@@ -1740,7 +1738,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                     try
                     {
-                        if (string.IsNullOrEmpty(sourceFileNameToUse))
+                        if (string.IsNullOrEmpty(entry.SourceFileName))
                         {
                             ForceUpdateProgress(entry);
                             return;
@@ -1832,7 +1830,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
                         LogWriteLine(
-                            $"Error while patching file: {sourceFileNameToUse} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
+                            $"Error while patching file: {entry.SourceFileName ?? string.Empty} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
                             LogType.Warning,
                             true);
 
