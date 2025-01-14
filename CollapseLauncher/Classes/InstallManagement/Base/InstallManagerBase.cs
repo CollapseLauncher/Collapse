@@ -1693,8 +1693,10 @@ namespace CollapseLauncher.InstallManager.Base
                         $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal,
                                                                 _progressAllCountFound)}";
 
-                    bool   isUseSameName       = string.IsNullOrEmpty(entry.SourceFileName);
-                    string sourceFileNameToUse = (isUseSameName ? entry.SourceFileName : entry.TargetFileName) ?? "";
+                    bool isUseSameName          = string.IsNullOrEmpty(entry.SourceFileName);
+                    bool isSourceTargetSameName = entry.SourceFileName?.Equals(entry.TargetFileName, StringComparison.OrdinalIgnoreCase) ?? false;
+                    bool isSuccess              = false;
+                    string sourceFileNameToUse  = (isUseSameName ? entry.SourceFileName : entry.TargetFileName) ?? "";
 
                     FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, sourceFileNameToUse))
                                              .EnsureNoReadOnly(out bool isSourceExist);
@@ -1740,6 +1742,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 HDiffPatch patcher = new HDiffPatch();
                                 patcher.Initialize(patchPath.FullName);
                                 patcher.Patch(sourcePath.FullName, targetPathTemp.FullName, true, thisInnerCtx, false, true);
+                                isSuccess = true;
                             }
                             catch (InvalidDataException ex) when (!thisInnerCtx.IsCancellationRequested)
                             {
@@ -1784,6 +1787,11 @@ namespace CollapseLauncher.InstallManager.Base
                         if (!string.IsNullOrEmpty(entry.PatchFileName))
                         {
                             _ = patchPath.TryDeleteFile();
+                        }
+
+                        if (isSuccess && !isSourceTargetSameName)
+                        {
+                            _ = sourcePath.TryDeleteFile();
                         }
 
                         _ = targetPathTemp.TryMoveTo(targetPath);
