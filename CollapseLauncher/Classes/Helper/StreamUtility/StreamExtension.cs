@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -149,6 +150,9 @@ namespace CollapseLauncher.Helper.StreamUtility
                 return false;
             }
         }
+
+        internal static string NormalizePath(this string path)
+            => ConverterTool.NormalizePath(path);
 
         internal static bool TryMoveTo(this FileInfo filePath, string toTarget, bool overwrite = true, bool throwIfFailed = false)
             => filePath.TryMoveTo(new FileInfo(toTarget), overwrite, throwIfFailed);

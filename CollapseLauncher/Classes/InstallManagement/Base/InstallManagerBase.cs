@@ -46,6 +46,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -1643,7 +1644,8 @@ namespace CollapseLauncher.InstallManager.Base
                 throw new DirectoryNotFoundException($"[InstallManagerBase::GetHDiffMapEntryList] Game directory: {gameDir} doesn't exist!");
             }
 
-            List<HDiffMapEntry> hDiffMapEntries = [];
+            List<HDiffMapEntry>               hDiffMapEntries  = [];
+            Dictionary<string, HDiffMapEntry> sourcePathsOnMap = [];
             foreach (FileInfo hdiffMapFile in directoryInfo.EnumerateFiles("*hdiffmap*.json", SearchOption.TopDirectoryOnly)
                                                            .EnumerateNoReadOnly())
             {
@@ -1658,6 +1660,25 @@ namespace CollapseLauncher.InstallManager.Base
                 if (currentDeserialize?.Entries != null)
                 {
                     hDiffMapEntries.AddRange(currentDeserialize.Entries);
+                }
+            }
+
+            foreach (HDiffMapEntry sourceFile in hDiffMapEntries)
+            {
+                _ = sourcePathsOnMap.TryAdd(sourceFile.SourceFileName, sourceFile);
+            }
+
+            foreach (FileInfo deletedFileMap in directoryInfo.EnumerateFiles("*deletefiles*.txt", SearchOption.TopDirectoryOnly)
+                                                             .EnumerateNoReadOnly())
+            {
+                using TextReader deletedFileMapReader = deletedFileMap.OpenText();
+                while (await deletedFileMapReader.ReadLineAsync() is { } line)
+                {
+                    string normalizedPath = line.NormalizePath();
+                    if (sourcePathsOnMap.TryGetValue(normalizedPath, out HDiffMapEntry valueEntry))
+                    {
+                        valueEntry.CanDeleteSource = true;
+                    }
                 }
             }
 
@@ -1694,15 +1715,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                                 _progressAllCountFound)}";
 
                     bool isSourceUseSameNameAsTarget = string.IsNullOrEmpty(entry.SourceFileName);
-                    bool isSourceTargetSameName      = entry.SourceFileName?.Equals(entry.TargetFileName, StringComparison.OrdinalIgnoreCase) ?? false;
-
-                    if (isSourceTargetSameName)
-                    {
-                        LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Patch will be applied directly into the file for: {entry.SourceFileName}", LogType.Default, true);
-                    }
-
-                    bool isSuccess              = false;
-                    string sourceFileNameToUse  = (isSourceUseSameNameAsTarget ? entry.TargetFileName : entry.SourceFileName) ?? "";
+                    bool isSuccess = false;
+                    string sourceFileNameToUse = (isSourceUseSameNameAsTarget ? entry.TargetFileName : entry.SourceFileName) ?? "";
 
                     FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, sourceFileNameToUse))
                                              .EnsureNoReadOnly(out bool isSourceExist);
@@ -1732,6 +1746,33 @@ namespace CollapseLauncher.InstallManager.Base
                         {
                             ForceUpdateProgress(entry);
                             LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Source file size mismatch: {sourcePath.FullName} ({sourcePath.Length} != {entry.SourceFileSize})", LogType.Warning, true);
+                            return;
+                        }
+
+                        await using FileStream sourceStream = sourcePath.OpenRead();
+                        await using FileStream patchStream = patchPath.OpenRead();
+
+                        byte[] sourceLocalHash = entry.SourceMD5Hash?.Length > 8 ?
+                            await CheckHashAsync(sourceStream, MD5.Create(), _token.Token, false) :
+                            entry.SourceMD5Hash?.Length > 4 ?
+                                await CheckNonCryptoHashAsync(sourceStream, new XxHash64(), _token.Token, false) :
+                                await CheckNonCryptoHashAsync(sourceStream, new Crc32(),    _token.Token, false);
+
+                        byte[] patchLocalHash = entry.PatchMD5Hash?.Length > 8 ?
+                            await CheckHashAsync(patchStream, MD5.Create(), _token.Token, false) :
+                            entry.SourceMD5Hash?.Length > 4 ?
+                                await CheckNonCryptoHashAsync(patchStream, new XxHash64(), _token.Token, false) :
+                                await CheckNonCryptoHashAsync(patchStream, new Crc32(),    _token.Token, false);
+
+                        if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash)
+                         || !patchLocalHash.AsSpan().SequenceEqual(entry.PatchMD5Hash))
+                        {
+                            ForceUpdateProgress(entry);
+                            LogWriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
+                                + $"Source file: {sourcePath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(sourceLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.SourceMD5Hash)}"
+                                + $"Patch file: {patchPath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(patchLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.PatchMD5Hash)}",
+                                LogType.Warning,
+                                true);
                             return;
                         }
 
@@ -1795,7 +1836,7 @@ namespace CollapseLauncher.InstallManager.Base
                             _ = patchPath.TryDeleteFile();
                         }
 
-                        if (isSuccess && !isSourceTargetSameName)
+                        if (isSuccess && entry.CanDeleteSource)
                         {
                             _ = sourcePath.TryDeleteFile();
                         }
