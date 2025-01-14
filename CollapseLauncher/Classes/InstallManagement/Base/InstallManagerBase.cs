@@ -1757,23 +1757,32 @@ namespace CollapseLauncher.InstallManager.Base
                             return;
                         }
 
-                        await using FileStream sourceStream = sourcePath.OpenRead();
-                        await using FileStream patchStream = patchPath.OpenRead();
+                        async Task<byte[]> GetNonCryptoHash<T>(FileInfo fileInfo, CancellationToken token)
+                            where T : NonCryptographicHashAlgorithm, new()
+                        {
+                            NonCryptographicHashAlgorithm hasher = new T();
+                            await using FileStream stream = fileInfo.OpenRead();
+                            await hasher.AppendAsync(stream, token);
+                            return hasher.GetHashAndReset();
+                        }
 
-                        byte[] sourceLocalHash = entry.SourceMD5Hash?.Length > 8 ?
-                            await CheckHashAsync(sourceStream, MD5.Create(), _token.Token, false) :
-                            entry.SourceMD5Hash?.Length > 4 ?
-                                await CheckNonCryptoHashAsync(sourceStream, new XxHash64(), _token.Token, false) :
-                                await CheckNonCryptoHashAsync(sourceStream, new Crc32(),    _token.Token, false);
+                        async Task<byte[]> GetCryptoHash(FileInfo fileinfo, HashAlgorithm hasher, CancellationToken token)
+                        {
+                            using (hasher)
+                            {
+                                await using FileStream stream = fileinfo.OpenRead();
+                                return await hasher.ComputeHashAsync(stream, token);
+                            }
+                        }
 
-                        byte[] patchLocalHash = entry.PatchMD5Hash?.Length > 8 ?
-                            await CheckHashAsync(patchStream, MD5.Create(), _token.Token, false) :
-                            entry.SourceMD5Hash?.Length > 4 ?
-                                await CheckNonCryptoHashAsync(patchStream, new XxHash64(), _token.Token, false) :
-                                await CheckNonCryptoHashAsync(patchStream, new Crc32(),    _token.Token, false);
+                        byte[] sourceLocalHash = entry.SourceMD5Hash?.Length switch
+                                                 {
+                                                     > 8 and 16 => await GetCryptoHash(sourcePath, MD5.Create(), _token.Token),
+                                                     > 4 => await GetNonCryptoHash<XxHash64>(sourcePath, _token.Token),
+                                                     _ => await GetNonCryptoHash<Crc32>(sourcePath, _token.Token)
+                                                 };
 
-                        if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash)
-                         || !patchLocalHash.AsSpan().SequenceEqual(entry.PatchMD5Hash))
+                        if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash))
                         {
                             ForceUpdateProgress(entry);
                             LogWriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
