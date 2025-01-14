@@ -107,7 +107,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Error occurred while updating the launcher!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
                 ForceInvokeUpdate = true;
                 LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { QuitFromUpdateMenu = true });
             }

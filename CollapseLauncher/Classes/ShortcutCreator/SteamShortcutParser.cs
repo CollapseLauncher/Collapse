@@ -1,42 +1,82 @@
 ﻿using CollapseLauncher.Helper.Metadata;
-using Hi3Helper;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.ShortcutUtils
 {
     public sealed class SteamShortcutParser
     {
-        public static Encoding ANSI;
-        private string _path;
-        private List<SteamShortcut> _shortcuts = [];
+        private readonly string _path;
+        private List<VdfObject> _shortcuts = [];
 
         public SteamShortcutParser(string path)
         {
             _path = path;
-
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            ANSI = Encoding.GetEncoding(1252);
-
             Load();
         }
 
-        public bool Contains(SteamShortcut shortcut) => _shortcuts.FindIndex(x => x.preliminaryAppID == shortcut.preliminaryAppID) != -1;
-
-        internal void Insert(PresetConfig preset, bool play = false)
+        private int FindIndex(SteamShortcut shortcut)
         {
-            SteamShortcut shortcut = new SteamShortcut(preset, play);
-
-            if (Contains(shortcut))
+            return _shortcuts.FindIndex(x =>
             {
-                _shortcuts.RemoveAll(x => x.preliminaryAppID == shortcut.preliminaryAppID);
+                if (x.Value.ObjectValue.TryGetValue("appid", out var appid))
+                    return appid.Value.IntValue == shortcut.AppID;
+                return false;
+            });
+        }
+
+        internal SteamShortcut Insert(PresetConfig preset, bool play = false)
+        {
+            var shortcut = new SteamShortcut(_path, preset, play);
+            var index = FindIndex(shortcut);
+            if (index == -1)
+            {
+                var shortcutDic = new Dictionary<string, VdfObject>
+                {
+                    ["appid"] = shortcut.AppID,
+                    ["AppName"] = shortcut.AppName,
+                    ["Exe"] = shortcut.Exe,
+                    ["StartDir"] = shortcut.StartDir,
+                    ["icon"] = shortcut.Icon,
+                    ["ShortcutPath"] = "",
+                    ["LaunchOptions"] = shortcut.LaunchOptions,
+                    ["IsHidden"] = 0,
+                    ["AllowDesktopConfig"] = 1,
+                    ["AllowOverlay"] = 1,
+                    ["OpenVR"] = 0,
+                    ["Devkit"] = 0,
+                    ["DevkitGameID"] = "",
+                    ["DevkitOverrideAppID"] = 0,
+                    ["LastPlayTime"] = 0,
+                    ["FlatpakAppID"] = "",
+                    ["tags"] = new Dictionary<string, VdfObject>(),
+                };
+
+                var obj = new VdfObject()
+                {
+                    Type = VdfType.Object,
+                    Value = new VdfValue()
+                    {
+                        ObjectValue = shortcutDic
+                    }
+                };
+                _shortcuts.Add(obj);
+            }
+            else
+            {
+                var shortcutDic = _shortcuts[index].Value.ObjectValue;
+                shortcutDic["appid"] = shortcut.AppID;
+                shortcutDic["AppName"] = shortcut.AppName;
+                shortcutDic["Exe"] = shortcut.Exe;
+                shortcutDic["StartDir"] = shortcut.StartDir;
+                shortcutDic["icon"] = shortcut.Icon;
+                shortcutDic["LaunchOptions"] = shortcut.LaunchOptions;
             }
 
-            _shortcuts.Add(shortcut);
-            shortcut.MoveImages(_path, preset);
+            return shortcut;
         }
 
         private void Load()
@@ -46,15 +86,11 @@ namespace CollapseLauncher.ShortcutUtils
             if (!File.Exists(_path))
                 return;
 
-            var contents = File.ReadAllText(_path, ANSI);
-            contents = string.Concat(contents.Skip(11));
-
-            foreach (string line in contents.Split("\x08\x08"))
+            using var fs = File.OpenRead(_path);
+            var shortcutObject = ReadObject(fs);
+            if (shortcutObject.TryGetValue("shortcuts", out var shortcuts))
             {
-                if (line == "") continue;
-                SteamShortcut steamShortcut = ParseShortcut(line + '\x08');
-                if (steamShortcut == null) continue;
-                _shortcuts.Add(steamShortcut);
+                _shortcuts = shortcuts.Value.ObjectValue.Values.ToList();
             }
         }
 
@@ -63,157 +99,196 @@ namespace CollapseLauncher.ShortcutUtils
             if (File.Exists(_path))
                 File.Move(_path, _path + "_old", true);
 
-            FileStream fs = File.OpenWrite(_path);
-            StreamWriter sw = new StreamWriter(fs, ANSI);
-
-            sw.Write("\x00shortcuts\x00");
-
-            int entryCount = 0;
-            foreach (SteamShortcut st in _shortcuts)
+            using var fs = File.OpenWrite(_path);
+            var shortcutObject = new Dictionary<string, VdfObject>
             {
-                sw.Write(st.ToEntry(entryCount));
-                entryCount++;
-            }
-            sw.Write("\x08\x08");
-            sw.Close();
-            fs.Close();
+                {
+                    "shortcuts", new VdfObject
+                    {
+                        Type = VdfType.Object,
+                        Value = new VdfValue()
+                        {
+                            ObjectValue = _shortcuts.Index().ToDictionary(x => x.Index.ToString(), x => x.Item)
+                        }
+                    }
+                }
+            };
+            WriteObject(fs, shortcutObject);
         }
 
-        #region Individual Shortcut Parser
-        public SteamShortcut ParseShortcut(string line)
+        #region Serializer and Deserializer
+        private enum VdfType
         {
-            byte[] ln = ANSI.GetBytes(line);
-            SteamShortcut newShortcut = new SteamShortcut();
+            Object,
+            String,
+            Int,
+            ObjectEnd = 8
+        }
 
-            List<string> strRes = new List<string>();
-            List<bool> boolRes = new List<bool>();
+        private class VdfValue
+        {
+            public string StringValue;
+            public uint IntValue;
+            public Dictionary<string, VdfObject> ObjectValue;
+        }
 
-            List<byte> buffer = [];
-            ParseType parse = ParseType.NameStr;
-            for (int i = 0; i < ln.Length; i++)
+        private class VdfObject
+        {
+            public VdfType Type;
+            public VdfValue Value;
+
+            public static implicit operator VdfObject(string value)
             {
-                if (ln[0] != 0)
-                    return null;
-                switch (parse)
+                return new VdfObject()
                 {
-                    case ParseType.FindType:
-                        if (ln[i] == 0)
-                            parse = ParseType.NameTags;
-                        if (ln[i] == 1)
-                            parse = ParseType.NameStr;
-                        if (ln[i] == 2)
-                            parse = ParseType.NameBool;
-                        continue;
-                    case ParseType.NameStr:
-                    case ParseType.NameBool:
-                        if (ln[i] == 0)
-                        {
-                            parse = parse == ParseType.NameStr ? ParseType.ValueStr : ParseType.ValueBool;
-                            string key = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
-                            if (key == "LastPlayTime")
-                                parse = ParseType.ValueTime;
-                            if (key == "appid")
-                                parse = ParseType.ValueAppid;
-                            buffer = [];
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
+                    Type = VdfType.String,
+                    Value = new VdfValue()
+                    {
+                        StringValue = value
+                    }
+                };
+            }
+
+            public static implicit operator VdfObject(uint value)
+            {
+                return new VdfObject()
+                {
+                    Type = VdfType.Int,
+                    Value = new VdfValue()
+                    {
+                        IntValue = value
+                    }
+                };
+            }
+
+            public static implicit operator VdfObject(Dictionary<string, VdfObject> value)
+            {
+                return new VdfObject()
+                {
+                    Type = VdfType.Object,
+                    Value = new VdfValue()
+                    {
+                        ObjectValue = value
+                    }
+                };
+            }
+        }
+
+        private static VdfType ReadType(FileStream reader)
+        {
+            return (VdfType)reader.ReadByte();
+        }
+
+        private static string ReadString(FileStream reader)
+        {
+            var buffer = new List<byte>();
+            while (reader.Position < reader.Length)
+            {
+                var read = (byte)reader.ReadByte();
+                if (read == 0) break;
+                buffer.Add(read);
+            }
+            return Encoding.UTF8.GetString(buffer.ToArray());
+        }
+
+        private static uint ReadInt(FileStream reader)
+        {
+            var buffer = new byte[4];
+            reader.ReadExactly(buffer);
+            return BitConverter.ToUInt32(buffer);
+        }
+
+        private static Dictionary<string, VdfObject> ReadObject(FileStream reader)
+        {
+            var result = new Dictionary<string, VdfObject>();
+
+            while (reader.Position < reader.Length)
+            {
+                var type = ReadType(reader);
+                if (type == VdfType.ObjectEnd)
+                    goto finish;
+
+                var name = ReadString(reader);
+                var subObject = new VdfObject
+                {
+                    Type = type,
+                    Value = new VdfValue()
+                };
+
+                switch (type)
+                {
+                    case VdfType.Object:
+                    {
+                        subObject.Value.ObjectValue = ReadObject(reader);
                         break;
-                    case ParseType.NameTags:
-                        if (ln[i] == 0)
-                        {
-                            parse = ParseType.ValueTags;
-                            buffer = [];
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
+                    }
+                    case VdfType.String:
+                    {
+                        subObject.Value.StringValue = ReadString(reader);
                         break;
-                    case ParseType.ValueTime:
-                        buffer.Add(ln[i]);
-                        if (buffer.Count == 4)
-                        {
-                            newShortcut.LastPlayTime = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
-                            buffer = [];
-                            parse = ParseType.FindType;
-                        }
+                    }
+                    case VdfType.Int:
+                    {
+                        subObject.Value.IntValue = ReadInt(reader);
                         break;
-                    case ParseType.ValueAppid:
-                        if (buffer.Count == 4)
-                        {
-                            newShortcut.appid = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
-                            buffer = [];
-                            parse = ParseType.NameStr;
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
+                    }
+                    default:
+                    {
+                        throw new InvalidDataException($"Unknown type {type:X}. Is it supposed to be in shortcuts.vdf?");
+                    }
+                }
+
+                result.Add(name, subObject);
+            }
+            finish:
+            return result;
+        }
+
+        private static void WriteType(FileStream writer, VdfType value)
+        {
+            writer.WriteByte((byte)value);
+        }
+
+        private static void WriteString(FileStream writer, string value)
+        {
+            writer.Write(Encoding.UTF8.GetBytes(value));
+            writer.WriteByte(0);
+        }
+
+        private static void WriteInt(FileStream writer, uint value)
+        {
+            writer.Write(BitConverter.GetBytes(value));
+        }
+
+        private static void WriteObject(FileStream writer, Dictionary<string, VdfObject> value)
+        {
+            foreach (var kv in value)
+            {
+                var name = kv.Key;
+                var subObject = kv.Value;
+                var type = subObject.Type;
+                WriteType(writer, type);
+                WriteString(writer, name);
+                switch (type)
+                {
+                    case VdfType.Object:
+                    {
+                        WriteObject(writer, subObject.Value.ObjectValue);
                         break;
-                    case ParseType.ValueTags:
-                        if (ln[i] == 8)
-                        {
-                            newShortcut.tags = ANSI.GetString(buffer.ToArray(), 0, buffer.Count);
-                            buffer = [];
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
+                    }
+                    case VdfType.String:
+                    {
+                        WriteString(writer, subObject.Value.StringValue);
                         break;
-                    case ParseType.ValueStr:
-                        if (ln[i] == 0)
-                        {
-                            strRes.Add(ANSI.GetString(buffer.ToArray(), 0, buffer.Count));
-                            buffer = [];
-                            parse = ParseType.FindType;
-                            continue;
-                        }
-                        buffer.Add(ln[i]);
+                    }
+                    case VdfType.Int:
+                    {
+                        WriteInt(writer, subObject.Value.IntValue);
                         break;
-                    case ParseType.ValueBool:
-                        boolRes.Add(ln[i] == 1);
-                        if (ln[i + 3] == 0)
-                            i += 3;
-                        parse = ParseType.FindType;
-                        break;
+                    }
                 }
             }
-
-            if (strRes.Count != 9 || boolRes.Count != 6)
-            {
-                LogWriteLine("Invalid shortcut! Skipping...", LogType.Error);
-                return null;
-            }
-
-            newShortcut.entryID = strRes[0];
-            newShortcut.AppName = strRes[1];
-            newShortcut.Exe = strRes[2];
-            newShortcut.StartDir = strRes[3];
-            newShortcut.icon = strRes[4];
-            newShortcut.ShortcutPath = strRes[5];
-            newShortcut.LaunchOptions = strRes[6];
-            newShortcut.DevkitGameID = strRes[7];
-            newShortcut.FlatpakAppID = strRes[8];
-
-            newShortcut.IsHidden = boolRes[0];
-            newShortcut.AllowDesktopConfig = boolRes[1];
-            newShortcut.AllowOverlay = boolRes[2];
-            newShortcut.OpenVR = boolRes[3];
-            newShortcut.Devkit = boolRes[4];
-            newShortcut.DevkitOverrideAppID = boolRes[5];
-
-            newShortcut.preliminaryAppID = SteamShortcut.GenerateAppId(newShortcut.Exe, newShortcut.AppName).ToString();
-
-            return newShortcut;
-        }
-
-        private enum ParseType
-        {
-            FindType,
-            NameStr,
-            ValueStr,
-            ValueAppid,
-            NameBool,
-            ValueBool,
-            ValueTime,
-            NameTags,
-            ValueTags
+            WriteType(writer, VdfType.ObjectEnd);
         }
         #endregion
     }

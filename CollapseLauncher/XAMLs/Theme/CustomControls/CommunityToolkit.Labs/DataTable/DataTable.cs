@@ -10,6 +10,7 @@ using System.Linq;
 using Windows.Foundation;
 
 namespace CommunityToolkit.WinUI.Controls.Labs.DataTable;
+// ReSharper disable All
 
 /// <summary>
 /// A <see cref="DataTable"/> is a <see cref="Panel"/> which lays out <see cref="DataColumn"/>s based on

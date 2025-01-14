@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
+// ReSharper disable All
 
 [TemplatePart(Name = MarkdownContainerName, Type = typeof(Grid))]
 public partial class MarkdownTextBlock : Control

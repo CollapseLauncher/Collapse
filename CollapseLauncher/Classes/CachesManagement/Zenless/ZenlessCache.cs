@@ -2,6 +2,7 @@
 using CollapseLauncher.Interfaces;
 using Microsoft.UI.Xaml;
 using System.Threading.Tasks;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher
 {

@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Latar Belakang Lainnya untuk Region",
     "GameSettings_Panel4": "Global - Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Perbesar Panel Event saat Hover",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
     "GameSettings_Panel4ShowPlaytimeButton": "Munculkan Tombol \"Waktu Main\"",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sinkronisasi Waktu Mulai dengan Database",
@@ -403,7 +404,7 @@
     "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
     "CustomArgs_Footer3": "berikut.",
 
-    "GameBoost": "Naikkan Prioritas Game [Eksperimental]",
+    "GameBoost": "Naikan Prioritas Game",
     "MobileLayout": "Gunakan Layout Mobile",
 
     "Advanced_Title": "Pengaturan Tingkat Lanjut",
@@ -984,9 +985,10 @@
     "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
     "SteamShortcutCreationSuccessSubtitle6": " • Dalam menggunakan overlay pada Steam, Steam harus berjalan sebagai administrator dan Collapse harus ditutup atau memiliki opsi \"Multiple Instances\" yang sudah dinyalakan pada menu \"Pengaturan Aplikasi\".",
     "SteamShortcutCreationSuccessSubtitle7": "• Apabila game tidak terpasang/belum diperbarui, maka Collapse akan mencoba untuk memasang atau memperbarui game. Mohon diingat bahwa dialog instalasi akan tetap muncul.",
-
     "SteamShortcutCreationFailureTitle": "Folder data Steam tidak valid",
     "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini.",
+    "SteamShortcutTitle": "Shortcut Steam",
+    "SteamShortcutDownloadingImages": "Mengunduh Gambar Grid Steam ({0}/{1})",
 
     "DownloadSettingsTitle": "Pengaturan Unduhan",
     "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
@@ -995,7 +997,13 @@
     "CloseOverlay": "Tutup Overlay",
 
     "DbGenerateUid_Title": "Apakah kamu yakin ingin mengubah ID User-mu?",
-    "DbGenerateUid_Content": "Mengubah User ID-mu dapat menyebabkan kehilangan data yang sudah tersimpan."
+    "DbGenerateUid_Content": "Mengubah User ID-mu dapat menyebabkan kehilangan data yang sudah tersimpan.",
+
+    "SophonIncrementUpdateUnavailTitle": "Pembaruan Incremental Tidak Tersedia: Versi Terlalu Usang!",
+    "SophonIncrementUpdateUnavailSubtitle1": "Versi game kamu: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": " sudah terlalu usang.",
+    "SophonIncrementUpdateUnavailSubtitle3": " dan pembaruan incremental untuk versi tersebut tidak tersedia. Tapi, kamu tetap bisa memperbarui game kamu dengan mengunduh ulang semuanya dari awal.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses"
   },
 
   "_FileMigrationProcess": {
@@ -1232,8 +1240,15 @@
     "Graphics_BloomQuality": "Kualitas Efek Bloom",
     "Graphics_AAMode": "Mode Anti-Aliasing",
     "Graphics_SFXQuality": "Kualitas SFX",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Bayangan Karakter di Map Eksplorasi",
     "Graphics_HalfResTransparent": "Transparan Setengah Resolusi",
+    
+    "Graphics_DLSS_UHP": "Performa Ultra",
+    "Graphics_DLSS_Perf": "Performa",
+    "Graphics_DLSS_Balanced": "Seimbang",
+    "Graphics_DLSS_Quality": "Kualitas",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Pengaturan Grafis Keseluruhan",
     "SpecEnabled": "Hidup",

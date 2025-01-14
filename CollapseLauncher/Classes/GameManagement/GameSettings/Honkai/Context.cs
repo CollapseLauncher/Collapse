@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.GameSettings.Honkai.Context
 {

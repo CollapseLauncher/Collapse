@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using System;
@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable CommentTypo
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace CollapseLauncher
 {
@@ -18,7 +20,7 @@ namespace CollapseLauncher
         private async Task<List<SRAsset>> Check(List<SRAsset> assetIndex, CancellationToken token)
         {
             // Initialize asset index for the return
-            List<SRAsset> returnAsset = new List<SRAsset>();
+            List<SRAsset> returnAsset = [];
 
             // Set Indetermined status as false
             _status.IsProgressAllIndetermined = false;
@@ -80,16 +82,15 @@ namespace CollapseLauncher
             }
 
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!)).EnsureNoReadOnly(out bool isPersistentExist);
+            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!)).EnsureNoReadOnly(out bool isFileInfoPersistentExist);
             FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreaming!, asset.LocalName!)).EnsureNoReadOnly(out bool isStreamingExist);
 
-            bool UsePersistent = !isStreamingExist;
-            bool IsPersistentExist = isPersistentExist && fileInfoPersistent.Length == asset.Size;
-            bool IsStreamingExist = isStreamingExist && fileInfoStreaming.Length == asset.Size;
-            asset.LocalName = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+            bool usePersistent = !isStreamingExist;
+            bool isPersistentExist = isFileInfoPersistentExist && fileInfoPersistent.Length == asset.Size;
+            asset.LocalName = usePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
             // Check if the file exist. If not, then add it to asset index.
-            if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
+            if (usePersistent && !isPersistentExist)
             {
                 AddGenericCheckAsset(asset, CacheAssetStatus.New, returnAsset, null, asset.Hash);
                 return;
@@ -102,7 +103,7 @@ namespace CollapseLauncher
             }
 
             // If above passes, then run the CRC check
-            await using FileStream fs = await NaivelyOpenFileStreamAsync(UsePersistent ? fileInfoPersistent : fileInfoStreaming,
+            await using FileStream fs = await NaivelyOpenFileStreamAsync(usePersistent ? fileInfoPersistent : fileInfoStreaming,
                                                                          FileMode.Open, FileAccess.Read, FileShare.Read);
             // Calculate the asset CRC (MD5)
             byte[] hashArray = await CheckHashAsync(fs, MD5.Create(), token);
@@ -114,7 +115,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void AddGenericCheckAsset(SRAsset asset, CacheAssetStatus assetStatus, List<SRAsset> returnAsset, byte[] localCRC, byte[] remoteCRC)
+        private void AddGenericCheckAsset(SRAsset asset, CacheAssetStatus assetStatus, List<SRAsset> returnAsset, byte[] localCrc, byte[] remoteCrc)
         {
             // Increment the count and total size
             lock (this)
@@ -139,8 +140,8 @@ namespace CollapseLauncher
                     ConvertCacheAssetTypeEnum(asset.AssetType),
                     $"{asset.AssetType}",
                     asset.Size,
-                    localCRC,
-                    remoteCRC
+                    localCrc,
+                    remoteCrc
                 ))
             );
         }

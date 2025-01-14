@@ -23,10 +23,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Statics
 {
-    internal partial class GamePresetProperty : IDisposable
+    internal sealed partial class GamePresetProperty : IDisposable
     {
         internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {

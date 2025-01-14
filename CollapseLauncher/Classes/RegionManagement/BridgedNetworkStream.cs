@@ -3,15 +3,12 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher
 {
-    partial class BridgedNetworkStream(HttpResponseMessage networkResponse, Stream networkStream) : Stream
+    internal sealed partial class BridgedNetworkStream(HttpResponseMessage networkResponse, Stream networkStream) : Stream
     {
-        private protected readonly HttpResponseMessage NetworkResponse = networkResponse;
-        private protected readonly Stream              NetworkStream   = networkStream;
-        private protected          long                NetworkLength   = networkResponse?.Content.Headers.ContentLength ?? 0;
-
         internal static async ValueTask<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
         {
             Stream networkStream = await networkResponse.Content.ReadAsStreamAsync(token);
@@ -20,18 +17,18 @@ namespace CollapseLauncher
 
         ~BridgedNetworkStream() => Dispose();
 
-        private int ReadBytes(Span<byte> buffer) => NetworkStream.Read(buffer);
+        private int ReadBytes(Span<byte> buffer) => networkStream.Read(buffer);
 
-        private int ReadBytes(byte[] buffer, int offset, int count) => NetworkStream.Read(buffer, offset, count);
+        private int ReadBytes(byte[] buffer, int offset, int count) => networkStream.Read(buffer, offset, count);
 
         public override int Read(Span<byte> buffer) => ReadBytes(buffer);
         public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
 
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-            NetworkStream.ReadAsync(buffer, offset, count, cancellationToken);
+            networkStream.ReadAsync(buffer, offset, count, cancellationToken);
 
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
-            NetworkStream.ReadAsync(buffer, cancellationToken);
+            networkStream.ReadAsync(buffer, cancellationToken);
 
         public new async ValueTask ReadExactlyAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
         {
@@ -54,9 +51,9 @@ namespace CollapseLauncher
 
         public override bool CanWrite => false;
 
-        public override void Flush() => NetworkStream.Flush();
+        public override void Flush() => networkStream.Flush();
 
-        public override long Length => NetworkLength;
+        public override long Length { get; } = networkResponse?.Content.Headers.ContentLength ?? 0;
 
         public override long Position
         {
@@ -71,20 +68,24 @@ namespace CollapseLauncher
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if (disposing)
+            if (!disposing)
             {
-                NetworkResponse?.Dispose();
-                NetworkStream?.Dispose();
+                return;
             }
+
+            networkResponse?.Dispose();
+            networkStream?.Dispose();
         }
 
+        /// <inheritdoc/>
         public override async ValueTask DisposeAsync()
         {
-            NetworkResponse?.Dispose();
-            if (NetworkStream != null)
-                await NetworkStream.DisposeAsync();
+            networkResponse?.Dispose();
+            if (networkStream != null)
+                await networkStream.DisposeAsync();
 
             await base.DisposeAsync();
+            GC.SuppressFinalize(this);
         }
     }
 }

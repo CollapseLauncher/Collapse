@@ -13,6 +13,7 @@ using System.Linq;
 using Windows.Foundation;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
+// ReSharper disable All
 
 internal partial class MyTableUIElement : Panel
 {

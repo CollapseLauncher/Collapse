@@ -15,6 +15,8 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -22,15 +24,17 @@ namespace CollapseLauncher.Pages.OOBE
     {
         public OOBESelectGameBG()
         {
-            this.Loaded += LoadedRoutine;
+            Loaded += LoadedRoutine;
         }
 
         private void LoadedRoutine(object sender, RoutedEventArgs e)
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            if (IsAppThemeLight)
-                (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.75;
+            if (IsAppThemeLight && Resources["DetailsLogoShadowController"] is AttachedDropShadow attachedShadow)
+            {
+                attachedShadow.Opacity = 0.75;
+            }
 
             if (!IsLoadDescription || !IsSuccess)
             {
@@ -40,34 +44,33 @@ namespace CollapseLauncher.Pages.OOBE
                 return;
             }
 
-            this.GameDetailsDescription.Text = _gameDescription;
-            this.GameDetailsPoster.Source = _gamePosterBitmapImage;
-            this.GameDetailsLogo.Source = _gameLogoBitmapImage;
+            GameDetailsDescription.Text = _gameDescription;
+            GameDetailsPoster.Source = _gamePosterBitmapImage;
+            GameDetailsLogo.Source = _gameLogoBitmapImage;
         }
 
         private void GameDetailsHomepage_Click(object sender, RoutedEventArgs e)
         {
-            string link = (string)((Button)sender).Tag;
-            Process proc = new Process() { StartInfo = new ProcessStartInfo(link) { UseShellExecute = true } };
+            string  link = (string)((Button)sender).Tag;
+            Process proc = new Process { StartInfo = new ProcessStartInfo(link) { UseShellExecute = true } };
 
             proc.Start();
         }
 
-        private string GameDetailsHomepageLink { get => _gameHomepageLink; }
+        internal static string GameDetailsHomepageLink { get => _gameHomepageLink; }
     }
 
     public static class OOBESelectGameBGProp
     {
-        public static string _gameDescription;
-        public static string _gamePosterPath;
-        public static string _gameLogoPath;
-        public static string _gameHomepageLink;
-        public static Bitmap _gamePosterBitmap;
-        public static BitmapImage _gamePosterBitmapImage;
-        public static BitmapImage _gameLogoBitmapImage;
-        public static bool IsLoadDescription = false;
-        public static bool IsNeedLoad = false;
-        public static bool IsSuccess = false;
+        internal static string      _gameDescription;
+        internal static string      _gamePosterPath;
+        internal static string      _gameLogoPath;
+        internal static string      _gameHomepageLink;
+        internal static Bitmap      _gamePosterBitmap;
+        internal static BitmapImage _gamePosterBitmapImage;
+        internal static BitmapImage _gameLogoBitmapImage;
+        internal static bool        IsLoadDescription;
+        internal static bool        IsSuccess;
 
         internal static async Task<bool> TryLoadGameDetails(PresetConfig config = null)
         {

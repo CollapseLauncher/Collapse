@@ -9,6 +9,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
@@ -20,6 +21,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -251,8 +253,8 @@ namespace CollapseLauncher.InstallManager.Base
                                 {
                                     string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
                                         voLang
-#if DEBUG
-                                        , true
+#if !DEBUG
+                                        , false
 #endif
                                         );
 
@@ -499,6 +501,11 @@ namespace CollapseLauncher.InstallManager.Base
 
         public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
         {
+            if (!Enum.IsDefined(gameState))
+            {
+                throw new InvalidEnumArgumentException(nameof(gameState), (int)gameState, typeof(GameInstallStateEnum));
+            }
+
             // Set the flag to false
             _isSophonDownloadCompleted = false;
 

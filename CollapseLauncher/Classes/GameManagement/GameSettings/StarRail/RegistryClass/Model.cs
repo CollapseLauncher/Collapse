@@ -10,7 +10,11 @@ using System.Collections.Generic;
 using System.Text;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.StarRail
 {
 
@@ -32,6 +36,17 @@ namespace CollapseLauncher.GameSettings.StarRail
         TAA = 1,
         FXAA = 2
     }
+
+    public enum DLSSMode
+    {
+        Off = 0,
+        UltraHighPerformance = 1,
+        Performance = 2,
+        Balanced = 3,
+        Quality = 4,
+        DLAA = 5
+    }
+    
     #endregion
 
     internal class Model : IGameSettingsValue<Model>
@@ -218,12 +233,18 @@ namespace CollapseLauncher.GameSettings.StarRail
         public Quality ReflectionQuality { get; set; } = Quality.VeryLow;
 
         /// <summary>
-        /// This defines "<c>SFX Quality</c>" combobox In-game settings. <br/>>
+        /// This defines "<c>SFX Quality</c>" combobox In-game settings. <br/>
         /// Options: VeryLow (1), Low (2), Medium(3), High(4) <br/>
         /// Default: High (I believe it's a mistake by miHoYo)
         /// </summary>
         public Quality SFXQuality { get; set; } = Quality.High;
-
+        
+        /// <summary>
+        /// This defines "<c>NVIDIA DLSS</c>" combobox In-game settings. <br/>
+        /// Options: Off (0), UltraHighPerformance (1), Performance (2), Balanced (3), Quality (4), DLAA (5) <br/>
+        /// Default: Off <br/>
+        /// </summary>
+        public DLSSMode DlssQuality { get; set; } = DLSSMode.Off;
         /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>
@@ -355,7 +376,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             }
         }
 
-        public bool Equals(Model? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is Model toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

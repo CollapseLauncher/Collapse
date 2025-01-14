@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
@@ -145,6 +145,7 @@ namespace CollapseLauncher
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size " +
                              $"(Local: {fileInfo.Length} <=> Remote: {asset.S}",
                              LogType.Warning, true);
+                return;
             }
 
             // Skip CRC check if fast method is used
@@ -391,6 +392,11 @@ namespace CollapseLauncher
             baseName = Path.GetFileNameWithoutExtension(filePath);
 
             // Get directory base info. If it doesn't exist, return
+            if (string.IsNullOrEmpty(basePath))
+            {
+                return;
+            }
+
             DirectoryInfo basePathDirInfo = new DirectoryInfo(basePath);
             if (!basePathDirInfo.Exists)
             {

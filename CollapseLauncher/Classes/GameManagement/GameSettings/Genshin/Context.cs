@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.GameSettings.Genshin.Context
 {

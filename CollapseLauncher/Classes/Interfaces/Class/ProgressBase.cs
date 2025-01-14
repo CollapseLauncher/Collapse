@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -27,9 +28,11 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.TaskbarListCOM;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
+// ReSharper disable InconsistentlySynchronizedField
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
@@ -445,6 +448,21 @@ namespace CollapseLauncher.Interfaces
 
             // Update progress
             ProgressChanged?.Invoke(this, _sophonProgress);
+
+            // Update taskbar progress
+            if (_status.IsProgressAllIndetermined)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
+            }
+            else if (_status.IsCompleted || _status.IsCanceled)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Normal);
+                WindowUtility.SetProgressValue((ulong)(_sophonProgress.ProgressAllPercentage * 10), 1000);
+            }
         }
 
         protected void UpdateSophonFileDownloadProgress(long downloadedWrite, long currentWrite)
@@ -515,7 +533,7 @@ namespace CollapseLauncher.Interfaces
         }
 
         protected string EnsureCreationOfDirectory(string str)
-            => StreamUtility.EnsureCreationOfDirectory(str).FullName;
+            => StreamExtension.EnsureCreationOfDirectory(str).FullName;
 
         protected string EnsureCreationOfDirectory(FileInfo str)
             => str.EnsureCreationOfDirectory().FullName;
@@ -650,7 +668,6 @@ namespace CollapseLauncher.Interfaces
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                     // If failed, flag ErrorOccured as true and skip the source directory deletion 
                     LogWriteLine($"Error while deleting source directory \"{directoryInfoSource.FullName}\"\r\nException: {ex}", LogType.Error, true);
-                    errorOccured = true;
                 }
             }
         }
@@ -1334,8 +1351,34 @@ namespace CollapseLauncher.Interfaces
             UpdateProgress();
         }
 
-        protected virtual void UpdateProgress() => ProgressChanged?.Invoke(this, _progress);
-        protected virtual void UpdateStatus() => StatusChanged?.Invoke(this, _status);
+        protected virtual void UpdateProgress()
+        {
+            ProgressChanged?.Invoke(this, _progress);
+
+            if (_status is {IsProgressAllIndetermined: false, IsCompleted: false, IsCanceled: false})
+            {
+                WindowUtility.SetProgressValue((ulong)(_progress.ProgressAllPercentage * 10), 1000);
+            }
+        }
+
+        protected virtual void UpdateStatus()
+        {
+            StatusChanged?.Invoke(this, _status);
+
+            if (_status.IsProgressAllIndetermined)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
+            }
+            else if (_status.IsCompleted || _status.IsCanceled)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Normal);
+            }
+        }
+
         #endregion
     }
 }

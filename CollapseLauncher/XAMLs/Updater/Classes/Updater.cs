@@ -28,6 +28,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher;
 

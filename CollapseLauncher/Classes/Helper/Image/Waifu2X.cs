@@ -7,6 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Hi3Helper.SentryHelper;
 using static CollapseLauncher.Helper.Image.Waifu2X;
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Helper.Image
 {
@@ -109,7 +112,7 @@ namespace CollapseLauncher.Helper.Image
     }
     #endregion
 
-    public partial class Waifu2X : IDisposable
+    public sealed partial class Waifu2X : IDisposable
     {
         #region Enums
         public enum Param

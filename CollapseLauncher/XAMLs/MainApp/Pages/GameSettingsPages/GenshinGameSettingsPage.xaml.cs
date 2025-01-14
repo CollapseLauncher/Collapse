@@ -4,7 +4,6 @@
     using CollapseLauncher.GameSettings.Genshin;
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Interfaces;
     using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
@@ -235,11 +234,11 @@
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -248,7 +247,7 @@
         {
             get
             {
-                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
+                bool value = CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments;
 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;
@@ -257,7 +256,7 @@
             }
             set
             {
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
+                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
                 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;
@@ -293,7 +292,7 @@
                 // Why is this not the default behavior instead of throwing errors? I don't know ask Microsoft
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"Gamma value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    LogWriteLine($"Gamma value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     GammaValue.Value = args.OldValue;
                 }
                 else
@@ -322,7 +321,7 @@
             {
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"MaxLuminosity value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    LogWriteLine($"MaxLuminosity value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     MaxLuminosityValue.Value = args.OldValue;
                 }
                 else
@@ -351,7 +350,7 @@
             {
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"UiPaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    LogWriteLine($"UiPaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     UiPaperWhiteValue.Value = args.OldValue;
                 }
                 else
@@ -380,7 +379,7 @@
             {
                 if (double.IsNaN(args.NewValue))
                 {
-                    LogWriteLine($"ScenePaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning, false);
+                    LogWriteLine($"ScenePaperWhite value from NumberBox is invalid, resetting it to last value: {args.OldValue}", LogType.Warning);
                     ScenePaperWhiteValue.Value = args.OldValue;
                 }
                 else

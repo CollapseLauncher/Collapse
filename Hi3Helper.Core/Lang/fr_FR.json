@@ -403,7 +403,7 @@
     "CustomArgs_Footer2": "documentation des arguments en ligne de commandes de « Unity Standalone Player »",
     "CustomArgs_Footer3": "pour afficher d'autres paramètres.",
 
-    "GameBoost": "Augmenter la priorité du jeu [Expérimental]",
+    "GameBoost": "Augmenter la priorité du jeu",
     "MobileLayout": "Utiliser l'interface mobile",
 
     "Advanced_Title": "Paramètres avancés",
@@ -1238,8 +1238,15 @@
     "Graphics_BloomQuality": "Qualité du flou lumineux",
     "Graphics_AAMode": "Mode anti-aliasing",
     "Graphics_SFXQuality": "Qualité des effets spéciaux",
+    "Graphics_DLSSQualityMode": "Mode Nvidia DLSS",
     "Graphics_SelfShadow": "Ombre du personnage en temps réel lors de l'exploration",
     "Graphics_HalfResTransparent": "Transparence semi-résolution",
+    
+    "Graphics_DLSS_UHP": "Ultra haute perf.",
+    "Graphics_DLSS_Perf": "Performance",
+    "Graphics_DLSS_Balanced": "Équilibré",
+    "Graphics_DLSS_Quality": "Qualité",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Paramètres graphiques globaux",
     "SpecEnabled": "Activé",

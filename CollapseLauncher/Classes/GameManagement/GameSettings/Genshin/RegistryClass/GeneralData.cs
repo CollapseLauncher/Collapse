@@ -9,10 +9,14 @@ using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable PartialTypeWithSinglePart
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class GeneralData
+    internal sealed partial class GeneralData
     {
         #region Fields
         private const string _ValueName = "GENERAL_DATA_h2389025596";
@@ -425,7 +429,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
         }
 
-        public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is GeneralData generalData && TypeExtensions.IsInstancePropertyEqual(this, generalData);
         #endregion
     }
 }

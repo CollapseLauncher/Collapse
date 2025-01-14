@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -24,7 +24,7 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
-    internal partial class GenshinInstall : InstallManagerBase
+    internal sealed partial class GenshinInstall : InstallManagerBase
     {
         #region Override Properties
 
@@ -129,7 +129,7 @@ namespace CollapseLauncher.InstallManager.Genshin
             await ApplyDeleteFileActionAsync(_token.Token);
         }
 
-        protected void EnsureMoveOldToNewAudioDirectory()
+        private void EnsureMoveOldToNewAudioDirectory()
         {
             // Return if the old path doesn't exist
             if (!Directory.Exists(_gameAudioOldPath))

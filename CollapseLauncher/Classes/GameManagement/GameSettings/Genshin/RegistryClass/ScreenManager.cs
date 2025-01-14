@@ -8,7 +8,11 @@ using System;
 using System.Drawing;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Genshin
 {
     internal class ScreenManager : BaseScreenSettingData, IGameSettingsValue<ScreenManager>
@@ -157,7 +161,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
         }
 
-        public bool Equals(ScreenManager? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is ScreenManager toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
     }
     #endregion
 }

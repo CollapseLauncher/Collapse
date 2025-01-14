@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Fondo Personalizado por Región",
     "GameSettings_Panel4": "Global - Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Escalar panel de eventos al pasar el ratón",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sincronizar Tiempo de Juego con Base de Datos",
@@ -403,7 +404,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver más parámetros.",
 
-    "GameBoost": "Aumentar Prioridad del Juego [Experimental]",
+    "GameBoost": "Aumentar Prioridad del Juego",
     "MobileLayout": "Usar Diseño de Móviles",
 
     "Advanced_Title": "Ajustes Avanzados",
@@ -984,9 +985,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Para usar el Steam overlay, es necesario iniciar Steam como administrador y Collapse debe estar cerrado completamente o tener la opción \"Multiples Ventanas\" habilitada en los ajustes.",
     "SteamShortcutCreationSuccessSubtitle7": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
-
     "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
+    "SteamShortcutTitle": "Acceso directo de Steam",
+    "SteamShortcutDownloadingImages": "Descargar Imágenes para Steam ({0}/{1})",
 
     "DownloadSettingsTitle": "Descargando Configuración",
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
@@ -1238,8 +1240,15 @@
     "Graphics_BloomQuality": "Calidad de Bloom",
     "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_SFXQuality": "Calidad de SFX",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
+    
+    "Graphics_DLSS_UHP": "Ultra Rendimiento",
+    "Graphics_DLSS_Perf": "Rendimiento",
+    "Graphics_DLSS_Balanced": "Balanceado",
+    "Graphics_DLSS_Quality": "Calidad",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "SpecEnabled": "Habilitado",

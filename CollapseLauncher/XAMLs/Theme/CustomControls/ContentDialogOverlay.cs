@@ -7,6 +7,7 @@
 
     namespace CollapseLauncher.CustomControls
 {
+    // ReSharper disable once PartialTypeWithSinglePart
     public partial class ContentDialogOverlay : ContentDialog
     {
         public string ThemeTitleGlyph { get; set; }

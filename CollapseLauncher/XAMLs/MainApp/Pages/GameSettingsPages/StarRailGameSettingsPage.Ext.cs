@@ -277,6 +277,13 @@ namespace CollapseLauncher.Pages
             get => Math.Clamp((int)Settings.GraphicsSettings.SFXQuality, 1, 4);
             set => Settings.GraphicsSettings.SFXQuality = (Quality)value;
         }
+
+        //DLSSQuality
+        public int DlssQuality
+        {
+            get => Math.Clamp((int)Settings.GraphicsSettings.DlssQuality, 0, 5);
+            set => Settings.GraphicsSettings.DlssQuality = (DLSSMode)value;
+        }
         //BloomQuality
         public int BloomQuality
         {

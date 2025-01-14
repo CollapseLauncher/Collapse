@@ -118,12 +118,9 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            if (_status != null)
-            {
-                _status.IsCompleted    = true;
-                _status.IsCanceled     = false;
-                _status.ActivityStatus = Lang._GameRepairPage.Status7;
-            }
+            _status.IsCompleted    = true;
+            _status.IsCanceled     = false;
+            _status.ActivityStatus = Lang._GameRepairPage.Status7;
 
             // Update status and progress
             UpdateAll();

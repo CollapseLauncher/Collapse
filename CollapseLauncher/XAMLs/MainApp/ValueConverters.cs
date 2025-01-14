@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using System;
 using Windows.Globalization.NumberFormatting;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Pages
 {

@@ -22,7 +22,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             get
             {
                 if (_magicReDo != null) return _magicReDo;
-                _magicReDo = (_gameVersionManager as GameTypeZenlessVersion)?.GamePreset
+                _magicReDo = (GameVersionManager as GameTypeZenlessVersion)?.GamePreset
                                                                              .GetGameDataTemplate("ImSleepin", new byte[] { 1, 0, 0, 0 });
                 if (_magicReDo == null || _magicReDo.Length == 0)
                     throw new NullReferenceException("MagicReDo value for ZZZ settings is empty!");
@@ -52,7 +52,7 @@ namespace CollapseLauncher.GameSettings.Zenless
             SettingsScreen = ScreenManager.Load();
             GeneralData = GeneralData.LoadWithMagic(
                 MagicReDo,
-                SettingsGameVersionManager.Create(_gameVersionManager, ZZZSettingsConfigFile, "GENERAL_DATA.bin"),
+                SettingsGameVersionManager.Create(GameVersionManager, ZZZSettingsConfigFile, "GENERAL_DATA.bin"),
                 ZenlessSettingsJSONContext.Default.GeneralData);
         }
 

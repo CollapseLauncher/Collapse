@@ -156,7 +156,8 @@
     "GameSettings_Panel3CustomBGRegion": "修改区服背景",
     "GameSettings_Panel3CustomBGRegionSectionTitle": "自定义区服背景",
     "GameSettings_Panel4": "全局 - 杂项",
-    "GameSettings_Panel4ShowEventsPanel": "显示公告面板",
+    "GameSettings_Panel4ShowEventsPanel": "显示活动面板",
+    "GameSettings_Panel4ScaleUpEventsPanel": "悬停时放大活动面板",
     "GameSettings_Panel4ShowSocialMediaPanel": "显示社交媒体面板",
     "GameSettings_Panel4ShowPlaytimeButton": "显示游戏时间",
     "GameSettings_Panel4SyncPlaytimeDatabase": "同步游戏时间到数据库",
@@ -403,7 +404,7 @@
     "CustomArgs_Footer2": "Unity Standalone Player 命令行文档",
     "CustomArgs_Footer3": "以了解更多命令行参数。",
 
-    "GameBoost": "提升游戏优先级［实验性］",
+    "GameBoost": "提升游戏优先级",
     "MobileLayout": "使用移动端布局",
 
     "Advanced_Title": "高级设置",
@@ -984,9 +985,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • 新的快捷方式仅在 Steam 重新加载后才会显示。",
     "SteamShortcutCreationSuccessSubtitle6": " • 要使用 Steam 叠加层，Steam 需要以管理员身份运行，而且 Collapse 必须完全关闭或在设置中启用“允许开启多个 Collapse”选项。",
     "SteamShortcutCreationSuccessSubtitle7": " • 如果游戏未安装/更新，Collapse 会尝试安装/更新。请注意，与这些过程相关的对话框仍会显示。",
-
     "SteamShortcutCreationFailureTitle": "无效的 Steam 数据文件夹",
     "SteamShortcutCreationFailureSubtitle": "无法找到有效的 userdata 文件夹。\n\n在尝试使用此功能之前，请确保至少登录一次 Steam 客户端。",
+    "SteamShortcutTitle": "Steam 快捷方式",
+    "SteamShortcutDownloadingImages": "正在下载 Steam 网格图像（{0}/{1}）",
 
     "DownloadSettingsTitle": "下载设置",
     "DownloadSettingsOption1": "安装后启动游戏",
@@ -1238,8 +1240,15 @@
     "Graphics_BloomQuality": "泛光效果（Bloom）",
     "Graphics_AAMode": "抗锯齿模式",
     "Graphics_SFXQuality": "特效质量",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "地图探索中角色实时阴影",
     "Graphics_HalfResTransparent": "半分辨率透明",
+    
+    "Graphics_DLSS_UHP": "超高性能",
+    "Graphics_DLSS_Perf": "性能",
+    "Graphics_DLSS_Balanced": "平衡",
+    "Graphics_DLSS_Quality": "质量",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "全局图形设置",
     "SpecEnabled": "启用",
