@@ -1240,7 +1240,7 @@
     "Graphics_BloomQuality": "泛光效果（Bloom）",
     "Graphics_AAMode": "抗锯齿模式",
     "Graphics_SFXQuality": "特效质量",
-    "Graphics_DLSSQualityMode": "Nvidia DLSS 模式",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "地图探索中角色实时阴影",
     "Graphics_HalfResTransparent": "半分辨率透明",
     
