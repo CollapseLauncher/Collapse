@@ -1240,7 +1240,7 @@
     "Graphics_BloomQuality": "Calidad de Bloom",
     "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_SFXQuality": "Calidad de SFX",
-    "Graphics_DLSSQualityMode": "Modo Nvidia DLSS",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
     
