@@ -1647,7 +1647,12 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (FileInfo hdiffMapFile in directoryInfo.EnumerateFiles("*hdiffmap*.json", SearchOption.TopDirectoryOnly)
                                                            .EnumerateNoReadOnly())
             {
-                await using FileStream hdiffMapStream = hdiffMapFile.OpenRead();
+                await using FileStream hdiffMapStream = hdiffMapFile.Open(new FileStreamOptions
+                {
+                    Mode    = FileMode.Open,
+                    Access  = FileAccess.Read,
+                    Options = FileOptions.DeleteOnClose
+                });
                 HDiffMap? currentDeserialize = await JsonSerializer.DeserializeAsync(hdiffMapStream, HDiffMapEntryJsonContext.Default.HDiffMap, _token.Token);
 
                 if (currentDeserialize?.Entries != null)
