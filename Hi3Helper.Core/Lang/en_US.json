@@ -1240,11 +1240,11 @@
     "Graphics_BloomQuality": "Bloom Quality",
     "Graphics_AAMode": "Anti-Aliasing Mode",
     "Graphics_SFXQuality": "SFX Quality",
-    "Graphics_DLSSQualityMode": "Nvidia DLSS Mode",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Character Shadow in Map Exploration",
     "Graphics_HalfResTransparent": "Half Resolution Transparency",
     
-    "Graphics_DLSS_UHP": "Ultra High Perf.",
+    "Graphics_DLSS_UHP": "Ultra Performance",
     "Graphics_DLSS_Perf": "Performance",
     "Graphics_DLSS_Balanced": "Balanced",
     "Graphics_DLSS_Quality": "Quality",

@@ -65,7 +65,7 @@ namespace Hi3Helper
                 public string Graphics_BloomQuality         { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_BloomQuality;
                 public string Graphics_SFXQuality           { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SFXQuality;
                 public string Graphics_AAMode               { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_AAMode;
-                public string Graphics_DLSSQualityMode      { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DLSSQualityMode;
+                public string Graphics_DlssQuality          { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_DlssQuality;
                 public string Graphics_SpecPanel            { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SpecPanel;
                 public string Graphics_SelfShadow           { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_SelfShadow;
                 public string Graphics_HalfResTransparent   { get; set; } = LangFallback?._StarRailGameSettingsPage.Graphics_HalfResTransparent;

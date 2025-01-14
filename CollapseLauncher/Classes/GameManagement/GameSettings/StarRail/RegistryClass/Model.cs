@@ -240,11 +240,11 @@ namespace CollapseLauncher.GameSettings.StarRail
         public Quality SFXQuality { get; set; } = Quality.High;
         
         /// <summary>
-        /// This defines "<c>Nvidia DLSS</c>" combobox In-game settings. <br/>
+        /// This defines "<c>NVIDIA DLSS</c>" combobox In-game settings. <br/>
         /// Options: Off (0), UltraHighPerformance (1), Performance (2), Balanced (3), Quality (4), DLAA (5) <br/>
         /// Default: Off <br/>
         /// </summary>
-        public DLSSMode DLSSQuality { get; set; } = DLSSMode.Off;
+        public DLSSMode DlssQuality { get; set; } = DLSSMode.Off;
         /// <summary>
         /// This defines "<c>Bloom Quality</c>" combobox In-game settings. <br/>
         /// Options: Off(0), VeryLow (1), Low (2), Medium(3), High(4), VeryHigh(5) <br/>

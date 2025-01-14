@@ -279,10 +279,10 @@ namespace CollapseLauncher.Pages
         }
 
         //DLSSQuality
-        public int DLSSQuality
+        public int DlssQuality
         {
-            get => Math.Clamp((int)Settings.GraphicsSettings.DLSSQuality, 0, 5);
-            set => Settings.GraphicsSettings.DLSSQuality = (DLSSMode)value;
+            get => Math.Clamp((int)Settings.GraphicsSettings.DlssQuality, 0, 5);
+            set => Settings.GraphicsSettings.DlssQuality = (DLSSMode)value;
         }
         //BloomQuality
         public int BloomQuality

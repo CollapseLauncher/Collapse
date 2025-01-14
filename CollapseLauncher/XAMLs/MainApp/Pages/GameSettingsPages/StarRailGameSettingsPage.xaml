@@ -499,13 +499,13 @@
                                                    Margin="0,8,0,8"
                                                    HorizontalAlignment="Left"
                                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSSQualityMode}"
+                                                   Text="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DlssQuality}"
                                                    TextWrapping="Wrap" />
-                                        <ComboBox x:Name="DLSSQualitySelector"
+                                        <ComboBox x:Name="DlssQualitySelector"
                                                   Margin="0,0,16,8"
                                                   HorizontalAlignment="Stretch"
                                                   CornerRadius="14"
-                                                  SelectedIndex="{x:Bind DLSSQuality, Mode=TwoWay}">
+                                                  SelectedIndex="{x:Bind DlssQuality, Mode=TwoWay}">
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.SpecDisabled}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_UHP}" />
                                             <ComboBoxItem Content="{x:Bind helper:Locale.Lang._StarRailGameSettingsPage.Graphics_DLSS_Perf}" />
