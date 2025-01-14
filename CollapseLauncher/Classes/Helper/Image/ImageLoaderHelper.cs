@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
+using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
@@ -128,7 +129,7 @@ namespace CollapseLauncher.Helper.Image
                 FileInfo resizedFileInfo = GetCacheFileInfo(inputFileInfo.FullName + inputFileInfo.Length);
                 if (resizedFileInfo!.Exists && resizedFileInfo.Length > 1 << 15 && !overwriteCachedImage)
                 {
-                    resizedImageFileStream = resizedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+                    resizedImageFileStream = resizedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
                     return resizedImageFileStream;
                 }
 
@@ -211,7 +212,7 @@ namespace CollapseLauncher.Helper.Image
             try
             {
                 await using (FileStream cachedFileStream =
-                             new FileStream(cachedFilePath!, StreamUtility.FileStreamCreateReadWriteOpt))
+                             new FileStream(cachedFilePath!, StreamExtension.FileStreamCreateReadWriteOpt))
                 {
                     dialogOverlay.IsPrimaryButtonEnabled   = false;
                     dialogOverlay.IsSecondaryButtonEnabled = false;
@@ -294,25 +295,25 @@ namespace CollapseLauncher.Helper.Image
 
                     InputFileInfo.Delete();
 
-                    return newCachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+                    return newCachedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
                 }
                 catch (IOException ex)
                 {
                     Logger.LogWriteLine($"[ImageLoaderHelper::GenerateCachedStream] IOException Caught! Opening InputFile instead...\r\n{ex}", LogType.Error, true);
                     await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    return InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+                    return InputFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
                 }
             }
 
             FileInfo cachedFileInfo = GetCacheFileInfo(InputFileInfo!.FullName + InputFileInfo.Length);
             bool isCachedFileExist = cachedFileInfo!.Exists && cachedFileInfo.Length > 1 << 15;
-            if (isCachedFileExist) return cachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+            if (isCachedFileExist) return cachedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
 
             await using (FileStream cachedFileStream = cachedFileInfo.Create())
-                await using (FileStream inputFileStream = InputFileInfo.Open(StreamUtility.FileStreamOpenReadOpt))
+                await using (FileStream inputFileStream = InputFileInfo.Open(StreamExtension.FileStreamOpenReadOpt))
                     await ResizeImageStream(inputFileStream, cachedFileStream, ToWidth, ToHeight);
 
-            return cachedFileInfo.Open(StreamUtility.FileStreamOpenReadOpt);
+            return cachedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
         }
 
         internal static FileInfo GetCacheFileInfo(string filePath)

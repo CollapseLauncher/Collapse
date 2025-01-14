@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using System;

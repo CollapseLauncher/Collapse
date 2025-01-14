@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI.Animations;
 #if USEFFMPEGFORVIDEOBG
 using FFmpegInteropX;
@@ -137,7 +138,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                 await GetPreviewAsColorPalette(filePath);
 
-                CurrentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamUtility.FileStreamOpenReadOpt);
+                CurrentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamExtension.FileStreamOpenReadOpt);
 
 #if !USEFFMPEGFORVIDEOBG
                 EnsureIfFormatIsDashOrUnsupported(CurrentMediaStream);

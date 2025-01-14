@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -532,7 +533,7 @@ namespace CollapseLauncher.Interfaces
         }
 
         protected string EnsureCreationOfDirectory(string str)
-            => StreamUtility.EnsureCreationOfDirectory(str).FullName;
+            => StreamExtension.EnsureCreationOfDirectory(str).FullName;
 
         protected string EnsureCreationOfDirectory(FileInfo str)
             => str.EnsureCreationOfDirectory().FullName;

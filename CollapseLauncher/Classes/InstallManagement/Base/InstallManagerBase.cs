@@ -20,6 +20,8 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.InstallManagement.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using Hi3Helper;
@@ -36,6 +38,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using SevenZipExtractor;
 using SevenZipExtractor.Event;
+using SharpCompress.Common;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
@@ -49,6 +52,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -776,7 +780,7 @@ namespace CollapseLauncher.InstallManager.Base
         private long GetSingleOrSegmentedUncompressedSize(GameInstallPackage asset)
         {
             using Stream      stream      = GetSingleOrSegmentedDownloadStream(asset);
-            using ArchiveFile archiveFile = new ArchiveFile(stream!);
+            using ArchiveFile archiveFile = ArchiveFile.Create(stream, true);
             return archiveFile.Entries.Sum(x => (long)x!.Size);
         }
 
@@ -893,8 +897,16 @@ namespace CollapseLauncher.InstallManager.Base
                 await installTaskDelegate(asset);
 
                 // Get the information about diff and delete list file
-                FileInfo hdiffList  = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt"));
-                FileInfo deleteList = new FileInfo(Path.Combine(_gamePath, "deletefiles.txt"));
+                FileInfo hdiffMapList = new FileInfo(Path.Combine(_gamePath, "hdiffmap.json")).EnsureNoReadOnly();
+                FileInfo hdiffList    = new FileInfo(Path.Combine(_gamePath, "hdifffiles.txt")).EnsureNoReadOnly();
+                FileInfo deleteList   = new FileInfo(Path.Combine(_gamePath, "deletefiles.txt")).EnsureNoReadOnly();
+
+                // If diffmap list file exist, then rename the file
+                if (hdiffMapList.Exists)
+                {
+                    hdiffMapList.MoveTo(Path.Combine(_gamePath, $"hdiffmap_{Path.GetFileNameWithoutExtension(asset!.PathOutput)}.json"),
+                                        true);
+                }
 
                 // If diff list file exist, then rename the file
                 if (hdiffList.Exists)
@@ -1145,7 +1157,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Load the zip
                 stream      = GetSingleOrSegmentedDownloadStream(asset);
-                archiveFile = new ArchiveFile(stream!);
+                archiveFile = ArchiveFile.Create(stream, true);
 
                 // Start extraction
                 archiveFile.ExtractProgress += ZipProgressAdapter;
@@ -1324,7 +1336,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
                 else
                 {
-                    foldersToKeepInDataFullPath = Array.Empty<string>();
+                    foldersToKeepInDataFullPath = [];
                 }
 
             #pragma warning disable CS8604 // Possible null reference argument.
@@ -1587,7 +1599,7 @@ namespace CollapseLauncher.InstallManager.Base
             return inStreamingAssetsPath;
         }
 
-        private async ValueTask FileHdiffPatcherInner(string patchPath, string sourceBasePath, string destPath, CancellationToken token)
+        private async Task FileHdiffPatcherInner(string patchPath, string sourceBasePath, string destPath, CancellationToken token)
         {
             HDiffPatch patcher = new HDiffPatch();
             patcher.Initialize(patchPath);
@@ -1623,16 +1635,188 @@ namespace CollapseLauncher.InstallManager.Base
                 throw task.Exception;
         }
 
-        public virtual async ValueTask ApplyHdiffListPatch()
+        protected virtual async Task<List<HDiffMapEntry>> GetHDiffMapEntryList(string gameDir)
         {
+            DirectoryInfo directoryInfo = new DirectoryInfo(gameDir);
+            if (!directoryInfo.Exists)
+            {
+                throw new DirectoryNotFoundException($"[InstallManagerBase::GetHDiffMapEntryList] Game directory: {gameDir} doesn't exist!");
+            }
+
+            List<HDiffMapEntry> hDiffMapEntries = [];
+            foreach (FileInfo hdiffMapFile in directoryInfo.EnumerateFiles("*hdiffmap*.json", SearchOption.TopDirectoryOnly)
+                                                           .EnumerateNoReadOnly())
+            {
+                await using FileStream hdiffMapStream = hdiffMapFile.OpenRead();
+                HDiffMap? currentDeserialize = await JsonSerializer.DeserializeAsync(hdiffMapStream, HDiffMapEntryJsonContext.Default.HDiffMap, _token.Token);
+
+                if (currentDeserialize?.Entries != null)
+                {
+                    hDiffMapEntries.AddRange(currentDeserialize.Entries);
+                }
+            }
+
+            return hDiffMapEntries;
+        }
+
+        protected virtual async Task ApplyHDiffMap()
+        {
+            string gameDir = _gamePath;
+            List<HDiffMapEntry> hDiffMapEntries = await GetHDiffMapEntryList(gameDir);
+
+            _status.IsIncludePerFileIndicator = false;
+            _progress.ProgressAllSizeCurrent  = 0;
+            _progress.ProgressAllSizeTotal    = hDiffMapEntries.Sum(entry => entry.TargetFileSize);
+
+            _progressAllCountTotal = 1;
+            _progressAllCountFound = hDiffMapEntries.Count;
+
+            HDiffPatch.LogVerbosity   =  Verbosity.Verbose;
+            EventListener.LoggerEvent += EventListener_PatchLogEvent;
+            EventListener.PatchEvent  += EventListener_PatchEvent;
+
+            try
+            {
+                Task parallelTask = Parallel.ForEachAsync(hDiffMapEntries, new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = _threadCount,
+                    CancellationToken      = _token.Token
+                },
+                async (entry, ctx) =>
+                {
+                    _status.ActivityStatus =
+                        $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, _progressAllCountTotal,
+                                                                _progressAllCountFound)}";
+
+                    bool   isUseSameName       = string.IsNullOrEmpty(entry.SourceFileName);
+                    string sourceFileNameToUse = (isUseSameName ? entry.SourceFileName : entry.TargetFileName) ?? "";
+
+                    FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, sourceFileNameToUse))
+                                             .EnsureNoReadOnly(out bool isSourceExist);
+                    FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
+                                             .EnsureNoReadOnly(out bool isPatchExist);
+                    FileInfo targetPath = new FileInfo(Path.Combine(gameDir, entry.TargetFileName ?? ""))
+                                             .EnsureCreationOfDirectory()
+                                             .EnsureNoReadOnly();
+                    FileInfo targetPathTemp = new FileInfo(targetPath + "_tmp")
+                                             .EnsureNoReadOnly();
+
+                    try
+                    {
+                        if (string.IsNullOrEmpty(sourceFileNameToUse))
+                        {
+                            ForceUpdateProgress(entry);
+                            return;
+                        }
+
+                        if (!isPatchExist || !isSourceExist)
+                        {
+                            ForceUpdateProgress(entry);
+                            return;
+                        }
+
+                        if (isSourceExist && sourcePath.Length != entry.SourceFileSize)
+                        {
+                            ForceUpdateProgress(entry);
+                            LogWriteLine($"[InstallManagerBase::ApplyHDiffMap] Source file size mismatch: {sourcePath.FullName} ({sourcePath.Length} != {entry.SourceFileSize})", LogType.Warning, true);
+                            return;
+                        }
+
+                        LogWriteLine($"Patching file {entry.SourceFileName} to {entry.TargetFileName}...", LogType.Default, true);
+                        UpdateProgressBase();
+                        UpdateStatus();
+
+                        await Task.Factory.StartNew(state =>
+                        {
+                            CancellationToken thisInnerCtx = (CancellationToken)state;
+                            try
+                            {
+                                thisInnerCtx.ThrowIfCancellationRequested();
+                                HDiffPatch patcher = new HDiffPatch();
+                                patcher.Initialize(patchPath.FullName);
+                                patcher.Patch(sourcePath.FullName, targetPathTemp.FullName, true, thisInnerCtx, false, true);
+                            }
+                            catch (InvalidDataException ex) when (!thisInnerCtx.IsCancellationRequested)
+                            {
+                                // ignored
+                                // Get the base and new target file size
+                                long newFileSize = HDiffPatch.GetHDiffNewSize(patchPath.FullName);
+                                long refFileSize = targetPath.Exists ? targetPath.Length : 0;
+
+                                // Check if the throw happened for different file, then rethrow
+                                if (newFileSize != refFileSize)
+                                    throw;
+
+                                // Otherwise, log the error
+                                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                                LogWriteLine($"New: {newFileSize} == Ref: {refFileSize}. File is already new. Skipping! {targetPath.FullName}", LogType.Warning, true);
+                            }
+                        },
+                        ctx,
+                        ctx,
+                        TaskCreationOptions.DenyChildAttach,
+                        TaskScheduler.Default);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        await _token.CancelAsync();
+                        LogWriteLine("Cancelling patching process!...", LogType.Warning, true);
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        await SentryHelper.ExceptionHandler_ForLoopAsync(ex);
+                        LogWriteLine(
+                            $"Error while patching file: {sourceFileNameToUse} to: {entry.TargetFileName ?? string.Empty}. Skipping!\r\n{ex}",
+                            LogType.Warning,
+                            true);
+
+                        ForceUpdateProgress(entry);
+                    }
+                    finally
+                    {
+                        Interlocked.Increment(ref _progressAllCountTotal);
+                        if (!string.IsNullOrEmpty(entry.PatchFileName))
+                        {
+                            _ = patchPath.TryDeleteFile();
+                        }
+
+                        _ = targetPathTemp.TryMoveTo(targetPath);
+                    }
+                });
+
+                await parallelTask;
+            }
+            finally
+            {
+                EventListener.LoggerEvent -= EventListener_PatchLogEvent;
+                EventListener.PatchEvent -= EventListener_PatchEvent;
+            }
+
+            return;
+
+            void ForceUpdateProgress(HDiffMapEntry entry)
+            {
+                Interlocked.Add(ref _progress.ProgressAllSizeCurrent, entry.TargetFileSize);
+                _progress.ProgressAllPercentage = ConverterTool.ToPercentage(_progress.ProgressAllSizeTotal, _progress.ProgressAllSizeCurrent);
+                _progress.ProgressAllSpeed = CalculateSpeed(entry.TargetFileSize);
+                _progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(_progress.ProgressAllSizeTotal, _progress.ProgressAllSizeCurrent, _progress.ProgressAllSpeed);
+
+                UpdateProgress();
+            }
+        }
+
+        public virtual async Task ApplyHdiffListPatch()
+        {
+            // As per January 2025, the HDiff patcher uses the new HDiffMap method.
+            // Run the HDiffMap method first before applying the legacy HDiffList patch.
+            await ApplyHDiffMap();
+
             List<PkgVersionProperties> hdiffEntry = TryGetHDiffList();
             _status.IsIncludePerFileIndicator = false;
 
-            lock (_progress)
-            {
-                _progress.ProgressAllSizeTotal   = hdiffEntry.Sum(x => x.fileSize);
-                _progress.ProgressAllSizeCurrent = 0;
-            }
+            _progress.ProgressAllSizeTotal   = hdiffEntry.Sum(x => x.fileSize);
+            _progress.ProgressAllSizeCurrent = 0;
 
             _progressAllCountTotal = 1;
             _progressAllCountFound = hdiffEntry.Count;
@@ -1706,12 +1890,8 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     Interlocked.Increment(ref _progressAllCountTotal);
-                    FileInfo patchFile = new FileInfo(patchPath)
-                    {
-                        IsReadOnly = false
-                    };
-
-                    patchFile.Delete();
+                    FileInfo patchFile = new FileInfo(patchPath).EnsureNoReadOnly();
+                    _ = patchFile.TryDeleteFile();
                 }
                 _token.Token.ThrowIfCancellationRequested();
             });
@@ -2825,8 +3005,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Start read the file
             using StreamReader sw = new StreamReader(_gameAudioLangListPath);
 #nullable enable
-            string? langStr;
-            while ((langStr = await sw.ReadLineAsync()) != null)
+            while (await sw.ReadLineAsync() is { } langStr)
             {
                 // Get the line and get the language locale code by language string
                 string? localeCode = GetLanguageLocaleCodeByLanguageString(langStr
@@ -2893,42 +3072,54 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Sanity Check: If the file is still missing even after the process, then throw
                 var fileInfo = new FileInfo(inputPath);
-                if (fileInfo.Exists)
+                if (!fileInfo.Exists)
                 {
-                    // Move the file to the target directory
-                    fileInfo.IsReadOnly = false;
-                    fileInfo.MoveTo(outputPath, true);
-                    LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
+                    continue;
                 }
+
+                // Move the file to the target directory
+                fileInfo.IsReadOnly = false;
+                fileInfo.MoveTo(outputPath, true);
+                LogWriteLine($"Moving from: {inputPath} to {outputPath}", LogType.Default, true);
             }
         }
 
         private void TryUnassignReadOnlyFiles()
         {
-            foreach (string file in Directory.EnumerateFiles(_gamePath, "*", SearchOption.AllDirectories))
+            DirectoryInfo dirInfo = new DirectoryInfo(_gamePath);
+            if (!dirInfo.Exists)
             {
-                FileInfo fileInfo = new FileInfo(file);
-                if (fileInfo.IsReadOnly)
-                {
-                    fileInfo.IsReadOnly = false;
-                }
+                return;
+            }
+
+            foreach (FileInfo _ in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories)
+                                           .EnumerateNoReadOnly())
+            {
+                // Do nothing
             }
         }
 
         private void TryRemoveRedundantHDiffList()
         {
-            foreach (string file in Directory.EnumerateFiles(_gamePath, "*.txt", SearchOption.TopDirectoryOnly))
+            DirectoryInfo dirInfo = new DirectoryInfo(_gamePath);
+            if (!dirInfo.Exists)
             {
-                string name = Path.GetFileName(file);
-                if (!name.StartsWith("deletefiles",   StringComparison.OrdinalIgnoreCase)
-                    && !name.StartsWith("hdifffiles", StringComparison.OrdinalIgnoreCase))
+                return;
+            }
+
+            foreach (FileInfo file in dirInfo.EnumerateFiles("*.*", SearchOption.TopDirectoryOnly))
+            {
+                string name = file.Name;
+                if (!(name.StartsWith("deletefiles", StringComparison.OrdinalIgnoreCase) && name.EndsWith(".txt",  StringComparison.OrdinalIgnoreCase))
+                 && !(name.StartsWith("hdifffiles",  StringComparison.OrdinalIgnoreCase) && name.EndsWith(".txt",  StringComparison.OrdinalIgnoreCase))
+                 && !(name.StartsWith("hdiffmap",    StringComparison.OrdinalIgnoreCase) && name.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
 
                 try
                 {
-                    File.Delete(file);
+                    file.Delete();
                 }
                 catch (Exception ex)
                 {

@@ -3,6 +3,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Base;
 using CommunityToolkit.WinUI;
 using Hi3Helper;

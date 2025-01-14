@@ -6,9 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 #nullable enable
-namespace CollapseLauncher.Helper
+namespace CollapseLauncher.Helper.StreamUtility
 {
-    internal static class StreamUtility
+    internal static class StreamExtension
     {
         internal const int DefaultBufferSize = 64 << 10;
 
@@ -82,18 +82,18 @@ namespace CollapseLauncher.Helper
             FileShare fileShare,
             FileOptions fileOption = FileOptions.None)
         {
-            const int maxTry     = 10;
-            int       currentTry = 1;
+            const int maxTry = 10;
+            int currentTry = 1;
             while (true)
             {
                 try
                 {
                     return info.Open(new FileStreamOptions
                     {
-                        Mode       = fileMode,
-                        Access     = fileAccess,
-                        Share      = fileShare,
-                        Options    = fileOption,
+                        Mode = fileMode,
+                        Access = fileAccess,
+                        Share = fileShare,
+                        Options = fileOption,
                         BufferSize = DefaultBufferSize
                     });
                 }
@@ -128,6 +128,47 @@ namespace CollapseLauncher.Helper
             finally
             {
                 filePath.Refresh();
+            }
+        }
+
+        internal static bool TryDeleteFile(this FileInfo filePath, bool throwIfFailed = false)
+        {
+            try
+            {
+                if (filePath.Exists)
+                    filePath.Delete();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (throwIfFailed)
+                    throw;
+
+                Logger.LogWriteLine($"Failed to delete file: {filePath.FullName}\r\n{ex}", LogType.Error, true);
+                return false;
+            }
+        }
+
+        internal static bool TryMoveTo(this FileInfo filePath, string toTarget, bool overwrite = true, bool throwIfFailed = false)
+            => filePath.TryMoveTo(new FileInfo(toTarget), overwrite, throwIfFailed);
+
+        internal static bool TryMoveTo(this FileInfo filePath, FileInfo toTarget, bool overwrite = true, bool throwIfFailed = false)
+        {
+            try
+            {
+                if (filePath.Exists)
+                    filePath.MoveTo(toTarget.FullName, overwrite);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (throwIfFailed)
+                    throw;
+
+                Logger.LogWriteLine($"Failed to move file: {filePath.FullName} to: {toTarget.FullName}\r\n{ex}", LogType.Error, true);
+                return false;
             }
         }
     }
