@@ -1786,8 +1786,7 @@ namespace CollapseLauncher.InstallManager.Base
                         {
                             ForceUpdateProgress(entry);
                             LogWriteLine("[InstallManagerBase::ApplyHDiffMap] Source file or patch has mismatch hash!\r\n"
-                                + $"Source file: {sourcePath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(sourceLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.SourceMD5Hash)}"
-                                + $"Patch file: {patchPath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(patchLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.PatchMD5Hash)}",
+                                + $"Source file: {sourcePath.FullName}\r\nLocal Hash: {HexTool.BytesToHexUnsafe(sourceLocalHash)}\r\nRemote Hash: {HexTool.BytesToHexUnsafe(entry.SourceMD5Hash)}",
                                 LogType.Warning,
                                 true);
                             return;
@@ -1855,10 +1854,15 @@ namespace CollapseLauncher.InstallManager.Base
 
                         if (isSuccess && entry.CanDeleteSource)
                         {
+                            sourcePath.Refresh();
                             _ = sourcePath.TryDeleteFile();
                         }
 
-                        _ = targetPathTemp.TryMoveTo(targetPath);
+                        targetPathTemp.Refresh();
+                        if (targetPathTemp.Exists)
+                        {
+                            _ = targetPathTemp.TryMoveTo(targetPath);
+                        }
                     }
                 });
 
