@@ -1663,6 +1663,11 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
 
+            if (hDiffMapEntries.Count == 0)
+            {
+                return hDiffMapEntries;
+            }
+
             foreach (HDiffMapEntry sourceFile in hDiffMapEntries)
             {
                 _ = sourcePathsOnMap.TryAdd(sourceFile.SourceFileName, sourceFile);
@@ -1689,6 +1694,11 @@ namespace CollapseLauncher.InstallManager.Base
         {
             string gameDir = _gamePath;
             List<HDiffMapEntry> hDiffMapEntries = await GetHDiffMapEntryList(gameDir);
+
+            if (hDiffMapEntries.Count == 0)
+            {
+                return;
+            }
 
             _status.IsIncludePerFileIndicator = false;
             _progress.ProgressAllSizeCurrent  = 0;

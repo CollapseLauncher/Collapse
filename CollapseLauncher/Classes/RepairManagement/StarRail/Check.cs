@@ -145,6 +145,7 @@ namespace CollapseLauncher
                 LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size " +
                              $"(Local: {fileInfo.Length} <=> Remote: {asset.S}",
                              LogType.Warning, true);
+                return;
             }
 
             // Skip CRC check if fast method is used
