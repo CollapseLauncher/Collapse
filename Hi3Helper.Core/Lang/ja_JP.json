@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "カスタム背景をゲームごとに変更",
     "GameSettings_Panel4": "共通設定 - その他",
     "GameSettings_Panel4ShowEventsPanel": "イベントパネルを表示",
+    "GameSettings_Panel4ScaleUpEventsPanel": "イベントパネルをマウスオーバー時に拡大",
     "GameSettings_Panel4ShowSocialMediaPanel": "ソーシャルメディアパネルを表示",
     "GameSettings_Panel4ShowPlaytimeButton": "累計プレイ時間を表示する",
     "GameSettings_Panel4SyncPlaytimeDatabase": "プレイ時間をデータベースと同期させる",
@@ -403,7 +404,7 @@
     "CustomArgs_Footer2": "Unity スタンドアロンプレイヤーのコマンドライン引数",
     "CustomArgs_Footer3": "を参照して、より多くの引数を確認してください。",
 
-    "GameBoost": "ゲームの優先度をブースト [実験的機能]",
+    "GameBoost": "ゲームの優先度をブースト",
     "MobileLayout": "スマホ版のUIを表示",
 
     "Advanced_Title": "高度な設定",
@@ -984,9 +985,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • 作成したショートカットはSteamの再起動後に表示されます。",
     "SteamShortcutCreationSuccessSubtitle6": " • Steamオーバーレイを使用するには、Steamを管理者として実行した上でCollapseを完全に閉じるか、ランチャー設定の「多重起動を許可する」を有効にする必要があります。",
     "SteamShortcutCreationSuccessSubtitle7": " • ゲームがインストール/更新されていない場合、Collapseはゲームのインストール/更新を試みます。これらのプロセスに関するダイアログが引き続き表示されることにご留意ください。",
-
     "SteamShortcutCreationFailureTitle": "Steamデータフォルダーが無効です",
     "SteamShortcutCreationFailureSubtitle": "有効なuserdataフォルダーが見つかりません。\n\nこの機能を使用する前に、少なくとも1回はSteamクライアントにログインしてください。",
+    "SteamShortcutTitle": "Steamショートカット",
+    "SteamShortcutDownloadingImages": "Steamライブラリ画像のダウンロード中({0}/{1})",
 
     "DownloadSettingsTitle": "ダウンロード設定",
     "DownloadSettingsOption1": "インストール完了後にゲームを起動",
@@ -1238,8 +1240,15 @@
     "Graphics_BloomQuality": "ブルーム効果",
     "Graphics_AAMode": "アンチエイリアス",
     "Graphics_SFXQuality": "エフェクトのクオリティ",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "マップ探索内のキャラのリアルタイムシャドウ",
     "Graphics_HalfResTransparent": "透明オブジェクトのハーフ解像度",
+    
+    "Graphics_DLSS_UHP": "ウルトラパフォーマンス",
+    "Graphics_DLSS_Perf": "パフォーマンス",
+    "Graphics_DLSS_Balanced": "バランス",
+    "Graphics_DLSS_Quality": "クォリティ",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "画質",
     "SpecEnabled": "有効",
