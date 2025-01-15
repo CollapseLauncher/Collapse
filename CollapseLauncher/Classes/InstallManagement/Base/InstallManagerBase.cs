@@ -1582,22 +1582,19 @@ namespace CollapseLauncher.InstallManager.Base
             input = ConverterTool.NormalizePath(input);
             string inStreamingAssetsPath = Path.Combine(basePath, input);
 
-            int baseStreamingAssetsIndex = input.LastIndexOf(streamingAssetsName, StringComparison.OrdinalIgnoreCase);
+            int baseStreamingAssetsIndex = input
+                .LastIndexOf(streamingAssetsName, StringComparison.OrdinalIgnoreCase);
             if (baseStreamingAssetsIndex <= 0)
             {
                 return inStreamingAssetsPath;
             }
 
-            string inputTrimmed = input.AsSpan().Slice(baseStreamingAssetsIndex + streamingAssetsName.Length + 1)
-                                       .ToString();
+            string inputTrimmed = input.AsSpan()
+                .Slice(baseStreamingAssetsIndex + streamingAssetsName.Length + 1)
+                .ToString();
             string inPersistentPath = Path.Combine(basePath, _gamePersistentFolderBasePath, inputTrimmed);
 
-            if (File.Exists(inPersistentPath))
-            {
-                return inPersistentPath;
-            }
-
-            return inStreamingAssetsPath;
+            return File.Exists(inPersistentPath) ? inPersistentPath : inStreamingAssetsPath;
         }
 
         private async Task FileHdiffPatcherInner(string patchPath, string sourceBasePath, string destPath, CancellationToken token)
@@ -1728,11 +1725,13 @@ namespace CollapseLauncher.InstallManager.Base
 
                     bool isSuccess = false;
 
-                    FileInfo sourcePath = new FileInfo(Path.Combine(gameDir, entry.SourceFileName ?? ""))
+                    FileInfo sourcePath = new FileInfo(GetBasePersistentDirectory(gameDir, entry.SourceFileName ?? ""))
                                              .EnsureNoReadOnly(out bool isSourceExist);
+                    string sourcePathDir = sourcePath.DirectoryName;
                     FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
                                              .EnsureNoReadOnly(out bool isPatchExist);
-                    FileInfo targetPath = new FileInfo(Path.Combine(gameDir, entry.TargetFileName ?? ""))
+                    string targetPathBasedOnSource = Path.Combine(sourcePathDir ?? "", Path.GetFileName(entry.TargetFileName ?? ""));
+                    FileInfo targetPath = new FileInfo(targetPathBasedOnSource)
                                              .EnsureCreationOfDirectory()
                                              .EnsureNoReadOnly();
                     FileInfo targetPathTemp = new FileInfo(targetPath + "_tmp")
