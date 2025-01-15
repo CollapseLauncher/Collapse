@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Hình nền tùy chỉnh cho vùng",
     "GameSettings_Panel4": "Toàn Cầu - Khác",
     "GameSettings_Panel4ShowEventsPanel": "Hiển thị bảng sự kiện",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Phóng to bảng Tin Tức khi rê chuột",
     "GameSettings_Panel4ShowSocialMediaPanel": "Hiển thị bảng mạng xã hội",
     "GameSettings_Panel4ShowPlaytimeButton": "Hiển thị thời gian chơi",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Đồng bộ thời gian chơi vào cơ sở dử liệu",
@@ -403,7 +404,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation",
     "CustomArgs_Footer3": "để biết thêm chi tiết.",
 
-    "GameBoost": "Tăng mức độ ưu tiên của trò chơi [Thử nghiệm]",
+    "GameBoost": "Tăng mức độ ưu tiên của trò chơi",
     "MobileLayout": "Sử dụng Layout Cảm Ứng",
 
     "Advanced_Title": "Cài đặt Nâng cao",
@@ -984,9 +985,10 @@
     "SteamShortcutCreationSuccessSubtitle5": "• Lối tắt mới chỉ được hiển thị sau khi tải lại Steam.",
     "SteamShortcutCreationSuccessSubtitle6": "• Để sử dụng lớp phủ Steam, Steam cần được chạy với quyền quản trị và Collapse phải bị đóng hoàn toàn hoặc tính năng \"Cho phép chạy nhiều tiến trình\" được bật trong cài đặt.",
     "SteamShortcutCreationSuccessSubtitle7": "• Nếu trò chơi chưa được cài đặt/cập nhật, Collapse sẽ thử cài đặt/cập nhật nó. Lưu ý rằng các hộp thoại liên quan tới các tiến trình này sẽ vẫn được hiển thị.",
-
     "SteamShortcutCreationFailureTitle": "Thư mục dữ liệu Steam không hợp lệ",
     "SteamShortcutCreationFailureSubtitle": "Không thể tìm thấy thư mục userdata hợp lệ.\n\nVui lòng nhớ đăng nhập vào phần mềm Steam ít nhất một lần trước khi sử dụng chức năng này.",
+    "SteamShortcutTitle": "Lối tắt Steam",
+    "SteamShortcutDownloadingImages": "Đang tải Ảnh Lưới Steam ({0}/{1})",
 
     "DownloadSettingsTitle": "Cài đặt tải xuống",
     "DownloadSettingsOption1": "Khởi động trò chơi sau khi cài đặt",
@@ -995,7 +997,13 @@
     "CloseOverlay": "Đóng cửa sổ phủ",
 
     "DbGenerateUid_Title": "Bạn có chắc là bạn có muốn đổi ID người dùng không?",
-    "DbGenerateUid_Content": "Việc thay đổi ID người dùng hiện tại sẽ khiến dữ liệu liên quan bị mất nếu bạn làm mất."
+    "DbGenerateUid_Content": "Việc thay đổi ID người dùng hiện tại sẽ khiến dữ liệu liên quan bị mất nếu bạn làm mất.",
+
+    "SophonIncrementUpdateUnavailTitle": "Bản vá cập nhật nhỏ không khả dụng: Phiên bản quá lỗi thời!",
+    "SophonIncrementUpdateUnavailSubtitle1": "Phiên bản trò chơi: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": "quá lỗi thời",
+    "SophonIncrementUpdateUnavailSubtitle3": " và bản cập nhật cho phiên bản của bạn không khả dụng. Tuy nhiên, bạn vẫn có thể cập nhật trò chơi của mình bằng cách tải lại toàn bộ trò chơi từ đầu.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Nhấp vào \"{0}\" để tiếp tục cập nhật toàn bộ hoặc nhấp vào \"{1}\" để hủy quy trình"
   },
 
   "_FileMigrationProcess": {
@@ -1232,8 +1240,15 @@
     "Graphics_BloomQuality": "Hiệu ứng toả sáng",
     "Graphics_AAMode": "Khử răng cưa",
     "Graphics_SFXQuality": "Chất lượng SFX",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Bóng nhân vật trong bản đồ",
     "Graphics_HalfResTransparent": "Độ Phân Giải Một Nữa Trong Suốt",
+    
+    "Graphics_DLSS_UHP": "Siêu Hiệu Năng",
+    "Graphics_DLSS_Perf": "Hiệu Năng",
+    "Graphics_DLSS_Balanced": "Cân Bằng",
+    "Graphics_DLSS_Quality": "Chất Lượng",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Thiết lập đồ hoạ",
     "SpecEnabled": "Bật",
