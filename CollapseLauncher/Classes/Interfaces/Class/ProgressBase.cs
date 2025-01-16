@@ -454,14 +454,14 @@ namespace CollapseLauncher.Interfaces
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
             }
-            else if (_status.IsCompleted || _status.IsCanceled)
-            {
-                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
-            }
-            else
+            else if (_status.IsRunning)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Normal);
                 WindowUtility.SetProgressValue((ulong)(_sophonProgress.ProgressAllPercentage * 10), 1000);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
             }
         }
 
@@ -1355,7 +1355,7 @@ namespace CollapseLauncher.Interfaces
         {
             ProgressChanged?.Invoke(this, _progress);
 
-            if (_status is {IsProgressAllIndetermined: false, IsCompleted: false, IsCanceled: false})
+            if (_status is {IsProgressAllIndetermined: false, IsRunning: true})
             {
                 WindowUtility.SetProgressValue((ulong)(_progress.ProgressAllPercentage * 10), 1000);
             }
@@ -1369,13 +1369,13 @@ namespace CollapseLauncher.Interfaces
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
             }
-            else if (_status.IsCompleted || _status.IsCanceled)
+            else if (_status.IsRunning)
             {
-                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+                WindowUtility.SetTaskBarState(TaskbarState.Normal);
             }
             else
             {
-                WindowUtility.SetTaskBarState(TaskbarState.Normal);
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
             }
         }
 
