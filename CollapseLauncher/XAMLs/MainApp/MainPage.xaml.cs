@@ -541,13 +541,13 @@ namespace CollapseLauncher
         {
             var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig!.GameLauncherApi!;
             GamePresetProperty currentGameProperty = GetCurrentGameProperty();
-            bool isUseCustomPerRegionBg = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+            bool isUseCustomPerRegionBg = currentGameProperty?.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
 
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             bool isAPIBackgroundAvailable =
                 !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
 
-            var posterBg = currentGameProperty?._GameVersion.GameType switch
+            var posterBg = currentGameProperty?.GameVersion.GameType switch
                            {
                                GameNameType.Honkai => Path.Combine(AppExecutableDir,
                                                                    @"Assets\Images\GameBackground\honkai.webp"),
@@ -563,7 +563,7 @@ namespace CollapseLauncher
             // Check if Regional Custom BG is enabled and available
             if (isUseCustomPerRegionBg)
             {
-                var regionBgPath = currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath;
+                var regionBgPath = currentGameProperty.GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath;
                 if (!string.IsNullOrEmpty(regionBgPath) && File.Exists(regionBgPath))
                 {
                     if (BackgroundMediaUtility.GetMediaType(regionBgPath) == BackgroundMediaUtility.MediaType.StillImage)
@@ -921,7 +921,7 @@ namespace CollapseLauncher
 
                         // Get current game property, including game preset
                         GamePresetProperty currentGameProperty = GetCurrentGameProperty();
-                        (_, string heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty?._GamePreset);
+                        (_, string heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty?.GamePreset);
 
                         // Create notification
                         NotificationContent toastContent = NotificationContent.Create()
@@ -1325,7 +1325,7 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.FooterMenuItems.Clear();
 
-            IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty()._GameVersion;
+            IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
 
             FontIcon IconLauncher = new FontIcon { Glyph = "" };
             FontIcon IconRepair = new FontIcon { Glyph = "" };
@@ -1543,15 +1543,15 @@ namespace CollapseLauncher
                     break;
 
                 case "repair":
-                    if (!(GetCurrentGameProperty()._GameVersion.GamePreset.IsRepairEnabled ?? false))
+                    if (!(GetCurrentGameProperty().GameVersion.GamePreset.IsRepairEnabled ?? false))
                         Navigate(typeof(UnavailablePage), itemTag);
                     else
                         Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), itemTag);
                     break;
 
                 case "caches":
-                    if (GetCurrentGameProperty()._GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                        Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty()._GameVersion.GamePreset.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                    if (GetCurrentGameProperty().GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
+                        Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty().GameVersion.GamePreset.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                     else
                         Navigate(typeof(UnavailablePage), itemTag);
                     break;
@@ -2054,14 +2054,14 @@ namespace CollapseLauncher
             ToggleNotificationPanelBtnClick(null, null);
         }
 
-        string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
+        string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath; }
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (!IsGameInstalled()) return;
 
-            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty._GameVersion.GamePreset.GameType switch
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty.GameVersion.GamePreset.GameType switch
             {
-                GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty._GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
+                GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty.GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                 _ => "ScreenShot"
             });
 
@@ -2113,7 +2113,7 @@ namespace CollapseLauncher
             {
                 if (!IsGameInstalled()) return;
 
-                string GameFolder = CurrentGameProperty._GameVersion.GameDirAppDataPath;
+                string GameFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
                 LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
                 await Task.Run(() =>
                     new Process
@@ -2137,7 +2137,7 @@ namespace CollapseLauncher
         {
             if (!GetCurrentGameProperty().IsGameRunning) return;
 
-            PresetConfig gamePreset = GetCurrentGameProperty()._GameVersion.GamePreset;
+            PresetConfig gamePreset = GetCurrentGameProperty().GameVersion.GamePreset;
             try
             {
                 var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
@@ -2186,7 +2186,7 @@ namespace CollapseLauncher
 
             DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
-            switch (CurrentGameProperty._GamePreset.GameType)
+            switch (CurrentGameProperty.GamePreset.GameType)
             {
                 case GameNameType.Honkai:
                     Navigate(typeof(HonkaiGameSettingsPage), "honkaigamesettings");

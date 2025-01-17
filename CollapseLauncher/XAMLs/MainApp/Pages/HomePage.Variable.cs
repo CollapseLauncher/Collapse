@@ -9,7 +9,7 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage
     {
-        internal string GameDirPath { get => CurrentGameProperty._GameVersion.GameDirPath; }
+        internal string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath; }
 
 #nullable enable
         internal static LauncherGameNewsData?  GameNewsData             { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameNews?.Content; }
@@ -107,15 +107,15 @@ namespace CollapseLauncher.Pages
 
         internal bool IsPlaytimeSyncDb
         {
-            get => CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase;
+            get => CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase;
             set
             {
-                CurrentGameProperty._GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
-                CurrentGameProperty?._GameSettings?.SaveBaseSettings();
+                CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
+                CurrentGameProperty?.GameSettings?.SaveBaseSettings();
                 SyncDbPlaytimeBtn.IsEnabled = value;
                 
                 // Run DbSync if toggle is changed to enable
-                if (value) CurrentGameProperty?._GamePlaytime.CheckDb();
+                if (value) CurrentGameProperty?.GamePlaytime.CheckDb();
             }
         }
 
@@ -123,7 +123,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                GameNameType gameType = CurrentGameProperty._GamePreset.GameType;
+                GameNameType gameType = CurrentGameProperty.GamePreset.GameType;
                 return gameType switch
                 {
                     GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
@@ -136,21 +136,21 @@ namespace CollapseLauncher.Pages
 
         internal int CurrentBannerIconWidth
         {
-            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconWidth :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconWidthHYP;
         }
 
         internal Thickness CurrentBannerIconMargin
         {
-            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
         }
 
         internal int CurrentBannerIconColumn
         {
-            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
                    1 :
                    0;
         }
@@ -162,7 +162,7 @@ namespace CollapseLauncher.Pages
 
         internal int CurrentBannerIconRow
         {
-            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
                    1 :
                    0;
         }
@@ -174,14 +174,14 @@ namespace CollapseLauncher.Pages
 
         internal HorizontalAlignment CurrentBannerIconHorizontalAlign
         {
-            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
         }
 
         internal VerticalAlignment CurrentBannerIconVerticalAlign
         {
-            get => CurrentGameProperty?._GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }

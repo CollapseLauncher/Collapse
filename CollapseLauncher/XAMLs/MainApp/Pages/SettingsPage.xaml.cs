@@ -431,14 +431,14 @@ namespace CollapseLauncher.Pages
                 BGPathDisplay.Text = file;
                 
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBG = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool isUseRegionCustomBG = currentGameProperty?.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!isUseRegionCustomBG)
                 {
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
                 }
-                else if (!string.IsNullOrEmpty(currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath))
+                else if (!string.IsNullOrEmpty(currentGameProperty.GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath))
                 {
-                    _ = BackgroundMediaUtility.GetMediaType(currentGameProperty._GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath);
+                    _ = BackgroundMediaUtility.GetMediaType(currentGameProperty.GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath);
                 }
             }
         }
@@ -487,7 +487,7 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("UseCustomBG", value);
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBG = currentGameProperty?._GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool isUseRegionCustomBG = currentGameProperty?.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!value)
                 {
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
@@ -497,7 +497,7 @@ namespace CollapseLauncher.Pages
                 }
                 else if (isUseRegionCustomBG)
                 {
-                    string currentRegionCustomBg = currentGameProperty._GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
+                    string currentRegionCustomBg = currentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
                     m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 

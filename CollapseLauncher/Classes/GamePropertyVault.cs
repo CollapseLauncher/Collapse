@@ -46,7 +46,7 @@ namespace CollapseLauncher.Statics
             #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
             #endif
-                value?._GameVersion?.Reinitialize();
+                value?.GameVersion?.Reinitialize();
                 return;
             }
 
@@ -64,8 +64,8 @@ namespace CollapseLauncher.Statics
             if (Vault == null || Vault.Count == 0) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
-                .Where(x => !x!._GameInstall!.IsRunning && !x.IsGameRunning && x._GamePreset!.HashID != CurrentGameHashID)
-                                                  .Select(x => x._GamePreset.HashID)
+                .Where(x => !x!.GameInstall!.IsRunning && !x.IsGameRunning && x.GamePreset!.HashID != CurrentGameHashID)
+                                                  .Select(x => x.GamePreset.HashID)
                                                   .ToArray();
 
             foreach (int key in unusedGamePropertyHashID)
@@ -86,19 +86,19 @@ namespace CollapseLauncher.Statics
         private static async ValueTask AttachNotifForCurrentGame_Inner(int hashID)
         {
             GamePresetProperty gameProperty = Vault![hashID];
-            if (gameProperty!._GameInstall!.IsRunning)
+            if (gameProperty!.GameInstall!.IsRunning)
             {
                 var bgNotification = Locale.Lang!._BackgroundNotification!;
-                string actTitle = string.Format((await gameProperty._GameVersion!.GetGameState() switch
+                string actTitle = string.Format((await gameProperty.GameVersion!.GetGameState() switch
                 {
                     GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
                     GameInstallStateEnum.NeedsUpdate          => bgNotification.CategoryTitle_Updating,
                     GameInstallStateEnum.InstalledHavePlugin  => bgNotification.CategoryTitle_Updating,
                     _                                         => bgNotification.CategoryTitle_Downloading
-                })!, gameProperty._GameVersion.GamePreset!.GameName);
+                })!, gameProperty.GameVersion.GamePreset!.GameName);
 
-                string actSubtitle = gameProperty._GameVersion.GamePreset.ZoneName;
-                BackgroundActivityManager.Attach(hashID, gameProperty._GameInstall, actTitle, actSubtitle);
+                string actSubtitle = gameProperty.GameVersion.GamePreset.ZoneName;
+                BackgroundActivityManager.Attach(hashID, gameProperty.GameInstall, actTitle, actSubtitle);
             }
         }
 

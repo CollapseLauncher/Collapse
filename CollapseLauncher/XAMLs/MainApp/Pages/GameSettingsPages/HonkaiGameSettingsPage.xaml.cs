@@ -26,7 +26,7 @@
     public partial class HonkaiGameSettingsPage
     {
         private GamePresetProperty CurrentGameProperty   { get; set; }
-        private HonkaiSettings     Settings              { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
+        private HonkaiSettings     Settings              { get => (HonkaiSettings)CurrentGameProperty.GameSettings; }
         private Brush              InheritApplyTextColor { get; set; }
         private RegistryMonitor    RegistryWatcher       { get; set; }
         private bool               IsNoReload = false;
@@ -38,7 +38,7 @@
                 CurrentGameProperty = GetCurrentGameProperty();
                 DispatcherQueue?.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -195,11 +195,11 @@
 
         public string CustomArgsValue
         {
-            get => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -208,7 +208,7 @@
         {
             get
             {
-                bool value = CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments;
+                bool value = CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments;
 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;
@@ -217,7 +217,7 @@
             }
             set
             {
-                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
+                CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
                 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;

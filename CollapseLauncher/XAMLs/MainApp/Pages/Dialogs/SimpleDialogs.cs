@@ -4,7 +4,6 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -1325,11 +1324,11 @@ namespace CollapseLauncher.Dialogs
         {
             ToggleSwitch startAfterInstall = new ToggleSwitch
             {
-                IsOn = currentGameProperty._GameInstall.StartAfterInstall,
+                IsOn = currentGameProperty.GameInstall.StartAfterInstall,
                 OffContent = Lang._Misc.Disabled,
                 OnContent = Lang._Misc.Enabled
             };
-            startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = startAfterInstall.IsOn;
+            startAfterInstall.Toggled += (_, _) => currentGameProperty.GameInstall.StartAfterInstall = startAfterInstall.IsOn;
 
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(

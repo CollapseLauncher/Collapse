@@ -42,11 +42,11 @@ namespace CollapseLauncher.Pages
             try
             {
                 CurrentGameProperty = GetCurrentGameProperty();
-                Settings = CurrentGameProperty._GameSettings as ZenlessSettings;
+                Settings = CurrentGameProperty.GameSettings as ZenlessSettings;
 
                 DispatcherQueue?.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -92,7 +92,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ToggleRegistrySubscribe(false);
-                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion?.GameDirPath);
                 string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?.GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
                 Exception exc = Settings.ExportSettings(true, gameBasePath, relativePaths);
 
@@ -132,7 +132,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ToggleRegistrySubscribe(false);
-                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion?.GameDirPath);
                 Exception exc = Settings.ImportSettings(gameBasePath);
 
                 if (exc != null) throw exc;
@@ -344,11 +344,11 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                CurrentGameProperty._GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -357,7 +357,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments;
+                bool value = CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments;
 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;
@@ -366,7 +366,7 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                CurrentGameProperty._GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
+                CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
                 
                 if (value) CustomArgsTextBox.IsEnabled = true;
                 else CustomArgsTextBox.IsEnabled       = false;

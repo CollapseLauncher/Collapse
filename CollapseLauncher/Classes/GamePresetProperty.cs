@@ -34,64 +34,68 @@ namespace CollapseLauncher
                 return;
             }
 
-            PresetConfig gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
+            PresetConfig? gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName]?[gameRegion];
 
-            _APIResourceProp = apiResourceProp!.Copy();
-            switch (gamePreset!.GameType)
+            if (gamePreset == null)
+            {
+                throw new NullReferenceException($"Cannot find game with name: {gameName} and region: {gameRegion} on the currently loaded metadata config!");
+            }
+
+            ApiResourceProp = apiResourceProp.Copy();
+            switch (gamePreset.GameType)
             {
                 case GameNameType.Honkai:
-                    _GameVersion = new GameTypeHonkaiVersion(uiElementParent, _APIResourceProp, gameName, gameRegion);
-                    _GameSettings = new HonkaiSettings(_GameVersion);
-                    _GameCache = new HonkaiCache(uiElementParent, _GameVersion);
-                    _GameRepair = new HonkaiRepair(uiElementParent, _GameVersion, _GameCache, _GameSettings);
-                    _GameInstall = new HonkaiInstall(uiElementParent, _GameVersion, _GameCache, _GameSettings);
+                    GameVersion = new GameTypeHonkaiVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
+                    GameSettings = new HonkaiSettings(GameVersion);
+                    GameCache = new HonkaiCache(uiElementParent, GameVersion);
+                    GameRepair = new HonkaiRepair(uiElementParent, GameVersion, GameCache, GameSettings);
+                    GameInstall = new HonkaiInstall(uiElementParent, GameVersion, GameCache, GameSettings);
                     break;
                 case GameNameType.StarRail:
-                    _GameVersion = new GameTypeStarRailVersion(uiElementParent, _APIResourceProp, gameName, gameRegion);
-                    _GameSettings = new StarRailSettings(_GameVersion);
-                    _GameCache = new StarRailCache(uiElementParent, _GameVersion);
-                    _GameRepair = new StarRailRepair(uiElementParent, _GameVersion);
-                    _GameInstall = new StarRailInstall(uiElementParent, _GameVersion);
+                    GameVersion = new GameTypeStarRailVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
+                    GameSettings = new StarRailSettings(GameVersion);
+                    GameCache = new StarRailCache(uiElementParent, GameVersion);
+                    GameRepair = new StarRailRepair(uiElementParent, GameVersion);
+                    GameInstall = new StarRailInstall(uiElementParent, GameVersion);
                     break;
                 case GameNameType.Genshin:
-                    _GameVersion = new GameTypeGenshinVersion(uiElementParent, _APIResourceProp, gameName, gameRegion);
-                    _GameSettings = new GenshinSettings(_GameVersion);
-                    _GameCache = null;
-                    _GameRepair = new GenshinRepair(uiElementParent, _GameVersion, _GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
-                    _GameInstall = new GenshinInstall(uiElementParent, _GameVersion);
+                    GameVersion = new GameTypeGenshinVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
+                    GameSettings = new GenshinSettings(GameVersion);
+                    GameCache = null;
+                    GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameAPIProp!.data!.game!.latest!.decompressed_path);
+                    GameInstall = new GenshinInstall(uiElementParent, GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    _GameVersion = new GameTypeZenlessVersion(uiElementParent, _APIResourceProp, gamePreset, gameName, gameRegion);
-                    ZenlessSettings gameSettings = new ZenlessSettings(_GameVersion);
-                    _GameSettings = gameSettings;
-                    _GameCache = new ZenlessCache(uiElementParent, _GameVersion, gameSettings);
-                    _GameRepair = new ZenlessRepair(uiElementParent, _GameVersion, gameSettings);
-                    _GameInstall = new ZenlessInstall(uiElementParent, _GameVersion, gameSettings);
+                    GameVersion = new GameTypeZenlessVersion(uiElementParent, ApiResourceProp, gamePreset, gameName, gameRegion);
+                    GameSettings = new ZenlessSettings(GameVersion);
+                    GameCache = new ZenlessCache(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
+                    GameRepair = new ZenlessRepair(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
+                    GameInstall = new ZenlessInstall(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
                     break;
                 case GameNameType.Unknown:
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {gamePreset.GameType} ({gamePreset.ProfileName} - {gamePreset.ZoneName}) is not supported!");
             }
 
-            _GamePlaytime = new Playtime(_GameVersion, _GameSettings);
+            GamePlaytime = new Playtime(GameVersion, GameSettings);
 
-            SentryHelper.CurrentGameCategory = _GameVersion.GameName;
-            SentryHelper.CurrentGameRegion = _GameVersion.GameRegion;
-            SentryHelper.CurrentGameLocation = _GameVersion.GameDirPath;
-            SentryHelper.CurrentGameInstalled = _GameVersion.IsGameInstalled();
-            SentryHelper.CurrentGameUpdated = _GameVersion.IsGameVersionMatch();
-            SentryHelper.CurrentGameHasPreload = _GameVersion.IsGameHasPreload();
-            SentryHelper.CurrentGameHasDelta = _GameVersion.IsGameHasDeltaPatch();
+            SentryHelper.CurrentGameCategory   = GameVersion.GameName;
+            SentryHelper.CurrentGameRegion     = GameVersion.GameRegion;
+            SentryHelper.CurrentGameLocation   = GameVersion.GameDirPath;
+            SentryHelper.CurrentGameInstalled  = GameVersion.IsGameInstalled();
+            SentryHelper.CurrentGameUpdated    = GameVersion.IsGameVersionMatch();
+            SentryHelper.CurrentGameHasPreload = GameVersion.IsGameHasPreload();
+            SentryHelper.CurrentGameHasDelta   = GameVersion.IsGameHasDeltaPatch();
         }
 
-        internal RegionResourceProp _APIResourceProp { get; set; }
-        internal PresetConfig _GamePreset { get => _GameVersion.GamePreset; }
-        internal IGameSettings _GameSettings { get; set; }
-        internal IGamePlaytime _GamePlaytime { get; set; }
-        internal IRepair _GameRepair { get; set; }
-        internal ICache _GameCache { get; set; }
-        internal IGameVersionCheck _GameVersion { get; set; }
-        internal IGameInstallManager _GameInstall { get; set; }
+        internal RegionResourceProp?  ApiResourceProp { get; set; }
+        internal IGameSettings?       GameSettings    { get; set; }
+        internal IGamePlaytime?       GamePlaytime    { get; set; }
+        internal IRepair?             GameRepair      { get; set; }
+        internal ICache?              GameCache       { get; set; }
+        internal IGameVersionCheck?   GameVersion     { get; set; }
+        internal IGameInstallManager? GameInstall     { get; set; }
+        internal PresetConfig?        GamePreset      { get => GameVersion?.GamePreset; }
 
         [field: AllowNull, MaybeNull]
         internal string GameExecutableName
@@ -99,7 +103,7 @@ namespace CollapseLauncher
             get
             {
                 if (string.IsNullOrEmpty(field))
-                    field = _GamePreset!.GameExecutableName;
+                    field = GamePreset?.GameExecutableName ?? "";
                 return field;
             }
         }
@@ -115,19 +119,22 @@ namespace CollapseLauncher
             }
         }
 
-        internal bool IsGameRunning
+        [field: AllowNull, MaybeNull]
+        internal string GameExecutablePath
         {
-            get => ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, Path.Combine(_GameVersion?.GameDirPath ?? "", GameExecutableName), ILoggerHelper.GetILogger());
+            get => field ??= Path.Combine(GameVersion?.GameDirPath ?? "", GameExecutableName);
         }
 
-        // Translation:
-        // The Process.GetProcessesByName(procName) will get an array of the process list. The output is piped into null-break operator "?" which will
-        // returns a null if something goes wrong. If not, then pass it to .Where(x) method which will select the given value with the certain logic.
-        // (in this case, we need to ensure that the MainWindowHandle is not a non-zero pointer) and then piped into null-break operator.
+        internal bool IsGameRunning
+        {
+            get => ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, ILoggerHelper.GetILogger());
+        }
+
         internal Process? GetGameProcessWithActiveWindow()
         {
             Process[] processArr = Process.GetProcessesByName(GameExecutableNameWithoutExtension);
             int selectedIndex = -1;
+
             try
             {
                 for (int i = 0; i < processArr.Length; i++)
@@ -136,7 +143,7 @@ namespace CollapseLauncher
                     int processId = process.Id;
 
                     string? processPath = ProcessChecker.GetProcessPathByProcessId(processId, ILoggerHelper.GetILogger());
-                    string expectedProcessPath = Path.Combine(_GameVersion?.GameDirPath ?? "", GameExecutableName);
+                    string expectedProcessPath = Path.Combine(GameVersion?.GameDirPath ?? "", GameExecutableName);
                     if (string.IsNullOrEmpty(processPath) || !expectedProcessPath.Equals(processPath, StringComparison.OrdinalIgnoreCase)
                      || process.MainWindowHandle == IntPtr.Zero)
                         continue;
@@ -169,22 +176,24 @@ namespace CollapseLauncher
 
         public void Dispose()
         {
-            _GameRepair?.CancelRoutine();
-            _GameCache?.CancelRoutine();
-            _GameInstall?.CancelRoutine();
+            GameRepair?.CancelRoutine();
+            GameCache?.CancelRoutine();
+            GameInstall?.CancelRoutine();
 
-            _GameRepair?.Dispose();
-            _GameCache?.Dispose();
-            _GameInstall?.Dispose();
-            _GamePlaytime?.Dispose();
+            GameRepair?.Dispose();
+            GameCache?.Dispose();
+            GameInstall?.Dispose();
+            GamePlaytime?.Dispose();
 
-            _APIResourceProp = null;
-            _GameSettings = null;
-            _GameRepair = null;
-            _GameCache = null;
-            _GameVersion = null;
-            _GameInstall = null;
-            _GamePlaytime = null;
+            ApiResourceProp = null;
+            GameSettings    = null;
+            GameRepair      = null;
+            GameCache       = null;
+            GameVersion     = null;
+            GameInstall     = null;
+            GamePlaytime    = null;
+
+            GC.SuppressFinalize(this);
         }
     }
 }

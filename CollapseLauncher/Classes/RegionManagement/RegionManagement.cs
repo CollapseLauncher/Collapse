@@ -199,7 +199,7 @@ namespace CollapseLauncher
             }
             
             // If the file is not downloaded, use template image first, then download the image
-            var currentGameType = GamePropertyVault.GetCurrentGameProperty()._GameVersion.GameType;
+            var currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion.GameType;
             tempImage ??= currentGameType switch
             {
                 GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
@@ -257,10 +257,10 @@ namespace CollapseLauncher
         private void DisposeAllPageStatics()
         {
             // CurrentGameProperty._GameInstall?.CancelRoutine();
-            CurrentGameProperty?._GameRepair?.CancelRoutine();
-            CurrentGameProperty?._GameRepair?.Dispose();
-            CurrentGameProperty?._GameCache?.CancelRoutine();
-            CurrentGameProperty?._GameCache?.Dispose();
+            CurrentGameProperty?.GameRepair?.CancelRoutine();
+            CurrentGameProperty?.GameRepair?.Dispose();
+            CurrentGameProperty?.GameCache?.CancelRoutine();
+            CurrentGameProperty?.GameCache?.Dispose();
 #if DEBUG
             LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
 #endif

@@ -91,7 +91,7 @@ namespace CollapseLauncher
             _ = progressLogoContainer.AddElementToStackPanel(
                 new Image
                 {
-                    Source = new BitmapImage(new Uri(CurrentGameProperty!._GameVersion!.GameType switch
+                    Source = new BitmapImage(new Uri(CurrentGameProperty!.GameVersion!.GameType switch
                     {
                         GameNameType.Honkai => "ms-appx:///Assets/Images/GameLogo/honkai-logo.png",
                         GameNameType.Genshin => "ms-appx:///Assets/Images/GameLogo/genshin-logo.png",
