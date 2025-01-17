@@ -114,7 +114,7 @@ namespace CollapseLauncher
         }
 
         #region AssetTypeCheck
-        private async ValueTask CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async Task CheckGenericAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
@@ -158,7 +158,7 @@ namespace CollapseLauncher
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(fileInfo, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+            byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -211,7 +211,7 @@ namespace CollapseLauncher
             }
         }
 
-        private async ValueTask CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        private async Task CheckAssetType(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
             _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6,
@@ -332,41 +332,39 @@ namespace CollapseLauncher
             }
         }
 
-        async ValueTask CheckFile(string fileNameToOpen, FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
+        async Task CheckFile(string fileNameToOpen, FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex, CancellationToken token)
         {
-            await using (FileStream filefs = new FileStream(fileNameToOpen,
-                                                      FileMode.Open,
-                                                      FileAccess.Read,
-                                                      FileShare.Read,
-                                                      _bufferBigLength))
+            await using FileStream filefs = new FileStream(fileNameToOpen,
+                                                           FileMode.Open,
+                                                           FileAccess.Read,
+                                                           FileShare.Read,
+                                                           _bufferBigLength);
+            // If pass the check above, then do CRC calculation
+            // Additional: the total file size progress is disabled and will be incremented after this
+            byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
+
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
             {
-                // If pass the check above, then do CRC calculation
-                // Additional: the total file size progress is disabled and will be incremented after this
-                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
-                // If local and asset CRC doesn't match, then add the asset
-                if (!IsArrayMatch(localCRC, asset.CRCArray))
-                {
-                    _progressAllSizeFound += asset.S;
-                    _progressAllCountFound++;
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(asset.N),
+                                                   ConvertRepairAssetTypeEnum(asset.FT),
+                                                   Path.GetDirectoryName(asset.N),
+                                                   asset.S,
+                                                   localCRC,
+                                                   asset.CRCArray
+                                                  )
+                                             ));
 
-                    Dispatch(() => AssetEntry.Add(
-                                                  new AssetProperty<RepairAssetType>(
-                                                       Path.GetFileName(asset.N),
-                                                       ConvertRepairAssetTypeEnum(asset.FT),
-                                                       Path.GetDirectoryName(asset.N),
-                                                       asset.S,
-                                                       localCRC,
-                                                       asset.CRCArray
-                                                      )
-                                                 ));
+                // Mark the main block as "need to be repaired"
+                asset.IsBlockNeedRepair = true;
+                targetAssetIndex.Add(asset);
 
-                    // Mark the main block as "need to be repaired"
-                    asset.IsBlockNeedRepair = true;
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
-                }
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
         }
 

@@ -106,7 +106,7 @@ namespace CollapseLauncher
             await using FileStream fs = await NaivelyOpenFileStreamAsync(usePersistent ? fileInfoPersistent : fileInfoStreaming,
                                                                          FileMode.Open, FileAccess.Read, FileShare.Read);
             // Calculate the asset CRC (MD5)
-            byte[] hashArray = await CheckHashAsync(fs, MD5.Create(), token);
+            byte[] hashArray = await CheckCryptoHashAsync<MD5>(fs, null, true, true, token);
 
             // If the asset CRC doesn't match, then add the file to asset index.
             if (!IsArrayMatch(asset.Hash, hashArray))

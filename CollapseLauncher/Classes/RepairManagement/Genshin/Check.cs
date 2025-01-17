@@ -302,8 +302,8 @@ namespace CollapseLauncher
                 // If pass the check above, then do hash calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
                 byte[] localHash = hashToCompare.Length == 8 ?
-                    await CheckNonCryptoHashAsync(fileStream, new XxHash64(), cancelToken) :
-                    await CheckHashAsync(fileStream, MD5.Create(), token);
+                    await CheckHashAsync<XxHash64>(fileStream, true, true, cancelToken) :
+                    await CheckCryptoHashAsync<MD5>(fileStream, null, true, true, cancelToken);
 
                 // Check if the hash is equal
                 bool isMatch = IsArrayMatch(hashToCompare.Span, localHash);

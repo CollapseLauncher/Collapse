@@ -733,7 +733,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
-                hashLocal = await base.CheckHashAsync(fs, MD5.Create(), token);
+                hashLocal = await CheckCryptoHashAsync<MD5>(fs, null, true, true, token);
             }
 
             // Check for the hash differences. If found, then show dialog to delete or cancel the process
@@ -1758,29 +1758,11 @@ namespace CollapseLauncher.InstallManager.Base
                             return;
                         }
 
-                        async Task<byte[]> GetNonCryptoHash<T>(FileInfo fileInfo, CancellationToken token)
-                            where T : NonCryptographicHashAlgorithm, new()
-                        {
-                            NonCryptographicHashAlgorithm hasher = new T();
-                            await using FileStream stream = fileInfo.OpenRead();
-                            await hasher.AppendAsync(stream, token);
-                            return hasher.GetHashAndReset();
-                        }
-
-                        async Task<byte[]> GetCryptoHash(FileInfo fileinfo, HashAlgorithm hasher, CancellationToken token)
-                        {
-                            using (hasher)
-                            {
-                                await using FileStream stream = fileinfo.OpenRead();
-                                return await hasher.ComputeHashAsync(stream, token);
-                            }
-                        }
-
                         byte[] sourceLocalHash = entry.SourceMD5Hash?.Length switch
                                                  {
-                                                     > 8 and 16 => await GetCryptoHash(sourcePath, MD5.Create(), _token.Token),
-                                                     > 4 => await GetNonCryptoHash<XxHash64>(sourcePath, _token.Token),
-                                                     _ => await GetNonCryptoHash<Crc32>(sourcePath, _token.Token)
+                                                     > 8 and 16 => await CheckCryptoHashAsync<MD5>(sourcePath, null, false, true, _token.Token),
+                                                     > 4 => await CheckHashAsync<XxHash64>(sourcePath, false, true, _token.Token),
+                                                     _ => await CheckHashAsync<Crc32>(sourcePath, false, true, _token.Token)
                                                  };
 
                         if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash))

@@ -189,7 +189,7 @@ namespace CollapseLauncher
             // Open and read fileInfo as FileStream 
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do MD5 Hash calculation
-            localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+            localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // Get size difference for summarize the _progressAllSizeCurrent
             long sizeDifference = asset.S - file.Length;
@@ -297,7 +297,7 @@ namespace CollapseLauncher
             await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
-                byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+                byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -411,45 +411,43 @@ namespace CollapseLauncher
             if ((fileOld?.Exists ?? false) && !file.Exists)
             {
                 // Open and read fileInfo as FileStream 
-                await using (FileStream fileOldfs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read))
+                await using FileStream fileOldFs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read);
+                // If pass the check above, then do CRC calculation
+                byte[] localOldCRC = await CheckCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
+
+                // If the hash matches, then add the patch
+                if (IsArrayMatch(localOldCRC, patchInfo.Value.PatchPairs[0].OldHash))
                 {
-                    // If pass the check above, then do CRC calculation
-                    byte[] localOldCRC = await CheckHashAsync(fileOldfs, MD5.Create(), token, false);
+                    // Update the total progress and found counter
+                    _progressAllSizeFound += patchInfo.Value.PatchPairs[0].PatchSize;
+                    _progressAllCountFound++;
 
-                    // If the hash matches, then add the patch
-                    if (IsArrayMatch(localOldCRC, patchInfo.Value.PatchPairs[0].OldHash))
-                    {
-                        // Update the total progress and found counter
-                        _progressAllSizeFound += patchInfo.Value.PatchPairs[0].PatchSize;
-                        _progressAllCountFound++;
+                    // Set the per size progress
+                    _progressPerFileSizeCurrent = asset.S;
 
-                        // Set the per size progress
-                        _progressPerFileSizeCurrent = asset.S;
+                    // Increment the total current progress
+                    _progressAllSizeCurrent += asset.S;
 
-                        // Increment the total current progress
-                        _progressAllSizeCurrent += asset.S;
+                    Dispatch(() => AssetEntry.Add(
+                                                  new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(asset.N),
+                                                       RepairAssetType.BlockUpdate,
+                                                       Path.GetDirectoryName(asset.N) + $" (MetaVer: {string.Join('.', patchInfo.Value.PatchPairs[0].OldVersion)})",
+                                                       patchInfo.Value.PatchPairs[0].PatchSize,
+                                                       localOldCRC,
+                                                       asset.CRCArray
+                                                      )
+                                                 ));
 
-                        Dispatch(() => AssetEntry.Add(
-                            new AssetProperty<RepairAssetType>(
-                                Path.GetFileName(asset.N),
-                                RepairAssetType.BlockUpdate,
-                                Path.GetDirectoryName(asset.N) + $" (MetaVer: {string.Join('.', patchInfo.Value.PatchPairs[0].OldVersion)})",
-                                patchInfo.Value.PatchPairs[0].PatchSize,
-                                localOldCRC,
-                                asset.CRCArray
-                            )
-                        ));
+                    // Mark the block to be patchable
+                    asset.IsPatchApplicable = true;
 
-                        // Mark the block to be patchable
-                        asset.IsPatchApplicable = true;
+                    // Add asset for missing/unmatched size file
+                    targetAssetIndex.Add(asset);
 
-                        // Add asset for missing/unmatched size file
-                        targetAssetIndex.Add(asset);
+                    LogWriteLine($"File [T: {asset.FT}]: {HexTool.BytesToHexUnsafe(localOldCRC)} has an update! Orig CRC: {HexTool.BytesToHexUnsafe(localOldCRC)} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.CRCArray)}", LogType.Warning, true);
 
-                        LogWriteLine($"File [T: {asset.FT}]: {HexTool.BytesToHexUnsafe(localOldCRC)} has an update! Orig CRC: {HexTool.BytesToHexUnsafe(localOldCRC)} <--> New CRC: {HexTool.BytesToHexUnsafe(asset.CRCArray)}", LogType.Warning, true);
-
-                        return;
-                    }
+                    return;
                 }
             }
 
@@ -505,7 +503,7 @@ namespace CollapseLauncher
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = await CheckHashAsync(filefs, MD5.Create(), token);
+            byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
