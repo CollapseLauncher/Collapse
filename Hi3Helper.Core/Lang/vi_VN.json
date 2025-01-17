@@ -1003,7 +1003,12 @@
     "SophonIncrementUpdateUnavailSubtitle1": "Phiên bản trò chơi: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": "quá lỗi thời",
     "SophonIncrementUpdateUnavailSubtitle3": " và bản cập nhật cho phiên bản của bạn không khả dụng. Tuy nhiên, bạn vẫn có thể cập nhật trò chơi của mình bằng cách tải lại toàn bộ trò chơi từ đầu.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Nhấp vào \"{0}\" để tiếp tục cập nhật toàn bộ hoặc nhấp vào \"{1}\" để hủy quy trình"
+    "SophonIncrementUpdateUnavailSubtitle4": "Nhấp vào \"{0}\" để tiếp tục cập nhật toàn bộ hoặc nhấp vào \"{1}\" để hủy quy trình",
+
+    "UACWarningTitle": "Cảnh báo: Phát hiện vô hiệu hóa UAC",
+    "UACWarningContent": "Vô hiệu hoá Kiểm Soát Tài Khoản Người Dùng (UAC hoặc User Account Control) không bao giờ là một ý tưởng hay.\nBảo mật của hệ điều hành sẽ bị xâm phạm và trò chơi có thể không chạy đúng cách.\nChọn nút “Tìm hiểu thêm ”để tìm hiểu cách bật UAC.\nMục nhập liên quan là: “Run all administrators in Admin Approval Mode.” (Tiếng Anh)",
+    "UACWarningLearnMore": "Tìm hiểu thêm",
+    "UACWarningDontShowAgain": "Đừng hiển thị lại nữa"
   },
 
   "_FileMigrationProcess": {
