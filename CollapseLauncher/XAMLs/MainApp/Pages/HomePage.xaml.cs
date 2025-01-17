@@ -138,12 +138,14 @@ namespace CollapseLauncher.Pages
 
         private void ReturnToHomePage()
         {
-            if (!IsPageUnload
-             || GamePropertyVault.GetCurrentGameProperty().GamePreset.HashID == CurrentGameProperty.GamePreset.HashID)
+            var presetConfig = GamePropertyVault.GetCurrentGameProperty().GamePreset;
+            if (IsPageUnload && presetConfig.HashID != CurrentGameProperty.GamePreset.HashID)
             {
-                MainPage.PreviousTagString.Add(MainPage.PreviousTag);
-                MainFrameChanger.ChangeMainFrame(typeof(HomePage));
+                return;
             }
+
+            MainPage.PreviousTagString.Add(MainPage.PreviousTag);
+            MainFrameChanger.ChangeMainFrame(typeof(HomePage));
         }
 
         private async void StartLoadedRoutine(object sender, RoutedEventArgs e)
@@ -178,7 +180,7 @@ namespace CollapseLauncher.Pages
                     PlaytimeDbSyncToggle.IsEnabled = false;
                 }
                 
-                if (!DbConfig.DbEnabled || !CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+                if (!DbConfig.DbEnabled || !(CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false))
                     SyncDbPlaytimeBtn.IsEnabled = false;
 
                 TryLoadEventPanelImage();
@@ -208,7 +210,6 @@ namespace CollapseLauncher.Pages
 
                 if (await CurrentGameProperty.GameInstall.TryShowFailedDeltaPatchState()) return;
                 if (await CurrentGameProperty.GameInstall.TryShowFailedGameConversionState()) return;
-
                 CurrentGameProperty.GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
                 UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
 
@@ -241,8 +242,7 @@ namespace CollapseLauncher.Pages
                 // Start automatic scan if the game is in NotInstalled state
                 // and if the return is 0 (yes), then save the config
                 if (gameState == GameInstallStateEnum.NotInstalled &&
-                    await CurrentGameProperty.GameInstall.GetInstallationPath(true)
-                    == 0)
+                    await CurrentGameProperty.GameInstall.GetInstallationPath(true) == 0)
                 {
                     // Save the config
                     CurrentGameProperty.GameInstall.ApplyGameConfig();
@@ -305,8 +305,9 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            IsPageUnload = true;
+            IsPageUnload                                     =  true;
             CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
+
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
             if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
         }
@@ -605,7 +606,7 @@ namespace CollapseLauncher.Pages
         private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
         {
             ToolTip tooltip = sender as ToolTip;
-            if (tooltip?.Tag is Button button)
+            if (tooltip is { Tag: Button button })
             {
                 if (!button.IsPointerOver && lastSocMedButton == button)
                     return;
@@ -915,9 +916,11 @@ namespace CollapseLauncher.Pages
         #region Game State
         private async ValueTask GetCurrentGameState()
         {
-            Visibility RepairGameButtonVisible = (CurrentGameProperty.GameVersion.GamePreset.IsRepairEnabled ?? false) ? Visibility.Visible : Visibility.Collapsed;
+            Visibility repairGameButtonVisible = (CurrentGameProperty.GameVersion.GamePreset.IsRepairEnabled ?? false) ?
+                Visibility.Visible : Visibility.Collapsed;
 
-            if ((!(CurrentGameProperty.GameVersion.GamePreset.IsConvertible ?? false)) || (CurrentGameProperty.GameVersion.GameType != GameNameType.Honkai))
+            if (!(CurrentGameProperty.GameVersion.GamePreset.IsConvertible ?? false)
+                || CurrentGameProperty.GameVersion.GameType != GameNameType.Honkai)
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             // Clear the _CommunityToolsProperty statics
@@ -952,13 +955,13 @@ namespace CollapseLauncher.Pages
             }
 
             if (CurrentGameProperty.GameVersion.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
-
             GameInstallationState = await CurrentGameProperty.GameVersion.GetGameState();
+
             switch (GameInstallationState)
             {
                 case GameInstallStateEnum.Installed:
                     {
-                        RepairGameButton.Visibility = RepairGameButtonVisible;
+                        RepairGameButton.Visibility = repairGameButtonVisible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
                         CustomStartupArgs.Visibility = Visibility.Visible;
@@ -966,7 +969,7 @@ namespace CollapseLauncher.Pages
                     break;
                 case GameInstallStateEnum.InstalledHavePreload:
                     {
-                        RepairGameButton.Visibility = RepairGameButtonVisible;
+                        RepairGameButton.Visibility = repairGameButtonVisible;
                         CustomStartupArgs.Visibility = Visibility.Visible;
                         InstallGameBtn.Visibility = Visibility.Collapsed;
                         StartGameBtn.Visibility = Visibility.Visible;
@@ -977,7 +980,7 @@ namespace CollapseLauncher.Pages
                 case GameInstallStateEnum.NeedsUpdate:
                 case GameInstallStateEnum.InstalledHavePlugin:
                     {
-                        RepairGameButton.Visibility = RepairGameButtonVisible;
+                        RepairGameButton.Visibility = repairGameButtonVisible;
                         RepairGameButton.IsEnabled = false;
                         CleanupFilesButton.IsEnabled = false;
                         UpdateGameBtn.Visibility = Visibility.Visible;
@@ -1007,50 +1010,52 @@ namespace CollapseLauncher.Pages
                 RaiseBackgroundInstallationStatus(GameInstallationState);
         }
 
-        private void RaiseBackgroundInstallationStatus(GameInstallStateEnum GameInstallationState)
+        private void RaiseBackgroundInstallationStatus(GameInstallStateEnum gameInstallationState)
         {
-            if (GameInstallationState == GameInstallStateEnum.NeedsUpdate
-             || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
-             || GameInstallationState == GameInstallStateEnum.GameBroken
-             || GameInstallationState == GameInstallStateEnum.NotInstalled)
+            if (gameInstallationState != GameInstallStateEnum.NeedsUpdate
+                && gameInstallationState != GameInstallStateEnum.InstalledHavePlugin
+                && gameInstallationState != GameInstallStateEnum.GameBroken
+                && gameInstallationState != GameInstallStateEnum.NotInstalled)
             {
-                HideImageCarousel(true);
+                return;
+            }
 
-                progressRing.Value = 0;
-                progressRing.IsIndeterminate = true;
+            HideImageCarousel(true);
 
-                InstallGameBtn.Visibility = Visibility.Collapsed;
-                UpdateGameBtn.Visibility = Visibility.Collapsed;
-                CancelDownloadBtn.Visibility = Visibility.Visible;
-                ProgressTimeLeft.Visibility = Visibility.Visible;
+            progressRing.Value           = 0;
+            progressRing.IsIndeterminate = true;
 
-                bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
-                if (isUseSophon)
-                {
-                    SophonProgressStatusGrid.Visibility = Visibility.Visible;
-                    CurrentGameProperty.GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
-                    CurrentGameProperty.GameInstall.StatusChanged += GameInstallSophon_StatusChanged;
-                }
-                else
-                {
-                    ProgressStatusGrid.Visibility = Visibility.Visible;
-                    CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                    CurrentGameProperty.GameInstall.StatusChanged += GameInstall_StatusChanged;
-                }
+            InstallGameBtn.Visibility    = Visibility.Collapsed;
+            UpdateGameBtn.Visibility     = Visibility.Collapsed;
+            CancelDownloadBtn.Visibility = Visibility.Visible;
+            ProgressTimeLeft.Visibility  = Visibility.Visible;
+
+            bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
+            if (isUseSophon)
+            {
+                SophonProgressStatusGrid.Visibility             =  Visibility.Visible;
+                CurrentGameProperty.GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
+                CurrentGameProperty.GameInstall.StatusChanged   += GameInstallSophon_StatusChanged;
+            }
+            else
+            {
+                ProgressStatusGrid.Visibility                   =  Visibility.Visible;
+                CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
             }
         }
 
-        private async void CheckRunningGameInstance(CancellationToken Token)
+        private async void CheckRunningGameInstance(CancellationToken token)
         {
-            TextBlock StartGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon StartGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            Grid StartGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+            TextBlock startGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+            FontIcon startGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+            Grid startGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
             // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
-            string StartGameBtnIconGlyph = StartGameBtnIcon!.Glyph;
-            string StartGameBtnRunningIconGlyph = "";
+            string       startGameBtnIconGlyph        = startGameBtnIcon!.Glyph;
+            const string startGameBtnRunningIconGlyph = "";
 
-            StartGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
-            StartGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+            startGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+            startGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
 
             try
             {
@@ -1059,14 +1064,14 @@ namespace CollapseLauncher.Pages
                     _cachedIsGameRunning = true;
 
                     StartGameBtn.IsEnabled = false;
-                    if (StartGameBtnText != null && StartGameBtnAnimatedIconGrid != null)
+                    if (startGameBtnText != null && startGameBtnAnimatedIconGrid != null)
                     {
-                        StartGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
-                        StartGameBtnIcon.Glyph               = StartGameBtnRunningIconGlyph;
-                        StartGameBtnAnimatedIconGrid.Opacity = 0;
-                        StartGameBtnIcon.Opacity             = 1;
+                        startGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
+                        startGameBtnIcon.Glyph               = startGameBtnRunningIconGlyph;
+                        startGameBtnAnimatedIconGrid.Opacity = 0;
+                        startGameBtnIcon.Opacity             = 1;
 
-                        StartGameBtnText.UpdateLayout();
+                        startGameBtnText.UpdateLayout();
 
                         RepairGameButton.IsEnabled       = false;
                         UninstallGameButton.IsEnabled    = false;
@@ -1083,7 +1088,7 @@ namespace CollapseLauncher.Pages
                         {
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
-                            StartGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                            startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
                             var fromActivityOffset = currentGameProcess.StartTime;
                             var gameSettings       = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
                             var gamePreset         = CurrentGameProperty.GamePreset;
@@ -1100,28 +1105,28 @@ namespace CollapseLauncher.Pages
 
                             // Start the resizable window payload
                             StartResizableWindowPayload(
-                                gamePreset.GameExecutableName,
-                                gameSettings,
-                                gamePreset.GameType, height, width);
+                                                        gamePreset.GameExecutableName,
+                                                        gameSettings,
+                                                        gamePreset.GameType, height, width);
 
-                            await currentGameProcess.WaitForExitAsync(Token);
+                            await currentGameProcess.WaitForExitAsync(token);
                         }
                     }
 
-                    await Task.Delay(RefreshRate, Token);
+                    await Task.Delay(RefreshRate, token);
                 }
 
                 _cachedIsGameRunning = false;
 
                 StartGameBtn.IsEnabled = true;
-                StartGameBtnText!.Text = Lang._HomePage.StartBtn;
-                StartGameBtnIcon.Glyph = StartGameBtnIconGlyph;
-                if (StartGameBtnAnimatedIconGrid != null)
+                startGameBtnText!.Text = Lang._HomePage.StartBtn;
+                startGameBtnIcon.Glyph = startGameBtnIconGlyph;
+                if (startGameBtnAnimatedIconGrid != null)
                 {
-                    StartGameBtnAnimatedIconGrid.Opacity = 1;
+                    startGameBtnAnimatedIconGrid.Opacity = 1;
                 }
 
-                StartGameBtnIcon.Opacity = 0;
+                startGameBtnIcon.Opacity = 0;
 
                 GameStartupSetting.IsEnabled = true;
                 RepairGameButton.IsEnabled = true;
@@ -1282,16 +1287,15 @@ namespace CollapseLauncher.Pages
                     // so system won't be stuck when download is finished because of the download verified dialog
                     Sleep.RestoreSleep();
 
-                    if (verifResult == -1)
+                    switch (verifResult)
                     {
-                        ReturnToHomePage();
-                        return;
-                    }
-                    if (verifResult == 1)
-                    {
-                        await Dialog_PreDownloadPackageVerified(this);
-                        ReturnToHomePage();
-                        return;
+                        case -1:
+                            ReturnToHomePage();
+                            return;
+                        case 1:
+                            await Dialog_PreDownloadPackageVerified(this);
+                            ReturnToHomePage();
+                            return;
                     }
                 }
 
@@ -1299,15 +1303,17 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
 
                 // If the current window is not in focus, then spawn the notification toast
-                if (!WindowUtility.IsCurrentWindowInFocus())
+                if (WindowUtility.IsCurrentWindowInFocus())
                 {
-                    string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
-
-                    WindowUtility.Tray_ShowNotification(
-                                                        string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
-                                                        Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
-                                                       );
+                    return;
                 }
+
+                string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
+
+                WindowUtility.Tray_ShowNotification(
+                                                    string.Format(Lang._NotificationToast.GamePreloadCompleted_Title, gameNameLocale),
+                                                    Lang._NotificationToast.GenericClickNotifToGoBack_Subtitle
+                                                   );
             }
             catch (OperationCanceledException)
             {
@@ -1343,15 +1349,15 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
-                string InstallDownloadSpeedString = SummarizeSizeSimple(e.ProgressAllSpeed);
-                string InstallDownloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeCurrent);
-                string InstallDownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeCurrent);
-                string DownloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeTotal);
-                string DownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeTotal);
+                string installDownloadSpeedString = SummarizeSizeSimple(e.ProgressAllSpeed);
+                string installDownloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeCurrent);
+                string installDownloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeCurrent);
+                string downloadSizeString = SummarizeSizeSimple(e.ProgressAllSizeTotal);
+                string downloadPerSizeString = SummarizeSizeSimple(e.ProgressPerFileSizeTotal);
 
-                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadSizeString, DownloadSizeString);
-                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, InstallDownloadPerSizeString, DownloadPerSizeString);
-                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, InstallDownloadSpeedString);
+                ProgressPreStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, installDownloadSizeString, downloadSizeString);
+                ProgressPrePerFileStatusSubtitle.Text = string.Format(Lang._Misc.PerFromTo, installDownloadPerSizeString, downloadPerSizeString);
+                ProgressPreStatusFooter.Text = string.Format(Lang._Misc.Speed, installDownloadSpeedString);
                 ProgressPreTimeLeft.Text = string.Format(Lang._Misc.TimeRemainHMSFormat, e.ProgressAllTimeLeft);
                 progressPreBar.Value = Math.Round(e.ProgressAllPercentage, 2);
                 progressPrePerFileBar.Value = Math.Round(e.ProgressPerFilePercentage, 2);
@@ -1676,7 +1682,7 @@ namespace CollapseLauncher.Pages
                     if (giForceHDR) GenshinHDREnforcer();
                 }
 
-                if (_Settings!.SettingsCollapseMisc != null &&
+                if (_Settings! is { SettingsCollapseMisc: not null } &&
                     _Settings.SettingsCollapseMisc.UseAdvancedGameSettings &&
                     _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand)
                 {
@@ -2064,12 +2070,14 @@ namespace CollapseLauncher.Pages
                 parameter.Append("-popupwindow ");
             }
 
-            if (_Settings.SettingsCollapseMisc.UseCustomArguments)
+            if (!_Settings.SettingsCollapseMisc.UseCustomArguments)
             {
-                string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
-                if (!string.IsNullOrEmpty(customArgs))
-                    parameter.Append(customArgs);
+                return parameter.ToString();
             }
+
+            string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
+            if (!string.IsNullOrEmpty(customArgs))
+                parameter.Append(customArgs);
 
             return parameter.ToString();
         }
@@ -2077,7 +2085,13 @@ namespace CollapseLauncher.Pages
         public string CustomArgsValue
         {
             get => CurrentGameProperty?.GameSettings?.SettingsCustomArgument.CustomArgumentValue;
-            set => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
+            set
+            {
+                if (CurrentGameProperty.GameSettings == null)
+                    return;
+
+                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
+            }
         }
 
         public bool UseCustomArgs
@@ -2085,15 +2099,10 @@ namespace CollapseLauncher.Pages
             get => CurrentGameProperty?.GameSettings?.SettingsCollapseMisc.UseCustomArguments ?? false;
             set
             {
-                if (CustomStartupArgsSwitch.IsOn)
-                {
-                    CustomArgsTextBox.IsEnabled = true;   
-                }
-                else
-                {
-                    CustomArgsTextBox.IsEnabled = false;
-                }
+                if (CurrentGameProperty.GameSettings == null)
+                    return;
 
+                CustomArgsTextBox.IsEnabled = CustomStartupArgsSwitch.IsOn;
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
             } 
             
@@ -2377,7 +2386,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 GameStartupSetting.Flyout.Hide();
-                if (CurrentGameProperty?.GameInstall != null)
+                if (CurrentGameProperty is { GameInstall: not null })
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)
@@ -3263,10 +3272,13 @@ namespace CollapseLauncher.Pages
         private bool? _regionPlayingRpc;
         private bool ToggleRegionPlayingRpc
         {
-            get => _regionPlayingRpc ??= CurrentGameProperty.GameSettings.AsIGameSettingsUniversal()
-                                                            .SettingsCollapseMisc.IsPlayingRpc;
+            get => _regionPlayingRpc ??= CurrentGameProperty.GameSettings?.AsIGameSettingsUniversal()
+                                                            .SettingsCollapseMisc.IsPlayingRpc ?? false;
             set
             {
+                if (CurrentGameProperty.GameSettings == null)
+                    return;
+
                 CurrentGameProperty.GameSettings.AsIGameSettingsUniversal()
                                     .SettingsCollapseMisc.IsPlayingRpc = value;
                 _regionPlayingRpc = value;

@@ -1000,7 +1000,7 @@ namespace CollapseLauncher.Interfaces
         }
 
         /// <summary>
-        /// <inheritdoc cref="StreamUtility.NaivelyOpenFileStreamAsync(FileInfo, FileMode, FileAccess, FileShare, FileOptions)"/>
+        /// <inheritdoc cref="StreamExtension.NaivelyOpenFileStreamAsync(FileInfo, FileMode, FileAccess, FileShare, FileOptions)"/>
         /// </summary>
         internal static ValueTask<FileStream> NaivelyOpenFileStreamAsync(FileInfo info, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
             => info.NaivelyOpenFileStreamAsync(fileMode, fileAccess, fileShare);

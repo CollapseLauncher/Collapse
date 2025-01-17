@@ -4,7 +4,6 @@
     using CollapseLauncher.Dialogs;
     using CollapseLauncher.GameSettings.StarRail;
     using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;

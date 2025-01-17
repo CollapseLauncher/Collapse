@@ -24,7 +24,7 @@
             TextBlock? descriptionParentPanel = panel.FindChild("SocialMediaParentPanel_Description") as TextBlock;
 
             // If already assigned, then return
-            if (panel.Tag is true || dataBind == null)
+            if (panel is { Tag: true } || dataBind == null)
             {
                 panel.Tag = true;
                 return;

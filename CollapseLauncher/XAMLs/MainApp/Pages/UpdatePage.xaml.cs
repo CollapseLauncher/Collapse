@@ -41,7 +41,7 @@ namespace CollapseLauncher.Pages
             string channelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
             CurrentVersionLabel.Text = $"{LauncherUpdateHelper.LauncherCurrentVersionString}";
 
-            if (!LauncherUpdateHelper.AppUpdateVersionProp?.Version.HasValue ?? false)
+            if (!(LauncherUpdateHelper.AppUpdateVersionProp is { Version: not null }) ?? false)
                 throw new NullReferenceException($"New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
 
             if (LauncherUpdateHelper.AppUpdateVersionProp != null && LauncherUpdateHelper.AppUpdateVersionProp.Version != null)

@@ -4,7 +4,6 @@
     using CollapseLauncher.GameSettings.Genshin;
     using CollapseLauncher.Helper;
     using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.Graphics.Canvas;

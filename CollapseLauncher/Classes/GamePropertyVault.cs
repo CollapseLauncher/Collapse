@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 // ReSharper disable PartialTypeWithSinglePart
 
+#nullable enable
 namespace CollapseLauncher.Statics
 {
     internal static class GamePropertyVault
@@ -20,12 +21,11 @@ namespace CollapseLauncher.Statics
 
         public static void LoadGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
-            if (LauncherMetadataHelper.LauncherMetadataConfig != null)
+            if (LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
+                .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false)
             {
-                PresetConfig gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
-
-                LastGameHashID    = LastGameHashID == 0 ? gamePreset!.HashID : LastGameHashID;
-                CurrentGameHashID = gamePreset!.HashID;
+                LastGameHashID = LastGameHashID == 0 ? gamePreset.HashID : LastGameHashID;
+                CurrentGameHashID = gamePreset.HashID;
             }
 
             RegisterGameProperty(uiElementParent, apiResourceProp, gameName, gameRegion);
@@ -33,20 +33,19 @@ namespace CollapseLauncher.Statics
 
         private static void RegisterGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
-            if (LauncherMetadataHelper.LauncherMetadataConfig == null)
+            if (!(LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
+                   .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false))
             {
                 return;
             }
 
-            PresetConfig gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
-
             CleanupUnusedGameProperty();
-            if (Vault.TryGetValue(gamePreset.HashID, out GamePresetProperty value))
+            if (Vault.TryGetValue(gamePreset.HashID, out GamePresetProperty? value))
             {
             #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
             #endif
-                value?.GameVersion?.Reinitialize();
+                value.GameVersion.Reinitialize();
                 return;
             }
 
@@ -64,55 +63,52 @@ namespace CollapseLauncher.Statics
             if (Vault == null || Vault.Count == 0) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
-                .Where(x => !x!.GameInstall!.IsRunning && !x.IsGameRunning && x.GamePreset!.HashID != CurrentGameHashID)
-                                                  .Select(x => x.GamePreset.HashID)
-                                                  .ToArray();
+                .Where(x => !x.GameInstall.IsRunning && !x.IsGameRunning && x.GamePreset.HashID != CurrentGameHashID)
+                .Select(x => x.GamePreset.HashID)
+                .ToArray();
 
             foreach (int key in unusedGamePropertyHashID)
             {
-#if DEBUG
+            #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Cleaning up unused game property by Hash ID: {key}", LogType.Debug, true);
-#endif
+            #endif
                 Vault.Remove(key);
             }
         }
 
-        public static async ValueTask AttachNotifForCurrentGame(int hashID = int.MinValue)
+        public static async Task AttachNotificationForCurrentGame(int hashID = int.MinValue)
         {
             if (hashID < 0) hashID = CurrentGameHashID;
-            if (Vault!.ContainsKey(hashID)) await AttachNotifForCurrentGame_Inner(hashID);
-        }
-
-        private static async ValueTask AttachNotifForCurrentGame_Inner(int hashID)
-        {
-            GamePresetProperty gameProperty = Vault![hashID];
-            if (gameProperty!.GameInstall!.IsRunning)
+            if (Vault.TryGetValue(hashID, out var gameProperty))
             {
-                var bgNotification = Locale.Lang!._BackgroundNotification!;
-                string actTitle = string.Format((await gameProperty.GameVersion!.GetGameState() switch
+                if (gameProperty is { GameInstall.IsRunning: true })
                 {
-                    GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
-                    GameInstallStateEnum.NeedsUpdate          => bgNotification.CategoryTitle_Updating,
-                    GameInstallStateEnum.InstalledHavePlugin  => bgNotification.CategoryTitle_Updating,
-                    _                                         => bgNotification.CategoryTitle_Downloading
-                })!, gameProperty.GameVersion.GamePreset!.GameName);
+                    var bgNotification = Locale.Lang._BackgroundNotification;
+                    string actTitle = string.Format(await gameProperty.GameVersion.GetGameState() switch
+                                                    {
+                                                        GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
+                                                        GameInstallStateEnum.NeedsUpdate => bgNotification.CategoryTitle_Updating,
+                                                        GameInstallStateEnum.InstalledHavePlugin => bgNotification.CategoryTitle_Updating,
+                                                        _ => bgNotification.CategoryTitle_Downloading
+                                                    }, gameProperty.GameVersion.GamePreset.GameName);
 
-                string actSubtitle = gameProperty.GameVersion.GamePreset.ZoneName;
-                BackgroundActivityManager.Attach(hashID, gameProperty.GameInstall, actTitle, actSubtitle);
+                    string? actSubtitle = gameProperty.GameVersion.GamePreset.ZoneName;
+                    BackgroundActivityManager.Attach(hashID, gameProperty.GameInstall, actTitle, actSubtitle);
+                }
             }
         }
 
-        public static void DetachNotifForCurrentGame(int hashID = int.MinValue)
+        public static void DetachNotificationForCurrentGame(int hashID = int.MinValue)
         {
             if (hashID < 0) hashID = CurrentGameHashID;
-            if (Vault!.ContainsKey(hashID)) BackgroundActivityManager.Detach(hashID);
+            if (Vault.ContainsKey(hashID)) BackgroundActivityManager.Detach(hashID);
         }
     }
 
     [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     internal partial class PageStatics
     {
-        internal static CommunityToolsProperty CommunityToolsProperty { get; set; } = new CommunityToolsProperty()
+        internal static CommunityToolsProperty CommunityToolsProperty { get; set; } = new()
         {
             OfficialToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>(),
             CommunityToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>()

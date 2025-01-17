@@ -466,8 +466,8 @@ namespace CollapseLauncher.Dialogs
             CurrentGameProperty.GameVersion.Reinitialize();
             CurrentGameProperty.GameVersion.UpdateGamePath(TargetProfile.ActualGameDataLocation);
 
-            string GameCategory = GetAppConfigValue("GameCategory").ToString();
-            LauncherMetadataHelper.SetPreviousGameRegion(GameCategory, TargetProfile.ZoneName);
+            string gameCategory = GetAppConfigValue("GameCategory").ToString();
+            LauncherMetadataHelper.SetPreviousGameRegion(gameCategory, TargetProfile.ZoneName);
             LoadAppConfig();
         }
 

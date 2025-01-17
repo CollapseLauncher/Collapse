@@ -107,9 +107,14 @@ namespace CollapseLauncher.Pages
 
         internal bool IsPlaytimeSyncDb
         {
-            get => CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase;
+            get => CurrentGameProperty.GameSettings?.SettingsCollapseMisc.IsSyncPlaytimeToDatabase ?? false;
             set
             {
+                if (CurrentGameProperty.GameSettings == null)
+                {
+                    return;
+                }
+
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.IsSyncPlaytimeToDatabase = value;
                 CurrentGameProperty?.GameSettings?.SaveBaseSettings();
                 SyncDbPlaytimeBtn.IsEnabled = value;
@@ -123,7 +128,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                GameNameType gameType = CurrentGameProperty.GamePreset.GameType;
+                GameNameType? gameType = CurrentGameProperty.GamePreset.GameType;
                 return gameType switch
                 {
                     GameNameType.Honkai => "ms-appx:///Assets/Images/GameMascot/AiShocked.png",
@@ -136,21 +141,21 @@ namespace CollapseLauncher.Pages
 
         internal int CurrentBannerIconWidth
         {
-            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconWidth :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconWidthHYP;
         }
 
         internal Thickness CurrentBannerIconMargin
         {
-            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconMargin :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconMarginHYP;
         }
 
         internal int CurrentBannerIconColumn
         {
-            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    1 :
                    0;
         }
@@ -162,7 +167,7 @@ namespace CollapseLauncher.Pages
 
         internal int CurrentBannerIconRow
         {
-            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    1 :
                    0;
         }
@@ -174,14 +179,14 @@ namespace CollapseLauncher.Pages
 
         internal HorizontalAlignment CurrentBannerIconHorizontalAlign
         {
-            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontal :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignHorizontalHYP;
         }
 
         internal VerticalAlignment CurrentBannerIconVerticalAlign
         {
-            get => CurrentGameProperty?.GamePreset?.LauncherType == LauncherType.Sophon ?
+            get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }

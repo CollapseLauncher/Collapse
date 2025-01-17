@@ -199,7 +199,7 @@ namespace CollapseLauncher
             }
             
             // If the file is not downloaded, use template image first, then download the image
-            var currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion.GameType;
+            GameNameType? currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion.GameType;
             tempImage ??= currentGameType switch
             {
                 GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
@@ -244,14 +244,14 @@ namespace CollapseLauncher
 
         private async ValueTask LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
         {
-            await GamePropertyVault.AttachNotifForCurrentGame();
+            await GamePropertyVault.AttachNotificationForCurrentGame();
             DisposeAllPageStatics();
 
             GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
 
             // Spawn Region Notification
             SpawnRegionNotification(preset.ProfileName);
-            GamePropertyVault.DetachNotifForCurrentGame();
+            GamePropertyVault.DetachNotificationForCurrentGame();
         }
 
         private void DisposeAllPageStatics()

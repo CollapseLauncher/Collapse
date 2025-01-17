@@ -431,7 +431,7 @@ namespace CollapseLauncher.Pages
                 BGPathDisplay.Text = file;
                 
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBG = currentGameProperty?.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool isUseRegionCustomBG = currentGameProperty.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!isUseRegionCustomBG)
                 {
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
@@ -487,7 +487,7 @@ namespace CollapseLauncher.Pages
             {
                 SetAndSaveConfigValue("UseCustomBG", value);
                 GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                bool isUseRegionCustomBG = currentGameProperty?.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+                bool isUseRegionCustomBG = currentGameProperty.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
                 if (!value)
                 {
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();

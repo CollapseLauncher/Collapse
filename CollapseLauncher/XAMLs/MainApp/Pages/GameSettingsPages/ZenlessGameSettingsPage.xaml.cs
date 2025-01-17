@@ -3,7 +3,6 @@ using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper.Animation;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
@@ -14,7 +13,6 @@ using Hi3Helper.Win32.Screen;
 using RegistryUtils;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -92,7 +90,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ToggleRegistrySubscribe(false);
-                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion?.GameDirPath);
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion.GameDirPath);
                 string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?.GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
                 Exception exc = Settings.ExportSettings(true, gameBasePath, relativePaths);
 
@@ -132,7 +130,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 ToggleRegistrySubscribe(false);
-                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion?.GameDirPath);
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion.GameDirPath);
                 Exception exc = Settings.ImportSettings(gameBasePath);
 
                 if (exc != null) throw exc;

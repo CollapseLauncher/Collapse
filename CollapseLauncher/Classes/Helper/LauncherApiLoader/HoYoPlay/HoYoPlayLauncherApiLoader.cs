@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 // ReSharper disable IdentifierTypo
 // ReSharper disable once CheckNamespace
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
@@ -125,7 +126,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             ConvertSdkResources(ref sophonResourceData, hypSdkResource);
             ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
             
-            base.LauncherGameResource = sophonResourcePropRoot;
+            LauncherGameResource = sophonResourcePropRoot;
 
             PerformDebugRoutines();
         }
@@ -404,33 +405,22 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             ConvertLauncherNews(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
             ConvertLauncherSocialMedia(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
 
-            base.LauncherGameNews = sophonLauncherNewsRoot;
-            base.LauncherGameNews?.Content?.InjectDownloadableItemCancelToken(this, token);
+            LauncherGameNews = sophonLauncherNewsRoot;
+            LauncherGameNews?.Content?.InjectDownloadableItemCancelToken(this, token);
         }
 
         #region Convert Launcher News
-        private void EnsureInitializeSophonLauncherNews(ref LauncherGameNews? sophonLauncherNewsData)
+        private static void EnsureInitializeSophonLauncherNews(ref LauncherGameNews? sophonLauncherNewsData)
         {
-            if (sophonLauncherNewsData == null)
-                sophonLauncherNewsData = new LauncherGameNews();
-
-            if (sophonLauncherNewsData.Content == null)
-                sophonLauncherNewsData.Content = new LauncherGameNewsData();
-
-            if (sophonLauncherNewsData.Content.Background == null)
-                sophonLauncherNewsData.Content.Background = new LauncherGameNewsBackground();
-
-            if (sophonLauncherNewsData.Content.NewsPost == null)
-                sophonLauncherNewsData.Content.NewsPost = new List<LauncherGameNewsPost>();
-
-            if (sophonLauncherNewsData.Content.NewsCarousel == null)
-                sophonLauncherNewsData.Content.NewsCarousel = new List<LauncherGameNewsCarousel>();
-
-            if (sophonLauncherNewsData.Content.SocialMedia == null)
-                sophonLauncherNewsData.Content.SocialMedia = new List<LauncherGameNewsSocialMedia>();
+            sophonLauncherNewsData                      ??= new LauncherGameNews();
+            sophonLauncherNewsData.Content              ??= new LauncherGameNewsData();
+            sophonLauncherNewsData.Content.Background   ??= new LauncherGameNewsBackground();
+            sophonLauncherNewsData.Content.NewsPost     ??= [];
+            sophonLauncherNewsData.Content.NewsCarousel ??= [];
+            sophonLauncherNewsData.Content.SocialMedia  ??= [];
         }
 
-        private void ConvertLauncherBackground(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        private static void ConvertLauncherBackground(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
         {
             if (string.IsNullOrEmpty(hypLauncherInfoData?.BackgroundImageUrl)) return;
 
@@ -440,7 +430,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnUrl = hypLauncherInfoData.FeaturedEventIconClickLink;
         }
 
-        private void ConvertLauncherNews(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        private static void ConvertLauncherNews(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
         {
             int index = 0;
             if (hypLauncherInfoData?.GameNewsContent?.NewsPostsList != null)
@@ -461,52 +451,56 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             }
 
             index = 0;
-            if (hypLauncherInfoData?.GameNewsContent?.NewsCarouselList != null)
+            if (hypLauncherInfoData?.GameNewsContent?.NewsCarouselList == null)
             {
-                // Carousel
-                foreach (LauncherNewsBanner hypCarouselData in hypLauncherInfoData.GameNewsContent.NewsCarouselList)
+                return;
+            }
+
+            // Carousel
+            foreach (LauncherNewsBanner hypCarouselData in hypLauncherInfoData.GameNewsContent.NewsCarouselList)
+            {
+                sophonLauncherNewsData?.Content?.NewsCarousel?.Add(new LauncherGameNewsCarousel
                 {
-                    sophonLauncherNewsData?.Content?.NewsCarousel?.Add(new LauncherGameNewsCarousel
-                    {
-                        CarouselId = hypCarouselData.Id,
-                        CarouselOrder = index++,
-                        CarouselImg = hypCarouselData.Image?.ImageUrl,
-                        CarouselUrl = hypCarouselData.Image?.ClickLink,
-                        CarouselTitle = hypCarouselData.Image?.Title
-                    });
-                }
+                    CarouselId    = hypCarouselData.Id,
+                    CarouselOrder = index++,
+                    CarouselImg   = hypCarouselData.Image?.ImageUrl,
+                    CarouselUrl   = hypCarouselData.Image?.ClickLink,
+                    CarouselTitle = hypCarouselData.Image?.Title
+                });
             }
         }
 
-        private void ConvertLauncherSocialMedia(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
+        private static void ConvertLauncherSocialMedia(ref LauncherGameNews? sophonLauncherNewsData, LauncherInfoData? hypLauncherInfoData)
         {
-            if (hypLauncherInfoData?.GameNewsContent?.SocialMediaList != null)
+            if (hypLauncherInfoData?.GameNewsContent?.SocialMediaList == null)
             {
-                // Social Media list
-                foreach (LauncherSocialMedia hypSocMedData in hypLauncherInfoData.GameNewsContent.SocialMediaList)
+                return;
+            }
+
+            // Social Media list
+            foreach (LauncherSocialMedia hypSocMedData in hypLauncherInfoData.GameNewsContent.SocialMediaList)
+            {
+                sophonLauncherNewsData?.Content?.SocialMedia?.Add(new LauncherGameNewsSocialMedia
                 {
-                    sophonLauncherNewsData?.Content?.SocialMedia?.Add(new LauncherGameNewsSocialMedia
-                    {
-                        IconId       = hypSocMedData.SocialMediaId,
-                        IconImg      = hypSocMedData.SocialMediaIcon?.ImageUrl,
-                        IconImgHover = string.IsNullOrEmpty(hypSocMedData.SocialMediaIcon?.ImageHoverUrl) ? hypSocMedData.SocialMediaIcon?.ImageUrl : hypSocMedData.SocialMediaIcon?.ImageHoverUrl,
-                        Title        = hypSocMedData.SocialMediaIcon?.Title,
-                        SocialMediaUrl = (hypSocMedData.SocialMediaLinks?.Count ?? 0) != 0 ?
-                            hypSocMedData.SocialMediaLinks?.FirstOrDefault()?.ClickLink :
-                            hypSocMedData.SocialMediaIcon?.ClickLink,
-                        QrImg   = hypSocMedData.SocialMediaQrImage?.ImageUrl,
-                        QrTitle = hypSocMedData.SocialMediaQrDescription,
-                        QrLinks = hypSocMedData.SocialMediaLinks?.Select(x =>
+                    IconId       = hypSocMedData.SocialMediaId,
+                    IconImg      = hypSocMedData.SocialMediaIcon?.ImageUrl,
+                    IconImgHover = string.IsNullOrEmpty(hypSocMedData.SocialMediaIcon?.ImageHoverUrl) ? hypSocMedData.SocialMediaIcon?.ImageUrl : hypSocMedData.SocialMediaIcon?.ImageHoverUrl,
+                    Title        = hypSocMedData.SocialMediaIcon?.Title,
+                    SocialMediaUrl = (hypSocMedData.SocialMediaLinks?.Count ?? 0) != 0 ?
+                        hypSocMedData.SocialMediaLinks?.FirstOrDefault()?.ClickLink :
+                        hypSocMedData.SocialMediaIcon?.ClickLink,
+                    QrImg   = hypSocMedData.SocialMediaQrImage?.ImageUrl,
+                    QrTitle = hypSocMedData.SocialMediaQrDescription,
+                    QrLinks = hypSocMedData.SocialMediaLinks?.Select(x =>
+                                                                     {
+                                                                         LauncherGameNewsSocialMediaQrLinks qrLink = new LauncherGameNewsSocialMediaQrLinks
                                                                          {
-                                                                             LauncherGameNewsSocialMediaQrLinks qrLink = new LauncherGameNewsSocialMediaQrLinks
-                                                                             {
-                                                                                 Title = x.Title,
-                                                                                 Url = x.ClickLink
-                                                                             };
-                                                                             return qrLink;
-                                                                         }).ToList()
-                    });
-                }
+                                                                             Title = x.Title,
+                                                                             Url   = x.ClickLink
+                                                                         };
+                                                                         return qrLink;
+                                                                     }).ToList()
+                });
             }
         }
         #endregion
@@ -515,7 +509,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         {
             if (PresetConfig?.LauncherGameInfoDisplayURL == null)
             {
-                base.LauncherGameInfoField = new HoYoPlayGameInfoField();
+                LauncherGameInfoField = new HoYoPlayGameInfoField();
                 return;
             }
 
@@ -536,29 +530,37 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             {
                 ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo.GameInfoData);
 
-                base.LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
+                LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
             }
         }
 
         #region Convert Game Info Resources
         private void ConvertGameInfoResources([DisallowNull] ref HoYoPlayGameInfoField? sophonGameInfo, HoYoPlayGameInfoData? hypLauncherGameInfoList)
         {
-            if (sophonGameInfo == null)
+            if (sophonGameInfo != null)
+            {
+                if (hypLauncherGameInfoList != null)
+                {
+                    sophonGameInfo =
+                        hypLauncherGameInfoList.Data?.FirstOrDefault(x =>
+                                                                         x.BizName?.Equals(PresetConfig
+                                                                           ?.LauncherBizName) ??
+                                                                         false);
+                }
+                else
+                {
+                    throw new ArgumentNullException(nameof(hypLauncherGameInfoList));
+                }
+            }
+            else
             {
                 throw new ArgumentNullException(nameof(sophonGameInfo));
             }
-
-            if (hypLauncherGameInfoList == null)
-            {
-                throw new ArgumentNullException(nameof(hypLauncherGameInfoList));
-            }
-
-            sophonGameInfo = hypLauncherGameInfoList.Data?.FirstOrDefault(x => x.BizName?.Equals(PresetConfig?.LauncherBizName) ?? false);
         }
         #endregion
 
         #region GetDeviceId override
-        protected sealed override string GetDeviceId(PresetConfig preset)
+        protected override string GetDeviceId(PresetConfig preset)
         {
             // Determine if the client is a mainland client based on the zone name
             bool isMainlandClient = (preset.ZoneName?.Equals("Mainland China") ?? false) || (preset.ZoneName?.Equals("Bilibili") ?? false);

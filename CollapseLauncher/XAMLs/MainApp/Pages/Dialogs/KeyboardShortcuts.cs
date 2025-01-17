@@ -513,7 +513,7 @@ namespace CollapseLauncher.Dialogs
         {
             KbShortcutChangeData data = (KbShortcutChangeData)(sender as Button).DataContext;
 
-            if (data.KeyName is "GameSelection" or "RegionSelection")
+            if (data is { KeyName: "GameSelection" or "RegionSelection" })
             {
                 SwapModifiers();
                 (sender as Button).FindParent<ContentDialogCollapse>().Hide();

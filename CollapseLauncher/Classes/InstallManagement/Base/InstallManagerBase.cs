@@ -38,7 +38,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using SevenZipExtractor;
 using SevenZipExtractor.Event;
-using SharpCompress.Common;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;

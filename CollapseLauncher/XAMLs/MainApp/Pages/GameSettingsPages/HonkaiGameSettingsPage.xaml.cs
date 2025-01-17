@@ -3,7 +3,6 @@
 #endif
     using CollapseLauncher.GameSettings.Honkai;
     using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Statics;
     using Hi3Helper;
     using Hi3Helper.Shared.ClassStruct;
     using Microsoft.UI.Xaml;

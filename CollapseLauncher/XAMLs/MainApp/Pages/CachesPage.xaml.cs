@@ -61,7 +61,7 @@ namespace CollapseLauncher.Pages
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
-                bool isNeedUpdate = await CurrentGameProperty.GameCache.StartCheckRoutine(isFast);
+                bool isNeedUpdate = await (CurrentGameProperty.GameCache?.StartCheckRoutine(isFast) ?? Task.FromResult(false));
 
                 UpdateCachesBtn.IsEnabled = isNeedUpdate;
                 CheckUpdateBtn.IsEnabled = !isNeedUpdate;
@@ -76,7 +76,7 @@ namespace CollapseLauncher.Pages
                     WindowUtility.Tray_ShowNotification(
                         Lang._NotificationToast.CacheUpdateCheckCompleted_Title,
                         isNeedUpdate ?
-                            string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty.GameCache.AssetEntry.Count) :
+                            string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty.GameCache?.AssetEntry.Count) :
                             Lang._NotificationToast.CacheUpdateCheckCompletedNotFound_Subtitle
                         );
                 }
@@ -111,9 +111,9 @@ namespace CollapseLauncher.Pages
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
-                int assetCount = CurrentGameProperty.GameCache.AssetEntry.Count;
+                int assetCount = CurrentGameProperty.GameCache?.AssetEntry.Count ?? 0;
 
-                await CurrentGameProperty.GameCache.StartUpdateRoutine();
+                await (CurrentGameProperty.GameCache?.StartUpdateRoutine() ?? Task.CompletedTask);
 
                 UpdateCachesBtn.IsEnabled = false;
                 CheckUpdateBtn.IsEnabled = true;
@@ -164,14 +164,24 @@ namespace CollapseLauncher.Pages
 
         private void AddEvent()
         {
+            if (CurrentGameProperty.GameCache == null)
+            {
+                return;
+            }
+
             CurrentGameProperty.GameCache.ProgressChanged += _cacheTool_ProgressChanged;
-            CurrentGameProperty.GameCache.StatusChanged += _cacheTool_StatusChanged;
+            CurrentGameProperty.GameCache.StatusChanged   += _cacheTool_StatusChanged;
 
             CachesTotalProgressBar.IsIndeterminate = true;
         }
 
         private void RemoveEvent()
         {
+            if (CurrentGameProperty.GameCache == null)
+            {
+                return;
+            }
+
             CurrentGameProperty.GameCache.ProgressChanged -= _cacheTool_ProgressChanged;
             CurrentGameProperty.GameCache.StatusChanged -= _cacheTool_StatusChanged;
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo

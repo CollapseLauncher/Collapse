@@ -27,7 +27,9 @@ namespace CollapseLauncher
 {
     internal sealed partial class GamePresetProperty : IDisposable
     {
+    #pragma warning disable CS8618, CS9264
         internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+    #pragma warning restore CS8618, CS9264
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig == null)
             {
@@ -90,12 +92,12 @@ namespace CollapseLauncher
 
         internal RegionResourceProp?  ApiResourceProp { get; set; }
         internal IGameSettings?       GameSettings    { get; set; }
-        internal IGamePlaytime?       GamePlaytime    { get; set; }
+        internal IGamePlaytime        GamePlaytime    { get; set; }
         internal IRepair?             GameRepair      { get; set; }
         internal ICache?              GameCache       { get; set; }
-        internal IGameVersionCheck?   GameVersion     { get; set; }
-        internal IGameInstallManager? GameInstall     { get; set; }
-        internal PresetConfig?        GamePreset      { get => GameVersion?.GamePreset; }
+        internal IGameVersionCheck    GameVersion     { get; set; }
+        internal IGameInstallManager  GameInstall     { get; set; }
+        internal PresetConfig         GamePreset      { get => GameVersion.GamePreset; }
 
         [field: AllowNull, MaybeNull]
         internal string GameExecutableName
@@ -103,7 +105,7 @@ namespace CollapseLauncher
             get
             {
                 if (string.IsNullOrEmpty(field))
-                    field = GamePreset?.GameExecutableName ?? "";
+                    field = GamePreset.GameExecutableName ?? "";
                 return field;
             }
         }
@@ -122,7 +124,7 @@ namespace CollapseLauncher
         [field: AllowNull, MaybeNull]
         internal string GameExecutablePath
         {
-            get => field ??= Path.Combine(GameVersion?.GameDirPath ?? "", GameExecutableName);
+            get => field ??= Path.Combine(GameVersion.GameDirPath, GameExecutableName);
         }
 
         internal bool IsGameRunning
@@ -164,36 +166,31 @@ namespace CollapseLauncher
             return null;
         }
 
-        /*
         ~GamePresetProperty()
         {
-#if DEBUG
-            Logger.LogWriteLine($"[~GamePresetProperty()] Deconstructor getting called in GamePresetProperty for Hash ID: {_GamePreset.HashID}", LogType.Warning, true);
-#endif
             Dispose();
         }
-        */
 
         public void Dispose()
         {
             GameRepair?.CancelRoutine();
             GameCache?.CancelRoutine();
-            GameInstall?.CancelRoutine();
+            GameInstall.CancelRoutine();
 
             GameRepair?.Dispose();
             GameCache?.Dispose();
-            GameInstall?.Dispose();
-            GamePlaytime?.Dispose();
+            GameInstall.Dispose();
+            GamePlaytime.Dispose();
 
             ApiResourceProp = null;
             GameSettings    = null;
             GameRepair      = null;
             GameCache       = null;
-            GameVersion     = null;
-            GameInstall     = null;
-            GamePlaytime    = null;
 
             GC.SuppressFinalize(this);
+        #if DEBUG
+            Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {GamePreset.HashID}", LogType.Warning, true);
+        #endif
         }
     }
 }

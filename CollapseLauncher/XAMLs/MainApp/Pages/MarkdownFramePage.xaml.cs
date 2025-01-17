@@ -69,7 +69,7 @@ namespace CollapseLauncher
             // Let the overlay navigated before the markdown is loaded to prevent UI thread stuck
             base.OnNavigatedTo(e);
 
-            if (e.Parameter is MarkdownFramePageParams parameters)
+            if (e is { Parameter: MarkdownFramePageParams parameters })
             {
                 Initialize(parameters);
             }
@@ -77,23 +77,23 @@ namespace CollapseLauncher
 
         private void Initialize(MarkdownFramePageParams parameters)
         {
-            if (parameters.MarkdownText == null && parameters.MarkdownUri == null && parameters.MarkdownUriCdn == null)
+            if (parameters is { MarkdownText: null } && parameters is { MarkdownUri: null } && parameters is { MarkdownUriCdn: null })
                 throw new
                     NullReferenceException("[MarkdownFramePage] Either MarkdownUri, MarkdownUriCdn or MarkdownText needs to be filled!");
 
-            if ((parameters.MarkdownText != null ? 1 : 0) +
-                (parameters.MarkdownUri != null ? 1 : 0) +
-                (parameters.MarkdownUriCdn != null ? 1 : 0) >= 2)
+            if ((parameters is { MarkdownText  : not null } ? 1 : 0) +
+                (parameters is { MarkdownUri   : not null } ? 1 : 0) +
+                (parameters is { MarkdownUriCdn: not null } ? 1 : 0) >= 2)
                 throw new
                     InvalidDataException("[MarkdownFramePage] Multiple markdown sources were assigned! Only assign one of the three possible sources!");
 
-            if (parameters.WebUri != null)
+            if (parameters is { WebUri: not null })
             {
                 MarkdownOpenExternalBtn.Visibility = Visibility.Visible;
                 _webUri                            = parameters.WebUri;
             }
 
-            if (parameters.Title != null)
+            if (parameters is { Title: not null })
             {
                 MarkdownFrameTitle.Text       = parameters.Title;
                 MarkdownFrameTitle.Visibility = Visibility.Visible;

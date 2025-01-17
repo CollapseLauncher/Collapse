@@ -1328,7 +1328,10 @@ namespace CollapseLauncher.Dialogs
                 OffContent = Lang._Misc.Disabled,
                 OnContent = Lang._Misc.Enabled
             };
-            startAfterInstall.Toggled += (_, _) => currentGameProperty.GameInstall.StartAfterInstall = startAfterInstall.IsOn;
+            startAfterInstall.Toggled += (_, _) =>
+            {
+                currentGameProperty.GameInstall.StartAfterInstall = startAfterInstall.IsOn;
+            };
 
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(

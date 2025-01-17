@@ -2,7 +2,6 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.Helper;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Native.ManagedTools;
@@ -62,22 +61,22 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                bool IsGameBroken = await CurrentGameProperty.GameRepair.StartCheckRoutine(isFast);
+                bool isGameBroken = await (CurrentGameProperty.GameRepair?.StartCheckRoutine(isFast) ?? Task.FromResult(false));
 
-                RepairFilesBtn.IsEnabled = IsGameBroken;
-                CheckFilesBtn.IsEnabled = !IsGameBroken;
+                RepairFilesBtn.IsEnabled = isGameBroken;
+                CheckFilesBtn.IsEnabled = !isGameBroken;
                 CancelBtn.IsEnabled = false;
 
-                RepairFilesBtn.Visibility = IsGameBroken ? Visibility.Visible : Visibility.Collapsed;
-                CheckFilesBtn.Visibility = IsGameBroken ? Visibility.Collapsed : Visibility.Visible;
+                RepairFilesBtn.Visibility = isGameBroken ? Visibility.Visible : Visibility.Collapsed;
+                CheckFilesBtn.Visibility = isGameBroken ? Visibility.Collapsed : Visibility.Visible;
 
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     WindowUtility.Tray_ShowNotification(
                                                         Lang._NotificationToast.GameRepairCheckCompleted_Title,
-                                                        IsGameBroken ?
-                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty.GameRepair.AssetEntry.Count) :
+                                                        isGameBroken ?
+                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty.GameRepair?.AssetEntry.Count) :
                                                             Lang._NotificationToast.GameRepairCheckCompletedNotFound_Subtitle
                                                        );
                 }
@@ -112,9 +111,9 @@ namespace CollapseLauncher.Pages
 
                 AddEvent();
 
-                int assetCount = CurrentGameProperty.GameRepair.AssetEntry.Count;
+                int assetCount = CurrentGameProperty.GameRepair?.AssetEntry.Count ?? 0;
 
-                await CurrentGameProperty.GameRepair.StartRepairRoutine();
+                await (CurrentGameProperty.GameRepair?.StartRepairRoutine() ?? Task.CompletedTask);
 
                 RepairFilesBtn.IsEnabled = false;
                 CheckFilesBtn.IsEnabled = true;
@@ -165,6 +164,9 @@ namespace CollapseLauncher.Pages
 
         private void AddEvent()
         {
+            if (CurrentGameProperty.GameRepair == null)
+                return;
+
             CurrentGameProperty.GameRepair.ProgressChanged += _repairTool_ProgressChanged;
             CurrentGameProperty.GameRepair.StatusChanged += _repairTool_StatusChanged;
 
@@ -174,6 +176,9 @@ namespace CollapseLauncher.Pages
 
         private void RemoveEvent()
         {
+            if (CurrentGameProperty.GameRepair == null)
+                return;
+
             CurrentGameProperty.GameRepair.ProgressChanged -= _repairTool_ProgressChanged;
             CurrentGameProperty.GameRepair.StatusChanged -= _repairTool_StatusChanged;
 

@@ -11,7 +11,6 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -539,15 +538,20 @@ namespace CollapseLauncher
 
         internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
-            var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig!.GameLauncherApi!;
+            var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
+            if (gameLauncherApi == null)
+            {
+                return;
+            }
+
             GamePresetProperty currentGameProperty = GetCurrentGameProperty();
-            bool isUseCustomPerRegionBg = currentGameProperty?.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
+            bool isUseCustomPerRegionBg = currentGameProperty.GameSettings?.SettingsCollapseMisc?.UseCustomRegionBG ?? false;
 
             IsCustomBG = GetAppConfigValue("UseCustomBG").ToBool();
             bool isAPIBackgroundAvailable =
-                !string.IsNullOrEmpty(LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.GameBackgroundImg);
+                !string.IsNullOrEmpty(gameLauncherApi.GameBackgroundImg);
 
-            var posterBg = currentGameProperty?.GameVersion.GameType switch
+            var posterBg = currentGameProperty.GameVersion.GameType switch
                            {
                                GameNameType.Honkai => Path.Combine(AppExecutableDir,
                                                                    @"Assets\Images\GameBackground\honkai.webp"),
@@ -595,7 +599,7 @@ namespace CollapseLauncher
                     {
                         ErrorSender.SendException(ex);
                         LogWriteLine($"Failed while downloading default background image!\r\n{ex}", LogType.Error, true);
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                        gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
                     }
                 }
                 // IF ITS STILL NOT THERE, then use fallback game poster, IF ITS STILL NOT THEREEEE!! use paimon cute deadge pic :)
@@ -606,8 +610,8 @@ namespace CollapseLauncher
             }
             
             // Use default background if the API background is empty (in-case HoYo did something catchy)
-            if (!isAPIBackgroundAvailable && !IsCustomBG && LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi != null)
-                LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal ??= posterBg;
+            if (!isAPIBackgroundAvailable && !IsCustomBG && LauncherMetadataHelper.CurrentMetadataConfig is { GameLauncherApi: not null })
+                gameLauncherApi.GameBackgroundImgLocal ??= posterBg;
             
             // If the custom per region is enabled, then execute below
             BackgroundImgChanger.ChangeBackground(gameLauncherApi.GameBackgroundImgLocal,
@@ -921,7 +925,7 @@ namespace CollapseLauncher
 
                         // Get current game property, including game preset
                         GamePresetProperty currentGameProperty = GetCurrentGameProperty();
-                        (_, string heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty?.GamePreset);
+                        (_, string heroImage) = OOBESelectGame.GetLogoAndHeroImgPath(currentGameProperty.GamePreset);
 
                         // Create notification
                         NotificationContent toastContent = NotificationContent.Create()
@@ -1389,24 +1393,29 @@ namespace CollapseLauncher
                     break;
             }
 
-            if (NavigationViewControl.SettingsItem is not null && NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
+            if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
             {
                 SettingsItem.Icon = IconAppSettings;
                 _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
             }
 
-            foreach (var deps in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
+            foreach (var dependency in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
             {
                 // Avoid any icons to have shadow attached if it's not from this page
-                if (deps.BaseUri.AbsolutePath != this.BaseUri.AbsolutePath)
+                if (dependency.BaseUri.AbsolutePath != this.BaseUri.AbsolutePath)
                 {
                     continue;
                 }
 
-                if (deps is FontIcon icon)
-                    AttachShadowNavigationPanelItem(icon);
-                if (deps is AnimatedIcon animIcon)
-                    AttachShadowNavigationPanelItem(animIcon);
+                switch (dependency)
+                {
+                    case FontIcon icon:
+                        AttachShadowNavigationPanelItem(icon);
+                        break;
+                    case AnimatedIcon animIcon:
+                        AttachShadowNavigationPanelItem(animIcon);
+                        break;
+                }
             }
             AttachShadowNavigationPanelItem(IconAppSettings);
 
@@ -1435,11 +1444,13 @@ namespace CollapseLauncher
         {
             foreach (NavigationViewItemBase item in NavigationViewControl.MenuItems)
             {
-                if (item is NavigationViewItem && item.Tag.ToString() == "launcher")
+                if (item is not NavigationViewItem || item.Tag.ToString() != "launcher")
                 {
-                    NavigationViewControl.SelectedItem = item;
-                    break;
+                    continue;
                 }
+
+                NavigationViewControl.SelectedItem = item;
+                break;
             }
 
             NavViewPaneBackground.OpacityTransition = new ScalarTransition()
@@ -1497,17 +1508,18 @@ namespace CollapseLauncher
             PointerPoint pointerPoint = e.GetCurrentPoint(NavViewPaneBackgroundHoverArea);
             IsCursorInNavBarHoverArea = pointerPoint.Position.X <= NavViewPaneBackgroundHoverArea.Width - 8 && pointerPoint.Position.X > 4;
 
-            if (!IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
+            switch (IsCursorInNavBarHoverArea)
             {
-                NavViewPaneBackground.Opacity = 0;
-                NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+                case false when !NavigationViewControl.IsPaneOpen:
+                    NavViewPaneBackground.Opacity     = 0;
+                    NavViewPaneBackground.Translation = new System.Numerics.Vector3(-48, 0, 0);
+                    break;
+                case true when !NavigationViewControl.IsPaneOpen:
+                    NavViewPaneBackground.Opacity     = 1;
+                    NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
+                    break;
             }
 
-            if (IsCursorInNavBarHoverArea && !NavigationViewControl.IsPaneOpen)
-            {
-                NavViewPaneBackground.Opacity = 1;
-                NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
-            }
             /*
             var duration = TimeSpan.FromSeconds(0.25);
             var current = (float)NavViewPaneBackground.Opacity;
@@ -2054,7 +2066,7 @@ namespace CollapseLauncher
             ToggleNotificationPanelBtnClick(null, null);
         }
 
-        string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath; }
+        private string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath ?? ""; }
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (!IsGameInstalled()) return;
@@ -2113,7 +2125,7 @@ namespace CollapseLauncher
             {
                 if (!IsGameInstalled()) return;
 
-                string GameFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
+                string? GameFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
                 LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
                 await Task.Run(() =>
                     new Process
@@ -2137,25 +2149,25 @@ namespace CollapseLauncher
         {
             if (!GetCurrentGameProperty().IsGameRunning) return;
 
-            PresetConfig gamePreset = GetCurrentGameProperty().GameVersion.GamePreset;
+            PresetConfig? gamePreset = GetCurrentGameProperty().GameVersion.GamePreset;
             try
             {
-                var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
+                Process[] gameProcess = Process.GetProcessesByName(gamePreset?.GameExecutableName?.Split('.')[0]);
                 foreach (var p in gameProcess)
                 {
-                    LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                    LogWriteLine($"Trying to stop game process {gamePreset?.GameExecutableName?.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
                     p.Kill();
                 }
             }
             catch (Win32Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset?.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
         private void GoGameRepair_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
+            if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) return;
 
@@ -2166,7 +2178,7 @@ namespace CollapseLauncher
 
         private void GoGameCaches_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts)
+            if (!IsLoadRegionComplete || CannotUseKbShortcuts)
                 return;
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
                 return;
@@ -2186,15 +2198,15 @@ namespace CollapseLauncher
 
             DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
-            switch (CurrentGameProperty.GamePreset.GameType)
+            switch (CurrentGameProperty.GamePreset)
             {
-                case GameNameType.Honkai:
+                case { GameType: GameNameType.Honkai }:
                     Navigate(typeof(HonkaiGameSettingsPage), "honkaigamesettings");
                     break;
-                case GameNameType.Genshin:
+                case { GameType: GameNameType.Genshin }:
                     Navigate(typeof(GenshinGameSettingsPage), "genshingamesettings");
                     break;
-                case GameNameType.StarRail:
+                case { GameType: GameNameType.StarRail }:
                     Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
                     break;
             }
@@ -2245,7 +2257,7 @@ namespace CollapseLauncher
             }
             SetAndSaveConfigValue("GameCategory", gameName);
             
-            if (args.Region != null)
+            if (args is { Region: not null })
             {
                 string gameRegion = args.Region;
                 if (!gameRegionCollection.Contains(gameRegion))
@@ -2299,7 +2311,7 @@ namespace CollapseLauncher
 
         public void OpenAppActivation()
         {
-            if (m_arguments.StartGame == null) return;
+            if (m_arguments is { StartGame: null }) return;
 
             DispatcherQueue?.TryEnqueue(ChangeToActivatedRegion);
         }
