@@ -420,7 +420,7 @@ namespace CollapseLauncher.Helper.Metadata
                         }
                     case MetadataType.CommunityTools:
                         {
-                            PageStatics._CommunityToolsProperty = await CommunityToolsProperty.LoadCommunityTools(configLocalStream);
+                            PageStatics.CommunityToolsProperty = await CommunityToolsProperty.LoadCommunityTools(configLocalStream);
                             break;
                         }
                     case MetadataType.PresetConfigV2 when string.IsNullOrEmpty(stamp.GameName) || string.IsNullOrEmpty(stamp.GameRegion):

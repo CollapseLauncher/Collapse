@@ -93,7 +93,7 @@ namespace CollapseLauncher.Pages
             {
                 ToggleRegistrySubscribe(false);
                 string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
-                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?._GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
+                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?.GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
                 Exception exc = Settings.ExportSettings(true, gameBasePath, relativePaths);
 
                 if (exc != null) throw exc;

@@ -1530,7 +1530,7 @@
                                                Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}" />
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
-                                              ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}">
+                                              ItemsSource="{x:Bind localStatic:PageStatics.CommunityToolsProperty.OfficialToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -1557,7 +1557,7 @@
                                                Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}" />
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
-                                              ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}">
+                                              ItemsSource="{x:Bind localStatic:PageStatics.CommunityToolsProperty.CommunityToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />

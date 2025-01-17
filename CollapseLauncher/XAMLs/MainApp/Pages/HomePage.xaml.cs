@@ -921,32 +921,32 @@ namespace CollapseLauncher.Pages
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             // Clear the _CommunityToolsProperty statics
-            PageStatics._CommunityToolsProperty.Clear();
+            PageStatics.CommunityToolsProperty.Clear();
 
             // Check if the _CommunityToolsProperty has the official tool list for current game type
-            if (PageStatics._CommunityToolsProperty.OfficialToolsDictionary.ContainsKey(CurrentGameProperty._GameVersion.GameType))
+            if (PageStatics.CommunityToolsProperty.OfficialToolsDictionary.ContainsKey(CurrentGameProperty._GameVersion.GameType))
             {
                 // If yes, then iterate it and add it to the list, to then getting read by the
                 // DataTemplate from HomePage
-                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.OfficialToolsDictionary[CurrentGameProperty._GameVersion.GameType])
+                foreach (CommunityToolsEntry iconProperty in PageStatics.CommunityToolsProperty.OfficialToolsDictionary[CurrentGameProperty._GameVersion.GameType])
                 {
                     if (iconProperty.Profiles.Contains(CurrentGameProperty._GamePreset.ProfileName))
                     {
-                        PageStatics._CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
+                        PageStatics.CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
                     }
                 }
             }
 
             // Check if the _CommunityToolsProperty has the community tool list for current game type
-            if (PageStatics._CommunityToolsProperty.CommunityToolsDictionary.ContainsKey(CurrentGameProperty._GameVersion.GameType))
+            if (PageStatics.CommunityToolsProperty.CommunityToolsDictionary.ContainsKey(CurrentGameProperty._GameVersion.GameType))
             {
                 // If yes, then iterate it and add it to the list, to then getting read by the
                 // DataTemplate from HomePage
-                foreach (CommunityToolsEntry iconProperty in PageStatics._CommunityToolsProperty.CommunityToolsDictionary[CurrentGameProperty._GameVersion.GameType])
+                foreach (CommunityToolsEntry iconProperty in PageStatics.CommunityToolsProperty.CommunityToolsDictionary[CurrentGameProperty._GameVersion.GameType])
                 {
                     if (iconProperty.Profiles.Contains(CurrentGameProperty._GamePreset.ProfileName))
                     {
-                        PageStatics._CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
+                        PageStatics.CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
                     }
                 }
             }
