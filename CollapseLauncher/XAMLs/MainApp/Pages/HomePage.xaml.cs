@@ -263,7 +263,10 @@ namespace CollapseLauncher.Pages
                 }
 
                 if (!(m_arguments.StartGame?.Play ?? false))
+                {
+                    await CheckUserAccountControlStatus();
                     return;
+                }
 
                 m_arguments.StartGame.Play = false;
 
@@ -3283,6 +3286,45 @@ namespace CollapseLauncher.Pages
                                     .SettingsCollapseMisc.IsPlayingRpc = value;
                 _regionPlayingRpc = value;
                 CurrentGameProperty.GameSettings.SaveSettings();
+            }
+        }
+
+        private async Task CheckUserAccountControlStatus()
+        {
+            try
+            {
+                var skipChecking = GetAppConfigValue("SkipCheckingUAC").ToBool();
+                if (skipChecking)
+                    return;
+
+                var enabled =
+                    (int)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+                                           "EnableLUA", 1)!;
+                if (enabled != 1)
+                {
+                    var result = await SpawnDialog(Lang._Dialogs.UACWarningTitle, Lang._Dialogs.UACWarningContent, this, Lang._Misc.Close,
+                                                   Lang._Dialogs.UACWarningLearnMore, Lang._Dialogs.UACWarningDontShowAgain,
+                                                   ContentDialogButton.Close, ContentDialogTheme.Warning);
+                    if (result == ContentDialogResult.Primary)
+                    {
+                        new Process
+                        {
+                            StartInfo = new ProcessStartInfo
+                            {
+                                UseShellExecute = true,
+                                FileName = "https://learn.microsoft.com/windows/security/application-security/application-control/user-account-control/settings-and-configuration?tabs=reg"
+                            }
+                        }.Start();
+                    }
+                    else if (result == ContentDialogResult.Secondary)
+                    {
+                        SetAndSaveConfigValue("SkipCheckingUAC", true);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // ignore
             }
         }
     }
