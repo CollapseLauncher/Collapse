@@ -1003,7 +1003,12 @@
     "SophonIncrementUpdateUnavailSubtitle1": "現在お使いのVer{0}は",
     "SophonIncrementUpdateUnavailSubtitle2": "古すぎる",
     "SophonIncrementUpdateUnavailSubtitle3": "ため、差分更新式アップデートができません。ゲームをアップデートするには、ゲーム全体の再ダウンロードが必要です。",
-    "SophonIncrementUpdateUnavailSubtitle4": "\"{0}\"を押すと全体の再ダウンロードを実行し、\"{1}\"を押すとアップデートをキャンセルします。"
+    "SophonIncrementUpdateUnavailSubtitle4": "\"{0}\"を押すと全体の再ダウンロードを実行し、\"{1}\"を押すとアップデートをキャンセルします。",
+
+    "UACWarningTitle": "警告：UACの無効化を検出しました",
+    "UACWarningContent": "ユーザーアカウント制御（UAC）の無効化は全くもって非推奨です。\nOSのセキュリティが侵害され、ゲームが正常に動作しなくなる可能性があるためです。\n\n\"もっと見る\"を押すと、UACを有効化する方法が表示されます。\n関連項目：「管理承認モードですべての管理者を実行する」",
+    "UACWarningLearnMore": "もっと見る",
+    "UACWarningDontShowAgain": "次回から表示しない"
   },
 
   "_FileMigrationProcess": {
