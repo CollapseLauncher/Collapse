@@ -61,7 +61,7 @@ namespace CollapseLauncher.Helper
         /// <typeparam name="T">The type of the hash algorithm to create. Must inherit from <see cref="HashAlgorithm"/>.</typeparam>
         /// <returns>An instance of the specified hash algorithm.</returns>
         /// <exception cref="NotSupportedException">Thrown when the specified hash algorithm type is not supported.</exception>
-        public static T CreateCryptoHash<T>()
+        public static HashAlgorithm CreateCryptoHash<T>()
             where T : HashAlgorithm
         {
             // Try to get the hash create method from the dictionary
@@ -75,7 +75,7 @@ namespace CollapseLauncher.Helper
             }
 
             // Create the hash algorithm instance
-            return (T)createHashDelegate();
+            return createHashDelegate();
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace CollapseLauncher.Helper
         /// <param name="key">The key to use for the HMAC-based hash algorithm.</param>
         /// <returns>An instance of the specified HMAC-based hash algorithm.</returns>
         /// <exception cref="NotSupportedException">Thrown when the specified HMAC-based hash algorithm type is not supported.</exception>
-        public static T CreateHmacCryptoHash<T>(byte[] key)
+        public static HashAlgorithm CreateHmacCryptoHash<T>(byte[] key)
             where T : HashAlgorithm
         {
             // Try to get the hash create method from the dictionary
@@ -99,7 +99,7 @@ namespace CollapseLauncher.Helper
             }
 
             // Create the hash algorithm instance
-            return (T)createHashDelegate(key);
+            return createHashDelegate(key);
         }
 
         /// <summary>
@@ -107,8 +107,8 @@ namespace CollapseLauncher.Helper
         /// </summary>
         /// <typeparam name="T">The type of the non-cryptographic hash algorithm to create. Must inherit from <see cref="NonCryptographicHashAlgorithm"/> and have a parameterless constructor.</typeparam>
         /// <returns>An instance of the specified non-cryptographic hash algorithm.</returns>
-        public static T CreateHash<T>()
-            where T : NonCryptographicHashAlgorithm, new() => new();
+        public static NonCryptographicHashAlgorithm CreateHash<T>()
+            where T : NonCryptographicHashAlgorithm, new() => new T();
 
         /// <summary>
         /// Gets the shared hash algorithm instance of the specified non-cryptographic hash algorithm.
