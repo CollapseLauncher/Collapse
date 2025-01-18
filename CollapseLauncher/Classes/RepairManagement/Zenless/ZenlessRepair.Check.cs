@@ -97,8 +97,8 @@ namespace CollapseLauncher
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
             byte[] localCRC = asset.CRCArray.Length > 8 ?
-                await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token) :
-                await CheckHashAsync<XxHash64>(filefs, true, true, token);
+                await GetCryptoHashAsync<MD5>(filefs, null, true, true, token) :
+                await GetHashAsync<XxHash64>(filefs, true, true, token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))

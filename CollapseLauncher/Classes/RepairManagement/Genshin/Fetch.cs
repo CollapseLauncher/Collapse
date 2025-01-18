@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -438,7 +439,9 @@ namespace CollapseLauncher
 
             // Get base_res_version_hash content
             string filePath = Path.Combine(_gamePath, $@"{_execPrefix}_Data\StreamingAssets\res_versions_streaming");
-            string hash = CreateMD5Shared(new FileStream(filePath, FileMode.Open, FileAccess.Read));
+            using FileStream resVersionStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            byte[] hashBytes = Hash.GetCryptoHash<MD5>(resVersionStream);
+            string hash = Convert.ToHexStringLower(hashBytes);
 
 #nullable enable
             // Write DownloadPref template

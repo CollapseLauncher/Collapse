@@ -189,7 +189,7 @@ namespace CollapseLauncher
             // Open and read fileInfo as FileStream 
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do MD5 Hash calculation
-            localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
+            localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // Get size difference for summarize the _progressAllSizeCurrent
             long sizeDifference = asset.S - file.Length;
@@ -297,7 +297,7 @@ namespace CollapseLauncher
             await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 // If pass the check above, then do CRC calculation
-                byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
+                byte[] localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
                 // If local and asset CRC doesn't match, then add the asset
                 if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -413,7 +413,7 @@ namespace CollapseLauncher
                 // Open and read fileInfo as FileStream 
                 await using FileStream fileOldFs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read);
                 // If pass the check above, then do CRC calculation
-                byte[] localOldCRC = await CheckCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
+                byte[] localOldCRC = await GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
 
                 // If the hash matches, then add the patch
                 if (IsArrayMatch(localOldCRC, patchInfo.Value.PatchPairs[0].OldHash))
@@ -503,7 +503,7 @@ namespace CollapseLauncher
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
+            byte[] localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))

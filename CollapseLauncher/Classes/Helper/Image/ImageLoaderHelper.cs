@@ -19,6 +19,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -318,7 +319,7 @@ namespace CollapseLauncher.Helper.Image
 
         internal static FileInfo GetCacheFileInfo(string filePath)
         {
-            string cachedFileHash = ConverterTool.BytesToCRC32Simple(filePath);
+            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(filePath);
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder!, cachedFileHash!);
             if (IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";

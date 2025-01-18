@@ -158,7 +158,7 @@ namespace CollapseLauncher
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(fileInfo, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
+            byte[] localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))
@@ -341,7 +341,7 @@ namespace CollapseLauncher
                                                            _bufferBigLength);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCRC = await CheckCryptoHashAsync<MD5>(filefs, null, true, true, token);
+            byte[] localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
 
             // If local and asset CRC doesn't match, then add the asset
             if (!IsArrayMatch(localCRC, asset.CRCArray))

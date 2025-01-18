@@ -7,12 +7,13 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
-using System.Collections.Concurrent;
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -436,8 +437,10 @@ namespace CollapseLauncher.Helper.Metadata
 
                                 // Generate HashID and GameName
                                 string hashComposition = $"{stamp.LastUpdated} - {stamp.GameName} - {stamp.GameRegion}";
-                                int hashID = ConverterTool.BytesToCRC32Int(hashComposition);
-                                presetConfig.HashID = hashID;
+                                byte[] hashBytes       = Hash.GetHashFromString<Crc32>(hashComposition);
+                                int    hashID          = BitConverter.ToInt32(hashBytes);
+                                
+                                presetConfig.HashID   = hashID;
                                 presetConfig.GameName = stamp.GameName;
                                 presetConfig.GameLauncherApi ??= presetConfig.LauncherType switch
                                 {

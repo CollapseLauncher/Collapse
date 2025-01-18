@@ -372,8 +372,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "seeO8icDfED/Qwl9PDFUx2Gf/7xv7dPsMnw5PnRwNZuz4EWMpy0wIVohC4MfCcTIoJgp+KUrWG4WH3NPSusQOA=="
+        "resolved": "9.0.1",
+        "contentHash": "jY+E/PElNWQiazN0YHqZGvcSedcZ4Wt0Os1nnJ2SzR3gWZlhNRDkSXOhuHJcLuImD8SrJQQ8TfU0W4mVcit2hg=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
@@ -444,8 +444,7 @@
         "dependencies": {
           "Google.Protobuf": "[3.29.3, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "Hi3Helper.Win32": "[1.0.0, )",
-          "System.IO.Hashing": "[9.0.0, )"
+          "Hi3Helper.Win32": "[1.0.0, )"
         }
       },
       "hi3helper.http": {

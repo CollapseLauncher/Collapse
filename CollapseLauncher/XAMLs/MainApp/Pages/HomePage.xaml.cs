@@ -43,6 +43,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -339,7 +340,7 @@ namespace CollapseLauncher.Pages
             }
 
             // Get the cached filename and path
-            string cachedFileHash = BytesToCRC32Simple(featuredEventIconImg);
+            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(featuredEventIconImg);
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
             if (ImageLoaderHelper.IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";

@@ -732,7 +732,7 @@ namespace CollapseLauncher.InstallManager.Base
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
-                hashLocal = await CheckCryptoHashAsync<MD5>(fs, null, true, true, token);
+                hashLocal = await GetCryptoHashAsync<MD5>(fs, null, true, true, token);
             }
 
             // Check for the hash differences. If found, then show dialog to delete or cancel the process
@@ -1759,9 +1759,9 @@ namespace CollapseLauncher.InstallManager.Base
 
                         byte[] sourceLocalHash = entry.SourceMD5Hash?.Length switch
                                                  {
-                                                     > 8 and 16 => await CheckCryptoHashAsync<MD5>(sourcePath, null, false, true, _token.Token),
-                                                     > 4 => await CheckHashAsync<XxHash64>(sourcePath, false, true, _token.Token),
-                                                     _ => await CheckHashAsync<Crc32>(sourcePath, false, true, _token.Token)
+                                                     > 8 and 16 => await GetCryptoHashAsync<MD5>(sourcePath, null, false, true, _token.Token),
+                                                     > 4 => await GetHashAsync<XxHash64>(sourcePath, false, true, _token.Token),
+                                                     _ => await GetHashAsync<Crc32>(sourcePath, false, true, _token.Token)
                                                  };
 
                         if (!sourceLocalHash.AsSpan().SequenceEqual(entry.SourceMD5Hash))

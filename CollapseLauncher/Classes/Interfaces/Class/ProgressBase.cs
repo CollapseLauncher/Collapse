@@ -821,7 +821,7 @@ namespace CollapseLauncher.Interfaces
                 // Try to create the file if not exist or open an existing one
                 await using Stream sdkDllStream = sdkDllFile.Open(!sdkDllFile.Exists || entry.Length < sdkDllFile.Length ? FileMode.Create : FileMode.OpenOrCreate);
                 // Get the hash from the stream
-                byte[] hashByte = await Hash.CheckHashAsync<Crc32>(sdkDllStream, null, token);
+                byte[] hashByte = await Hash.GetHashAsync<Crc32>(sdkDllStream, null, token);
                 uint   hashInt  = BitConverter.ToUInt32(hashByte);
 
                 // If the hash is the same, then skip
@@ -1007,137 +1007,137 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region HashTools
-        protected virtual ConfiguredTaskAwaitable<byte[]> CheckCryptoHashAsync<T>(
+        protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
             string            filePath,
             byte[]?           hmacKey             = null,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.CheckCryptoHashAsync<T>(filePath,
-                                           hmacKey,
-                                           read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                           token);
+            Hash.GetCryptoHashAsync<T>(filePath,
+                                       hmacKey,
+                                       read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                       token);
 
-        protected virtual ConfiguredTaskAwaitable<byte[]> CheckCryptoHashAsync<T>(
+        protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
             FileInfo          fileInfo,
             byte[]?           hmacKey             = null,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.CheckCryptoHashAsync<T>(fileInfo,
-                                           hmacKey,
-                                           read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                           token);
+            Hash.GetCryptoHashAsync<T>(fileInfo,
+                                       hmacKey,
+                                       read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                       token);
 
-        protected virtual ConfiguredTaskAwaitable<byte[]> CheckCryptoHashAsync<T>(
+        protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
             Stream            stream,
             byte[]?           hmacKey             = null,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.CheckCryptoHashAsync<T>(stream,
-                                           hmacKey,
-                                           read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                           token);
+            Hash.GetCryptoHashAsync<T>(stream,
+                                       hmacKey,
+                                       read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                       token);
 
-        protected virtual byte[] CheckCryptoHash<T>(
+        protected virtual byte[] GetCryptoHash<T>(
             string            filePath,
             byte[]?           hmacKey             = null,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.CheckCryptoHash<T>(filePath,
-                                      hmacKey,
-                                      read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                      token);
+            Hash.GetCryptoHash<T>(filePath,
+                                  hmacKey,
+                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                  token);
 
-        protected virtual byte[] CheckCryptoHash<T>(
+        protected virtual byte[] GetCryptoHash<T>(
             FileInfo          fileInfo,
             byte[]?           hmacKey             = null,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.CheckCryptoHash<T>(fileInfo,
-                                    hmacKey,
-                                    read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                    token);
+            Hash.GetCryptoHash<T>(fileInfo,
+                                  hmacKey,
+                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                  token);
 
-        protected virtual byte[] CheckCryptoHash<T>(
+        protected virtual byte[] GetCryptoHash<T>(
             Stream            stream,
             byte[]?           hmacKey             = null,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.CheckCryptoHash<T>(stream,
-                                    hmacKey,
-                                    read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                    token);
+            Hash.GetCryptoHash<T>(stream,
+                                  hmacKey,
+                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                  token);
 
-        protected virtual ConfiguredTaskAwaitable<byte[]> CheckHashAsync<T>(
+        protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
             string            filePath,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.CheckHashAsync<T>(filePath,
-                                   read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                   token);
+            Hash.GetHashAsync<T>(filePath,
+                                 read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                 token);
 
-        protected virtual ConfiguredTaskAwaitable<byte[]> CheckHashAsync<T>(
+        protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
             FileInfo          fileInfo,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.CheckHashAsync<T>(fileInfo,
-                                   read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                   token);
+            Hash.GetHashAsync<T>(fileInfo,
+                                 read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                 token);
 
-        protected virtual ConfiguredTaskAwaitable<byte[]> CheckHashAsync<T>(
+        protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
             Stream            stream,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.CheckHashAsync<T>(stream,
-                                   read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                   token);
+            Hash.GetHashAsync<T>(stream,
+                                 read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                 token);
 
-        protected virtual byte[] CheckHash<T>(
+        protected virtual byte[] GetHash<T>(
             string            filePath,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.CheckHash<T>(filePath,
-                              read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                              token);
+            Hash.GetHash<T>(filePath,
+                            read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                            token);
 
-        protected virtual byte[] CheckHash<T>(
+        protected virtual byte[] GetHash<T>(
             FileInfo          fileInfo,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.CheckHash<T>(fileInfo,
-                              read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                              token);
+            Hash.GetHash<T>(fileInfo,
+                            read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                            token);
 
-        protected virtual byte[] CheckHash<T>(
+        protected virtual byte[] GetHash<T>(
             Stream            stream,
             bool              updateProgress      = true,
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.CheckHash<T>(stream,
-                              read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                              token);
+            Hash.GetHash<T>(stream,
+                            read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                            token);
 
         private void UpdateHashReadProgress(int read, bool updateProgress, bool updateTotalProgress)
         {
@@ -1185,7 +1185,7 @@ namespace CollapseLauncher.Interfaces
             {
                 await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
                 // Verify the patch file and if it doesn't match, then re-download it
-                byte[] patchCrc = await CheckCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
+                byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
                 if (!IsArrayMatch(patchCrc, patchHash.Span))
                 {
                     // Revert back the total size

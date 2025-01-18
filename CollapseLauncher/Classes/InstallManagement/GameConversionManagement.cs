@@ -11,11 +11,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -175,19 +177,17 @@ namespace CollapseLauncher
                 {
                     using (FileStream fs = new FileStream(OutputPath, FileMode.Open, FileAccess.Read))
                     {
-                        await Task.Run(() =>
-                        {
-                            LocalHash = Entry.CurrCRC.Length > 8 ?
-                                CreateMD5Shared(fs) :
-                                BytesToCRC32Simple(fs);
+                        byte[] hashBytes = Entry.CurrCRC.Length > 8 ?
+                            await Hash.GetCryptoHashAsync<MD5>(fs, null, null, Token) :
+                            await Hash.GetHashAsync<Crc32>(fs, null, Token);
+                        LocalHash = Convert.ToHexStringLower(hashBytes);
 
-                            Token.ThrowIfCancellationRequested();
-                            if (LocalHash.ToLower() != Entry.CurrCRC)
-                            {
-                                LogWriteLine($"File {Entry.FileName} has unmatched hash. Local: {LocalHash.ToLower()} Remote: {Entry.CurrCRC}", LogType.Warning, true);
-                                BrokenManifest.Add(Entry);
-                            }
-                        }, Token);
+                        Token.ThrowIfCancellationRequested();
+                        if (LocalHash != Entry.CurrCRC)
+                        {
+                            LogWriteLine($"File {Entry.FileName} has unmatched hash. Local: {LocalHash} Remote: {Entry.CurrCRC}", LogType.Warning, true);
+                            BrokenManifest.Add(Entry);
+                        }
                     }
                 }
                 else

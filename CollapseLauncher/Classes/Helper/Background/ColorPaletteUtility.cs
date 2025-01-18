@@ -12,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Hashing;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Hi3Helper.SentryHelper;
@@ -95,7 +96,7 @@ namespace CollapseLauncher.Helper.Background
             }
 
             string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
-            string cachedFileHash    = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
+            string cachedFileHash    = Hash.GetHashStringFromString<Crc32>(cachedPalettePath);
             cachedPalettePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, cachedFileHash);
 
             if (!File.Exists(cachedPalettePath) || forceCreateNewCache)
