@@ -22,7 +22,7 @@ namespace CollapseLauncher
         private async Task<List<SRAsset>> Fetch(CancellationToken token)
         {
             // Initialize asset index for the return
-            List<SRAsset> returnAsset = new List<SRAsset>();
+            List<SRAsset> returnAsset = [];
 
             // Initialize new proxy-aware HttpClient
             using HttpClient client = new HttpClientBuilder()
@@ -41,7 +41,7 @@ namespace CollapseLauncher
             _status.IsIncludePerFileIndicator = false;
             UpdateStatus();
 
-            if (!await _innerGameVersionManager!.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath!, $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent")))
+            if (!await InnerGameVersionManager!.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(_gamePath!, $"{Path.GetFileNameWithoutExtension(_gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent")))
                 throw new InvalidDataException("The dispatcher response is invalid! Please open an issue to our GitHub page to report this issue.");
 
             // Iterate type and do fetch
@@ -88,18 +88,18 @@ namespace CollapseLauncher
             switch (type)
             {
                 case SRAssetType.IFix:
-                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadIFixMetadataInformation(downloadClient, downloadProgress, token);
-                    assetProperty = _innerGameVersionManager!.StarRailMetadataTool!.MetadataIFix!.GetAssets();
+                    await InnerGameVersionManager!.StarRailMetadataTool!.ReadIFixMetadataInformation(downloadClient, downloadProgress, token);
+                    assetProperty = InnerGameVersionManager!.StarRailMetadataTool!.MetadataIFix!.GetAssets();
                     assetIndex!.AddRange(assetProperty!.AssetList!);
                     return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
                 case SRAssetType.DesignData:
-                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadDesignMetadataInformation(downloadClient, downloadProgress, token);
-                    assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataDesign!.GetAssets();
+                    await InnerGameVersionManager!.StarRailMetadataTool!.ReadDesignMetadataInformation(downloadClient, downloadProgress, token);
+                    assetProperty = InnerGameVersionManager.StarRailMetadataTool.MetadataDesign!.GetAssets();
                     assetIndex!.AddRange(assetProperty!.AssetList!);
                     return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
                 case SRAssetType.Lua:
-                    await _innerGameVersionManager!.StarRailMetadataTool!.ReadLuaMetadataInformation(downloadClient, downloadProgress, token);
-                    assetProperty = _innerGameVersionManager.StarRailMetadataTool.MetadataLua!.GetAssets();
+                    await InnerGameVersionManager!.StarRailMetadataTool!.ReadLuaMetadataInformation(downloadClient, downloadProgress, token);
+                    assetProperty = InnerGameVersionManager.StarRailMetadataTool.MetadataLua!.GetAssets();
                     assetIndex!.AddRange(assetProperty!.AssetList!);
                     return (assetProperty.AssetList.Count, assetProperty.AssetTotalSize);
             }

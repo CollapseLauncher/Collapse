@@ -68,7 +68,7 @@ namespace CollapseLauncher
         private int  CurrentGameCategory  = -1;
         private int  CurrentGameRegion    = -1;
 
-        internal static List<string> PreviousTagString       = new();
+        internal static List<string> PreviousTagString       = [];
 
 #nullable enable
         internal static BackgroundMediaUtility? CurrentBackgroundHandler;
@@ -182,7 +182,7 @@ namespace CollapseLauncher
 
             (PresetConfig presetConfig, string gameName, string gameRegion) = await LoadSavedGameSelection();
             if (m_appMode == AppMode.Hi3CacheUpdater)
-                Page = (m_appMode == AppMode.Hi3CacheUpdater && presetConfig.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage);
+                Page = m_appMode == AppMode.Hi3CacheUpdater && presetConfig.GameType == GameNameType.Honkai ? typeof(CachesPage) : typeof(NotInstalledPage);
 
             InitKeyboardShortcuts();
 
@@ -300,17 +300,17 @@ namespace CollapseLauncher
             get
             {
                 double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                RectInt32[] rect = new[]
-                {
-                    new RectInt32((int)(TitleBarDrag1.ActualOffset.X * scaleFactor),
-                                  0,
-                                  (int)(TitleBarDrag1.ActualWidth * scaleFactor),
-                                  (int)(48 * scaleFactor)),
-                    new RectInt32((int)(TitleBarDrag2.ActualOffset.X * scaleFactor),
-                                  0,
-                                  (int)(TitleBarDrag2.ActualWidth * scaleFactor),
-                                  (int)(48 * scaleFactor))
-                };
+                RectInt32[] rect =
+                [
+                    new((int)(TitleBarDrag1.ActualOffset.X * scaleFactor),
+                        0,
+                        (int)(TitleBarDrag1.ActualWidth * scaleFactor),
+                        (int)(48 * scaleFactor)),
+                    new((int)(TitleBarDrag2.ActualOffset.X * scaleFactor),
+                        0,
+                        (int)(TitleBarDrag2.ActualWidth * scaleFactor),
+                        (int)(48 * scaleFactor))
+                ];
                 return rect;
             }
         }
@@ -322,13 +322,13 @@ namespace CollapseLauncher
                 Rect currentWindowPos = WindowUtility.CurrentWindowPosition;
                 double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
 
-                RectInt32[] rect = new[]
-                {
-                    new RectInt32(0,
-                                  0,
-                                  (int)((currentWindowPos.Width - 96) * scaleFactor),
-                                  (int)(48 * scaleFactor))
-                };
+                RectInt32[] rect =
+                [
+                    new(0,
+                        0,
+                        (int)((currentWindowPos.Width - 96) * scaleFactor),
+                        (int)(48 * scaleFactor))
+                ];
                 return rect;
             }
         }
@@ -362,24 +362,22 @@ namespace CollapseLauncher
             switch (e.Template)
             {
                 case DragAreaTemplate.None:
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new[]
-                    {
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
                         GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
-                    });
+                    ]);
                     break;
                 case DragAreaTemplate.Full:
                     nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
                     break;
                 case DragAreaTemplate.Default:
                     nonClientInputSrc.ClearAllRegionRects();
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, new[]
-                    {
+                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
                         GetElementPos(GridBG_RegionGrid),
                         GetElementPos(GridBG_IconGrid),
                         GetElementPos(GridBG_NotifBtn),
                         GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
                         GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
-                    });
+                    ]);
                     break;
             }
 
@@ -438,11 +436,9 @@ namespace CollapseLauncher
 
         private static bool IsPrincipalHasNoAdministratorAccess()
         {
-            using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
-            {
-                WindowsPrincipal principal = new WindowsPrincipal(identity);
-                return !principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
+            using WindowsIdentity identity  = WindowsIdentity.GetCurrent();
+            WindowsPrincipal      principal = new WindowsPrincipal(identity);
+            return !principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
         #endregion
 
@@ -465,7 +461,7 @@ namespace CollapseLauncher
             else CurrentBackgroundHandler?.Undimm();
         }
 
-        private HashSet<string> _processingBackground = new();
+        private HashSet<string> _processingBackground = [];
         private async void CustomBackgroundChanger_Event(object sender, BackgroundImgProperty e)
         {
             if (_processingBackground.Contains(e.ImgPath))
@@ -1901,7 +1897,7 @@ namespace CollapseLauncher
                     { "ReloadRegion", RefreshPage_Invoked }
                 };
 
-                foreach (var func in actions)
+                foreach (KeyValuePair<string, KeybindAction> func in actions)
                 {
                     if (KbShortcutList != null)
                     {
@@ -1926,7 +1922,7 @@ namespace CollapseLauncher
 
         private void RefreshPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete))
+            if (CannotUseKbShortcuts || !IsLoadRegionComplete)
                 return;
 
             switch (PreviousTag)
@@ -1988,7 +1984,7 @@ namespace CollapseLauncher
             DisableInstantRegionChange = true;
             RestoreCurrentRegion();
             
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete)
+            if (CannotUseKbShortcuts || !IsLoadRegionComplete
                                      || index >= ComboBoxGameCategory.Items.Count
                                      || ComboBoxGameCategory.SelectedValue == ComboBoxGameCategory.Items[index]
                )
@@ -2014,7 +2010,7 @@ namespace CollapseLauncher
             RestoreCurrentRegion();
             
 
-            if (CannotUseKbShortcuts || !(IsLoadRegionComplete)
+            if (CannotUseKbShortcuts || !IsLoadRegionComplete
                                      || index >= ComboBoxGameRegion.Items.Count 
                                      || ComboBoxGameRegion.SelectedValue == ComboBoxGameRegion.Items[index])
             {
@@ -2039,7 +2035,7 @@ namespace CollapseLauncher
 
         private void GoHome_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
+            if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
 
@@ -2051,7 +2047,7 @@ namespace CollapseLauncher
 
         private void GoSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
+            if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
 
@@ -2190,7 +2186,7 @@ namespace CollapseLauncher
 
         private void GoGameSettings_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts)
+            if (!IsLoadRegionComplete || CannotUseKbShortcuts)
                 return;
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.FooterMenuItems.Last())
@@ -2282,7 +2278,7 @@ namespace CollapseLauncher
 
         private async void ChangeToActivatedRegion()
         {
-            if (!(IsLoadRegionComplete) || CannotUseKbShortcuts) return;
+            if (!IsLoadRegionComplete || CannotUseKbShortcuts) return;
 
             bool sameRegion = SetActivatedRegion();
 

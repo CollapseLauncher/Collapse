@@ -117,12 +117,12 @@
             InheritApplyTextColor = ApplyText.Foreground;
         }
 
-        private void RegistryExportClick(object sender, RoutedEventArgs e)
+        private async void RegistryExportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                Exception exc = Settings.ExportSettings();
+                Exception exc = await Settings.ExportSettings();
 
                 if (exc != null) throw exc;
 
@@ -143,12 +143,12 @@
             }
         }
 
-        private void RegistryImportClick(object sender, RoutedEventArgs e)
+        private async void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                Exception exc = Settings.ImportSettings();
+                Exception exc = await Settings.ImportSettings();
 
                 if (exc != null) throw exc;
 

@@ -44,10 +44,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? BizName { get; init; }
 
         [JsonPropertyName("display")]
-        public HoYoPlayGameInfoDisplay? Display { get; init; } = new HoYoPlayGameInfoDisplay();
+        public HoYoPlayGameInfoDisplay? Display { get; init; } = new();
 
         [JsonPropertyName("reservation")]
-        public LauncherContentData? ReservationLink { get; init; } = new LauncherContentData();
+        public LauncherContentData? ReservationLink { get; init; } = new();
 
         [JsonPropertyName("display_status")]
         public LauncherGameAvailabilityStatus DisplayStatus { get; init; } = LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_AVAILABLE;

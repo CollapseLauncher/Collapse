@@ -124,7 +124,7 @@ namespace CollapseLauncher.Helper.Metadata
                 // If the stamp is empty or metadata needs to be reinitialized, then reinit the config
                 case -1:
                 case -2:
-                    Logger.LogWriteLine($"Metadata config needs to be reinitialized! Reloading the config!", LogType.Warning, true);
+                    Logger.LogWriteLine("Metadata config needs to be reinitialized! Reloading the config!", LogType.Warning, true);
                     await Initialize();
                     break;
             }
@@ -453,7 +453,7 @@ namespace CollapseLauncher.Helper.Metadata
                                 await configLocalStream.DisposeAsync();
 
                                 // If the dictionary doesn't contain the dictionary of the game, then initialize it
-                                var presetConfigDict = new Dictionary<string, PresetConfig>();
+                                Dictionary<string, PresetConfig>? presetConfigDict = new();
                                 if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
                                     // Initialize and add the game preset config dictionary
                                     // ReSharper disable once ConstantConditionalAccessQualifier
@@ -691,7 +691,7 @@ namespace CollapseLauncher.Helper.Metadata
                     // Deserialize and do sanitize if the old stamp list is empty
                     oldStampList = await stampStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
                     if (oldStampList == null || oldStampList.Count == 0)
-                        throw new NullReferenceException($"The old stamp list contains an empty/null content!");
+                        throw new NullReferenceException("The old stamp list contains an empty/null content!");
 
                     // Try to iterate the new stamp list to replace the old ones or add a new entry
                     foreach (Stamp? newStamp in newStampList)

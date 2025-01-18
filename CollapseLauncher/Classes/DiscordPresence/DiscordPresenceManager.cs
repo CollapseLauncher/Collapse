@@ -61,14 +61,16 @@
 
             public DiscordPresenceManager(bool initialStart = true)
             {
-                if (initialStart)
+                if (!initialStart)
                 {
-                    // Prepare idle cached setting
-                    Logger.LogWriteLine($"Doing initial start for Discord RPC!\r\n\tIdle status : {IdleEnabled}",
-                                        LogType.Scheme);
-
-                    SetupPresence();
+                    return;
                 }
+
+                // Prepare idle cached setting
+                Logger.LogWriteLine($"Doing initial start for Discord RPC!\r\n\tIdle status : {IdleEnabled}",
+                                    LogType.Scheme);
+
+                SetupPresence();
             }
 
             // Deconstruct and dispose unmanaged resources

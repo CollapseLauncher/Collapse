@@ -450,19 +450,17 @@ namespace CollapseLauncher
                     {
                         // Try open the shortcut and check whether this shortcut is actually pointing to
                         // CollapseLauncher.exe file
-                        using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
-                        {
-                            // Try to get the target path and its filename
-                            string shortcutTargetPath = shellLink.Target;
+                        using ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut);
+                        // Try to get the target path and its filename
+                        string shortcutTargetPath = shellLink.Target;
 
-                            // Compare if the filename is equal, then delete it.
-                            if (shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
-                            {
-                                File.Delete(thisUserStartMenuShortcut);
-                                LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
-                                             $"{thisUserStartMenuShortcut} -> {shortcutTargetPath}",
-                                             LogType.Default, true);
-                            }
+                        // Compare if the filename is equal, then delete it.
+                        if (shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            File.Delete(thisUserStartMenuShortcut);
+                            LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
+                                         $"{thisUserStartMenuShortcut} -> {shortcutTargetPath}",
+                                         LogType.Default, true);
                         }
                     }
                 }

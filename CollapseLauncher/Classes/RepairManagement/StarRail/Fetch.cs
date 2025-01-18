@@ -26,7 +26,7 @@ namespace CollapseLauncher
 {
     internal static partial class StarRailRepairExtension
     {
-        private static Dictionary<string, int> _hashtable = new Dictionary<string, int>();
+        private static Dictionary<string, int> _hashtable = new();
 
         internal static void ClearHashtable() => _hashtable.Clear();
 
@@ -89,7 +89,7 @@ namespace CollapseLauncher
                 // If the this._isOnlyRecoverMain && base._isVersionOverride is true, copy the asset index into the _originAssetIndex
                 if (_isOnlyRecoverMain && _isVersionOverride)
                 {
-                    _originAssetIndex = new List<FilePropertiesRemote>();
+                    _originAssetIndex = [];
                     foreach (FilePropertiesRemote asset in assetIndex)
                     {
                         FilePropertiesRemote newAsset = asset.Copy();
@@ -164,7 +164,7 @@ namespace CollapseLauncher
         private async Task GetPrimaryManifest(CancellationToken token, List<FilePropertiesRemote> assetIndex)
         {
             // Initialize pkgVersion list
-            List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
+            List<PkgVersionProperties> pkgVersion = [];
 
             // Initialize repo metadata
             try
@@ -173,7 +173,7 @@ namespace CollapseLauncher
                 Dictionary<string, string> repoMetadata = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
-                if (!(repoMetadata.TryGetValue(_gameVersion.VersionString, out var value)))
+                if (!repoMetadata.TryGetValue(_gameVersion.VersionString, out var value))
                 {
                     throw new VersionNotFoundException($"Manifest for {_gameVersionManager.GamePreset.ZoneName} (version: {_gameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
@@ -373,7 +373,7 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValue = new[] { fallbackCurrentLangname };
+                returnValue = [fallbackCurrentLangname];
                 if (audioLangListPathStatic != null)
                 {
                     File.WriteAllLines(audioLangListPathStatic, returnValue);
@@ -386,7 +386,7 @@ namespace CollapseLauncher
             returnValue = File.ReadAllLines(audioLangListPathStatic);
             if (returnValue.Length == 0)
             {
-                returnValue = new[] { fallbackCurrentLangname };
+                returnValue = [fallbackCurrentLangname];
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
             }
             

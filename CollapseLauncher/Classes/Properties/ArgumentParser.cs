@@ -14,7 +14,7 @@ namespace CollapseLauncher
     {
         private static List<string> allowedProtocolCommands = ["tray", "open"];
 
-        private static RootCommand rootCommand = new RootCommand();
+        private static RootCommand rootCommand = new();
 
         public static void ParseArguments(params string[] args)
         {
@@ -106,7 +106,7 @@ namespace CollapseLauncher
 
             if (rootCommand.Invoke(args) > 0)
             {
-                var e = new ArgumentException($"Argument to run this command is invalid! See the information above for more detail.");
+                var e = new ArgumentException("Argument to run this command is invalid! See the information above for more detail.");
                 Console.WriteLine(e);
                 m_appMode = AppMode.Launcher;
             }
@@ -142,7 +142,7 @@ namespace CollapseLauncher
 
         public static void AddUpdaterOptions(Command command)
         {
-            Option<string> o_Input = new Option<string>(["--input", "-i"], "App path") { IsRequired = true };
+            Option<string>            o_Input   = new(["--input", "-i"], "App path") { IsRequired = true };
             Option<AppReleaseChannel> o_Channel = new Option<AppReleaseChannel>(["--channel", "-c"], "App release channel") { IsRequired = true }.FromAmong();
             command.AddOption(o_Input);
             command.AddOption(o_Channel);
@@ -158,8 +158,8 @@ namespace CollapseLauncher
 
         public static void ParseTakeOwnershipArguments(params string[] args)
         {
-            var inputOption = new Option<string>(["--input", "-i"], description: "Folder path to claim") { IsRequired = true };
-            var command = new Command("takeownership", "Take ownership of the folder");
+            Option<string> inputOption = new(["--input", "-i"], description: "Folder path to claim") { IsRequired = true };
+            var            command     = new Command("takeownership", "Take ownership of the folder");
             command.AddOption(inputOption);
             command.Handler = CommandHandler.Create((string Input) =>
             {
@@ -195,14 +195,14 @@ namespace CollapseLauncher
 
         private static void AddMigrateOptions(bool isBHI3L, Command command)
         {
-            var inputOption = new Option<string>(["--input", "-i"], description: "Installation Source") { IsRequired = true };
-            var outputOption = new Option<string>(["--output", "-o"], description: "Installation Target") { IsRequired = true };
+            Option<string> inputOption  = new(["--input", "-i"],  description: "Installation Source") { IsRequired = true };
+            Option<string> outputOption = new(["--output", "-o"], description: "Installation Target") { IsRequired = true };
             command.AddOption(inputOption);
             command.AddOption(outputOption);
             if (isBHI3L)
             {
-                var gameVerOption = new Option<string>(["--gamever", "-g"], description: "Game version string (Format: x.x.x)") { IsRequired = true };
-                var regLocOption = new Option<string>(["--regloc", "-r"], description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
+                Option<string> gameVerOption = new(["--gamever", "-g"], description: "Game version string (Format: x.x.x)") { IsRequired                  = true };
+                Option<string> regLocOption  = new(["--regloc", "-r"],  description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
                 command.AddOption(gameVerOption);
                 command.AddOption(regLocOption);
                 command.Handler = CommandHandler.Create(
@@ -235,11 +235,11 @@ namespace CollapseLauncher
 
         public static void ParseMoveSteamArguments(params string[] args)
         {
-            var inputOption = new Option<string>(["--input", "-i"], description: "Installation Source") { IsRequired = true };
-            var outputOption = new Option<string>(["--output", "-o"], description: "Installation Target") { IsRequired = true };
-            var keyNameOption = new Option<string>(["--keyname", "-k"], description: "Registry key name") { IsRequired = true };
-            var regLocOption = new Option<string>(["--regloc", "-r"], description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
-            var command = new Command("movesteam", "Migrate Game from Steam to another location");
+            Option<string> inputOption   = new(["--input", "-i"],   description: "Installation Source") { IsRequired                                  = true };
+            Option<string> outputOption  = new(["--output", "-o"],  description: "Installation Target") { IsRequired                                  = true };
+            Option<string> keyNameOption = new(["--keyname", "-k"], description: "Registry key name") { IsRequired                                    = true };
+            Option<string> regLocOption  = new(["--regloc", "-r"],  description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
+            var            command       = new Command("movesteam", "Migrate Game from Steam to another location");
             command.AddOption(inputOption);
             command.AddOption(outputOption);
             command.AddOption(keyNameOption);
@@ -268,13 +268,13 @@ namespace CollapseLauncher
 
         private static void AddOpenCommand()
         {
-            var gameOption = new Option<string>(["--game", "-g"],
-                                                description: "Game number/name\n" +
-                                                             "e.g. 0 or \"Honkai Impact 3rd\""){ IsRequired = true };
-            var regionOption = new Option<string>(["--region", "-r"], 
-                                                  description: "Region number/name\n" +
-                                                               "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game") { IsRequired = false };
-            var startGameOption = new Option<bool>(["--play", "-p"], description: "Start Game after loading the Game/Region") { IsRequired = false };
+            Option<string> gameOption = new(["--game", "-g"],
+                                            description: "Game number/name\n" +
+                                                         "e.g. 0 or \"Honkai Impact 3rd\""){ IsRequired = true };
+            Option<string> regionOption = new(["--region", "-r"], 
+                                              description: "Region number/name\n" +
+                                                           "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game") { IsRequired = false };
+            Option<bool> startGameOption = new(["--play", "-p"], description: "Start Game after loading the Game/Region") { IsRequired = false };
             var command = new Command("open", "Open the Launcher in a specific Game and Region (if specified).\n" +
                                 "Note that game/regions provided will be ignored if invalid.\n" +
                                 "Quotes are required if the game/region name has spaces.");

@@ -128,7 +128,7 @@ namespace CollapseLauncher
             // Initialize Window Handlers and register to Window Utility
             WindowUtility.RegisterWindow(this);
 
-            string title = $"Collapse";
+            string title = "Collapse";
             if (IsPreview)
                 title += " Preview";
 #if DEBUG

@@ -116,7 +116,7 @@ namespace CollapseLauncher
         {
             if (!(ver.Length == 3 || ver.Length == 4))
             {
-                throw new ArgumentException($"Version array entered should have length of 3 or 4!");
+                throw new ArgumentException("Version array entered should have length of 3 or 4!");
             }
 
             Major = ver[0];
@@ -201,8 +201,8 @@ namespace CollapseLauncher
             return new GameVersion(new[] { NextMajor, NextMinor, Build, Revision });
         }
 
-        public Version ToVersion() => new Version(Major, Minor, Build, Revision);
-        public override string ToString() => $"{Major}.{Minor}.{Build}";
+        public          Version ToVersion() => new(Major, Minor, Build, Revision);
+        public override string  ToString()  => $"{Major}.{Minor}.{Build}";
 
         public          string VersionStringManifest { get => string.Join('.', VersionArrayManifest); }
         public          string VersionString         { get => string.Join('.', VersionArray); }

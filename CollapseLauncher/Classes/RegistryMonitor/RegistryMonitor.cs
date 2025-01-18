@@ -80,12 +80,12 @@ namespace RegistryUtils
 
         #region Private member variables
 
-        private HKEYCLASS _registryHive;
-        private string _registrySubName;
-        private object _threadLock = new object();
-        private Thread _thread;
-        private bool _disposed;
-        private ManualResetEvent _eventTerminate = new ManualResetEvent(false);
+        private HKEYCLASS        _registryHive;
+        private string           _registrySubName;
+        private object           _threadLock = new();
+        private Thread           _thread;
+        private bool             _disposed;
+        private ManualResetEvent _eventTerminate = new(false);
 
         private RegChangeNotifyFilter _regFilter = RegChangeNotifyFilter.Key | RegChangeNotifyFilter.Attribute |
                                                    RegChangeNotifyFilter.Value | RegChangeNotifyFilter.Security;
@@ -147,7 +147,7 @@ namespace RegistryUtils
             }
             _disposed = true;
 #if DEBUG
-            LogWriteLine($"RegistryMonitor Disposed!", LogType.Debug, true);
+            LogWriteLine("RegistryMonitor Disposed!", LogType.Debug, true);
 #endif
         }
 
@@ -317,7 +317,7 @@ namespace RegistryUtils
             try
             {
                 AutoResetEvent _eventNotify = new AutoResetEvent(false);
-                waitHandles = new WaitHandle[] { _eventNotify, _eventTerminate };
+                waitHandles = [_eventNotify, _eventTerminate];
                 while (!_eventTerminate.WaitOne(0, true))
                 {
                     if (_disposed) break;

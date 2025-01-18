@@ -23,8 +23,8 @@ namespace CollapseLauncher
 
         public CommunityToolsProperty()
         {
-            OfficialToolsList = new ObservableCollection<CommunityToolsEntry>();
-            CommunityToolsList = new ObservableCollection<CommunityToolsEntry>();
+            OfficialToolsList  = [];
+            CommunityToolsList = [];
         }
 
         public void Clear()

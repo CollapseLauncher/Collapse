@@ -18,26 +18,27 @@ namespace CollapseLauncher
 {
     internal class BackgroundActivityManager
     {
-        private static ThemeShadow _infoBarShadow = new ThemeShadow();
-        public static Dictionary<int, IBackgroundActivity> BackgroundActivities = new Dictionary<int, IBackgroundActivity>();
+        private static readonly ThemeShadow                          InfoBarShadow        = new();
+        public static           Dictionary<int, IBackgroundActivity> BackgroundActivities = new();
 
         public static void Attach(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
         {
-            if (!BackgroundActivities!.ContainsKey(hashID))
+            if (BackgroundActivities.ContainsKey(hashID))
             {
-                AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle);
-                BackgroundActivities.Add(hashID, activity);
-#if DEBUG
-                Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);
-#endif
+                return;
             }
+
+            AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle);
+            BackgroundActivities.Add(hashID, activity);
+        #if DEBUG
+            Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);
+        #endif
         }
 
         public static void Detach(int hashID)
         {
-            if (BackgroundActivities!.ContainsKey(hashID))
+            if (BackgroundActivities.Remove(hashID))
             {
-                BackgroundActivities.Remove(hashID);
                 DetachEventFromNotification(hashID);
 #if DEBUG
                 Logger.LogWriteLine($"Background activity with ID: {hashID} has been detached", LogType.Debug, true);
@@ -62,7 +63,7 @@ namespace CollapseLauncher
                 Background = (Brush)Application.Current!.Resources!["InfoBarAnnouncementBrush"],
                 IsOpen = true,
                 IsClosable = false,
-                Shadow = _infoBarShadow,
+                Shadow = InfoBarShadow,
                 Title = activityTitle,
                 Message = activitySubtitle
             }
@@ -76,7 +77,7 @@ namespace CollapseLauncher
             _parentNotifUI.Content = _parentContainer;
             Grid _parentGrid = _parentContainer.AddElementToStackPanel(
                 UIElementExtensions.CreateGrid()
-                    .WithColumns(new(72), new(1, GridUnitType.Star))
+                    .WithColumns(new GridLength(72), new GridLength(1, GridUnitType.Star))
             );
 
             StackPanel progressLogoContainer = _parentGrid.AddElementToGridColumn(
@@ -110,8 +111,8 @@ namespace CollapseLauncher
 
             Grid progressStatusGrid = progressStatusContainer.AddElementToStackPanel(
                 UIElementExtensions.CreateGrid()
-                    .WithColumns(new(1, GridUnitType.Star), new(1, GridUnitType.Star))
-                    .WithRows(new(1, GridUnitType.Star), new(1, GridUnitType.Star))
+                    .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star))
+                    .WithRows(new GridLength(1,    GridUnitType.Star), new GridLength(1, GridUnitType.Star))
                     .WithMargin(0d, 0d, 0d, 16d)
             );
 

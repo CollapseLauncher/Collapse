@@ -18,7 +18,7 @@ namespace CollapseLauncher
         private async Task<List<CacheAsset>> Check(List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Initialize asset index for the return
-            List<CacheAsset> returnAsset = new List<CacheAsset>();
+            List<CacheAsset> returnAsset = [];
 
             // Set Indetermined status as false
             _status.IsProgressAllIndetermined = false;
@@ -71,43 +71,45 @@ namespace CollapseLauncher
             {
                 string filePath = fileInfo.FullName;
 
-                if (!filePath.Contains("output_log", StringComparison.OrdinalIgnoreCase)
-                 && !filePath.Contains("Crashes", StringComparison.OrdinalIgnoreCase)
-                 && !filePath.Contains("Verify.txt", StringComparison.OrdinalIgnoreCase)
-                 && !filePath.Contains("APM", StringComparison.OrdinalIgnoreCase)
-                 && !filePath.Contains("FBData", StringComparison.OrdinalIgnoreCase)
-                 && !filePath.Contains("asb.dat", StringComparison.OrdinalIgnoreCase)
-                 && !assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
+                if (filePath.Contains("output_log",    StringComparison.OrdinalIgnoreCase)
+                    || filePath.Contains("Crashes",    StringComparison.OrdinalIgnoreCase)
+                    || filePath.Contains("Verify.txt", StringComparison.OrdinalIgnoreCase)
+                    || filePath.Contains("APM",        StringComparison.OrdinalIgnoreCase)
+                    || filePath.Contains("FBData",     StringComparison.OrdinalIgnoreCase)
+                    || filePath.Contains("asb.dat",    StringComparison.OrdinalIgnoreCase)
+                    || assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
                 {
-                    // Increment the total found count
-                    _progressAllCountFound++;
-
-                    // Add asset to the returnAsset
-                    CacheAsset asset = new CacheAsset()
-                    {
-                        BasePath = Path.GetDirectoryName(filePath),
-                        N = Path.GetFileName(filePath),
-                        DataType = CacheAssetType.Unused,
-                        CS = fileInfo.Length,
-                        CRC = null,
-                        Status = CacheAssetStatus.Unused,
-                        IsUseLocalPath = true
-                    };
-                    returnAsset!.Add(asset);
-
-                    // Add to asset entry display
-                    Dispatch(() => AssetEntry!.Add(new AssetProperty<CacheAssetType>(
-                            asset.N,
-                            asset.DataType,
-                            asset.BasePath,
-                            asset.CS,
-                            null,
-                            null
-                        ))
-                    );
-
-                    LogWriteLine($"File: {asset.ConcatPath} is unused!", LogType.Warning, true);
+                    continue;
                 }
+
+                // Increment the total found count
+                _progressAllCountFound++;
+
+                // Add asset to the returnAsset
+                CacheAsset asset = new CacheAsset()
+                {
+                    BasePath       = Path.GetDirectoryName(filePath),
+                    N              = Path.GetFileName(filePath),
+                    DataType       = CacheAssetType.Unused,
+                    CS             = fileInfo.Length,
+                    CRC            = null,
+                    Status         = CacheAssetStatus.Unused,
+                    IsUseLocalPath = true
+                };
+                returnAsset!.Add(asset);
+
+                // Add to asset entry display
+                Dispatch(() => AssetEntry!.Add(new AssetProperty<CacheAssetType>(
+                                                    asset.N,
+                                                    asset.DataType,
+                                                    asset.BasePath,
+                                                    asset.CS,
+                                                    null,
+                                                    null
+                                                   ))
+                        );
+
+                LogWriteLine($"File: {asset.ConcatPath} is unused!", LogType.Warning, true);
             }
         }
 
@@ -144,7 +146,7 @@ namespace CollapseLauncher
             // If above passes, then run the CRC check
             await using FileStream fs = await NaivelyOpenFileStreamAsync(fileInfo, FileMode.Open, FileAccess.Read, FileShare.Read);
             // Calculate the asset CRC (SHA1)
-            byte[] hashArray = await GetCryptoHashAsync<HMACSHA1>(fs, _gameSalt, true, true, token);
+            byte[] hashArray = await GetCryptoHashAsync<HMACSHA1>(fs, GameSalt, true, true, token);
 
             // If the asset CRC doesn't match, then add the file to asset index.
             if (!IsArrayMatch(asset.CRCArray, hashArray))

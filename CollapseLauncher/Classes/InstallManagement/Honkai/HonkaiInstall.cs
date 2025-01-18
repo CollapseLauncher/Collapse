@@ -184,7 +184,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 gameDataFolderName  = "BH3_Data",
                 foldersToDelete     = ["BH3_Data", "AntiCheatExpert"],
                 filesToDelete       = ["ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini"],
-                foldersToKeepInData = Array.Empty<string>()
+                foldersToKeepInData = []
             };
         }
 

@@ -251,7 +251,7 @@ namespace CollapseLauncher.Pages.OOBE
         private async void GetRecommendedCDN()
         {
             // Initialize the token source
-            _checkRecommendedCDNToken = new();
+            _checkRecommendedCDNToken = new CancellationTokenSourceWrapper();
 
             // Set the selected CDN to -1
             SelectCDN.SelectedIndex   = -1;
@@ -779,7 +779,7 @@ namespace CollapseLauncher.Pages.OOBE
         };
 
         private readonly ObservableCollection<string> LangList =
-            new(LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})"));
+            [.. LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})")];
 
         private int SelectedLangIndex
         {

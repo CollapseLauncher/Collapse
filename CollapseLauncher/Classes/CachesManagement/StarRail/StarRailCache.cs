@@ -10,24 +10,18 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class StarRailCache : ProgressBase<SRAsset>, ICache
+    internal partial class StarRailCache(UIElement parentUI, IGameVersionCheck gameVersionManager)
+        : ProgressBase<SRAsset>(parentUI,
+                                gameVersionManager,
+                                gameVersionManager.GameDirPath,
+                                null,
+                                gameVersionManager.GetGameVersionAPI()?.VersionString), ICache
     {
         #region Properties
-        private GameTypeStarRailVersion _innerGameVersionManager { get; set; }
-        private List<SRAsset> _updateAssetIndex { get; set; }
-        protected override string _userAgent { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
+        private            GameTypeStarRailVersion InnerGameVersionManager { get; set; } = gameVersionManager as GameTypeStarRailVersion;
+        private            List<SRAsset>           UpdateAssetIndex        { get; set; }
+        protected override string                  _userAgent               { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
-
-        public StarRailCache(UIElement parentUI, IGameVersionCheck GameVersionManager)
-            : base(
-                  parentUI,
-                  GameVersionManager,
-                  GameVersionManager.GameDirPath,
-                  null,
-                  GameVersionManager.GetGameVersionAPI()?.VersionString)
-        {
-            _innerGameVersionManager = GameVersionManager as GameTypeStarRailVersion;
-        }
 
         ~StarRailCache() => Dispose();
 
@@ -40,7 +34,7 @@ namespace CollapseLauncher
         private async Task<bool> CheckRoutine()
         {
             // Initialize _updateAssetIndex
-            _updateAssetIndex = new List<SRAsset>();
+            UpdateAssetIndex = [];
 
             // Reset status and progress
             ResetStatusAndProgress();
@@ -49,19 +43,19 @@ namespace CollapseLauncher
             _assetIndex = await Fetch(_token.Token);
 
             // Step 2: Start assets checking
-            _updateAssetIndex = await Check(_assetIndex, _token.Token);
+            UpdateAssetIndex = await Check(_assetIndex, _token.Token);
 
             // Step 3: Summarize and returns true if the assetIndex count != 0 indicates caches needs to be update.
             //         either way, returns false.
             return SummarizeStatusAndProgress(
-                _updateAssetIndex,
+                UpdateAssetIndex,
                 string.Format(Lang._CachesPage.CachesStatusNeedUpdate, _progressAllCountFound, ConverterTool.SummarizeSizeSimple(_progressAllSizeFound)),
                 Lang._CachesPage.CachesStatusUpToDate);
         }
 
         public async Task StartUpdateRoutine(bool showInteractivePrompt = false)
         {
-            if (_updateAssetIndex.Count == 0) throw new InvalidOperationException("There's no cache file need to be update! You can't do the update process!");
+            if (UpdateAssetIndex.Count == 0) throw new InvalidOperationException("There's no cache file need to be update! You can't do the update process!");
 
             _ = await TryRunExamineThrow(UpdateRoutine());
         }
@@ -69,7 +63,7 @@ namespace CollapseLauncher
         private async Task<bool> UpdateRoutine()
         {
             // Assign update task
-            Task<bool> updateTask = Update(_updateAssetIndex, _assetIndex, _token.Token);
+            Task<bool> updateTask = Update(UpdateAssetIndex, _assetIndex, _token.Token);
 
             // Run update process
             bool updateTaskSuccess = await TryRunExamineThrow(updateTask);
@@ -86,7 +80,7 @@ namespace CollapseLauncher
             UpdateAll();
 
             // Clean up _updateAssetIndex
-            _updateAssetIndex.Clear();
+            UpdateAssetIndex.Clear();
 
             return updateTaskSuccess;
         }

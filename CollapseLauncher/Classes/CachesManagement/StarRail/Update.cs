@@ -40,9 +40,9 @@ namespace CollapseLauncher
                 UpdateStatus();
 
                 // Iterate the asset index and do update operation
-                ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+                ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
                 
-                var runningTask = new ConcurrentDictionary<(SRAsset, IAssetProperty), byte>();
+                ConcurrentDictionary<(SRAsset, IAssetProperty), byte> runningTask = new();
                 if (_isBurstDownloadEnabled)
                 {
                     await Parallel.ForEachAsync(

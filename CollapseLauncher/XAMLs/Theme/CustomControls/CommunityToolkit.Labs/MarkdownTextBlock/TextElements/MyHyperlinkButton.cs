@@ -13,11 +13,11 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyHyperlinkButton : IAddChild
 {
-    private HyperlinkButton? _hyperLinkButton;
-    private InlineUIContainer _inlineUIContainer = new InlineUIContainer();
-    private MyFlowDocument? _flowDoc;
-    private LinkInline? _linkInline;
-    private HtmlNode? _htmlNode;
+    private HyperlinkButton?  _hyperLinkButton;
+    private InlineUIContainer _inlineUIContainer = new();
+    private MyFlowDocument?   _flowDoc;
+    private LinkInline?       _linkInline;
+    private HtmlNode?         _htmlNode;
 
     public bool IsHtml => _htmlNode != null;
 

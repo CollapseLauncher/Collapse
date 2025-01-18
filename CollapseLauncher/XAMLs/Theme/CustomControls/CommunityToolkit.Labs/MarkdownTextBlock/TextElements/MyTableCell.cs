@@ -12,12 +12,12 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyTableCell : IAddChild
 {
-    private TableCell _tableCell;
-    private Paragraph _paragraph = new Paragraph();
+    private TableCell      _tableCell;
+    private Paragraph      _paragraph = new();
     private MyFlowDocument _flowDocument;
-    private int _columnIndex;
-    private int _rowIndex;
-    private Grid _container;
+    private int            _columnIndex;
+    private int            _rowIndex;
+    private Grid           _container;
 
     public TextElement TextElement
     {

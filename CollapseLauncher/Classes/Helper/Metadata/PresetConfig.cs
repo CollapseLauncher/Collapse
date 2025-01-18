@@ -252,9 +252,9 @@ namespace CollapseLauncher.Helper.Metadata
         #region Constants
         // ReSharper disable once UnusedMember.Local
         private const string PrefixRegInstallLocation =
-            "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{0}";
+            @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{0}";
 
-        private const string PrefixRegGameConfig       = "Software\\{0}\\{1}";
+        private const string PrefixRegGameConfig       = @"Software\{0}\{1}";
         private const string PrefixDefaultProgramFiles = "{1}Program Files\\{0}";
         private const string QueryLauncherIdHead       = "launcher_id";
         private const string QueryGameIdHead           = "game_ids[]";

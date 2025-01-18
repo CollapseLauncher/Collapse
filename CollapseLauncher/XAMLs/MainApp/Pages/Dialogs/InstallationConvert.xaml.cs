@@ -31,16 +31,16 @@ namespace CollapseLauncher.Dialogs
 {
     public partial class InstallationConvert : Page
     {
-        string SourceDataIntegrityURL;
-        string GameVersion;
-        bool IsAlreadyConverted;
-        PresetConfig SourceProfile;
-        PresetConfig TargetProfile;
-        GameConversionManagement Converter;
-        IniFile SourceIniFile;
-        CancellationTokenSource tokenSource = new CancellationTokenSource();
+        string                     SourceDataIntegrityURL;
+        string                     GameVersion;
+        bool                       IsAlreadyConverted;
+        PresetConfig               SourceProfile;
+        PresetConfig               TargetProfile;
+        GameConversionManagement   Converter;
+        IniFile                    SourceIniFile;
+        CancellationTokenSource    tokenSource = new();
         private GamePresetProperty CurrentGameProperty { get; set; }
-        private Stopwatch CurrentStopwatch = Stopwatch.StartNew();
+        private Stopwatch          CurrentStopwatch = Stopwatch.StartNew();
 
         public InstallationConvert()
         {
@@ -166,13 +166,11 @@ namespace CollapseLauncher.Dialogs
             try
             {
                 FallbackCDNUtil.DownloadProgress += Step2ProgressEvents;
-                using (MemoryStream s = new MemoryStream())
-                {
-                    string repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
-                    await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, s, repoListURL, tokenSource.Token);
-                    s.Position = 0;
-                    _RepoList = await s.DeserializeAsync(CoreLibraryJSONContext.Default.DictionaryStringString, tokenSource.Token);
-                }
+                using MemoryStream s           = new MemoryStream();
+                string             repoListURL = string.Format(AppGameRepoIndexURLPrefix, Profile.ProfileName);
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, s, repoListURL, tokenSource.Token);
+                s.Position = 0;
+                _RepoList  = await s.DeserializeAsync(CoreLibraryJSONContext.Default.DictionaryStringString, tokenSource.Token);
             }
             finally
             {
@@ -277,7 +275,7 @@ namespace CollapseLauncher.Dialogs
 
         public static List<string> GetConvertibleNameList(string zoneName)
         {
-            List<string> outList = new List<string>();
+            List<string> outList = [];
             if (LauncherMetadataHelper.CurrentMetadataConfigGameName == null)
             {
                 return outList;

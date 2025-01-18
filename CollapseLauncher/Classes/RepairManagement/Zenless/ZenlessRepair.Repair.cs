@@ -38,7 +38,7 @@ namespace CollapseLauncher
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
             // Iterate repair asset and check it using different method for each type
-            ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
             if (_isBurstDownloadEnabled)
             {
                 await Parallel.ForEachAsync(

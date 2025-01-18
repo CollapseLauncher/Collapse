@@ -631,7 +631,7 @@ public static class Extensions
 
     public static bool IsHeading(this string tag)
     {
-        var headings = new List<string>() { "h1", "h2", "h3", "h4", "h5", "h6" };
+        List<string>? headings = new() { "h1", "h2", "h3", "h4", "h5", "h6" };
         return headings.Contains(tag.ToLower());
     }
 
@@ -652,7 +652,7 @@ public static class Extensions
         double.TryParse(widthAttribute?.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out double width);
 
         // Return the height and width as a tuple
-        return new(width, height);
+        return new Size(width, height);
     }
 
     public static Size GetMarkdownImageSize(LinkInline link)
@@ -675,7 +675,7 @@ public static class Extensions
             var dimensions = parts[1].Split('x');
             if (dimensions.Length == 2 && int.TryParse(dimensions[0], out int width) && int.TryParse(dimensions[1], out int height))
             {
-                return new(width, height);
+                return new Size(width, height);
             }
         }
 
@@ -693,7 +693,7 @@ public static class Extensions
         //}
 
         // Return default values if no width and height are found
-        return new(0, 0);
+        return new Size(0, 0);
     }
 
     public static SolidColorBrush GetAccentColorBrush()

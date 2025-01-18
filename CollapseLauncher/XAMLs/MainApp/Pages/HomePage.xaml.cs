@@ -360,34 +360,30 @@ namespace CollapseLauncher.Pages
             {
                 // Using the original icon file and cached icon file streams
                 if (!isCacheIconExist)
-                    await using (FileStream cachedIconFileStream = new FileStream(cachedIconFileInfo.FullName,
-                                          FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
-                    {
-                        await using (Stream copyIconFileStream = new MemoryStream())
-                        {
-                            await using (Stream iconFileStream =
-                                         await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
-                                                  PageToken.Token))
-                            {
-                                var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-                                // Copy remote stream to memory stream
-                                await iconFileStream.CopyToAsync(copyIconFileStream);
-                                copyIconFileStream.Position = 0;
-                                // Get the icon image information and set the resized frame size
-                                var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
-                                var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
-                                var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
+                {
+                    await using FileStream cachedIconFileStream = new FileStream(cachedIconFileInfo.FullName,
+                             FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                    await using Stream copyIconFileStream = new MemoryStream();
+                    await using Stream iconFileStream =
+                        await FallbackCDNUtil.GetHttpStreamFromResponse(featuredEventIconImg,
+                                                                        PageToken.Token);
+                    var scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+                    // Copy remote stream to memory stream
+                    await iconFileStream.CopyToAsync(copyIconFileStream);
+                    copyIconFileStream.Position = 0;
+                    // Get the icon image information and set the resized frame size
+                    var iconImageInfo = await Task.Run(() => ImageFileInfo.Load(copyIconFileStream));
+                    var width         = (int)(iconImageInfo.Frames[0].Width * scaleFactor);
+                    var height        = (int)(iconImageInfo.Frames[0].Height * scaleFactor);
 
-                                copyIconFileStream.Position = 0; // Reset the original icon stream position
-                                await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
-                                                                          (uint)width, (uint)height); // Start resizing
-                                cachedIconFileStream.Position = 0; // Reset the cached icon stream position
+                    copyIconFileStream.Position = 0; // Reset the original icon stream position
+                    await ImageLoaderHelper.ResizeImageStream(copyIconFileStream, cachedIconFileStream,
+                                                              (uint)width, (uint)height); // Start resizing
+                    cachedIconFileStream.Position = 0; // Reset the cached icon stream position
 
-                                // Set the source from cached icon stream
-                                source.SetSource(cachedIconFileStream.AsRandomAccessStream());
-                            }
-                        }
-                    }
+                    // Set the source from cached icon stream
+                    source.SetSource(cachedIconFileStream.AsRandomAccessStream());
+                }
                 else
                 {
                     await using Stream cachedIconFileStream = cachedIconFileInfo.OpenRead();
@@ -920,7 +916,7 @@ namespace CollapseLauncher.Pages
         #region Game State
         private async ValueTask GetCurrentGameState()
         {
-            Visibility repairGameButtonVisible = (CurrentGameProperty.GameVersion.GamePreset.IsRepairEnabled ?? false) ?
+            Visibility repairGameButtonVisible = CurrentGameProperty.GameVersion.GamePreset.IsRepairEnabled ?? false ?
                 Visibility.Visible : Visibility.Collapsed;
 
             if (!(CurrentGameProperty.GameVersion.GamePreset.IsConvertible ?? false)
@@ -1150,7 +1146,7 @@ namespace CollapseLauncher.Pages
             catch (TaskCanceledException)
             {
                 // Ignore
-                LogWriteLine($"Game run watcher has been terminated!");
+                LogWriteLine("Game run watcher has been terminated!");
             }
             catch (Exception ex)
             {
@@ -1686,9 +1682,7 @@ namespace CollapseLauncher.Pages
                     if (giForceHDR) GenshinHDREnforcer();
                 }
 
-                if (_Settings! is { SettingsCollapseMisc: not null } &&
-                    _Settings.SettingsCollapseMisc.UseAdvancedGameSettings &&
-                    _Settings.SettingsCollapseMisc.UseGamePreLaunchCommand)
+                if (_Settings is { SettingsCollapseMisc: { UseAdvancedGameSettings: true, UseGamePreLaunchCommand: true } })
                 {
                     var delay = _Settings.SettingsCollapseMisc.GameLaunchDelay;
                     PreLaunchCommand(_Settings);
@@ -1834,7 +1828,7 @@ namespace CollapseLauncher.Pages
             ArgumentNullException.ThrowIfNull(gamePreset);
             try
             {
-                var gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
+                Process[] gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
                 foreach (var p in gameProcess)
                 {
                     LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
@@ -1940,7 +1934,7 @@ namespace CollapseLauncher.Pages
 
                 if (apiID == 4)
                 {
-                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
                     {
                         var size = ScreenProp.CurrentResolution;
@@ -2013,7 +2007,7 @@ namespace CollapseLauncher.Pages
 
                 if (apiID == 4)
                 {
-                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
                     {
                         var size = ScreenProp.CurrentResolution;
@@ -2031,7 +2025,7 @@ namespace CollapseLauncher.Pages
                 {
                     parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
                     RequireWindowExclusivePayload = true;
-                    LogWriteLine($"Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
+                    LogWriteLine("Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
                 }
 
                 // Enable mobile mode
@@ -2044,7 +2038,7 @@ namespace CollapseLauncher.Pages
 
                 if (apiID == 4)
                 {
-                    LogWriteLine($"You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
+                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
                     if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
                     {
                         var size = ScreenProp.CurrentResolution;
@@ -2241,7 +2235,7 @@ namespace CollapseLauncher.Pages
                 if (CurrentGameProperty.GamePreset.GameType == GameNameType.Zenless)
                 {
                     var logDir = Path.Combine(CurrentGameProperty.GameVersion.GameDirPath,
-                                              "ZenlessZoneZero_Data\\Persistent\\LogDir\\");
+                                              @"ZenlessZoneZero_Data\Persistent\LogDir\");
 
                     _ = Directory.CreateDirectory(logDir); // Always ensure that the LogDir will always be created.
 
@@ -2268,27 +2262,25 @@ namespace CollapseLauncher.Pages
                 
                 LogWriteLine($"Reading Game's log file from {logPath}", LogType.Default, saveGameLog);
 
-                await using (FileStream fs =
-                             new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite))
-                    using (StreamReader reader = new StreamReader(fs))
+                await using FileStream fs =
+                    new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
+                using StreamReader reader = new StreamReader(fs);
+                while (true)
+                {
+                    while (!reader.EndOfStream)
                     {
-                        while (true)
+                        var line = await reader.ReadLineAsync(WatchOutputLog.Token);
+                        if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                         {
-                            while (!reader.EndOfStream)
-                            {
-                                var line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                                if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
-                                {
-                                    StartExclusiveWindowPayload();
-                                    RequireWindowExclusivePayload = false;
-                                }
-
-                                LogWriteLine(line!, LogType.Game, saveGameLog);
-                            }
-
-                            await Task.Delay(100, WatchOutputLog.Token);
+                            StartExclusiveWindowPayload();
+                            RequireWindowExclusivePayload = false;
                         }
+
+                        LogWriteLine(line!, LogType.Game, saveGameLog);
                     }
+
+                    await Task.Delay(100, WatchOutputLog.Token);
+                }
             }
             catch (OperationCanceledException)
             {
@@ -2590,7 +2582,7 @@ namespace CollapseLauncher.Pages
         private void PlaytimeStatsFlyout_OnOpened(object sender, object e)
         {
             // Match PlaytimeStatsFlyout and set it's transition animation offset to 0 (but keep animation itself)
-            var popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(PlaytimeBtn.XamlRoot);
+            IReadOnlyList<Popup> popups = VisualTreeHelper.GetOpenPopupsForXamlRoot(PlaytimeBtn.XamlRoot);
             foreach (var popup in popups.Where(x => x.Child is FlyoutPresenter {Content: Grid {Tag: "PlaytimeStatsFlyoutGrid"}}))
             {
                 var transition = popup.ChildTransitions[0] as PopupThemeTransition;
@@ -2668,13 +2660,13 @@ namespace CollapseLauncher.Pages
             {
                 // Set the notification trigger
                 CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-                LogWriteLine($"Update cancelled!", LogType.Warning);
+                LogWriteLine("Update cancelled!", LogType.Warning);
             }
             catch (OperationCanceledException)
             {
                 // Set the notification trigger
                 CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
-                LogWriteLine($"Update cancelled!", LogType.Warning);
+                LogWriteLine("Update cancelled!", LogType.Warning);
             }
             catch (NullReferenceException ex)
             {
@@ -3299,7 +3291,7 @@ namespace CollapseLauncher.Pages
                     return;
 
                 var enabled =
-                    (int)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+                    (int)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System",
                                            "EnableLUA", 1)!;
                 if (enabled != 1)
                 {

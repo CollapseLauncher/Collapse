@@ -38,7 +38,7 @@ namespace CollapseLauncher.Pages
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public FileCleanupPage()
         {
-            FileInfoSource = new ObservableCollection<LocalFileInfo>();
+            FileInfoSource = [];
 
             InitializeComponent();
             Current = this;
@@ -179,16 +179,16 @@ namespace CollapseLauncher.Pages
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
-            var addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
+            List<LocalFileInfo>? removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
+            List<LocalFileInfo>? addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
             
-            var removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
-                                               ? removedItems.Sum(x => x.FileSize)
-                                               : removedItems.Select(x => x.FileSize).ToArray().Sum());
+            Task<long>? removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
+                                                       ? removedItems.Sum(x => x.FileSize)
+                                                       : removedItems.Select(x => x.FileSize).ToArray().Sum());
 
-            var addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
-                                             ? addedItems.Sum(x => x.FileSize)
-                                             : addedItems.Select(x => x.FileSize).ToArray().Sum());
+            Task<long>? addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
+                                                     ? addedItems.Sum(x => x.FileSize)
+                                                     : addedItems.Select(x => x.FileSize).ToArray().Sum());
 
             var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
             var removedSize = results[0];
@@ -343,63 +343,61 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    using (ThreadPoolThrottle threadThrottle = ThreadPoolThrottle.Start())
+                    using ThreadPoolThrottle threadThrottle = ThreadPoolThrottle.Start();
+                    var                      options        = new ParallelOptions { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
+                    Task deleteListTask = Task.Factory.StartNew(
+                                                                () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
+                                                                CancellationToken.None,
+                                                                TaskCreationOptions.DenyChildAttach,
+                                                                TaskScheduler.Default);
+
+                    List<LocalFileInfo> failedList     = [];
+                    Lock                failedListLock = new Lock();
+
+                    Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
+                                                                        await Task.Factory.StartNew(state =>
+                                                                                     {
+                                                                                         LocalFileInfo fileInfo = (LocalFileInfo)state!;
+                                                                                         try
+                                                                                         {
+                                                                                             FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                                                                                             if (isFileExist)
+                                                                                             {
+                                                                                                 fileInfoN.Delete();
+                                                                                             }
+
+                                                                                             Interlocked.Increment(ref deleteSuccess);
+                                                                                         }
+                                                                                         catch (Exception ex)
+                                                                                         {
+                                                                                             Interlocked.Increment(ref deleteFailed);
+                                                                                             lock (failedListLock)
+                                                                                             {
+                                                                                                 failedList.Add(fileInfo);
+                                                                                             }
+                                                                                             Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                                                                                      LogType.Error, true);
+                                                                                         }
+                                                                                     },
+                                                                                 fileInfoState,
+                                                                                 CancellationToken.None,
+                                                                                 TaskCreationOptions.DenyChildAttach,
+                                                                                 TaskScheduler.Default));
+
+                    await Task.WhenAll(deleteListTask, deleteFileTask);
+
+                    if (failedList.Count > 0)
                     {
-                        var options = new ParallelOptions { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
-                        Task deleteListTask = Task.Factory.StartNew(
-                            () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
-                            CancellationToken.None,
-                            TaskCreationOptions.DenyChildAttach,
-                            TaskScheduler.Default);
-
-                        List<LocalFileInfo> failedList = [];
-                        Lock failedListLock = new Lock();
-
-                        Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
-                        await Task.Factory.StartNew(state =>
+                        foreach (LocalFileInfo failedFileInfo in failedList)
                         {
-                            LocalFileInfo fileInfo = (LocalFileInfo)state!;
-                            try
-                            {
-                                FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
-                                if (isFileExist)
-                                {
-                                    fileInfoN.Delete();
-                                }
-
-                                Interlocked.Increment(ref deleteSuccess);
-                            }
-                            catch (Exception ex)
-                            {
-                                Interlocked.Increment(ref deleteFailed);
-                                lock (failedListLock)
-                                {
-                                    failedList.Add(fileInfo);
-                                }
-                                Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
-                                    LogType.Error, true);
-                            }
-                        },
-                        fileInfoState,
-                        CancellationToken.None,
-                        TaskCreationOptions.DenyChildAttach,
-                        TaskScheduler.Default));
-
-                        await Task.WhenAll(deleteListTask, deleteFileTask);
-
-                        if (failedList.Count > 0)
-                        {
-                            foreach (LocalFileInfo failedFileInfo in failedList)
-                            {
-                                deletedItems.Remove(failedFileInfo);
-                            }
+                            deletedItems.Remove(failedFileInfo);
                         }
-
-                        long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
-                        _assetTotalSize -= totalDeleted;
-
-                        Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
                     }
+
+                    long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
+                    _assetTotalSize -= totalDeleted;
+
+                    Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
                 }
 
                 // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).

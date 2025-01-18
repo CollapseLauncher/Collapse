@@ -22,8 +22,8 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class UpdatePage : Page
     {
-        private readonly CancellationTokenSource _tokenSource    = new CancellationTokenSource();
-        private readonly MarkdownConfig          _markdownConfig = new MarkdownConfig();
+        private readonly CancellationTokenSource _tokenSource    = new();
+        private readonly MarkdownConfig          _markdownConfig = new();
 
         public UpdatePage()
         {
@@ -79,7 +79,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (LauncherUpdateWatcher.isMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
+                if (LauncherUpdateWatcher.IsMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
                 {
                     switch (await Dialog_MeteredConnectionWarning(Content))
                     {

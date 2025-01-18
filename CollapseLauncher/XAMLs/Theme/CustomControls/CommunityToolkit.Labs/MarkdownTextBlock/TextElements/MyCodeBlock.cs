@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Markdig.Helpers;
 using Markdig.Syntax;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -43,9 +44,9 @@ internal class MyCodeBlock : IAddChild
             var stringBuilder = new StringBuilder();
 
             // go through all the lines backwards and only add the lines to a stack if we have encountered the first non-empty line
-            var lines = fencedCodeBlock.Lines.Lines;
-            var stack = new Stack<string>();
-            var encounteredFirstNonEmptyLine = false;
+            StringLine[]  lines                        = fencedCodeBlock.Lines.Lines;
+            Stack<string> stack                        = new();
+            var           encounteredFirstNonEmptyLine = false;
             if (lines.Length != 0)
             {
                 for (var i = lines.Length - 1; i >= 0; i--)

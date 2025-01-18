@@ -116,9 +116,9 @@ namespace CollapseLauncher
             if (lastException != null) throw lastException;
 
             // Get gatewayURl and fetch the gateway
-            _gameGateway =
+            GameGateway =
                 await KianaDispatch.GetGameserver(downloadClient, dispatch!, _gameVersionManager.GamePreset.GameGatewayDefault!, token);
-            _gameRepoURL = BuildAssetBundleURL(_gameGateway);
+            _gameRepoURL = BuildAssetBundleURL(GameGateway);
         }
 
         private static string BuildAssetBundleURL(KianaDispatch gateway) => CombineURLFromString(gateway!.AssetBundleUrls![0], "/{0}/editor_compressed/");
@@ -186,7 +186,7 @@ namespace CollapseLauncher
                 // If isFirst flag set to true, then get the _gameSalt.
                 if (isFirst)
                 {
-                    _gameSalt = GetAssetIndexSalt(line);
+                    GameSalt = GetAssetIndexSalt(line);
                     isFirst = false;
                     continue;
                 }
@@ -194,7 +194,7 @@ namespace CollapseLauncher
                 // Get the lucky number if it does so 👀
                 if (isNeedReadLuckyNumber && int.TryParse(line, null, out int luckyNumber))
                 {
-                    _luckyNumber = luckyNumber;
+                    LuckyNumber = luckyNumber;
                     isNeedReadLuckyNumber = false;
                     continue;
                 }
@@ -225,7 +225,7 @@ namespace CollapseLauncher
                 if (content == null) continue;
 
                 // Check if the asset is regional and contains only selected language.
-                if (IsValidRegionFile(content.N, _gameLang))
+                if (IsValidRegionFile(content.N, GameLang))
                 {
                     // Set base URL and Path and add it to asset index
                     content.BaseURL = baseUrl;
@@ -335,23 +335,23 @@ namespace CollapseLauncher
         private bool IsValidRegionFile(string input, string lang)
         {
             // If the path contains regional string, then move to the next check
-            if (input!.Contains(_cacheRegionalCheckName!))
+            if (input!.Contains(CacheRegionalCheckName!))
             {
                 // Check if the regional string has specified language string
-                return input.Contains($"{_cacheRegionalCheckName}_{lang}");
+                return input.Contains($"{CacheRegionalCheckName}_{lang}");
             }
 
             // If none, then pass it as true (non-regional string)
             return true;
         }
 
-        public KianaDispatch GetCurrentGateway() => _gameGateway;
+        public KianaDispatch GetCurrentGateway() => GameGateway;
 
         public async Task<(List<CacheAsset>, string, string, int)> GetCacheAssetList(
             DownloadClient downloadClient, CacheAssetType type, CancellationToken token)
         {
             // Initialize asset index for the return
-            List<CacheAsset> returnAsset = new();
+            List<CacheAsset> returnAsset = [];
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
             await BuildGameRepoURL(downloadClient, token);
@@ -360,8 +360,8 @@ namespace CollapseLauncher
             _ = await FetchByType(type, downloadClient, returnAsset, token);
 
             // Return the list and base asset bundle repo URL
-            return (returnAsset, _gameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(_gameGateway),
-                    _luckyNumber);
+            return (returnAsset, GameGateway!.ExternalAssetUrls!.FirstOrDefault(), BuildAssetBundleURL(GameGateway),
+                    LuckyNumber);
         }
     }
 }

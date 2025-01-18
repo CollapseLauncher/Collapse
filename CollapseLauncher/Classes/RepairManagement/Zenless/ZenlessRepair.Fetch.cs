@@ -41,7 +41,7 @@ namespace CollapseLauncher
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
             // Create a hash set to overwrite local files
-            Dictionary<string, FilePropertiesRemote> hashSet = new Dictionary<string, FilePropertiesRemote>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FilePropertiesRemote> hashSet = new(StringComparer.OrdinalIgnoreCase);
 
             // If not in cache mode, then fetch main package
             if (!IsCacheUpdateMode)
@@ -85,7 +85,7 @@ namespace CollapseLauncher
                 return;
 
             // Initialize pkgVersion list
-            List<PkgVersionProperties> pkgVersion = new List<PkgVersionProperties>();
+            List<PkgVersionProperties> pkgVersion = [];
 
             // Initialize repo metadata
             try
@@ -448,7 +448,7 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValue = new[] { fallbackCurrentLangname };
+                returnValue = [fallbackCurrentLangname];
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
                 return returnValue;
             }
@@ -457,7 +457,7 @@ namespace CollapseLauncher
             returnValue = File.ReadAllLines(audioLangListPathStatic);
             if (returnValue.Length == 0)
             {
-                returnValue = new[] { fallbackCurrentLangname };
+                returnValue = [fallbackCurrentLangname];
                 File.WriteAllLines(audioLangListPathStatic, returnValue);
             }
 
@@ -473,7 +473,7 @@ namespace CollapseLauncher
                     Directory.CreateDirectory(audioLangPathDir);
 
                 // Assign the default value and write to the file, then return.
-                returnValueAlternate = new[] { fallbackCurrentLangnameNative };
+                returnValueAlternate = [fallbackCurrentLangnameNative];
                 File.WriteAllLines(audioLangListPathAlternativeStatic, returnValueAlternate);
                 return returnValueAlternate;
             }
@@ -482,7 +482,7 @@ namespace CollapseLauncher
             returnValueAlternate = File.ReadAllLines(audioLangListPathAlternativeStatic);
             if (returnValueAlternate.Length == 0)
             {
-                returnValueAlternate = new[] { fallbackCurrentLangnameNative };
+                returnValueAlternate = [fallbackCurrentLangnameNative];
                 File.WriteAllLines(audioLangListPathAlternativeStatic, returnValueAlternate);
             }
 

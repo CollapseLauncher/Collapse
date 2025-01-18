@@ -14,14 +14,16 @@ using RegistryUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using Windows.UI;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using static CollapseLauncher.Statics.GamePropertyVault;
+using Brush = Microsoft.UI.Xaml.Media.Brush;
+using Color = Windows.UI.Color;
 
 namespace CollapseLauncher.Pages
 {
@@ -85,14 +87,14 @@ namespace CollapseLauncher.Pages
             InheritApplyTextColor = ApplyText.Foreground!;
         }
 
-        private void RegistryExportClick(object sender, RoutedEventArgs e)
+        private async void RegistryExportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
                 string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion.GameDirPath);
-                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?.GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
-                Exception exc = Settings.ExportSettings(true, gameBasePath, relativePaths);
+                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $@"{CurrentGameProperty?.GameExecutableNameWithoutExtension}_Data\Persistent\LocalStorage");
+                Exception exc = await Settings.ExportSettings(true, gameBasePath, relativePaths);
 
                 if (exc != null) throw exc;
 
@@ -125,13 +127,13 @@ namespace CollapseLauncher.Pages
             }).ToArray();
         }
         
-        private void RegistryImportClick(object sender, RoutedEventArgs e)
+        private async void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
                 string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion.GameDirPath);
-                Exception exc = Settings.ImportSettings(gameBasePath);
+                Exception exc = await Settings.ImportSettings(gameBasePath);
 
                 if (exc != null) throw exc;
 
@@ -233,7 +235,7 @@ namespace CollapseLauncher.Pages
                                                  // HOYOOOOOOO!!!!!!!
 
             // Get the list of available resolutions. Otherwise, throw an exception.
-            var currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList();
+            List<Size> currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList();
             if (currentAcceptedRes.Count == 0)
                 throw new NullReferenceException("Cannot get screen resolution. Prolly the app cannot communicate with Win32 API???");
             var maxAcceptedResW = currentAcceptedRes.Max(x => x.Width); // Find the maximum resolution width that can be accepted.
@@ -255,16 +257,16 @@ namespace CollapseLauncher.Pages
         
         private List<string> GetResPairs_Fullscreen(System.Drawing.Size defaultResolution)
         {
-            var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
-            var acH               = acceptableHeight;
-            var acceptedMaxHeight = ScreenProp.GetMaxHeight();
+            var       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            List<int> acH               = acceptableHeight;
+            var       acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
 
             // Get the resolution pairs and initialize default resolution index
-            List<string> resPairs = new List<string>();
-            int indexOfDefaultRes = -1;
+            List<string> resPairs          = [];
+            int          indexOfDefaultRes = -1;
 
             for (int i = 0; i < acH.Count; i++)
             {
@@ -291,15 +293,15 @@ namespace CollapseLauncher.Pages
 
         private List<string> GetResPairs_Windowed()
         {
-            var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
-            var wideRatio         = (double)16 / 9;
-            var ulWideRatio       = (double)21 / 9;
-            var acH               = acceptableHeight;
-            var acceptedMaxHeight = ScreenProp.GetMaxHeight();
+            var       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            var       wideRatio         = (double)16 / 9;
+            var       ulWideRatio       = (double)21 / 9;
+            List<int> acH               = acceptableHeight;
+            var       acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
-            List<string> resPairs = new List<string>();
+            List<string> resPairs = [];
 
             // If res is 21:9 then add proper native to the list
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)

@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Microsoft.Windows.AppLifecycle;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Activation;
@@ -18,7 +19,7 @@ namespace CollapseLauncher
             AppInstance.GetCurrent().Activated += App_Activated;
 
             string protocolName = "collapse";
-            RegistryKey reg = Registry.ClassesRoot.OpenSubKey(protocolName + "\\shell\\open\\command", true);
+            RegistryKey reg = Registry.ClassesRoot.OpenSubKey(protocolName + @"\shell\open\command", true);
 
             if (reg != null)
             {
@@ -39,7 +40,7 @@ namespace CollapseLauncher
             protocol.SetValue("URL Protocol", "");
             protocol.SetValue("Version", LauncherUpdateHelper.LauncherCurrentVersionString);
 
-            RegistryKey command = protocol.CreateSubKey("shell\\open\\command", true);
+            RegistryKey command = protocol.CreateSubKey(@"shell\open\command", true);
 
             command.SetValue("", string.Format("\"{0}\" %1", AppExecutablePath));
         }
@@ -58,8 +59,8 @@ namespace CollapseLauncher
             m_arguments = new Arguments();
 
             // Matches anything that is between two \" or " and anything that is not a space.
-            var splitArgs = Regex.Matches(args!.Arguments, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
-                                 .Select(x => x.Value.Trim('"'));
+            IEnumerable<string> splitArgs = Regex.Matches(args!.Arguments, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
+                                                 .Select(x => x.Value.Trim('"'));
 
             ArgumentParser.ParseArguments(splitArgs.Skip(1).ToArray());
 

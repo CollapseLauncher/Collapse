@@ -115,7 +115,7 @@ namespace CollapseLauncher.Pages
 
         #region GameResolution
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
-        private List<bool> ScreenResolutionIsFullscreenIdx = new List<bool>();
+        private List<bool> ScreenResolutionIsFullscreenIdx = [];
 
         public bool IsFullscreenEnabled
         {

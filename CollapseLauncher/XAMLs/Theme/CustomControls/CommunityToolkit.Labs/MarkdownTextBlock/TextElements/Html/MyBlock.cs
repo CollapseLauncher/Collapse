@@ -26,8 +26,8 @@ internal class MyBlock : IAddChild
     {
         _htmlNode = block;
         var align = _htmlNode.GetAttributeValue("align", "left");
-        _richTextBlocks = new List<RichTextBlock>();
-        _paragraph = new Paragraph();
+        _richTextBlocks = [];
+        _paragraph      = new Paragraph();
         _paragraph.TextAlignment = align switch
         {
             "left" => TextAlignment.Left,

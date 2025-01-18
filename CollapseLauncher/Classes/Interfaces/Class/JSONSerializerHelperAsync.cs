@@ -27,7 +27,7 @@ namespace CollapseLauncher
         internal static async Task<List<T?>> DeserializeAsListAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
         {
             // Create List of T
-            List<T?> listItem = new List<T?>();
+            List<T?> listItem = [];
 
             // Enumerate in async
             await foreach (T? item in data.DeserializeAsEnumerable(typeInfo, token))

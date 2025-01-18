@@ -67,7 +67,7 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine("[ShortcutCreator::AddToSteam] Cancelled manually.");
             });
 
-            var shortcuts = new List<SteamShortcut>();
+            List<SteamShortcut> shortcuts = new();
 
             foreach (var path in paths)
             {
@@ -97,7 +97,7 @@ namespace CollapseLauncher.ShortcutUtils
             if (reg == null)
                 return null;
 
-            var steamPath = (string)reg.GetValue("InstallPath", "C:\\Program Files (x86)\\Steam");
+            var steamPath = (string)reg.GetValue("InstallPath", @"C:\Program Files (x86)\Steam");
 
             var steamUserData = Path.Combine(steamPath, "userdata");
 

@@ -78,7 +78,7 @@ namespace CollapseLauncher.ShortcutUtils
             if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
             var iconName = ShortcutCreator.GetIconName(_preset.GameType);
-            var iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, "Assets\\Images\\GameIcon\\" + iconName);
+            var iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, @"Assets\Images\GameIcon\" + iconName);
 
             if (!Path.Exists(Icon) && Path.Exists(iconAssetPath))
             {
@@ -119,17 +119,17 @@ namespace CollapseLauncher.ShortcutUtils
 
         private async Task CacheImages(CancellationToken token)
         {
-            var assets = _preset.ZoneSteamAssets;
+            Dictionary<string, SteamGameProp> assets = _preset.ZoneSteamAssets;
             if (assets == null) return;
 
-            var images = new[]
+            (string, string)[] images = new[]
             {
                 ("Hero", "_hero"),
                 ("Logo", "_logo"),
                 ("Banner", "p"),
                 ("Preview", "")
             };
-            var cacheImageList = new List<(string, string)>();
+            List<(string, string)> cacheImageList = new();
 
             foreach (var image in images)
             {

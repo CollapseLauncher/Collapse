@@ -29,7 +29,7 @@ namespace CollapseLauncher.Interfaces
                 _gameVersionOverride = new GameVersion(versionOverride);
             }
 
-            AssetEntry = new ObservableCollection<IAssetProperty>();
+            AssetEntry = [];
         }
 
         public GamePropertyBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)

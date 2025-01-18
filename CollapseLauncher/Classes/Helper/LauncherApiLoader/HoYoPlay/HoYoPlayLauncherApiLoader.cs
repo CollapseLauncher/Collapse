@@ -166,7 +166,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             if (hypPluginPackage == null) return;
 
-            List<RegionResourcePlugin> pluginCurrentPackageList = new List<RegionResourcePlugin>();
+            List<RegionResourcePlugin> pluginCurrentPackageList = [];
             GuessAssignPluginConversion(pluginCurrentPackageList, hypPluginPackage);
             sophonResourceData.plugins = pluginCurrentPackageList;
         }
@@ -224,7 +224,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 // Assign and convert main game package (diff)
                 if (hypRootPackage.MainPackage?.Patches != null)
                 {
-                    sophonPackageResources.game.diffs = new List<RegionResourceVersion>();
+                    sophonPackageResources.game.diffs = [];
                     foreach (PackageResourceSections hypMainDiffPackageSection in hypRootPackage.MainPackage.Patches)
                     {
                         PackageResourceSections hypMainDiffPackageSectionRef = hypMainDiffPackageSection;
@@ -254,7 +254,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                         continue;
                     }
 
-                    sophonPackageResources.pre_download_game.diffs = new List<RegionResourceVersion>();
+                    sophonPackageResources.pre_download_game.diffs = [];
                     foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload
                                 .Patches)
                     {
@@ -303,7 +303,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             // If the audio package list is not null or empty, then process
             if (hypAudioPackageList != null && hypAudioPackageList.Count != 0)
             {
-                sophonPackageVersion.voice_packs = new List<RegionResourceVersion>();
+                sophonPackageVersion.voice_packs = [];
                 foreach (PackageDetails hypAudioPackage in hypAudioPackageList)
                 {
                     sophonPackageVersion.voice_packs.Add(new RegionResourceVersion
@@ -348,7 +348,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             sophonPackageVersion.version = version;
             sophonPackageVersion.decompressed_path = resourceListUrl;
 
-            sophonPackageVersion.segments = new List<RegionResourceVersion>();
+            sophonPackageVersion.segments = [];
 
             foreach (PackageDetails packageDetail in hypPackageList)
             {

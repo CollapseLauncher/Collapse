@@ -21,15 +21,15 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyImage : IAddChild
 {
-    private InlineUIContainer _container = new InlineUIContainer();
-    private Image _image = new Image();
-    private Grid? _imageGrid;
-    private Uri? _uri;
-    private IImageProvider? _imageProvider;
-    private ISVGRenderer _svgRenderer;
-    private double _precedentWidth;
-    private double _precedentHeight;
-    private bool _loaded;
+    private InlineUIContainer _container = new();
+    private Image             _image     = new();
+    private Grid?             _imageGrid;
+    private Uri?              _uri;
+    private IImageProvider?   _imageProvider;
+    private ISVGRenderer      _svgRenderer;
+    private double            _precedentWidth;
+    private double            _precedentHeight;
+    private bool              _loaded;
 
     public TextElement TextElement
     {

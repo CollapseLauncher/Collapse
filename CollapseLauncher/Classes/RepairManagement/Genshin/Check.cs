@@ -24,7 +24,7 @@ namespace CollapseLauncher
     {
         private async Task Check(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
-            List<PkgVersionProperties> brokenAssetIndex = new List<PkgVersionProperties>();
+            List<PkgVersionProperties> brokenAssetIndex = [];
 
             // Set Indetermined status as false
             _status.IsProgressAllIndetermined = false;
@@ -54,7 +54,7 @@ namespace CollapseLauncher
                                  $"Thread count set to {threadCount}.", LogType.Warning, true);
                 }
                 
-                var runningTask = new ConcurrentDictionary<PkgVersionProperties, byte>();
+                ConcurrentDictionary<PkgVersionProperties, byte> runningTask = new();
                 // Await the task for parallel processing
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = threadCount, CancellationToken = token }, async (asset, threadToken) =>

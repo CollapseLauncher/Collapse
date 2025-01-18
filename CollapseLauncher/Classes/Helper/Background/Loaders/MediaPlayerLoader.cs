@@ -90,7 +90,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         ~MediaPlayerLoader()
         {
-            LogWriteLine($"[~MediaPlayerLoader()] MediaPlayerLoader Deconstructor has been called!", LogType.Warning, true);
+            LogWriteLine("[~MediaPlayerLoader()] MediaPlayerLoader Deconstructor has been called!", LogType.Warning, true);
             Dispose();
         }
 
@@ -263,7 +263,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             try
             {
                 if (buffer.AsSpan(4).StartsWith(dashSignature))
-                    throw new FormatException($"The video format is in \"MPEG-DASH\" format, which is unsupported.");
+                    throw new FormatException("The video format is in \"MPEG-DASH\" format, which is unsupported.");
             }
             finally
             {

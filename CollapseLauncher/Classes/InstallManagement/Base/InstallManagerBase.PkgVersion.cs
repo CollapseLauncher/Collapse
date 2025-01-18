@@ -251,7 +251,7 @@ namespace CollapseLauncher.InstallManager.Base
                     _gameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
                 if (packagePreDownloadList != null)
                 {
-                    var preDownloadZips = new List<string>();
+                    List<string>? preDownloadZips = new List<string>();
                     var pkg = new GameInstallPackage(packagePreDownloadList, _gamePath)
                         { PackageType = GameInstallPackageType.General };
                     if (!string.IsNullOrEmpty(pkg.Name)) preDownloadZips.Add($"{pkg.Name}*");
@@ -311,7 +311,7 @@ namespace CollapseLauncher.InstallManager.Base
             catch (Exception ex)
             {
                 ErrorSender.SendException(ex);
-                return (new List<LocalFileInfo>(), 0);
+                return ([], 0);
             }
         }
 

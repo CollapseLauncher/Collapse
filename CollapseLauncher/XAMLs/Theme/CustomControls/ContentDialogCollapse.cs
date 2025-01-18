@@ -28,8 +28,8 @@ namespace CollapseLauncher.CustomControls
                 ContentDialogTheme.Error => UIElementExtensions.GetApplicationResource<SolidColorBrush>("SystemFillColorCriticalBrush"),
                 _ => UIElementExtensions.GetApplicationResource<SolidColorBrush>("SystemFillColorAttentionBrush")
             }).Color;
-            titleColor.A = 255;
-            (UIElementExtensions.GetApplicationResource<SolidColorBrush>("DialogTitleBrush")).Color = titleColor;
+            titleColor.A                                                                          = 255;
+            UIElementExtensions.GetApplicationResource<SolidColorBrush>("DialogTitleBrush").Color = titleColor;
 
             ThemeTitleGlyph = Theme switch
             {

@@ -63,45 +63,45 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) =>
-        {
-            try
-            {
-                await action;
-            }
-            catch (Exception ex)
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                    ErrorSender.SendException(ex));
-            }
-        },
-        new ExecutionDataflowBlockOptions
-        {
-            EnsureOrdered = true,
-            MaxMessagesPerTask = 1,
-            MaxDegreeOfParallelism = 1,
-            BoundedCapacity = 1,
-            TaskScheduler = TaskScheduler.Current
-        });
-        internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
-        {
-            try
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
-            }
-            catch (Exception ex)
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                    ErrorSender.SendException(ex));
-            }
-        },
-            new ExecutionDataflowBlockOptions
-            {
-                EnsureOrdered = true,
-                MaxMessagesPerTask = 1,
-                MaxDegreeOfParallelism = 1,
-                BoundedCapacity = 1
-            });
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new(async (action) =>
+                                                                           {
+                                                                               try
+                                                                               {
+                                                                                   await action;
+                                                                               }
+                                                                               catch (Exception ex)
+                                                                               {
+                                                                                   _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                                                                                                                             ErrorSender.SendException(ex));
+                                                                               }
+                                                                           },
+                                                                           new ExecutionDataflowBlockOptions
+                                                                           {
+                                                                               EnsureOrdered = true,
+                                                                               MaxMessagesPerTask = 1,
+                                                                               MaxDegreeOfParallelism = 1,
+                                                                               BoundedCapacity = 1,
+                                                                               TaskScheduler = TaskScheduler.Current
+                                                                           });
+        internal ActionBlock<Action> SharedActionBlockQueueChange = new(static (action) =>
+                                                                        {
+                                                                            try
+                                                                            {
+                                                                                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
+                                                                            }
+                                                                            catch (Exception ex)
+                                                                            {
+                                                                                _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                                                                                                                          ErrorSender.SendException(ex));
+                                                                            }
+                                                                        },
+                                                                        new ExecutionDataflowBlockOptions
+                                                                        {
+                                                                            EnsureOrdered = true,
+                                                                            MaxMessagesPerTask = 1,
+                                                                            MaxDegreeOfParallelism = 1,
+                                                                            BoundedCapacity = 1
+                                                                        });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.

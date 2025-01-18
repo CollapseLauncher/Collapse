@@ -93,7 +93,7 @@ namespace CollapseLauncher.GamePlaytime
             try
             {
                 _isDeserializing.Add(hashID);
-                if (root == null) throw new NullReferenceException($"Cannot load playtime. RegistryKey is unexpectedly not initialized!");
+                if (root == null) throw new NullReferenceException("Cannot load playtime. RegistryKey is unexpectedly not initialized!");
 
                 int? totalTime = (int?)root.GetValue(TotalTimeValueName,null);
                 int? lastPlayed = (int?)root.GetValue(LastPlayedValueName,null);
@@ -150,7 +150,7 @@ namespace CollapseLauncher.GamePlaytime
         {
             try
             {
-                if (_registryRoot == null) throw new NullReferenceException($"Cannot save playtime since RegistryKey is unexpectedly not initialized!");
+                if (_registryRoot == null) throw new NullReferenceException("Cannot save playtime since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);

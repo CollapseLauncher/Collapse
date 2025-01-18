@@ -236,25 +236,25 @@ namespace CollapseLauncher.Pages
         public bool VerticalSync
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.VerticalSync);
-            set => Settings.SettingsGeneralData.globalPerfData.VerticalSync = (VerticalSyncOption)(Convert.ToInt32(value));
+            set => Settings.SettingsGeneralData.globalPerfData.VerticalSync = (VerticalSyncOption)Convert.ToInt32(value);
         }
 
         public bool VolumetricFog
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.VolumetricFog);
-            set => Settings.SettingsGeneralData.globalPerfData.VolumetricFog = (VolumetricFogOption)(Convert.ToInt32(value));
+            set => Settings.SettingsGeneralData.globalPerfData.VolumetricFog = (VolumetricFogOption)Convert.ToInt32(value);
         }
 
         public bool Reflections
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.Reflections);
-            set => Settings.SettingsGeneralData.globalPerfData.Reflections = (ReflectionsOption)(Convert.ToInt32(value));
+            set => Settings.SettingsGeneralData.globalPerfData.Reflections = (ReflectionsOption)Convert.ToInt32(value);
         }
 
         public bool Bloom
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.Bloom);
-            set => Settings.SettingsGeneralData.globalPerfData.Bloom = (BloomOption)(Convert.ToInt32(value));
+            set => Settings.SettingsGeneralData.globalPerfData.Bloom = (BloomOption)Convert.ToInt32(value);
         }
 
         public int FPS
@@ -328,62 +328,62 @@ namespace CollapseLauncher.Pages
                     VolumetricFogToggle.IsEnabled = true;
                 }
 
-                Settings.SettingsGeneralData.globalPerfData.ShadowQuality = (ShadowQualityOption)(value);
+                Settings.SettingsGeneralData.globalPerfData.ShadowQuality = (ShadowQualityOption)value;
             }
         }
 
         public int VisualEffects
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.VisualEffects;
-            set => Settings.SettingsGeneralData.globalPerfData.VisualEffects = (VisualEffectsOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.VisualEffects = (VisualEffectsOption)value;
         }
 
         public int SFXQuality
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.SFXQuality;
-            set => Settings.SettingsGeneralData.globalPerfData.SFXQuality = (SFXQualityOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.SFXQuality = (SFXQualityOption)value;
         }
 
         public int EnvironmentDetail
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.EnvironmentDetail;
-            set => Settings.SettingsGeneralData.globalPerfData.EnvironmentDetail = (EnvironmentDetailOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.EnvironmentDetail = (EnvironmentDetailOption)value;
         }
 
         public int MotionBlur
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.MotionBlur;
-            set => Settings.SettingsGeneralData.globalPerfData.MotionBlur = (MotionBlurOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.MotionBlur = (MotionBlurOption)value;
         }
 
         public int CrowdDensity
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.CrowdDensity;
-            set => Settings.SettingsGeneralData.globalPerfData.CrowdDensity = (CrowdDensityOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.CrowdDensity = (CrowdDensityOption)value;
         }
 
         public int SubsurfaceScattering
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.SubsurfaceScattering;
-            set => Settings.SettingsGeneralData.globalPerfData.SubsurfaceScattering = (SubsurfaceScatteringOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.SubsurfaceScattering = (SubsurfaceScatteringOption)value;
         }
 
         public int CoOpTeammateEffects
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.CoOpTeammateEffects;
-            set => Settings.SettingsGeneralData.globalPerfData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.CoOpTeammateEffects = (CoOpTeammateEffectsOption)value;
         }
 
         public int AnisotropicFiltering
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.AnisotropicFiltering;
-            set => Settings.SettingsGeneralData.globalPerfData.AnisotropicFiltering = (AnisotropicFilteringOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.AnisotropicFiltering = (AnisotropicFilteringOption)value;
         }
 
         public int Antialiasing
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.Antialiasing;
-            set => Settings.SettingsGeneralData.globalPerfData.Antialiasing = (AntialiasingOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.Antialiasing = (AntialiasingOption)value;
         }
 
         public bool TeamPageBackground
@@ -395,13 +395,13 @@ namespace CollapseLauncher.Pages
         public int GlobalIllumination
         {
             get => (int)Settings.SettingsGeneralData.globalPerfData.GlobalIllumination;
-            set => Settings.SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)(value);
+            set => Settings.SettingsGeneralData.globalPerfData.GlobalIllumination = (GlobalIlluminationOption)value;
         }
 
         public bool DynamicCharacterResolution
         {
             get => Convert.ToBoolean((int)Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution);
-            set => Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution = (DynamicCharacterResolutionOption)(Convert.ToInt32(value));
+            set => Settings.SettingsGeneralData.globalPerfData.DynamicCharacterResolution = (DynamicCharacterResolutionOption)Convert.ToInt32(value);
         }
         #endregion
 

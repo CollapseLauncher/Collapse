@@ -2707,7 +2707,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Try open BHI3L registry key
             // If the key doesn't exist, then return false
-            RegistryKey? Key = Registry.CurrentUser.OpenSubKey("Software\\Bp\\Better HI3 Launcher");
+            RegistryKey? Key = Registry.CurrentUser.OpenSubKey(@"Software\Bp\Better HI3 Launcher");
             if (Key == null)
             {
                 return false;

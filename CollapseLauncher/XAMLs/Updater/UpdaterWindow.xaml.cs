@@ -25,9 +25,9 @@ public sealed partial class UpdaterWindow
     
     public static  string workingDir = Path.GetDirectoryName(execPath);
     public static  string sourcePath = Path.Combine(workingDir, Path.GetFileName(execPath)!);
-    public static  string applyPath  = Path.Combine(workingDir, $"ApplyUpdate.exe");
+    public static  string applyPath  = Path.Combine(workingDir, "ApplyUpdate.exe");
     
-    private static string applyElevatedPath = Path.Combine(workingDir, "..\\", $"ApplyUpdate.exe");
+    private static string applyElevatedPath = Path.Combine(workingDir, "..\\", "ApplyUpdate.exe");
 
     public static string elevatedPath =
         Path.Combine(workingDir, Path.GetFileNameWithoutExtension(sourcePath) + ".Elevated.exe");
@@ -40,7 +40,7 @@ public sealed partial class UpdaterWindow
         InitializeComponent();
         InitializeWindowSettings();
 // ReSharper disable RedundantAssignment
-        var title = $"Collapse Launcher Updater";
+        var title = "Collapse Launcher Updater";
         if (IsPreview)
             Title = title += "[PREVIEW]";
     #if DEBUG

@@ -50,7 +50,7 @@ namespace CollapseLauncher.Pages
 
     public partial class StringToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => (value is string asString) && !string.IsNullOrEmpty(asString) ? Visibility.Visible : Visibility.Collapsed;
+        public object Convert(object value, Type targetType, object parameter, string input) => value is string asString && !string.IsNullOrEmpty(asString) ? Visibility.Visible : Visibility.Collapsed;
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 

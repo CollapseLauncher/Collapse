@@ -16,7 +16,8 @@ namespace CollapseLauncher
     {
         #region Properties
         private const    string        _assetBasePath   = "BH3_Data/StreamingAssets/";
-        private readonly string[]      _skippableAssets = new[] { "CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic" };
+        private readonly string[]      _skippableAssets = ["CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic"
+        ];
         private          HonkaiCache   _cacheUtil             { get; init; }
         private          string        _assetBaseURL          { get; set; }
         private          string        _blockBaseURL          { get => ConverterTool.CombineURLFromString(_assetBaseURL,      $"StreamingAsb/{string.Join('_', _gameVersion.VersionArray)}/pc/HD"); }

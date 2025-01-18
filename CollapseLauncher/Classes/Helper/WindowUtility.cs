@@ -755,7 +755,7 @@ namespace CollapseLauncher.Helper
 
             double scaleFactor = CurrentWindowMonitorScaleFactor;
             var incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-            var safeArea = new RectInt32[]
+            RectInt32[]? safeArea = new RectInt32[]
             {
                     new(CurrentAppWindow.Size.Width - (int)((144 + 12) * scaleFactor), 0, (int)((144 + 12) * scaleFactor),
                         (int)(48 * scaleFactor))
@@ -770,9 +770,9 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            double scaleFactor = CurrentWindowMonitorScaleFactor;
-            var incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-            var safeArea = new RectInt32[] { new(0, 0, CurrentAppWindow.Size.Width, (int)(48 * scaleFactor)) };
+            double       scaleFactor = CurrentWindowMonitorScaleFactor;
+            var          incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
+            RectInt32[]? safeArea = new RectInt32[] { new(0, 0, CurrentAppWindow.Size.Width, (int)(48 * scaleFactor)) };
             incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
         }
 

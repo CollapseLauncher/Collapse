@@ -40,7 +40,7 @@ public class TableRenderer : MarkdownObjectRenderer<WinUIRenderer, Table>
                         ? i
                         : cell.ColumnIndex;
                     columnIndex = columnIndex >= table.ColumnDefinitions.Count ? table.ColumnDefinitions.Count - 1 : columnIndex;
-                    var alignment = table.ColumnDefinitions[columnIndex].Alignment;
+                    TableColumnAlign? alignment = table.ColumnDefinitions[columnIndex].Alignment;
                     textAlignment = alignment switch
                     {
                         TableColumnAlign.Center => TextAlignment.Center,

@@ -40,10 +40,10 @@ namespace CollapseLauncher
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
             // Iterate repair asset
-            ObservableCollection<IAssetProperty> assetProperty = new ObservableCollection<IAssetProperty>(AssetEntry);
+            ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
             if (_isBurstDownloadEnabled)
             {
-                var processingAsset = new ConcurrentDictionary<(PkgVersionProperties, IAssetProperty), byte>();
+                ConcurrentDictionary<(PkgVersionProperties, IAssetProperty), byte> processingAsset = new();
                 await Parallel.ForEachAsync(
                     PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
@@ -67,7 +67,7 @@ namespace CollapseLauncher
             }
             else
             {
-                var processingAsset = new ConcurrentDictionary<(PkgVersionProperties, IAssetProperty), byte>();
+                ConcurrentDictionary<(PkgVersionProperties, IAssetProperty), byte> processingAsset = new();
                 foreach ((PkgVersionProperties AssetIndex, IAssetProperty AssetProperty) asset in
                     PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR

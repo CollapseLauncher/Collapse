@@ -16,34 +16,34 @@ namespace CollapseLauncher
         private const byte MIN_ALLOWED_CHAR_LENGTH = 2;
 
         private static readonly JavaScriptEncoder jsonEncoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-        private static readonly JsonWriterOptions jsonWriterOptions = new JsonWriterOptions()
+        private static readonly JsonWriterOptions jsonWriterOptions = new()
         {
             Indented = false,
             Encoder = jsonEncoder
         };
-        private static readonly JsonWriterOptions jsonWriterOptionsIndented = new JsonWriterOptions()
+        private static readonly JsonWriterOptions jsonWriterOptionsIndented = new()
         {
             Indented = true,
             Encoder = jsonEncoder
         };
-        private static readonly JsonReaderOptions jsonReaderOptions = new JsonReaderOptions()
+        private static readonly JsonReaderOptions jsonReaderOptions = new()
         {
             AllowTrailingCommas = true,
             CommentHandling = JsonCommentHandling.Skip
         };
-        private static readonly JsonNodeOptions jsonNodeOptions = new JsonNodeOptions()
+        private static readonly JsonNodeOptions jsonNodeOptions = new()
         {
             PropertyNameCaseInsensitive = false // Restricted to use the exact property name case
         };
-        private static readonly JsonDocumentOptions jsonDocumentOptions = new JsonDocumentOptions()
+        private static readonly JsonDocumentOptions jsonDocumentOptions = new()
         {
             AllowTrailingCommas = true,
             CommentHandling = JsonCommentHandling.Skip
         };
 
-        private static readonly ArrayBufferWriter<byte> jsonBufferWriter = new ArrayBufferWriter<byte>(4 << 10);
-        private static readonly Utf8JsonWriter jsonWriter = new Utf8JsonWriter(jsonBufferWriter, jsonWriterOptions);
-        private static readonly Utf8JsonWriter jsonWriterIndented = new Utf8JsonWriter(jsonBufferWriter, jsonWriterOptionsIndented);
+        private static readonly ArrayBufferWriter<byte> jsonBufferWriter   = new(4 << 10);
+        private static readonly Utf8JsonWriter          jsonWriter         = new(jsonBufferWriter, jsonWriterOptions);
+        private static readonly Utf8JsonWriter          jsonWriterIndented = new(jsonBufferWriter, jsonWriterOptionsIndented);
 
         internal static T? Deserialize<T>(this string data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
             where T : class => InnerDeserialize(data, typeInfo, defaultType);

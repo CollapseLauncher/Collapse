@@ -54,7 +54,7 @@ namespace CollapseLauncher.Helper.JsonConverter
                 JsonSerializerOptions options)
         {
 
-            throw new JsonException($"Serializing is not supported!");
+            throw new JsonException("Serializing is not supported!");
         }
     }
 }

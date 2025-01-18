@@ -38,7 +38,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         [JsonIgnore]
         public override Size sizeRes
         {
-            get => new Size(width, height);
+            get => new(width, height);
             set
             {
                 width = value.Width < 64 ? currentRes.Width : value.Width;

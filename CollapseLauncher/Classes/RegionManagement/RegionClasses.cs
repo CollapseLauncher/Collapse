@@ -24,7 +24,7 @@ namespace CollapseLauncher
                 return null;
             }
 
-            return source.Count == 0 ? new List<T>() : source;
+            return source.Count == 0 ? [] : source;
         }
     }
 

@@ -50,7 +50,7 @@ namespace CollapseLauncher
     {
         private          string?      _mainMetaRepoUrl;
         private readonly byte[]       _collapseHeader        = "Collapse"u8.ToArray();
-        private readonly List<string> _ignoredUnusedFileList = new();
+        private readonly List<string> _ignoredUnusedFileList = [];
 
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
@@ -330,7 +330,7 @@ namespace CollapseLauncher
             await using TextWriter sw = fileInfo.CreateText();
 
             // Initialize concurrent queue for video metadata
-            ConcurrentDictionary<string, CGMetadata> videoMetadataQueue = new ConcurrentDictionary<string, CGMetadata>();
+            ConcurrentDictionary<string, CGMetadata> videoMetadataQueue = new();
 
             // Iterate the metadata to be converted into asset index
             await Parallel.ForEachAsync(enumEntry!, new ParallelOptions
@@ -603,9 +603,9 @@ namespace CollapseLauncher
                                         SenadinaFileIdentifier? patchConfigIdentifier, string _repoURL, CancellationToken token)
         {
             // Set Primary XMF Path
-            string xmfPriPath = Path.Combine(_gamePath!, "BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks.xmf");
+            string xmfPriPath = Path.Combine(_gamePath!, @"BH3_Data\StreamingAssets\Asb\pc\Blocks.xmf");
             // Set Secondary XMF Path
-            string xmfSecPath = Path.Combine(_gamePath!, $"BH3_Data\\StreamingAssets\\Asb\\pc\\Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
+            string xmfSecPath = Path.Combine(_gamePath!, $@"BH3_Data\StreamingAssets\Asb\pc\Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf");
 
             // Set Manifest Platform XMF Path
             string xmfPlatformPath = Path.Combine(_gamePath!, @"BH3_Data\StreamingAssets\Asb\pc\BlockMeta.xmf");

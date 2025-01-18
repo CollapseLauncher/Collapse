@@ -356,7 +356,7 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = null,
                 DefaultButton = ContentDialogButton.Primary,
                 Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : throw new NullReferenceException($"WindowUtility.CurrentWindow cannot be null!")
+                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : throw new NullReferenceException("WindowUtility.CurrentWindow cannot be null!")
             };
 
             InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
@@ -563,7 +563,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe(UIElement content)
         {
-            Dictionary<string, PresetConfig> convertibleRegions = new Dictionary<string, PresetConfig>();
+            Dictionary<string, PresetConfig> convertibleRegions = new();
             foreach (KeyValuePair<string, PresetConfig> config in LauncherMetadataHelper.LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName!]
                 .Where(x => x.Value.IsConvertible ?? false))
                 convertibleRegions.Add(config.Key, config.Value);
@@ -593,7 +593,8 @@ namespace CollapseLauncher.Dialogs
             var sourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, new List<string>(convertibleRegions.Keys)),
+                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
+                                                                        [..convertibleRegions.Keys]),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };
@@ -729,7 +730,7 @@ namespace CollapseLauncher.Dialogs
                     case MigrateFromLauncherType.Steam:
                         return await Dialog_ExistingInstallationSteam(content, existingGamePath, isHasOnlyMigrateOption);
                     default:
-                        throw new InvalidOperationException($"Dialog is not supported for unknown migration!");
+                        throw new InvalidOperationException("Dialog is not supported for unknown migration!");
                 }
             }
 
@@ -1112,7 +1113,7 @@ namespace CollapseLauncher.Dialogs
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                              .WithVerticalAlignment(VerticalAlignment.Stretch)
-                                             .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
+                                             .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto);
 
                 _ = rootGrid.AddElementToGridRow(new TextBlock
                 {

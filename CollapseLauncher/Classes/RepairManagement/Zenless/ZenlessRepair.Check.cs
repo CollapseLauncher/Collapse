@@ -16,7 +16,7 @@ namespace CollapseLauncher
     {
         private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
+            List<FilePropertiesRemote> brokenAssetIndex = [];
 
             // Set Indetermined status as false
             _status.IsProgressAllIndetermined = false;

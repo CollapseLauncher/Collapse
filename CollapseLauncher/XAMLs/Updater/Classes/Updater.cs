@@ -52,7 +52,7 @@ public partial class Updater : IDisposable
 
     private static readonly string execPath          = Process.GetCurrentProcess().MainModule!.FileName;
     private static readonly string workingDir        = Path.GetDirectoryName(execPath);
-    private static readonly string applyElevatedPath = Path.Combine(workingDir, "..\\", $"ApplyUpdate.exe");
+    private static readonly string applyElevatedPath = Path.Combine(workingDir, "..\\", "ApplyUpdate.exe");
 
     public event EventHandler<UpdaterStatus>   UpdaterStatusChanged;
     public event EventHandler<UpdaterProgress> UpdaterProgressChanged;

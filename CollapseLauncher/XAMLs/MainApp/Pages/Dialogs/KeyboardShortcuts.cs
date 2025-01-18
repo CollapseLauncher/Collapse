@@ -73,7 +73,7 @@ namespace CollapseLauncher.Dialogs
             // Region/Game Shortcuts
             StackPanel changeStack = CollapseUIExt.CreateStackPanel().WithVisibility(Visibility.Collapsed).WithWidth(_buttonWidth);
             Grid changeTitleGrid = CollapseUIExt.CreateGrid()
-                .WithColumns(GridLength.Auto, new(1.0d, GridUnitType.Star)).WithColumnSpacing(5d)
+                .WithColumns(GridLength.Auto, new GridLength(1.0d, GridUnitType.Star)).WithColumnSpacing(5d)
                 .WithVerticalAlignment(VerticalAlignment.Center)
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch);
 
@@ -153,8 +153,8 @@ namespace CollapseLauncher.Dialogs
             Button gameFolderButton  = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GameFolderTab)       .WithDataContext(2);
             Button gameManagerButton = CollapseUIExt.CreateButtonWithIcon<Button>(text: Lang._KbShortcuts!.GameManagementTab)   .WithDataContext(3);
 
-            List<StackPanel> stacks = new() { genStack, changeStack, gameFolderStack, gameManageStack };
-            List<Button> buttons = new() { genButton, changeButton, gameFolderButton, gameManagerButton };
+            List<StackPanel> stacks  = [genStack, changeStack, gameFolderStack, gameManageStack];
+            List<Button>     buttons = [genButton, changeButton, gameFolderButton, gameManagerButton];
 
             foreach (Button button in buttons)
             {
@@ -180,7 +180,7 @@ namespace CollapseLauncher.Dialogs
         private static Grid GenerateShortcutBlock(string keyName, KbShortcut shortcut, string description, string example = null, bool enableSwapButton = true)
         {
             Grid shortcutGrid = CollapseUIExt.CreateGrid()
-                .WithColumns(GridLength.Auto, new(1d, GridUnitType.Star)).WithColumnSpacing(5)
+                .WithColumns(GridLength.Auto, new GridLength(1d, GridUnitType.Star)).WithColumnSpacing(5)
                 .WithMargin(0d, 8d)
                 .WithVerticalAlignment(VerticalAlignment.Center)
                 .WithHorizontalAlignment(HorizontalAlignment.Stretch);
@@ -599,10 +599,10 @@ namespace CollapseLauncher.Dialogs
 
         private static readonly List<KbShortcut> ForbiddenShortcutList =
         [
-            new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.A },
-            new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.X },
-            new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.C },
-            new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.V }
+            new() { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.A },
+            new() { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.X },
+            new() { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.C },
+            new() { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.V }
         ];
         #endregion
 
@@ -619,7 +619,7 @@ namespace CollapseLauncher.Dialogs
 
             if (keyListStr == null)
             {
-                foreach (var entry in DefaultShortcutList)
+                foreach (KeyValuePair<string, KbShortcut> entry in DefaultShortcutList)
                 {
                     resultList.Add(entry.Key, entry.Value);
                 }
@@ -650,8 +650,8 @@ namespace CollapseLauncher.Dialogs
                 }
             }
 
-            var missingKeys = DefaultShortcutList.Keys.Except(resultList.Keys);
-            var deprecatedKeys = resultList.Keys.Except(DefaultShortcutList.Keys);
+            IEnumerable<string> missingKeys    = DefaultShortcutList.Keys.Except(resultList.Keys);
+            IEnumerable<string> deprecatedKeys = resultList.Keys.Except(DefaultShortcutList.Keys);
 
             // ReSharper disable PossibleMultipleEnumeration
             saveAfterLoad = saveAfterLoad || missingKeys.Any() || deprecatedKeys.Any();
@@ -676,7 +676,7 @@ namespace CollapseLauncher.Dialogs
         {
             KbShortcutList ??= DefaultShortcutList;
             string res = "";
-            foreach (var entry in KbShortcutList)
+            foreach (KeyValuePair<string, KbShortcut> entry in KbShortcutList)
             {
                 res += $"{entry.Key}:{entry.Value.ToCode()}|";
             }

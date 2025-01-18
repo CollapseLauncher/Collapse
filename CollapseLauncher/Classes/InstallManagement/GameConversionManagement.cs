@@ -161,11 +161,11 @@ namespace CollapseLauncher
         private async Task<List<FileProperties>> VerifyIngredients(List<FileProperties> FileManifest, string GamePath)
         {
             ResetSw();
-            List<FileProperties> BrokenManifest = new List<FileProperties>();
-            long CurRead = 0;
-            long TotalSize = FileManifest.Sum(x => x.FileSize);
-            string LocalHash;
-            string OutputPath;
+            List<FileProperties> BrokenManifest = [];
+            long                 CurRead        = 0;
+            long                 TotalSize      = FileManifest.Sum(x => x.FileSize);
+            string               LocalHash;
+            string               OutputPath;
 
             ConvertStatus = Lang._InstallConvert.Step3Title2;
             foreach (FileProperties Entry in FileManifest)
@@ -175,19 +175,17 @@ namespace CollapseLauncher
                 UpdateProgress(CurRead, TotalSize, 1, 1, ConvertSw.Elapsed, ConvertStatus, ConvertDetail);
                 if (File.Exists(OutputPath))
                 {
-                    using (FileStream fs = new FileStream(OutputPath, FileMode.Open, FileAccess.Read))
-                    {
-                        byte[] hashBytes = Entry.CurrCRC.Length > 8 ?
-                            await Hash.GetCryptoHashAsync<MD5>(fs, null, null, Token) :
-                            await Hash.GetHashAsync<Crc32>(fs, null, Token);
-                        LocalHash = Convert.ToHexStringLower(hashBytes);
+                    using FileStream fs = new FileStream(OutputPath, FileMode.Open, FileAccess.Read);
+                    byte[] hashBytes = Entry.CurrCRC.Length > 8 ?
+                        await Hash.GetCryptoHashAsync<MD5>(fs, null, null, Token) :
+                        await Hash.GetHashAsync<Crc32>(fs, null, Token);
+                    LocalHash = Convert.ToHexStringLower(hashBytes);
 
-                        Token.ThrowIfCancellationRequested();
-                        if (LocalHash != Entry.CurrCRC)
-                        {
-                            LogWriteLine($"File {Entry.FileName} has unmatched hash. Local: {LocalHash} Remote: {Entry.CurrCRC}", LogType.Warning, true);
-                            BrokenManifest.Add(Entry);
-                        }
+                    Token.ThrowIfCancellationRequested();
+                    if (LocalHash != Entry.CurrCRC)
+                    {
+                        LogWriteLine($"File {Entry.FileName} has unmatched hash. Local: {LocalHash} Remote: {Entry.CurrCRC}", LogType.Warning, true);
+                        BrokenManifest.Add(Entry);
                     }
                 }
                 else
@@ -200,7 +198,7 @@ namespace CollapseLauncher
 
         private List<FileProperties> BuildManifest(List<FilePropertiesRemote> FileRemote)
         {
-            List<FileProperties> _out = new List<FileProperties>();
+            List<FileProperties> _out = [];
 
             foreach (FilePropertiesRemote Entry in FileRemote)
             {
@@ -231,7 +229,7 @@ namespace CollapseLauncher
         private List<FileProperties> BuildBlockManifest(List<XMFBlockList> BlockC, string BaseName)
         {
             string Name;
-            List<FileProperties> _out = new List<FileProperties>();
+            List<FileProperties> _out = [];
 
             foreach (XMFBlockList Block in BlockC)
             {

@@ -340,7 +340,7 @@ namespace CollapseLauncher.Pages
                 UpdateLoadingStatus.Visibility = Visibility.Collapsed;
                 UpdateAvailableStatus.Visibility = Visibility.Visible;
                 UpToDateStatus.Visibility = Visibility.Collapsed;
-                UpdateAvailableLabel.Text = e.NewVersionName.VersionString + (ChannelName);
+                UpdateAvailableLabel.Text = e.NewVersionName.VersionString + ChannelName;
             }
             else
             {
@@ -901,11 +901,11 @@ namespace CollapseLauncher.Pages
                 if (value < 0) return;
                 CurrentWindowSizeName     = WindowSizeProfilesKey[value];
                 BGPathDisplayViewer.Width = CurrentWindowSize.SettingsPanelWidth;
-                var delayedDragAreaChange = async () =>
-                {
-                    await Task.Delay(250);
-                    ChangeTitleDragArea.Change(DragAreaTemplate.Default);
-                };
+                Func<Task> delayedDragAreaChange = async () =>
+                                                   {
+                                                       await Task.Delay(250);
+                                                       ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+                                                   };
                 delayedDragAreaChange();
                 SaveAppConfig();
             }

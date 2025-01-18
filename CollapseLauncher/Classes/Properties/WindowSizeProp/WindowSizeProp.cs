@@ -19,8 +19,8 @@ namespace CollapseLauncher.WindowSize
 #else
             =
 #endif
-            new Dictionary<string, WindowSizeProp>
-        {
+            new()
+            {
             {
                 "Normal",
                 new WindowSizeProp()

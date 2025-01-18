@@ -19,7 +19,7 @@ namespace CollapseLauncher
     {
         private async Task Check(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            List<FilePropertiesRemote> brokenAssetIndex = new List<FilePropertiesRemote>();
+            List<FilePropertiesRemote> brokenAssetIndex = [];
 
             // Set Indetermined status as false
             _status.IsProgressAllIndetermined     = false;
@@ -294,33 +294,31 @@ namespace CollapseLauncher
             }
 
             // Open and read fileInfo as FileStream 
-            await using (FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            // If pass the check above, then do CRC calculation
+            byte[] localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
+
+            // If local and asset CRC doesn't match, then add the asset
+            if (!IsArrayMatch(localCRC, asset.CRCArray))
             {
-                // If pass the check above, then do CRC calculation
-                byte[] localCRC = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
+                _progressAllSizeFound += asset.S;
+                _progressAllCountFound++;
 
-                // If local and asset CRC doesn't match, then add the asset
-                if (!IsArrayMatch(localCRC, asset.CRCArray))
-                {
-                    _progressAllSizeFound += asset.S;
-                    _progressAllCountFound++;
+                Dispatch(() => AssetEntry.Add(
+                                              new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(asset.N),
+                                                   asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.Generic,
+                                                   Path.GetDirectoryName(asset.N),
+                                                   asset.S,
+                                                   localCRC,
+                                                   asset.CRCArray
+                                                  )
+                                             ));
 
-                    Dispatch(() => AssetEntry.Add(
-                        new AssetProperty<RepairAssetType>(
-                            Path.GetFileName(asset.N),
-                            asset.FT == FileType.Audio ? RepairAssetType.Audio : RepairAssetType.Generic,
-                            Path.GetDirectoryName(asset.N),
-                            asset.S,
-                            localCRC,
-                            asset.CRCArray
-                        )
-                    ));
+                // Add asset for unmatched CRC
+                targetAssetIndex.Add(asset);
 
-                    // Add asset for unmatched CRC
-                    targetAssetIndex.Add(asset);
-
-                    LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
-                }
+                LogWriteLine($"File [T: {asset.FT}]: {asset.N} is broken! Index CRC: {asset.CRC} <--> File CRC: {HexTool.BytesToHexUnsafe(localCRC)}", LogType.Warning, true);
             }
         }
 
@@ -329,8 +327,8 @@ namespace CollapseLauncher
             // Skip if _isOnlyRecoverMain set to true
             if (_isOnlyRecoverMain) return;
 
-            List<FilePropertiesRemote> removableAssets = new List<FilePropertiesRemote>();
-            Span<Range> ranges = stackalloc Range[2];
+            List<FilePropertiesRemote> removableAssets = [];
+            Span<Range>                ranges          = stackalloc Range[2];
 
             // Iterate the skippable asset and do LINQ check
             foreach (string skippableAsset in _skippableAssets)
@@ -453,7 +451,7 @@ namespace CollapseLauncher
 
             // Check if the file exist or doesn't have proper size, then mark it.
             bool isFileNotExistOrHasImproperSize = !file.Exists || (file.Exists && file.Length != asset.S);
-            bool isFileImproperSize                = (file.Exists && file.Length != asset.S);
+            bool isFileImproperSize              = file.Exists && file.Length != asset.S;
             bool isFileExist                     = !file.Exists; // invert operator to match logic below
 
             if (isFileNotExistOrHasImproperSize)
@@ -538,7 +536,7 @@ namespace CollapseLauncher
         {
             // Build the list of existing files inside the game folder
             // for comparison with asset index into catalog list
-            List<string> catalog = new List<string>();
+            List<string> catalog = [];
             BuildAssetIndexCatalog(catalog, assetIndex);
 
             // Compare the catalog list with asset index and add it to target asset index
@@ -605,7 +603,7 @@ namespace CollapseLauncher
                 bool isUSM = asset.EndsWith(".usm", StringComparison.OrdinalIgnoreCase);
 
                 // Blocks related
-                bool isXMFBlocks = asset.EndsWith($"Blocks.xmf", StringComparison.OrdinalIgnoreCase);
+                bool isXMFBlocks = asset.EndsWith("Blocks.xmf", StringComparison.OrdinalIgnoreCase);
                 bool isXMFBlocksVer = asset.EndsWith($"Blocks_{_gameVersion.Major}_{_gameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
                 bool isXMFMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
                 bool isBlockPatch = asset.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) && asset.Contains("Patch", StringComparison.OrdinalIgnoreCase);

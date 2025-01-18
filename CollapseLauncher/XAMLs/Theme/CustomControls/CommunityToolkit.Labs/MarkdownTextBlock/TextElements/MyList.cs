@@ -36,7 +36,7 @@ internal class MyList : IAddChild
             _isOrdered = true;
             _bulletType = ToBulletType(listBlock.BulletType);
 
-            if (listBlock.OrderedStart != null && (listBlock.DefaultOrderedStart != listBlock.OrderedStart))
+            if (listBlock.OrderedStart != null && listBlock.DefaultOrderedStart != listBlock.OrderedStart)
             {
                 int _startIndex = int.Parse(listBlock.OrderedStart, NumberFormatInfo.InvariantInfo);
                 _index = _startIndex;

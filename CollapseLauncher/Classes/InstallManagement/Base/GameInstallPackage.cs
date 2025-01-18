@@ -84,9 +84,9 @@ namespace CollapseLauncher.InstallManager
 
             if (packageProperty.segments != null && packageProperty.segments.Count > 0)
             {
-                Name = Path.GetFileName(packageProperty.segments.FirstOrDefault()?.path);
+                Name       = Path.GetFileName(packageProperty.segments.FirstOrDefault()?.path);
                 PathOutput = Path.Combine(pathOutput, Name ?? "");
-                Segments = new List<GameInstallPackage>();
+                Segments   = [];
 
                 foreach (RegionResourceVersion segment in packageProperty.segments)
                 {

@@ -61,7 +61,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         public static          Dictionary<int, int> FPSIndexDict    = GenerateStaticFPSIndexDict();
         private static Dictionary<int, int> GenerateStaticFPSIndexDict()
         {
-            Dictionary<int, int> ret = new Dictionary<int, int>();
+            Dictionary<int, int> ret = new();
             for (int i = 0; i < FPSIndex.Length; i++)
             {
                 ret.Add(FPSIndex[i], i);

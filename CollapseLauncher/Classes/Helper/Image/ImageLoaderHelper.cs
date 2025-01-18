@@ -489,8 +489,8 @@ namespace CollapseLauncher.Helper.Image
             return true;
         }
 
-        private static HashSet<FileInfo> _processingFiles = new();
-        private static HashSet<string> _processingUrls = new();
+        private static HashSet<FileInfo> _processingFiles = [];
+        private static HashSet<string>   _processingUrls  = [];
 
         public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
             => _ = await TryDownloadToCompletenessAsync(url, useHttpClient, fileInfo, token);

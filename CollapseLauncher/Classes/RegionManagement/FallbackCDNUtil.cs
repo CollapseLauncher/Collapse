@@ -145,7 +145,7 @@ namespace CollapseLauncher
 
         private CDNUtilHTTPStatus(bool isInitializationError) => IsInitializationError = isInitializationError;
 
-        internal static CDNUtilHTTPStatus CreateInitializationError() => new CDNUtilHTTPStatus(true);
+        internal static CDNUtilHTTPStatus CreateInitializationError() => new(true);
     }
 
     internal readonly struct UrlStatus
@@ -188,7 +188,7 @@ namespace CollapseLauncher
                 .SetAllowedDecompression(DecompressionMethods.None)
                 .Create();
 
-            LogWriteLine($"[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
+            LogWriteLine("[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
         }
 
         public static event EventHandler<DownloadEvent> DownloadProgress;
@@ -296,8 +296,8 @@ namespace CollapseLauncher
         private static void PerformStreamCheckAndSeek(Stream outputStream)
         {
             // Throw if output stream can't write and seek
-            if (!outputStream.CanWrite) throw new ArgumentException($"outputStream must be writable!", "outputStream");
-            if (!outputStream.CanSeek) throw new ArgumentException($"outputStream must be seekable!", "outputStream");
+            if (!outputStream.CanWrite) throw new ArgumentException("outputStream must be writable!", "outputStream");
+            if (!outputStream.CanSeek) throw new ArgumentException("outputStream must be seekable!", "outputStream");
 
             // Reset the outputStream position
             outputStream.Position = 0;

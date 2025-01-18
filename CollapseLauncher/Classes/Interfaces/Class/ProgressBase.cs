@@ -42,11 +42,11 @@ namespace CollapseLauncher.Interfaces
         public ProgressBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
             : base(parentUI, gameVersionManager, gameSettings, gamePath, gameRepoURL, versionOverride)
         {
-            _status = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
-            _progress = new TotalPerFileProgress();
-            _sophonStatus = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
+            _status         = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
+            _progress       = new TotalPerFileProgress();
+            _sophonStatus   = new TotalPerFileStatus() { IsIncludePerFileIndicator = true };
             _sophonProgress = new TotalPerFileProgress();
-            _assetIndex = new List<T1>();
+            _assetIndex     = [];
         }
 
         public ProgressBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
@@ -755,7 +755,7 @@ namespace CollapseLauncher.Interfaces
                 downloaded += read;
                 lock (_progress)
                 {
-                    _progress.ProgressPerFilePercentage = Math.Round((downloaded / sizeToDownload) * 100, 2);
+                    _progress.ProgressPerFilePercentage = Math.Round(downloaded / sizeToDownload * 100, 2);
                 }
                 lock (_status)
                 {

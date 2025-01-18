@@ -34,7 +34,7 @@ namespace CollapseLauncher.ShortcutUtils
             var index = FindIndex(shortcut);
             if (index == -1)
             {
-                var shortcutDic = new Dictionary<string, VdfObject>
+                Dictionary<string, VdfObject> shortcutDic = new()
                 {
                     ["appid"] = shortcut.AppID,
                     ["AppName"] = shortcut.AppName,
@@ -67,7 +67,7 @@ namespace CollapseLauncher.ShortcutUtils
             }
             else
             {
-                var shortcutDic = _shortcuts[index].Value.ObjectValue;
+                Dictionary<string, VdfObject> shortcutDic = _shortcuts[index].Value.ObjectValue;
                 shortcutDic["appid"] = shortcut.AppID;
                 shortcutDic["AppName"] = shortcut.AppName;
                 shortcutDic["Exe"] = shortcut.Exe;
@@ -86,8 +86,8 @@ namespace CollapseLauncher.ShortcutUtils
             if (!File.Exists(_path))
                 return;
 
-            using var fs = File.OpenRead(_path);
-            var shortcutObject = ReadObject(fs);
+            using var                     fs             = File.OpenRead(_path);
+            Dictionary<string, VdfObject> shortcutObject = ReadObject(fs);
             if (shortcutObject.TryGetValue("shortcuts", out var shortcuts))
             {
                 _shortcuts = shortcuts.Value.ObjectValue.Values.ToList();
@@ -100,7 +100,7 @@ namespace CollapseLauncher.ShortcutUtils
                 File.Move(_path, _path + "_old", true);
 
             using var fs = File.OpenWrite(_path);
-            var shortcutObject = new Dictionary<string, VdfObject>
+            Dictionary<string, VdfObject> shortcutObject = new()
             {
                 {
                     "shortcuts", new VdfObject
@@ -181,7 +181,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static string ReadString(FileStream reader)
         {
-            var buffer = new List<byte>();
+            List<byte> buffer = new();
             while (reader.Position < reader.Length)
             {
                 var read = (byte)reader.ReadByte();
@@ -200,7 +200,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static Dictionary<string, VdfObject> ReadObject(FileStream reader)
         {
-            var result = new Dictionary<string, VdfObject>();
+            Dictionary<string, VdfObject> result = new();
 
             while (reader.Position < reader.Length)
             {
@@ -262,7 +262,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static void WriteObject(FileStream writer, Dictionary<string, VdfObject> value)
         {
-            foreach (var kv in value)
+            foreach (KeyValuePair<string, VdfObject> kv in value)
             {
                 var name = kv.Key;
                 var subObject = kv.Value;

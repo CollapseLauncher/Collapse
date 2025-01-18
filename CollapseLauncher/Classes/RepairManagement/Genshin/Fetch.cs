@@ -218,7 +218,7 @@ namespace CollapseLauncher
         {
             // Get the paths
             // string downloadPrefPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\DownloadPref");
-            string ctablePersistPath = Path.Combine(_gamePath, $"{_execPrefix}_Data\\Persistent\\ctable.dat");
+            string ctablePersistPath = Path.Combine(_gamePath, $@"{_execPrefix}_Data\Persistent\ctable.dat");
 
             // Check the file existence and delete it
             // if (File.Exists(downloadPrefPath)) TryDeleteReadOnlyFile(downloadPrefPath);

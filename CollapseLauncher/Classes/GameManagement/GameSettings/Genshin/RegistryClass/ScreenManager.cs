@@ -32,7 +32,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         /// </summary>
         public override Size sizeRes
         {
-            get => new Size(width, height);
+            get => new(width, height);
             set
             {
                 width = value.Width < 64 ? currentRes.Width : value.Width;
@@ -108,7 +108,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load Genshin Screen Manager settings as RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException("Cannot load Genshin Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
                 object? valueWidth = RegistryRoot.GetValue(_ValueNameScreenManagerWidth, null);
                 object? valueHeight = RegistryRoot.GetValue(_ValueNameScreenManagerHeight, null);

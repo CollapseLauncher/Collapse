@@ -129,41 +129,39 @@ namespace CollapseLauncher
 			extra block; seek forwards in oldfile by z bytes".
 			*/
             // read header
-            using (Stream patchStream = _patchStream())
+            using Stream patchStream = _patchStream();
+            // check patch stream capabilities
+            // ReSharper disable NotResolvedInText
+            if (!patchStream.CanRead)
             {
-                // check patch stream capabilities
-                // ReSharper disable NotResolvedInText
-                if (!patchStream.CanRead)
-                {
-                    throw new ArgumentException("Patch stream must be readable.", "_patchStream");
-                }
-                if (!patchStream.CanSeek)
-                {
-                    throw new ArgumentException("Patch stream must be seekable.", "_patchStream");
-                }
-                // ReSharper restore NotResolvedInText
-
-                Span<byte> header = stackalloc byte[c_headerSize];
-                patchStream.ReadExactly(header);
-
-                // check for appropriate magic
-                long signature = ReadInt64Sanity(header);
-                if (signature != c_fileSignature)
-                {
-                    throw new InvalidOperationException("The patch file is not in a valid format!");
-                }
-
-                // read lengths from header
-                _controlLength = ReadInt64Sanity(header.Slice(8));
-                _diffLength = ReadInt64Sanity(header.Slice(16));
-                _newSize = ReadInt64Sanity(header.Slice(24));
-                if (_controlLength < 0 || _diffLength < 0 || _newSize < 0)
-                {
-                    throw new InvalidOperationException($"The patch file may be corrupted! control: {_controlLength}, diff: {_diffLength}, newSize: {_newSize}");
-                }
-
-                _canContinueApply = true;
+                throw new ArgumentException("Patch stream must be readable.", "_patchStream");
             }
+            if (!patchStream.CanSeek)
+            {
+                throw new ArgumentException("Patch stream must be seekable.", "_patchStream");
+            }
+            // ReSharper restore NotResolvedInText
+
+            Span<byte> header = stackalloc byte[c_headerSize];
+            patchStream.ReadExactly(header);
+
+            // check for appropriate magic
+            long signature = ReadInt64Sanity(header);
+            if (signature != c_fileSignature)
+            {
+                throw new InvalidOperationException("The patch file is not in a valid format!");
+            }
+
+            // read lengths from header
+            _controlLength = ReadInt64Sanity(header.Slice(8));
+            _diffLength    = ReadInt64Sanity(header.Slice(16));
+            _newSize       = ReadInt64Sanity(header.Slice(24));
+            if (_controlLength < 0 || _diffLength < 0 || _newSize < 0)
+            {
+                throw new InvalidOperationException($"The patch file may be corrupted! control: {_controlLength}, diff: {_diffLength}, newSize: {_newSize}");
+            }
+
+            _canContinueApply = true;
         }
 
         private Stream TryGetCompressionStream(Stream source, long startPosition)
@@ -244,7 +242,7 @@ namespace CollapseLauncher
             // check if apply can proceed
             if (!_canContinueApply)
             {
-                throw new InvalidOperationException($"You must initialize the patch before applying!");
+                throw new InvalidOperationException("You must initialize the patch before applying!");
             }
 
             // restart progress stopwatch

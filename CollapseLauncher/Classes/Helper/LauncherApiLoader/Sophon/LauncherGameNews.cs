@@ -52,7 +52,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         private List<LauncherGameNewsCarousel>? _newsCarousel;
         private List<LauncherGameNewsPost>?     _newsPost;
 
-        public HoYoPlayGameInfoField GameInfoField { get; init; } = new HoYoPlayGameInfoField();
+        public HoYoPlayGameInfoField GameInfoField { get; init; } = new();
 
         [JsonPropertyName("adv")] public LauncherGameNewsBackground? Background { get; set; }
 

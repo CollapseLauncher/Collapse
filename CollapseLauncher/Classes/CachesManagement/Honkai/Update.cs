@@ -37,9 +37,9 @@ namespace CollapseLauncher
                 UpdateStatus();
 
                 // Iterate the asset index and do update operation
-                ObservableCollection<IAssetProperty> assetProperty   = new ObservableCollection<IAssetProperty>(AssetEntry);
+                ObservableCollection<IAssetProperty> assetProperty   = [.. AssetEntry];
 
-                var runningTask = new ConcurrentDictionary<(CacheAsset, IAssetProperty), byte>();
+                ConcurrentDictionary<(CacheAsset, IAssetProperty), byte> runningTask = new();
                 if (_isBurstDownloadEnabled)
                 {
                     await Parallel.ForEachAsync(
@@ -103,19 +103,17 @@ namespace CollapseLauncher
             string listFile = Path.Combine(_gamePath!, "Data", "Verify.txt");
 
             // Initialize listFile File Stream
-            using (FileStream fs = new FileStream(listFile, FileMode.Create, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs))
-                {
-                    // Iterate asset index and generate the path for the cache path
-                    foreach (CacheAsset asset in assetIndex!)
-                    {
-                        // Yes, the path is written in this way. Idk why miHoYo did this...
-                        // Update 6.8: They finally notices that they use "//" instead of "/"
-                        string basePath = GetAssetBasePathByType(asset!.DataType)!.Replace('\\', '/');
-                        string path = basePath + "/" + asset.ConcatN;
-                        sw.WriteLine(path);
-                    }
-                }
+            using FileStream   fs = new FileStream(listFile, FileMode.Create, FileAccess.Write);
+            using StreamWriter sw = new StreamWriter(fs);
+            // Iterate asset index and generate the path for the cache path
+            foreach (CacheAsset asset in assetIndex!)
+            {
+                // Yes, the path is written in this way. Idk why miHoYo did this...
+                // Update 6.8: They finally notices that they use "//" instead of "/"
+                string basePath = GetAssetBasePathByType(asset!.DataType)!.Replace('\\', '/');
+                string path     = basePath + "/" + asset.ConcatN;
+                sw.WriteLine(path);
+            }
         }
 
         private async Task UpdateCacheAsset((CacheAsset AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token)

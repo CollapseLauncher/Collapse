@@ -211,7 +211,7 @@ namespace CollapseLauncher.InstallManager.Base
                     try
                     {
                         // Initialize the info pair list
-                        var sophonInfoPairList = new List<SophonChunkManifestInfoPair>();
+                        List<SophonChunkManifestInfoPair>? sophonInfoPairList = new();
 
                         // Get the info pair based on info provided above (for main game file)
                         var sophonMainInfoPair = await
@@ -712,7 +712,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                       _progressAllCountTotal)}";
                 UpdateStatus();
 
-                var processingAsset = new ConcurrentDictionary<SophonAsset, byte>();
+                ConcurrentDictionary<SophonAsset, byte>? processingAsset = new();
 
                 // Set the delegate function for the download action
                 async ValueTask Action(HttpClient localHttpClient, SophonAsset asset)
@@ -990,7 +990,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected virtual List<string> GetSophonLanguageDisplayDictFromVoicePackList(SophonData sophonData)
         {
-            var value = new List<string>();
+            List<string>? value = new();
             foreach (SophonManifestIdentity identity in sophonData.ManifestIdentityList)
             {
                 // Check the lang ID and add the translation of the language to the list

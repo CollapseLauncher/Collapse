@@ -29,7 +29,7 @@ namespace CollapseLauncher
             _status.IsAssetEntryPanelShow = true;
 
             // Get persistent and streaming paths
-            string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager!.GamePreset!.GameExecutableName);
+            string execName = Path.GetFileNameWithoutExtension(InnerGameVersionManager!.GamePreset!.GameExecutableName);
             string baseDesignDataPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\DesignData\Windows");
             string baseDesignDataPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\DesignData\Windows");
 

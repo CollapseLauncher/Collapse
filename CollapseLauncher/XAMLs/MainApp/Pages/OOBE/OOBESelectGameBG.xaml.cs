@@ -110,7 +110,7 @@ namespace CollapseLauncher.Pages.OOBE
 
                 if (_gameLogoPath == null)
                 {
-                    LogWriteLine($"Failed while loading poster image as _gameLogoPath returns null!", LogType.Error, true);
+                    LogWriteLine("Failed while loading poster image as _gameLogoPath returns null!", LogType.Error, true);
                     return IsSuccess = false;
                 }
 

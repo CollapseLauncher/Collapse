@@ -25,7 +25,7 @@ namespace CollapseLauncher.Helper.Update
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
         internal static bool IsLauncherUpdateAvailable;
 
-        internal static GameVersion? LauncherCurrentVersion => field ??= new(LauncherConfig.AppCurrentVersionString);
+        internal static GameVersion? LauncherCurrentVersion => field ??= new GameVersion(LauncherConfig.AppCurrentVersionString);
 
         [field: AllowNull, MaybeNull]
         internal static string LauncherCurrentVersionString => field = LauncherConfig.AppCurrentVersionString;
