@@ -84,10 +84,8 @@ namespace CollapseLauncher.GamePlaytime
             int hashId = _gameVersionManager.GamePreset.HashID;
 
             // If a playtime HashSet has already tracked, then return (do not track the playtime more than once)
-            if (ActiveSessions.Contains(hashId)) return;
-
             // Otherwise, add it to track list
-            ActiveSessions.Add(hashId);
+            if (!ActiveSessions.Add(hashId)) return;
 
             begin ??= DateTime.Now;
 

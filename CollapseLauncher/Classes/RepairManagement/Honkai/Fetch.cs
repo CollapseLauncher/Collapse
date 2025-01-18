@@ -193,7 +193,7 @@ namespace CollapseLauncher
             LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
             return response.Deserialize(SenadinaJSONContext.Default.DictionaryStringSenadinaFileIdentifier);
 #else
-            return await fileIdentifierStreamDecoder.DeserializeAsync(SenadinaJSONContext.Default.DictionaryStringSenadinaFileIdentifier, token);
+            return await fileIdentifierStreamDecoder.DeserializeAsync(SenadinaJSONContext.Default.DictionaryStringSenadinaFileIdentifier, token: token);
 #endif
         }
 
