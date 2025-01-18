@@ -886,7 +886,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 // Try to run the application
-                Process proc = new Process()
+                Process proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
@@ -1201,7 +1201,7 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            string ver = CurrentGameProperty.GameVersion.GetGameVersionAPIPreload()?.VersionString;
+            string ver = CurrentGameProperty.GameVersion.GetGameVersionApiPreload()?.VersionString;
 
             try
             {
@@ -2648,7 +2648,7 @@ namespace CollapseLauncher.Pages
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     string gameNameLocale = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
-                    string gameVersionString = CurrentGameProperty.GameVersion.GetGameVersionAPI()?.VersionString;
+                    string gameVersionString = CurrentGameProperty.GameVersion.GetGameVersionApi()?.VersionString;
 
                     WindowUtility.Tray_ShowNotification(
                                                         string.Format(Lang._NotificationToast.GameUpdateCompleted_Title, gameNameLocale),
@@ -3104,7 +3104,7 @@ namespace CollapseLauncher.Pages
                 var storyboard = new Storyboard();
                 var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
-                var cubicEaseOut = new CubicEase()
+                var cubicEaseOut = new CubicEase
                 {
                     EasingMode = EasingMode.EaseOut
                 };
@@ -3154,7 +3154,7 @@ namespace CollapseLauncher.Pages
                 var storyboard = new Storyboard();
                 var transform = (CompositeTransform)elementPanel.RenderTransform;
                 transform.CenterY = elementPanel.ActualHeight + 8;
-                var cubicEaseOut = new CubicEase()
+                var cubicEaseOut = new CubicEase
                 {
                     EasingMode = EasingMode.EaseOut
                 };

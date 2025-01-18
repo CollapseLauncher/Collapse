@@ -17,8 +17,11 @@ using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 #nullable enable
+#pragma warning disable CA2211
 namespace CollapseLauncher
 {
     public static class InnerLauncherConfig
@@ -80,7 +83,7 @@ namespace CollapseLauncher
         {
             int? index = LauncherMetadataHelper.GetPreviousGameRegion(category);
 
-            return index == -1 || index == null ? 0 : (int)index;
+            return index is -1 or null ? 0 : (int)index;
         }
 
         public static List<StackPanel> BuildGameTitleListUI()

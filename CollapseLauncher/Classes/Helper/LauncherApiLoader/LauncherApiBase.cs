@@ -15,6 +15,8 @@ using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -45,13 +47,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public virtual RegionResourceProp?    LauncherGameResource  { get; protected set; }
         public virtual LauncherGameNews?      LauncherGameNews      { get; protected set; }
         public virtual HoYoPlayGameInfoField? LauncherGameInfoField { get; protected set; }
-        public virtual HttpClient?            ApiGeneralHttpClient  { get => field; protected set => field = value; }
-        public virtual HttpClient?            ApiResourceHttpClient { get => field; protected set => field = value; }
+        public virtual HttpClient?            ApiGeneralHttpClient  { get; protected set; }
+        public virtual HttpClient?            ApiResourceHttpClient { get; protected set; }
 
         public void Dispose()
         {
             ApiGeneralHttpClient?.Dispose();
             ApiResourceHttpClient?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         ~LauncherApiBase()
@@ -292,21 +295,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             
             // WORKAROUND: Certain language is not supported by the API and will return null/empty response.
             // Use other locale to prevent crashes/empty background image
-            switch (localeLang)
-            {
-                case "es-419":
-                    localeLang = "es-es";
-                    break;
-                case "pt-br":
-                    localeLang = "pt-pt";
-                    break;
-                // case "pl-pl":
-                //     localeLang = "en-us";
-                //     break;
-                // case "uk-ua":
-                //     localeLang = "en-us";
-                //     break;
-            }
+            localeLang = localeLang switch
+                         {
+                             "es-419" => "es-es",
+                             "pt-br" => "pt-pt",
+                             _ => localeLang
+                         };
 
             LauncherGameNews? regionResourceProp =
                 await LoadLauncherNewsInner(isMultilingual, localeLang, PresetConfig, onTimeoutRoutine, token);

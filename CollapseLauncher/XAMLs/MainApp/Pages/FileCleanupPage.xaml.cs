@@ -179,16 +179,16 @@ namespace CollapseLauncher.Pages
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            List<LocalFileInfo>? removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
-            List<LocalFileInfo>? addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
+            List<LocalFileInfo> removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
+            List<LocalFileInfo> addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
             
-            Task<long>? removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
-                                                       ? removedItems.Sum(x => x.FileSize)
-                                                       : removedItems.Select(x => x.FileSize).ToArray().Sum());
+            Task<long> removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
+                                                      ? removedItems.Sum(x => x.FileSize)
+                                                      : removedItems.Select(x => x.FileSize).ToArray().Sum());
 
-            Task<long>? addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
-                                                     ? addedItems.Sum(x => x.FileSize)
-                                                     : addedItems.Select(x => x.FileSize).ToArray().Sum());
+            Task<long> addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
+                                                    ? addedItems.Sum(x => x.FileSize)
+                                                    : addedItems.Select(x => x.FileSize).ToArray().Sum());
 
             var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
             var removedSize = results[0];

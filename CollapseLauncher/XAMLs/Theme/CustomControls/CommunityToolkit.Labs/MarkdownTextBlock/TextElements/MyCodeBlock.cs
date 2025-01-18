@@ -78,7 +78,7 @@ internal class MyCodeBlock : IAddChild
                 var lineString = line.ToString();
                 if (!string.IsNullOrWhiteSpace(lineString))
                 {
-                    paragraph.Inlines.Add(new Run() { Text = lineString });
+                    paragraph.Inlines.Add(new Run { Text = lineString });
                 }
                 richTextBlock.Blocks.Add(paragraph);
             }

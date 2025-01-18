@@ -24,7 +24,7 @@ namespace CollapseLauncher.Helper.JsonConverter
             return returnList;
         }
 
-        private unsafe string EmptiedBackslash(ReadOnlySpan<byte> span)
+        private static unsafe string EmptiedBackslash(ReadOnlySpan<byte> span)
         {
             Span<byte> buffer = new byte[span.Length];
             int indexIn = 0;

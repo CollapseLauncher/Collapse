@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 // ReSharper disable once CheckNamespace
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable InconsistentNaming
+// ReSharper disable StringLiteralTypo
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
@@ -139,8 +141,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                     .GameBiz?
                     .Equals(PresetConfig?.LauncherBizName, StringComparison.OrdinalIgnoreCase) ?? false);
 
-            if (sdkPackages == null) return;
-            if (sdkPackages.SdkPackageDetail == null) return;
+            if (sdkPackages?.SdkPackageDetail == null) return;
 
             sophonResourceData.sdk = new RegionResourceVersion
             {
@@ -171,32 +172,29 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             sophonResourceData.plugins = pluginCurrentPackageList;
         }
 
-        private void GuessAssignPluginConversion(List<RegionResourcePlugin> sophonPluginList, LauncherPackages hypPlugin)
+        private static void GuessAssignPluginConversion(List<RegionResourcePlugin> sophonPluginList, LauncherPackages hypPlugin)
         {
             List<PackagePluginSections>? pluginSectionsList = hypPlugin.PluginPackageSections;
             if ((pluginSectionsList?.Count ?? 0) == 0) return;
             if (pluginSectionsList == null) return;
 
-            foreach (PackagePluginSections firstPluginSection in pluginSectionsList)
+            sophonPluginList.AddRange(pluginSectionsList.Select(firstPluginSection => new RegionResourcePlugin
             {
-                RegionResourcePlugin sophonPlugin = new RegionResourcePlugin();
-                sophonPlugin.version = firstPluginSection.Version;
-                sophonPlugin.plugin_id = firstPluginSection.PluginId;
-                sophonPlugin.release_id = firstPluginSection.ReleaseId;
-                sophonPlugin.package = new RegionResourceVersion
+                version    = firstPluginSection.Version,
+                plugin_id  = firstPluginSection.PluginId,
+                release_id = firstPluginSection.ReleaseId,
+                package = new RegionResourceVersion
                 {
-                    validate = firstPluginSection.PluginPackage?.PackageAssetValidationList,
-                    md5 = firstPluginSection.PluginPackage?.PackageMD5Hash,
-                    url = firstPluginSection.PluginPackage?.PackageUrl,
-                    path = firstPluginSection.PluginPackage?.PackageUrl,
-                    size = firstPluginSection.PluginPackage?.PackageDecompressSize ?? 0,
+                    validate     = firstPluginSection.PluginPackage?.PackageAssetValidationList,
+                    md5          = firstPluginSection.PluginPackage?.PackageMD5Hash,
+                    url          = firstPluginSection.PluginPackage?.PackageUrl,
+                    path         = firstPluginSection.PluginPackage?.PackageUrl,
+                    size         = firstPluginSection.PluginPackage?.PackageDecompressSize ?? 0,
                     package_size = firstPluginSection.PluginPackage?.PackageSize ?? 0,
-                    run_command = firstPluginSection.PluginPackage?.PackageRunCommand,
-                    version = firstPluginSection.Version
-                };
-
-                sophonPluginList.Add(sophonPlugin);
-            }
+                    run_command  = firstPluginSection.PluginPackage?.PackageRunCommand,
+                    version      = firstPluginSection.Version
+                }
+            }));
         }
         #endregion
 
@@ -236,9 +234,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 sophonPackageResources.pre_download_game = new RegionResourceLatest();
 
                 // Convert if preload entry is not empty or null
-                if (hypRootPackage.PreDownload?.CurrentVersion != null || (hypRootPackage.PreDownload?.Patches?.Count ?? 0) != 0)
+                if (hypRootPackage.PreDownload?.CurrentVersion == null &&
+                    (hypRootPackage.PreDownload?.Patches?.Count ?? 0) == 0)
                 {
+                    continue;
+                }
 
+                {
                     // Assign and convert preload game package (latest)
                     PackageResourceSections? hypPreloadPackageSection = hypRootPackage.PreDownload?.CurrentVersion;
                     if (hypPreloadPackageSection != null)
@@ -270,15 +272,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
         private void ConvertHYPSectionToResourceVersion(ref PackageResourceSections hypPackageResourceSection, ref RegionResourceVersion sophonResourceVersion)
         {
-            if (hypPackageResourceSection == null)
-            {
-                throw new ArgumentNullException(nameof(hypPackageResourceSection));
-            }
-
-            if (sophonResourceVersion == null)
-            {
-                throw new ArgumentNullException(nameof(sophonResourceVersion));
-            }
+            ArgumentNullException.ThrowIfNull(hypPackageResourceSection, nameof(hypPackageResourceSection));
+            ArgumentNullException.ThrowIfNull(sophonResourceVersion,     nameof(sophonResourceVersion));
 
             // Convert game packages
             RegionResourceVersion packagesVersion = new RegionResourceVersion();
@@ -301,21 +296,23 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             }
 
             // If the audio package list is not null or empty, then process
-            if (hypAudioPackageList != null && hypAudioPackageList.Count != 0)
+            if (hypAudioPackageList == null || hypAudioPackageList.Count == 0)
             {
-                sophonPackageVersion.voice_packs = [];
-                foreach (PackageDetails hypAudioPackage in hypAudioPackageList)
+                return;
+            }
+
+            sophonPackageVersion.voice_packs = [];
+            foreach (PackageDetails hypAudioPackage in hypAudioPackageList)
+            {
+                sophonPackageVersion.voice_packs.Add(new RegionResourceVersion
                 {
-                    sophonPackageVersion.voice_packs.Add(new RegionResourceVersion
-                    {
-                        url = hypAudioPackage.PackageUrl,
-                        path = hypAudioPackage.PackageUrl, // As fallback for PackageUrl
-                        size = hypAudioPackage.PackageDecompressSize,
-                        package_size = hypAudioPackage.PackageSize ?? 0,
-                        md5 = hypAudioPackage.PackageMD5Hash,
-                        language = hypAudioPackage.Language
-                    });
-                }
+                    url          = hypAudioPackage.PackageUrl,
+                    path         = hypAudioPackage.PackageUrl, // As fallback for PackageUrl
+                    size         = hypAudioPackage.PackageDecompressSize,
+                    package_size = hypAudioPackage.PackageSize ?? 0,
+                    md5          = hypAudioPackage.PackageMD5Hash,
+                    language     = hypAudioPackage.Language
+                });
             }
         }
 
@@ -577,7 +574,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             return hypDeviceId;
         }
 
-        private string FindOrCreateHYPDeviceId(RegistryKey? rootRegistryKey, bool isMainlandClient, string registryRootPath)
+        private static string FindOrCreateHYPDeviceId(RegistryKey? rootRegistryKey, bool isMainlandClient, string registryRootPath)
         {
             // Define default version keys for mainland and global clients
             const string HYPVerDefaultCN = "1_1";
@@ -621,7 +618,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             }
         }
 
-        private string CreateNewDeviceId()
+        private static string CreateNewDeviceId()
         {
             // Define the registry key path for cryptography settings
             const string regKeyCryptography = @"SOFTWARE\Microsoft\Cryptography";

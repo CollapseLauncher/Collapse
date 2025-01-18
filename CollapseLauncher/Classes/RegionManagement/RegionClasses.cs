@@ -35,7 +35,7 @@ namespace CollapseLauncher
 
         public RegionResourceProp Copy()
         {
-            return new RegionResourceProp()
+            return new RegionResourceProp
             {
                 data         = data?.Copy(),
                 imgLocalPath = imgLocalPath
@@ -52,7 +52,7 @@ namespace CollapseLauncher
 
         public RegionResourceGame Copy()
         {
-            return new RegionResourceGame()
+            return new RegionResourceGame
             {
                 plugins           = plugins?.Copy(),
                 game              = game?.Copy(),
@@ -71,7 +71,7 @@ namespace CollapseLauncher
 
         public RegionResourcePlugin Copy()
         {
-            return new RegionResourcePlugin()
+            return new RegionResourcePlugin
             {
                 release_id = release_id,
                 plugin_id  = plugin_id,
@@ -88,7 +88,7 @@ namespace CollapseLauncher
 
         public RegionResourcePluginValidate Copy()
         {
-            return new RegionResourcePluginValidate()
+            return new RegionResourcePluginValidate
             {
                 path = path,
                 md5  = md5
@@ -103,7 +103,7 @@ namespace CollapseLauncher
 
         public RegionResourceLatest Copy()
         {
-            return new RegionResourceLatest()
+            return new RegionResourceLatest
             {
                 latest = latest?.Copy(),
                 diffs  = diffs?.Copy()
@@ -145,7 +145,7 @@ namespace CollapseLauncher
 
         public RegionResourceVersion Copy()
         {
-            return new RegionResourceVersion()
+            return new RegionResourceVersion
             {
                 version               = version,
                 pkg_version           = pkg_version,

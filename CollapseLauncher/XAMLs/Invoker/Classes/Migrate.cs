@@ -108,9 +108,9 @@ namespace CollapseLauncher
                 // Use move process if the method above throw a fucking nonsense reason even the folder is actually exist...
                 catch (DirectoryNotFoundException)
                 {
-                    Process move = new Process()
+                    Process move = new Process
                     {
-                        StartInfo = new ProcessStartInfo()
+                        StartInfo = new ProcessStartInfo
                         {
                             FileName = "cmd.exe",
                             UseShellExecute = false,

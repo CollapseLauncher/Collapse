@@ -1217,7 +1217,7 @@ namespace CollapseLauncher.Pages
 
             void RestoreButtonBinding()
             {
-                BindingOperations.SetBinding(button, IsEnabledProperty, new Binding()
+                BindingOperations.SetBinding(button, IsEnabledProperty, new Binding
                 {
                     Source = NetworkSettingsProxyToggle,
                     Path = new PropertyPath("IsOn"),

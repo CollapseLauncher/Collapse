@@ -17,15 +17,9 @@ namespace CollapseLauncher
         public Dictionary<GameNameType, List<CommunityToolsEntry>> CommunityToolsDictionary { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ObservableCollection<CommunityToolsEntry> OfficialToolsList;
+        public ObservableCollection<CommunityToolsEntry> OfficialToolsList = [];
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ObservableCollection<CommunityToolsEntry> CommunityToolsList;
-
-        public CommunityToolsProperty()
-        {
-            OfficialToolsList  = [];
-            CommunityToolsList = [];
-        }
+        public ObservableCollection<CommunityToolsEntry> CommunityToolsList = [];
 
         public void Clear()
         {

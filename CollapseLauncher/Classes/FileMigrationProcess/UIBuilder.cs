@@ -58,7 +58,7 @@ namespace CollapseLauncher
                     .CreateButtonWithIcon<Button>(Locale.Lang._FileMigrationProcess.ChoosePathButton, "", "FontAwesome", "AccentButtonStyle"),
                     1, 1).WithMargin(8d, 12d, 0d, 0d);
 
-            InfoBar warningTextInfoBar = mainGrid.AddElementToGridRowColumn(new InfoBar()
+            InfoBar warningTextInfoBar = mainGrid.AddElementToGridRowColumn(new InfoBar
             {
                 IsClosable = true,
                 IsOpen = false
@@ -207,7 +207,7 @@ namespace CollapseLauncher
                 3, 0, 0, 2);
 
             // Set progress percentage indicator subtitle with progress bar value
-            BindingOperations.SetBinding(progressTextIndicatorSubtitle, TextBlock.TextProperty, new Binding()
+            BindingOperations.SetBinding(progressTextIndicatorSubtitle, TextBlock.TextProperty, new Binding
             {
                 Source = progressBarIndicator,
                 Path = new PropertyPath("Value"),

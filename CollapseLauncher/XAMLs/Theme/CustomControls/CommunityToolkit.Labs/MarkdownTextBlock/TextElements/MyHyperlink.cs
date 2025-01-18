@@ -24,7 +24,7 @@ internal class MyHyperlink : IAddChild
     public MyHyperlink(LinkInline linkInline, string? baseUrl)
     {
         var url = linkInline.GetDynamicUrl != null ? linkInline.GetDynamicUrl() : linkInline.Url;
-        _hyperlink = new Hyperlink()
+        _hyperlink = new Hyperlink
         {
             NavigateUri = Extensions.GetUri(url, baseUrl),
         };
@@ -33,7 +33,7 @@ internal class MyHyperlink : IAddChild
     public MyHyperlink(HtmlNode htmlNode, string? baseUrl)
     {
         var url = htmlNode.GetAttributeValue("href", "#");
-        _hyperlink = new Hyperlink()
+        _hyperlink = new Hyperlink
         {
             NavigateUri = Extensions.GetUri(url, baseUrl),
         };

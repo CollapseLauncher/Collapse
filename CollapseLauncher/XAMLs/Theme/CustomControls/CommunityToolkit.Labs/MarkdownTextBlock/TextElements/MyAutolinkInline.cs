@@ -14,7 +14,7 @@ internal class MyAutolinkInline : IAddChild
 
     public MyAutolinkInline(AutolinkInline autoLinkInline)
     {
-        TextElement = new Hyperlink()
+        TextElement = new Hyperlink
         {
             NavigateUri = new Uri(autoLinkInline.Url),
         };

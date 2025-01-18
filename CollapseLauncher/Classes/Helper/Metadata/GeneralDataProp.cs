@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.Helper.Metadata
 {

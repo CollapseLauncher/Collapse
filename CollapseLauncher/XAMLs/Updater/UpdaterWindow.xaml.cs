@@ -103,7 +103,7 @@ public sealed partial class UpdaterWindow
             await File.WriteAllTextAsync(newVerTagPath, updateInfo.VersionString);
 
             await Task.Delay(5000);
-            var applyUpdate = new Process()
+            var applyUpdate = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {

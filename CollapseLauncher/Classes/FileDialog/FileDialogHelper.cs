@@ -96,7 +96,7 @@ namespace CollapseLauncher.FileDialogCOM
 
             async Task SpawnInvalidDialog(string dialogTitle, string message, string selectedPath, bool isUseLegacyFormatting = false)
             {
-                TextBlock textBlock = new TextBlock()
+                TextBlock textBlock = new TextBlock
                 {
                     TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
                 };

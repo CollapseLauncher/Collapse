@@ -17,7 +17,7 @@ internal class MyInlineText : IAddChild
 
     public MyInlineText(string text)
     {
-        _run = new Run()
+        _run = new Run
         {
             Text = text
         };

@@ -14,6 +14,8 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CheckNamespace
 // ReSharper disable AssignNullToNotNullAttribute
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher
 {

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher
 {
@@ -21,17 +22,17 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = [];
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
+            Status.IsProgressAllIndetermined = false;
 
             // Show the asset entry panel
-            _status.IsAssetEntryPanelShow = true;
+            Status.IsAssetEntryPanelShow = true;
 
             try
             {
                 // Create the cache directory if it doesn't exist
-                if (!Directory.Exists(_gamePath))
+                if (!Directory.Exists(GamePath))
                 {
-                    Directory.CreateDirectory(_gamePath!);
+                    Directory.CreateDirectory(GamePath!);
                 }
 
                 // Check for unused files
@@ -40,7 +41,7 @@ namespace CollapseLauncher
                 // Do check in parallelization.
                 await Parallel.ForEachAsync(assetIndex!, new ParallelOptions
                 {
-                    MaxDegreeOfParallelism = _threadCount,
+                    MaxDegreeOfParallelism = ThreadCount,
                     CancellationToken = token
                 }, async (asset, localToken) =>
                 {
@@ -59,7 +60,7 @@ namespace CollapseLauncher
         private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
         {
             // Directory info and if the directory doesn't exist, return
-            DirectoryInfo directoryInfo = new DirectoryInfo(_gamePath);
+            DirectoryInfo directoryInfo = new DirectoryInfo(GamePath);
             if (!directoryInfo.Exists)
             {
                 return;
@@ -83,10 +84,10 @@ namespace CollapseLauncher
                 }
 
                 // Increment the total found count
-                _progressAllCountFound++;
+                ProgressAllCountFound++;
 
                 // Add asset to the returnAsset
-                CacheAsset asset = new CacheAsset()
+                CacheAsset asset = new CacheAsset
                 {
                     BasePath       = Path.GetDirectoryName(filePath),
                     N              = Path.GetFileName(filePath),
@@ -116,9 +117,9 @@ namespace CollapseLauncher
         private async ValueTask CheckAsset(CacheAsset asset, List<CacheAsset> returnAsset, CancellationToken token)
         {
             // Increment the count and update the status
-            Interlocked.Add(ref _progressAllCountCurrent, 1);
-            _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
-            _status.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
+            Interlocked.Add(ref ProgressAllCountCurrent, 1);
+            Status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.DataType, asset.N);
+            Status.ActivityAll = string.Format(Lang._CachesPage.CachesTotalStatusChecking!, ProgressAllCountCurrent, ProgressAllCountTotal);
 
             // Assign the file info.
             FileInfo fileInfo = new FileInfo(asset.ConcatPath).EnsureNoReadOnly(out bool isExist);
@@ -138,7 +139,7 @@ namespace CollapseLauncher
             }
 
             // Skip CRC check if fast method is used
-            if (_useFastMethod)
+            if (UseFastMethod)
             {
                 return;
             }
@@ -161,9 +162,9 @@ namespace CollapseLauncher
             lock (this)
             {
                 // Set Indetermined status as false
-                _status.IsProgressAllIndetermined = false;
-                _progressAllCountFound++;
-                _progressAllSizeFound += asset!.CS;
+                Status.IsProgressAllIndetermined = false;
+                ProgressAllCountFound++;
+                ProgressAllSizeFound += asset!.CS;
             }
 
             // Add file into asset index

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Sources;
+// ReSharper disable StringLiteralTypo
 #endif
 // ReSharper disable CheckNamespace
 

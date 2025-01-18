@@ -246,8 +246,8 @@ namespace CollapseLauncher.Dialogs
             {
                 shortcutButtons.AddElementToStackPanel(
                     CreateKeyBoardButton(shortcut.GetFormattedModifier()),
-                    new TextBlock()
-                    {
+                    new TextBlock
+                        {
                         Text = "+",
                         FontWeight = FontWeights.Bold,
                         FontSize = 20
@@ -263,7 +263,7 @@ namespace CollapseLauncher.Dialogs
 
         private static Border CreateKeyBoardButton(string key)
         {
-            Border keyboxBorder = new Border()
+            Border keyboxBorder = new Border
             {
                 Height = 42,
                 Width = 42,
@@ -277,7 +277,7 @@ namespace CollapseLauncher.Dialogs
             keyboxBorder.Translation += Shadow48;
             keyboxBorder.Shadow = ts;
 
-            TextBlock keybox = new TextBlock()
+            TextBlock keybox = new TextBlock
             {
                 Text = key,
                 Foreground = new SolidColorBrush(Application.Current.RequestedTheme == ApplicationTheme.Dark ? Colors.Black : Colors.White),
@@ -312,7 +312,7 @@ namespace CollapseLauncher.Dialogs
                 _oldSender = sender;
 
                 Storyboard storyboard = new Storyboard();
-                DoubleAnimation opacityAnimation = new DoubleAnimation()
+                DoubleAnimation opacityAnimation = new DoubleAnimation
                 {
                     From = 1,
                     To = 0,
@@ -330,7 +330,7 @@ namespace CollapseLauncher.Dialogs
                 oldStack.Visibility = Visibility.Collapsed;
 
                 Storyboard storyboard2 = new Storyboard();
-                DoubleAnimation opacityAnimation2 = new DoubleAnimation()
+                DoubleAnimation opacityAnimation2 = new DoubleAnimation
                 {
                     From = 0,
                     To = 1,
@@ -365,7 +365,7 @@ namespace CollapseLauncher.Dialogs
                                     Placement = FlyoutPlacementMode.RightEdgeAlignedTop
                                 };
             helpStack.AddElementToStackPanel(
-                new TextBlock()
+                new TextBlock
                 {
                     Text = Lang._KbShortcuts.ChangeShortcut_Help1,
                     TextWrapping = TextWrapping.Wrap
@@ -427,8 +427,8 @@ namespace CollapseLauncher.Dialogs
                                              });
             
             keysPanel.AddElementToStackPanel(CreateKeyBoardButton(data.Shortcut.GetKey(data.KeyName)));
-            keysPanel.AddElementToStackPanel(new FontIcon()
-                                             {
+            keysPanel.AddElementToStackPanel(new FontIcon
+            {
                                                  Glyph      = "arrow-right", FontSize = 15,
                                                  FontFamily = CollapseUIExt.GetApplicationResource<FontFamily>("FontAwesomeSolid"),
                                                  Margin     = new Thickness(10, 0, 10, 0)
@@ -436,8 +436,8 @@ namespace CollapseLauncher.Dialogs
             
             Border newKey1 = CreateKeyBoardButton("?");
             keysPanel.AddElementToStackPanel(newKey1);
-            keysPanel.AddElementToStackPanel(new TextBlock()
-                                             {
+            keysPanel.AddElementToStackPanel(new TextBlock
+            {
                                                  Text                = "+", FontSize = 20, FontWeight = FontWeights.Bold,
                                                  HorizontalAlignment = HorizontalAlignment.Center,
                                                  VerticalAlignment   = VerticalAlignment.Center
@@ -540,7 +540,7 @@ namespace CollapseLauncher.Dialogs
         {
             if (!KbShortcutList.TryGetValue(key, out KbShortcut oldShortcut))
             {
-                oldShortcut = new KbShortcut() { Key = VirtualKey.None, Modifier = VirtualKeyModifiers.None };
+                oldShortcut = new KbShortcut { Key = VirtualKey.None, Modifier = VirtualKeyModifiers.None };
             }
 
             KbShortcutList[key] = newShortcut;

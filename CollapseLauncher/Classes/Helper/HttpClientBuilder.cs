@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.InteropServices;
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -90,7 +91,6 @@ namespace CollapseLauncher.Helper
             string? lHttpProxyUrl = LauncherConfig.GetAppConfigValue("HttpProxyUrl").ToString();
             string? lHttpProxyUsername = LauncherConfig.GetAppConfigValue("HttpProxyUsername").ToString();
             string? lHttpProxyPassword = LauncherConfig.GetAppConfigValue("HttpProxyPassword").ToString();
-            int lHttpClientConnections = maxConnections;
 
             double lHttpClientTimeout = LauncherConfig.GetAppConfigValue("HttpClientTimeout").ToDouble();
 
@@ -106,7 +106,7 @@ namespace CollapseLauncher.Helper
             AllowRedirections(lIsAllowHttpRedirections);
 
             SetTimeout(lHttpClientTimeout);
-            SetMaxConnection(lHttpClientConnections);
+            SetMaxConnection(maxConnections);
 
             return this;
         }
@@ -229,8 +229,7 @@ namespace CollapseLauncher.Helper
             if (typeof(THandler) == typeof(HttpClientHandler))
             {
                 // Cast as HttpClientHandler
-                HttpClientHandler? httpClientHandler = handler as HttpClientHandler;
-                if (httpClientHandler == null)
+                if (handler is not HttpClientHandler httpClientHandler)
                     throw new InvalidCastException("Cannot cast handler as HttpClientHandler");
 
                 // Set the properties
@@ -252,8 +251,7 @@ namespace CollapseLauncher.Helper
             else if (typeof(THandler) == typeof(SocketsHttpHandler))
             {
                 // Cast as SocketsHttpHandler
-                SocketsHttpHandler? socketsHttpHandler = handler as SocketsHttpHandler;
-                if (socketsHttpHandler == null)
+                if (handler is not SocketsHttpHandler socketsHttpHandler)
                     throw new InvalidCastException("Cannot cast handler as SocketsHttpHandler");
 
                 // Set the properties

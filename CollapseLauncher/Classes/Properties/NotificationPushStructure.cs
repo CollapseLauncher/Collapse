@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.JsonConverter;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -7,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -50,87 +52,6 @@ namespace Hi3Helper.Shared.ClassStruct
         }
 
         public virtual void BuildFrameworkElement(ref Utf8JsonReader reader) { }
-    }
-
-    public class NotificationActionConverter : JsonConverter<NotificationActionBase>
-    {
-        public override bool CanConvert(Type type)
-        {
-            return typeof(NotificationActionBase).IsAssignableFrom(type);
-        }
-
-        public override NotificationActionBase Read(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options)
-        {
-            // Check if the token is a start object
-            if (reader.TokenType != JsonTokenType.StartObject)
-            {
-                throw new JsonException();
-            }
-
-            NotificationActionBase returnValue = new NotificationActionBase();
-
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonTokenType.EndObject)
-                {
-                    return returnValue;
-                }
-
-                // Check and get the property name
-                string section = reader.GetString();
-                reader.Read();
-
-                switch (section)
-                {
-                    case "ActionType":
-                        {
-                            section = reader.GetString();
-                            // For performance, parse with ignoreCase:false first.
-                            if (!Enum.TryParse(section, ignoreCase: false, out NotificationActionTypeDesc actionType) &&
-                                !Enum.TryParse(section, ignoreCase: true, out actionType))
-                            {
-                                // Skip if the action is not supported
-                                reader.Skip();
-                                reader.Skip();
-                                break;
-                            }
-                            returnValue.ActionType = actionType;
-                        }
-                        break;
-                    case "ActionValue":
-                        {
-                            switch (returnValue.ActionType)
-                            {
-                                case NotificationActionTypeDesc.ClickLink:
-                                    // Build the UI element
-                                    returnValue = new NotificationActionClickLink();
-                                    returnValue.BuildFrameworkElement(ref reader);
-                                    break;
-                                default:
-                                    reader.Skip();
-                                    break;
-                            }
-                        }
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            return returnValue;
-        }
-
-        public override void Write(
-                Utf8JsonWriter writer,
-                NotificationActionBase baseType,
-                JsonSerializerOptions options)
-        {
-            throw new JsonException("Serializing is not supported!");
-        }
     }
 
     public class NotificationActionClickLink : NotificationActionBase
@@ -191,7 +112,7 @@ namespace Hi3Helper.Shared.ClassStruct
             }
         }
 
-        private string ReadString(ref Utf8JsonReader reader)
+        private static string ReadString(ref Utf8JsonReader reader)
         {
             reader.Read();
             return reader.TokenType switch
@@ -220,37 +141,41 @@ namespace Hi3Helper.Shared.ClassStruct
         public List<int>              RegionPushIgnoreMsgIds { get; set; } = [];
         public List<int>              CurrentShowMsgIds      { get; set; } = [];
 
-        public void AddIgnoredMsgIds(int MsgId, bool IsAppPush = true)
+        public void AddIgnoredMsgIds(int msgId, bool isAppPush = true)
         {
-            if (IsAppPush ? !AppPushIgnoreMsgIds.Contains(MsgId) : !RegionPushIgnoreMsgIds.Contains(MsgId))
+            if (isAppPush ? AppPushIgnoreMsgIds.Contains(msgId) : RegionPushIgnoreMsgIds.Contains(msgId))
             {
-                if (IsAppPush)
-                {
-                    AppPushIgnoreMsgIds.Add(MsgId);
-                }
-                else
-                {
-                    RegionPushIgnoreMsgIds.Add(MsgId);
-                }
+                return;
+            }
+
+            if (isAppPush)
+            {
+                AppPushIgnoreMsgIds.Add(msgId);
+            }
+            else
+            {
+                RegionPushIgnoreMsgIds.Add(msgId);
             }
         }
 
-        public void RemoveIgnoredMsgIds(int MsgId, bool IsAppPush = true)
+        public void RemoveIgnoredMsgIds(int msgId, bool isAppPush = true)
         {
-            if (IsAppPush ? AppPushIgnoreMsgIds.Contains(MsgId) : RegionPushIgnoreMsgIds.Contains(MsgId))
+            if (isAppPush ? !AppPushIgnoreMsgIds.Contains(msgId) : !RegionPushIgnoreMsgIds.Contains(msgId))
             {
-                if (IsAppPush)
-                {
-                    AppPushIgnoreMsgIds.Remove(MsgId);
-                }
-                else
-                {
-                    RegionPushIgnoreMsgIds.Remove(MsgId);
-                }
+                return;
+            }
+
+            if (isAppPush)
+            {
+                AppPushIgnoreMsgIds.Remove(msgId);
+            }
+            else
+            {
+                RegionPushIgnoreMsgIds.Remove(msgId);
             }
         }
 
-        public bool IsMsgIdIgnored(int MsgId) => AppPushIgnoreMsgIds.Contains(MsgId) || RegionPushIgnoreMsgIds.Contains(MsgId);
+        public bool IsMsgIdIgnored(int msgId) => AppPushIgnoreMsgIds.Contains(msgId) || RegionPushIgnoreMsgIds.Contains(msgId);
 
         public void EliminatePushList()
         {
@@ -258,19 +183,19 @@ namespace Hi3Helper.Shared.ClassStruct
             RegionPush?.RemoveAll(x => RegionPushIgnoreMsgIds.Any(y => x.MsgId == y));
         }
 
-        public static Button GenerateNotificationButton(string IconGlyph, string Text, RoutedEventHandler ButtonAction = null, string FontIconName = "FontAwesomeSolid", string ButtonStyle = "AccentButtonStyle")
+        public static Button GenerateNotificationButton(string iconGlyph, string text, RoutedEventHandler buttonAction = null, string fontIconName = "FontAwesomeSolid", string buttonStyle = "AccentButtonStyle")
         {
-            Button Btn =
+            Button btn =
                 UIElementExtensions.CreateButtonWithIcon<Button>(
-                    Text,
-                    IconGlyph,
-                    FontIconName,
-                    ButtonStyle
+                    text,
+                    iconGlyph,
+                    fontIconName,
+                    buttonStyle
                 )
                 .WithMargin(0d, 0d, 0d, 8d);
 
-            if (ButtonAction != null) Btn.Click += ButtonAction;
-            return Btn;
+            if (buttonAction != null) btn.Click += buttonAction;
+            return btn;
         }
     }
 }

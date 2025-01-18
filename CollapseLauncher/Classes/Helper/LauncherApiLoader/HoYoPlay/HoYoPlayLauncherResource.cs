@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
@@ -131,7 +132,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? UnpackedBaseUrl { get; init; }
 
         [JsonPropertyName("channel_sdk_pkg")]
-        public string? ChannelSDKPkg { get; init; }
+        public string? ChannelSdkPkg { get; init; }
 
         [JsonPropertyName("command")]
         public string? PackageRunCommand { get; init; }

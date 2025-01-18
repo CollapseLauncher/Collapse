@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.ShortcutUtils
 {
@@ -67,7 +68,7 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine("[ShortcutCreator::AddToSteam] Cancelled manually.");
             });
 
-            List<SteamShortcut> shortcuts = new();
+            List<SteamShortcut> shortcuts = [];
 
             foreach (var path in paths)
             {

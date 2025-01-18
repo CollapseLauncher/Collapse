@@ -1,4 +1,5 @@
-﻿namespace CollapseLauncher.Helper.Metadata
+﻿// ReSharper disable InconsistentNaming
+namespace CollapseLauncher.Helper.Metadata
 {
     internal class BHI3LInfo
     {

@@ -54,8 +54,8 @@ namespace CollapseLauncher.Helper.Background
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
-        private IBackgroundMediaLoader?         _loaderStillImage;
-        private IBackgroundMediaLoader?         _loaderMediaPlayer;
+        private StillImageLoader?               _loaderStillImage;
+        private MediaPlayerLoader?              _loaderMediaPlayer;
 
         private bool _isCurrentRegistered;
 
@@ -388,7 +388,7 @@ namespace CollapseLauncher.Helper.Background
                 await (mediaType switch
                 {
                     MediaType.Media => _loaderMediaPlayer,
-                    MediaType.StillImage => _loaderStillImage,
+                    MediaType.StillImage => _loaderStillImage as IBackgroundMediaLoader,
                     _ => throw new InvalidCastException()
                 }).LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken.Token);
 
@@ -419,8 +419,7 @@ namespace CollapseLauncher.Helper.Background
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                if (throwAction != null)
-                    throwAction(ex);
+                throwAction?.Invoke(ex);
             }
         }
 

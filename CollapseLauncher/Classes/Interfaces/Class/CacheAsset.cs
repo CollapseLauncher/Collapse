@@ -3,6 +3,8 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using System.IO;
 using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.Interfaces
 {

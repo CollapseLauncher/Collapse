@@ -734,7 +734,7 @@ namespace CollapseLauncher
                 RunTimeoutCancel(TokenSource);
 
                 await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
-                NotificationData = await networkStream.DeserializeAsync(InternalAppJSONContext.Default.NotificationPush, TokenSource.Token);
+                NotificationData = await networkStream.DeserializeAsync(InternalAppJSONContext.Default.NotificationPush, token: TokenSource.Token);
                 IsLoadNotifComplete = true;
 
                 NotificationData?.EliminatePushList();
@@ -1337,15 +1337,15 @@ namespace CollapseLauncher
             {
                 if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
-                    NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                    { Icon = IconCaches, Tag = "caches" }
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                                { Icon = IconCaches, Tag = "caches" }
                     .BindNavigationViewItemText("_CachesPage", "PageTitle"));
                 }
                 return;
             }
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-            { Icon = IconLauncher, Tag = "launcher" }
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                        { Icon = IconLauncher, Tag = "launcher" }
             .BindNavigationViewItemText("_HomePage", "PageTitle"));
 
             NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
@@ -1353,38 +1353,38 @@ namespace CollapseLauncher
 
             if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Icon = IconRepair, Tag = "repair" }
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                            { Icon = IconRepair, Tag = "repair" }
                 .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
             }
 
             if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
             {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem()
-                { Icon = IconCaches, Tag = "caches" }
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                            { Icon = IconCaches, Tag = "caches" }
                 .BindNavigationViewItemText("_CachesPage", "PageTitle"));
             }
 
             switch (CurrentGameVersionCheck.GameType)
             {
                 case GameNameType.Honkai:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Icon = IconGameSettings, Tag = "honkaigamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "honkaigamesettings" }
                     .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.StarRail:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Icon = IconGameSettings, Tag = "starrailgamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "starrailgamesettings" }
                     .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Genshin:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem() 
-                    { Icon = IconGameSettings, Tag = "genshingamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "genshingamesettings" }
                     .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
                     break;
                 case GameNameType.Zenless:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem()
-                    { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
                     .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                     break;
             }
@@ -1449,11 +1449,11 @@ namespace CollapseLauncher
                 break;
             }
 
-            NavViewPaneBackground.OpacityTransition = new ScalarTransition()
+            NavViewPaneBackground.OpacityTransition = new ScalarTransition
             {
                 Duration = TimeSpan.FromMilliseconds(150)
             };
-            NavViewPaneBackground.TranslationTransition = new Vector3Transition()
+            NavViewPaneBackground.TranslationTransition = new Vector3Transition
             {
                 Duration = TimeSpan.FromMilliseconds(150)
             };
@@ -1782,7 +1782,7 @@ namespace CollapseLauncher
             try
             {
                 WebView2FramePage.WebView2URL = URL;
-                WebView2Frame.Navigate(typeof(WebView2FramePage), null, new SlideNavigationTransitionInfo() { Effect = SlideNavigationTransitionEffect.FromBottom });
+                WebView2Frame.Navigate(typeof(WebView2FramePage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromBottom });
             }
             catch (Exception ex)
             {
@@ -1839,7 +1839,7 @@ namespace CollapseLauncher
                     VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
                     for (; numIndex <= LauncherMetadataHelper.CurrentGameNameCount; numIndex++)
                     {
-                        KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                        KeyboardAccelerator keystroke = new KeyboardAccelerator
                         {
                             Modifiers = keyModifier,
                             Key       = VirtualKey.Number1 + numIndex,
@@ -1847,7 +1847,7 @@ namespace CollapseLauncher
                         keystroke.Invoked += KeyboardGameShortcut_Invoked;
                         KeyboardHandler.KeyboardAccelerators.Add(keystroke);
 
-                        KeyboardAccelerator keystrokeNP = new KeyboardAccelerator()
+                        KeyboardAccelerator keystrokeNP = new KeyboardAccelerator
                         {
                             Key = VirtualKey.NumberPad1 + numIndex,
                         };
@@ -1859,7 +1859,7 @@ namespace CollapseLauncher
                     keyModifier = KbShortcutList["RegionSelection"].Modifier;
                     while (numIndex < LauncherMetadataHelper.CurrentGameRegionMaxCount)
                     {
-                        KeyboardAccelerator keystroke = new KeyboardAccelerator()
+                        KeyboardAccelerator keystroke = new KeyboardAccelerator
                         {
                             Modifiers = keyModifier,
                             Key       = VirtualKey.Number1 + numIndex++,
@@ -1869,7 +1869,7 @@ namespace CollapseLauncher
                     }
                 }
 
-                KeyboardAccelerator keystrokeF5 = new KeyboardAccelerator()
+                KeyboardAccelerator keystrokeF5 = new KeyboardAccelerator
                 {
                     Key = VirtualKey.F5
                 };
@@ -1901,7 +1901,7 @@ namespace CollapseLauncher
                 {
                     if (KbShortcutList != null)
                     {
-                        KeyboardAccelerator kbfunc = new KeyboardAccelerator()
+                        KeyboardAccelerator kbfunc = new KeyboardAccelerator
                         {
                             Modifiers = KbShortcutList[func.Key].Modifier,
                             Key       = KbShortcutList[func.Key].Key
@@ -2078,9 +2078,9 @@ namespace CollapseLauncher
             if (!Directory.Exists(ScreenshotFolder))
                 Directory.CreateDirectory(ScreenshotFolder);
 
-            new Process()
+            new Process
             {
-                StartInfo = new ProcessStartInfo()
+                StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
                     FileName = "explorer.exe",

@@ -15,19 +15,19 @@ namespace CollapseLauncher
                                 gameVersionManager,
                                 gameVersionManager.GameDirPath,
                                 null,
-                                gameVersionManager.GetGameVersionAPI()?.VersionString), ICache
+                                gameVersionManager.GetGameVersionApi()?.VersionString), ICache
     {
         #region Properties
         private            GameTypeStarRailVersion InnerGameVersionManager { get; set; } = gameVersionManager as GameTypeStarRailVersion;
         private            List<SRAsset>           UpdateAssetIndex        { get; set; }
-        protected override string                  _userAgent               { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
+        protected override string                  UserAgent               { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
         ~StarRailCache() => Dispose();
 
         public async Task<bool> StartCheckRoutine(bool useFastCheck)
         {
-            _useFastMethod = useFastCheck;
+            UseFastMethod = useFastCheck;
             return await TryRunExamineThrow(CheckRoutine());
         }
 
@@ -40,16 +40,16 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            _assetIndex = await Fetch(_token.Token);
+            AssetIndex = await Fetch(Token.Token);
 
             // Step 2: Start assets checking
-            UpdateAssetIndex = await Check(_assetIndex, _token.Token);
+            UpdateAssetIndex = await Check(AssetIndex, Token.Token);
 
             // Step 3: Summarize and returns true if the assetIndex count != 0 indicates caches needs to be update.
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 UpdateAssetIndex,
-                string.Format(Lang._CachesPage.CachesStatusNeedUpdate, _progressAllCountFound, ConverterTool.SummarizeSizeSimple(_progressAllSizeFound)),
+                string.Format(Lang._CachesPage.CachesStatusNeedUpdate, ProgressAllCountFound, ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
                 Lang._CachesPage.CachesStatusUpToDate);
         }
 
@@ -63,7 +63,7 @@ namespace CollapseLauncher
         private async Task<bool> UpdateRoutine()
         {
             // Assign update task
-            Task<bool> updateTask = Update(UpdateAssetIndex, _assetIndex, _token.Token);
+            Task<bool> updateTask = Update(UpdateAssetIndex, AssetIndex, Token.Token);
 
             // Run update process
             bool updateTaskSuccess = await TryRunExamineThrow(updateTask);
@@ -72,9 +72,9 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Set as completed
-            _status.IsCompleted = true;
-            _status.IsCanceled = false;
-            _status.ActivityStatus = Lang._CachesPage.CachesStatusUpToDate;
+            Status.IsCompleted = true;
+            Status.IsCanceled = false;
+            Status.ActivityStatus = Lang._CachesPage.CachesStatusUpToDate;
 
             // Update status and progress
             UpdateAll();
@@ -89,12 +89,13 @@ namespace CollapseLauncher
 
         public void CancelRoutine()
         {
-            _token.Cancel();
+            Token.Cancel();
         }
 
         public void Dispose()
         {
             CancelRoutine();
+            GC.SuppressFinalize(this);
         }
     }
 }

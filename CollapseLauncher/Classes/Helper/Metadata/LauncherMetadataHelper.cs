@@ -14,6 +14,8 @@ using System.IO.Hashing;
 using System.Linq;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -50,12 +52,8 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Game Name & Region Collection and Current Config
 
-        private static PresetConfig? _currentMetadataConfig;
-        internal static PresetConfig? CurrentMetadataConfig
-        {
-            get => _currentMetadataConfig;
-            set => _currentMetadataConfig = value;
-        }
+        internal static PresetConfig? CurrentMetadataConfig { get; set; }
+
         internal static string? CurrentMetadataConfigGameName;
         internal static string? CurrentMetadataConfigGameRegion;
         internal static Dictionary<string, List<string>?>? LauncherGameNameRegionCollection { get; private set; }
@@ -89,7 +87,6 @@ namespace CollapseLauncher.Helper.Metadata
 
             // Check the modification status
             int isConfigLocallyModified = IsMetadataLocallyModified(gameName, gameRegion);
-            PresetConfig? config;
 
             switch (isConfigLocallyModified)
             {
@@ -129,7 +126,7 @@ namespace CollapseLauncher.Helper.Metadata
                     break;
             }
 
-            config = LauncherMetadataConfig?[gameName]?[gameRegion];
+            var config = LauncherMetadataConfig?[gameName]?[gameRegion];
             if (config != null)
             {
                 CurrentMetadataConfig = config;
@@ -188,11 +185,9 @@ namespace CollapseLauncher.Helper.Metadata
             FileInfo configLocalFileInfo = new FileInfo(configLocalFilePath);
 
             // Compare the last modified time. If it doesn't match, return 1 (modified)
-            if (configLocalFileInfo.LastWriteTimeUtc != stamp.LastModifiedTimeUtc)
-                return 1;
-
-            // Otherwise, return 0 (unmodified)
-            return 0;
+            return configLocalFileInfo.LastWriteTimeUtc != stamp.LastModifiedTimeUtc ? 1 :
+                // Otherwise, return 0 (unmodified)
+                0;
         }
 
         internal static async ValueTask Initialize(bool isCacheUpdateModeOnly = false, bool isShowLoadingMessage = true)
@@ -224,8 +219,7 @@ namespace CollapseLauncher.Helper.Metadata
             string stampRemoteFilePath = LauncherStampRemoteURLPath;
 
             // Initialize and clear the stamp dictionary
-            if (LauncherMetadataStampDictionary == null)
-                LauncherMetadataStampDictionary = new Dictionary<string, Stamp>();
+            LauncherMetadataStampDictionary ??= new Dictionary<string, Stamp>();
 
             LauncherMetadataStampDictionary.Clear();
 
@@ -350,11 +344,8 @@ namespace CollapseLauncher.Helper.Metadata
             List<Stamp?> stampList = LauncherMetadataStamp
                                    .Where(x => x?.MetadataType == MetadataType.PresetConfigV2)
                                    .ToList();
-            foreach (Stamp? stamp in stampList)
+            foreach (var stamp in stampList.OfType<Stamp>())
             {
-                if (stamp == null)
-                    continue;
-
                 if (isShowLoadingMessage)
                 {
                     LoadingMessageHelper.SetMessage(Locale.Lang._MainPage.Initializing,
@@ -453,7 +444,7 @@ namespace CollapseLauncher.Helper.Metadata
                                 await configLocalStream.DisposeAsync();
 
                                 // If the dictionary doesn't contain the dictionary of the game, then initialize it
-                                Dictionary<string, PresetConfig>? presetConfigDict = new();
+                                Dictionary<string, PresetConfig> presetConfigDict = new();
                                 if (!LauncherMetadataConfig?.ContainsKey(stamp.GameName) ?? false)
                                     // Initialize and add the game preset config dictionary
                                     // ReSharper disable once ConstantConditionalAccessQualifier
@@ -608,7 +599,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        internal static ConcurrentDictionary<Stamp, byte> _metadataUpdateEntry = new();
+        internal static ConcurrentDictionary<Stamp, byte> MetadataUpdateEntry = new();
         internal static async ValueTask RunMetadataUpdate()
         {
             // Delay the routine if the update check or routine is running
@@ -632,7 +623,7 @@ namespace CollapseLauncher.Helper.Metadata
                 foreach (Stamp? newUpdateStamp in NewUpdateMetadataStamp)
                 {
                     if (newUpdateStamp == null) continue;
-                    if (!_metadataUpdateEntry.TryAdd(newUpdateStamp, 0))
+                    if (!MetadataUpdateEntry.TryAdd(newUpdateStamp, 0))
                     {
                         Logger.LogWriteLine($"[RunMetadataUpdate] Skipping duplicate assignment for stamp:\r\n\t" +
                                             $"N : {newUpdateStamp.GameName}\r\n\tT : {newUpdateStamp.MetadataType}",
@@ -655,7 +646,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                     Logger.LogWriteLine($"Removed old metadata config file! [Name: {newUpdateStamp.GameName} | Region: {newUpdateStamp.GameRegion} | Type: {newUpdateStamp.MetadataType}]\r\nLocation: {configLocalFilePath}",
                                         LogType.Default, true);
-                    _metadataUpdateEntry.Remove(newUpdateStamp, out _);
+                    MetadataUpdateEntry.Remove(newUpdateStamp, out _);
                 }
 
                 // Then update the stamp file
@@ -686,7 +677,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 // Read the old stamp list stream
                 List<Stamp?>? oldStampList;
-                using (FileStream stampStream = File.OpenRead(stampPath))
+                await using (FileStream stampStream = File.OpenRead(stampPath))
                 {
                     // Deserialize and do sanitize if the old stamp list is empty
                     oldStampList = await stampStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
@@ -719,7 +710,7 @@ namespace CollapseLauncher.Helper.Metadata
                 }
 
                 // Now write the updated list to the stamp file
-                using (FileStream updatedStampStream = File.Create(stampPath))
+                await using (FileStream updatedStampStream = File.Create(stampPath))
                 {
                     await oldStampList.SerializeAsync(updatedStampStream, InternalAppJSONContext.Default.ListStamp);
                     return;

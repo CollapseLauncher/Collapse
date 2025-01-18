@@ -42,7 +42,7 @@ internal class MyHyperlinkButton : IAddChild
 
     private void Init(string? url, string? baseUrl)
     {
-        _hyperLinkButton = new HyperlinkButton()
+        _hyperLinkButton = new HyperlinkButton
         {
             NavigateUri = Extensions.GetUri(url, baseUrl),
         };

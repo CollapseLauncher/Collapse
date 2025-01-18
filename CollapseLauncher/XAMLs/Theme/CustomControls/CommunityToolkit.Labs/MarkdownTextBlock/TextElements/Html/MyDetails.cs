@@ -36,7 +36,7 @@ internal class MyDetails : IAddChild
         _flowDocument = new MyFlowDocument();
         _flowDocument.RichTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
         _expander.Content = _flowDocument.RichTextBlock;
-        var headerBlock = new TextBlock()
+        var headerBlock = new TextBlock
         {
             Text = header?.InnerText
         };

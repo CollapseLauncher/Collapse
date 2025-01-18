@@ -375,7 +375,7 @@ public partial class Updater : IDisposable
 
     private static void SuicideLegacy()
     {
-        var applyUpdate = new Process()
+        var applyUpdate = new Process
         {
             StartInfo = new ProcessStartInfo
             {

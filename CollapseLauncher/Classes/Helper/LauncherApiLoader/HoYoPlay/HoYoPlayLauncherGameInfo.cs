@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay

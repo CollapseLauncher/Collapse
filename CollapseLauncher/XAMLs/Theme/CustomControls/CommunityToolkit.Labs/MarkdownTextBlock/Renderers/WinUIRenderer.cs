@@ -72,8 +72,8 @@ public class WinUIRenderer : RendererBase
     {
         if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
 
-        var           lines  = leafBlock.Lines;
-        StringLine[]? slices = lines.Lines;
+        var          lines  = leafBlock.Lines;
+        StringLine[] slices = lines.Lines;
         for (var i = 0; i < lines.Count; i++)
         {
             if (i != 0)

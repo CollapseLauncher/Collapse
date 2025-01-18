@@ -121,7 +121,7 @@ namespace CollapseLauncher.Dialogs
             int choiceAsDefault = defaultIndex;
             StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
 
-            parentPanel.AddElementToStackPanel(new TextBlock()
+            parentPanel.AddElementToStackPanel(new TextBlock
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
@@ -331,7 +331,7 @@ namespace CollapseLauncher.Dialogs
             int choiceAsDefault = defaultIndex;
             StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
 
-            parentPanel.AddElementToStackPanel(new TextBlock()
+            parentPanel.AddElementToStackPanel(new TextBlock
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
@@ -612,7 +612,7 @@ namespace CollapseLauncher.Dialogs
             StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
             comboBoxContainer.AddElementToStackPanel(
                 sourceGame,
-                new FontIcon()
+                new FontIcon
                 {
                     Glyph = "",
                     FontFamily = FontCollections.FontAwesomeSolid,
@@ -647,7 +647,7 @@ namespace CollapseLauncher.Dialogs
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 });
-            texts.Inlines.Add(new Hyperlink()
+            texts.Inlines.Add(new Hyperlink
             {
                 Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor") } },
                 NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
@@ -802,7 +802,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_GameInstallCorruptedDataAnyway(UIElement content, string fileName, long fileSize)
         {
-            TextBlock textBlock = new TextBlock()
+            TextBlock textBlock = new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap
             };
@@ -1210,7 +1210,7 @@ namespace CollapseLauncher.Dialogs
                 pathText,
                 new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox() {
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox {
                 Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
             }.WithMargin(0d, 4d, 0d, -8d).WithHorizontalAlignment(HorizontalAlignment.Center));
         
@@ -1264,7 +1264,7 @@ namespace CollapseLauncher.Dialogs
                 new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, 2d),
                 new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d));
 
-            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox()
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox
             {
                 Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
             }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, -8d));

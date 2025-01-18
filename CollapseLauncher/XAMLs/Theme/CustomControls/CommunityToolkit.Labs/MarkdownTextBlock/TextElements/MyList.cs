@@ -51,8 +51,8 @@ internal class MyList : IAddChild
     public void AddChild(IAddChild child)
     {
         var grid = new Grid();
-        grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Auto) });
-        grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         string bullet;
         if (_isOrdered)
         {
@@ -72,7 +72,7 @@ internal class MyList : IAddChild
         {
             bullet = _dot;
         }
-        var textBlock = new TextBlock()
+        var textBlock = new TextBlock
         {
             Text = bullet,
         };

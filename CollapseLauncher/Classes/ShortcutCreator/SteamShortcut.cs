@@ -60,13 +60,13 @@ namespace CollapseLauncher.ShortcutUtils
             if (play) LaunchOptions += " -p";
         }
 
-        private static uint GenerateAppId(string exe, string appname)
+        private static uint GenerateAppId(string exe, string appName)
         {
             // Actually the appid generation algorithm for custom apps has been changed.
             // It's now a completely random number instead of the crc32.
             // But to be able to track the target app, we still use crc32 as appid.
             var crc32 = new Crc32();
-            crc32.Append(Encoding.UTF8.GetBytes(exe + appname));
+            crc32.Append(Encoding.UTF8.GetBytes(exe + appName));
             return BitConverter.ToUInt32(crc32.GetCurrentHash()) | 0x80000000;
         }
 
@@ -122,23 +122,24 @@ namespace CollapseLauncher.ShortcutUtils
             Dictionary<string, SteamGameProp> assets = _preset.ZoneSteamAssets;
             if (assets == null) return;
 
-            (string, string)[] images = new[]
-            {
+            (string, string)[] images =
+            [
                 ("Hero", "_hero"),
                 ("Logo", "_logo"),
                 ("Banner", "p"),
                 ("Preview", "")
-            };
-            List<(string, string)> cacheImageList = new();
+            ];
+            List<(string, string)> cacheImageList = [];
 
-            foreach (var image in images)
+            for (var index = images.Length - 1; index >= 0; index--)
             {
-                var asset = assets[image.Item1];
+                var image       = images[index];
+                var asset       = assets[image.Item1];
                 var steamSuffix = image.Item2;
 
                 var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
-                var hash = MD5Hash(cachePath);
-                if (hash.ToLower() != asset.MD5)
+                var hash      = MD5Hash(cachePath);
+                if (!hash.Equals(asset.MD5, StringComparison.OrdinalIgnoreCase))
                     cacheImageList.Add(image);
             }
 
@@ -164,7 +165,7 @@ namespace CollapseLauncher.ShortcutUtils
             var cachePath = Path.Combine(AppGameImgCachedFolder, AppID + steamSuffix);
 
             var hash = MD5Hash(cachePath);
-            if (hash.ToLower() == asset.MD5) return;
+            if (hash.Equals(asset.MD5, StringComparison.OrdinalIgnoreCase)) return;
 
             var cdnURL = FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(asset.URL, "metadata/");
 
@@ -181,7 +182,7 @@ namespace CollapseLauncher.ShortcutUtils
 
                 hash = MD5Hash(cachePath);
 
-                if (hash.ToLower() == asset.MD5) return;
+                if (hash.Equals(asset.MD5, StringComparison.OrdinalIgnoreCase)) return;
 
                 File.Delete(cachePath);
 
@@ -197,8 +198,8 @@ namespace CollapseLauncher.ShortcutUtils
             try
             {
                 // Try to get the remote stream and download the file
-                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
-                await using Stream outStream = fileInfo.Open(new FileStreamOptions()
+                await using BridgedNetworkStream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                await using FileStream outStream = fileInfo.Open(new FileStreamOptions
                 {
                     Access = FileAccess.Write,
                     Mode = FileMode.Create,
@@ -212,7 +213,7 @@ namespace CollapseLauncher.ShortcutUtils
                 LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
                 int read;
                 while ((read = await netStream.ReadAsync(buffer, token)) > 0)
-                    await outStream.WriteAsync(buffer, 0, read, token);
+                    await outStream.WriteAsync(buffer.AsMemory(0, read), token);
 
                 LogWriteLine($"Downloading resource from: {url} has been completed and stored locally into:"
                              + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)",

@@ -290,7 +290,7 @@ namespace CollapseLauncher.Extension
                 throw new IndexOutOfRangeException("\"columnWidth\" cannot be empty!");
 
             foreach (var t in columnWidths)
-                grid.ColumnDefinitions.Add(new ColumnDefinition()
+                grid.ColumnDefinitions.Add(new ColumnDefinition
                 {
                     Width = t
                 });
@@ -298,7 +298,7 @@ namespace CollapseLauncher.Extension
 
         internal static void AddGridColumns(this Grid grid, int count, GridLength? columnWidth = null)
         {
-            for (; count > 0; count--) grid.ColumnDefinitions.Add(new ColumnDefinition()
+            for (; count > 0; count--) grid.ColumnDefinitions.Add(new ColumnDefinition
             {
                 Width = columnWidth ?? GridLength.Auto
             });
@@ -306,7 +306,7 @@ namespace CollapseLauncher.Extension
 
         internal static void AddGridRows(this Grid grid, int count, GridLength? columnHeight = null)
         {
-            for (; count > 0; count--) grid.RowDefinitions.Add(new RowDefinition()
+            for (; count > 0; count--) grid.RowDefinitions.Add(new RowDefinition
             {
                 Height = columnHeight ?? GridLength.Auto
             });
@@ -945,7 +945,7 @@ namespace CollapseLauncher.Extension
             string passedValue = $"{offset?.X},{offset?.Y},{offset?.Z}";
             // ReSharper restore ConstantConditionalAccessQualifier
 
-            AttachedDropShadow shadow = new AttachedDropShadow()
+            AttachedDropShadow shadow = new AttachedDropShadow
             {
                 Color = shadowColor ?? Colors.Black,
                 BlurRadius = blurRadius,

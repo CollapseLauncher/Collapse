@@ -631,7 +631,7 @@ public static class Extensions
 
     public static bool IsHeading(this string tag)
     {
-        List<string>? headings = new() { "h1", "h2", "h3", "h4", "h5", "h6" };
+        List<string> headings = ["h1", "h2", "h3", "h4", "h5", "h6"];
         return headings.Contains(tag.ToLower());
     }
 

@@ -107,14 +107,8 @@ namespace CollapseLauncher.Pages.OOBE
             };
 
             // Return paths
-            return (string.Format(
-                            @"Assets\Images\GameLogo\{0}-logo.png",
-                            logoName
-                        ),
-                        string.Format(
-                            @"Assets\Images\GamePoster\poster_{0}.png",
-                            posterName
-                        ));
+            return ($@"Assets\Images\GameLogo\{logoName}-logo.png",
+                    $@"Assets\Images\GamePoster\poster_{posterName}.png");
         }
 
 

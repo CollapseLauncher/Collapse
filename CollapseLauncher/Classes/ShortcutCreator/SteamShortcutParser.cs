@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace CollapseLauncher.ShortcutUtils
 {
@@ -55,10 +57,10 @@ namespace CollapseLauncher.ShortcutUtils
                     ["tags"] = new Dictionary<string, VdfObject>(),
                 };
 
-                var obj = new VdfObject()
+                var obj = new VdfObject
                 {
                     Type = VdfType.Object,
-                    Value = new VdfValue()
+                    Value = new VdfValue
                     {
                         ObjectValue = shortcutDic
                     }
@@ -106,7 +108,7 @@ namespace CollapseLauncher.ShortcutUtils
                     "shortcuts", new VdfObject
                     {
                         Type = VdfType.Object,
-                        Value = new VdfValue()
+                        Value = new VdfValue
                         {
                             ObjectValue = _shortcuts.Index().ToDictionary(x => x.Index.ToString(), x => x.Item)
                         }
@@ -139,10 +141,10 @@ namespace CollapseLauncher.ShortcutUtils
 
             public static implicit operator VdfObject(string value)
             {
-                return new VdfObject()
+                return new VdfObject
                 {
                     Type = VdfType.String,
-                    Value = new VdfValue()
+                    Value = new VdfValue
                     {
                         StringValue = value
                     }
@@ -151,10 +153,10 @@ namespace CollapseLauncher.ShortcutUtils
 
             public static implicit operator VdfObject(uint value)
             {
-                return new VdfObject()
+                return new VdfObject
                 {
                     Type = VdfType.Int,
-                    Value = new VdfValue()
+                    Value = new VdfValue
                     {
                         IntValue = value
                     }
@@ -163,10 +165,10 @@ namespace CollapseLauncher.ShortcutUtils
 
             public static implicit operator VdfObject(Dictionary<string, VdfObject> value)
             {
-                return new VdfObject()
+                return new VdfObject
                 {
                     Type = VdfType.Object,
-                    Value = new VdfValue()
+                    Value = new VdfValue
                     {
                         ObjectValue = value
                     }
@@ -181,7 +183,7 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static string ReadString(FileStream reader)
         {
-            List<byte> buffer = new();
+            List<byte> buffer = [];
             while (reader.Position < reader.Length)
             {
                 var read = (byte)reader.ReadByte();
@@ -262,10 +264,8 @@ namespace CollapseLauncher.ShortcutUtils
 
         private static void WriteObject(FileStream writer, Dictionary<string, VdfObject> value)
         {
-            foreach (KeyValuePair<string, VdfObject> kv in value)
+            foreach (var (name, subObject) in value)
             {
-                var name = kv.Key;
-                var subObject = kv.Value;
                 var type = subObject.Type;
                 WriteType(writer, type);
                 WriteString(writer, name);

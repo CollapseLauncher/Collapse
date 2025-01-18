@@ -25,7 +25,7 @@ namespace CollapseLauncher.Pages
 
         private void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {
-            DataPackage data = new DataPackage()
+            DataPackage data = new DataPackage
             {
                 RequestedOperation = DataPackageOperation.Copy
             };

@@ -30,8 +30,8 @@ namespace CollapseLauncher
             {
                 Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", Path.Combine(AppGameFolder, "_webView2"));
 
-                WebView2Runtime = new WebView2()
-                                  {
+                WebView2Runtime = new WebView2
+                {
                                       HorizontalAlignment = HorizontalAlignment.Stretch,
                                       VerticalAlignment   = VerticalAlignment.Stretch
                                   };
@@ -73,21 +73,21 @@ namespace CollapseLauncher
 
         private void SetWebView2Bindings()
         {
-            BindingOperations.SetBinding(WebView2BackBtn, IsEnabledProperty, new Binding()
+            BindingOperations.SetBinding(WebView2BackBtn, IsEnabledProperty, new Binding
             {
                 Source = WebView2Runtime,
                 Path = new PropertyPath("CanGoBack"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
-            BindingOperations.SetBinding(WebView2ForwardBtn, IsEnabledProperty, new Binding()
+            BindingOperations.SetBinding(WebView2ForwardBtn, IsEnabledProperty, new Binding
             {
                 Source = WebView2Runtime,
                 Path = new PropertyPath("CanGoForward"),
                 Mode = BindingMode.OneWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
-            BindingOperations.SetBinding(WebView2URLBox, TextBox.TextProperty, new Binding()
+            BindingOperations.SetBinding(WebView2URLBox, TextBox.TextProperty, new Binding
             {
                 Source = WebView2Runtime,
                 Path = new PropertyPath("Source"),

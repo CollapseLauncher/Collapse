@@ -153,7 +153,7 @@ namespace CollapseLauncher
                         new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
                         return;
                     case AppMode.InvokerMigrate:
-                        if (m_arguments.Migrate.IsBHI3L)
+                        if (m_arguments.Migrate.IsBhi3L)
                         {
                             new Migrate().DoMigrationBHI3L(
                                                            m_arguments.Migrate.GameVer,
