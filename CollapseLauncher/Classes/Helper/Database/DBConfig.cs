@@ -43,9 +43,8 @@ namespace CollapseLauncher.Helper.Database
 
         private static void DefaultChecker()
         {
-            foreach (KeyValuePair<string, IniValue> entry in DbSettingsTemplate.Where(
-                entry => !_config[DbSectionName].ContainsKey(entry.Key)
-                                               || string.IsNullOrEmpty(_config[DbSectionName][entry.Key])))
+            foreach (KeyValuePair<string, IniValue> entry in DbSettingsTemplate.Where(bool (entry) => !_config[DbSectionName].ContainsKey(entry.Key)
+                                                                                                      || string.IsNullOrEmpty(_config[DbSectionName][entry.Key])))
             {
                 SetValue(entry.Key, entry.Value);
             }

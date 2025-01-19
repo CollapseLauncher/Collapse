@@ -54,7 +54,7 @@ namespace CollapseLauncher.ShortcutUtils
                     ["DevkitOverrideAppID"] = 0,
                     ["LastPlayTime"] = 0,
                     ["FlatpakAppID"] = "",
-                    ["tags"] = new Dictionary<string, VdfObject>(),
+                    ["tags"] = new Dictionary<string, VdfObject>()
                 };
 
                 var obj = new VdfObject

@@ -18,7 +18,7 @@ namespace CollapseLauncher
                                 gameVersionManager.GetGameVersionApi()?.VersionString), ICache
     {
         #region Properties
-        private            GameTypeStarRailVersion InnerGameVersionManager { get; set; } = gameVersionManager as GameTypeStarRailVersion;
+        private            GameTypeStarRailVersion InnerGameVersionManager { get; } = gameVersionManager as GameTypeStarRailVersion;
         private            List<SRAsset>           UpdateAssetIndex        { get; set; }
         protected override string                  UserAgent               { get; set; } = "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion

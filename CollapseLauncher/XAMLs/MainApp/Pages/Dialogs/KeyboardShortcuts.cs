@@ -19,9 +19,12 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
-
+// ReSharper disable StringLiteralTypo
+// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
+// ReSharper disable InconsistentNaming
 
 namespace CollapseLauncher.Dialogs
 {
@@ -36,7 +39,7 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Show Shortcuts ContentDialog
-        public static async Task<ContentDialogResult> Dialog_ShowKbShortcuts(UIElement Content, int page = 0)
+        public static async Task<ContentDialogResult> Dialog_ShowKbShortcuts(UIElement content, int page = 0)
         {
             _buttonWidth = int.Max(Lang._KbShortcuts.GeneralTab.Length * 5
                           + Lang._KbShortcuts.SwitchTab.Length * 5
@@ -172,7 +175,7 @@ namespace CollapseLauncher.Dialogs
             return await SpawnDialog(
                     Lang._KbShortcuts.DialogTitle,
                     mainStack,
-                    Content,
+                    content,
                     Lang._Misc.Close
                 );
         }
@@ -263,7 +266,7 @@ namespace CollapseLauncher.Dialogs
 
         private static Border CreateKeyBoardButton(string key)
         {
-            Border keyboxBorder = new Border
+            Border keyBoxBorder = new Border
             {
                 Height = 42,
                 Width = 42,
@@ -273,11 +276,11 @@ namespace CollapseLauncher.Dialogs
             };
 
             ThemeShadow ts = new ThemeShadow();
-            ts.Receivers.Add(keyboxBorder);
-            keyboxBorder.Translation += Shadow48;
-            keyboxBorder.Shadow = ts;
+            ts.Receivers.Add(keyBoxBorder);
+            keyBoxBorder.Translation += Shadow48;
+            keyBoxBorder.Shadow = ts;
 
-            TextBlock keybox = new TextBlock
+            TextBlock keyBox = new TextBlock
             {
                 Text = key,
                 Foreground = new SolidColorBrush(Application.Current.RequestedTheme == ApplicationTheme.Dark ? Colors.Black : Colors.White),
@@ -286,9 +289,9 @@ namespace CollapseLauncher.Dialogs
                 VerticalAlignment = VerticalAlignment.Center
             };
 
-            keyboxBorder.Child = keybox;
+            keyBoxBorder.Child = keyBox;
 
-            return keyboxBorder;
+            return keyBoxBorder;
         }
 
         private static async void ChangeMenuVisibility<T1, T2>(int sender, List<T1> stacks, List<T2> buttons)
@@ -494,13 +497,15 @@ namespace CollapseLauncher.Dialogs
             {
                 int keyValue = (int)s.Key;
 
-                if (keyCount >= 1 && keyValue is (>= 0x41 and <= 0x5A) or 9) // Virtual-Key codes for Letters and Tab
+                if (keyCount < 1 || keyValue is not ((>= 0x41 and <= 0x5A) or 9)) // Virtual-Key codes for Letters and Tab
                 {
-                    newShortcut.Key = s.Key;
-                    text2.Text = s.Key.ToString();
-
-                    result.IsPrimaryButtonEnabled = ValidKeyCombination(newShortcut);
+                    return;
                 }
+
+                newShortcut.Key = s.Key;
+                text2.Text      = s.Key.ToString();
+
+                result.IsPrimaryButtonEnabled = ValidKeyCombination(newShortcut);
             };
 
             CannotUseKbShortcuts = true;
@@ -511,28 +516,35 @@ namespace CollapseLauncher.Dialogs
 
         private static async void Swap_Click(object sender, RoutedEventArgs e)
         {
-            KbShortcutChangeData data = (KbShortcutChangeData)(sender as Button).DataContext;
+            try
+            {
+                KbShortcutChangeData data = (KbShortcutChangeData)(sender as Button).DataContext;
 
-            if (data is { KeyName: "GameSelection" or "RegionSelection" })
-            {
-                SwapModifiers();
-                (sender as Button).FindParent<ContentDialogCollapse>().Hide();
-                await Task.Delay(200);
-                await Dialog_ShowKbShortcuts(sender as UIElement, 1);
-            }
-            else
-            {
-                try
+                if (data is { KeyName: "GameSelection" or "RegionSelection" })
                 {
+                    SwapModifiers();
                     (sender as Button).FindParent<ContentDialogCollapse>().Hide();
                     await Task.Delay(200);
-                    await Dialog_SwitchKey(sender as UIElement, data);
-                    await Dialog_ShowKbShortcuts(sender as UIElement, data.PageNumber);
+                    await Dialog_ShowKbShortcuts(sender as UIElement, 1);
                 }
-                catch (Exception ex)
+                else
                 {
-                    LogWriteLine(ex.ToString());
+                    try
+                    {
+                        (sender as Button).FindParent<ContentDialogCollapse>().Hide();
+                        await Task.Delay(200);
+                        await Dialog_SwitchKey(sender as UIElement, data);
+                        await Dialog_ShowKbShortcuts(sender as UIElement, data.PageNumber);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine(ex.ToString());
+                    }
                 }
+            }
+            catch
+            {
+                // ignored
             }
         }
 
@@ -607,7 +619,7 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Custom Keyboard Shortcuts
-        public static Dictionary<string, KbShortcut> KbShortcutList = new();
+        internal static Dictionary<string, KbShortcut> KbShortcutList = new();
 
         public static void LoadKbShortcuts()
         {
@@ -699,7 +711,7 @@ namespace CollapseLauncher.Dialogs
                     VirtualKeyModifiers.Control => Lang._KbShortcuts.Keyboard_Control,
                     VirtualKeyModifiers.Menu => Lang._KbShortcuts.Keyboard_Menu,
                     VirtualKeyModifiers.Shift => Lang._KbShortcuts.Keyboard_Shift,
-                    _ => Modifier.ToString(),
+                    _ => Modifier.ToString()
                 };
             }
 
@@ -734,13 +746,13 @@ namespace CollapseLauncher.Dialogs
                     "Ctrl" => VirtualKeyModifiers.Control,
                     "Shift" => VirtualKeyModifiers.Shift,
                     "Alt" => VirtualKeyModifiers.Menu,
-                    _ => (VirtualKeyModifiers)Enum.Parse(typeof(VirtualKeyModifiers), strings[0])
+                    _ => Enum.Parse<VirtualKeyModifiers>(strings[0])
                 };
 
                 if (strings[1] is "1 - 3" or "1 - 6")
                     return new KbShortcut { Modifier = mod, Key = VirtualKey.None };
 
-                VirtualKey key = (VirtualKey)Enum.Parse(typeof(VirtualKey), strings[1]);
+                VirtualKey key = Enum.Parse<VirtualKey>(strings[1]);
                 return new KbShortcut { Modifier = mod, Key = key };
             }
 
@@ -752,7 +764,7 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Change Keyboard Shortcut struct
-        private struct KbShortcutChangeData
+        private class KbShortcutChangeData
         {
             public string KeyName { get; init; }
             public KbShortcut Shortcut { get; init; }

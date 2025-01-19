@@ -618,7 +618,7 @@ namespace CollapseLauncher
                         stopwatch.Restart();
                         // Get the URL Status then return boolean and URLStatus
                         CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
-                        latencyAvgArr[j] = !(isSuccess = urlStatus.IsSuccessStatusCode && !urlStatus.IsInitializationError) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
+                        latencyAvgArr[j] = !(isSuccess = urlStatus is { IsSuccessStatusCode: true, IsInitializationError: false }) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
                     }
 
                     // Get the average latency of the CDN.

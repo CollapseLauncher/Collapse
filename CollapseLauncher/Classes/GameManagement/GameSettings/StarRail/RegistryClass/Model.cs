@@ -71,7 +71,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         #endregion
 
         #region Presets
-        private static Model _VeryLowPreset = new()
+        private static readonly Model _VeryLowPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = false,
@@ -91,7 +91,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             
         };
 
-        private static Model _LowPreset = new()
+        private static readonly Model _LowPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -110,7 +110,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableSelfShadow         = 2
         };
 
-        private static Model _MediumPreset = new()
+        private static readonly Model _MediumPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -129,7 +129,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableSelfShadow         = 2
         };
 
-        private static Model _HighPreset = new()
+        private static readonly Model _HighPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -148,7 +148,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableSelfShadow         = 1
         };
 
-        private static Model _VeryHighPreset = new()
+        private static readonly Model _VeryHighPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,

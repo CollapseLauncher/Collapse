@@ -20,14 +20,14 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class PersonalAudioSetting : IGameSettingsValue<PersonalAudioSetting>
     {
         #region Fields
-        private const string _ValueName = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
-        private PersonalAudioSettingVolume _VolumeValue;
-        private int _MasterVolume = 100;
-        private int _BGMVolume = 100;
-        private int _SoundEffectVolume = 100;
-        private int _VoiceVolume = 100;
-        private int _ElfVolume = 100;
-        private int _CGVolumeV2 = 100;
+        private const    string                     _ValueName = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
+        private readonly PersonalAudioSettingVolume _VolumeValue;
+        private          int                        _MasterVolume      = 100;
+        private          int                        _BGMVolume         = 100;
+        private          int                        _SoundEffectVolume = 100;
+        private          int                        _VoiceVolume       = 100;
+        private          int                        _ElfVolume         = 100;
+        private          int                        _CGVolumeV2        = 100;
 
         public PersonalAudioSetting()
         {
@@ -152,12 +152,12 @@ namespace CollapseLauncher.GameSettings.Honkai
             get => _userCVLanguage switch
             {
                 "Japanese" => 1,
-                _ => 0,
+                _ => 0
             };
             set => _userCVLanguage = value switch
             {
                 1 => "Japanese",
-                _ => "Chinese(PRC)",
+                _ => "Chinese(PRC)"
             };
         }
 

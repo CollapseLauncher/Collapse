@@ -20,8 +20,8 @@ namespace CollapseLauncher.GameSettings
     {
 #nullable enable
         #region Fields
-        private string CurrentPresetName = PresetConst.DefaultPresetName;
-        private Dictionary<string, T1>? _Presets;
+        private          string                  CurrentPresetName = PresetConst.DefaultPresetName;
+        private readonly Dictionary<string, T1>? _Presets;
         #endregion
 
         #region Properties

@@ -46,7 +46,7 @@ public class TableRenderer : MarkdownObjectRenderer<WinUIRenderer, Table>
                         TableColumnAlign.Center => TextAlignment.Center,
                         TableColumnAlign.Left => TextAlignment.Left,
                         TableColumnAlign.Right => TextAlignment.Right,
-                        _ => TextAlignment.Left,
+                        _ => TextAlignment.Left
                     };
                 }
 

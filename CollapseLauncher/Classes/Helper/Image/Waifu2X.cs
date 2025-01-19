@@ -121,7 +121,7 @@ namespace CollapseLauncher.Helper.Image
         {
             Noise,
             Scale,
-            TileSize,
+            TileSize
         }
 
         public enum Waifu2XStatus
@@ -135,7 +135,7 @@ namespace CollapseLauncher.Helper.Image
             Error,
             NotAvailable = Error,
             TestNotPassed,
-            NotInitialized,
+            NotInitialized
         }
         #endregion
 

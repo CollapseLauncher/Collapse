@@ -229,7 +229,7 @@ namespace CollapseLauncher
                 FileCountIndicatorSubtitle = fileCountIndicatorSubtitle,
                 FileSizeIndicatorSubtitle = fileSizeIndicatorSubtitle,
                 ProgressBarIndicator = progressBarIndicator,
-                SpeedIndicatorSubtitle = speedIndicatorSubtitle,
+                SpeedIndicatorSubtitle = speedIndicatorSubtitle
             };
         }
     }

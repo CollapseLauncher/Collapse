@@ -35,14 +35,14 @@ namespace CollapseLauncher;
 public partial class Updater : IDisposable
 {
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
-    private string          ChannelURL;
-    private string          ChannelName;
-    private Stopwatch       UpdateStopwatch;
-    private UpdateManager   UpdateManager;
-    private IFileDownloader UpdateDownloader;
+    private readonly string          ChannelURL;
+    private readonly string          ChannelName;
+    private          Stopwatch       UpdateStopwatch;
+    private readonly UpdateManager   UpdateManager;
+    private readonly IFileDownloader UpdateDownloader;
 #if USEVELOPACK
-    private ILogger         UpdateManagerLogger;
-    private VelopackAsset   VelopackVersionToUpdate;
+    private readonly ILogger       UpdateManagerLogger;
+    private          VelopackAsset VelopackVersionToUpdate;
 #endif
     private GameVersion     NewVersionTag;
 
@@ -57,8 +57,8 @@ public partial class Updater : IDisposable
     public event EventHandler<UpdaterStatus>   UpdaterStatusChanged;
     public event EventHandler<UpdaterProgress> UpdaterProgressChanged;
 
-    private UpdaterStatus   Status;
-    private UpdaterProgress Progress;
+    private readonly UpdaterStatus   Status;
+    private          UpdaterProgress Progress;
 
     public Updater(string channelName)
     {
@@ -257,7 +257,7 @@ public partial class Updater : IDisposable
         UpdateStopwatch = Stopwatch.StartNew();
 
         CDNURLProperty preferredCdn = FallbackCDNUtil.GetPreferredCDN();
-        string updateFileIndexUrl = ConverterTool.CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
+        string updateFileIndexUrl = CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
 
         AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
                                             InternalAppJSONContext.Default.AppUpdateVersionProp, default)!;

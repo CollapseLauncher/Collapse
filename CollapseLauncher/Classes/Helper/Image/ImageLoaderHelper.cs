@@ -171,7 +171,7 @@ namespace CollapseLauncher.Helper.Image
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                CornerRadius = new CornerRadius(12),
+                CornerRadius = new CornerRadius(12)
                 // Margin = new Thickness(-23, -19, -23, -19)
             };
 

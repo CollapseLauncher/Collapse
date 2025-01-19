@@ -46,7 +46,7 @@ namespace CollapseLauncher.GameSettings.Genshin
     internal class GlobalPerfData
     {
         #region Fields
-        private static GlobalPerfData _LowestPreset = new()
+        private static readonly GlobalPerfData _LowestPreset = new()
         {
             FPS = FPSOption.f30,
             RenderResolution = 1,
@@ -66,10 +66,10 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x1,
             GraphicsQuality = GraphicsQualityOption.Lowest,
             GlobalIllumination = GlobalIlluminationOption.Off,
-            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On
         };
 
-        private static GlobalPerfData _LowPreset = new()
+        private static readonly GlobalPerfData _LowPreset = new()
         {
             FPS = FPSOption.f30,
             RenderResolution = 8,
@@ -89,10 +89,10 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x2,
             GraphicsQuality = GraphicsQualityOption.Low,
             GlobalIllumination = GlobalIlluminationOption.Off,
-            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On
         };
 
-        private static GlobalPerfData _MediumPreset = new()
+        private static readonly GlobalPerfData _MediumPreset = new()
         {
             FPS = FPSOption.f60,
             RenderResolution = 8,
@@ -112,7 +112,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x4,
             GraphicsQuality = GraphicsQualityOption.Medium,
             GlobalIllumination = GlobalIlluminationOption.Medium,
-            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On
         };
         #endregion
 

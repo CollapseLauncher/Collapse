@@ -25,6 +25,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable CommentTypo
 // ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.Dialogs
 {
@@ -127,7 +128,7 @@ namespace CollapseLauncher.Dialogs
                 TextWrapping = TextWrapping.Wrap,
                 FontWeight = FontWeights.Medium,
                 Margin = new Thickness(0, 0, 0, 16),
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -247,11 +248,13 @@ namespace CollapseLauncher.Dialogs
 
                     CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
                     Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    if (textBlockLocal == null || thisIconText == null || (thisCheckBox.IsChecked ?? false))
                     {
-                        textBlockLocal.Opacity = 0.5;
-                        thisIconText.Opacity = 0.5;
+                        return;
                     }
+
+                    textBlockLocal.Opacity = 0.5;
+                    thisIconText.Opacity   = 0.5;
                 };
 
                 if (i == defaultIndex)
@@ -337,7 +340,7 @@ namespace CollapseLauncher.Dialogs
                 TextWrapping = TextWrapping.Wrap,
                 FontWeight = FontWeights.Medium,
                 Margin = new Thickness(0, 0, 0, 16),
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -572,24 +575,6 @@ namespace CollapseLauncher.Dialogs
 
             ComboBox targetGame = new ComboBox();
 
-            SelectionChangedEventHandler sourceGameChangedArgs = (sender, _) =>
-                                                                 {
-                                                                     // ReSharper disable AccessToModifiedClosure
-                                                                     targetGame!.IsEnabled            = true;
-                                                                     dialog!.IsSecondaryButtonEnabled = false;
-                                                                     targetGame!.ItemsSource =
-                                                                         InnerLauncherConfig
-                                                                            .BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
-                                                                                 InstallationConvert
-                                                                                    .GetConvertibleNameList(
-                                                                        InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox)!.SelectedItem)));
-                                                                 };
-            SelectionChangedEventHandler targetGameChangedArgs = (sender, _) =>
-                                                                 {
-                                                                     if ((sender as ComboBox)!.SelectedIndex != -1)
-                                                                         dialog!.IsSecondaryButtonEnabled = true;
-                                                                     // ReSharper restore AccessToModifiedClosure
-                                                                 };
             var sourceGame = new ComboBox
             {
                 Width = 200,
@@ -598,7 +583,7 @@ namespace CollapseLauncher.Dialogs
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };
-            sourceGame.SelectionChanged += sourceGameChangedArgs;
+            sourceGame.SelectionChanged += SourceGameChangedArgs;
             targetGame = new ComboBox
             {
                 Width = 200,
@@ -606,7 +591,7 @@ namespace CollapseLauncher.Dialogs
                 IsEnabled = false,
                 CornerRadius = new CornerRadius(14)
             };
-            targetGame.SelectionChanged += targetGameChangedArgs;
+            targetGame.SelectionChanged += TargetGameChangedArgs;
 
             StackPanel dialogContainer = CollapseUIExt.CreateStackPanel();
             StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
@@ -641,6 +626,20 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = content.XamlRoot
             };
             return (await dialog.QueueAndSpawnDialog(), sourceGame, targetGame);
+
+            void SourceGameChangedArgs(object sender, SelectionChangedEventArgs _)
+            {
+                // ReSharper disable AccessToModifiedClosure
+                targetGame!.IsEnabled            = true;
+                dialog!.IsSecondaryButtonEnabled = false;
+                targetGame!.ItemsSource          = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, InstallationConvert.GetConvertibleNameList(InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox)!.SelectedItem)));
+            }
+
+            void TargetGameChangedArgs(object sender, SelectionChangedEventArgs _)
+            {
+                if ((sender as ComboBox)!.SelectedIndex != -1) dialog!.IsSecondaryButtonEnabled = true;
+                // ReSharper restore AccessToModifiedClosure
+            }
         }
 
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement content, string fileName)
@@ -650,7 +649,7 @@ namespace CollapseLauncher.Dialogs
             texts.Inlines.Add(new Hyperlink
             {
                 Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor") } },
-                NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
+                NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe")
             });
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 });
             texts.Inlines.Add(new Run { Text = $" {Lang._Misc.Next} ", FontWeight = FontWeights.Bold });
@@ -723,15 +722,15 @@ namespace CollapseLauncher.Dialogs
         {
             if (migrateFromLauncherType != MigrateFromLauncherType.Official)
             {
-                switch (migrateFromLauncherType)
-                {
-                    case MigrateFromLauncherType.BetterHi3Launcher:
-                        return await Dialog_ExistingInstallationBetterLauncher(content, existingGamePath, isHasOnlyMigrateOption);
-                    case MigrateFromLauncherType.Steam:
-                        return await Dialog_ExistingInstallationSteam(content, existingGamePath, isHasOnlyMigrateOption);
-                    default:
-                        throw new InvalidOperationException("Dialog is not supported for unknown migration!");
-                }
+                return migrateFromLauncherType switch
+                       {
+                           MigrateFromLauncherType.BetterHi3Launcher => await
+                               Dialog_ExistingInstallationBetterLauncher(content, existingGamePath,
+                                                                         isHasOnlyMigrateOption),
+                           MigrateFromLauncherType.Steam => await
+                               Dialog_ExistingInstallationSteam(content, existingGamePath, isHasOnlyMigrateOption),
+                           _ => throw new InvalidOperationException("Dialog is not supported for unknown migration!")
+                       };
             }
 
             string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
@@ -1357,23 +1356,23 @@ namespace CollapseLauncher.Dialogs
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
             return await parentUI.DispatcherQueue.EnqueueAsync(async () =>
-                                                               {
-                                                                   // Create a new instance of dialog
-                                                                   ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
-                                                                   {
-                                                                       Title = title,
-                                                                       Content = content,
-                                                                       CloseButtonText = closeText,
-                                                                       PrimaryButtonText = primaryText,
-                                                                       SecondaryButtonText = secondaryText,
-                                                                       DefaultButton = defaultButton,
-                                                                       Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                                                                       XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI.XamlRoot
-                                                                   };
+            {
+                // Create a new instance of dialog
+                ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
+                {
+                    Title = title,
+                    Content = content,
+                    CloseButtonText = closeText,
+                    PrimaryButtonText = primaryText,
+                    SecondaryButtonText = secondaryText,
+                    DefaultButton = defaultButton,
+                    Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                    XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI.XamlRoot
+                };
 
-                                                                   // Queue and spawn the dialog instance
-                                                                   return await dialog.QueueAndSpawnDialog();
-                                                               });
+                // Queue and spawn the dialog instance
+                return await dialog.QueueAndSpawnDialog();
+            });
         }
 
         public static async ValueTask<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)

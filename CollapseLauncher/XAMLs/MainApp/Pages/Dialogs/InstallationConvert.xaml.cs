@@ -528,7 +528,8 @@ namespace CollapseLauncher.Dialogs
                 ApplyConfiguration();
                 return;
             }
-            else if (!Directory.Exists(ignoredPath)) return;
+
+            if (!Directory.Exists(ignoredPath)) return;
 
             int    dirLength = ignoredPath.Length + 1;
             foreach (string filePath in Directory.EnumerateFiles(ignoredPath, "*", SearchOption.AllDirectories))

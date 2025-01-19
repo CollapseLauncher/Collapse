@@ -253,7 +253,7 @@ namespace CollapseLauncher
             CustomNotifAction = NotificationCustomAction.Add,
             Notification = new NotificationProp
             {
-                MsgId = tagID,
+                MsgId = tagID
             },
             OtherContent = infoBarUI
         });
@@ -263,7 +263,7 @@ namespace CollapseLauncher
             CustomNotifAction = NotificationCustomAction.Remove,
             Notification = new NotificationProp
             {
-                MsgId = tagID,
+                MsgId = tagID
             }
         });
     }
@@ -344,7 +344,7 @@ namespace CollapseLauncher
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = url,
-                        UseShellExecute = true,
+                        UseShellExecute = true
                     });
                 });
             }

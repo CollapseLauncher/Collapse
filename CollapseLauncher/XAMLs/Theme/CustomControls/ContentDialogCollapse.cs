@@ -42,7 +42,7 @@ namespace CollapseLauncher.CustomControls
 
         public new IAsyncOperation<ContentDialogResult> ShowAsync()
         {
-            if (Title != null && Title is string titleString && Theme != ContentDialogTheme.Informational)
+            if (Title is string titleString && Theme != ContentDialogTheme.Informational)
             {
                 Grid titleStack = UIElementExtensions.CreateIconTextGrid(
                         text: titleString,

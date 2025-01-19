@@ -108,7 +108,7 @@ namespace CollapseLauncher
                 // Initialize the metadata tool (including dispatcher and gateway).
                 // Perform this if only base._isVersionOverride is false to indicate that the repair performed is
                 // not for delta patch integrity check.
-                if (!IsVersionOverride && !this.IsOnlyRecoverMain && await InnerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
+                if (!IsVersionOverride && !IsOnlyRecoverMain && await InnerGameVersionManager.StarRailMetadataTool.Initialize(token, downloadClient, _httpClient_FetchAssetProgress, GetExistingGameRegionID(), Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(InnerGameVersionManager.GamePreset.GameExecutableName)}_Data\\Persistent")))
                 {
                     await Task.WhenAll(
                         // Read Block metadata
@@ -268,7 +268,7 @@ namespace CollapseLauncher
                 N = localAbsolutePath,
                 RN = remoteAbsolutePath,
                 IsPatchApplicable = isPatchApplicable,
-                IsHasHashMark = isHasHashMark,
+                IsHasHashMark = isHasHashMark
             };
         }
 

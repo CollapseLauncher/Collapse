@@ -23,6 +23,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable CommentTypo
 
 // ReSharper disable CheckNamespace
 // ReSharper disable IdentifierTypo
@@ -137,27 +140,34 @@ namespace CollapseLauncher.Pages
 
         private async void ToggleCheckAll(object sender, RoutedEventArgs e)
         {
-            var s = new Stopwatch();
-            if (ListViewTable.Items.Count > 1000)
+            try
             {
-                LoadingMessageHelper.Initialize();
-                LoadingMessageHelper.ShowLoadingFrame();
-                LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                Locale.Lang._FileCleanupPage.LoadingSubtitle3);
-            }
+                var s = new Stopwatch();
+                if (ListViewTable.Items.Count > 1000)
+                {
+                    LoadingMessageHelper.Initialize();
+                    LoadingMessageHelper.ShowLoadingFrame();
+                    LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
+                                                    Locale.Lang._FileCleanupPage.LoadingSubtitle3);
+                }
             
-            await Task.Delay(100);
-            s.Start();
-            bool toCheckCopy = false;
-            if (sender is CheckBox checkBox)
+                await Task.Delay(100);
+                s.Start();
+                bool toCheckCopy = false;
+                if (sender is CheckBox checkBox)
+                {
+                    bool toCheck = checkBox.IsChecked ?? false;
+                    await ToggleCheckAllInnerAsync(toCheck);
+                    toCheckCopy = toCheck;
+                } 
+                s.Stop();
+                LoadingMessageHelper.HideLoadingFrame();
+                Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+            }
+            catch (Exception ex)
             {
-                bool toCheck = checkBox.IsChecked ?? false;
-                await ToggleCheckAllInnerAsync(toCheck);
-                toCheckCopy = toCheck;
-            } 
-            s.Stop();
-            LoadingMessageHelper.HideLoadingFrame();
-            Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
         private async Task CheckAll()
@@ -179,47 +189,54 @@ namespace CollapseLauncher.Pages
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            List<LocalFileInfo> removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
-            List<LocalFileInfo> addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
-            
-            Task<long> removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
-                                                      ? removedItems.Sum(x => x.FileSize)
-                                                      : removedItems.Select(x => x.FileSize).ToArray().Sum());
-
-            Task<long> addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
-                                                    ? addedItems.Sum(x => x.FileSize)
-                                                    : addedItems.Select(x => x.FileSize).ToArray().Sum());
-
-            var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
-            var removedSize = results[0];
-            var addedSize   = results[1];
-
-            _selectedAssetsCount += addedItems.Count - removedItems.Count;
-            _assetSelectedSize   += addedSize - removedSize;
-
-            await EnqueueOnDispatcherQueueAsync(() =>
+            try
             {
-                if (_selectedAssetsCount > 0)
-                {
-                    ToggleCheckAllCheckBox.Content = string.Format(
-                                                                   Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
-                                                                    _selectedAssetsCount,
-                                                                    ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
-                                                                    ConverterTool.SummarizeSizeSimple(_assetTotalSize));
-                }
-                else
-                {
-                    ToggleCheckAllCheckBox.Content = Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
-                }
+                List<LocalFileInfo> removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
+                List<LocalFileInfo> addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
+            
+                Task<long> removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
+                                                          ? removedItems.Sum(x => x.FileSize)
+                                                          : removedItems.Select(x => x.FileSize).ToArray().Sum());
 
-                DeleteSelectedFilesText.Text =
-                    string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, _selectedAssetsCount);
-                DeleteSelectedFiles.IsEnabled = _selectedAssetsCount > 0;
+                Task<long> addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
+                                                        ? addedItems.Sum(x => x.FileSize)
+                                                        : addedItems.Select(x => x.FileSize).ToArray().Sum());
 
-                ToggleCheckAllCheckBox.IsChecked = _selectedAssetsCount == 0
-                    ? false
-                    : _selectedAssetsCount == FileInfoSource.Count ? true : null;
-            });
+                var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
+                var removedSize = results[0];
+                var addedSize   = results[1];
+
+                _selectedAssetsCount += addedItems.Count - removedItems.Count;
+                _assetSelectedSize   += addedSize - removedSize;
+
+                await EnqueueOnDispatcherQueueAsync(() =>
+                                                    {
+                                                        if (_selectedAssetsCount > 0)
+                                                        {
+                                                            ToggleCheckAllCheckBox.Content = string.Format(
+                                                                 Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
+                                                                 _selectedAssetsCount,
+                                                                 ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
+                                                                 ConverterTool.SummarizeSizeSimple(_assetTotalSize));
+                                                        }
+                                                        else
+                                                        {
+                                                            ToggleCheckAllCheckBox.Content = Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
+                                                        }
+
+                                                        DeleteSelectedFilesText.Text =
+                                                            string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, _selectedAssetsCount);
+                                                        DeleteSelectedFiles.IsEnabled = _selectedAssetsCount > 0;
+
+                                                        ToggleCheckAllCheckBox.IsChecked = _selectedAssetsCount == 0
+                                                            ? false
+                                                            : _selectedAssetsCount == FileInfoSource.Count ? true : null;
+                                                    });
+            }
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
         private Task EnqueueOnDispatcherQueueAsync(Action action)

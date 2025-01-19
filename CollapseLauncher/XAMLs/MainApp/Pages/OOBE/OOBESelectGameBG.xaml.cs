@@ -76,11 +76,10 @@ namespace CollapseLauncher.Pages.OOBE
         {
             try
             {
-                if (!(IsLoadDescription = !(config is null
-                                         || config.ZoneDescription is null
-                                         || config.ZonePosterURL is null
-                                         || config.ZoneLogoURL is null
-                                         || config.ZoneURL is null)))
+                if (!(IsLoadDescription = !(config?.ZoneDescription is null
+                                            || config.ZonePosterURL is null
+                                            || config.ZoneLogoURL is null
+                                            || config.ZoneURL is null)))
                 {
                     _gamePosterBitmap = null;
                     _gamePosterBitmapImage = null;

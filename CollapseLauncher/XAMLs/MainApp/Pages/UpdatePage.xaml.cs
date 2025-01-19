@@ -17,6 +17,8 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Pages
 {
@@ -27,12 +29,12 @@ namespace CollapseLauncher.Pages
 
         public UpdatePage()
         {
-            this.InitializeComponent();
-            this.Loaded += LoadedAsyncRoutine;
-            this.Unloaded += UpdatePage_Unloaded;
+            InitializeComponent();
+            Loaded += LoadedAsyncRoutine;
+            Unloaded += UpdatePage_Unloaded;
         }
 
-        private void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+        private static void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
         private async void LoadedAsyncRoutine(object sender, RoutedEventArgs e)
         {

@@ -22,11 +22,11 @@ namespace CollapseLauncher.GameSettings.StarRail
     internal class PCResolution : BaseScreenSettingData, IGameSettingsValue<PCResolution>
     {
         #region Fields
-        private const string _ValueName                        = "GraphicsSettings_PCResolution_h431323223";
-        private const string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
-        private const string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
-        private const string _ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
-        private static Size currentRes                         = ScreenProp.CurrentResolution;
+        private const           string _ValueName                        = "GraphicsSettings_PCResolution_h431323223";
+        private const           string _ValueNameScreenManagerWidth      = "Screenmanager Resolution Width_h182942802";
+        private const           string _ValueNameScreenManagerHeight     = "Screenmanager Resolution Height_h2627697771";
+        private const           string _ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
+        private static readonly Size   currentRes                        = ScreenProp.CurrentResolution;
         #endregion
 
         #region Properties

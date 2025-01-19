@@ -23,7 +23,7 @@ namespace CollapseLauncher.ShortcutUtils
                 GameNameType.Genshin => "icon-genshin.ico",
                 GameNameType.StarRail => "icon-starrail.ico",
                 GameNameType.Zenless => "icon-zenless.ico",
-                _ => "icon-honkai.ico",
+                _ => "icon-honkai.ico"
             };
         }
 

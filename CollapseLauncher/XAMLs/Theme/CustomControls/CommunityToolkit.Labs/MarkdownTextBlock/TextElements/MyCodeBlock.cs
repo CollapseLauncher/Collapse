@@ -15,7 +15,7 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyCodeBlock : IAddChild
 {
-    private Paragraph _paragraph;
+    private readonly Paragraph _paragraph;
 
     public TextElement TextElement
     {
@@ -27,11 +27,13 @@ internal class MyCodeBlock : IAddChild
         MarkdownConfig _config = config;
         _paragraph = new Paragraph();
         var container = new InlineUIContainer();
-        var border = new Border();
-        border.Background = (Brush)Application.Current.Resources["ExpanderHeaderBackground"];
-        border.Padding = _config.Themes.Padding;
-        border.Margin = _config.Themes.InternalMargin;
-        border.CornerRadius = _config.Themes.CornerRadius;
+        var border    = new Border
+        {
+            Background   = (Brush)Application.Current.Resources["ExpanderHeaderBackground"],
+            Padding      = _config.Themes.Padding,
+            Margin       = _config.Themes.InternalMargin,
+            CornerRadius = _config.Themes.CornerRadius
+        };
         var richTextBlock = new RichTextBlock();
 
         if (codeBlock is FencedCodeBlock fencedCodeBlock)

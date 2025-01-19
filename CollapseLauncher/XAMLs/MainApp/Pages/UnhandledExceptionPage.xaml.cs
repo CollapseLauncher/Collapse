@@ -12,7 +12,7 @@ namespace CollapseLauncher.Pages
         public UnhandledExceptionPage()
         {
             BackgroundImgChanger.ToggleBackground(true);
-            this.InitializeComponent();
+            InitializeComponent();
             ExceptionTextBox.Text = ErrorSender.ExceptionContent;
             Title.Text = ErrorSender.ExceptionTitle;
             Subtitle.Text = ErrorSender.ExceptionSubtitle;
