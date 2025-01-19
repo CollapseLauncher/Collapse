@@ -47,8 +47,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public virtual RegionResourceProp?    LauncherGameResource  { get; protected set; }
         public virtual LauncherGameNews?      LauncherGameNews      { get; protected set; }
         public virtual HoYoPlayGameInfoField? LauncherGameInfoField { get; protected set; }
-        public virtual HttpClient?            ApiGeneralHttpClient  { get; protected set; }
-        public virtual HttpClient?            ApiResourceHttpClient { get; protected set; }
+        public virtual HttpClient             ApiGeneralHttpClient  { get; protected set; }
+        public virtual HttpClient             ApiResourceHttpClient { get; protected set; }
 
         public void Dispose()
         {
@@ -65,7 +65,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion)
             : this(presetConfig, gameName, gameRegion, false) { }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion, bool isIgnoreBaseHttpClientInit)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         {
             PresetConfig = presetConfig;
             GameName     = gameName;
@@ -75,44 +77,38 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             if (!isIgnoreBaseHttpClientInit)
             {
-                InitializeHttpClients(presetConfig);
+                // Create generic HttpClientBuilder
+                HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
+                                                                             .UseLauncherConfig()
+                                                                             .AllowUntrustedCert()
+                                                                             .SetAllowedDecompression()
+                                                                             .SetHttpVersion(HttpVersion.Version30);
+
+                // Create resource HttpClientBuilder
+                HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
+                                                                              .UseLauncherConfig()
+                                                                              .AllowUntrustedCert()
+                                                                              .SetAllowedDecompression(DecompressionMethods.None)
+                                                                              .SetHttpVersion(HttpVersion.Version30);
+
+                // If the metadata has user-agent defined, set the resource's HttpClient user-agent
+                if (!string.IsNullOrEmpty(presetConfig.ApiGeneralUserAgent))
+                {
+                    apiGeneralHttpBuilder.SetUserAgent(presetConfig.ApiGeneralUserAgent);
+                }
+                if (!string.IsNullOrEmpty(presetConfig.ApiResourceUserAgent))
+                {
+                    apiResourceHttpBuilder.SetUserAgent(string.Format(presetConfig.ApiResourceUserAgent, InnerLauncherConfig.m_isWindows11 ? "11" : "10"));
+                }
+
+                // Add other API general and resource headers from the metadata configuration
+                presetConfig.AddApiGeneralAdditionalHeaders((key, value) => apiGeneralHttpBuilder.AddHeader(key, value));
+                presetConfig.AddApiResourceAdditionalHeaders((key, value) => apiResourceHttpBuilder.AddHeader(key, value));
+
+                // Create HttpClient instances for both General and Resource APIs.
+                ApiGeneralHttpClient = apiGeneralHttpBuilder.Create();
+                ApiResourceHttpClient = apiResourceHttpBuilder.Create();
             }
-        }
-
-        private void InitializeHttpClients(PresetConfig presetConfig)
-        {
-            // Create generic HttpClientBuilder
-            HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
-                                                                         .UseLauncherConfig()
-                                                                         .AllowUntrustedCert()
-                                                                         .SetAllowedDecompression()
-                                                                         .SetHttpVersion(HttpVersion.Version30);
-
-            // Create resource HttpClientBuilder
-            HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
-                                                                          .UseLauncherConfig()
-                                                                          .AllowUntrustedCert()
-                                                                          .SetAllowedDecompression(DecompressionMethods.None)
-                                                                          .SetHttpVersion(HttpVersion.Version30);
-
-            // If the metadata has user-agent defined, set the resource's HttpClient user-agent
-            if (!string.IsNullOrEmpty(presetConfig.ApiGeneralUserAgent))
-            {
-                apiGeneralHttpBuilder.SetUserAgent(presetConfig.ApiGeneralUserAgent);
-            }
-            if (!string.IsNullOrEmpty(presetConfig.ApiResourceUserAgent))
-            {
-                apiResourceHttpBuilder.SetUserAgent(string.Format(presetConfig.ApiResourceUserAgent, InnerLauncherConfig.m_isWindows11 ? "11" : "10"));
-            }
-
-            // Add other API general and resource headers from the metadata configuration
-            presetConfig.AddApiGeneralAdditionalHeaders((key,  value) => apiGeneralHttpBuilder.AddHeader(key, value));
-            presetConfig.AddApiResourceAdditionalHeaders((key, value) => apiResourceHttpBuilder.AddHeader(key, value));
-
-            // Create HttpClient instances for both General and Resource APIs.
-            ApiGeneralHttpClient  = apiGeneralHttpBuilder.Create();
-            ApiResourceHttpClient = apiResourceHttpBuilder.Create();
-
         }
 
         public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,

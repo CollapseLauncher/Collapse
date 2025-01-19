@@ -24,9 +24,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
     internal sealed partial class HoYoPlayLauncherApiLoader : LauncherApiBase
     {
-        public override HttpClient? ApiGeneralHttpClient { get; protected set; }
+        public override HttpClient ApiGeneralHttpClient { get; protected set; }
 
-        public override HttpClient? ApiResourceHttpClient { get; protected set; }
+        public override HttpClient ApiResourceHttpClient { get; protected set; }
 
         private HoYoPlayLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion, true)
@@ -72,7 +72,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         protected override async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
-                async innerToken => await ApiGeneralHttpClient!.GetFromJsonAsync(
+                async innerToken => await ApiGeneralHttpClient.GetFromJsonAsync(
                     PresetConfig?.LauncherResourceURL,
                     HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
                     innerToken);
@@ -89,37 +89,39 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             HoYoPlayLauncherResources? hypPluginResource = null;
             HoYoPlayLauncherResources? hypSdkResource = null;
 
-            tasks[0] = hypResourceResponseCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypResourceResponse = result);
+            tasks[0] = hypResourceResponseCallback
+                .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                .AsTaskAndDoAction((result) => hypResourceResponse = result);
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(
+                        await ApiGeneralHttpClient.GetFromJsonAsync(
                             PresetConfig?.LauncherPluginURL,
                             HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
                             innerToken);
 
-                tasks[1] = hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                  ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypPluginResource = result);
+                tasks[1] = hypPluginResourceCallback
+                    .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                    .AsTaskAndDoAction((result) => hypPluginResource = result);
             }
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(
+                        await ApiGeneralHttpClient.GetFromJsonAsync(
                             PresetConfig?.LauncherGameChannelSDKURL,
                             HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
                             innerToken);
 
-                tasks[2] = hypSdkResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                               ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypSdkResource = result);
+                tasks[2] = hypSdkResourceCallback
+                    .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
+                    .AsTaskAndDoAction((result) => hypSdkResource = result);
             }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest();
-
             RegionResourceGame sophonResourceData = new RegionResourceGame
             {
                 game = sophonResourceCurrentPackage
@@ -136,7 +138,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             ConvertPluginResources(ref sophonResourceData, hypPluginResource);
             ConvertSdkResources(ref sophonResourceData, hypSdkResource);
             ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
-            
+
             LauncherGameResource = sophonResourcePropRoot;
 
             PerformDebugRoutines();
