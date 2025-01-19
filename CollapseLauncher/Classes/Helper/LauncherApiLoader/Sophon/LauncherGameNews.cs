@@ -37,7 +37,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         public ILauncherApi? LauncherApi { get; set; }
     }
 
-    public class LauncherGameNews
+    [JsonSerializable(typeof(LauncherGameNews), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class LauncherGameNewsJSONContext : JsonSerializerContext;
+
+    public sealed class LauncherGameNews
     {
         [JsonPropertyName("retcode")] public int? ReturnCode { get; init; }
 
@@ -46,7 +49,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         [JsonPropertyName("data")] public LauncherGameNewsData? Content { get; set; }
     }
 
-    public class LauncherGameNewsData
+    public sealed class LauncherGameNewsData
     {
         public HoYoPlayGameInfoField GameInfoField { get; init; } = new();
 

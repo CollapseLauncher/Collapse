@@ -922,11 +922,11 @@ namespace CollapseLauncher.Pages
         private bool IsShowRegionChangeWarning
         {
             get
-            { 
-                var value = LauncherConfig.IsShowRegionChangeWarning;
+            {
+                field = LauncherConfig.IsShowRegionChangeWarning;
 
-                PanelChangeRegionInstant.Visibility = !value ? Visibility.Visible : Visibility.Collapsed;
-                return value;
+                PanelChangeRegionInstant.Visibility = !field ? Visibility.Visible : Visibility.Collapsed;
+                return field;
             }
             set
             {
@@ -941,13 +941,13 @@ namespace CollapseLauncher.Pages
         
         private bool IsInstantRegionChange
         {
-            get => LauncherConfig.IsInstantRegionChange;
+            get => field = LauncherConfig.IsInstantRegionChange;
             set
             {
                 IsInstantRegionNeedRestart = true;
                 var valueConfig = field;
                 InstantRegionToggleWarning.Visibility = value != valueConfig ? Visibility.Visible : Visibility.Collapsed;
-                
+
                 LauncherConfig.IsInstantRegionChange = value;
             }
         }

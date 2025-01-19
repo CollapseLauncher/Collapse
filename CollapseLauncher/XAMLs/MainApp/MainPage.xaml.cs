@@ -744,7 +744,7 @@ namespace CollapseLauncher
                 RunTimeoutCancel(TokenSource);
 
                 await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
-                NotificationData = await networkStream.DeserializeAsync(InternalAppJSONContext.Default.NotificationPush, token: TokenSource.Token);
+                NotificationData = await networkStream.DeserializeAsync(NotificationPushJSONContext.Default.NotificationPush, token: TokenSource.Token);
                 IsLoadNotifComplete = true;
 
                 NotificationData?.EliminatePushList();

@@ -6,7 +6,10 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
-    public class HoYoPlayLauncherGameInfo
+    [JsonSerializable(typeof(HoYoPlayLauncherGameInfo), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class HoYoPlayLauncherGameInfoJSONContext : JsonSerializerContext;
+
+    public sealed class HoYoPlayLauncherGameInfo
     {
         [JsonPropertyName("retcode")] public int? ReturnCode { get; init; }
 
@@ -15,20 +18,20 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         [JsonPropertyName("data")] public HoYoPlayGameInfoData? GameInfoData { get; init; }
     }
 
-    public class HoYoPlayGameInfoData
+    public sealed class HoYoPlayGameInfoData
     {
         [JsonPropertyName("games")] public List<HoYoPlayGameInfoField>? Data { get; init; }
         [JsonPropertyName("game_branches")] public List<HoYoPlayGameInfoBranch>? GameBranchesInfo { get; init; }
     }
 
-    public class HoYoPlayGameInfoBranch
+    public sealed class HoYoPlayGameInfoBranch
     {
         [JsonPropertyName("game")] public HoYoPlayGameInfoField? GameInfo { get; init; }
         [JsonPropertyName("main")] public HoYoPlayGameInfoBranchField? GameMainField { get; init; }
         [JsonPropertyName("pre_download")] public HoYoPlayGameInfoBranchField? GamePreloadField { get; init; }
     }
 
-    public class HoYoPlayGameInfoBranchField
+    public sealed class HoYoPlayGameInfoBranchField
     {
         [JsonPropertyName("package_id")] public string? PackageId { get; init; }
         [JsonPropertyName("branch")] public string? Branch { get; init; }
@@ -36,7 +39,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         [JsonPropertyName("tag")] public string? Tag { get; init; }
     }
 
-    public class HoYoPlayGameInfoField
+    public sealed class HoYoPlayGameInfoField
     {
         [JsonPropertyName("id")]
         public string? Id { get; init; }
@@ -54,7 +57,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public LauncherGameAvailabilityStatus DisplayStatus { get; init; } = LauncherGameAvailabilityStatus.LAUNCHER_GAME_DISPLAY_STATUS_AVAILABLE;
     }
 
-    public class HoYoPlayGameInfoDisplay
+    public sealed class HoYoPlayGameInfoDisplay
     {
         [JsonPropertyName("language")]
         public string? Language { get; init; }

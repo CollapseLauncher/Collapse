@@ -35,7 +35,10 @@ namespace CollapseLauncher
         }
     }
 
-    public class AppUpdateVersionProp
+    [JsonSerializable(typeof(AppUpdateVersionProp), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class AppUpdateVersionPropJSONContext : JsonSerializerContext;
+    
+    public sealed class AppUpdateVersionProp
     {
         [JsonPropertyName("f")]
         public List<AppUpdateVersionFileProp> FileList { get; set; }

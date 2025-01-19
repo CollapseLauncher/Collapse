@@ -3,21 +3,12 @@ using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
-#if !USEVELOPACK
-using Squirrel;
-using Squirrel.Sources;
-#else
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
 using Microsoft.Extensions.Logging;
-using Velopack;
-using Velopack.Locators;
-using Velopack.Sources;
-#endif
 using System;
 using System.Diagnostics;
 using System.IO;
-#if !USEVELOPACK
-using System.Linq;
-#endif
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -25,9 +16,17 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Hi3Helper.Data;
-using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
+
+#if !USEVELOPACK
+using Squirrel;
+using Squirrel.Sources;
+using System.Linq;
+#else
+using Velopack;
+using Velopack.Locators;
+using Velopack.Sources;
+#endif
+
 // ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher;
@@ -260,7 +259,7 @@ public partial class Updater : IDisposable
         string updateFileIndexUrl = CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
 
         AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
-                                            InternalAppJSONContext.Default.AppUpdateVersionProp, default)!;
+                                            AppUpdateVersionPropJSONContext.Default.AppUpdateVersionProp, default)!;
 
         GameVersion? gameVersion = updateInfo!.Version;
 

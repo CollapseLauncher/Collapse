@@ -178,7 +178,7 @@ namespace CollapseLauncher.Dialogs
                 FallbackCDNUtil.DownloadProgress -= Step2ProgressEvents;
             }
 
-            RegionResourceProp entry = await FallbackCDNUtil.DownloadAsJSONType(profile.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, _tokenSource.Token);
+            RegionResourceProp entry = await FallbackCDNUtil.DownloadAsJSONType(profile.LauncherResourceURL, RegionResourcePropJSONContext.Default.RegionResourceProp, _tokenSource.Token);
             _gameVersion = entry.data?.game?.latest?.version;
 
             return repoList[_gameVersion ?? throw new InvalidOperationException()];

@@ -72,7 +72,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         protected override async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
-                async innerToken => await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.HoYoPlayLauncherResources, innerToken);
+                async innerToken => await ApiGeneralHttpClient!.GetFromJsonAsync(
+                    PresetConfig?.LauncherResourceURL,
+                    HoYoPlayLauncherResourcesJSONContext.Default.HoYoPlayLauncherResources,
+                    innerToken);
 
             // Assign as 3 Task array
             Task[] tasks = [
@@ -93,7 +96,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherPluginURL, InternalAppJSONContext.Default.HoYoPlayLauncherResources, innerToken);
+                        await ApiGeneralHttpClient!.GetFromJsonAsync(
+                            PresetConfig?.LauncherPluginURL,
+                            HoYoPlayLauncherResourcesJSONContext.Default.HoYoPlayLauncherResources,
+                            innerToken);
 
                 tasks[1] = hypPluginResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                   ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypPluginResource = result);
@@ -103,7 +109,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             {
                 ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherGameChannelSDKURL, InternalAppJSONContext.Default.HoYoPlayLauncherResources, innerToken);
+                        await ApiGeneralHttpClient!.GetFromJsonAsync(
+                            PresetConfig?.LauncherGameChannelSDKURL,
+                            HoYoPlayLauncherResourcesJSONContext.Default.HoYoPlayLauncherResources,
+                            innerToken);
 
                 tasks[2] = hypSdkResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypSdkResource = result);
@@ -369,14 +378,19 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             string launcherSpriteUrl = string.Format(PresetConfig?.LauncherSpriteURL!, localeCode);
             string launcherNewsUrl = string.Format(PresetConfig?.LauncherNewsURL!, localeCode);
 
-
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
                 async innerToken =>
-                    await ApiResourceHttpClient!.GetFromJsonAsync(launcherSpriteUrl, InternalAppJSONContext.Default.HoYoPlayLauncherNews, innerToken);
+                    await ApiResourceHttpClient!.GetFromJsonAsync(
+                        launcherSpriteUrl,
+                        HoYoPlayLauncherNewsJSONContext.Default.HoYoPlayLauncherNews,
+                        innerToken);
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
                 async innerToken =>
-                    await ApiResourceHttpClient!.GetFromJsonAsync(launcherNewsUrl, InternalAppJSONContext.Default.HoYoPlayLauncherNews, innerToken);
+                    await ApiResourceHttpClient!.GetFromJsonAsync(
+                        launcherNewsUrl,
+                        HoYoPlayLauncherNewsJSONContext.Default.HoYoPlayLauncherNews,
+                        innerToken);
 
             HoYoPlayLauncherNews? hypLauncherBackground = null;
             HoYoPlayLauncherNews? hypLauncherNews = null;
@@ -517,7 +531,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
                 async innerToken =>
-                    await ApiResourceHttpClient!.GetFromJsonAsync(launcherGameInfoUrl, InternalAppJSONContext.Default.HoYoPlayLauncherGameInfo, innerToken);
+                    await ApiResourceHttpClient!.GetFromJsonAsync(
+                        launcherGameInfoUrl,
+                        HoYoPlayLauncherGameInfoJSONContext.Default.HoYoPlayLauncherGameInfo,
+                        innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await hypLauncherGameInfoCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                            ExecutionTimeoutAttempt, onTimeoutRoutine, token);

@@ -8,7 +8,10 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Interfaces
 {
-    internal class CacheAsset : IAssetIndexSummary
+    [JsonSerializable(typeof(CacheAsset), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class CacheAssetJSONContext : JsonSerializerContext;
+
+    internal sealed class CacheAsset : IAssetIndexSummary
     {
         // Concatenate N and CRC to get the filepath.
         public string ConcatN => IsUseLocalPath ? $"{N}" : $"{N}_{CRC}.unity3d";

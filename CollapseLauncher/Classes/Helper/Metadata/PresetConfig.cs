@@ -100,7 +100,10 @@ namespace CollapseLauncher.Helper.Metadata
             // Fetch branch info
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
                 async innerToken =>
-                    await FallbackCDNUtil.DownloadAsJSONType(branchUrl, InternalAppJSONContext.Default.HoYoPlayLauncherGameInfo, innerToken);
+                    await FallbackCDNUtil.DownloadAsJSONType(
+                        branchUrl,
+                        HoYoPlayLauncherGameInfoJSONContext.Default.HoYoPlayLauncherGameInfo,
+                        innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await hypLauncherBranchCallback.WaitForRetryAsync(
                 LauncherApiBase.ExecutionTimeout,
@@ -252,7 +255,10 @@ namespace CollapseLauncher.Helper.Metadata
         }
     }
 
-    internal class PresetConfig
+    [JsonSerializable(typeof(PresetConfig), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class PresetConfigJSONContext : JsonSerializerContext;
+
+    internal sealed class PresetConfig
     {
         #region Constants
         // ReSharper disable once UnusedMember.Local
@@ -550,9 +556,7 @@ namespace CollapseLauncher.Helper.Metadata
                 }
 
                 ReadOnlySpan<char> regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-                GeneralDataProp? regValues =
-                    (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue), typeof(GeneralDataProp),
-                                                                 InternalAppJSONContext.Default);
+                GeneralDataProp? regValues = regValue.Deserialize(GeneralDataPropJSONContext.Default.GeneralDataProp);
                 return regValues?.deviceVoiceLanguageType ?? 2;
             }
             catch (JsonException ex)
@@ -629,24 +633,14 @@ namespace CollapseLauncher.Helper.Metadata
         {
             try
             {
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true) ?? Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+                RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
                 var result    = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                var initValue = new GeneralDataProp();
-                if (result != null)
-                {
-                    ReadOnlySpan<char> regValue = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
-                    initValue = (GeneralDataProp?)JsonSerializer.Deserialize(new string(regValue),
-                                                                             typeof(GeneralDataProp),
-                                                                             InternalAppJSONContext.Default) ??
-                                initValue;
-                }
-
+                GeneralDataProp? initValue = result?.Deserialize(GeneralDataPropJSONContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
-                keys.SetValue("GENERAL_DATA_h2389025596",
-                              Encoding.UTF8.GetBytes(
-                                                     JsonSerializer.Serialize(initValue, typeof(GeneralDataProp),
-                                                                              InternalAppJSONContext.Default) + '\0'));
+
+                string jsonString = initValue.Serialize(GeneralDataPropJSONContext.Default.GeneralDataProp, true);
+                keys.SetValue("GENERAL_DATA_h2389025596", Encoding.UTF8.GetBytes(jsonString), RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {
@@ -659,11 +653,10 @@ namespace CollapseLauncher.Helper.Metadata
         {
             try
             {
-                RegistryKey keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation, true) ?? Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation);
+                RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
                 string initValue = GetStarRailVoiceLanguageByID(langID);
-                keys.SetValue("LanguageSettings_LocalAudioLanguage_h882585060",
-                              Encoding.UTF8.GetBytes(initValue + '\0'));
+                keys.SetValue("LanguageSettings_LocalAudioLanguage_h882585060", Encoding.UTF8.GetBytes(initValue + '\0'), RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {
@@ -728,8 +721,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
 
             RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-            byte[]? value =
-                (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>(), RegistryValueOptions.None);
+            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>(), RegistryValueOptions.None);
 
             if (keys is null || value is null || value.Length is 0)
             {
@@ -738,18 +730,15 @@ namespace CollapseLauncher.Helper.Metadata
                 return 0;
             }
 
-            string regValue = new string(Encoding.UTF8.GetString(value).AsSpan().Trim('\0'));
-
             try
             {
-                return (int?)((GeneralDataProp?)JsonSerializer.Deserialize(regValue, typeof(GeneralDataProp),
-                                                                           InternalAppJSONContext.Default))
-                  ?.selectedServerName ?? 0;
+                return (int)(value.Deserialize(GeneralDataPropJSONContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
-                LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}! Returning value 0 as fallback!\r\nValue: {regValue}\r\n{ex}",
+                LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}!" +
+                             $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.Trim((byte)0))}\r\n{ex}",
                              LogType.Warning, true);
                 return 0;
             }

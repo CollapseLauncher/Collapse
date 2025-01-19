@@ -159,7 +159,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
                 async innerToken =>
-                    await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, innerToken);
+                    await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, RegionResourcePropJSONContext.Default.RegionResourceProp, innerToken);
 
             Task[] tasks = [
                 launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
@@ -173,7 +173,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default.RegionResourceProp, innerToken);
+                        await ApiGeneralHttpClient!.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), RegionResourcePropJSONContext.Default.RegionResourceProp, innerToken);
 
                 tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine, token)
@@ -351,13 +351,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         private async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
             string launcherSpriteUrl, CancellationToken token)
         {
-            return await ApiResourceHttpClient!.GetFromJsonAsync(launcherSpriteUrl, InternalAppJSONContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient!.GetFromJsonAsync(launcherSpriteUrl, LauncherGameNewsJSONContext.Default.LauncherGameNews, token);
         }
 
         private async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
                                                                                CancellationToken token)
         {
-            return await ApiResourceHttpClient!.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), InternalAppJSONContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient!.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), LauncherGameNewsJSONContext.Default.LauncherGameNews, token);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)

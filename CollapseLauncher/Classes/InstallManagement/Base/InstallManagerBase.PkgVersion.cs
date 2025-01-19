@@ -31,7 +31,10 @@ using static Hi3Helper.Logger;
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
 {
-    public class LocalFileInfo
+    [JsonSerializable(typeof(LocalFileInfo), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class LocalFileInfoJSONContext : JsonSerializerContext;
+
+    public sealed class LocalFileInfo
     {
         [JsonPropertyName("remoteName")]
         [JsonConverter(typeof(SlashToBackslashConverter))]
@@ -373,7 +376,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Read line and deserialize
                 string?        line          = await reader.ReadLineAsync(token);
-                LocalFileInfo? localFileInfo = line?.Deserialize(InternalAppJSONContext.Default.LocalFileInfo);
+                LocalFileInfo? localFileInfo = line?.Deserialize(LocalFileInfoJSONContext.Default.LocalFileInfo);
 
                 // Assign the values
                 if (localFileInfo == null)

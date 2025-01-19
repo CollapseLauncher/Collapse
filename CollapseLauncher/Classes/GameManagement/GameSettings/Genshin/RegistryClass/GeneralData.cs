@@ -380,7 +380,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                     $"Unless you have never opened the game (fresh installation), please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n\r\n" +
                     $"{ex}", ex));
 
-                GeneralData data = _generalDataDefault!.Deserialize(GenshinSettingsJSONContext.Default.GeneralData) ?? new GeneralData();
+                GeneralData data = _generalDataDefault.Deserialize(GenshinSettingsJSONContext.Default.GeneralData) ?? new GeneralData();
                 data.graphicsData   = GraphicsData.Load(data._graphicsData!);
                 data.globalPerfData = GlobalPerfData.Load(data._globalPerfData!, data.graphicsData)!;
                 return data;
@@ -393,8 +393,8 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                _graphicsData = graphicsData!.Create(globalPerfData!);
-                _globalPerfData = globalPerfData!.Save()!;
+                _graphicsData = graphicsData.Create(globalPerfData);
+                _globalPerfData = globalPerfData.Save();
 
                 string data = this.Serialize(GenshinSettingsJSONContext.Default.GeneralData);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);

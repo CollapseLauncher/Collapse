@@ -2722,7 +2722,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Try parsing the config
                 value  = Encoding.UTF8.GetString(keyValue);
-                config = value.Deserialize(InternalAppJSONContext.Default.BHI3LInfo);
+                config = value.Deserialize(BHI3LInfoJSONContext.Default.BHI3LInfo);
             }
             catch (Exception ex)
             {

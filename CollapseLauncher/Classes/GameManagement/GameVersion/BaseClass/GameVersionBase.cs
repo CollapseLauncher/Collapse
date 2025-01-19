@@ -88,7 +88,7 @@ namespace CollapseLauncher.GameVersioning
                     }
                 }
             };
-            string uapcValue = uapc.Serialize(InternalAppJSONContext.Default.DictionaryStringDictionaryStringString, false);
+            string uapcValue = uapc.Serialize(GenericJSONContext.Default.DictionaryStringDictionaryStringString, false);
             return new IniValue(uapcValue);
         }
 

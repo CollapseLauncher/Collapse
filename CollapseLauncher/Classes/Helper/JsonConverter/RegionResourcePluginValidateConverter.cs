@@ -19,7 +19,7 @@ namespace CollapseLauncher.Helper.JsonConverter
             JsonSerializerOptions options)
         {
             string valueString = EmptiedBackslash(reader.ValueSpan);
-            List<RegionResourcePluginValidate> returnList = valueString.Deserialize(InternalAppJSONContext.Default.ListRegionResourcePluginValidate);
+            List<RegionResourcePluginValidate> returnList = valueString.Deserialize(RegionResourcePluginValidateJSONContext.Default.ListRegionResourcePluginValidate);
 
             return returnList;
         }

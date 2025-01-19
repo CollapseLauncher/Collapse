@@ -133,7 +133,10 @@ namespace Hi3Helper.Shared.ClassStruct
         Error
     }
 
-    public class NotificationPush
+    [JsonSerializable(typeof(NotificationPush), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class NotificationPushJSONContext : JsonSerializerContext;
+
+    public sealed class NotificationPush
     {
         public List<NotificationProp> AppPush                { get; set; } = [];
         public List<NotificationProp> RegionPush             { get; set; } = [];

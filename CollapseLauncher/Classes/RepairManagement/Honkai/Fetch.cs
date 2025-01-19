@@ -269,7 +269,7 @@ namespace CollapseLauncher
             if (objIgnoredAudioPCKTypes != null)
             {
                 ReadOnlySpan<byte> bytesIgnoredAudioPckTypes = (byte[])objIgnoredAudioPCKTypes;
-                IgnoredAudioPCKTypes = bytesIgnoredAudioPckTypes.Deserialize(InternalAppJSONContext.Default.AudioPCKTypeArray) ?? IgnoredAudioPCKTypes;
+                IgnoredAudioPCKTypes = bytesIgnoredAudioPckTypes.Deserialize(GenericJSONContext.Default.AudioPCKTypeArray) ?? IgnoredAudioPCKTypes;
             }
 
             // Try get the values of the registry key of the Video CG ignored list
@@ -283,7 +283,7 @@ namespace CollapseLauncher
             }
 
             ReadOnlySpan<byte> bytesIgnoredVideoCGSubCategory = (byte[])objIgnoredVideoCGSubCategory;
-            IgnoredVideoCGSubCategory = bytesIgnoredVideoCGSubCategory.Deserialize(InternalAppJSONContext.Default.Int32Array) ?? IgnoredVideoCGSubCategory;
+            IgnoredVideoCGSubCategory = bytesIgnoredVideoCGSubCategory.Deserialize(GenericJSONContext.Default.Int32Array) ?? IgnoredVideoCGSubCategory;
 
             // Return the property value
             return new HonkaiRepairAssetIgnore { IgnoredAudioPCKType = IgnoredAudioPCKTypes, IgnoredVideoCGSubCategory = IgnoredVideoCGSubCategory };

@@ -6,6 +6,9 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
+    [JsonSerializable(typeof(HoYoPlayLauncherResources), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class HoYoPlayLauncherResourcesJSONContext : JsonSerializerContext;
+
     public class HoYoPlayLauncherResources
     {
         [JsonPropertyName("data")]

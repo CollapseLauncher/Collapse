@@ -1,10 +1,14 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Helper.Metadata
 {
-    public class Stamp
+    [JsonSerializable(typeof(List<Stamp>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class StampJSONContext : JsonSerializerContext;
+
+    public sealed class Stamp
     {
         public long LastUpdated { get; set; }
         public string? MetadataPath { get; set; } = null;

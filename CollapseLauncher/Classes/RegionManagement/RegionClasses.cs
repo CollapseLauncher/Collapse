@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -28,7 +29,10 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceProp : IRegionResourceCopyable<RegionResourceProp>
+    [JsonSerializable(typeof(RegionResourceProp), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class RegionResourcePropJSONContext : JsonSerializerContext;
+
+    public sealed class RegionResourceProp : IRegionResourceCopyable<RegionResourceProp>
     {
         public RegionResourceGame? data         { get; set; }
         public string              imgLocalPath { get; set; } = string.Empty;
@@ -43,7 +47,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
+    public sealed class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
     {
         public List<RegionResourcePlugin>? plugins           { get; set; }
         public RegionResourceLatest?       game              { get; set; }
@@ -62,7 +66,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
+    public sealed class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
     {
         public string?                release_id { get; set; }
         public string?                plugin_id  { get; set; }
@@ -81,7 +85,9 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
+    [JsonSerializable(typeof(List<RegionResourcePluginValidate>), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal sealed partial class RegionResourcePluginValidateJSONContext : JsonSerializerContext;
+    public sealed class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
     {
         public string? path { get; set; }
         public string? md5  { get; set; }
@@ -96,7 +102,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceLatest : IRegionResourceCopyable<RegionResourceLatest>
+    public sealed class RegionResourceLatest : IRegionResourceCopyable<RegionResourceLatest>
     {
         public RegionResourceVersion?       latest { get; set; }
         public List<RegionResourceVersion>? diffs  { get; set; }
@@ -111,7 +117,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
+    public sealed class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
     {
         public string? run_command       { get; set; }
         public string? version           { get; set; }

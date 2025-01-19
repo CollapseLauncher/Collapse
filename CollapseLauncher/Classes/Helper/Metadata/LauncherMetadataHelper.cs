@@ -5,6 +5,7 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Concurrent;
@@ -13,7 +14,6 @@ using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
@@ -245,7 +245,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 // Deserialize the stream
                 LauncherMetadataStamp =
-                    await stampLocalStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
+                    await stampLocalStream.DeserializeAsListAsync(StampJSONContext.Default.Stamp);
 
                 // SANITIZE: Check if the stamp is empty, then throw
                 if (LauncherMetadataStamp == null || LauncherMetadataStamp.Count == 0)
@@ -404,7 +404,7 @@ namespace CollapseLauncher.Helper.Metadata
                         {
                             // Deserialize the key config
                             MasterKeyConfig? keyConfig =
-                                await configLocalStream.DeserializeAsync(InternalAppJSONContext.Default.MasterKeyConfig);
+                                await configLocalStream.DeserializeAsync(MesterKeyConfigJSONContext.Default.MasterKeyConfig);
 
                             // Assign the key to instance property
                             CurrentMasterKey = keyConfig ?? throw new InvalidDataException("Master key config seems to be empty!");
@@ -421,7 +421,7 @@ namespace CollapseLauncher.Helper.Metadata
                     case MetadataType.PresetConfigV2:
                         {
                             PresetConfig? presetConfig =
-                                await configLocalStream.DeserializeAsync(InternalAppJSONContext.Default.PresetConfig);
+                                await configLocalStream.DeserializeAsync(PresetConfigJSONContext.Default.PresetConfig);
                             if (presetConfig != null)
                             {
                                 if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
@@ -534,7 +534,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (stampRemoteStream != null)
                 {
                     List<Stamp?>? remoteMetadataStampList =
-                        await stampRemoteStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
+                        await stampRemoteStream.DeserializeAsListAsync(StampJSONContext.Default.Stamp);
 
                     // Check and throw if the metadata stamp returns null or empty
                     if (remoteMetadataStampList == null || remoteMetadataStampList.Count == 0)
@@ -667,7 +667,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        private static async ValueTask UpdateStampContent(string stampPath, List<Stamp?> newStampList)
+        private static async Task UpdateStampContent(string stampPath, List<Stamp?> newStampList)
         {
             try
             {
@@ -676,11 +676,11 @@ namespace CollapseLauncher.Helper.Metadata
                     throw new FileNotFoundException($"Unable to update the stamp file because it is not exist! It should have been located here: {stampPath}");
 
                 // Read the old stamp list stream
-                List<Stamp?>? oldStampList;
+                List<Stamp?> oldStampList;
                 await using (FileStream stampStream = File.OpenRead(stampPath))
                 {
                     // Deserialize and do sanitize if the old stamp list is empty
-                    oldStampList = await stampStream.DeserializeAsListAsync(InternalAppJSONContext.Default.Stamp);
+                    oldStampList = await stampStream.DeserializeAsListAsync(StampJSONContext.Default.Stamp);
                     if (oldStampList == null || oldStampList.Count == 0)
                         throw new NullReferenceException("The old stamp list contains an empty/null content!");
 
@@ -712,7 +712,7 @@ namespace CollapseLauncher.Helper.Metadata
                 // Now write the updated list to the stamp file
                 await using (FileStream updatedStampStream = File.Create(stampPath))
                 {
-                    await oldStampList.SerializeAsync(updatedStampStream, InternalAppJSONContext.Default.ListStamp);
+                    await oldStampList.SerializeAsync(updatedStampStream, StampJSONContext.Default.ListStamp);
                     return;
                 }
             }
