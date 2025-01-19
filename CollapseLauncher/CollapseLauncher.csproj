@@ -385,7 +385,7 @@
     </Target>
 
 	<ItemGroup Condition="'$(PublishAot)' == 'true'">
-		<LinkerArg Include="/LTCG /DEBUG:NONE" />
+		<LinkerArg Include="/DEBUG:NONE /NODEFAULTLIB:MSVCRT" />
 	</ItemGroup>
 
 	<ItemGroup>
