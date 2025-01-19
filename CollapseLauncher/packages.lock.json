@@ -422,21 +422,21 @@
       "h.generatedicons.system.drawing": {
         "type": "Project",
         "dependencies": {
-          "System.Drawing.Common": "[9.0.0, )"
+          "System.Drawing.Common": "[9.0.1, )"
         }
       },
       "h.notifyicon": {
         "type": "Project",
         "dependencies": {
           "H.GeneratedIcons.System.Drawing": "[1.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )"
         }
       },
       "h.notifyicon.winui": {
         "type": "Project",
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )",
           "Microsoft.Web.WebView2": "[1.0.2950-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
           "Microsoft.WindowsAppSDK": "[1.6.241114003, )"
@@ -502,7 +502,7 @@
       "innosetuphelper": {
         "type": "Project",
         "dependencies": {
-          "System.IO.Hashing": "[9.0.0, )"
+          "System.IO.Hashing": "[9.0.1, )"
         }
       },
       "SettingsControls": {
