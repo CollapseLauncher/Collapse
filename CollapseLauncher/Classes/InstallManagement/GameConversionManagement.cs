@@ -94,7 +94,7 @@ namespace CollapseLauncher
                     _convertDetail = Lang._InstallConvert.Step2Subtitle;
                     await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, buffer, url, _token);
                     buffer.Position = 0;
-                    sourceFileRemote = await buffer.DeserializeAsListAsync(CoreLibraryJSONContext.Default.FilePropertiesRemote, _token);
+                    sourceFileRemote = await buffer.DeserializeAsListAsync(CoreLibraryJsonContext.Default.FilePropertiesRemote, _token);
                 }
 
                 using (MemoryStream buffer = new MemoryStream())
@@ -103,7 +103,7 @@ namespace CollapseLauncher
                     _convertDetail = Lang._InstallConvert.Step2Subtitle;
                     await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, buffer, url, _token);
                     buffer.Position = 0;
-                    targetFileRemote = await buffer.DeserializeAsListAsync(CoreLibraryJSONContext.Default.FilePropertiesRemote, _token);
+                    targetFileRemote = await buffer.DeserializeAsListAsync(CoreLibraryJsonContext.Default.FilePropertiesRemote, _token);
                 }
             }
             finally

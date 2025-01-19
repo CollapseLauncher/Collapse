@@ -37,8 +37,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
         public ILauncherApi? LauncherApi { get; set; }
     }
 
-    [JsonSerializable(typeof(LauncherGameNews), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class LauncherGameNewsJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(LauncherGameNews))]
+    internal sealed partial class LauncherGameNewsJsonContext : JsonSerializerContext;
 
     public sealed class LauncherGameNews
     {

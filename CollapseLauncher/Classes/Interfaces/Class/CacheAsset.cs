@@ -8,8 +8,9 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Interfaces
 {
-    [JsonSerializable(typeof(CacheAsset), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class CacheAssetJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(CacheAsset))]
+    internal sealed partial class CacheAssetJsonContext : JsonSerializerContext;
 
     internal sealed class CacheAsset : IAssetIndexSummary
     {

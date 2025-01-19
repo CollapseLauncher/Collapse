@@ -259,7 +259,7 @@ public partial class Updater : IDisposable
         string updateFileIndexUrl = CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
 
         AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
-                                            AppUpdateVersionPropJSONContext.Default.AppUpdateVersionProp, default)!;
+                                            AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp, default)!;
 
         GameVersion? gameVersion = updateInfo!.Version;
 

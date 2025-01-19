@@ -110,7 +110,7 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(HonkaiSettingsJSONContext.Default.ScreenSettingData) ?? new ScreenSettingData();
+                    return byteStr.Deserialize(HonkaiSettingsJsonContext.Default.ScreenSettingData) ?? new ScreenSettingData();
                 }
             }
             catch (Exception ex)
@@ -134,7 +134,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(HonkaiSettingsJSONContext.Default.ScreenSettingData);
+                string data = this.Serialize(HonkaiSettingsJsonContext.Default.ScreenSettingData);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);

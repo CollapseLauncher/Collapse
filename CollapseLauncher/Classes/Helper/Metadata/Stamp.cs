@@ -5,8 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Helper.Metadata
 {
-    [JsonSerializable(typeof(List<Stamp>), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class StampJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(List<Stamp>))]
+    internal sealed partial class StampJsonContext : JsonSerializerContext;
 
     public sealed class Stamp
     {

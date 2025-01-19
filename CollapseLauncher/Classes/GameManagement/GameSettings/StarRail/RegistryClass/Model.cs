@@ -329,7 +329,7 @@ namespace CollapseLauncher.GameSettings.StarRail
                     LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
 
-                    return byteStr.Deserialize(StarRailSettingsJSONContext.Default.Model) ?? new Model();
+                    return byteStr.Deserialize(StarRailSettingsJsonContext.Default.Model) ?? new Model();
                 }
             }
             catch (Exception ex)
@@ -362,7 +362,7 @@ namespace CollapseLauncher.GameSettings.StarRail
 
                 RegistryRoot.SetValue(_GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
 
-                string data = this.Serialize(StarRailSettingsJSONContext.Default.Model);
+                string data = this.Serialize(StarRailSettingsJsonContext.Default.Model);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
                 RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG

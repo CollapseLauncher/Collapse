@@ -191,9 +191,9 @@ namespace CollapseLauncher
             using StreamReader rd = new StreamReader(fileIdentifierStreamDecoder);
             string response = await rd.ReadToEndAsync(token);
             LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
-            return response.Deserialize(SenadinaJSONContext.Default.DictionaryStringSenadinaFileIdentifier);
+            return response.Deserialize(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier);
 #else
-            return await fileIdentifierStreamDecoder.DeserializeAsync(SenadinaJSONContext.Default.DictionaryStringSenadinaFileIdentifier, token: token);
+            return await fileIdentifierStreamDecoder.DeserializeAsync(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier, token: token);
 #endif
         }
 
@@ -269,7 +269,7 @@ namespace CollapseLauncher
             if (objIgnoredAudioPCKTypes != null)
             {
                 ReadOnlySpan<byte> bytesIgnoredAudioPckTypes = (byte[])objIgnoredAudioPCKTypes;
-                IgnoredAudioPCKTypes = bytesIgnoredAudioPckTypes.Deserialize(GenericJSONContext.Default.AudioPCKTypeArray) ?? IgnoredAudioPCKTypes;
+                IgnoredAudioPCKTypes = bytesIgnoredAudioPckTypes.Deserialize(GenericJsonContext.Default.AudioPCKTypeArray) ?? IgnoredAudioPCKTypes;
             }
 
             // Try get the values of the registry key of the Video CG ignored list
@@ -283,7 +283,7 @@ namespace CollapseLauncher
             }
 
             ReadOnlySpan<byte> bytesIgnoredVideoCGSubCategory = (byte[])objIgnoredVideoCGSubCategory;
-            IgnoredVideoCGSubCategory = bytesIgnoredVideoCGSubCategory.Deserialize(GenericJSONContext.Default.Int32Array) ?? IgnoredVideoCGSubCategory;
+            IgnoredVideoCGSubCategory = bytesIgnoredVideoCGSubCategory.Deserialize(GenericJsonContext.Default.Int32Array) ?? IgnoredVideoCGSubCategory;
 
             // Return the property value
             return new HonkaiRepairAssetIgnore { IgnoredAudioPCKType = IgnoredAudioPCKTypes, IgnoredVideoCGSubCategory = IgnoredVideoCGSubCategory };
@@ -571,7 +571,7 @@ namespace CollapseLauncher
 
             // Start downloading metadata using FallbackCDNUtil
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
-            return await stream!.DeserializeAsync(CoreLibraryJSONContext.Default.DictionaryStringString, token: token);
+            return await stream!.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token);
         }
 
         private async Task FetchAssetIndex(List<FilePropertiesRemote> assetIndex, CancellationToken token)

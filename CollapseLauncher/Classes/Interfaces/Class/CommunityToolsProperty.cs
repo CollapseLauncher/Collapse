@@ -11,8 +11,9 @@ using Hi3Helper.SentryHelper;
 
 namespace CollapseLauncher
 {
-    [JsonSerializable(typeof(CommunityToolsProperty), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class CommunityToolsPropertyJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(CommunityToolsProperty))]
+    internal sealed partial class CommunityToolsPropertyJsonContext : JsonSerializerContext;
 
     public class CommunityToolsProperty
     {
@@ -34,7 +35,7 @@ namespace CollapseLauncher
         {
             try
             {
-                CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync(CommunityToolsPropertyJSONContext.Default.CommunityToolsProperty);
+                CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync(CommunityToolsPropertyJsonContext.Default.CommunityToolsProperty);
                 ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.OfficialToolsDictionary);
                 ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.CommunityToolsDictionary);
                 return communityToolkitProperty;

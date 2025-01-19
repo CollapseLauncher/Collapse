@@ -102,7 +102,7 @@ namespace CollapseLauncher.Helper.Metadata
                 async innerToken =>
                     await FallbackCDNUtil.DownloadAsJSONType(
                         branchUrl,
-                        HoYoPlayLauncherGameInfoJSONContext.Default.HoYoPlayLauncherGameInfo,
+                        HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
                         innerToken);
 
             HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await hypLauncherBranchCallback.WaitForRetryAsync(
@@ -255,8 +255,9 @@ namespace CollapseLauncher.Helper.Metadata
         }
     }
 
-    [JsonSerializable(typeof(PresetConfig), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class PresetConfigJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(PresetConfig))]
+    internal sealed partial class PresetConfigJsonContext : JsonSerializerContext;
 
     internal sealed class PresetConfig
     {
@@ -556,7 +557,7 @@ namespace CollapseLauncher.Helper.Metadata
                 }
 
                 ReadOnlySpan<char> regValue = Encoding.UTF8.GetString(value).AsSpan().Trim('\0');
-                GeneralDataProp? regValues = regValue.Deserialize(GeneralDataPropJSONContext.Default.GeneralDataProp);
+                GeneralDataProp? regValues = regValue.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp);
                 return regValues?.deviceVoiceLanguageType ?? 2;
             }
             catch (JsonException ex)
@@ -636,10 +637,10 @@ namespace CollapseLauncher.Helper.Metadata
                 RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
                 var result    = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                GeneralDataProp? initValue = result?.Deserialize(GeneralDataPropJSONContext.Default.GeneralDataProp) ?? new GeneralDataProp();
+                GeneralDataProp? initValue = result?.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
 
-                string jsonString = initValue.Serialize(GeneralDataPropJSONContext.Default.GeneralDataProp, true);
+                string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp, true);
                 keys.SetValue("GENERAL_DATA_h2389025596", Encoding.UTF8.GetBytes(jsonString), RegistryValueKind.Binary);
             }
             catch (Exception ex)
@@ -732,7 +733,7 @@ namespace CollapseLauncher.Helper.Metadata
 
             try
             {
-                return (int)(value.Deserialize(GeneralDataPropJSONContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
+                return (int)(value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
             }
             catch (Exception ex)
             {

@@ -175,7 +175,7 @@ namespace CollapseLauncher
 
             // Start downloading metadata using FallbackCDNUtil
             await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
-            return await stream.DeserializeAsync(CoreLibraryJSONContext.Default.DictionaryStringString, token: token);
+            return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token);
         }
         #endregion
 

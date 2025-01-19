@@ -29,8 +29,9 @@ namespace CollapseLauncher
         }
     }
 
-    [JsonSerializable(typeof(RegionResourceProp), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class RegionResourcePropJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(RegionResourceProp))]
+    internal sealed partial class RegionResourcePropJsonContext : JsonSerializerContext;
 
     public sealed class RegionResourceProp : IRegionResourceCopyable<RegionResourceProp>
     {
@@ -85,8 +86,9 @@ namespace CollapseLauncher
         }
     }
 
-    [JsonSerializable(typeof(List<RegionResourcePluginValidate>), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class RegionResourcePluginValidateJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(List<RegionResourcePluginValidate>))]
+    internal sealed partial class RegionResourcePluginValidateJsonContext : JsonSerializerContext;
     public sealed class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
     {
         public string? path { get; set; }

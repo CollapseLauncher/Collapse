@@ -245,7 +245,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 // Deserialize the stream
                 LauncherMetadataStamp =
-                    await stampLocalStream.DeserializeAsListAsync(StampJSONContext.Default.Stamp);
+                    await stampLocalStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp);
 
                 // SANITIZE: Check if the stamp is empty, then throw
                 if (LauncherMetadataStamp == null || LauncherMetadataStamp.Count == 0)
@@ -404,7 +404,7 @@ namespace CollapseLauncher.Helper.Metadata
                         {
                             // Deserialize the key config
                             MasterKeyConfig? keyConfig =
-                                await configLocalStream.DeserializeAsync(MesterKeyConfigJSONContext.Default.MasterKeyConfig);
+                                await configLocalStream.DeserializeAsync(MesterKeyConfigJsonContext.Default.MasterKeyConfig);
 
                             // Assign the key to instance property
                             CurrentMasterKey = keyConfig ?? throw new InvalidDataException("Master key config seems to be empty!");
@@ -421,7 +421,7 @@ namespace CollapseLauncher.Helper.Metadata
                     case MetadataType.PresetConfigV2:
                         {
                             PresetConfig? presetConfig =
-                                await configLocalStream.DeserializeAsync(PresetConfigJSONContext.Default.PresetConfig);
+                                await configLocalStream.DeserializeAsync(PresetConfigJsonContext.Default.PresetConfig);
                             if (presetConfig != null)
                             {
                                 if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
@@ -534,7 +534,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (stampRemoteStream != null)
                 {
                     List<Stamp?>? remoteMetadataStampList =
-                        await stampRemoteStream.DeserializeAsListAsync(StampJSONContext.Default.Stamp);
+                        await stampRemoteStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp);
 
                     // Check and throw if the metadata stamp returns null or empty
                     if (remoteMetadataStampList == null || remoteMetadataStampList.Count == 0)
@@ -680,7 +680,7 @@ namespace CollapseLauncher.Helper.Metadata
                 await using (FileStream stampStream = File.OpenRead(stampPath))
                 {
                     // Deserialize and do sanitize if the old stamp list is empty
-                    oldStampList = await stampStream.DeserializeAsListAsync(StampJSONContext.Default.Stamp);
+                    oldStampList = await stampStream.DeserializeAsListAsync(StampJsonContext.Default.Stamp);
                     if (oldStampList == null || oldStampList.Count == 0)
                         throw new NullReferenceException("The old stamp list contains an empty/null content!");
 
@@ -712,7 +712,7 @@ namespace CollapseLauncher.Helper.Metadata
                 // Now write the updated list to the stamp file
                 await using (FileStream updatedStampStream = File.Create(stampPath))
                 {
-                    await oldStampList.SerializeAsync(updatedStampStream, StampJSONContext.Default.ListStamp);
+                    await oldStampList.SerializeAsync(updatedStampStream, StampJsonContext.Default.ListStamp);
                     return;
                 }
             }

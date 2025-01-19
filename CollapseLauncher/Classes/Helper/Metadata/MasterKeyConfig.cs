@@ -3,8 +3,9 @@
 namespace CollapseLauncher.Helper.Metadata
 {
 #nullable enable
-    [JsonSerializable(typeof(MasterKeyConfig), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class MesterKeyConfigJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(MasterKeyConfig))]
+    internal sealed partial class MesterKeyConfigJsonContext : JsonSerializerContext;
 
     public sealed class MasterKeyConfig : Hashable
     {

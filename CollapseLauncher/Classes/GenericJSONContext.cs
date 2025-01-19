@@ -5,8 +5,9 @@ using System.Text.Json.Serialization;
 #nullable enable
 namespace CollapseLauncher
 {
-    [JsonSerializable(typeof(int[]), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    [JsonSerializable(typeof(AudioPCKType[]), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class GenericJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(int[]))]
+    [JsonSerializable(typeof(AudioPCKType[]))]
+    [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>))]
+    internal sealed partial class GenericJsonContext : JsonSerializerContext;
 }

@@ -3,8 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Helper.Metadata
 {
-    [JsonSerializable(typeof(BHI3LInfo), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class BHI3LInfoJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(BHI3LInfo))]
+    internal sealed partial class BHI3LInfoJsonContext : JsonSerializerContext;
 
     internal sealed class BHI3LInfo
     {

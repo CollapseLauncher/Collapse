@@ -17,7 +17,7 @@ namespace CollapseLauncher.GameSettings.Genshin
 #nullable enable
         public static GraphicsData Load(string graphicsJson)
         {
-            return graphicsJson.Deserialize(GenshinSettingsJSONContext.Default.GraphicsData) ?? new GraphicsData();
+            return graphicsJson.Deserialize(GenshinSettingsJsonContext.Default.GraphicsData) ?? new GraphicsData();
         }
 
         public string Create(GlobalPerfData globalPerf)
@@ -45,7 +45,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new GenshinKeyValuePair(21, (int)globalPerf.DynamicCharacterResolution + 1)
             ];
 
-            string data = this.Serialize(GenshinSettingsJSONContext.Default.GraphicsData, false);
+            string data = this.Serialize(GenshinSettingsJsonContext.Default.GraphicsData, false);
 #if DEBUG
             LogWriteLine($"Saved Genshin GraphicsData\r\n{data}", LogType.Debug, true);
 #endif

@@ -35,8 +35,9 @@ namespace CollapseLauncher
         }
     }
 
-    [JsonSerializable(typeof(AppUpdateVersionProp), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class AppUpdateVersionPropJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(AppUpdateVersionProp))]
+    internal sealed partial class AppUpdateVersionPropJsonContext : JsonSerializerContext;
     
     public sealed class AppUpdateVersionProp
     {

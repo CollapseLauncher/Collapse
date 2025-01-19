@@ -311,7 +311,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             else
             {
-                tempData = globalPerfJson?.Deserialize(GenshinSettingsJSONContext.Default.GlobalPerfData) ?? new GlobalPerfData();
+                tempData = globalPerfJson?.Deserialize(GenshinSettingsJsonContext.Default.GlobalPerfData) ?? new GlobalPerfData();
             }
 
             // Initialize globalPerf with a preset
@@ -496,7 +496,7 @@ namespace CollapseLauncher.GameSettings.Genshin
                 new PerfDataItem(19, (int)GlobalIllumination,         portedVersion),
                 new PerfDataItem(21, (int)DynamicCharacterResolution, portedVersion)
             ];
-            string data = this.Serialize(GenshinSettingsJSONContext.Default.GlobalPerfData, false);
+            string data = this.Serialize(GenshinSettingsJsonContext.Default.GlobalPerfData, false);
 #if DEBUG
             LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
 #endif

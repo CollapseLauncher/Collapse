@@ -2036,7 +2036,7 @@ namespace CollapseLauncher.InstallManager.Base
                     while (!listReader.EndOfStream)
                     {
                         string currentLine = listReader.ReadLine();
-                        var    prop = currentLine?.Deserialize(CoreLibraryJSONContext.Default.PkgVersionProperties);
+                        var    prop = currentLine?.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
                         if (prop == null)
                         {
@@ -2722,7 +2722,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Try parsing the config
                 value  = Encoding.UTF8.GetString(keyValue);
-                config = value.Deserialize(BHI3LInfoJSONContext.Default.BHI3LInfo);
+                config = value.Deserialize(BHI3LInfoJsonContext.Default.BHI3LInfo);
             }
             catch (Exception ex)
             {

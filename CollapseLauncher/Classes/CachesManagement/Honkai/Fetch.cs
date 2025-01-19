@@ -213,7 +213,7 @@ namespace CollapseLauncher
                 try
                 {
                     // Deserialize the line and set the type
-                    content = line.Deserialize(CacheAssetJSONContext.Default.CacheAsset);
+                    content = line.Deserialize(CacheAssetJsonContext.Default.CacheAsset);
                 }
                 catch (Exception ex)
                 {

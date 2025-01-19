@@ -9,8 +9,9 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Helper.Metadata
 {
-    [JsonSerializable(typeof(GeneralDataProp), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal sealed partial class GeneralDataPropJSONContext : JsonSerializerContext;
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(GeneralDataProp))]
+    internal sealed partial class GeneralDataPropJsonContext : JsonSerializerContext;
 
     // WARNING!!!
     // This feature is only available for Genshin.

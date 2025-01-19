@@ -65,7 +65,7 @@ namespace CollapseLauncher
 
                     Registry.CurrentUser.OpenSubKey(@"Software\Bp\Better HI3 Launcher", true)!
                         .SetValue(registryName,
-                        Encoding.UTF8.GetBytes(info.Serialize(BHI3LInfoJSONContext.Default.BHI3LInfo)),
+                        Encoding.UTF8.GetBytes(info.Serialize(BHI3LInfoJsonContext.Default.BHI3LInfo)),
                         RegistryValueKind.Binary);
                 }
                 catch (Exception ex)
