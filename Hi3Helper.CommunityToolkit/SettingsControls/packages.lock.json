@@ -26,9 +26,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.2950-prerelease, )",
-        "resolved": "1.0.2950-prerelease",
-        "contentHash": "15GH8uTwpzNi8PH5MFS5cnjJj7LxCMJXD3gfMVEiTqniKrABb8u8B8d2fLXIvnl/YlATrtkX1M+fXF2wokIiUA=="
+        "requested": "[1.0.2957.106, )",
+        "resolved": "1.0.2957.106",
+        "contentHash": "eHc2yKD//d1a6Razu6jl373RGKdzLhxDBk/wc/i//tC9+nEVXcO38pvjZwR2s0C34y+0trzKvbGHffrEx7vyVw=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -74,9 +74,9 @@
     "net9.0-windows10.0.22621/win-x64": {
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.2950-prerelease, )",
-        "resolved": "1.0.2950-prerelease",
-        "contentHash": "15GH8uTwpzNi8PH5MFS5cnjJj7LxCMJXD3gfMVEiTqniKrABb8u8B8d2fLXIvnl/YlATrtkX1M+fXF2wokIiUA=="
+        "requested": "[1.0.2957.106, )",
+        "resolved": "1.0.2957.106",
+        "contentHash": "eHc2yKD//d1a6Razu6jl373RGKdzLhxDBk/wc/i//tC9+nEVXcO38pvjZwR2s0C34y+0trzKvbGHffrEx7vyVw=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
