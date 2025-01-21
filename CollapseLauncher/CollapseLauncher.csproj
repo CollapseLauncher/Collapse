@@ -121,6 +121,7 @@
         <NativeLibrary Include="StaticLib\Waifu2x\ncnn.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\SPIRV.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\glslang.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\glslang-default-resource-limits.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\OGLCompiler.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\MachineIndependent.lib" />
         <NativeLibrary Include="StaticLib\Waifu2x\GenericCodeGen.lib" />
@@ -347,6 +348,10 @@
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
     </Target>
 
+    <Target Name="PreBuild-NativeAOTStaticLib" BeforeTargets="PreBuildEvent" Condition="'$(PublishAot)' == 'true'">
+        <Exec Command="&quot;$(ProjectDir)StaticLib\7za.exe&quot; x &quot;$(ProjectDir)StaticLib\StaticLib.7z&quot; -o&quot;$(ProjectDir)StaticLib\&quot; -y" />
+    </Target>
+    
     <Target Name="PostBuild" AfterTargets="Publish">
         <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
@@ -385,7 +390,7 @@
     </Target>
 
 	<ItemGroup Condition="'$(PublishAot)' == 'true'">
-		<LinkerArg Include="/DEBUG:NONE /NODEFAULTLIB:MSVCRT" />
+		<LinkerArg Include="/DEBUG:NONE /NODEFAULTLIB:MSVCRT /LTCG" />
 	</ItemGroup>
 
 	<ItemGroup>
