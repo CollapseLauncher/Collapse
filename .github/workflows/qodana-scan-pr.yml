@@ -46,10 +46,6 @@ jobs:
             fetch-depth: 0  # a full history is required for pull request analysis
             submodules: recursive # many many submodules  
 
-      - name: Update submodules to match the PR branch
-        run: |
-          git submodule update --init --recursive
-
       - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:
