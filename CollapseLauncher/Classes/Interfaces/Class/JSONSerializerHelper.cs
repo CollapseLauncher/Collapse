@@ -45,6 +45,15 @@ namespace CollapseLauncher
         private static readonly Utf8JsonWriter          JsonWriter         = new(JsonBufferWriter, JsonWriterOptions);
         private static readonly Utf8JsonWriter          JsonWriterIndented = new(JsonBufferWriter, JsonWriterOptionsIndented);
 
+        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : class => InnerDeserialize(data, typeInfo, defaultType);
+
+        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
+            where T : struct => InnerDeserialize(data, typeInfo, defaultType);
+
+        internal static JsonNode? DeserializeAsJsonNode(this ReadOnlySpan<byte> data)
+            => InnerDeserializeAsJsonNode(data);
+
         internal static T? Deserialize<T>(this string data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
             where T : class => InnerDeserialize(data, typeInfo, defaultType);
 
@@ -61,15 +70,6 @@ namespace CollapseLauncher
             where T : struct => InnerDeserialize(data, typeInfo, defaultType);
 
         internal static JsonNode? DeserializeAsJsonNode(this ReadOnlySpan<char> data)
-            => InnerDeserializeAsJsonNode(data);
-
-        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
-            where T : class => InnerDeserialize(data, typeInfo, defaultType);
-
-        internal static T? Deserialize<T>(this ReadOnlySpan<byte> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
-            where T : struct => InnerDeserialize(data, typeInfo, defaultType);
-
-        internal static JsonNode? DeserializeAsJsonNode(this ReadOnlySpan<byte> data)
             => InnerDeserializeAsJsonNode(data);
 
         internal static T? Deserialize<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)

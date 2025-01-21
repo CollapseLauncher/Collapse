@@ -636,8 +636,8 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
-                var result    = (byte[]?)keys.GetValue("GENERAL_DATA_h2389025596");
-                GeneralDataProp? initValue = result?.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
+                var result    = (byte[])keys.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>());
+                GeneralDataProp? initValue = JsonSerializerHelper.Deserialize(result, GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
 
                 string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp, true);
@@ -722,7 +722,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
 
             RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
-            byte[]? value = (byte[]?)keys?.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>(), RegistryValueOptions.None);
+            byte[] value = (byte[])keys?.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>(), RegistryValueOptions.None)!;
 
             if (keys is null || value is null || value.Length is 0)
             {
@@ -733,13 +733,13 @@ namespace CollapseLauncher.Helper.Metadata
 
             try
             {
-                return (int)(value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
+                return (int)(JsonSerializerHelper.Deserialize(value, GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex);
                 LogWriteLine($"Error while getting existing GENERAL_DATA_h2389025596 value on {ZoneFullname}!" +
-                             $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.Trim((byte)0))}\r\n{ex}",
+                             $"Returning value 0 as fallback!\r\nValue: {Encoding.UTF8.GetString(value.AsSpan().Trim((byte)0))}\r\n{ex}",
                              LogType.Warning, true);
                 return 0;
             }
