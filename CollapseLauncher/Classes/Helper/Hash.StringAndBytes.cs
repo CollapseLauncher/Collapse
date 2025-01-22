@@ -52,11 +52,11 @@ namespace CollapseLauncher.Helper
             where T : NonCryptographicHashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<NonCryptographicHashAlgorithm, Lock> hash = ref GetSharedHash<T>();
+            ref Tuple<NonCryptographicHashAlgorithm?, Lock> hash = ref GetSharedHash<T>();
 
             // Allocate the return buffer and calculate the hash from the source span
-            byte[] hashBytesReturn = new byte[hash.Item1.HashLengthInBytes];
-            if (!TryGetHashFromBytes<T>(ref hash, source, hashBytesReturn, out _))
+            byte[] hashBytesReturn = new byte[hash.Item1!.HashLengthInBytes];
+            if (!TryGetHashFromBytes<T>(ref hash!, source, hashBytesReturn, out _))
             {
                 throw new InvalidOperationException("Failed to get the hash.");
             }
@@ -75,14 +75,14 @@ namespace CollapseLauncher.Helper
             where T : NonCryptographicHashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<NonCryptographicHashAlgorithm, Lock> hash = ref GetSharedHash<T>();
+            ref Tuple<NonCryptographicHashAlgorithm?, Lock> hash = ref GetSharedHash<T>();
 
             // Allocate the hash buffer to be written to
-            Span<byte> hashBuffer = stackalloc byte[hash.Item1.HashLengthInBytes];
+            Span<byte> hashBuffer = stackalloc byte[hash.Item1!.HashLengthInBytes];
             Span<char> hashCharBuffer = stackalloc char[hash.Item1.HashLengthInBytes * 2];
 
             // Compute the hash and reset
-            if (!TryGetHashFromBytes<T>(ref hash, source, hashBuffer, out _))
+            if (!TryGetHashFromBytes<T>(ref hash!, source, hashBuffer, out _))
             {
                 throw new InvalidOperationException("Failed to get the hash.");
             }
@@ -168,11 +168,11 @@ namespace CollapseLauncher.Helper
             where T : HashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<HashAlgorithm, Lock> hash = ref GetSharedCryptoHash<T>();
+            ref Tuple<HashAlgorithm?, Lock> hash = ref GetSharedCryptoHash<T>();
 
             // Allocate the return buffer and calculate the hash from the source span
-            byte[] hashBytesReturn = new byte[hash.Item1.HashSize];
-            if (!TryGetCryptoHashFromBytes<T>(ref hash, source, hashBytesReturn, out _))
+            byte[] hashBytesReturn = new byte[hash.Item1!.HashSize];
+            if (!TryGetCryptoHashFromBytes<T>(ref hash!, source, hashBytesReturn, out _))
             {
                 throw new InvalidOperationException("Failed to get the hash.");
             }
@@ -191,14 +191,14 @@ namespace CollapseLauncher.Helper
             where T : HashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<HashAlgorithm, Lock> hash = ref GetSharedCryptoHash<T>();
+            ref Tuple<HashAlgorithm?, Lock> hash = ref GetSharedCryptoHash<T>();
 
             // Allocate the hash buffer to be written to
-            Span<byte> hashBuffer = stackalloc byte[hash.Item1.HashSize];
+            Span<byte> hashBuffer = stackalloc byte[hash.Item1!.HashSize];
             Span<char> hashCharBuffer = stackalloc char[hash.Item1.HashSize * 2];
 
             // Compute the hash and reset
-            if (!TryGetCryptoHashFromBytes<T>(ref hash, source, hashBuffer, out _))
+            if (!TryGetCryptoHashFromBytes<T>(ref hash!, source, hashBuffer, out _))
             {
                 throw new InvalidOperationException("Failed to get the hash.");
             }
