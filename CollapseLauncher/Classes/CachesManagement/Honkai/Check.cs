@@ -2,6 +2,7 @@
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,6 +58,15 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
+        private SearchValues<string> UnusedSearchValues = SearchValues.Create([
+            "output_log",
+            "Crashes",
+            "Verify.txt",
+            "APM",
+            "FBData",
+            "asb.dat"
+        ], StringComparison.OrdinalIgnoreCase);
+
         private void CheckUnusedAssets(List<CacheAsset> assetIndex, List<CacheAsset> returnAsset)
         {
             // Directory info and if the directory doesn't exist, return
@@ -70,15 +80,10 @@ namespace CollapseLauncher
             foreach (FileInfo fileInfo in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories)
                 .EnumerateNoReadOnly())
             {
-                string filePath = fileInfo.FullName;
+                ReadOnlySpan<char> filePath = fileInfo.FullName;
 
-                if (filePath.Contains("output_log",    StringComparison.OrdinalIgnoreCase)
-                    || filePath.Contains("Crashes",    StringComparison.OrdinalIgnoreCase)
-                    || filePath.Contains("Verify.txt", StringComparison.OrdinalIgnoreCase)
-                    || filePath.Contains("APM",        StringComparison.OrdinalIgnoreCase)
-                    || filePath.Contains("FBData",     StringComparison.OrdinalIgnoreCase)
-                    || filePath.Contains("asb.dat",    StringComparison.OrdinalIgnoreCase)
-                    || assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
+                if (filePath.ContainsAny(UnusedSearchValues)
+                 || assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
                 {
                     continue;
                 }
@@ -89,8 +94,8 @@ namespace CollapseLauncher
                 // Add asset to the returnAsset
                 CacheAsset asset = new CacheAsset
                 {
-                    BasePath       = Path.GetDirectoryName(filePath),
-                    N              = Path.GetFileName(filePath),
+                    BasePath       = Path.GetDirectoryName(fileInfo.FullName),
+                    N              = Path.GetFileName(fileInfo.FullName),
                     DataType       = CacheAssetType.Unused,
                     CS             = fileInfo.Length,
                     CRC            = null,
