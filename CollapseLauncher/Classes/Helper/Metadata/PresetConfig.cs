@@ -24,6 +24,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable StringLiteralTypo
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.Metadata
@@ -192,7 +193,7 @@ namespace CollapseLauncher.Helper.Metadata
                 #region Parse and split queries - Sanitize the GameId and LauncherId query
                 int querySplitRangesLen = querySpan.Split(splitRanges, '&', StringSplitOptions.RemoveEmptyEntries);
                 int queryWritten = 0;
-                Span<char> querySpanBuffer = urlSpanBuffer.Slice(urlSpanBufferLen);
+                Span<char> querySpanBuffer = urlSpanBuffer[urlSpanBufferLen..];
                 for (int i = querySplitRangesLen - 1; i > -1; i--)
                 {
                     Range segmentRange = splitRanges[i];
@@ -205,7 +206,7 @@ namespace CollapseLauncher.Helper.Metadata
                         continue;
 
                     // Otherwise, add others
-                    if (!querySegment.TryCopyTo(querySpanBuffer.Slice(queryWritten)))
+                    if (!querySegment.TryCopyTo(querySpanBuffer[queryWritten..]))
                         throw new InvalidOperationException("Failed to copy query string to buffer");
                     queryWritten += segmentLen;
 
@@ -222,21 +223,21 @@ namespace CollapseLauncher.Helper.Metadata
                 #endregion
 
                 #region Append GameId and LauncherId query
-                if (!launcherIdOrPasswordHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                if (!launcherIdOrPasswordHead.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy launcher id or password head string to buffer");
                 urlSpanBufferLen += launcherIdOrPasswordHead.Length;
                 urlSpanBuffer[urlSpanBufferLen++] = '=';
-                if (!launcherIdOrPassword.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                if (!launcherIdOrPassword.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy launcher id or password value string to buffer");
                 urlSpanBufferLen += launcherIdOrPassword.Length;
 
                 urlSpanBuffer[urlSpanBufferLen++] = '&';
 
-                if (!gameIdOrGamePackageIdHead.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                if (!gameIdOrGamePackageIdHead.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy game id or package id head string to buffer");
                 urlSpanBufferLen += gameIdOrGamePackageIdHead.Length;
                 urlSpanBuffer[urlSpanBufferLen++] = '=';
-                if (!gameIdOrGamePackageId.TryCopyTo(urlSpanBuffer.Slice(urlSpanBufferLen)))
+                if (!gameIdOrGamePackageId.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy game id or package id value string to buffer");
                 urlSpanBufferLen += gameIdOrGamePackageId.Length;
 
