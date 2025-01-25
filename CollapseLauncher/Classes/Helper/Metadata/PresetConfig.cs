@@ -169,8 +169,7 @@ namespace CollapseLauncher.Helper.Metadata
                 return url;
 
             int urlLen = url.Length + (1 << 10);
-            bool isUseRent = urlLen > 4 << 10;
-            char[] urlBuffer = isUseRent ? ArrayPool<char>.Shared.Rent(urlLen) : new char[urlLen];
+            char[] urlBuffer = ArrayPool<char>.Shared.Rent(urlLen);
             Span<char> urlSpanBuffer = urlBuffer;
             ReadOnlySpan<char> urlSpan = url;
 
@@ -250,7 +249,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
             finally
             {
-                if (isUseRent) ArrayPool<char>.Shared.Return(urlBuffer);
+                ArrayPool<char>.Shared.Return(urlBuffer);
             }
         }
     }
