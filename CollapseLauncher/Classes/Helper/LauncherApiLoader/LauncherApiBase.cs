@@ -17,6 +17,7 @@ using System.Net.Http.Json;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable VirtualMemberCallInConstructor
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -52,8 +53,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
         public void Dispose()
         {
-            ApiGeneralHttpClient?.Dispose();
-            ApiResourceHttpClient?.Dispose();
+            ApiGeneralHttpClient.Dispose();
+            ApiResourceHttpClient.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -75,40 +76,42 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             EnsurePresetConfigNotNull();
 
-            if (!isIgnoreBaseHttpClientInit)
+            if (isIgnoreBaseHttpClientInit)
             {
-                // Create generic HttpClientBuilder
-                HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
-                                                                             .UseLauncherConfig()
-                                                                             .AllowUntrustedCert()
-                                                                             .SetAllowedDecompression()
-                                                                             .SetHttpVersion(HttpVersion.Version30);
-
-                // Create resource HttpClientBuilder
-                HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
-                                                                              .UseLauncherConfig()
-                                                                              .AllowUntrustedCert()
-                                                                              .SetAllowedDecompression(DecompressionMethods.None)
-                                                                              .SetHttpVersion(HttpVersion.Version30);
-
-                // If the metadata has user-agent defined, set the resource's HttpClient user-agent
-                if (!string.IsNullOrEmpty(presetConfig.ApiGeneralUserAgent))
-                {
-                    apiGeneralHttpBuilder.SetUserAgent(presetConfig.ApiGeneralUserAgent);
-                }
-                if (!string.IsNullOrEmpty(presetConfig.ApiResourceUserAgent))
-                {
-                    apiResourceHttpBuilder.SetUserAgent(string.Format(presetConfig.ApiResourceUserAgent, InnerLauncherConfig.m_isWindows11 ? "11" : "10"));
-                }
-
-                // Add other API general and resource headers from the metadata configuration
-                presetConfig.AddApiGeneralAdditionalHeaders((key, value) => apiGeneralHttpBuilder.AddHeader(key, value));
-                presetConfig.AddApiResourceAdditionalHeaders((key, value) => apiResourceHttpBuilder.AddHeader(key, value));
-
-                // Create HttpClient instances for both General and Resource APIs.
-                ApiGeneralHttpClient = apiGeneralHttpBuilder.Create();
-                ApiResourceHttpClient = apiResourceHttpBuilder.Create();
+                return;
             }
+
+            // Create generic HttpClientBuilder
+            HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
+                                                                         .UseLauncherConfig()
+                                                                         .AllowUntrustedCert()
+                                                                         .SetAllowedDecompression()
+                                                                         .SetHttpVersion(HttpVersion.Version30);
+
+            // Create resource HttpClientBuilder
+            HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
+                                                                          .UseLauncherConfig()
+                                                                          .AllowUntrustedCert()
+                                                                          .SetAllowedDecompression(DecompressionMethods.None)
+                                                                          .SetHttpVersion(HttpVersion.Version30);
+
+            // If the metadata has user-agent defined, set the resource's HttpClient user-agent
+            if (!string.IsNullOrEmpty(presetConfig.ApiGeneralUserAgent))
+            {
+                apiGeneralHttpBuilder.SetUserAgent(presetConfig.ApiGeneralUserAgent);
+            }
+            if (!string.IsNullOrEmpty(presetConfig.ApiResourceUserAgent))
+            {
+                apiResourceHttpBuilder.SetUserAgent(string.Format(presetConfig.ApiResourceUserAgent, InnerLauncherConfig.m_isWindows11 ? "11" : "10"));
+            }
+
+            // Add other API general and resource headers from the metadata configuration
+            presetConfig.AddApiGeneralAdditionalHeaders((key,  value) => apiGeneralHttpBuilder.AddHeader(key, value));
+            presetConfig.AddApiResourceAdditionalHeaders((key, value) => apiResourceHttpBuilder.AddHeader(key, value));
+
+            // Create HttpClient instances for both General and Resource APIs.
+            ApiGeneralHttpClient  = apiGeneralHttpBuilder.Create();
+            ApiResourceHttpClient = apiResourceHttpBuilder.Create();
         }
 
         public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,
@@ -155,7 +158,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
                 async innerToken =>
-                    await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
+                    await ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
 
             Task[] tasks = [
                 launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
@@ -169,7 +172,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
+                        await ApiGeneralHttpClient.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
 
                 tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine, token)
@@ -347,13 +350,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         private async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
             string launcherSpriteUrl, CancellationToken token)
         {
-            return await ApiResourceHttpClient!.GetFromJsonAsync(launcherSpriteUrl, LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl, LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
         }
 
         private async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
                                                                                CancellationToken token)
         {
-            return await ApiResourceHttpClient!.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)

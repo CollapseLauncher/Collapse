@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 // ReSharper disable IdentifierTypo
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -32,7 +33,7 @@ namespace Hi3Helper.Shared.ClassStruct
         [JsonConverter(typeof(NotificationActionConverter))]
         public NotificationActionBase? ActionProperty { get; set; }
         public bool IsForceShowNotificationPanel { get; set; }
-#nullable disable
+#nullable restore
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter<NotificationActionTypeDesc>))]
@@ -61,7 +62,7 @@ namespace Hi3Helper.Shared.ClassStruct
 #nullable enable
         public string? GlyphIcon { get; set; }
         public string? GlyphFont { get; set; }
-#nullable disable
+#nullable restore
 
         public NotificationActionClickLink()
         {

@@ -640,7 +640,7 @@ namespace CollapseLauncher.Helper.Metadata
                 GeneralDataProp? initValue = JsonSerializerHelper.Deserialize(result, GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
 
-                string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp, true);
+                string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp);
                 keys.SetValue("GENERAL_DATA_h2389025596", Encoding.UTF8.GetBytes(jsonString), RegistryValueKind.Binary);
             }
             catch (Exception ex)

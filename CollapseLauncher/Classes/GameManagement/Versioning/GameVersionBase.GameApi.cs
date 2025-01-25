@@ -273,8 +273,8 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual List<RegionResourcePlugin>? GetGamePluginZip()
         {
             // Check if the plugin is not empty, then add it
-            if ((GameApiProp?.data?.plugins?.Count ?? 0) != 0)
-                return [.. GameApiProp?.data?.plugins!];
+            if ((GameApiProp.data?.plugins?.Count ?? 0) != 0)
+                return [.. GameApiProp.data?.plugins!];
 
             // Return null if plugin is unavailable
             return null;
@@ -283,7 +283,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual List<RegionResourcePlugin>? GetGameSdkZip()
         {
             // Check if the sdk is not empty, then add it
-            if (GameApiProp?.data?.sdk == null)
+            if (GameApiProp.data?.sdk == null)
             {
                 return null;
             }
@@ -293,14 +293,14 @@ namespace CollapseLauncher.GameManagement.Versioning
             {
                 plugin_id  = "sdk",
                 release_id = "sdk",
-                version    = GameApiProp?.data?.sdk.version,
-                package    = GameApiProp?.data?.sdk
+                version    = GameApiProp.data?.sdk.version,
+                package    = GameApiProp.data?.sdk
             };
 
             // If the package is not null, then add the validation
             if (sdkPlugin.package != null)
             {
-                sdkPlugin.package.pkg_version = GameApiProp?.data?.sdk?.pkg_version;
+                sdkPlugin.package.pkg_version = GameApiProp.data?.sdk?.pkg_version;
             }
 
             // Return a single list

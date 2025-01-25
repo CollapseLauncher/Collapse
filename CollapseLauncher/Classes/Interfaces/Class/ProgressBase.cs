@@ -810,7 +810,7 @@ namespace CollapseLauncher.Interfaces
                 {
                     case "PCGameSDK":
                         // Set the SDK DLL path
-                        sdkDllPath = Path.Combine(GamePath!, $"{Path.GetFileNameWithoutExtension(GameVersionManager!.GamePreset!.GameExecutableName)}_Data", "Plugins", "PCGameSDK.dll");
+                        sdkDllPath = Path.Combine(GamePath!, $"{Path.GetFileNameWithoutExtension(GameVersionManager!.GamePreset.GameExecutableName)}_Data", "Plugins", "PCGameSDK.dll");
                         break;
                     case "sdk_pkg_version":
                         // Set the SDK DLL path to be used for sdk_pkg_version

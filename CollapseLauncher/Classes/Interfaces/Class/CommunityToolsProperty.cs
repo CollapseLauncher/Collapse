@@ -8,6 +8,7 @@ using System.IO;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher
 {

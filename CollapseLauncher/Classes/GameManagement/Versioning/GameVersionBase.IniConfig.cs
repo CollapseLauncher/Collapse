@@ -187,9 +187,9 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Update Game Config Methods
-        public void UpdateGamePath(string path, bool saveValue = true)
+        public void UpdateGamePath(string? path, bool saveValue = true)
         {
-            GameIniProfile[DefaultIniProfileSection]["game_install_path"] = path.Replace('\\', '/');
+            GameIniProfile[DefaultIniProfileSection]["game_install_path"] = path?.Replace('\\', '/');
             if (saveValue)
             {
                 SaveGameIni(GameIniProfilePath, GameIniProfile);

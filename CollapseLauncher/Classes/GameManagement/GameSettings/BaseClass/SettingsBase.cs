@@ -18,7 +18,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         internal static string? RegistryPath
         {
-            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset?.InternalGameNameInConfig) ? null :
+            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
                 Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
         }
 

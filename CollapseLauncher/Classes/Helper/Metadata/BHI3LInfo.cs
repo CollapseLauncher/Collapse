@@ -1,5 +1,6 @@
-﻿// ReSharper disable InconsistentNaming
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Helper.Metadata
 {

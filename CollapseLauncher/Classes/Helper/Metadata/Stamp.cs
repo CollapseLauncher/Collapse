@@ -1,8 +1,9 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable PartialTypeWithSinglePart
 
+#nullable enable
 namespace CollapseLauncher.Helper.Metadata
 {
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]

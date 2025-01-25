@@ -1487,22 +1487,22 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual async ValueTask<bool> TryShowFailedDeltaPatchState()
         {
             // Get the target and source path
-            string GamePath            = GameVersionManager.GameDirPath;
-            string GamePathIngredients = GamePath + "_Ingredients";
+            string gamePath            = GameVersionManager.GameDirPath;
+            string gamePathIngredients = gamePath + "_Ingredients";
             // If path doesn't exist, then return false
-            if (!Directory.Exists(GamePathIngredients))
+            if (!Directory.Exists(gamePathIngredients))
             {
                 return false;
             }
 
-            LogWriteLine($"Previous failed delta patch has been detected on Game {GameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})",
+            LogWriteLine($"Previous failed delta patch has been detected on Game {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousDeltaPatchInstallFailed(ParentUI))
             {
                 // If primary button clicked, then move the folder and get back to HomePage
                 case ContentDialogResult.Primary:
-                    MoveFolderContent(GamePathIngredients, GamePath);
+                    MoveFolderContent(gamePathIngredients, gamePath);
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                     break;
             }

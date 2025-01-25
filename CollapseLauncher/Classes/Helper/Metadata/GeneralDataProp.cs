@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 // ReSharper disable InconsistentNaming
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Helper.Metadata
 {

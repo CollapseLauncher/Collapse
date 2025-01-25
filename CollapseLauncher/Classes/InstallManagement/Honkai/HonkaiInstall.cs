@@ -101,29 +101,29 @@ namespace CollapseLauncher.InstallManager.Honkai
         public override async ValueTask<bool> TryShowFailedGameConversionState()
         {
             // Get the target and source path
-            string GamePath            = GameVersionManager.GameDirPath;
-            string GamePathIngredients = GetFailedGameConversionFolder(GamePath);
+            string gamePath            = GameVersionManager.GameDirPath;
+            string gamePathIngredients = GetFailedGameConversionFolder(gamePath);
             // If path doesn't exist or null, then return false
-            if (GamePathIngredients is null || !Directory.Exists(GamePathIngredients))
+            if (gamePathIngredients is null || !Directory.Exists(gamePathIngredients))
             {
                 return false;
             }
 
             // Get the size of entire folder and check if it's below 1 MB, then return false
-            long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
+            long FileSize = Directory.EnumerateFiles(gamePathIngredients).Sum(x => new FileInfo(x).Length);
             if (FileSize < 1 << 20)
             {
                 return false;
             }
 
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {GameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})",
+            LogWriteLine($"Previous failed game conversion has been detected on Game: {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
             switch (await Dialog_PreviousGameConversionFailed(ParentUI))
             {
                 // If primary button clicked, then move the folder and get back to HomePage
                 case ContentDialogResult.Primary:
-                    MoveFolderContent(GamePathIngredients, GamePath);
+                    MoveFolderContent(gamePathIngredients, gamePath);
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                     break;
             }

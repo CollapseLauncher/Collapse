@@ -382,14 +382,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
                 async innerToken =>
-                    await ApiResourceHttpClient!.GetFromJsonAsync(
+                    await ApiResourceHttpClient.GetFromJsonAsync(
                         launcherSpriteUrl,
                         HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
                         innerToken);
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
                 async innerToken =>
-                    await ApiResourceHttpClient!.GetFromJsonAsync(
+                    await ApiResourceHttpClient.GetFromJsonAsync(
                         launcherNewsUrl,
                         HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
                         innerToken);
@@ -533,7 +533,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
                 async innerToken =>
-                    await ApiResourceHttpClient!.GetFromJsonAsync(
+                    await ApiResourceHttpClient.GetFromJsonAsync(
                         launcherGameInfoUrl,
                         HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
                         innerToken);

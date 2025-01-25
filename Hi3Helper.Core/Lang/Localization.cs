@@ -15,6 +15,9 @@ using System.Linq;
 using System.Reflection;
 using static ApplyUpdate.Statics;
 #endif
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper
 {
@@ -22,16 +25,16 @@ namespace Hi3Helper
     {
         public LangMetadata(string filePath, int index)
         {
-            this.LangFilePath = filePath;
-            this.LangIndex = index;
-            this.LangIsLoaded = false;
+            LangFilePath = filePath;
+            LangIndex = index;
+            LangIsLoaded = false;
 
-            ReadOnlySpan<char> langRelativePath = filePath.AsSpan().Slice(AppLangFolder!.Length + 1);
+            ReadOnlySpan<char> langRelativePath = filePath.AsSpan()[(AppLangFolder!.Length + 1)..];
 
             try
             {
                 _ = LoadLangBase(filePath);
-                LogWriteLine($"Locale file: {langRelativePath} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
+                LogWriteLine($"Locale file: {langRelativePath} loaded as {LangName} by {LangAuthor}", LogType.Scheme, true);
             }
             catch (Exception ex)
             {
@@ -62,22 +65,18 @@ namespace Hi3Helper
 
         public LocalizationParams LoadLang()
         {
-#if APPLYUPDATE
+        #if APPLYUPDATE
             return LoadLang(new Uri(LangFilePath));
-#else
-            using (Stream s = new FileStream(this.LangFilePath!, FileMode.Open, FileAccess.Read))
-            {
-                return LoadLang(s);
-            }
-#endif
+        #else
+            using Stream s = new FileStream(LangFilePath!, FileMode.Open, FileAccess.Read);
+            return LoadLang(s);
+        #endif
         }
 
         public LocalizationParamsBase LoadLangBase(string langPath)
         {
-            using (Stream s = new FileStream(langPath!, FileMode.Open, FileAccess.Read))
-            {
-                return LoadLangBase(s);
-            }
+            using Stream s = new FileStream(langPath!, FileMode.Open, FileAccess.Read);
+            return LoadLangBase(s);
         }
 
 #if APPLYUPDATE
@@ -93,10 +92,10 @@ namespace Hi3Helper
         public LocalizationParams LoadLang(Stream langStream)
         {
             LocalizationParams _langData = JsonSerializer.Deserialize(langStream!, CoreLibraryFieldsJsonContext.Default.LocalizationParams);
-            this.LangAuthor = _langData!.Author;
-            this.LangID = _langData.LanguageID.ToLower();
-            this.LangName = _langData.LanguageName;
-            this.LangIsLoaded = true;
+            LangAuthor = _langData!.Author;
+            LangID = _langData.LanguageID.ToLower();
+            LangName = _langData.LanguageName;
+            LangIsLoaded = true;
 
             return _langData;
         }
@@ -104,10 +103,10 @@ namespace Hi3Helper
         public LocalizationParamsBase LoadLangBase(Stream langStream)
         {
             LocalizationParamsBase _langData = JsonSerializer.Deserialize(langStream!, CoreLibraryFieldsJsonContext.Default.LocalizationParamsBase);
-            this.LangAuthor = _langData!.Author;
-            this.LangID = _langData.LanguageID.ToLower();
-            this.LangName = _langData.LanguageName;
-            this.LangIsLoaded = true;
+            LangAuthor = _langData!.Author;
+            LangID = _langData.LanguageID.ToLower();
+            LangName = _langData.LanguageName;
+            LangIsLoaded = true;
 
             return _langData;
         }
@@ -151,12 +150,14 @@ namespace Hi3Helper
             {
                 LangMetadata Metadata = new LangMetadata(langPath, i);
 #endif
-                if (Metadata.LangIsLoaded)
+                if (!Metadata.LangIsLoaded)
                 {
-                    LanguageNames!.Add(Metadata.LangID.ToLower(), Metadata);
-                    LanguageIDIndex!.Add(Metadata.LangID);
-                    i++;
+                    continue;
                 }
+
+                LanguageNames!.Add(Metadata.LangID.ToLower(), Metadata);
+                LanguageIDIndex!.Add(Metadata.LangID);
+                i++;
             }
 
             if (!LanguageNames!.ContainsKey(FallbackLangID))
@@ -182,14 +183,14 @@ namespace Hi3Helper
             {
                 LangFallback = LanguageNames![FallbackLangID].LoadLang();
                 langID = langID!.ToLower();
-                if (!LanguageNames.ContainsKey(langID))
+                if (!LanguageNames.TryGetValue(langID, out LangMetadata langMetadata))
                 {
                     Lang = LanguageNames[FallbackLangID].LoadLang();
                     LogWriteLine($"Locale file with ID: {langID} doesn't exist! Fallback locale will be loaded instead.", LogType.Warning, true);
                     return;
                 }
 
-                Lang = LanguageNames[langID].LoadLang();
+                Lang = langMetadata.LoadLang();
                 TryLoadSizePrefix(Lang);
             }
             catch (Exception ex)
@@ -238,11 +239,11 @@ namespace Hi3Helper
             ConverterTool.SizeSuffixes = sizeSurfixes;
         }
 
-        public static Dictionary<string, LangMetadata> LanguageNames = new Dictionary<string, LangMetadata>();
-        public static List<string> LanguageIDIndex = new List<string>();
-        public static LocalizationParams Lang;
+        public static Dictionary<string, LangMetadata> LanguageNames   = new();
+        public static List<string>                     LanguageIDIndex = [];
+        public static LocalizationParams               Lang;
 #nullable enable
-        public static LocalizationParams? LangFallback;
+        internal static LocalizationParams? LangFallback;
 
         [GeneratedBindableCustomProperty]
         public partial class LocalizationParamsBase
@@ -256,15 +257,7 @@ namespace Hi3Helper
         public sealed partial class LocalizationParams : LocalizationParamsBase;
     }
 
-    public class LocalizationNotFoundException : Exception
-    {
-        public LocalizationNotFoundException(string message)
-            : base(message) { }
-    }
+    public class LocalizationNotFoundException(string message) : Exception(message);
 
-    public class LocalizationInnerException : Exception
-    {
-        public LocalizationInnerException(string message, Exception ex)
-            : base(message, ex) { }
-    }
+    public class LocalizationInnerException(string message, Exception ex) : Exception(message, ex);
 }

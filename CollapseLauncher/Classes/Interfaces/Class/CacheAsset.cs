@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.Json.Serialization;
 // ReSharper disable InconsistentNaming
 // ReSharper disable CommentTypo
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.Interfaces
 {

@@ -64,7 +64,7 @@ namespace CollapseLauncher
                     GameVersion = new GameTypeGenshinVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
                     GameSettings = new GenshinSettings(GameVersion);
                     GameCache = null;
-                    GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameApiProp!.data!.game!.latest!.decompressed_path);
+                    GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameApiProp.data!.game!.latest!.decompressed_path);
                     GameInstall = new GenshinInstall(uiElementParent, GameVersion);
                     break;
                 case GameNameType.Zenless:

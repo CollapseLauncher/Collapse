@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 // ReSharper disable StringLiteralTypo
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay

@@ -182,7 +182,7 @@ namespace CollapseLauncher.Interfaces
         /// </summary>
         /// <param name="path">The path of the game folder</param>
         /// <param name="saveValue">Save the config file</param>
-        void UpdateGamePath(string path, bool saveValue = true);
+        void UpdateGamePath(string? path, bool saveValue = true);
 
         /// <summary>
         /// Update the version of the game to the latest one provided by miHoYo's API and also save it to the Game Profile's Ini file.

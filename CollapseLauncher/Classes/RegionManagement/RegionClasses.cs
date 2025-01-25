@@ -1,8 +1,7 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 // ReSharper disable CheckNamespace

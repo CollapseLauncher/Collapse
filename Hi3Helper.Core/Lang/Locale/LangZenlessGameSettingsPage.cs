@@ -1,5 +1,7 @@
-// ReSharper disable InconsistentNaming
 using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper
 {

@@ -99,7 +99,7 @@ namespace CollapseLauncher
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!manifestDict.TryGetValue(GameVersion.VersionString!, out string? gameRepoUrl))
                 {
-                    throw new VersionNotFoundException($"Manifest for {GameVersionManager!.GamePreset!.ZoneName} (version: {GameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+                    throw new VersionNotFoundException($"Manifest for {GameVersionManager!.GamePreset.ZoneName} (version: {GameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
                 }
 
                 GameRepoURL = gameRepoUrl;
@@ -120,7 +120,7 @@ namespace CollapseLauncher
                 // TODO: Use FallbackCDNUtil to fetch the stream.
                 if (IsSenadinaVersion && !IsOnlyRecoverMain)
                 {
-                    _mainMetaRepoUrl = $"https://r2.bagelnl.my.id/cl-meta/pustaka/{GameVersionManager!.GamePreset!.ProfileName}/{string.Join('.', versionArray)}";
+                    _mainMetaRepoUrl = $"https://r2.bagelnl.my.id/cl-meta/pustaka/{GameVersionManager!.GamePreset.ProfileName}/{string.Join('.', versionArray)}";
 
                     // Get the Senadina File Identifier Dictionary and its file references
                     senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(client, _mainMetaRepoUrl, token);
@@ -258,7 +258,7 @@ namespace CollapseLauncher
         private HonkaiRepairAssetIgnore GetIgnoredAssetsProperty()
         {
             // Try get the parent registry key
-            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(GameVersionManager!.GamePreset!.ConfigRegistryLocation);
+            RegistryKey? keys = Registry.CurrentUser.OpenSubKey(GameVersionManager!.GamePreset.ConfigRegistryLocation);
             if (keys == null) return HonkaiRepairAssetIgnore.CreateEmpty(); // Return an empty property if the parent key doesn't exist
 
             // Initialize the property

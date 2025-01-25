@@ -1,6 +1,4 @@
-﻿using Hi3Helper.Data;
-using System.Collections.Generic;
-
+﻿// ReSharper disable InconsistentNaming
 namespace Hi3Helper.Preset
 {
     public class XMFBlockList

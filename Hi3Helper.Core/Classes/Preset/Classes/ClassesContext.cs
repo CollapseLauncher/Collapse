@@ -3,6 +3,7 @@ using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Locale;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace Hi3Helper
 {

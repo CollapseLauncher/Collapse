@@ -2092,7 +2092,7 @@ namespace CollapseLauncher
             ToggleNotificationPanelBtnClick(null, null);
         }
 
-        private string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath ?? ""; }
+        private string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath; }
         private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             if (!IsGameInstalled()) return;
@@ -2151,8 +2151,8 @@ namespace CollapseLauncher
             {
                 if (!IsGameInstalled()) return;
 
-                string? GameFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
-                LogWriteLine($"Opening Game Folder:\r\n\t{GameFolder}");
+                string gameFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
+                LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
                 await Task.Run(() =>
                     new Process
                     {
@@ -2160,7 +2160,7 @@ namespace CollapseLauncher
                         {
                             UseShellExecute = true,
                             FileName = "explorer.exe",
-                            Arguments = GameFolder
+                            Arguments = gameFolder
                         }
                     }.Start());
             }
@@ -2175,20 +2175,26 @@ namespace CollapseLauncher
         {
             if (!GetCurrentGameProperty().IsGameRunning) return;
 
-            PresetConfig? gamePreset = GetCurrentGameProperty().GameVersion.GamePreset;
+            PresetConfig gamePreset = GetCurrentGameProperty().GameVersion.GamePreset;
+            string? gamePresetExecName = gamePreset.GameExecutableName;
+            if (string.IsNullOrEmpty(gamePresetExecName))
+            {
+                return;
+            }
+
             try
             {
-                Process[] gameProcess = Process.GetProcessesByName(gamePreset?.GameExecutableName?.Split('.')[0]);
+                Process[] gameProcess = Process.GetProcessesByName(gamePresetExecName.Split('.')[0]);
                 foreach (var p in gameProcess)
                 {
-                    LogWriteLine($"Trying to stop game process {gamePreset?.GameExecutableName?.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                    LogWriteLine($"Trying to stop game process {gamePresetExecName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
                     p.Kill();
                 }
             }
             catch (Win32Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset?.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             }
         }
         private void GoGameRepair_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)

@@ -21,12 +21,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
-
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base

@@ -115,7 +115,7 @@ namespace CollapseLauncher
             object? value = RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             if (value == null)
             {
-                return GameVersionManager!.GamePreset!.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
+                return GameVersionManager!.GamePreset.GameDispatchDefaultName ?? throw new KeyNotFoundException("Default dispatcher name in metadata is not exist!");
             }
 #nullable disable
 
