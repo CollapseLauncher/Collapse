@@ -2,9 +2,7 @@ using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -54,18 +52,13 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         protected virtual GameVersion? GameVersionAPI
         {
-            get => field ??= GameVersion.TryParse(GameApiProp.data?.game?.latest?.version, out GameVersion? version) ? version : null;
+            get => GameVersion.TryParse(GameApiProp.data?.game?.latest?.version, out GameVersion? version) ? version : null;
         }
 
         protected virtual GameVersion? GameVersionAPIPreload
         {
             get
             {
-                if (field != null)
-                {
-                    return field;
-                }
-
                 GameVersion? currentInstalled = GameVersionInstalled;
 
                 // If no installation installed, then return null
@@ -76,21 +69,14 @@ namespace CollapseLauncher.GameManagement.Versioning
                 if (string.IsNullOrEmpty(GameApiProp.data?.pre_download_game?.latest?.version))
                     return null;
 
-                return field = new GameVersion(GameApiProp.data.pre_download_game.latest.version);
+                return new GameVersion(GameApiProp.data.pre_download_game.latest.version);
             }
         }
 
-        [field: AllowNull, MaybeNull]
         protected virtual Dictionary<string, GameVersion> PluginVersionsAPI
         {
             get
             {
-                // If field is not null, then return the cached dictionary
-                if (field != null)
-                {
-                    return field;
-                }
-
                 // Initialize dictionary
                 Dictionary<string, GameVersion> value = new();
 
@@ -112,7 +98,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     value.TryAdd(plugin.plugin_id, new GameVersion(plugin.version));
                 }
 
-                return field = value;
+                return value;
             }
         }
 
@@ -121,7 +107,8 @@ namespace CollapseLauncher.GameManagement.Versioning
             get
             {
                 // Check if the INI has game_version key...
-                if (!GameIniVersion[DefaultIniVersionSection].TryGetValue("game_version", out IniValue gameVersion))
+                if (!GameIniVersion[DefaultIniVersionSection]
+                    .TryGetValue("game_version", out IniValue gameVersion))
                 {
                     return null;
                 }
@@ -149,12 +136,6 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             get
             {
-                // If field is not null, then return the cached dictionary
-                if (field != null)
-                {
-                    return field;
-                }
-
                 // Initialize dictionary
                 Dictionary<string, GameVersion> value = new();
 
@@ -186,21 +167,15 @@ namespace CollapseLauncher.GameManagement.Versioning
                     }
                 }
 
-                return field = value;
+                return value;
             }
-            set => UpdatePluginVersions(field = value ?? PluginVersionsAPI);
+            set => UpdatePluginVersions(value ?? PluginVersionsAPI);
         }
 
         protected virtual GameVersion? SdkVersionInstalled
         {
             get
             {
-                // If it's already cached, then return
-                if (field != null)
-                {
-                    return field;
-                }
-
                 // Check if the game config has SDK version. If not, return null
                 const string keyName = "plugin_sdk_version";
                 if (!GameIniVersion[DefaultIniVersionSection].TryGetValue(keyName, out IniValue pluginSdkVersion))
@@ -212,13 +187,13 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return null;
 
                 // Try parse the version.
-                return field = !GameVersion.TryParse(versionName, out GameVersion? result) ?
+                return !GameVersion.TryParse(versionName, out GameVersion? result) ?
                     // If it's not valid, then return null
                     null :
                     // Otherwise, return the result
                     result;
             }
-            set => UpdateSdkVersion(field = value ?? SdkVersionAPI);
+            set => UpdateSdkVersion(value ?? SdkVersionAPI);
         }
         #endregion
 
@@ -228,8 +203,6 @@ namespace CollapseLauncher.GameManagement.Versioning
         public GameVersion? GetGameVersionApi() => GameVersionAPI;
 
         public GameVersion? GetGameVersionApiPreload() => GameVersionAPIPreload;
-
-        
         #endregion
 
         #region Game Info Methods

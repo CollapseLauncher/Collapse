@@ -118,20 +118,15 @@ namespace CollapseLauncher.GameManagement.Versioning
             return GameApiProp.data?.pre_download_game?.latest != null || GameApiProp.data?.pre_download_game?.diffs != null;
         }
 
-        public virtual bool IsGameHasDeltaPatch()
-        {
-            return false;
-        }
+        public virtual bool IsGameHasDeltaPatch() => false;
 
         public virtual bool IsGameVersionMatch()
-        {
             // Ensure if the GameVersionInstalled is available (this is coming from the Game Profile's Ini file).
             // If not, then return false to indicate that the game isn't installed.
-            return GameVersionInstalled.HasValue &&
+            => GameVersionInstalled.HasValue &&
                    // If the game is installed and the version doesn't match, then return to false.
                    // But if the game version matches, then return to true.
                    GameVersionInstalled.Value.IsMatch(GameVersionAPI);
-        }
 
         public virtual async ValueTask<bool> IsPluginVersionsMatch()
         {

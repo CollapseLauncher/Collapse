@@ -53,51 +53,39 @@ namespace CollapseLauncher.GameManagement.Versioning
         #region Game Config Properties
         protected virtual IniFile GameIniProfile     { get; } = new();
         protected virtual IniFile GameIniVersion     { get; } = new();
-
-        [field: AllowNull, MaybeNull]
-        public virtual IniSection GameIniVersionSection { get => field ??= GameIniVersion[DefaultIniVersionSection]; }
-
-        [field: AllowNull, MaybeNull]
-        public virtual IniSection GameIniProfileSection { get => field ??= GameIniVersion[DefaultIniProfileSection]; }
+        public virtual IniSection GameIniVersionSection { get => GameIniVersion[DefaultIniVersionSection]; }
+        public virtual IniSection GameIniProfileSection { get => GameIniVersion[DefaultIniProfileSection]; }
         #endregion
 
         #region Game Config Path Properties
         protected virtual string? GameConfigDirPath { get; set; }
 
-        [field: AllowNull, MaybeNull]
-        protected virtual string GameIniProfilePath => field ??= Path.Combine(GameConfigDirPath ?? "", "config.ini");
+        protected virtual string GameIniProfilePath => Path.Combine(GameConfigDirPath ?? "", "config.ini");
 
-        [field: AllowNull, MaybeNull]
         protected virtual string GameIniVersionPath
         {
             get
             {
-                if (field != null)
-                {
-                    return field;
-                }
-
                 var configPath = GameIniProfile[DefaultIniProfileSection]["game_install_path"].ToString();
                 var defaultPath = Path.Combine(GameConfigDirPath ?? "", GamePreset.GameDirectoryName ?? "Games", "config.ini");
 
                 if (string.IsNullOrEmpty(configPath)) return defaultPath;
 
                 string path = ConverterTool.NormalizePath(Path.Combine(configPath, "config.ini"));
-                return field = IsDiskPartitionExist(path) ? path : defaultPath;
+                return IsDiskPartitionExist(path) ? path : defaultPath;
             }
         }
 
-        [field: AllowNull, MaybeNull]
         public virtual string GameDirPath
         {
-            get => field ??= Path.GetDirectoryName(GameIniVersionPath) ?? string.Empty;
+            get => Path.GetDirectoryName(GameIniVersionPath) ?? string.Empty;
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
                     value = string.Empty;
                 }
-                UpdateGamePath(field = value, false);
+                UpdateGamePath(value, false);
                 UpdateGameChannels();
             }
         }
@@ -210,7 +198,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         public void UpdateGameVersionToLatest(bool saveValue = true)
         {
-            GameIniVersion[DefaultIniVersionSection]["game_version"] = GameVersionAPI?.VersionString;
+            GameVersionInstalled = GameVersionAPI;
             if (!saveValue)
             {
                 return;
