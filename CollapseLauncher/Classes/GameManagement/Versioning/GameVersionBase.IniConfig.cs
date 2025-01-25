@@ -402,9 +402,9 @@ namespace CollapseLauncher.GameManagement.Versioning
                 }
                 else if (allowOverwriteUnmatchedValues
                          && ini[section].ContainsKey(value.Key)
-                         && !string.IsNullOrEmpty(value.Value.ToString())
-                         && !string.IsNullOrEmpty(ini[section][value.Key].ToString())
-                         && ini[section][value.Key].ToString() != value.Value.ToString())
+                         && !string.IsNullOrEmpty(value.Value)
+                         && !string.IsNullOrEmpty(ini[section][value.Key])
+                         && ini[section][value.Key] != value.Value)
                 {
                     ini[section][value.Key] = value.Value;
                 }

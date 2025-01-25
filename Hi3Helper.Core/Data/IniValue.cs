@@ -430,6 +430,16 @@ namespace Hi3Helper.Data
         public static implicit operator Size(IniValue value) => value.ToSize();
 
         public static implicit operator Guid(IniValue value) => value.ToGuid();
+        public static bool operator ==(IniValue valueA, IniValue valueB)
+        {
+            if (valueA.Value?.Equals(valueB.Value) ?? false)
+                return true;
+
+            bool equalsPerInner = ValueType.Equals(valueA, valueB);
+            return equalsPerInner;
+        }
+
+        public static bool operator !=(IniValue valueA, IniValue valueB) => !(valueA == valueB);
         #endregion
     }
 }
