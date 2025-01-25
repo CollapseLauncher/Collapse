@@ -57,7 +57,7 @@ namespace InnoSetupHelper
             {
                 using InnoUninstallLog innoLog = InnoUninstallLog.Load(path, true);
                 // Always set the log to x64 mode
-                innoLog.Header.IsLog64Bit = true;
+                innoLog.Header.IsLog64bit = true;
 
                 // Clean up the existing file and directory records
                 CleanUpInnoDirOrFilesRecord(innoLog, searchValue);
