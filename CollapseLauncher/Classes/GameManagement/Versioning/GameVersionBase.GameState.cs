@@ -254,11 +254,16 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             try
             {
-                if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(Path.GetPathRoot(path)))
+                ReadOnlySpan<char> pathRoot = Path.GetPathRoot(path);
+                if (pathRoot.IsEmpty)
                 {
                     return false;
                 }
-                return new DriveInfo(Path.GetPathRoot(path) ?? string.Empty).IsReady;
+
+                string pathRootStr = pathRoot.ToString();
+                // return new DriveInfo(pathRootStr).IsReady;
+                // Return from Directory.Exists() since the IsReady property use the same method.
+                return Directory.Exists(pathRootStr);
             }
             catch (Exception)
             {
