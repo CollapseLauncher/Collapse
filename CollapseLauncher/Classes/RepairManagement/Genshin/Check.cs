@@ -117,7 +117,7 @@ namespace CollapseLauncher
             if (!Directory.Exists(audioAsbPath)) Directory.CreateDirectory(audioAsbPath);
 
             // Get the list of audio language names from _gameVersionManager
-            List<string> audioLangList = ((GameTypeGenshinVersion)GameVersionManager)._audioVoiceLanguageList;
+            List<string> audioLangList = ((GameTypeGenshinVersion)GameVersionManager).AudioVoiceLanguageList;
 
             // Enumerate the content of audio persistent directory
             foreach (string path in Directory.EnumerateDirectories(audioPersistentPath, "*", SearchOption.TopDirectoryOnly))

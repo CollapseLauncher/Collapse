@@ -22,7 +22,7 @@ namespace CollapseLauncher
         private       int              LuckyNumber      { get; set; }
         #endregion
 
-        public HonkaiCache(UIElement parentUI, IGameVersionCheck gameVersionManager)
+        public HonkaiCache(UIElement parentUI, IGameVersion gameVersionManager)
             : base(
                   parentUI,
                   gameVersionManager!,

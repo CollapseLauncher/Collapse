@@ -95,7 +95,7 @@ namespace CollapseLauncher
         internal IGamePlaytime        GamePlaytime    { get; set; }
         internal IRepair?             GameRepair      { get; set; }
         internal ICache?              GameCache       { get; set; }
-        internal IGameVersionCheck    GameVersion     { get; set; }
+        internal IGameVersion    GameVersion     { get; set; }
         internal IGameInstallManager  GameInstall     { get; set; }
         internal PresetConfig         GamePreset      { get => GameVersion.GamePreset; }
 

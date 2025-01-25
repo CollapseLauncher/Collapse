@@ -25,12 +25,12 @@ namespace CollapseLauncher.GamePlaytime
 
         private static readonly HashSet<int>      ActiveSessions = []; 
         private                 RegistryKey?      _registryRoot;
-        private readonly        IGameVersionCheck _gameVersionManager;
+        private readonly        IGameVersion _gameVersionManager;
 
         private readonly CancellationTokenSourceWrapper _token = new();
         #endregion
 
-        public Playtime(IGameVersionCheck gameVersionManager, IGameSettings gameSettings)
+        public Playtime(IGameVersion gameVersionManager, IGameSettings gameSettings)
         {
             string        registryPath = Path.Combine($"Software\\{gameVersionManager.VendorTypeProp.VendorType}", gameVersionManager.GamePreset.InternalGameNameInConfig!);
             _registryRoot = Registry.CurrentUser.OpenSubKey(registryPath, true);

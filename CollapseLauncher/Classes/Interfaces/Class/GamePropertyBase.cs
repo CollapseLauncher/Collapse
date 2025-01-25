@@ -13,7 +13,7 @@ namespace CollapseLauncher.Interfaces
         private GameVersion GameVersionOverride { get; }
 
 #nullable enable
-        public GamePropertyBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
+        public GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
         {
             GameSettings = gameSettings;
             GameVersionManager = gameVersionManager;
@@ -32,7 +32,7 @@ namespace CollapseLauncher.Interfaces
             AssetEntry = [];
         }
 
-        public GamePropertyBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
+        public GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
             : this(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
 #nullable restore
 
@@ -61,7 +61,7 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected IGameVersionCheck GameVersionManager { get; set; }
+        protected IGameVersion GameVersionManager { get; set; }
         protected IGameSettings GameSettings { get; set; }
         protected string GamePath { get => string.IsNullOrEmpty(GamePathField) ? GameVersionManager.GameDirPath : GamePathField; }
         protected string GameRepoURL { get; set; }

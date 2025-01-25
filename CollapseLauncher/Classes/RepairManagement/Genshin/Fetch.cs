@@ -93,7 +93,7 @@ namespace CollapseLauncher
         private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)
         {
             // Section: Eliminate unused audio files
-            List<string> audioLangList = (GameVersionManager as GameTypeGenshinVersion)!._audioVoiceLanguageList;
+            List<string> audioLangList = (GameVersionManager as GameTypeGenshinVersion)!.AudioVoiceLanguageList;
             string audioLangListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
 
             // Get the list of audio lang list

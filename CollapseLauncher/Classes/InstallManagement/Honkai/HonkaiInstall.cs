@@ -45,7 +45,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #endregion
 
-        public HonkaiInstall(UIElement     parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager)
+        public HonkaiInstall(UIElement     parentUI, IGameVersion GameVersionManager, ICache GameCacheManager)
             : base(parentUI, GameVersionManager)
         {
             _gameCacheManager = GameCacheManager as HonkaiCache;

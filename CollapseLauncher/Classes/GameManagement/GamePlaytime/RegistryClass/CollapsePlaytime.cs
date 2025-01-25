@@ -26,7 +26,7 @@ namespace CollapseLauncher.GamePlaytime
         private  static HashSet<int>      _isDeserializing = [];
         private         RegistryKey       _registryRoot;
         private         int               _hashID;
-        private         IGameVersionCheck _gameVersion;
+        private         IGameVersion _gameVersion;
         private         IGameSettings     _gameSettings;
         
         #endregion
@@ -87,7 +87,7 @@ namespace CollapseLauncher.GamePlaytime
         /// Reads from the Registry and deserializes the contents.
         /// </summary>
         public static CollapsePlaytime Load(RegistryKey root, int hashID,
-                                            IGameVersionCheck gameVersion,
+                                            IGameVersion gameVersion,
                                             IGameSettings gameSettings)
         {
             try

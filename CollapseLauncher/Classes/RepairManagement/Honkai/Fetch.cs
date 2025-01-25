@@ -1,3 +1,4 @@
+using CollapseLauncher.GameManagement.Versioning;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.StreamUtility;

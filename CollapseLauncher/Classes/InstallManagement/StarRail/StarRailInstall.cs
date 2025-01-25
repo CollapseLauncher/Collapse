@@ -59,7 +59,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #endregion
 
-        public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
+        public StarRailInstall(UIElement parentUI, IGameVersion GameVersionManager)
             : base(parentUI, GameVersionManager)
         {
         }

@@ -18,7 +18,7 @@ namespace CollapseLauncher
         Korean = 3
     }
 
-    internal partial class GenshinRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, string gameRepoURL)
+    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager, string gameRepoURL)
         : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, null, gameRepoURL, null), IRepair
     {
         #region ExtensionProperties

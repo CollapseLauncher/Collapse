@@ -64,7 +64,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #endregion
 
-        public GenshinInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
+        public GenshinInstall(UIElement parentUI, IGameVersion GameVersionManager)
             : base(parentUI, GameVersionManager)
         {
         }

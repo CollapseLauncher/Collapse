@@ -1339,7 +1339,7 @@ namespace CollapseLauncher
             NavigationViewControl.MenuItems.Clear();
             NavigationViewControl.FooterMenuItems.Clear();
 
-            IGameVersionCheck CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
+            IGameVersion CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
 
             FontIcon IconLauncher = new FontIcon { Glyph = "" };
             FontIcon IconRepair = new FontIcon { Glyph = "" };

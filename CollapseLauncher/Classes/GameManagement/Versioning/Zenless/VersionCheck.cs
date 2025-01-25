@@ -1,3 +1,4 @@
+using CollapseLauncher.GameManagement.Versioning;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
@@ -118,7 +119,6 @@ namespace CollapseLauncher.GameVersioning
             : base(parentUIElement, gameRegionProp, gameName, gameRegion)
         {
             // Try check for reinitializing game version.
-            TryReinitializeGameVersion();
             InitializeSleepy(gamePreset);
         }
 

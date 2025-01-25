@@ -7,7 +7,7 @@ namespace CollapseLauncher.GameSettings.Base
     internal sealed class SettingsGameVersionManager
     {
         /// <summary>
-        /// Create an instance of the IGameVersionCheck adapter for <see cref="MagicNodeBaseValues{T}"/> members.<br/>
+        /// Create an instance of the IGameVersion adapter for <see cref="MagicNodeBaseValues{T}"/> members.<br/>
         /// Note: Use the formatting string with index 0 for executable and 1 for the config filename.<br/>
         /// <br/>
         /// For example:<br/>
@@ -17,7 +17,7 @@ namespace CollapseLauncher.GameSettings.Base
         /// <param name="fileDirPathFormat">The formatted string for the file location</param>
         /// <param name="fileName">Name of the config file</param>
         /// <returns><see cref="SettingsGameVersionManager"/> to be used for <see cref="MagicNodeBaseValues{T}"/> members.</returns>
-        internal static SettingsGameVersionManager Create(IGameVersionCheck? gameVersionManager, string fileDirPathFormat, string fileName)
+        internal static SettingsGameVersionManager Create(IGameVersion? gameVersionManager, string fileDirPathFormat, string fileName)
         {
             return new SettingsGameVersionManager
             {
@@ -27,7 +27,7 @@ namespace CollapseLauncher.GameSettings.Base
             };
         }
 
-        internal IGameVersionCheck? VersionManager { get; set; }
+        internal IGameVersion? VersionManager { get; set; }
 
         internal string? GameFolder => VersionManager?.GameDirPath;
         internal string GameExecutable => Path.GetFileNameWithoutExtension(VersionManager?.GamePreset.GameExecutableName!);

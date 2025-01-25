@@ -40,7 +40,7 @@ namespace CollapseLauncher.Interfaces
 {
     internal class ProgressBase<T1> : GamePropertyBase<T1> where T1 : IAssetIndexSummary
     {
-        public ProgressBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
+        public ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
             : base(parentUI, gameVersionManager, gameSettings, gamePath, gameRepoURL, versionOverride)
         {
             Status         = new TotalPerFileStatus { IsIncludePerFileIndicator = true };
@@ -50,7 +50,7 @@ namespace CollapseLauncher.Interfaces
             AssetIndex     = [];
         }
 
-        public ProgressBase(UIElement parentUI, IGameVersionCheck? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
+        public ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
             : this(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
 
         public event EventHandler<TotalPerFileProgress>? ProgressChanged;

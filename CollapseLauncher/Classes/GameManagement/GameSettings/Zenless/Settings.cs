@@ -36,7 +36,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         public GeneralData GeneralData { get; set; }
         #endregion
 
-        public ZenlessSettings(IGameVersionCheck GameVersionManager) : base(GameVersionManager)
+        public ZenlessSettings(IGameVersion GameVersionManager) : base(GameVersionManager)
         {
             // Initialize magic
             _ = MagicReDo;

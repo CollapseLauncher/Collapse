@@ -256,12 +256,12 @@ namespace Hi3Helper.Shared.Region
         }
 
         [field: AllowNull, MaybeNull]
-        public static  string  AppExecutableName => field ??= Path.GetFileName(AppExecutablePath);
+        public static string AppExecutableName => field ??= Path.GetFileName(AppExecutablePath);
         [field: AllowNull, MaybeNull]
-        public static  string  AppExecutableDir => field ??= Path.GetDirectoryName(AppExecutablePath) ?? "";
-        public static  string  AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
-        public static  string  AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
-        public static  string  AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
+        public static string AppExecutableDir => field ??= (Path.GetDirectoryName(AppExecutablePath) ?? "");
+        public static string AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
+        public static string AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
+        public static string AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
 
         [field: AllowNull, MaybeNull]
         public static Version AppCurrentVersion
@@ -329,10 +329,11 @@ namespace Hi3Helper.Shared.Region
         public static bool IsAppThemeNeedRestart            = false;
         public static bool IsInstantRegionNeedRestart       = false;
 
-        public static readonly string AppDefaultBG       = Path.Combine(AppExecutableDir, "Assets", "Images", "PageBackground", "default.png");
-        public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
+        public static readonly string AppAssetsFolder    = Path.Combine(AppExecutableDir!, "Assets");
+        public static readonly string AppImagesFolder    = Path.Combine(AppAssetsFolder, "Images");
+        public static readonly string AppDefaultBG       = Path.Combine(AppImagesFolder, "PageBackground", "default.png");
+        public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir!, "Lang");
         public static readonly string AppDataFolder      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
-        public static readonly string AppImagesFolder    = Path.Combine(AppExecutableDir, "Assets", "Images");
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder, "config.ini");
         public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
 

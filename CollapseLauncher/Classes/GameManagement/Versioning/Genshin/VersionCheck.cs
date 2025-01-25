@@ -1,10 +1,17 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CollapseLauncher.GameManagement.Versioning;
+using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.IO;
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.GameVersioning
 {
-    internal sealed class GameTypeGenshinVersion : GameVersionBase
+    internal sealed class GameTypeGenshinVersion(
+        UIElement          parentUIElement,
+        RegionResourceProp gameRegionProp,
+        string             gameName,
+        string             gamePreset)
+        : GameVersionBase(parentUIElement, gameRegionProp, gameName, gamePreset)
     {
         #region Const
         private const string GlobalExecName = "GenshinImpact.exe";
@@ -12,15 +19,8 @@ namespace CollapseLauncher.GameVersioning
         #endregion
 
         #region Properties
-        public readonly List<string> _audioVoiceLanguageList = ["Chinese", "English(US)", "Japanese", "Korean"];
+        public readonly List<string> AudioVoiceLanguageList = ["Chinese", "English(US)", "Japanese", "Korean"];
         #endregion
-
-        public GameTypeGenshinVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, string gameName, string gamePreset)
-            : base(parentUIElement, gameRegionProp, gameName, gamePreset)
-        {
-            // Try check for reinitializing game version.
-            TryReinitializeGameVersion();
-        }
 
         public override bool IsGameHasDeltaPatch() => false;
 

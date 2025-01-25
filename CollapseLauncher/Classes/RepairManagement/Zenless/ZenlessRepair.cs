@@ -65,7 +65,7 @@ namespace CollapseLauncher
 
         protected override string UserAgent { get; set; } = "UnityPlayer/2019.4.40f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)";
 
-        public ZenlessRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, ZenlessSettings gameSettings, bool isOnlyRecoverMain = false, string? versionOverride = null, bool isCacheUpdateMode = false)
+        public ZenlessRepair(UIElement parentUI, IGameVersion gameVersionManager, ZenlessSettings gameSettings, bool isOnlyRecoverMain = false, string? versionOverride = null, bool isCacheUpdateMode = false)
             : base(parentUI, gameVersionManager, null, "", versionOverride)
         {
             // Use IsOnlyRecoverMain for future delta-patch or main game only files

@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
@@ -17,9 +18,6 @@ namespace CollapseLauncher.GameVersioning
         public GameTypeStarRailVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, string gameName, string gameRegion)
             : base(parentUIElement, gameRegionProp, gameName, gameRegion)
         {
-            // Try check for reinitializing game version.
-            TryReinitializeGameVersion();
-
             // Initialize Star Rail metadata tool
             if (GamePreset.ProtoDispatchKey != null)
             {
@@ -65,7 +63,7 @@ namespace CollapseLauncher.GameVersioning
                 byte[]? data = GamePreset.GetGameDataTemplate("MagicSpell", [2, 3, 0, 0]);
                 if (data == null)
                 {
-                    Logger.LogWriteLine("[IGameVersionCheck:InitializeProtoId] data is null!", LogType.Error, true);
+                    Logger.LogWriteLine("[IGameVersion:InitializeProtoId] data is null!", LogType.Error, true);
                     return;
                 }
 

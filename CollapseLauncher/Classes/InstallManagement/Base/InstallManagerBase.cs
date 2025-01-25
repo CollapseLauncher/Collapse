@@ -163,7 +163,7 @@ namespace CollapseLauncher.InstallManager.Base
         public virtual bool       IsRunning         { get; protected set; }
         #endregion
 
-        public InstallManagerBase(UIElement parentUI, IGameVersionCheck GameVersionManager)
+        public InstallManagerBase(UIElement parentUI, IGameVersion GameVersionManager)
             : base(parentUI, GameVersionManager, "", "", null)
         {
             _gamePersistentFolderBasePath =

@@ -62,7 +62,7 @@ namespace CollapseLauncher.InstallManager.Zenless
             Path.Combine(_gameDataPersistentPath, "audio_lang");
         #endregion
 
-        public ZenlessInstall(UIElement parentUI, IGameVersionCheck GameVersionManager, ZenlessSettings zenlessSettings)
+        public ZenlessInstall(UIElement parentUI, IGameVersion GameVersionManager, ZenlessSettings zenlessSettings)
             : base(parentUI, GameVersionManager)
         {
             ZenlessSettings = zenlessSettings;

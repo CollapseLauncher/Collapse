@@ -41,7 +41,7 @@ namespace CollapseLauncher
         private protected List<FilePropertiesRemote> OriginAssetIndex { get; set; }
         #endregion
 
-        public HonkaiRepair(UIElement parentUI, IGameVersionCheck gameVersionManager, ICache gameCacheManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
+        public HonkaiRepair(UIElement parentUI, IGameVersion gameVersionManager, ICache gameCacheManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
             : base(parentUI, gameVersionManager, gameSettings, null, "", versionOverride)
         {
             CacheUtil = (gameCacheManager as ICacheBase<HonkaiCache>)?.AsBaseType();

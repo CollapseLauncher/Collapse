@@ -20,7 +20,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         public GraphicsGrade             SettingsGraphicsGrade  { get; set; }
         #endregion
 
-        public HonkaiSettings(IGameVersionCheck GameVersionManager)
+        public HonkaiSettings(IGameVersion GameVersionManager)
             : base(GameVersionManager)
         {
             // Initialize and Load Settings

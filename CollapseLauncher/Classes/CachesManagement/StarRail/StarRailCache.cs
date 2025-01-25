@@ -10,7 +10,7 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher
 {
-    internal partial class StarRailCache(UIElement parentUI, IGameVersionCheck gameVersionManager)
+    internal partial class StarRailCache(UIElement parentUI, IGameVersion gameVersionManager)
         : ProgressBase<SRAsset>(parentUI,
                                 gameVersionManager,
                                 gameVersionManager.GameDirPath,
