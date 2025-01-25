@@ -422,26 +422,12 @@ namespace Hi3Helper.Data
         public static implicit operator Size(IniValue value) => value.ToSize();
 
         public static implicit operator Guid(IniValue value) => value.ToGuid();
-        public static bool operator ==(IniValue valueA, IniValue valueB)
-        {
-            if (valueA.Value?.Equals(valueB.Value) ?? false)
-                return true;
 
-            bool equalsPerInner = Equals(valueA, valueB);
-            return equalsPerInner;
-        }
+        public static bool operator ==(IniValue valueA, IniValue valueB) => Equals(valueA, valueB);
 
         public static bool operator !=(IniValue valueA, IniValue valueB) => !(valueA == valueB);
 
-        public override bool Equals([NotNullWhen(true)] object? obj)
-        {
-            if (obj is not IniValue iniValue)
-            {
-                return false;
-            }
-
-            return this == iniValue;
-        }
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj is IniValue iniValue && GetHashCode() == iniValue.GetHashCode();
 
         public override int GetHashCode() => Value?.GetHashCode() ?? 0;
         #endregion
