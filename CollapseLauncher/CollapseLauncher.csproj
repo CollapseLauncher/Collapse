@@ -55,7 +55,7 @@
         <NoWarn>TA100</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <PropertyGroup Condition="'$(PublishAot)' == 'true' And '$(Configuration)' != 'Debug'">
         <RunAOTCompilation>true</RunAOTCompilation>
         <OptimizationPreference>Speed</OptimizationPreference>
         <StripSymbols>true</StripSymbols>
