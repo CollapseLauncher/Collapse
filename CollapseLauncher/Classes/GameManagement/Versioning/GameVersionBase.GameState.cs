@@ -7,6 +7,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
@@ -272,6 +273,38 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Check Game State
+        public async ValueTask<GameInstallStateEnum> GetGameState()
+        {
+            // Check if the game installed first
+            // If the game is installed, then move to another step.
+            if (!IsGameInstalled())
+            {
+                return GameInstallStateEnum.NotInstalled;
+            }
+
+            // If the game version is not match, return need update.
+            // Otherwise, move to the next step.
+            if (!IsGameVersionMatch())
+            {
+                return GameInstallStateEnum.NeedsUpdate;
+            }
+
+            // Check for the game/plugin version and preload availability.
+            if (IsGameHasPreload())
+            {
+                return GameInstallStateEnum.InstalledHavePreload;
+            }
+
+            // If the plugin version is not match, return that it's installed but have plugin updates.
+            if (!await IsPluginVersionsMatch() || !await IsSdkVersionsMatch())
+            {
+                return GameInstallStateEnum.InstalledHavePlugin;
+            }
+
+            // If all passes, then return as Installed.
+            return GameInstallStateEnum.Installed;
+        }
+
         public virtual async ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement)
         {
             string? execName = GamePreset.GameExecutableName;

@@ -235,38 +235,6 @@ namespace CollapseLauncher.GameManagement.Versioning
         #region Game Info Methods
         public virtual DeltaPatchProperty? GetDeltaPatchInfo() => GameDeltaPatchProp;
 
-        public async ValueTask<GameInstallStateEnum> GetGameState()
-        {
-            // Check if the game installed first
-            // If the game is installed, then move to another step.
-            if (!IsGameInstalled())
-            {
-                return GameInstallStateEnum.NotInstalled;
-            }
-
-            // If the game version is not match, return need update.
-            // Otherwise, move to the next step.
-            if (!IsGameVersionMatch())
-            {
-                return GameInstallStateEnum.NeedsUpdate;
-            }
-
-            // Check for the game/plugin version and preload availability.
-            if (IsGameHasPreload())
-            {
-                return GameInstallStateEnum.InstalledHavePreload;
-            }
-
-            // If the plugin version is not match, return that it's installed but have plugin updates.
-            if (!await IsPluginVersionsMatch() || !await IsSdkVersionsMatch())
-            {
-                return GameInstallStateEnum.InstalledHavePlugin;
-            }
-
-            // If all passes, then return as Installed.
-            return GameInstallStateEnum.Installed;
-        }
-
         public virtual List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState)
         {
             // Initialize the return list
