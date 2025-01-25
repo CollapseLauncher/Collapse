@@ -317,7 +317,8 @@ namespace CollapseLauncher
                     gamePreset.GameDispatchChannelName,
                     gamePreset.GameDispatchArrayURL![Random.Shared.Next(0, gamePreset.GameDispatchArrayURL.Count - 1)],
                     dispatchUrlTemplate,
-                    targetServerName ?? fallbackServerName,
+                    targetServerName,
+                    fallbackServerName,
                     gatewayUrlTemplate,
                     gamePreset.ProtoDispatchKey,
                     SleepyBuildProperty.Create(GameVersionManagerCast.SleepyIdentity, GameVersionManagerCast.SleepyArea)
