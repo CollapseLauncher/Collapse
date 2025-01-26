@@ -152,7 +152,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             MismatchPlugin = null;
             foreach (KeyValuePair<string, GameVersion> pluginVersion in pluginVersions)
             {
-                if (pluginVersionsInstalled.TryGetValue(pluginVersion.Key, out var installedPluginVersion) &&
+                if (pluginVersionsInstalled.TryGetValue(pluginVersion.Key, out GameVersion installedPluginVersion) &&
                     pluginVersion.Value.IsMatch(installedPluginVersion))
                 {
                     continue;
@@ -396,7 +396,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     if (string.IsNullOrEmpty(line))
                         continue;
 
-                    PkgVersionProperties pkgVersion = line.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+                    PkgVersionProperties? pkgVersion = line.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
                     if (pkgVersion == null)
                     {
@@ -444,14 +444,14 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return result;
             }
 
-            foreach (var validate in plugin.package?.validate!)
+            foreach (RegionResourcePluginValidate validate in plugin.package?.validate!)
             {
                 if (validate.path == null)
                 {
                     continue;
                 }
 
-                var path = Path.Combine(GameDirPath, validate.path);
+                string path = Path.Combine(GameDirPath, validate.path);
                 try
                 {
                     if (!File.Exists(path))
@@ -460,8 +460,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                         break;
                     }
 
-                    await using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    var md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
+                    await using FileStream fs  = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    string?                md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
                     if (md5 == validate.md5)
                     {
                         continue;

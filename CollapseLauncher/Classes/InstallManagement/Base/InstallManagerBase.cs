@@ -3359,7 +3359,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private void DeleteDownloadedFile(string FileOutput, byte Thread)
+        private void DeleteDownloadedFile(string FileOutput, int Thread)
         {
             // Get the info of the existing file
             FileInfo fileInfo = new FileInfo(FileOutput);

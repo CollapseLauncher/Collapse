@@ -171,7 +171,7 @@ namespace CollapseLauncher.Dialogs
                 string             repoListURL = string.Format(AppGameRepoIndexURLPrefix, profile.ProfileName);
                 await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, s, repoListURL, _tokenSource.Token);
                 s.Position = 0;
-                repoList  = await s.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: _tokenSource.Token);
+                repoList   = await s.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: _tokenSource.Token);
             }
             finally
             {
@@ -181,7 +181,7 @@ namespace CollapseLauncher.Dialogs
             RegionResourceProp entry = await FallbackCDNUtil.DownloadAsJSONType(profile.LauncherResourceURL, RegionResourcePropJsonContext.Default.RegionResourceProp, _tokenSource.Token);
             _gameVersion = entry.data?.game?.latest?.version;
 
-            return repoList[_gameVersion ?? throw new InvalidOperationException()];
+            return repoList![_gameVersion ?? throw new InvalidOperationException()];
         }
 
         internal bool IsSourceGameExist(PresetConfig profile)

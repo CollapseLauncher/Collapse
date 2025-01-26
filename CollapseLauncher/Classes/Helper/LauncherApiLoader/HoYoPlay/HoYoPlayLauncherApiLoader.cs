@@ -553,24 +553,17 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         #region Convert Game Info Resources
         private void ConvertGameInfoResources([DisallowNull] ref HoYoPlayGameInfoField? sophonGameInfo, HoYoPlayGameInfoData? hypLauncherGameInfoList)
         {
-            if (sophonGameInfo != null)
+            if (hypLauncherGameInfoList != null)
             {
-                if (hypLauncherGameInfoList != null)
-                {
-                    sophonGameInfo =
-                        hypLauncherGameInfoList.Data?.FirstOrDefault(x =>
-                                                                         x.BizName?.Equals(PresetConfig
-                                                                           ?.LauncherBizName) ??
-                                                                         false);
-                }
-                else
-                {
-                    throw new ArgumentNullException(nameof(hypLauncherGameInfoList));
-                }
+                sophonGameInfo =
+                    hypLauncherGameInfoList.Data?.FirstOrDefault(x =>
+                                                                     x.BizName?.Equals(PresetConfig
+                                                                                ?.LauncherBizName) ??
+                                                                     false);
             }
             else
             {
-                throw new ArgumentNullException(nameof(sophonGameInfo));
+                throw new ArgumentNullException(nameof(hypLauncherGameInfoList));
             }
         }
         #endregion

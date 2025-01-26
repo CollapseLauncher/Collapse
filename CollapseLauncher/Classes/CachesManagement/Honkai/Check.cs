@@ -58,7 +58,7 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private SearchValues<string> UnusedSearchValues = SearchValues.Create([
+        private readonly SearchValues<string> _unusedSearchValues = SearchValues.Create([
             "output_log",
             "Crashes",
             "Verify.txt",
@@ -82,7 +82,7 @@ namespace CollapseLauncher
             {
                 ReadOnlySpan<char> filePath = fileInfo.FullName;
 
-                if (filePath.ContainsAny(UnusedSearchValues)
+                if (filePath.ContainsAny(_unusedSearchValues)
                  || assetIndex.Exists(x => x.ConcatPath == fileInfo.FullName))
                 {
                     continue;

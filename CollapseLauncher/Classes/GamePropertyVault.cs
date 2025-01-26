@@ -60,7 +60,7 @@ namespace CollapseLauncher.Statics
         private static async void CleanupUnusedGameProperty()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            if (Vault == null || Vault.Count == 0) return;
+            if (Vault.Count == 0) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
                 .Where(x => !x.GameInstall.IsRunning && !x.IsGameRunning && x.GamePreset.HashID != CurrentGameHashID)

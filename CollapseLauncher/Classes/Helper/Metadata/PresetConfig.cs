@@ -636,8 +636,8 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
-                var result    = (byte[])keys.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>());
-                GeneralDataProp? initValue = JsonSerializerHelper.Deserialize(result, GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
+                byte[] result    = (byte[])keys.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>());
+                GeneralDataProp initValue = JsonSerializerHelper.Deserialize(result, GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
 
                 string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp);
@@ -724,7 +724,7 @@ namespace CollapseLauncher.Helper.Metadata
             RegistryKey? keys = Registry.CurrentUser.OpenSubKey(ConfigRegistryLocation);
             byte[] value = (byte[])keys?.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>(), RegistryValueOptions.None)!;
 
-            if (keys is null || value is null || value.Length is 0)
+            if (keys is null || value.Length is 0)
             {
                 LogWriteLine($"Server name ID registry on \e[32;1m{Path.GetFileName(ConfigRegistryLocation)}\e[0m doesn't exist. Fallback value will be used (0 / USA).",
                              LogType.Warning, true);

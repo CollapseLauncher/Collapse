@@ -369,10 +369,10 @@ namespace Hi3Helper.SentryHelper
         {
             get
             {
-                List<(string GpuName, string DriverVersion)> gpuInfoList = new();
+                List<(string GpuName, string DriverVersion)> gpuInfoList = [];
                 try
                 {
-                    using var baseKey =
+                    using RegistryKey? baseKey =
                         Registry.LocalMachine
                                 .OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\");
                     if (baseKey != null)
