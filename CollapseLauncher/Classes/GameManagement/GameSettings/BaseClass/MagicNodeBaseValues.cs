@@ -408,7 +408,7 @@ namespace CollapseLauncher.GameSettings.Base
                 Directory.CreateDirectory(fileDirPath!);
 
             // Write into the file
-            string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false);
+            string jsonString = SettingsJsonNode.SerializeJsonNode(TypeInfo, false, true);
             Sleepy.WriteString(filePath, jsonString, Magic);
         }
 
