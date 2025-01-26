@@ -251,40 +251,36 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                     continue;
                 }
 
+                // Assign and convert preload game package (latest)
+                PackageResourceSections? hypPreloadPackageSection = hypRootPackage.PreDownload?.CurrentVersion;
+                if (hypPreloadPackageSection != null)
                 {
-                    // Assign and convert preload game package (latest)
-                    PackageResourceSections? hypPreloadPackageSection = hypRootPackage.PreDownload?.CurrentVersion;
-                    if (hypPreloadPackageSection != null)
-                    {
-                        RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
-                        ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
-                        sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
-                    }
+                    RegionResourceVersion sophonPreloadPackageSection = new RegionResourceVersion();
+                    ConvertHYPSectionToResourceVersion(ref hypPreloadPackageSection, ref sophonPreloadPackageSection);
+                    sophonPackageResources.pre_download_game.latest = sophonPreloadPackageSection;
+                }
 
-                    // Assign and convert preload game package (diff)
-                    if (hypRootPackage.PreDownload?.Patches == null || hypRootPackage.PreDownload.Patches.Count == 0)
-                    {
-                        continue;
-                    }
+                // Assign and convert preload game package (diff)
+                if (hypRootPackage.PreDownload?.Patches == null || hypRootPackage.PreDownload.Patches.Count == 0)
+                    continue;
 
-                    sophonPackageResources.pre_download_game.diffs = [];
-                    foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload
-                                .Patches)
-                    {
-                        PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
-                        RegionResourceVersion   sophonResourceVersion           = new RegionResourceVersion();
-                        ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef,
-                                                           ref sophonResourceVersion);
-                        sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
-                    }
+                sophonPackageResources.pre_download_game.diffs = [];
+                foreach (PackageResourceSections hypPreloadDiffPackageSection in hypRootPackage.PreDownload
+                            .Patches)
+                {
+                    PackageResourceSections hypPreloadDiffPackageSectionRef = hypPreloadDiffPackageSection;
+                    RegionResourceVersion   sophonResourceVersion           = new RegionResourceVersion();
+                    ConvertHYPSectionToResourceVersion(ref hypPreloadDiffPackageSectionRef,
+                                                       ref sophonResourceVersion);
+                    sophonPackageResources.pre_download_game.diffs.Add(sophonResourceVersion);
                 }
             }
         }
 
         private void ConvertHYPSectionToResourceVersion(ref PackageResourceSections hypPackageResourceSection, ref RegionResourceVersion sophonResourceVersion)
         {
-            ArgumentNullException.ThrowIfNull(hypPackageResourceSection, nameof(hypPackageResourceSection));
-            ArgumentNullException.ThrowIfNull(sophonResourceVersion,     nameof(sophonResourceVersion));
+            ArgumentNullException.ThrowIfNull(hypPackageResourceSection);
+            ArgumentNullException.ThrowIfNull(sophonResourceVersion);
 
             // Convert game packages
             RegionResourceVersion packagesVersion = new RegionResourceVersion();

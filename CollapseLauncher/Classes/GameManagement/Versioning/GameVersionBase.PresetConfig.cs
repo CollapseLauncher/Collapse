@@ -35,21 +35,21 @@ namespace CollapseLauncher.GameManagement.Versioning
                 // Throw if GameName or GameRegion is null
                 if (string.IsNullOrEmpty(GameName) || string.IsNullOrEmpty(GameRegion))
                 {
-                    throw new NullReferenceException("Cannot get current Game Preset as GameName and GameRegion property must NOT be null!");
+                    throw new ArgumentException("Cannot get current Game Preset as GameName and GameRegion property must NOT be null!");
                 }
 
                 // Throw if the preset of the GameName is not found. Otherwise, get the preset of the GameName
                 if (!(LauncherMetadataHelper.LauncherMetadataConfig?
                     .TryGetValue(GameName, out Dictionary<string, PresetConfig>? gamePreset) ?? false))
                 {
-                    throw new NullReferenceException($"Cannot get current preset from GameName: '{GameName}' as it is not found in the LauncherMetadataConfig!");
+                    throw new ArgumentException($"Cannot get current preset from GameName: '{GameName}' as it is not found in the LauncherMetadataConfig!");
                 }
 
                 // Throw if the preset of the GameRegion is not found. Otherwise, get the preset of the GameRegion
                 if (!(gamePreset?
                     .TryGetValue(GameRegion, out PresetConfig? regionConfig) ?? false))
                 {
-                    throw new NullReferenceException($"Cannot get current preset from GameRegion: '{GameRegion}' as it is not found in the LauncherMetadataConfig!");
+                    throw new ArgumentException($"Cannot get current preset from GameRegion: '{GameRegion}' as it is not found in the LauncherMetadataConfig!");
                 }
 
                 // Assign to the field and cache, then return.

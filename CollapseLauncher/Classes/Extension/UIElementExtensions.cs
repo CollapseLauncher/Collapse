@@ -227,7 +227,7 @@ namespace CollapseLauncher.Extension
             bool isHasText = !string.IsNullOrEmpty(text);
 
             if (!isHasIcon && !isHasText)
-                throw new NullReferenceException("[UIElementExtensions::CreateIconTextGrid()] At least \"text\" or \"iconGlyph\" must be set!");
+                throw new ArgumentException("[UIElementExtensions::CreateIconTextGrid()] At least \"text\" or \"iconGlyph\" must be set!");
 
             Grid contentPanel = CreateGrid()
                 .WithColumns(GridLength.Auto, new GridLength(1, GridUnitType.Star))
@@ -287,7 +287,7 @@ namespace CollapseLauncher.Extension
         internal static void AddGridColumns(this Grid grid, params GridLength[] columnWidths)
         {
             if (columnWidths.Length == 0)
-                throw new IndexOutOfRangeException("\"columnWidth\" cannot be empty!");
+                throw new ArgumentException("\"columnWidth\" cannot be empty!");
 
             foreach (var t in columnWidths)
                 grid.ColumnDefinitions.Add(new ColumnDefinition

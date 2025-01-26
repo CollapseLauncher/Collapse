@@ -105,7 +105,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             executableName = Path.GetFileNameWithoutExtension(executableName);
             string sdkDllPath = Path.Combine(GameDirPath, $"{executableName}_Data", "Plugins", "PCGameSDK.dll");
 
-            return !(!isBilibili && File.Exists(sdkDllPath));
+            return !File.Exists(sdkDllPath);
         }
         #endregion
 
@@ -261,7 +261,6 @@ namespace CollapseLauncher.GameManagement.Versioning
                 }
 
                 string pathRootStr = pathRoot.ToString();
-                // return new DriveInfo(pathRootStr).IsReady;
                 // Return from Directory.Exists() since the IsReady property use the same method.
                 return Directory.Exists(pathRootStr);
             }

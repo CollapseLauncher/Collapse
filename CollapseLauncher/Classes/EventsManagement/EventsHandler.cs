@@ -208,7 +208,7 @@ namespace CollapseLauncher
         public static           void                    ChangeWindowFrame(Type toPage) => ChangeWindowFrame(toPage, new DrillInNavigationTransitionInfo());
         public static void ChangeWindowFrame(Type toPage, NavigationTransitionInfo transition)
         {
-            _currentWindow = toPage ?? throw new NullReferenceException("Argument: toPage cannot be null!");
+            _currentWindow = toPage ?? throw new ArgumentException("Cannot navigate to a null page!");
             Invoker.ChangeWindowFrame(toPage, transition);
         }
 
@@ -216,7 +216,7 @@ namespace CollapseLauncher
         public static void ChangeMainFrame(Type toPage) => ChangeMainFrame(toPage, new DrillInNavigationTransitionInfo());
         public static void ChangeMainFrame(Type toPage, NavigationTransitionInfo transition)
         {
-            _currentPage = toPage ?? throw new NullReferenceException("Argument: toPage cannot be null!");
+            _currentPage = toPage ?? throw new ArgumentException("Cannot navigate to a null page!");
             Invoker!.ChangeMainFrame(toPage, transition);
         }
 

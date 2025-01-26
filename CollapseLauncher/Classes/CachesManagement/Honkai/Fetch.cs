@@ -336,7 +336,7 @@ namespace CollapseLauncher
 
         private string GetAssetBasePathByType(CacheAssetType type) => Path.Combine(GamePath!, type == CacheAssetType.Data ? "Data" : "Resources");
 
-        private bool IsValidRegionFile(string input, string lang)
+        private static bool IsValidRegionFile(string input, string lang)
         {
             // If the path contains regional string, then move to the next check
             if (input!.Contains(CacheRegionalCheckName!))

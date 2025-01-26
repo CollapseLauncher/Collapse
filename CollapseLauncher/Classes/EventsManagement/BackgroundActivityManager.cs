@@ -44,7 +44,6 @@ namespace CollapseLauncher
 #if DEBUG
                 Logger.LogWriteLine($"Background activity with ID: {hashID} has been detached", LogType.Debug, true);
 #endif
-                return;
             }
 
 #if DEBUG

@@ -20,6 +20,14 @@ namespace CollapseLauncher.GameManagement.Versioning
         private const string DefaultIniVersionSection = "General";
         #endregion
 
+        #region Constants
+        private const string cps = "cps";
+        private const string channel = "channel";
+        private const string sub_channel = "sub_channel";
+        
+        private const string ConfigFileName = "config.ini";
+        #endregion
+
         #region Default Config Properties
         protected virtual int     DefaultGameChannelID    => GamePreset.ChannelID ?? 0;
         protected virtual int     DefaultGameSubChannelID => GamePreset.SubChannelID ?? 0;
@@ -30,9 +38,9 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         protected virtual IniSection DefaultIniProfile => new()
             {
-                { "cps", new IniValue(GamePreset.LauncherCPSType) },
-                { "channel", new IniValue(DefaultGameChannelID) },
-                { "sub_channel", new IniValue(DefaultGameSubChannelID) },
+                { cps, new IniValue(GamePreset.LauncherCPSType) },
+                { channel, new IniValue(DefaultGameChannelID) },
+                { sub_channel, new IniValue(DefaultGameSubChannelID) },
                 { "game_install_path", new IniValue(DefaultGameDirPath.Replace('\\', '/')) },
                 { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
                 { "is_first_exit", new IniValue(false) },
@@ -60,18 +68,18 @@ namespace CollapseLauncher.GameManagement.Versioning
         #region Game Config Path Properties
         protected virtual string? GameConfigDirPath { get; set; }
 
-        protected virtual string GameIniProfilePath => Path.Combine(GameConfigDirPath ?? "", "config.ini");
+        protected virtual string GameIniProfilePath => Path.Combine(GameConfigDirPath ?? "", ConfigFileName);
 
         protected virtual string GameIniVersionPath
         {
             get
             {
                 var configPath = GameIniProfile[DefaultIniProfileSection]["game_install_path"].ToString();
-                var defaultPath = Path.Combine(GameConfigDirPath ?? "", GamePreset.GameDirectoryName ?? "Games", "config.ini");
+                var defaultPath = Path.Combine(GameConfigDirPath ?? "", GamePreset.GameDirectoryName ?? "Games", ConfigFileName);
 
                 if (string.IsNullOrEmpty(configPath)) return defaultPath;
 
-                string path = ConverterTool.NormalizePath(Path.Combine(configPath, "config.ini"));
+                string path = ConverterTool.NormalizePath(Path.Combine(configPath, ConfigFileName));
                 return IsDiskPartitionExist(path) ? path : defaultPath;
             }
         }
@@ -162,7 +170,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             const string subChannelIdKeyName = "sub_channel";
             const string cpsKeyName = "cps";
 
-            string gameIniVersionPath = Path.Combine(GameDirPath, "config.ini");
+            string gameIniVersionPath = Path.Combine(GameDirPath, ConfigFileName);
 
             GameIniVersion[DefaultIniVersionSection][channelIdKeyName] = GamePreset.ChannelID ?? 0;
             GameIniVersion[DefaultIniVersionSection][subChannelIdKeyName] = GamePreset.SubChannelID ?? 0;
@@ -223,21 +231,6 @@ namespace CollapseLauncher.GameManagement.Versioning
             GameIniVersion[DefaultIniVersionSection]["channel"] = DefaultGameChannelID;
             GameIniVersion[DefaultIniVersionSection]["sub_channel"] = DefaultGameSubChannelID;
             GameIniVersion[DefaultIniVersionSection]["cps"] = DefaultGameCps;
-
-            /* Disable these lines as these will trigger some bugs (like Endless "Broken config.ini" dialog)
-             * and causes the cps field to be missing for other non-Bilibili games
-             * 
-            // Remove the contains section if the client is not Bilibili, and it does have the value.
-            // This to avoid an issue with HSR config.ini detection
-            bool isBilibili = GamePreset.ZoneName == "Bilibili";
-            if ( !isBilibili
-                && GameIniVersion.ContainsSection(_defaultIniVersionSection)
-                && GameIniVersion[_defaultIniVersionSection].ContainsKey("cps")
-                && GameIniVersion[_defaultIniVersionSection]["cps"].ToString().IndexOf("bilibili", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                GameIniVersion[_defaultIniVersionSection].Remove("cps");
-            }
-            */
 
             if (saveValue)
             {
@@ -302,7 +295,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // Check if the ini file does have the "game_version" value.
-            string iniPath = Path.Combine(basePath, "config.ini");
+            string iniPath = Path.Combine(basePath, ConfigFileName);
             return IsTryParseIniVersionExist(iniPath) ? basePath :
                 // If the file doesn't exist, return as null.
                 null;
@@ -312,7 +305,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             // Phase 1: Check on the root directory
             string   targetPath = Path.Combine(path, executableName ?? string.Empty);
-            string   configPath = Path.Combine(path, "config.ini");
+            string   configPath = Path.Combine(path, ConfigFileName);
             FileInfo targetInfo = new FileInfo(targetPath);
             if (targetInfo is { Exists: true, Length: > 1 << 16 } && File.Exists(configPath))
             {
@@ -321,7 +314,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 
             // Phase 2: Check on the launcher directory + GamePreset.GameDirectoryName
             targetPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", executableName ?? string.Empty);
-            configPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", "config.ini");
+            configPath = Path.Combine(path, GamePreset.GameDirectoryName ?? "Games", ConfigFileName);
             targetInfo = new FileInfo(targetPath);
             if (targetInfo is { Exists: true, Length: > 1 << 16 } && File.Exists(configPath))
             {
