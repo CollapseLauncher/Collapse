@@ -76,7 +76,7 @@ namespace CollapseLauncher.Pages
                     VSyncToggle.IsChecked                    = true;
                     RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
                     AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
-                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Medium;
+                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Low;
                     ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
                     FxQualitySelector.SelectedIndex          = (int)QualityOption5.Low;
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
