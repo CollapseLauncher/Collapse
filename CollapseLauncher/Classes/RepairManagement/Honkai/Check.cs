@@ -4,10 +4,12 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
@@ -542,7 +544,7 @@ namespace CollapseLauncher
         {
             // Build the list of existing files inside the game folder
             // for comparison with asset index into catalog list
-            List<string> catalog = [];
+            HashSet<string> catalog = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             BuildAssetIndexCatalog(catalog, assetIndex);
 
             // Compare the catalog list with asset index and add it to target asset index
@@ -553,7 +555,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void BuildAssetIndexCatalog(List<string> catalog, List<FilePropertiesRemote> assetIndex)
+        private void BuildAssetIndexCatalog(HashSet<string> catalog, List<FilePropertiesRemote> assetIndex)
         {
             // Iterate the asset index
             foreach (FilePropertiesRemote asset in assetIndex)
@@ -582,75 +584,107 @@ namespace CollapseLauncher
             }
         }
 
-        private void GetUnusedAssetIndexList(List<string> catalog, List<FilePropertiesRemote> targetAssetIndex)
+        private void GetUnusedAssetIndexList(HashSet<string> catalog, List<FilePropertiesRemote> targetAssetIndex)
         {
+            SearchValues<string> searchValuesContains = SearchValues.Create([
+                "\\ScreenShot\\",
+                "webCaches",
+                "SDKCaches",
+                "Patch",
+                ".zip",
+                ".7z"
+                ], StringComparison.OrdinalIgnoreCase);
+
+            SearchValues<string> searchValuesStartsWith = SearchValues.Create([
+                "@",
+                "d3d",
+                "dxgi.dll",
+                GameVersionManager.GamePreset.ProfileName
+                ], StringComparison.OrdinalIgnoreCase);
+
+            SearchValues<string> searchValuesEndsWith = SearchValues.Create([
+                ".log",
+                ".sys",
+                "Version.txt",
+                ".ini",
+                "manifest.m",
+                "Wwise_IDs.h",
+                "Blocks.xmf",
+                $"Blocks_{GameVersion.Major}_{GameVersion.Minor}.xmf",
+                "BlockMeta.xmf",
+                ".wmv",
+                ".patch",
+                ".dll"
+                ], StringComparison.OrdinalIgnoreCase);
+
+            List<Regex> matchIgnoredFilesRegex = new List<Regex>();
+            string ignoredFilesPath = Path.Combine(GamePath, "@IgnoredFiles");
+            if (File.Exists(ignoredFilesPath))
+            {
+                try
+                {
+                    string[] ignoredFiles = File.ReadAllLines(ignoredFilesPath);
+                    matchIgnoredFilesRegex.AddRange(
+                        ignoredFiles.Select(
+                            regex => new Regex(regex,
+                                RegexOptions.IgnoreCase |
+                                RegexOptions.NonBacktracking |
+                                RegexOptions.Compiled)));
+                    LogWriteLine("Found ignore file settings!");
+                }
+                catch (Exception ex)
+                {
+                    SentryHelper.ExceptionHandler(ex);
+                    LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
+                }
+            }
+
             int pathOffset = GamePath.Length + 1;
             foreach (string asset in Directory.EnumerateFiles(Path.Combine(GamePath), "*", SearchOption.AllDirectories))
             {
-                string filename = Path.GetFileName(asset);
+                ReadOnlySpan<char> filename = Path.GetFileName(asset);
+                ReadOnlySpan<char> assetSpan = asset;
 
                 // Universal
-                bool isIncluded = catalog.Any(x => x.Equals(asset, StringComparison.OrdinalIgnoreCase));
-                bool isScreenshot = asset.Contains("ScreenShot", StringComparison.OrdinalIgnoreCase);
-                bool isLog = asset.EndsWith(".log", StringComparison.OrdinalIgnoreCase);
-                bool isDriver = asset.EndsWith(".sys", StringComparison.OrdinalIgnoreCase);
-
-                // Configuration related
-                bool isWebcaches = asset.Contains("webCaches", StringComparison.OrdinalIgnoreCase);
-                bool isSdKcaches = asset.Contains("SDKCaches", StringComparison.OrdinalIgnoreCase);
-                bool isVersion = asset.EndsWith("Version.txt", StringComparison.OrdinalIgnoreCase);
-                bool isIni = asset.EndsWith(".ini", StringComparison.OrdinalIgnoreCase);
-
-                // Audio related
-                bool isAudioManifest = asset.EndsWith("manifest.m", StringComparison.OrdinalIgnoreCase);
-                bool isWwiseHeader = asset.EndsWith("Wwise_IDs.h", StringComparison.OrdinalIgnoreCase);
-
-                // Video related
-                bool isUsm = asset.EndsWith(".usm", StringComparison.OrdinalIgnoreCase);
-
-                // Blocks related
-                bool isXmfBlocks = asset.EndsWith("Blocks.xmf", StringComparison.OrdinalIgnoreCase);
-                bool isXmfBlocksVer = asset.EndsWith($"Blocks_{GameVersion.Major}_{GameVersion.Minor}.xmf", StringComparison.OrdinalIgnoreCase);
-                bool isXmfMeta = asset.EndsWith("BlockMeta.xmf", StringComparison.OrdinalIgnoreCase);
-                bool isBlockPatch = asset.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) && asset.Contains("Patch", StringComparison.OrdinalIgnoreCase);
-
-                // Flags related
-                bool isFlags = filename.StartsWith('@');
-
-                // Archive file related
-                bool isZip = filename.Contains(".zip", StringComparison.OrdinalIgnoreCase) || filename.Contains(".7z", StringComparison.OrdinalIgnoreCase);
-
-                // Delta-patch related
-                bool isDeltaPatch = filename.StartsWith(GameVersionManager.GamePreset.ProfileName) && asset.EndsWith(".patch");
-
-                // Direct X related
-                bool isDirectX = (filename.StartsWith("d3d", StringComparison.OrdinalIgnoreCase) && asset.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                    || filename.StartsWith("dxgi.dll", StringComparison.OrdinalIgnoreCase);
-
-                string[] ignoredFiles = [];
-                if (File.Exists(Path.Combine(GamePath, "@IgnoredFiles")))
+                bool isIncluded = catalog.Contains(asset);
+                if (isIncluded) // If it's included, then return
                 {
-                    try
-                    {
-                        ignoredFiles = File.ReadAllLines(Path.Combine(GamePath, "@IgnoredFiles"));
-                        LogWriteLine("Found ignore file settings!");
-                    }
-                    catch (Exception ex)
-                    {
-                        SentryHelper.ExceptionHandler(ex);
-                        LogWriteLine($"Failed when reading ignore file setting! Ignoring...\r\n{ex}", LogType.Error, true);
-                    }
+                    continue;
                 }
 
-                if (ignoredFiles.Length > 0) _ignoredUnusedFileList.AddRange(ignoredFiles);
+                bool isContainsAnyAsset = assetSpan.ContainsAny(searchValuesContains);
+                if (isContainsAnyAsset)
+                {
+                    continue;
+                }
+
+                bool isStartsWithAnyFileName = filename.IndexOfAny(searchValuesStartsWith) == 0;
+                int isEndsWithAnyFileNameIndex = filename.IndexOfAny(searchValuesEndsWith);
+                bool isEndsWithAnyFileName = isEndsWithAnyFileNameIndex > -1 && isEndsWithAnyFileNameIndex < filename.Length;
+                if (isStartsWithAnyFileName && isEndsWithAnyFileName)
+                {
+                    continue;
+                }
+
+                if (isStartsWithAnyFileName)
+                {
+                    continue;
+                }
+
+                if (isEndsWithAnyFileName)
+                {
+                    continue;
+                }
+
+                bool isBlockPatch = asset.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase) && asset.Contains("Patch", StringComparison.OrdinalIgnoreCase);
+                if (isBlockPatch)
+                {
+                    continue;
+                }
 
                 // Is file ignored
-                bool isFileIgnored = _ignoredUnusedFileList.Contains(asset, StringComparer.OrdinalIgnoreCase);
-
-                if (isIncluded || isFileIgnored || isIni || isDriver || isXmfBlocks || isXmfBlocksVer || isXmfMeta
-                    || isVersion || isScreenshot || isWebcaches || isSdKcaches || isLog
-                    || isUsm || isWwiseHeader || isAudioManifest || isBlockPatch
-                    || isDeltaPatch || isFlags || isZip || isDirectX)
+                bool isFileIgnored = matchIgnoredFilesRegex.Any(x => x.IsMatch(asset));
+                if (isFileIgnored)
                 {
                     continue;
                 }
