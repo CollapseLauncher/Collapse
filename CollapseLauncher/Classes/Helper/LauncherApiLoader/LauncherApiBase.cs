@@ -15,6 +15,9 @@ using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable VirtualMemberCallInConstructor
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -45,13 +48,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public virtual RegionResourceProp?    LauncherGameResource  { get; protected set; }
         public virtual LauncherGameNews?      LauncherGameNews      { get; protected set; }
         public virtual HoYoPlayGameInfoField? LauncherGameInfoField { get; protected set; }
-        public virtual HttpClient?            ApiGeneralHttpClient  { get => field; protected set => field = value; }
-        public virtual HttpClient?            ApiResourceHttpClient { get => field; protected set => field = value; }
+        public virtual HttpClient             ApiGeneralHttpClient  { get; protected set; }
+        public virtual HttpClient             ApiResourceHttpClient { get; protected set; }
 
         public void Dispose()
         {
-            ApiGeneralHttpClient?.Dispose();
-            ApiResourceHttpClient?.Dispose();
+            ApiGeneralHttpClient.Dispose();
+            ApiResourceHttpClient.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         ~LauncherApiBase()
@@ -62,7 +66,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion)
             : this(presetConfig, gameName, gameRegion, false) { }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         protected LauncherApiBase(PresetConfig presetConfig, string gameName, string gameRegion, bool isIgnoreBaseHttpClientInit)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         {
             PresetConfig = presetConfig;
             GameName     = gameName;
@@ -70,14 +76,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             EnsurePresetConfigNotNull();
 
-            if (!isIgnoreBaseHttpClientInit)
+            if (isIgnoreBaseHttpClientInit)
             {
-                InitializeHttpClients(presetConfig);
+                return;
             }
-        }
 
-        private void InitializeHttpClients(PresetConfig presetConfig)
-        {
             // Create generic HttpClientBuilder
             HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
                                                                          .UseLauncherConfig()
@@ -109,7 +112,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             // Create HttpClient instances for both General and Resource APIs.
             ApiGeneralHttpClient  = apiGeneralHttpBuilder.Create();
             ApiResourceHttpClient = apiResourceHttpBuilder.Create();
-
         }
 
         public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,
@@ -156,7 +158,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
             ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
                 async innerToken =>
-                    await ApiGeneralHttpClient!.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, InternalAppJSONContext.Default.RegionResourceProp, innerToken);
+                    await ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
 
             Task[] tasks = [
                 launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
@@ -170,7 +172,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                     async innerToken =>
-                        await ApiGeneralHttpClient!.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), InternalAppJSONContext.Default.RegionResourceProp, innerToken);
+                        await ApiGeneralHttpClient.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
 
                 tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine, token)
@@ -292,21 +294,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             
             // WORKAROUND: Certain language is not supported by the API and will return null/empty response.
             // Use other locale to prevent crashes/empty background image
-            switch (localeLang)
-            {
-                case "es-419":
-                    localeLang = "es-es";
-                    break;
-                case "pt-br":
-                    localeLang = "pt-pt";
-                    break;
-                // case "pl-pl":
-                //     localeLang = "en-us";
-                //     break;
-                // case "uk-ua":
-                //     localeLang = "en-us";
-                //     break;
-            }
+            localeLang = localeLang switch
+                         {
+                             "es-419" => "es-es",
+                             "pt-br" => "pt-pt",
+                             _ => localeLang
+                         };
 
             LauncherGameNews? regionResourceProp =
                 await LoadLauncherNewsInner(isMultilingual, localeLang, PresetConfig, onTimeoutRoutine, token);
@@ -357,13 +350,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         private async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
             string launcherSpriteUrl, CancellationToken token)
         {
-            return await ApiResourceHttpClient!.GetFromJsonAsync(launcherSpriteUrl, InternalAppJSONContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl, LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
         }
 
         private async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
                                                                                CancellationToken token)
         {
-            return await ApiResourceHttpClient!.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), InternalAppJSONContext.Default.LauncherGameNews, token);
+            return await ApiResourceHttpClient.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)

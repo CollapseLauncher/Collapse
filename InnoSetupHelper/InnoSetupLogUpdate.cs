@@ -24,8 +24,7 @@ namespace InnoSetupHelper
     {
         public static event EventHandler<InnoSetupLogStruct>? LoggerEvent;
 
-        private static readonly string[] excludeDeleteFile = new string[]
-        {
+        private static readonly string[] ExcludeDeleteFile = [
             // Generic Files
 #if DEBUG
             "ApplyUpdate.",
@@ -46,7 +45,7 @@ namespace InnoSetupHelper
             // Hi3Helper.Http DLLs
             , "Hi3Helper.Http"
 #endif
-        };
+        ];
 
         public static void UpdateInnoSetupLog(string path)
         {
@@ -79,7 +78,7 @@ namespace InnoSetupHelper
         private static string GetPathWithoutDriveLetter(string path)
         {
             int firstIndexOf = path.IndexOf('\\');
-            return firstIndexOf > -1 ? path.Substring(firstIndexOf + 1) : path;
+            return firstIndexOf > -1 ? path[(firstIndexOf + 1)..] : path;
         }
 
         private static void RegisterDirOrFilesRecord(InnoUninstallLog innoLog, string pathToRegister)
@@ -93,7 +92,7 @@ namespace InnoSetupHelper
             {
                 foreach (FileInfo fileInfo in currentDirectory.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
                 {
-                    if (excludeDeleteFile.Any(x => x.IndexOf(fileInfo.FullName, StringComparison.OrdinalIgnoreCase) > -1)) continue;
+                    if (ExcludeDeleteFile.Any(x => x.IndexOf(fileInfo.FullName, StringComparison.OrdinalIgnoreCase) > -1)) continue;
                     fileInfo.IsReadOnly = false;
                     LogWriteLine($"[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] " +
                                  $"Registering Inno Setup record: (DeleteFileRecord){fileInfo.FullName}", InnoSetupLogType.Default, true);

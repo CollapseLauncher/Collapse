@@ -3,7 +3,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+// ReSharper disable once IdentifierTypo
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
+// ReSharper disable StringLiteralTypo
 
 namespace Hi3Helper.TaskScheduler
 {
@@ -18,18 +20,25 @@ namespace Hi3Helper.TaskScheduler
 
     public class Program
     {
-        static int PrintUsage()
+        private static int PrintUsage()
         {
-            string executableName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
+            var processModule = Process.GetCurrentProcess().MainModule;
+            if (processModule == null)
+            {
+                return int.MaxValue;
+            }
+
+            string executableName = Path.GetFileNameWithoutExtension(processModule.FileName);
             Console.WriteLine($"Usage:\r\n{executableName} [IsEnabled] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [Enable] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [EnableToTray] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [Disable] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [DisableToTray] \"Scheduler name\" \"Executable path\"");
+
             return int.MaxValue;
         }
 
-        static int Main(string[] args)
+        internal static int Main(string[] args)
         {
             try
             {
@@ -37,6 +46,7 @@ namespace Hi3Helper.TaskScheduler
                     return PrintUsage().ReturnValAsConsole();
 
                 string action = args[0].ToLower();
+                // ReSharper disable once IdentifierTypo
                 string schedName = args[1];
                 string execPath = args[2];
 
@@ -129,7 +139,7 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // Get actionPath
-            string? actionPath = task.Definition.Actions?.FirstOrDefault()?.ToString();
+            string? actionPath = task.Definition.Actions.FirstOrDefault()?.ToString();
 
             // If actionPath is null, then return null as empty
             if (string.IsNullOrEmpty(actionPath))
@@ -138,16 +148,18 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // if actionPath isn't matched, then replace with current executable path
-            if (!actionPath?.StartsWith(execPath, StringComparison.OrdinalIgnoreCase) ?? false)
+            if (!(!actionPath?.StartsWith(execPath, StringComparison.OrdinalIgnoreCase) ?? false))
             {
-                // Check if the last action path runs on tray
-                bool isLastHasTray = actionPath?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
-
-                // Register changes
-                task.Definition.Actions?.Clear();
-                task.Definition.Actions?.Add(new ExecAction(execPath, isLastHasTray ? "tray" : null));
-                task.RegisterChanges();
+                return task;
             }
+
+            // Check if the last action path runs on tray
+            bool isLastHasTray = actionPath.EndsWith("tray", StringComparison.OrdinalIgnoreCase);
+
+            // Register changes
+            task.Definition.Actions.Clear();
+            task.Definition.Actions.Add(new ExecAction(execPath, isLastHasTray ? "tray" : null));
+            task.RegisterChanges();
 
             // If the task matches, then return the task
             return task;
@@ -164,10 +176,10 @@ namespace Hi3Helper.TaskScheduler
                 if (task != null)
                 {
                     // Check if it's enabled with tray
-                    bool isOnTray = task.Definition?.Actions?.FirstOrDefault()?.ToString()?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
+                    bool isOnTray = task.Definition.Actions.FirstOrDefault()?.ToString().EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
 
                     // If the task definition is enabled, then return 1 (true) or 2 (true with tray)
-                    if (task.Definition?.Settings.Enabled ?? false)
+                    if (task.Definition.Settings.Enabled)
                         return isOnTray ? 2 : 1;
 
                     // Otherwise, if the task exist but not enabled, then return 0 (false) or -1 (false with tray)

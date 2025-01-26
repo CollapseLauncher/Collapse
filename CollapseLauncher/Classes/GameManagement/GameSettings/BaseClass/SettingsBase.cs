@@ -18,7 +18,7 @@ namespace CollapseLauncher.GameSettings.Base
 
         internal static string? RegistryPath
         {
-            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset?.InternalGameNameInConfig) ? null :
+            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
                 Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
         }
 
@@ -39,7 +39,7 @@ namespace CollapseLauncher.GameSettings.Base
             }
         }
 
-        protected SettingsBase(IGameVersionCheck gameVersionManager) => GameVersionManager = gameVersionManager;
+        protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;
 
         public virtual void InitializeSettings()
         {
@@ -49,7 +49,7 @@ namespace CollapseLauncher.GameSettings.Base
         }
 
 #nullable disable
-        public static IGameVersionCheck GameVersionManager { get; set; }
+        public static IGameVersion GameVersionManager { get; set; }
 
         public virtual void ReloadSettings() => InitializeSettings();
 

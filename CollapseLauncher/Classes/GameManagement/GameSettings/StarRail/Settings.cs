@@ -14,7 +14,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         public LocalAudioLanguage AudioLanguage { get; set; }
         public LocalTextLanguage TextLanguage { get; set; }
 
-        public StarRailSettings(IGameVersionCheck GameVersionManager)
+        public StarRailSettings(IGameVersion GameVersionManager)
             : base(GameVersionManager)
         {
             // Initialize and Load Settings

@@ -9,7 +9,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public VisibleBackground     SettingVisibleBackground { get; set; }
         public WindowsHDR            SettingsWindowsHDR       { get; set; }
 
-        public GenshinSettings(IGameVersionCheck GameVersionManager)
+        public GenshinSettings(IGameVersion GameVersionManager)
             : base(GameVersionManager)
         {
             // Initialize and Load Settings

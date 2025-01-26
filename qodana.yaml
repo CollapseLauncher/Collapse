@@ -1,6 +1,6 @@
 version: "1.0"
 ide: QDNET
-bootstrap: dotnet build CollapseLauncher -c Release
+bootstrap: git submodule sync --recursive && git -c protocol.version=2 submodule update --init --force --recursive && dotnet build CollapseLauncher -c Release
 dotnet:
   solution: CollapseLauncher.sln
 exclude:

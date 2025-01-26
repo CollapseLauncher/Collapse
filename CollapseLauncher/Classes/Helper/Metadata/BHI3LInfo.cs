@@ -1,11 +1,19 @@
-﻿namespace CollapseLauncher.Helper.Metadata
+﻿using System.Text.Json.Serialization;
+// ReSharper disable InconsistentNaming
+// ReSharper disable PartialTypeWithSinglePart
+
+namespace CollapseLauncher.Helper.Metadata
 {
-    internal class BHI3LInfo
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(BHI3LInfo))]
+    internal sealed partial class BHI3LInfoJsonContext : JsonSerializerContext;
+
+    internal sealed class BHI3LInfo
     {
         public BHI3LInfo_GameInfo game_info { get; set; }
     }
 
-    internal class BHI3LInfo_GameInfo
+    internal sealed class BHI3LInfo_GameInfo
     {
         public string version { get; set; }
         public string install_path { get; set; }
