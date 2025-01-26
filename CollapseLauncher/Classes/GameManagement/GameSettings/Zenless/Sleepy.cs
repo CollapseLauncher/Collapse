@@ -2,6 +2,7 @@
  * Initial Implementation Credit by: @Shatyuka
  */
 
+using CollapseLauncher.Helper.StreamUtility;
 using System;
 using System.Buffers;
 using System.IO;
@@ -81,8 +82,8 @@ internal static class Sleepy
     internal static string ReadString(string filePath, ReadOnlySpan<byte> magic)
     {
         // Get the FileInfo
-        FileInfo fileInfo = new FileInfo(filePath);
-        if (!fileInfo.Exists)
+        FileInfo fileInfo = new FileInfo(filePath).EnsureNoReadOnly(out bool isExist);
+        if (!isExist)
             throw new FileNotFoundException("[Sleepy::ReadString] File does not exist!");
 
         // Open the stream and get the thing
@@ -106,8 +107,7 @@ internal static class Sleepy
         int magicLength = magic.Length;
 
         // Alloc temporary buffers
-        bool   isRent      = length <= 1 << 17; // Check if length <= 128 KiB
-        char[] bufferChars = isRent ? ArrayPool<char>.Shared.Rent(length) : new char[length];
+        char[] bufferChars = ArrayPool<char>.Shared.Rent(length);
 
         // Do the do
         CreateEvil(magic, out bool[] evil, out int evilsCount);
@@ -128,8 +128,7 @@ internal static class Sleepy
                 finally
                 {
                     // Return and clear the buffer, to only returns the return string.
-                    if (isRent) ArrayPool<char>.Shared.Return(bufferChars, true);
-                    else Array.Clear(bufferChars);
+                    ArrayPool<char>.Shared.Return(bufferChars, true);
                 }
             }
     }
@@ -168,13 +167,13 @@ internal static class Sleepy
     {
         // Ensure the folder always exist
         string? fileDir = Path.GetDirectoryName(filePath);
-        if (!string.IsNullOrEmpty(fileDir) && !Directory.Exists(fileDir))
+        if (!string.IsNullOrEmpty(fileDir))
         {
             Directory.CreateDirectory(fileDir);
         }
 
         // Get the FileInfo
-        FileInfo fileInfo = new FileInfo(filePath);
+        FileInfo fileInfo = new FileInfo(filePath).EnsureNoReadOnly();
 
         // Create the stream and write the thing
         using FileStream stream = fileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.Write);
@@ -198,11 +197,10 @@ internal static class Sleepy
         // Do the do
         int  contentLen = content.Length;
         int  bufferLen  = contentLen * 2;
-        bool isRent     = bufferLen <= 2 << 17;
 
         // Alloc temporary buffers
-        byte[] contentBytes = isRent ? ArrayPool<byte>.Shared.Rent(bufferLen) : new byte[bufferLen];
-        byte[] encodedBytes = isRent ? ArrayPool<byte>.Shared.Rent(bufferLen) : new byte[bufferLen];
+        byte[] contentBytes = ArrayPool<byte>.Shared.Rent(bufferLen);
+        byte[] encodedBytes = ArrayPool<byte>.Shared.Rent(bufferLen);
 
         // Do the do
         CreateEvil(magic, out bool[] evil, out int evilsCount);
@@ -227,11 +225,8 @@ internal static class Sleepy
                         finally
                         {
                             // Return and clear the buffer.
-                            if (isRent) ArrayPool<byte>.Shared.Return(contentBytes, true);
-                            else Array.Clear(contentBytes);
-
-                            if (isRent) ArrayPool<byte>.Shared.Return(encodedBytes, true);
-                            else Array.Clear(encodedBytes);
+                            ArrayPool<byte>.Shared.Return(contentBytes, true);
+                            ArrayPool<byte>.Shared.Return(encodedBytes, true);
                         }
                     }
     }
