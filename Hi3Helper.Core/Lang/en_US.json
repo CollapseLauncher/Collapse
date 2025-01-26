@@ -362,6 +362,8 @@
     "SpecVeryHigh": "Very High",
     "SpecMaximum": "Maximum",
     "SpecUltra": "Ultra",
+    "SpecDynamic": "Dynamic",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Audio Settings",
     "Audio_Master": "Master Volume",

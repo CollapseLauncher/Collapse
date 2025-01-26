@@ -50,10 +50,10 @@ namespace CollapseLauncher.Pages
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
                     ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.High;
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.High;
+                    HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Dynamic;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
-                    HPCAToggle.IsChecked                     = true;
                     break;
                 case GraphicsPresetOption.Medium:
                     VSyncToggle.IsChecked                    = true;
@@ -67,10 +67,10 @@ namespace CollapseLauncher.Pages
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
                     ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Medium;
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Medium;
+                    HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Off;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
-                    HPCAToggle.IsChecked                     = false;
                     break;
                 case GraphicsPresetOption.Low:
                     VSyncToggle.IsChecked                    = true;
@@ -84,10 +84,10 @@ namespace CollapseLauncher.Pages
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
                     ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Low;
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Low;
+                    HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Off;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
-                    HPCAToggle.IsChecked                     = false;
                     break;
             }
 
@@ -576,10 +576,10 @@ namespace CollapseLauncher.Pages
         }
 
         /// <inheritdoc cref="GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
-        public bool Graphics_HiPreCharaAnim
+        public int Graphics_HiPreCharaAnim
         {
-            get => Settings.GeneralData.HiPrecisionCharaAnim;
-            set => Settings.GeneralData.HiPrecisionCharaAnim = value;
+            get => (int)Settings.GeneralData.HiPrecisionCharaAnim;
+            set => Settings.GeneralData.HiPrecisionCharaAnim = (HiPrecisionCharaAnimOption)value;
         }
         #endregion
 

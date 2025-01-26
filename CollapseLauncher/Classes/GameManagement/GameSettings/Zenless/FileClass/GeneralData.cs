@@ -543,19 +543,20 @@ namespace CollapseLauncher.GameSettings.Zenless
         }
 
         // Key 13162 High-Precision Character Animation
-        private SystemSettingLocalData<int>? _hpcaData;
+        private SystemSettingLocalData<HiPrecisionCharaAnimOption>? _hpcaData;
 
         /// <summary>
         ///     Sets in-game settings for High-Precision Character Animation. <br />
         ///     Whatever that is ¯\_(ツ)_/¯
         /// </summary>
+        /// <see cref="HiPrecisionCharaAnimOption" />
         [JsonIgnore]
-        public bool HiPrecisionCharaAnim
+        public HiPrecisionCharaAnimOption HiPrecisionCharaAnim
         {
             get => (_hpcaData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("13162", 0))
-            .GetData() == 1;
-            set => _hpcaData?.SetData(value ? 1 : 0);
+            .AsSystemSettingLocalData("13162", HiPrecisionCharaAnimOption.Off))
+            .GetDataEnum<HiPrecisionCharaAnimOption>();
+            set => _hpcaData?.SetDataEnum(value);
         }
 
         #endregion
