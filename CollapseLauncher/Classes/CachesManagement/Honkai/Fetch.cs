@@ -339,14 +339,10 @@ namespace CollapseLauncher
         private static bool IsValidRegionFile(string input, string lang)
         {
             // If the path contains regional string, then move to the next check
-            if (input!.Contains(CacheRegionalCheckName!))
-            {
-                // Check if the regional string has specified language string
-                return input.Contains($"{CacheRegionalCheckName}_{lang}");
-            }
-
+            return !input.Contains(CacheRegionalCheckName!) ||
+                   // Check if the regional string has specified language string
+                   input.Contains($"{CacheRegionalCheckName}_{lang}");
             // If none, then pass it as true (non-regional string)
-            return true;
         }
 
         public KianaDispatch GetCurrentGateway() => GameGateway;

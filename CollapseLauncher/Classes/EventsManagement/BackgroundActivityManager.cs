@@ -41,14 +41,15 @@ namespace CollapseLauncher
             if (BackgroundActivities.Remove(hashID))
             {
                 DetachEventFromNotification(hashID);
-#if DEBUG
+            #if DEBUG
                 Logger.LogWriteLine($"Background activity with ID: {hashID} has been detached", LogType.Debug, true);
-#endif
+                return;
+            #endif
             }
 
-#if DEBUG
+        #if DEBUG
             Logger.LogWriteLine($"Cannot detach background activity with ID: {hashID} because it doesn't attached", LogType.Debug, true);
-#endif
+        #endif
         }
 
         private static void AttachEventToNotification(int hashID, IBackgroundActivity activity, string activityTitle, string activitySubtitle)
