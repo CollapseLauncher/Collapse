@@ -41,12 +41,14 @@ namespace CollapseLauncher.Interfaces
         protected const int BufferBigLength = 2 << 20; // 2 MiB
         protected const int SizeForMultiDownload = 10 << 20;
         protected const int DownloadThreadCountReserved = 16;
+        protected const double DownloadThreadCountReservedMultiplication = 1.5d;
         protected virtual string UserAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
 
         protected bool IsVersionOverride { get; init; }
         protected bool IsBurstDownloadEnabled { get => IsBurstDownloadModeEnabled; }
-        protected byte DownloadThreadCount { get => (byte)AppCurrentDownloadThread; }
-        protected byte ThreadCount { get => (byte)AppCurrentThread; }
+        protected int DownloadThreadCount { get => AppCurrentDownloadThread; }
+        protected int DownloadThreadWithReservedCount { get => (int)Math.Round(DownloadThreadCount * DownloadThreadCountReservedMultiplication); }
+        protected int ThreadCount { get => (byte)AppCurrentThread; }
         protected int DownloadThreadCountSqrt { get => (int)Math.Max(Math.Sqrt(DownloadThreadCount), 4); }
         protected CancellationTokenSourceWrapper Token { get; set; }
         protected GameVersion GameVersion
