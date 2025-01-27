@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 // ReSharper disable once IdentifierTypo
 // ReSharper disable StringLiteralTypo
 
@@ -101,7 +102,7 @@ namespace Hi3Helper.TaskScheduler
         private static void TryDelete(TaskService taskService, string scheduleName)
         {
             // Try to get the tasks
-            TaskSched[] tasks = taskService.FindAllTasks(new System.Text.RegularExpressions.Regex(scheduleName), false);
+            TaskSched[] tasks = taskService.FindAllTasks(new Regex(scheduleName, RegexOptions.Compiled, TimeSpan.FromSeconds(5)), false);
 
             // If null, then ignore
             if (tasks == null || tasks.Length == 0)
@@ -124,7 +125,7 @@ namespace Hi3Helper.TaskScheduler
         private static TaskSched? GetExistingTask(TaskService taskService, string scheduleName, string execPath)
         {
             // Try to get the tasks
-            TaskSched[] tasks = taskService.FindAllTasks(new System.Text.RegularExpressions.Regex(scheduleName), false);
+            TaskSched[] tasks = taskService.FindAllTasks(new Regex(scheduleName, RegexOptions.Compiled, TimeSpan.FromSeconds(5)), false);
 
             // Try to get the first task
             TaskSched? task = tasks?

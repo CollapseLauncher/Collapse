@@ -9,16 +9,21 @@ using Markdig.Syntax;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-#pragma warning disable SYSLIB1045
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
-internal class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlock>
+internal partial class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlock>
 {
+    [GeneratedRegex(@"\t|\n|\r", RegexOptions.NonBacktracking, 3000)]
+    internal static partial Regex GetTabAndNewLineMatch();
+
+    [GeneratedRegex("&nbsp;", RegexOptions.NonBacktracking, 3000)]
+    internal static partial Regex GetNonBreakingSpaceMatch();
+
     protected override void Write(WinUIRenderer renderer, HtmlBlock obj)
     {
-        if (renderer == null) throw new ArgumentNullException(nameof(renderer));
-        if (obj == null) throw new ArgumentNullException(nameof(obj));
+        ArgumentNullException.ThrowIfNull(renderer);
+        ArgumentNullException.ThrowIfNull(obj);
 
         StringBuilder stringBuilder = new();
         foreach (StringLine line in obj.Lines.Lines)
@@ -31,8 +36,8 @@ internal class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlo
             stringBuilder.AppendLine(lineText);
         }
 
-        string html = Regex.Replace(stringBuilder.ToString(), @"\t|\n|\r", "", RegexOptions.Compiled);
-        html = Regex.Replace(html, "&nbsp;", " ", RegexOptions.Compiled);
+        string html = GetTabAndNewLineMatch().Replace(stringBuilder.ToString(), "");
+        html = GetNonBreakingSpaceMatch().Replace(html, " ");
         HtmlDocument doc = new();
         doc.LoadHtml(html);
         HtmlWriter.WriteHtml(renderer, doc.DocumentNode.ChildNodes);

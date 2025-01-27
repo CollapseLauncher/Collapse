@@ -22,7 +22,7 @@ using Windows.UI.ViewManagement;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
-public static class Extensions
+public static partial class Extensions
 {
     public const string Blue = "#FF0000FF";
     public const string White = "#FFFFFFFF";
@@ -387,6 +387,9 @@ public static class Extensions
         return !currentRect.Equals(nextRect);
     }
 
+    [GeneratedRegex(@"([^)\s]+)\s*=\s*\d+x\d+\s*", RegexOptions.NonBacktracking, 3000)]
+    internal static partial Regex GetUrlWidthAndHeight();
+
     public static string RemoveImageSize(string? url)
     {
         if (string.IsNullOrEmpty(url))
@@ -395,10 +398,8 @@ public static class Extensions
         }
 
         // Create a regex pattern to match the URL with width and height
-        string pattern = @"([^)\s]+)\s*=\s*\d+x\d+\s*";
-
         // Replace the matched URL with the URL only
-        string result = Regex.Replace(url, pattern, "$1", RegexOptions.Compiled);
+        string result = GetUrlWidthAndHeight().Replace(url, "$1");
 
         return result;
     }
