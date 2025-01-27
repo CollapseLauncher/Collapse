@@ -362,6 +362,8 @@
     "SpecVeryHigh": "最高",
     "SpecMaximum": "極めて高い",
     "SpecUltra": "最高",
+    "SpecDynamic": "ダイナミック",
+    "SpecGlobal": "グローバル",
 
     "Audio_Title": "音量設定",
     "Audio_Master": "メイン音量",
