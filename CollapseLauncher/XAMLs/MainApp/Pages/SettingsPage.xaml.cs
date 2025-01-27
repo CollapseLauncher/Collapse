@@ -371,9 +371,9 @@ namespace CollapseLauncher.Pages
             
             if (WindowUtility.CurrentWindow is MainWindow mainWindow)
             {
-                mainWindow.overlayFrame.BackStack?.Clear();
-                mainWindow.overlayFrame.Navigate(typeof(NullPage));
-                mainWindow.overlayFrame.Navigate(typeof(MarkdownFramePage), mdParam,
+                mainWindow.OverlayFrame.BackStack?.Clear();
+                mainWindow.OverlayFrame.Navigate(typeof(NullPage));
+                mainWindow.OverlayFrame.Navigate(typeof(MarkdownFramePage), mdParam,
                                                  new DrillInNavigationTransitionInfo());
             }
 
@@ -385,8 +385,8 @@ namespace CollapseLauncher.Pages
                 if (WindowUtility.CurrentWindow is not MainWindow mainWindow)
                     return;
 
-                mainWindow.overlayFrame.GoBack();
-                mainWindow.overlayFrame.BackStack?.Clear();
+                mainWindow.OverlayFrame.GoBack();
+                mainWindow.OverlayFrame.BackStack?.Clear();
             }
             #nullable restore
         }

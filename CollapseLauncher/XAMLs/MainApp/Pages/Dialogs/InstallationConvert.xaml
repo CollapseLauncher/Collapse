@@ -44,7 +44,8 @@
                     <CompositeTransform Rotation="180" />
                 </Slider.RenderTransform>
             </Slider>
-            <Rectangle Grid.RowSpan="5"
+            <Rectangle Grid.Row="0"
+                       Grid.RowSpan="5"
                        Grid.Column="0"
                        Grid.ColumnSpan="2"
                        Fill="Transparent" />
@@ -62,8 +63,7 @@
                               IsIndeterminate="True"
                               Value="100" />
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step1ProgressTitle"
-                               VerticalAlignment="Center"
+                    <TextBlock VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._InstallConvert.Step1Title}" />
                     <TextBlock x:Name="Step1ProgressStatus"
@@ -86,8 +86,7 @@
                               IsIndeterminate="false"
                               Value="100" />
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step2ProgressTitle"
-                               VerticalAlignment="Center"
+                    <TextBlock VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._InstallConvert.Step2Title}" />
                     <TextBlock x:Name="Step2ProgressStatus"
@@ -134,8 +133,7 @@
                               IsIndeterminate="false"
                               Value="100" />
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step4ProgressTitle"
-                               VerticalAlignment="Center"
+                    <TextBlock VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._InstallConvert.Step4Title}" />
                     <TextBlock x:Name="Step4ProgressStatus"
@@ -158,8 +156,7 @@
                               IsIndeterminate="false"
                               Value="100" />
                 <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="Step5ProgressTitle"
-                               VerticalAlignment="Center"
+                    <TextBlock VerticalAlignment="Center"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._InstallConvert.Step5Title}" />
                     <TextBlock x:Name="Step5ProgressStatus"
@@ -186,8 +183,7 @@
                                Text="{x:Bind helper:Locale.Lang._InstallConvert.CancelBtn}" />
                 </StackPanel>
             </Button>
-            <TextBlock x:Name="MigrationSubtextStatus"
-                       HorizontalAlignment="Right"
+            <TextBlock HorizontalAlignment="Right"
                        VerticalAlignment="Bottom"
                        Style="{ThemeResource BodyTextBlockStyle}">
                 <Span>

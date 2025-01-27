@@ -5,7 +5,6 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:helper="using:Hi3Helper"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:p="using:CollapseLauncher.Helper.Metadata"
       xmlns:uielementex="using:CollapseLauncher.Extension"
       Background="Transparent"
       mc:Ignorable="d">
@@ -25,6 +24,7 @@
                            FontSize="72"
                            FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Header2}" />
+                <!--  ReSharper disable once UnusedMember.Local  -->
                 <Button x:Name="ShowErrorBtn"
                         Margin="0,16,0,0"
                         Padding="8,8"
@@ -61,6 +61,7 @@
                         </Grid>
                     </Grid>
                 </Button>
+                <!--  ReSharper disable once UnusedMember.Local  -->
                 <Button x:Name="GoToAppSettingsBtn"
                         Margin="0,8,0,0"
                         Padding="8,8"
@@ -103,6 +104,7 @@
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerTitle}" />
                 <TextBlock Margin="0,0,0,16"
                            Text="{x:Bind helper:Locale.Lang._DisconnectedPage.RegionChangerSubtitle}" />
+                <!--  ReSharper disable once UnusedMember.Local  -->
                 <Grid x:Name="ComboBoxGameGrid"
                       CornerRadius="{x:Bind uielementex:UIElementExtensions.AttachRoundedKindCornerRadius(ComboBoxGameGrid)}">
                     <Grid.ColumnDefinitions>
@@ -111,7 +113,6 @@
                     </Grid.ColumnDefinitions>
                     <ComboBox x:Name="ComboBoxGameCategory"
                               HorizontalAlignment="Stretch"
-                              HorizontalContentAlignment="Stretch"
                               Canvas.ZIndex="2"
                               CornerRadius="15,0,0,15"
                               PlaceholderText="{x:Bind helper:Locale.Lang._GameClientTitles['Honkai Impact 3rd']}"
@@ -120,7 +121,6 @@
                     <ComboBox x:Name="ComboBoxGameRegion"
                               Grid.Column="1"
                               HorizontalAlignment="Stretch"
-                              HorizontalContentAlignment="Stretch"
                               Canvas.ZIndex="2"
                               CornerRadius="0,15,15,0"
                               PlaceholderText="{x:Bind helper:Locale.Lang._GameClientRegions['Southeast Asia']}"
@@ -128,7 +128,8 @@
                               Style="{ThemeResource DefaultComboBoxStyle}" />
                 </Grid>
             </StackPanel>
-            <TextBlock VerticalAlignment="Bottom"
+            <TextBlock Grid.Column="0"
+                       VerticalAlignment="Bottom"
                        FontSize="16"
                        Opacity="0.75">
                 <Run Text="{x:Bind helper:Locale.Lang._DisconnectedPage.Footer1}" />

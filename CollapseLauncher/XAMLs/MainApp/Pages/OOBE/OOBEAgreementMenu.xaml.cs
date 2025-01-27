@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -35,7 +36,7 @@ namespace CollapseLauncher.Pages.OOBE
 
     public sealed partial class OOBEAgreementMenu
     {
-        internal readonly List<AgreementProperty> MarkdownFileList =
+        internal List<AgreementProperty> MarkdownFileList { get; } =
         [
             new("Privacy Policy (EN)",      "PRIVACY.md"),
             new("Third Party Notices (EN)", "THIRD_PARTY_NOTICES.md")

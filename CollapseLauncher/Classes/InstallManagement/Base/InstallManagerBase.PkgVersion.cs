@@ -117,9 +117,9 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 if (WindowUtility.CurrentWindow is MainWindow mainWindow)
                 {
-                    mainWindow.overlayFrame.BackStack?.Clear();
-                    mainWindow.overlayFrame.Navigate(typeof(NullPage));
-                    mainWindow.overlayFrame.Navigate(typeof(FileCleanupPage), null,
+                    mainWindow.OverlayFrame.BackStack?.Clear();
+                    mainWindow.OverlayFrame.Navigate(typeof(NullPage));
+                    mainWindow.OverlayFrame.Navigate(typeof(FileCleanupPage), null,
                                                      new DrillInNavigationTransitionInfo());
                 }
                 
@@ -153,8 +153,8 @@ namespace CollapseLauncher.InstallManager.Base
                 if (WindowUtility.CurrentWindow is not MainWindow mainWindow)
                     return;
 
-                mainWindow.overlayFrame.GoBack();
-                mainWindow.overlayFrame.BackStack?.Clear();
+                mainWindow.OverlayFrame.GoBack();
+                mainWindow.OverlayFrame.BackStack?.Clear();
             }
         }
 

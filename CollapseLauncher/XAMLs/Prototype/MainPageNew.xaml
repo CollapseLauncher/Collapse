@@ -95,7 +95,6 @@
                     Grid.Column="0"
                     Height="33"
                     Margin="58,8,0,0"
-                    HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Style="{ThemeResource TransparentDefaultButtonStyle}">
                 <!--<Button.Transitions>
@@ -141,8 +140,6 @@
                                    Visibility="Visible" />
                     </StackPanel>
                     <StackPanel x:Name="PreviewBuildIndicator"
-                                Grid.Column="4"
-                                Grid.ColumnSpan="2"
                                 Margin="-16,-12,0,0"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"

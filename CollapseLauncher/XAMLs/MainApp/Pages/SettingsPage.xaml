@@ -1,4 +1,4 @@
-<!--  ReSharper disable IdentifierTypo  -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
 <Page x:Class="CollapseLauncher.Pages.SettingsPage"
@@ -1207,9 +1207,6 @@
                                     HorizontalAlignment="Left"
                                     Spacing="8">
                             <Grid x:Name="DatabaseConnectivityTestTextChecking"
-                                  Grid.Row="2"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
                                   Padding="12,8"
                                   HorizontalAlignment="Stretch"
                                   Background="{ThemeResource AccentAcrylicInAppFillColorBaseBrush}"
@@ -1232,9 +1229,6 @@
                                               IsIndeterminate="true" />
                             </Grid>
                             <Grid x:Name="DatabaseConnectivityTestTextSuccess"
-                                  Grid.Row="2"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
                                   Padding="12,8"
                                   HorizontalAlignment="Stretch"
                                   Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
@@ -1259,9 +1253,6 @@
                                           Glyph="" />
                             </Grid>
                             <Grid x:Name="DatabaseConnectivityTestTextFailed"
-                                  Grid.Row="2"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
                                   Padding="12,8"
                                   HorizontalAlignment="Stretch"
                                   Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
@@ -1281,7 +1272,8 @@
                                            FontWeight="Medium"
                                            HorizontalTextAlignment="Left"
                                            Text="{x:Bind helper:Locale.Lang._SettingsPage.Database_ConnectFail}" />
-                                <FontIcon Grid.Column="1"
+                                <FontIcon Grid.Row="0"
+                                          Grid.Column="1"
                                           HorizontalAlignment="Right"
                                           VerticalAlignment="Center"
                                           FontFamily="{ThemeResource FontAwesomeSolid}"
@@ -1289,6 +1281,7 @@
                                           Foreground="{ThemeResource SystemFillColorCritical}"
                                           Glyph="" />
                                 <TextBox Grid.Row="1"
+                                         Grid.Column="0"
                                          Grid.ColumnSpan="2"
                                          MaxHeight="300"
                                          Margin="0,8,0,4"
@@ -1300,9 +1293,6 @@
                                          ScrollViewer.VerticalScrollBarVisibility="Auto" />
                             </Grid>
                             <Grid x:Name="DatabaseWarningBox"
-                                  Grid.Row="2"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
                                   Padding="12,8"
                                   HorizontalAlignment="Stretch"
                                   Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
@@ -1452,8 +1442,8 @@
                     </Hyperlink>
                     <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.About_Copyright4}" />
                 </TextBlock>
-                <TextBlock IsTextSelectionEnabled="True"
-                           HorizontalAlignment="Left"
+                <TextBlock HorizontalAlignment="Left"
+                           IsTextSelectionEnabled="True"
                            Style="{ThemeResource BodyTextBlockStyle}"
                            TextWrapping="Wrap">
                     <Hyperlink x:Name="GitVersionIndicatorHyperlink"

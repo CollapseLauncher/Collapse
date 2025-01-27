@@ -17,11 +17,11 @@ namespace CollapseLauncher.Pages
             Title.Text = ErrorSender.ExceptionTitle;
             Subtitle.Text = ErrorSender.ExceptionSubtitle;
 
-            if (ErrorSender.ExceptionType == ErrorType.Connection && WindowUtility.CurrentWindow is MainWindow mainWindow && mainWindow.rootFrame.CanGoBack)
+            if (ErrorSender.ExceptionType == ErrorType.Connection && WindowUtility.CurrentWindow is MainWindow mainWindow && mainWindow.RootFrame.CanGoBack)
                 BackToPreviousPage.Visibility = Visibility.Visible;
         }
 
-        private void GoBackPreviousPage(object sender, RoutedEventArgs e) => (WindowUtility.CurrentWindow as MainWindow)?.rootFrame.GoBack();
+        private void GoBackPreviousPage(object sender, RoutedEventArgs e) => (WindowUtility.CurrentWindow as MainWindow)?.RootFrame.GoBack();
 
         private void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {

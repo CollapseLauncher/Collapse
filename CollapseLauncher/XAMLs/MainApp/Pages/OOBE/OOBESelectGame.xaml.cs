@@ -48,7 +48,7 @@ namespace CollapseLauncher.Pages.OOBE
                                                          false);
             SaveAppConfig();
 
-            (WindowUtility.CurrentWindow as MainWindow)?.rootFrame.Navigate(typeof(MainPage), null,
+            (WindowUtility.CurrentWindow as MainWindow)?.RootFrame.Navigate(typeof(MainPage), null,
                                                          new SlideNavigationTransitionInfo
                                                              { Effect = SlideNavigationTransitionEffect.FromBottom });
 

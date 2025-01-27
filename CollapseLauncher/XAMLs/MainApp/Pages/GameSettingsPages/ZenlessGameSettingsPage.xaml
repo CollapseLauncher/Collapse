@@ -91,7 +91,6 @@
                                                         Width="24"
                                                         Height="24"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -112,7 +111,7 @@
                                             </Grid>
                                             <!--
                                                 Exclusive Fullscreen option is disabled in Zenless due to it being ignored by the game
-                                                Delete `Visibility="Collapsed"' to revert this change
+                                                Delete `Visibility="Collapsed"` to revert this change
                                             -->
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
@@ -142,7 +141,6 @@
                                                         Width="24"
                                                         Height="24"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -393,7 +391,8 @@
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Effects, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecVeryLow}" /> <!-- Borrow Locale from Genshin Settings for now -->
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecVeryLow}" /> 
+                                        <!--  Borrow Locale from Genshin Settings for now  -->
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
@@ -563,14 +562,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioMasterVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolMain, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioMasterVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolMain, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -578,14 +575,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioSFXVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolSfx, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioSFXVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolSfx, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -600,14 +595,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioBGMVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolMusic, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioBGMVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolMusic, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -615,15 +608,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioVOVolumeSlider"
-                                                    Grid.Column="1"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolDialog, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioVOVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolDialog, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

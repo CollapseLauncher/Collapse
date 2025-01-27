@@ -50,7 +50,7 @@ namespace CollapseLauncher
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
                     WindowUtility.CurrentWindowIsResizable = false;
                     WindowUtility.CurrentWindowIsMaximizable = false;
-                    rootFrame.Navigate(typeof(OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
+                    RootFrame.Navigate(typeof(OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
                 }
                 else
                     StartMainPage();
@@ -72,7 +72,7 @@ namespace CollapseLauncher
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             
             RunIntroSequence();
-            rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+            RootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
 
         private async void RunIntroSequence()
@@ -222,25 +222,25 @@ namespace CollapseLauncher
         {
             if (e.QuitFromUpdateMenu)
             {
-                overlayFrame.Navigate(typeof(NullPage), null, new EntranceNavigationTransitionInfo());
+                OverlayFrame.Navigate(typeof(NullPage), null, new EntranceNavigationTransitionInfo());
                 return;
             }
 
             if (e.IsUpdateAvailable)
             {
-                overlayFrame.Navigate(typeof(UpdatePage));
+                OverlayFrame.Navigate(typeof(UpdatePage));
             }
         }
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
-            rootFrame.Navigate(e.FrameTo, null, e.Transition);
+            RootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
         private void MainFrameChangerInvoker_WindowFrameGoBackEvent(object sender, EventArgs e)
         {
-            if (rootFrame.CanGoBack)
-                rootFrame.GoBack();
+            if (RootFrame.CanGoBack)
+                RootFrame.GoBack();
         }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
