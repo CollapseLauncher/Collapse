@@ -1098,7 +1098,7 @@ namespace CollapseLauncher.Pages
                         int processId;
                         if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _))
                         {
-                            Process currentGameProcess = Process.GetProcessById(processId);
+                            using Process currentGameProcess = Process.GetProcessById(processId);
 
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
@@ -2877,7 +2877,7 @@ namespace CollapseLauncher.Pages
 
                 // Assign the priority to the process and write a log (just for displaying any info)
                 toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
-                GameBoostInvokeTryCount    = 0;
+                GameBoostInvokeTryCount = 0;
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
                              $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
             }
@@ -2895,6 +2895,10 @@ namespace CollapseLauncher.Pages
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
                              $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
                              LogType.Error, true);
+            }
+            finally
+            {
+                toTargetProc?.Dispose();
             }
 #nullable restore
         }
