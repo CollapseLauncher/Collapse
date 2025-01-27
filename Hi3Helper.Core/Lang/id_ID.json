@@ -363,7 +363,7 @@
     "SpecMaximum": "Maksimum",
     "SpecUltra": "Terbaik",
     "SpecDynamic": "Dinamis",
-    "SpecGlobal": "Menyeluruh",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Pengaturan Suara",
     "Audio_Master": "Volume Utama",
@@ -1543,7 +1543,7 @@
     "Graphics_EffectsQ": "Kualitas Efek",
     "Graphics_ShadingQ": "Kualitas Shading",
     "Graphics_Distortion": "Distorsi",
-    "Graphics_HighPrecisionCharacterAnimation": "Animasi Akurasi Tinggi Karakter",
+    "Graphics_HighPrecisionCharacterAnimation": "Animasi Akurasi Tinggi pada Karakter",
     "Audio_PlaybackDev": "Perangkat Pemutaran Suara",
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
