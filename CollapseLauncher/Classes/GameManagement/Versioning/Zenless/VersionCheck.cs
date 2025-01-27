@@ -1,7 +1,6 @@
 using CollapseLauncher.GameManagement.Versioning;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Microsoft.UI.Xaml;
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
@@ -115,8 +114,8 @@ namespace CollapseLauncher.GameVersioning
         }
         #endregion
 
-        public GameTypeZenlessVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, PresetConfig gamePreset, string gameName, string gameRegion)
-            : base(parentUIElement, gameRegionProp, gameName, gameRegion)
+        public GameTypeZenlessVersion(RegionResourceProp gameRegionProp, PresetConfig gamePreset, string gameName, string gameRegion)
+            : base(gameRegionProp, gameName, gameRegion)
         {
             // Try check for reinitializing game version.
             InitializeSleepy(gamePreset);

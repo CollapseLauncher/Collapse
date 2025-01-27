@@ -70,6 +70,7 @@ using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.Pages
 {
@@ -934,34 +935,40 @@ namespace CollapseLauncher.Pages
                 ConvertVersionButton.Visibility = Visibility.Collapsed;
 
             // Clear the _CommunityToolsProperty statics
-            PageStatics.CommunityToolsProperty.Clear();
+            PageStatics.CommunityToolsProperty?.Clear();
 
             // Check if the _CommunityToolsProperty has the official tool list for current game type
-            if (PageStatics.CommunityToolsProperty.OfficialToolsDictionary.TryGetValue(CurrentGameProperty.GameVersion.GameType, out List<CommunityToolsEntry> officialEntryList))
+            if (PageStatics.CommunityToolsProperty?
+               .OfficialToolsDictionary?
+               .TryGetValue(CurrentGameProperty.GameVersion.GameType,
+                            out List<CommunityToolsEntry> officialEntryList) ?? false)
             {
                 // If yes, then iterate it and add it to the list, to then getting read by the
                 // DataTemplate from HomePage
-                for (var index = officialEntryList.Count - 1; index >= 0; index--)
+                for (int index = officialEntryList.Count - 1; index >= 0; index--)
                 {
-                    var iconProperty = officialEntryList[index];
-                    if (iconProperty.Profiles.Contains(CurrentGameProperty.GamePreset.ProfileName))
+                    CommunityToolsEntry iconProperty = officialEntryList[index];
+                    if (iconProperty.Profiles?.Contains(CurrentGameProperty.GamePreset.ProfileName) ?? false)
                     {
-                        PageStatics.CommunityToolsProperty.OfficialToolsList.Add(iconProperty);
+                        PageStatics.CommunityToolsProperty.OfficialToolsList?.Add(iconProperty);
                     }
                 }
             }
 
             // Check if the _CommunityToolsProperty has the community tool list for current game type
-            if (PageStatics.CommunityToolsProperty.CommunityToolsDictionary.TryGetValue(CurrentGameProperty.GameVersion.GameType, out List<CommunityToolsEntry> communityEntryList))
+            if (PageStatics.CommunityToolsProperty?
+               .CommunityToolsDictionary?
+               .TryGetValue(CurrentGameProperty.GameVersion.GameType,
+                            out List<CommunityToolsEntry> communityEntryList) ?? false)
             {
                 // If yes, then iterate it and add it to the list, to then getting read by the
                 // DataTemplate from HomePage
-                for (var index = communityEntryList.Count - 1; index >= 0; index--)
+                for (int index = communityEntryList.Count - 1; index >= 0; index--)
                 {
-                    var iconProperty = communityEntryList[index];
-                    if (iconProperty.Profiles.Contains(CurrentGameProperty.GamePreset.ProfileName))
+                    CommunityToolsEntry iconProperty = communityEntryList[index];
+                    if (iconProperty.Profiles?.Contains(CurrentGameProperty.GamePreset.ProfileName) ?? false)
                     {
-                        PageStatics.CommunityToolsProperty.CommunityToolsList.Add(iconProperty);
+                        PageStatics.CommunityToolsProperty.CommunityToolsList?.Add(iconProperty);
                     }
                 }
             }

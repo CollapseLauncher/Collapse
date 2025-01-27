@@ -309,7 +309,10 @@ namespace CollapseLauncher
 
         private static void OnProcessExit(object sender, EventArgs e)
         {
-            App.IsAppKilled = true;
+            // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
+            //       to ensure no hot-exit being called before all background tasks
+            //       hasn't being cancelled.
+            // App.IsAppKilled = true;
         }
 
         private static void StartUpdaterHook(string aumid)

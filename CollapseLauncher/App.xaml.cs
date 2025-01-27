@@ -22,7 +22,10 @@ namespace CollapseLauncher
 {
     public partial class App
     {
-        public static bool IsAppKilled { get; set; } = false;
+        // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
+        //       to ensure no hot-exit being called before all background tasks
+        //       hasn't being cancelled.
+        // public static bool IsAppKilled { get; set; } = false;
 
         public App()
         {

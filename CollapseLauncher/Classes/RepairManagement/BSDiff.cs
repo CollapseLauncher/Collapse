@@ -12,6 +12,9 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Threading;
 // ReSharper disable CommentTypo
+// ReSharper disable CheckNamespace
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace CollapseLauncher
 {

@@ -125,7 +125,11 @@ namespace CollapseLauncher
         {
             InitializeComponent();
             Activate();
-            Closed += (_, _) => { App.IsAppKilled = true; };
+
+            // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
+            //       to ensure no hot-exit being called before all background tasks
+            //       hasn't being cancelled.
+            // Closed += (_, _) => { App.IsAppKilled = true; };
 
             // Initialize Window Handlers and register to Window Utility
             this.RegisterWindow();

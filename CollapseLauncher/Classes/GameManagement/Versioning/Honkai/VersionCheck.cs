@@ -1,16 +1,14 @@
 using CollapseLauncher.GameManagement.Versioning;
-using Microsoft.UI.Xaml;
 using System;
 // ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.GameVersioning
 {
     internal sealed class GameTypeHonkaiVersion(
-        UIElement          parentUIElement,
         RegionResourceProp gameRegionProp,
         string             gameName,
         string             gameRegion)
-        : GameVersionBase(parentUIElement, gameRegionProp, gameName, gameRegion)
+        : GameVersionBase(gameRegionProp, gameName, gameRegion)
     {
         #region Statics
         private static readonly Version senadinaVersion = new(7, 3, 0);

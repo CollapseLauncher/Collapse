@@ -207,13 +207,9 @@ namespace CollapseLauncher.Helper
             // If the key already exist, then override the previous one.
             // Otherwise, add the new key-value pair
             // ReSharper disable once RedundantDictionaryContainsKeyBeforeAdding
-            if (HttpHeaders.ContainsKey(key))
+            if (!HttpHeaders.TryAdd(key, value))
             {
                 HttpHeaders[key] = value;
-            }
-            else
-            {
-                HttpHeaders?.Add(key, value);
             }
 
             // Return the instance of the builder

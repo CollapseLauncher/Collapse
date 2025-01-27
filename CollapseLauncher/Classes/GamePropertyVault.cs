@@ -79,11 +79,11 @@ namespace CollapseLauncher.Statics
         public static async Task AttachNotificationForCurrentGame(int hashID = int.MinValue)
         {
             if (hashID < 0) hashID = CurrentGameHashID;
-            if (Vault.TryGetValue(hashID, out var gameProperty))
+            if (Vault.TryGetValue(hashID, out GamePresetProperty? gameProperty))
             {
                 if (gameProperty is { GameInstall.IsRunning: true })
                 {
-                    var bgNotification = Locale.Lang._BackgroundNotification;
+                    Locale.LocalizationParams.LangBackgroundNotification? bgNotification = Locale.Lang._BackgroundNotification;
                     string actTitle = string.Format(await gameProperty.GameVersion.GetGameState() switch
                                                     {
                                                         GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
@@ -108,7 +108,7 @@ namespace CollapseLauncher.Statics
     [SuppressMessage("ReSharper", "PartialTypeWithSinglePart")]
     internal partial class PageStatics
     {
-        internal static CommunityToolsProperty CommunityToolsProperty { get; set; } = new()
+        internal static CommunityToolsProperty? CommunityToolsProperty { get; set; } = new()
         {
             OfficialToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>(),
             CommunityToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>()

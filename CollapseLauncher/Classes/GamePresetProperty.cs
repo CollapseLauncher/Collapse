@@ -48,28 +48,28 @@ namespace CollapseLauncher
             switch (gamePreset.GameType)
             {
                 case GameNameType.Honkai:
-                    GameVersion = new GameTypeHonkaiVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
+                    GameVersion = new GameTypeHonkaiVersion(ApiResourceProp, gameName, gameRegion);
                     GameSettings = new HonkaiSettings(GameVersion);
                     GameCache = new HonkaiCache(uiElementParent, GameVersion);
                     GameRepair = new HonkaiRepair(uiElementParent, GameVersion, GameCache, GameSettings);
                     GameInstall = new HonkaiInstall(uiElementParent, GameVersion, GameCache);
                     break;
                 case GameNameType.StarRail:
-                    GameVersion = new GameTypeStarRailVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
+                    GameVersion = new GameTypeStarRailVersion(ApiResourceProp, gameName, gameRegion);
                     GameSettings = new StarRailSettings(GameVersion);
                     GameCache = new StarRailCache(uiElementParent, GameVersion);
                     GameRepair = new StarRailRepair(uiElementParent, GameVersion);
                     GameInstall = new StarRailInstall(uiElementParent, GameVersion);
                     break;
                 case GameNameType.Genshin:
-                    GameVersion = new GameTypeGenshinVersion(uiElementParent, ApiResourceProp, gameName, gameRegion);
+                    GameVersion = new GameTypeGenshinVersion(ApiResourceProp, gameName, gameRegion);
                     GameSettings = new GenshinSettings(GameVersion);
                     GameCache = null;
                     GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameApiProp.data!.game!.latest!.decompressed_path);
                     GameInstall = new GenshinInstall(uiElementParent, GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    GameVersion = new GameTypeZenlessVersion(uiElementParent, ApiResourceProp, gamePreset, gameName, gameRegion);
+                    GameVersion = new GameTypeZenlessVersion(ApiResourceProp, gamePreset, gameName, gameRegion);
                     GameSettings = new ZenlessSettings(GameVersion);
                     GameCache = new ZenlessCache(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
                     GameRepair = new ZenlessRepair(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);

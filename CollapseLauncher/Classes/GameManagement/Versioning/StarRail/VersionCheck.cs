@@ -3,7 +3,6 @@ using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Proto.StarRail;
-using Microsoft.UI.Xaml;
 using System;
 using System.Text;
 
@@ -15,8 +14,8 @@ namespace CollapseLauncher.GameVersioning
         public SRMetadata StarRailMetadataTool { get; set; }
         #endregion
 
-        public GameTypeStarRailVersion(UIElement parentUIElement, RegionResourceProp gameRegionProp, string gameName, string gameRegion)
-            : base(parentUIElement, gameRegionProp, gameName, gameRegion)
+        public GameTypeStarRailVersion(RegionResourceProp gameRegionProp, string gameName, string gameRegion)
+            : base(gameRegionProp, gameName, gameRegion)
         {
             // Initialize Star Rail metadata tool
             if (GamePreset.ProtoDispatchKey != null)

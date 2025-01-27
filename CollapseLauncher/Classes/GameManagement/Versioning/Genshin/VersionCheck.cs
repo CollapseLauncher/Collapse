@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameManagement.Versioning;
-using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.IO;
 // ReSharper disable IdentifierTypo
@@ -7,11 +6,10 @@ using System.IO;
 namespace CollapseLauncher.GameVersioning
 {
     internal sealed class GameTypeGenshinVersion(
-        UIElement          parentUIElement,
         RegionResourceProp gameRegionProp,
         string             gameName,
         string             gamePreset)
-        : GameVersionBase(parentUIElement, gameRegionProp, gameName, gamePreset)
+        : GameVersionBase(gameRegionProp, gameName, gamePreset)
     {
         #region Const
         private const string GlobalExecName = "GenshinImpact.exe";
