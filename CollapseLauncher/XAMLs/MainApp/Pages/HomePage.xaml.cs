@@ -1096,7 +1096,7 @@ namespace CollapseLauncher.Pages
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
                         int processId;
-                        if (!CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _))
+                        if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _))
                         {
                             Process currentGameProcess = Process.GetProcessById(processId);
 
