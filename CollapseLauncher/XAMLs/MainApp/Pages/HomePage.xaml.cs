@@ -2838,10 +2838,10 @@ namespace CollapseLauncher.Pages
         private async Task GameBoost_Invoke(GamePresetProperty gameProp)
         {
 #nullable enable
-            Process? toTargetProc = null;
+            string processName = gameProp.GameExecutableName;
+            int processId = -1;
             try
             {
-                int processId;
                 // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
                 while (!gameProp.TryGetGameProcessIdWithActiveWindow(out processId, out _))
                 {
@@ -2851,11 +2851,8 @@ namespace CollapseLauncher.Pages
                     // which it will break the loop and execute the next code below it.
                 }
 
-                // Init new target process
-                toTargetProc = Process.GetProcessById(processId);
-
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
-                             $"Target Process : {toTargetProc.ProcessName} [{toTargetProc.Id}]", LogType.Default, true);
+                             $"Target Process : {processName} [{processId}]", LogType.Default, true);
 
                 // Wait 20 (or 10 if its first try) seconds before applying
                 if (GameBoostInvokeTryCount == 0)
@@ -2868,24 +2865,27 @@ namespace CollapseLauncher.Pages
                 }
 
                 // Check early exit
-                if (toTargetProc.HasExited)
+                if (!gameProp.GetIsGameProcessRunning(processId))
                 {
-                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} [{toTargetProc.Id}] has exited!",
+                    LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} [{processId}] has exited!",
                                  LogType.Warning, true);
                     return;
                 }
 
                 // Assign the priority to the process and write a log (just for displaying any info)
-                toTargetProc.PriorityClass = ProcessPriorityClass.AboveNormal;
+                if (!gameProp.TrySetGameProcessPriority(processId, Hi3Helper.Win32.Native.Enums.PriorityClass.ABOVE_NORMAL_PRIORITY_CLASS))
+                {
+                    throw new Win32Exception();
+                }
                 GameBoostInvokeTryCount = 0;
-                LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {toTargetProc.ProcessName} " +
-                             $"[{toTargetProc.Id}] priority is boosted to above normal!", LogType.Warning, true);
+                LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} " +
+                             $"[{processId}] priority is boosted to above normal!", LogType.Warning, true);
             }
             catch (Exception ex) when (GameBoostInvokeTryCount < 5)
             {
                 LogWriteLine($"[HomePage::GameBoost_Invoke] (Try #{GameBoostInvokeTryCount})" +
                              $"There has been error while boosting game priority to Above Normal! Retrying...\r\n" +
-                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
+                             $"\tTarget Process : {processName} [{processId}]\r\n{ex}",
                              LogType.Error, true);
                 GameBoostInvokeTryCount++;
                 _ = Task.Run(async () => { await GameBoost_Invoke(gameProp); });
@@ -2893,12 +2893,8 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine($"[HomePage::GameBoost_Invoke] There has been error while boosting game priority to Above Normal!\r\n" +
-                             $"\tTarget Process : {toTargetProc?.ProcessName} [{toTargetProc?.Id}]\r\n{ex}",
+                             $"\tTarget Process : {processName} [{processId}]\r\n{ex}",
                              LogType.Error, true);
-            }
-            finally
-            {
-                toTargetProc?.Dispose();
             }
 #nullable restore
         }

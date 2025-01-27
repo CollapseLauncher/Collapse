@@ -11,6 +11,7 @@ using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper;
 using Microsoft.Extensions.Logging;
@@ -140,12 +141,24 @@ namespace CollapseLauncher
             get => ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, GamePropLogger);
         }
 
+        internal bool GetIsGameProcessRunning(int processId)
+            => ProcessChecker.IsProcessExist(processId);
+
         internal bool TryGetGameProcessIdWithActiveWindow(out int processId, out nint windowHandle)
             => ProcessChecker.TryGetProcessIdWithActiveWindow(GameExecutableNameWithoutExtension,
                                                               out processId,
                                                               out windowHandle,
                                                               GameExecutableDir,
                                                               logger: GamePropLogger);
+
+        internal bool TrySetGameProcessPriority(PriorityClass priorityClass = PriorityClass.NORMAL_PRIORITY_CLASS)
+            => ProcessChecker.TrySetProcessPriority(GameExecutableNameWithoutExtension,
+                                                    priorityClass,
+                                                    GameExecutableDir,
+                                                    logger: GamePropLogger);
+
+        internal bool TrySetGameProcessPriority(int processId, PriorityClass priorityClass = PriorityClass.NORMAL_PRIORITY_CLASS)
+            => ProcessChecker.TrySetProcessPriority(processId, priorityClass, GamePropLogger);
 
         ~GamePresetProperty()
         {
