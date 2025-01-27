@@ -2414,7 +2414,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 GameStartupSetting.Flyout.Hide();
-                if (CurrentGameProperty is { GameInstall: not null })
+                if (CurrentGameProperty is not null)
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)

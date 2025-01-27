@@ -9,9 +9,7 @@ namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 public static partial class StyleExtensions
 {
     // Used to distinct normal ResourceDictionary and the one we add.
-    private sealed partial class StyleExtensionResourceDictionary : ResourceDictionary
-    {
-    }
+    private sealed partial class StyleExtensionResourceDictionary : ResourceDictionary;
 
     public static ResourceDictionary GetResources(Style obj)
     {

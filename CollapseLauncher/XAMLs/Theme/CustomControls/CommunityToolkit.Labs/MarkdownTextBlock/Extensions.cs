@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.ViewManagement;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
@@ -323,15 +324,15 @@ public static class Extensions
 
     public static string ToAlphabetical(this int index)
     {
-        var alphabetical = "abcdefghijklmnopqrstuvwxyz";
-        var remainder = index;
-        var stringBuilder = new StringBuilder();
+        string alphabetical = "abcdefghijklmnopqrstuvwxyz";
+        int remainder = index;
+        StringBuilder stringBuilder = new StringBuilder();
         while (remainder != 0)
         {
             if (remainder > 26)
             {
-                var newRemainder = remainder % 26;
-                var i = (remainder - newRemainder) / 26;
+                int newRemainder = remainder % 26;
+                int i = (remainder - newRemainder) / 26;
                 stringBuilder.Append(alphabetical[i - 1]);
                 remainder = newRemainder;
             }
@@ -346,14 +347,15 @@ public static class Extensions
 
     public static TextPointer? GetNextInsertionPosition(this TextPointer position, LogicalDirection logicalDirection)
     {
-        // Check if the current position is already an insertion position
-        if (position.IsAtInsertionPosition(logicalDirection))
+        while (true)
         {
-            // Return the same position
-            return position;
-        }
-        else
-        {
+            // Check if the current position is already an insertion position
+            if (position.IsAtInsertionPosition(logicalDirection))
+            {
+                // Return the same position
+                return position;
+            }
+
             // Try to find the next insertion position by moving one symbol forward
             TextPointer next = position.GetPositionAtOffset(1, logicalDirection);
             // If there is no next position, return null
@@ -361,11 +363,9 @@ public static class Extensions
             {
                 return null;
             }
-            else
-            {
-                // Recursively call this method until an insertion position is found or null is returned
-                return GetNextInsertionPosition(next, logicalDirection);
-            }
+
+            // Search for the next position until an insertion position is found or null is returned
+            position = next;
         }
     }
 
@@ -380,13 +380,11 @@ public static class Extensions
         {
             return false;
         }
-        else
-        {
-            // Get the character rect of the next position
-            Rect nextRect = next.GetCharacterRect(logicalDirection);
-            // Compare the two rects and return true if they are different
-            return !currentRect.Equals(nextRect);
-        }
+
+        // Get the character rect of the next position
+        Rect nextRect = next.GetCharacterRect(logicalDirection);
+        // Compare the two rects and return true if they are different
+        return !currentRect.Equals(nextRect);
     }
 
     public static string RemoveImageSize(string? url)
@@ -397,41 +395,39 @@ public static class Extensions
         }
 
         // Create a regex pattern to match the URL with width and height
-        var pattern = @"([^)\s]+)\s*=\s*\d+x\d+\s*";
+        string pattern = @"([^)\s]+)\s*=\s*\d+x\d+\s*";
 
         // Replace the matched URL with the URL only
-        var result = Regex.Replace(url, pattern, "$1", RegexOptions.Compiled);
+        string result = Regex.Replace(url, pattern, "$1", RegexOptions.Compiled);
 
         return result;
     }
 
     public static Uri GetUri(string? url, string? @base)
     {
-        var validUrl = RemoveImageSize(url);
-        Uri result;
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-        if (Uri.TryCreate(validUrl, UriKind.Absolute, out result))
+        string validUrl = RemoveImageSize(url);
+    #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        if (Uri.TryCreate(validUrl, UriKind.Absolute, out Uri result))
         {
             //the url is already absolute
             return result;
         }
-        else if (!string.IsNullOrWhiteSpace(@base))
+
+        if (!string.IsNullOrWhiteSpace(@base))
         {
             //the url is relative, so append the base
             //trim any trailing "/" from the base and any leading "/" from the url
-            @base = @base.TrimEnd('/');
+            @base    = @base.TrimEnd('/');
             validUrl = validUrl.TrimStart('/');
             //return the base and the url separated by a single "/"
             return new Uri(@base + "/" + validUrl);
         }
-        else
-        {
-            //the url is relative to the file system
-            //add ms-appx
-            validUrl = validUrl.TrimStart('/');
-            return new Uri("ms-appx:///" + validUrl);
-        }
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+
+        //the url is relative to the file system
+        //add ms-appx
+        validUrl = validUrl.TrimStart('/');
+        return new Uri("ms-appx:///" + validUrl);
+    #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
     }
 
     //public static StyleDictionary GetOneDarkProStyle()
@@ -632,17 +628,17 @@ public static class Extensions
             throw new ArgumentException("Link must be an image", nameof(link));
         }
 
-        var url = link.Url;
+        string? url = link.Url;
         if (string.IsNullOrEmpty(url))
         {
             throw new ArgumentException("Link must have a valid URL", nameof(link));
         }
 
         // Try to parse the width and height from the URL
-        var parts = url.Split('=');
+        string[] parts = url.Split('=');
         if (parts.Length == 2)
         {
-            var dimensions = parts[1].Split('x');
+            string[] dimensions = parts[1].Split('x');
             if (dimensions.Length == 2 && int.TryParse(dimensions[0], out int width) && int.TryParse(dimensions[1], out int height))
             {
                 return new Size(width, height);
@@ -669,13 +665,13 @@ public static class Extensions
     public static SolidColorBrush GetAccentColorBrush()
     {
         // Create a UISettings object to get the accent color
-        var uiSettings = new UISettings();
+        UISettings uiSettings = new UISettings();
 
         // Get the accent color as a Color value
-        var accentColor = uiSettings.GetColorValue(UIColorType.Accent);
+        Color accentColor = uiSettings.GetColorValue(UIColorType.Accent);
 
         // Create a SolidColorBrush from the accent color
-        var accentBrush = new SolidColorBrush(accentColor);
+        SolidColorBrush accentBrush = new SolidColorBrush(accentColor);
 
         return accentBrush;
     }

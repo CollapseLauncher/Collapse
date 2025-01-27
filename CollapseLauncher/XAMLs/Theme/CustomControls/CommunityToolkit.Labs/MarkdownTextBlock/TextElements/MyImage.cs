@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage.Streams;
+// ReSharper disable AsyncVoidMethod
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 

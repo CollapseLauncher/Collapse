@@ -497,7 +497,7 @@ namespace CollapseLauncher.Dialogs
             {
                 int keyValue = (int)s.Key;
 
-                if (keyCount < 1 || keyValue is not ((>= 0x41 and <= 0x5A) or 9)) // Virtual-Key codes for Letters and Tab
+                if (keyCount < 1 || keyValue is not (>= 0x41 and <= 0x5A or 9)) // Virtual-Key codes for Letters and Tab
                 {
                     return;
                 }

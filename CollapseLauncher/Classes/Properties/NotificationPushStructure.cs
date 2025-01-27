@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 // ReSharper disable IdentifierTypo
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace Hi3Helper.Shared.ClassStruct
 {

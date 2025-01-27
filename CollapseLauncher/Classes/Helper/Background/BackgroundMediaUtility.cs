@@ -14,6 +14,10 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -63,7 +67,7 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new(async (action) =>
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new(async action =>
                                                                            {
                                                                                try
                                                                                {
@@ -83,7 +87,7 @@ namespace CollapseLauncher.Helper.Background
                                                                                BoundedCapacity = 1,
                                                                                TaskScheduler = TaskScheduler.Current
                                                                            });
-        internal ActionBlock<Action> SharedActionBlockQueueChange = new(static (action) =>
+        internal ActionBlock<Action> SharedActionBlockQueueChange = new(static action =>
                                                                         {
                                                                             try
                                                                             {

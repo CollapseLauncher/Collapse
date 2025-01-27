@@ -19,6 +19,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 #nullable enable
 namespace CollapseLauncher.Pages.OOBE

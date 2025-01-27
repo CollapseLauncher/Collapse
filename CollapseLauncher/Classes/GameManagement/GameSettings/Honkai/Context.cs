@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameSettings.Honkai.Context
 {
@@ -10,5 +11,5 @@ namespace CollapseLauncher.GameSettings.Honkai.Context
     [JsonSerializable(typeof(PersonalGraphicsSettingV2))]
     [JsonSerializable(typeof(PersonalAudioSettingVolume))]
     [JsonSerializable(typeof(Dictionary<string, PersonalGraphicsSettingV2>))]
-    internal sealed partial class HonkaiSettingsJsonContext : JsonSerializerContext { }
+    internal sealed partial class HonkaiSettingsJsonContext : JsonSerializerContext;
 }

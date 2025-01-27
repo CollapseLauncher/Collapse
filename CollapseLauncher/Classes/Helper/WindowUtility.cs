@@ -80,17 +80,15 @@ namespace CollapseLauncher.Helper
                             ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
                             : null;
                     }
-                    else
-                    {
-                        DisplayInformation? displayInfoInit = null;
-                        dispatcherQueue.TryEnqueue(() =>
-                        {
-                            displayInfoInit = CurrentWindowId.HasValue
-                                ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
-                                : null;
-                        });
-                        return displayInfoInit;
-                    }
+
+                    DisplayInformation? displayInfoInit = null;
+                    dispatcherQueue.TryEnqueue(() =>
+                                               {
+                                                   displayInfoInit = CurrentWindowId.HasValue
+                                                       ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
+                                                       : null;
+                                               });
+                    return displayInfoInit;
                 }
                 catch (Exception ex)
                 {

@@ -2468,17 +2468,8 @@ namespace CollapseLauncher.InstallManager.Base
             // Build the UI
             Grid mainGrid = UIElementExtensions.CreateGrid()
                 .WithWidth(590)
-                .WithColumns([
-                    new GridLength(1, GridUnitType.Star),
-                    new GridLength(1, GridUnitType.Auto)
-                    ])
-                .WithRows([
-                    new GridLength(1, GridUnitType.Star),
-                    new GridLength(1, GridUnitType.Star),
-                    new GridLength(1, GridUnitType.Star),
-                    new GridLength(1, GridUnitType.Star),
-                    new GridLength(1, GridUnitType.Star)
-                    ])
+                .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Auto))
+                .WithRows(new GridLength(1,    GridUnitType.Star), new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Star))
                 .WithColumnSpacing(16);
 
             TextBlock statusActivity = mainGrid.AddElementToGridRowColumn(

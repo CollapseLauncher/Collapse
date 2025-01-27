@@ -11,13 +11,13 @@ using System.Text;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CheckNamespace
 #pragma warning disable CA2211
 
 #nullable enable
 namespace Hi3Helper.Shared.Region
 {
     #region CDN Property
-
     public readonly struct CDNURLProperty : IEquatable<CDNURLProperty>
     {
         public string URLPrefix              { get; init; }
@@ -30,7 +30,6 @@ namespace Hi3Helper.Shared.Region
             return URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
         }
     }
-
     #endregion
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -258,7 +257,7 @@ namespace Hi3Helper.Shared.Region
         [field: AllowNull, MaybeNull]
         public static string AppExecutableName => field ??= Path.GetFileName(AppExecutablePath);
         [field: AllowNull, MaybeNull]
-        public static string AppExecutableDir => field ??= (Path.GetDirectoryName(AppExecutablePath) ?? "");
+        public static string AppExecutableDir => field ??= Path.GetDirectoryName(AppExecutablePath) ?? string.Empty;
         public static string AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
         public static string AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
         public static string AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
@@ -329,7 +328,9 @@ namespace Hi3Helper.Shared.Region
         public static bool IsAppThemeNeedRestart            = false;
         public static bool IsInstantRegionNeedRestart       = false;
 
+#pragma warning disable CS8604 // Possible null reference argument.
         public static readonly string AppAssetsFolder    = Path.Combine(AppExecutableDir, "Assets");
+#pragma warning restore CS8604 // Possible null reference argument.
         public static readonly string AppImagesFolder    = Path.Combine(AppAssetsFolder, "Images");
         public static readonly string AppDefaultBG       = Path.Combine(AppImagesFolder, "PageBackground", "default.png");
         public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
@@ -455,14 +456,15 @@ namespace Hi3Helper.Shared.Region
         public static Guid GetGuid(int sessionNum)
         {
             Guid guidString = GetAppConfigValue($"sessionGuid{sessionNum}");
-            if (guidString == Guid.Empty)
+            if (guidString != Guid.Empty)
             {
-                var g = Guid.NewGuid();
-                SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
-                return g;
+                return guidString;
             }
 
-            return guidString;
+            Guid g = Guid.NewGuid();
+            SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
+            return g;
+
         }
 
         #endregion

@@ -15,13 +15,14 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher
 {
     [JsonSerializable(typeof(ZenlessResManifestAsset))]
     [JsonSourceGenerationOptions(AllowOutOfOrderMetadataProperties = true, AllowTrailingCommas = true, GenerationMode = JsonSourceGenerationMode.Metadata, IncludeFields = false, IgnoreReadOnlyFields = true)]
-    internal partial class ZenlessManifestContext : JsonSerializerContext { }
+    internal partial class ZenlessManifestContext : JsonSerializerContext;
 
     internal static class ZenlessRepairExtensions
     {

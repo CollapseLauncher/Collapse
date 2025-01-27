@@ -409,7 +409,6 @@
       "colorthief": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "System.Drawing.Common": "[9.0.1, )"
         }
       },
@@ -417,14 +416,12 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Logging": "[9.0.1, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "System.Text.Json": "[9.0.1, )"
         }
       },
       "h.generatedicons.system.drawing": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "System.Drawing.Common": "[9.0.1, )"
         }
       },
@@ -432,8 +429,7 @@
         "type": "Project",
         "dependencies": {
           "H.GeneratedIcons.System.Drawing": "[1.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )"
         }
       },
       "h.notifyicon.winui": {
@@ -462,30 +458,24 @@
         "dependencies": {
           "Google.Protobuf": "[3.29.3, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "Hi3Helper.Win32": "[1.0.0, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )"
+          "Hi3Helper.Win32": "[1.0.0, )"
         }
       },
       "hi3helper.http": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )"
-        }
+        "type": "Project"
       },
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
           "Google.Protobuf": "[*, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )"
         }
       },
       "ImageCropper": {
@@ -507,7 +497,6 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.241112-preview1, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Web.WebView2": "[1.0.2957.106, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
           "Microsoft.WindowsAppSDK": "[1.6.250108002, )"
@@ -533,10 +522,7 @@
         }
       },
       "sevenzipextractor": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )"
-        }
+        "type": "Project"
       }
     },
     "net9.0-windows10.0.22621/win-x64": {

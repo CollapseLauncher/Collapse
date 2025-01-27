@@ -86,13 +86,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 BitmapImage bitmapImage =
                     await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
 
-                await Task.WhenAll([
-                    ApplyAndSwitchImage(AnimationDuration, bitmapImage),
-                    ColorPaletteUtility.ApplyAccentColor(ParentUI,
-                                                         imageStream.AsRandomAccessStream(),
-                                                         filePath,
-                                                         isImageLoadForFirstTime, false)
-                    ]);
+                await Task.WhenAll(ApplyAndSwitchImage(AnimationDuration, bitmapImage), ColorPaletteUtility.ApplyAccentColor(ParentUI,
+                                                                                                                             imageStream.AsRandomAccessStream(),
+                                                                                                                             filePath,
+                                                                                                                             isImageLoadForFirstTime, false));
 
             }
             finally

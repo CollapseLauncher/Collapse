@@ -18,6 +18,7 @@ using Windows.Storage.Streams;
 using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 using WColor = Windows.UI.Color;
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background

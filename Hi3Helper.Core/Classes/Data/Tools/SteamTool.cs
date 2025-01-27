@@ -44,7 +44,7 @@ namespace Hi3Helper.Data
             }
 
         #if DEBUG
-            if (apps.Count == 0) Logger.LogWriteLine($"AppInfo on steam cannot be found!");
+            if (apps.Count == 0) Logger.LogWriteLine("AppInfo on steam cannot be found!");
 #endif
             return apps;
         }

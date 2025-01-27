@@ -26,6 +26,7 @@ using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable CommentTypo
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable IdentifierTypo
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace CollapseLauncher.Dialogs
 {

@@ -3,6 +3,7 @@ using Hi3Helper.Data;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher
 {

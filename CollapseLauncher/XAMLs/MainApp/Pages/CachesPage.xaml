@@ -34,6 +34,7 @@
                         <PopupThemeTransition />
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
+                <!-- ReSharper disable once Xaml.PossibleNullReferenceException -->
                 <ListView ItemsSource="{x:Bind CurrentGameProperty.GameCache.AssetEntry}">
                     <ListView.Header>
                         <Border Padding="0,8,0,0"

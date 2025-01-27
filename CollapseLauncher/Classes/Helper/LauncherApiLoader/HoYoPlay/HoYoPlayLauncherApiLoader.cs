@@ -91,7 +91,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             tasks[0] = hypResourceResponseCallback
                 .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                .AsTaskAndDoAction((result) => hypResourceResponse = result);
+                .AsTaskAndDoAction(result => hypResourceResponse = result);
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
@@ -104,7 +104,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
                 tasks[1] = hypPluginResourceCallback
                     .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                    .AsTaskAndDoAction((result) => hypPluginResource = result);
+                    .AsTaskAndDoAction(result => hypPluginResource = result);
             }
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
@@ -118,7 +118,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
                 tasks[2] = hypSdkResourceCallback
                     .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                    .AsTaskAndDoAction((result) => hypSdkResource = result);
+                    .AsTaskAndDoAction(result => hypSdkResource = result);
             }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest();
@@ -396,9 +396,9 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             // Load both in parallel
             Task[] tasks = [
                 hypLauncherBackgroundCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypLauncherBackground = result),
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction(result => hypLauncherBackground = result),
                 hypLauncherNewsCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction((result) => hypLauncherNews = result)
+                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction(result => hypLauncherNews = result)
                 ];
 
             // Await the result

@@ -5,6 +5,7 @@ using LibISULR.Records;
 using System;
 using System.IO;
 using System.Linq;
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace InnoSetupHelper
 {
@@ -57,7 +58,7 @@ namespace InnoSetupHelper
             {
                 using InnoUninstallLog innoLog = InnoUninstallLog.Load(path, true);
                 // Always set the log to x64 mode
-                innoLog.Header.IsLog64bit = true;
+                innoLog.Header.IsLog64Bit = true;
 
                 // Clean up the existing file and directory records
                 CleanUpInnoDirOrFilesRecord(innoLog, searchValue);
@@ -83,7 +84,7 @@ namespace InnoSetupHelper
 
         private static void RegisterDirOrFilesRecord(InnoUninstallLog innoLog, string pathToRegister)
         {
-            DirectoryInfo currentDirectory = new DirectoryInfo(pathToRegister);
+            DirectoryInfo currentDirectory = new(pathToRegister);
             if (innoLog.Records == null)
             {
                 LogWriteLine("[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] Records is uninitialized!", InnoSetupLogType.Error, true);

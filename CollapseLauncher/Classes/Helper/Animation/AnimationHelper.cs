@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
+// ReSharper disable AsyncVoidMethod
 
 // ReSharper disable CheckNamespace
 

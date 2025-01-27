@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {

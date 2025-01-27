@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using HtmlAgilityPack;
+using Markdig.Helpers;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+#pragma warning disable SYSLIB1045
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers;
 
@@ -18,10 +20,10 @@ internal class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlo
         if (renderer == null) throw new ArgumentNullException(nameof(renderer));
         if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-        var stringBuilder = new StringBuilder();
-        foreach (var line in obj.Lines.Lines)
+        StringBuilder stringBuilder = new();
+        foreach (StringLine line in obj.Lines.Lines)
         {
-            var lineText = line.Slice.ToString().Trim();
+            string lineText = line.Slice.ToString().Trim();
             if (string.IsNullOrWhiteSpace(lineText))
             {
                 continue;
@@ -29,9 +31,9 @@ internal class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlo
             stringBuilder.AppendLine(lineText);
         }
 
-        var html = Regex.Replace(stringBuilder.ToString(), @"\t|\n|\r", "", RegexOptions.Compiled);
-        html = Regex.Replace(html, @"&nbsp;", " ", RegexOptions.Compiled);
-        var doc = new HtmlDocument();
+        string html = Regex.Replace(stringBuilder.ToString(), @"\t|\n|\r", "", RegexOptions.Compiled);
+        html = Regex.Replace(html, "&nbsp;", " ", RegexOptions.Compiled);
+        HtmlDocument doc = new();
         doc.LoadHtml(html);
         HtmlWriter.WriteHtml(renderer, doc.DocumentNode.ChildNodes);
     }

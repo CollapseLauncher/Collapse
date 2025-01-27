@@ -143,11 +143,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         protected virtual async Task LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
                                                          CancellationToken     token)
         {
-            await Task.WhenAll([
-                LoadLauncherGameResource(onTimeoutRoutine, token),
-                LoadLauncherNews(onTimeoutRoutine, token),
-                LoadLauncherGameInfo(onTimeoutRoutine, token)
-                ]);
+            await Task.WhenAll(LoadLauncherGameResource(onTimeoutRoutine, token), LoadLauncherNews(onTimeoutRoutine, token), LoadLauncherGameInfo(onTimeoutRoutine, token));
         }
 
         protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
@@ -163,7 +159,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             Task[] tasks = [
                 launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                            .AsTaskAndDoAction((result) => LauncherGameResource = result),
+                                            .AsTaskAndDoAction(result => LauncherGameResource = result),
                 Task.CompletedTask
                 ];
 
@@ -176,7 +172,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
                 tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
                                                                         ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                                     .AsTaskAndDoAction((result) => pluginProp = result);
+                                                     .AsTaskAndDoAction(result => pluginProp = result);
             }
 
             await Task.WhenAll(tasks);

@@ -13,6 +13,7 @@ using static Hi3Helper.Logger;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher.GamePlaytime
 {

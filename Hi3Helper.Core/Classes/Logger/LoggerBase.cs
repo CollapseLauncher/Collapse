@@ -7,6 +7,7 @@ using System.Threading;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.ManagedTools;
 // ReSharper disable CheckNamespace
+// ReSharper disable StringLiteralTypo
 #endif
 
 namespace Hi3Helper
@@ -14,12 +15,12 @@ namespace Hi3Helper
     public abstract class LoggerBase
     {
         #region Properties
-        private FileStream    LogStream         { get; set; }
-        private StreamWriter  LogWriter         { get; set; }
-        private bool          IsWriterOnDispose { get; set; }
-        private Lock          LockObject = new();
-        private StringBuilder StringBuilder { get; }
-        private string        LogFolder     { get; set; }
+        private          FileStream    LogStream         { get; set; }
+        private          StreamWriter  LogWriter         { get; set; }
+        private          bool          IsWriterOnDispose { get; set; }
+        private readonly Lock          _lockObject = new();
+        private          StringBuilder StringBuilder { get; }
+        private          string        LogFolder     { get; set; }
 #if !APPLYUPDATE
         public static string LogPath { get; set; }
 #endif
@@ -50,7 +51,7 @@ namespace Hi3Helper
             }
 #endif
 
-            lock (LockObject)
+            lock (_lockObject)
             {
                 // Try dispose the _logWriter even though it's not initialized.
                 // This will be used if the program need to change the log folder to another location.
@@ -75,7 +76,7 @@ namespace Hi3Helper
 #nullable enable
         public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
         {
-            lock (LockObject)
+            lock (_lockObject)
             {
                 DisposeBase();
 
@@ -123,7 +124,7 @@ namespace Hi3Helper
         public void WriteLog(string line, LogType type)
         {
             // Always seek to the end of the file.
-            lock(LockObject)
+            lock(_lockObject)
             {
                 try
                 {
@@ -179,7 +180,7 @@ namespace Hi3Helper
                 // Colorize the log type
                 if (coloredType)
                 {
-                    StringBuilder.Append(GetColorizedString(type) + GetLabelString(type) + "\u001b[0m");
+                    StringBuilder.Append(GetColorizedString(type) + GetLabelString(type) + "\e[0m");
                 }
                 else
                 {
@@ -229,7 +230,7 @@ namespace Hi3Helper
             // Append the current instance number
             fallbackString += $"-id{GetTotalInstance()}";
             LogPath = Path.Combine(LogFolder, $"log-{dateString + fallbackString}-{GetCurrentTime("HH-mm-ss")}.log");
-            Console.WriteLine("\u001b[37;44m[LOGGER]\u001b[0m Log will be written to: " + LogPath);
+            Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
 
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
@@ -243,28 +244,28 @@ namespace Hi3Helper
             IsWriterOnDispose = false;
         }
 
-        private int GetTotalInstance() => ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
+        private static int GetTotalInstance() => ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 #endif
 
-        private ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, Debug, GLC, Remote or Empty!");
+        private static ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, Debug, GLC, Remote or Empty!");
 
         /// <summary>
         /// Get the ASCII color in string form.
         /// </summary>
         /// <param name="type">The type of the log</param>
         /// <returns>A string of the ASCII color</returns>
-        private string GetColorizedString(LogType type) => type switch
-        {
-            LogType.Default => "\u001b[32;1m",
-            LogType.Error => "\u001b[31;1m",
-            LogType.Warning => "\u001b[33;1m",
-            LogType.Scheme => "\u001b[34;1m",
-            LogType.Game => "\u001b[35;1m",
-            LogType.Debug => "\u001b[36;1m",
-            LogType.GLC => "\u001b[91;1m",
-            LogType.Sentry => "\u001b[42;1m",
-            _ => string.Empty
-        };
+        private static string GetColorizedString(LogType type) => type switch
+                                                                  {
+                                                                      LogType.Default => "\e[32;1m",
+                                                                      LogType.Error => "\e[31;1m",
+                                                                      LogType.Warning => "\e[33;1m",
+                                                                      LogType.Scheme => "\e[34;1m",
+                                                                      LogType.Game => "\e[35;1m",
+                                                                      LogType.Debug => "\e[36;1m",
+                                                                      LogType.GLC => "\e[91;1m",
+                                                                      LogType.Sentry => "\e[42;1m",
+                                                                      _ => string.Empty
+                                                                  };
 
         /// <summary>
         /// Get the label string based on log type.
@@ -272,19 +273,19 @@ namespace Hi3Helper
         /// <param name="type">The type of the log</param>
         /// <returns>A string of the label based on type</returns>
         /// <exception cref="ArgumentException"></exception>
-        private string GetLabelString(LogType type) => type switch
-        {
-            LogType.Default => "[Info]  ",
-            LogType.Error   => "[Erro]  ",
-            LogType.Warning => "[Warn]  ",
-            LogType.Scheme  => "[Schm]  ",
-            LogType.Game    => "[Game]  ",
-            LogType.Debug   => "[DBG]   ",
-            LogType.GLC     => "[GLC]   ",
-            LogType.Sentry   => "[Sentry]  ",
-            LogType.NoTag   => "      ",
-            _ => throw ThrowInvalidType()
-        };
+        private static string GetLabelString(LogType type) => type switch
+                                                              {
+                                                                  LogType.Default => "[Info]  ",
+                                                                  LogType.Error   => "[Erro]  ",
+                                                                  LogType.Warning => "[Warn]  ",
+                                                                  LogType.Scheme  => "[Schm]  ",
+                                                                  LogType.Game    => "[Game]  ",
+                                                                  LogType.Debug   => "[DBG]   ",
+                                                                  LogType.GLC     => "[GLC]   ",
+                                                                  LogType.Sentry   => "[Sentry]  ",
+                                                                  LogType.NoTag   => "      ",
+                                                                  _ => throw ThrowInvalidType()
+                                                              };
 #endregion
     }
 }
