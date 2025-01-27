@@ -13,9 +13,9 @@ using CollapseLauncher.Interfaces;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Diagnostics.CodeAnalysis;
 
@@ -80,6 +80,7 @@ namespace CollapseLauncher
             }
 
             GamePlaytime = new Playtime(GameVersion, GameSettings);
+            GamePropLogger = ILoggerHelper.GetILogger($"[GameProp: {GameVersion.GameName} - {GameVersion.GameRegion}]");
 
             SentryHelper.CurrentGameCategory   = GameVersion.GameName;
             SentryHelper.CurrentGameRegion     = GameVersion.GameRegion;
@@ -95,7 +96,8 @@ namespace CollapseLauncher
         internal IGamePlaytime        GamePlaytime    { get; set; }
         internal IRepair?             GameRepair      { get; set; }
         internal ICache?              GameCache       { get; set; }
-        internal IGameVersion    GameVersion     { get; set; }
+        internal ILogger              GamePropLogger  { get; set; }
+        internal IGameVersion         GameVersion     { get; set; }
         internal IGameInstallManager  GameInstall     { get; set; }
         internal PresetConfig         GamePreset      { get => GameVersion.GamePreset; }
 
@@ -122,49 +124,28 @@ namespace CollapseLauncher
         }
 
         [field: AllowNull, MaybeNull]
+        internal string GameExecutableDir
+        {
+            get => field ??= GameVersion.GameDirPath;
+        }
+
+        [field: AllowNull, MaybeNull]
         internal string GameExecutablePath
         {
-            get => field ??= Path.Combine(GameVersion.GameDirPath, GameExecutableName);
+            get => field ??= Path.Combine(GameExecutableDir, GameExecutableName);
         }
 
         internal bool IsGameRunning
         {
-            get => ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, ILoggerHelper.GetILogger());
+            get => ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, GamePropLogger);
         }
 
-        internal Process? GetGameProcessWithActiveWindow()
-        {
-            Process[] processArr = Process.GetProcessesByName(GameExecutableNameWithoutExtension);
-            int selectedIndex = -1;
-
-            try
-            {
-                for (int i = 0; i < processArr.Length; i++)
-                {
-                    Process process = processArr[i];
-                    int processId = process.Id;
-
-                    string? processPath = ProcessChecker.GetProcessPathByProcessId(processId, ILoggerHelper.GetILogger());
-                    string expectedProcessPath = Path.Combine(GameVersion?.GameDirPath ?? "", GameExecutableName);
-                    if (string.IsNullOrEmpty(processPath) || !expectedProcessPath.Equals(processPath, StringComparison.OrdinalIgnoreCase)
-                     || process.MainWindowHandle == IntPtr.Zero)
-                        continue;
-
-                    selectedIndex = i;
-                    return process;
-                }
-            }
-            finally
-            {
-                for (int i = 0; i < processArr.Length; i++)
-                {
-                    if (i == selectedIndex)
-                        continue;
-                    processArr[i].Dispose();
-                }
-            }
-            return null;
-        }
+        internal bool TryGetGameProcessIdWithActiveWindow(out int processId, out nint windowHandle)
+            => ProcessChecker.TryGetProcessIdWithActiveWindow(GameExecutableNameWithoutExtension,
+                                                              out processId,
+                                                              out windowHandle,
+                                                              GameExecutableDir,
+                                                              logger: GamePropLogger);
 
         ~GamePresetProperty()
         {

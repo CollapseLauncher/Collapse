@@ -1095,9 +1095,11 @@ namespace CollapseLauncher.Pages
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                        Process currentGameProcess = CurrentGameProperty.GetGameProcessWithActiveWindow();
-                        if (currentGameProcess != null)
+                        int processId;
+                        if (!CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _))
                         {
+                            Process currentGameProcess = Process.GetProcessById(processId);
+
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
                             startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
@@ -1116,8 +1118,7 @@ namespace CollapseLauncher.Pages
                             int? width = gameSettings.SettingsScreen.width;
 
                             // Start the resizable window payload
-                            StartResizableWindowPayload(
-                                                        gamePreset.GameExecutableName,
+                            StartResizableWindowPayload(gamePreset.GameExecutableName,
                                                         gameSettings,
                                                         gamePreset.GameType, height, width);
 
@@ -2837,18 +2838,21 @@ namespace CollapseLauncher.Pages
         private async Task GameBoost_Invoke(GamePresetProperty gameProp)
         {
 #nullable enable
-            // Init new target process
             Process? toTargetProc = null;
             try
             {
+                int processId;
                 // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
-                while ((toTargetProc = gameProp.GetGameProcessWithActiveWindow()) == null)
+                while (!gameProp.TryGetGameProcessIdWithActiveWindow(out processId, out _))
                 {
                     await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
                     // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
                     // it will instead return a non-null value and assign it to "toTargetProc" variable,
                     // which it will break the loop and execute the next code below it.
                 }
+
+                // Init new target process
+                toTargetProc = Process.GetProcessById(processId);
 
                 LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                              $"Target Process : {toTargetProc.ProcessName} [{toTargetProc.Id}]", LogType.Default, true);
