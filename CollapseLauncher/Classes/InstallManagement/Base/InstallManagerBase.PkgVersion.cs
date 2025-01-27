@@ -27,6 +27,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeObjectCreationWhenTypeEvident
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base

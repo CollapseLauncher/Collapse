@@ -4,6 +4,11 @@ using Hi3Helper.Preset;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
+// ReSharper disable CheckNamespace
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Hi3Helper.Shared.ClassStruct
 {
@@ -11,34 +16,34 @@ namespace Hi3Helper.Shared.ClassStruct
     public enum FileType : byte { Generic, Block, Audio, Video, Unused }
     public class FilePropertiesRemote : IAssetIndexSummary
     {
-        public bool IsUsed { get; set; }
-        private string _crc;
-        private byte[] _crcArray;
+        public  bool   IsUsed { get; set; }
 
         // public long BlkS() => BlkC.Sum(x => x.BlockSize);
         public string N { get; set; }
         public string RN { get; set; }
+
         public string CRC
         {
-            get => _crc;
+            get;
             set
             {
-                _crc = value.ToLower();
-                _crcArray = HexTool.HexToBytesUnsafe(_crc);
+                field     = value.ToLower();
+                CRCArray = HexTool.HexToBytesUnsafe(field);
             }
         }
-        public byte[] CRCArray { get => _crcArray; }
-        public string M { get; set; }
-        public FileType FT { get; set; }
-        public List<XMFBlockList> BlkC { get; set; }
-        public ManifestAudioPatchInfo? AudioPatchInfo { get; set; }
-        public BlockPatchInfo? BlockPatchInfo { get; set; }
-        public long S { get; set; }
-        public bool IsPatchApplicable { get; set; }
-        public bool IsBlockNeedRepair { get; set; }
-        public bool IsHasHashMark { get; set; }
 
-        public FilePropertiesRemote Copy() => new FilePropertiesRemote
+        public byte[]                  CRCArray          { get; private set; }
+        public string                  M                 { get; set; }
+        public FileType                FT                { get; set; }
+        public List<XMFBlockList>      BlkC              { get; set; }
+        public ManifestAudioPatchInfo? AudioPatchInfo    { get; set; }
+        public BlockPatchInfo?         BlockPatchInfo    { get; set; }
+        public long                    S                 { get; set; }
+        public bool                    IsPatchApplicable { get; set; }
+        public bool                    IsBlockNeedRepair { get; set; }
+        public bool                    IsHasHashMark     { get; set; }
+
+        public FilePropertiesRemote Copy() => new()
         {
             N = N,
             RN = RN,

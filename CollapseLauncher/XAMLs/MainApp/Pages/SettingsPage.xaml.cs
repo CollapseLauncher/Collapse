@@ -50,15 +50,16 @@ using Task = System.Threading.Tasks.Task;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
-#pragma warning disable CA1822
-
 // ReSharper disable CheckNamespace
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable AssignNullToNotNullAttribute
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable HeuristicUnreachableCode
+
+#pragma warning disable CA1822
 
 namespace CollapseLauncher.Pages
 {
-    // ReSharper disable once RedundantExtendsListEntry
     public sealed partial class SettingsPage : Page
     {
         #region Properties

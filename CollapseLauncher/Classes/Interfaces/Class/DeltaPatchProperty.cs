@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+// ReSharper disable MemberInitializerValueIgnored
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher
 {

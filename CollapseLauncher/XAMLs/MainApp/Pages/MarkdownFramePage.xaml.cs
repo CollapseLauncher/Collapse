@@ -12,6 +12,9 @@ using System.Text;
 using System.Threading;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher
