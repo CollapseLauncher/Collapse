@@ -13,7 +13,6 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System;
 using System.Collections.Generic;
-// ReSharper disable MemberInitializerValueIgnored
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
@@ -25,7 +24,7 @@ public class WinUIRenderer : RendererBase
     private readonly Stack<IAddChild> _stack = new();
     private          char[]           _buffer;
     public           MyFlowDocument   FlowDocument { get; }
-    public           MarkdownConfig   Config       { get; set; } = MarkdownConfig.Default;
+    public           MarkdownConfig   Config       { get; set; }
 
     public WinUIRenderer(MyFlowDocument document, MarkdownConfig config)
     {
