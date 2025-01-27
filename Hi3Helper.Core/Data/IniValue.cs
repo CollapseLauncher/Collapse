@@ -4,25 +4,27 @@ using System.Drawing;
 using System.Globalization;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace Hi3Helper.Data
 {
-    public struct IniValue
+    public struct IniValue : IEquatable<IniValue>
     {
         #region Fields
         private string? _value;
-        private bool _isEmpty = true;
+
         #endregion
 
         #region Methods
         public string? Value
         {
             get => _value;
-            set => _isEmpty = string.IsNullOrEmpty(_value = value);
+            set => IsEmpty = string.IsNullOrEmpty(_value = value);
         }
 
-        public bool IsEmpty => _isEmpty;
+        public bool IsEmpty { get; private set; } = true;
+
         #endregion
 
         #region Constructors
@@ -189,7 +191,7 @@ namespace Hi3Helper.Data
         public readonly Guid ToGuid()
         {
             // If the back value is empty, return an empty Guid
-            if (_isEmpty)
+            if (IsEmpty)
             {
                 return Guid.Empty;
             }
@@ -220,7 +222,7 @@ namespace Hi3Helper.Data
         public bool? ToBoolNullable()
         {
             // If the value is empty, return null
-            if (_isEmpty)
+            if (IsEmpty)
             {
                 return null;
             }
@@ -426,6 +428,8 @@ namespace Hi3Helper.Data
         public static bool operator ==(IniValue valueA, IniValue valueB) => Equals(valueA, valueB);
 
         public static bool operator !=(IniValue valueA, IniValue valueB) => !(valueA == valueB);
+
+        public bool Equals(IniValue compareTo) => this == compareTo;
 
         public override bool Equals([NotNullWhen(true)] object? obj) => obj is IniValue iniValue && GetHashCode() == iniValue.GetHashCode();
 
