@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.14</Version>
+        <Version>1.82.15</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -31,7 +31,7 @@
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
         <!-- AoT Configs -->
-		<PublishAot>false</PublishAot>
+        <PublishAot>false</PublishAot>
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -55,7 +55,7 @@
         <NoWarn>TA100</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(PublishAot)' == 'true'">
+    <PropertyGroup Condition="'$(PublishAot)' == 'true' And '$(Configuration)' != 'Debug'">
         <RunAOTCompilation>true</RunAOTCompilation>
         <OptimizationPreference>Speed</OptimizationPreference>
         <StripSymbols>true</StripSymbols>
@@ -76,15 +76,15 @@
         - USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
                                 This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
-		- USEVELOPACK : Use Velopack as the update manager
+        - USEVELOPACK : Use Velopack as the update manager
 -->
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
-		<TrimMode>full</TrimMode>
-		<CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
-	</PropertyGroup>
+        <TrimMode>full</TrimMode>
+        <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
@@ -99,11 +99,15 @@
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
-
-    <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+    
+    <ItemGroup Condition="'$(PublishAot)' == 'true'">
+        <!-- Use additional linker arguments -->
+        <LinkerArg Include="/DEBUG:NONE" Condition="'$(Configuration)'!='Debug'" />
+        <LinkerArg Include="/NODEFAULTLIB:MSVCRT /LTCG" />
+        
         <!-- Region: Libsql.Client -->
         <DirectPInvoke Include="csharp_bindings" />
-        <NativeLibrary Include="StaticLib\csharp_bindings_msvc-release.lib" />
+        <NativeLibrary Include="StaticLib\csharp_bindings_msvc-ucrt.lib" />
         <!--
         These libraries are required by csharp_bindings to resolve calls to:
             - GetUserProfileDirectoryW function from Win32's userenv.dll
@@ -114,44 +118,47 @@
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
-        <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan_msvc-release.lib" />
+        <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan-static_msvc-ucrt.lib" />
         <!--
         These libraries are required by waifu2x-ncnn-vulkan to resolve external calls.
         -->
-        <NativeLibrary Include="StaticLib\Waifu2x\ncnn.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x\SPIRV.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x\glslang.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x\OGLCompiler.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x\MachineIndependent.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x\GenericCodeGen.lib" />
-		<NativeLibrary Include="StaticLib\Waifu2x\OSDependent.lib" />
-		<NativeLibrary Include="StaticLib\libomp_msvc-release.lib" />
-		
-		<!-- Region: webp -->
-		<DirectPInvoke Include="webp" />
-		<NativeLibrary Include="StaticLib\libwebp_msvc-release.lib" />
-		<DirectPInvoke Include="webpdemux" />
-		<NativeLibrary Include="StaticLib\libwebpdemux_msvc-release.lib" />
-		<DirectPInvoke Include="webpmux" />
-		<NativeLibrary Include="StaticLib\libwebpmux_msvc-release.lib" />
-		<!--
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\ncnn.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\SPIRV.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\glslang.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\glslang-default-resource-limits.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\OGLCompiler.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\MachineIndependent.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\GenericCodeGen.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\OSDependent.lib" />
+        <NativeLibrary Include="StaticLib\libomp_msvc-ucrt.lib" />
+        
+        <!-- Region: webp -->
+        <DirectPInvoke Include="webp" />
+        <NativeLibrary Include="StaticLib\libwebp_msvc-ucrt.lib" />
+        <DirectPInvoke Include="webpdemux" />
+        <NativeLibrary Include="StaticLib\libwebpdemux_msvc-ucrt.lib" />
+        <DirectPInvoke Include="webpmux" />
+        <NativeLibrary Include="StaticLib\libwebpmux_msvc-ucrt.lib" />
+        <!--
         These libraries are required by libwebp to resolve external calls.
         -->
-		<NativeLibrary Include="StaticLib\libsharpyuv_msvc-release.lib" />
-		<NativeLibrary Include="StaticLib\libwebpdecoder_msvc-release.lib" />
+        <NativeLibrary Include="StaticLib\libsharpyuv_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\libwebpdecoder_msvc-ucrt.lib" />
     </ItemGroup>
 
     <ItemGroup>
-		<!--
-		Use Velopack if "USEVELOPACK" constant is used. Otherwise, use Squirrel.
-		-->
+        <!--
+        Use Velopack if "USEVELOPACK" constant is used. Otherwise, use Squirrel.
+        -->
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
+        <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="9.0.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-		<PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.1" />
+        <PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -173,23 +180,23 @@
         <PackageReference Include="Markdig.Signed" Version="0.40.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.1" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2950-prerelease" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
-        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0-preview2" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="runtime.win-x64.Microsoft.DotNet.ILCompiler" Version="9.0.0" />
-        <PackageReference Include="SharpCompress" Version="0.38.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
+        <PackageReference Include="runtime.win-x64.Microsoft.DotNet.ILCompiler" Version="9.0.1" />
+        <PackageReference Include="SharpCompress" Version="0.39.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.8" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
-        <PackageReference Include="System.Text.Json" Version="9.0.0" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.1" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.1" />
+        <PackageReference Include="System.Text.Json" Version="9.0.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -346,6 +353,10 @@
         <RemoveDir Directories="$(OutDir)Lib\win-x86" Condition="Exists('$(OutDir)Lib\win-x86')" />
     </Target>
 
+    <Target Name="PreBuild-NativeAOTStaticLib" BeforeTargets="PreBuildEvent" Condition="'$(PublishAot)' == 'true'">
+        <Exec Command="&quot;$(ProjectDir)StaticLib\7za.exe&quot; x &quot;$(ProjectDir)StaticLib\StaticLib.7z.001&quot; -o&quot;$(ProjectDir)StaticLib\&quot; -y" />
+    </Target>
+    
     <Target Name="PostBuild" AfterTargets="Publish">
         <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
@@ -360,45 +371,41 @@
         <!-- Region: waifu2x-ncnn-vulkan -->
         <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" />
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" />
-		
-		<!-- Trim unused files and debug symbols -->
-		<ItemGroup>
-			<FilesToDelete Include="$(PublishDir)*.winmd;" />
-			<FilesToDelete Include="$(PublishDir)*.xml;" />
-		</ItemGroup>
-		<Delete Files="@(FilesToDelete)" />
-		<Delete Files="$(PublishDir)DwmSceneI.dll" />
-		<Delete Files="$(PublishDir)DWriteCore.dll" />
-		<Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
-		<Delete Files="$(PublishDir)Microsoft.Windows.Widgets.dll" />
-		<Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.dll" />
-		<Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
-		<Delete Files="$(PublishDir)PushNotificationsLongRunningTask.ProxyStub.dll" />
-		<Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
-		<Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
-		<Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
-		<Delete Files="$(PublishDir)webp.dll" />
-		<Delete Files="$(PublishDir)webpdemux.dll" />
-		<Delete Files="$(PublishDir)webpmux.dll" />
-		<Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
+        
+        <!-- Trim unused files and debug symbols -->
+        <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)*.winmd;" />
+            <FilesToDelete Include="$(PublishDir)*.xml;" />
+        </ItemGroup>
+        <Delete Files="@(FilesToDelete)" />
+        <Delete Files="$(PublishDir)DwmSceneI.dll" />
+        <Delete Files="$(PublishDir)DWriteCore.dll" />
+        <Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
+        <Delete Files="$(PublishDir)Microsoft.Windows.Widgets.dll" />
+        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.dll" />
+        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
+        <Delete Files="$(PublishDir)PushNotificationsLongRunningTask.ProxyStub.dll" />
+        <Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
+        <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
+        <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
+        <Delete Files="$(PublishDir)webp.dll" />
+        <Delete Files="$(PublishDir)webpdemux.dll" />
+        <Delete Files="$(PublishDir)webpmux.dll" />
+        <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
 
-	<ItemGroup Condition="'$(PublishAot)' == 'true'">
-		<LinkerArg Include="/LTCG /DEBUG:NONE" />
-	</ItemGroup>
+    <ItemGroup>
+      <Compile Update="Properties\Resources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <Compile Update="Properties\Resources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Resources.resx</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	</ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="Properties\Resources.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
 </Project>

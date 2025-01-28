@@ -362,6 +362,8 @@
     "SpecVeryHigh": "Muy Alto",
     "SpecMaximum": "Máximo",
     "SpecUltra": "Ultra",
+    "SpecDynamic": "Dinámico",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Global",
@@ -1003,7 +1005,12 @@
     "SophonIncrementUpdateUnavailSubtitle1": "Tu versión del juego: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": " es muy obsoleta",
     "SophonIncrementUpdateUnavailSubtitle3": " y la actualización incremental no está disponible para tu versión. Sin embargo, aún podrías actualizar tu juego volviendo a descargarlo desde cero.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso"
+    "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso",
+
+    "UACWarningTitle": "Advertencia: Detectado UAC deshabilitado",
+    "UACWarningContent": "Desactivar el Control de cuentas de usuario (UAC) nunca es una buena idea. \nLa seguridad del SO se verá comprometida y es posible que el juego no funcione correctamente. \n\nHaz clic en \"Más información\" para ver cómo activar UAC. \nLa entrada relacionada es: Ejecución de todos los administradores en Administración modo de aprobación.",
+    "UACWarningLearnMore": "Más información",
+    "UACWarningDontShowAgain": "No mostrar de nuevo"
   },
 
   "_FileMigrationProcess": {

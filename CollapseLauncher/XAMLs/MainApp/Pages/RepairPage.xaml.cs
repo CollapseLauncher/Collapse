@@ -2,7 +2,6 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.Helper;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Native.ManagedTools;
@@ -16,6 +15,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher.Pages
 {
@@ -26,7 +26,7 @@ namespace CollapseLauncher.Pages
         {
             BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GetCurrentGameProperty();
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         private void StartGameCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -62,22 +62,22 @@ namespace CollapseLauncher.Pages
             {
                 AddEvent();
 
-                bool IsGameBroken = await CurrentGameProperty._GameRepair.StartCheckRoutine(isFast);
+                bool isGameBroken = await (CurrentGameProperty.GameRepair?.StartCheckRoutine(isFast) ?? Task.FromResult(false));
 
-                RepairFilesBtn.IsEnabled = IsGameBroken;
-                CheckFilesBtn.IsEnabled = !IsGameBroken;
+                RepairFilesBtn.IsEnabled = isGameBroken;
+                CheckFilesBtn.IsEnabled = !isGameBroken;
                 CancelBtn.IsEnabled = false;
 
-                RepairFilesBtn.Visibility = IsGameBroken ? Visibility.Visible : Visibility.Collapsed;
-                CheckFilesBtn.Visibility = IsGameBroken ? Visibility.Collapsed : Visibility.Visible;
+                RepairFilesBtn.Visibility = isGameBroken ? Visibility.Visible : Visibility.Collapsed;
+                CheckFilesBtn.Visibility = isGameBroken ? Visibility.Collapsed : Visibility.Visible;
 
                 // If the current window is not in focus, then spawn the notification toast
                 if (!WindowUtility.IsCurrentWindowInFocus())
                 {
                     WindowUtility.Tray_ShowNotification(
                                                         Lang._NotificationToast.GameRepairCheckCompleted_Title,
-                                                        IsGameBroken ?
-                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty._GameRepair.AssetEntry.Count) :
+                                                        isGameBroken ?
+                                                            string.Format(Lang._NotificationToast.GameRepairCheckCompletedFound_Subtitle, CurrentGameProperty.GameRepair?.AssetEntry.Count) :
                                                             Lang._NotificationToast.GameRepairCheckCompletedNotFound_Subtitle
                                                        );
                 }
@@ -112,9 +112,9 @@ namespace CollapseLauncher.Pages
 
                 AddEvent();
 
-                int assetCount = CurrentGameProperty._GameRepair.AssetEntry.Count;
+                int assetCount = CurrentGameProperty.GameRepair?.AssetEntry.Count ?? 0;
 
-                await CurrentGameProperty._GameRepair.StartRepairRoutine();
+                await (CurrentGameProperty.GameRepair?.StartRepairRoutine() ?? Task.CompletedTask);
 
                 RepairFilesBtn.IsEnabled = false;
                 CheckFilesBtn.IsEnabled = true;
@@ -165,8 +165,11 @@ namespace CollapseLauncher.Pages
 
         private void AddEvent()
         {
-            CurrentGameProperty._GameRepair.ProgressChanged += _repairTool_ProgressChanged;
-            CurrentGameProperty._GameRepair.StatusChanged += _repairTool_StatusChanged;
+            if (CurrentGameProperty.GameRepair == null)
+                return;
+
+            CurrentGameProperty.GameRepair.ProgressChanged += _repairTool_ProgressChanged;
+            CurrentGameProperty.GameRepair.StatusChanged += _repairTool_StatusChanged;
 
             RepairTotalProgressBar.IsIndeterminate = true;
             RepairPerFileProgressBar.IsIndeterminate = true;
@@ -174,8 +177,11 @@ namespace CollapseLauncher.Pages
 
         private void RemoveEvent()
         {
-            CurrentGameProperty._GameRepair.ProgressChanged -= _repairTool_ProgressChanged;
-            CurrentGameProperty._GameRepair.StatusChanged -= _repairTool_StatusChanged;
+            if (CurrentGameProperty.GameRepair == null)
+                return;
+
+            CurrentGameProperty.GameRepair.ProgressChanged -= _repairTool_ProgressChanged;
+            CurrentGameProperty.GameRepair.StatusChanged -= _repairTool_StatusChanged;
 
             RepairTotalProgressBar.IsIndeterminate = false;
             RepairPerFileProgressBar.IsIndeterminate = false;
@@ -232,22 +238,23 @@ namespace CollapseLauncher.Pages
 
         private void CancelOperation(object sender, RoutedEventArgs e)
         {
-            CurrentGameProperty._GameRepair?.CancelRoutine();
+            CurrentGameProperty.GameRepair?.CancelRoutine();
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            CurrentGameProperty._GameRepair?.CancelRoutine();
-            CurrentGameProperty._GameRepair?.AssetEntry.Clear();
+            CurrentGameProperty.GameRepair?.CancelRoutine();
+            CurrentGameProperty.GameRepair?.AssetEntry.Clear();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
-            if (GameInstallationState == GameInstallStateEnum.NotInstalled
-                || GameInstallationState == GameInstallStateEnum.NeedsUpdate
-                || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
-                || GameInstallationState == GameInstallStateEnum.GameBroken)
+            if (GameInstallationState
+                is GameInstallStateEnum.NotInstalled
+                or GameInstallStateEnum.NeedsUpdate
+                or GameInstallStateEnum.InstalledHavePlugin
+                or GameInstallStateEnum.GameBroken)
             {
                 Overlay.Visibility = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;

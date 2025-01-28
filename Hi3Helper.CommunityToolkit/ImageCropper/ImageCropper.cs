@@ -99,12 +99,10 @@ public partial class ImageCropper : Control
                 // When not null or 0.
                 return aspectRatio.Value;
             }
-            else
-            {
-                // Fallback to sentinal value.
-                // Used to indicate aspect ratio should be discarded and reset during manipulation of the image cropper.
-                return -1;
-            }
+
+            // Fallback to sentinal value.
+            // Used to indicate aspect ratio should be discarded and reset during manipulation of the image cropper.
+            return -1;
         }
     }
 

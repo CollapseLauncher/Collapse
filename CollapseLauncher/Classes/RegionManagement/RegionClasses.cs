@@ -1,7 +1,7 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 // ReSharper disable CheckNamespace
@@ -24,18 +24,22 @@ namespace CollapseLauncher
                 return null;
             }
 
-            return source.Count == 0 ? new List<T>() : source;
+            return source.Count == 0 ? [] : source;
         }
     }
 
-    public class RegionResourceProp : IRegionResourceCopyable<RegionResourceProp>
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(RegionResourceProp))]
+    internal sealed partial class RegionResourcePropJsonContext : JsonSerializerContext;
+
+    public sealed class RegionResourceProp : IRegionResourceCopyable<RegionResourceProp>
     {
         public RegionResourceGame? data         { get; set; }
         public string              imgLocalPath { get; set; } = string.Empty;
 
         public RegionResourceProp Copy()
         {
-            return new RegionResourceProp()
+            return new RegionResourceProp
             {
                 data         = data?.Copy(),
                 imgLocalPath = imgLocalPath
@@ -43,7 +47,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
+    public sealed class RegionResourceGame : IRegionResourceCopyable<RegionResourceGame>
     {
         public List<RegionResourcePlugin>? plugins           { get; set; }
         public RegionResourceLatest?       game              { get; set; }
@@ -52,7 +56,7 @@ namespace CollapseLauncher
 
         public RegionResourceGame Copy()
         {
-            return new RegionResourceGame()
+            return new RegionResourceGame
             {
                 plugins           = plugins?.Copy(),
                 game              = game?.Copy(),
@@ -62,7 +66,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
+    public sealed class RegionResourcePlugin : IRegionResourceCopyable<RegionResourcePlugin>
     {
         public string?                release_id { get; set; }
         public string?                plugin_id  { get; set; }
@@ -71,7 +75,7 @@ namespace CollapseLauncher
 
         public RegionResourcePlugin Copy()
         {
-            return new RegionResourcePlugin()
+            return new RegionResourcePlugin
             {
                 release_id = release_id,
                 plugin_id  = plugin_id,
@@ -81,14 +85,17 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(List<RegionResourcePluginValidate>))]
+    internal sealed partial class RegionResourcePluginValidateJsonContext : JsonSerializerContext;
+    public sealed class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
     {
         public string? path { get; set; }
         public string? md5  { get; set; }
 
         public RegionResourcePluginValidate Copy()
         {
-            return new RegionResourcePluginValidate()
+            return new RegionResourcePluginValidate
             {
                 path = path,
                 md5  = md5
@@ -96,14 +103,14 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceLatest : IRegionResourceCopyable<RegionResourceLatest>
+    public sealed class RegionResourceLatest : IRegionResourceCopyable<RegionResourceLatest>
     {
         public RegionResourceVersion?       latest { get; set; }
         public List<RegionResourceVersion>? diffs  { get; set; }
 
         public RegionResourceLatest Copy()
         {
-            return new RegionResourceLatest()
+            return new RegionResourceLatest
             {
                 latest = latest?.Copy(),
                 diffs  = diffs?.Copy()
@@ -111,7 +118,7 @@ namespace CollapseLauncher
         }
     }
 
-    public class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
+    public sealed class RegionResourceVersion : IRegionResourceCopyable<RegionResourceVersion>
     {
         public string? run_command       { get; set; }
         public string? version           { get; set; }
@@ -145,7 +152,7 @@ namespace CollapseLauncher
 
         public RegionResourceVersion Copy()
         {
-            return new RegionResourceVersion()
+            return new RegionResourceVersion
             {
                 version               = version,
                 pkg_version           = pkg_version,

@@ -30,9 +30,9 @@
     "OverlayPrepareFolderSubtitle": "Menerapkan izin-izin...",
     "OverlayPrepareFolderTitle": "Menyiapkan Folder Launcher",
     "PageTitle": "Halaman Startup Awal",
-    "Pg1LoadingSubitle1": "Menyiapkan list game yang didukung untukmu",
-    "Pg1LoadingSubitle2": "Selesai! Pindah ke bagian selanjutnya!",
-    "Pg1LoadingTitle1": "Membaca List Game",
+    "Pg1LoadingSubitle1": "Menyiapkan daftar dukungan game untuk kamu...",
+    "Pg1LoadingSubitle2": "Selesai! Yuk kita pindah ke bagian selanjutnya!",
+    "Pg1LoadingTitle1": "Membaca Daftar Game...",
     "Pg1NextBtn": "Selanjutnya - Memilih Game",
     "Pg2ComboBox": "Pilih Game",
     "Pg2ComboBoxRegion": "Pilih Region",
@@ -80,7 +80,7 @@
     "UnhandledTitle3": "Game Crash",
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
-    "UnhandledSubtitle4": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:\r\nAkibat miHoYo A/B testing, Collapse tidak dapat memproses pengaturan ini: App_Settings_h2319593470.\r\nKami mohon maaf atas ketidaknyamanannya.",
+    "UnhandledSubtitle4": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting) bahwa dikarenakan PC kamu mendapatkan beberapa fitur A/B testing miHoYo/HoYoverse untuk game ini, Collapse tidak bisa memproses key registri berikut: App_Settings_h2319593470.\r\nTerima kasih atas perhatiannya dan mohon maaf atas hal ini.",
     "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
     "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
@@ -362,6 +362,8 @@
     "SpecVeryHigh": "S. Tinggi",
     "SpecMaximum": "Maksimum",
     "SpecUltra": "Terbaik",
+    "SpecDynamic": "Dinamis",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Pengaturan Suara",
     "Audio_Master": "Volume Utama",
@@ -960,7 +962,7 @@
     "OperationWarningNotCancellableMsg5": "\" untuk membatalkan.",
 
     "GenericWarningExceptionTitle": "Peringatan",
-    "GenericWarningExceptionSubtitle": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:",
+    "GenericWarningExceptionSubtitle": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting)",
 
     "ShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
     "ShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat pada tempat ini:",
@@ -1003,7 +1005,12 @@
     "SophonIncrementUpdateUnavailSubtitle1": "Versi game kamu: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": " sudah terlalu usang.",
     "SophonIncrementUpdateUnavailSubtitle3": " dan pembaruan incremental untuk versi tersebut tidak tersedia. Tapi, kamu tetap bisa memperbarui game kamu dengan mengunduh ulang semuanya dari awal.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses"
+    "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses",
+
+    "UACWarningTitle": "Peringatan: UAC Terdeteksi Dimatikan!",
+    "UACWarningContent": "Mematikan User Account Control (UAC) sangat tidak disarankan.\nUAC dibutuhkan untuk beberapa game agar bisa berjalan dengan baik dan mematikan UAC bisa membahayakan keamanan Operasi Sistem kamu, lho!\n\nKlik tombol \"Pelajari Lebih Lanjut\" untuk mencari tahu cara menyalakan UAC kembali.\nEntry yang perlu dinyalakan: \"Run all administrators in Admin Approval Mode.\"",
+    "UACWarningLearnMore": "Pelajari Lebih Lanjut",
+    "UACWarningDontShowAgain": "Jangan Munculkan Lagi"
   },
 
   "_FileMigrationProcess": {

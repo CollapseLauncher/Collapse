@@ -4,7 +4,6 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
-using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -26,6 +25,8 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable CommentTypo
 // ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable IdentifierTypo
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace CollapseLauncher.Dialogs
 {
@@ -122,13 +123,13 @@ namespace CollapseLauncher.Dialogs
             int choiceAsDefault = defaultIndex;
             StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
 
-            parentPanel.AddElementToStackPanel(new TextBlock()
+            parentPanel.AddElementToStackPanel(new TextBlock
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
                 FontWeight = FontWeights.Medium,
                 Margin = new Thickness(0, 0, 0, 16),
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -248,11 +249,13 @@ namespace CollapseLauncher.Dialogs
 
                     CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
                     Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (textBlockLocal != null && thisIconText != null && !(thisCheckBox.IsChecked ?? false))
+                    if (textBlockLocal == null || thisIconText == null || (thisCheckBox.IsChecked ?? false))
                     {
-                        textBlockLocal.Opacity = 0.5;
-                        thisIconText.Opacity = 0.5;
+                        return;
                     }
+
+                    textBlockLocal.Opacity = 0.5;
+                    thisIconText.Opacity   = 0.5;
                 };
 
                 if (i == defaultIndex)
@@ -332,13 +335,13 @@ namespace CollapseLauncher.Dialogs
             int choiceAsDefault = defaultIndex;
             StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
 
-            parentPanel.AddElementToStackPanel(new TextBlock()
+            parentPanel.AddElementToStackPanel(new TextBlock
             {
                 Text = Lang._Dialogs.ChooseAudioLangSubtitle,
                 TextWrapping = TextWrapping.Wrap,
                 FontWeight = FontWeights.Medium,
                 Margin = new Thickness(0, 0, 0, 16),
-                HorizontalAlignment = HorizontalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -357,7 +360,7 @@ namespace CollapseLauncher.Dialogs
                 SecondaryButtonText = null,
                 DefaultButton = ContentDialogButton.Primary,
                 Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : throw new NullReferenceException($"WindowUtility.CurrentWindow cannot be null!")
+                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : throw new NullReferenceException("WindowUtility.CurrentWindow cannot be null!")
             };
 
             InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
@@ -564,7 +567,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe(UIElement content)
         {
-            Dictionary<string, PresetConfig> convertibleRegions = new Dictionary<string, PresetConfig>();
+            Dictionary<string, PresetConfig> convertibleRegions = new();
             foreach (KeyValuePair<string, PresetConfig> config in LauncherMetadataHelper.LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName!]
                 .Where(x => x.Value.IsConvertible ?? false))
                 convertibleRegions.Add(config.Key, config.Value);
@@ -573,32 +576,15 @@ namespace CollapseLauncher.Dialogs
 
             ComboBox targetGame = new ComboBox();
 
-            SelectionChangedEventHandler sourceGameChangedArgs = (sender, _) =>
-                                                                 {
-                                                                     // ReSharper disable AccessToModifiedClosure
-                                                                     targetGame!.IsEnabled            = true;
-                                                                     dialog!.IsSecondaryButtonEnabled = false;
-                                                                     targetGame!.ItemsSource =
-                                                                         InnerLauncherConfig
-                                                                            .BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
-                                                                                 InstallationConvert
-                                                                                    .GetConvertibleNameList(
-                                                                        InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox)!.SelectedItem)));
-                                                                 };
-            SelectionChangedEventHandler targetGameChangedArgs = (sender, _) =>
-                                                                 {
-                                                                     if ((sender as ComboBox)!.SelectedIndex != -1)
-                                                                         dialog!.IsSecondaryButtonEnabled = true;
-                                                                     // ReSharper restore AccessToModifiedClosure
-                                                                 };
             var sourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, new List<string>(convertibleRegions.Keys)),
+                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
+                                                                        [..convertibleRegions.Keys]),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
                 CornerRadius = new CornerRadius(14)
             };
-            sourceGame.SelectionChanged += sourceGameChangedArgs;
+            sourceGame.SelectionChanged += SourceGameChangedArgs;
             targetGame = new ComboBox
             {
                 Width = 200,
@@ -606,13 +592,13 @@ namespace CollapseLauncher.Dialogs
                 IsEnabled = false,
                 CornerRadius = new CornerRadius(14)
             };
-            targetGame.SelectionChanged += targetGameChangedArgs;
+            targetGame.SelectionChanged += TargetGameChangedArgs;
 
             StackPanel dialogContainer = CollapseUIExt.CreateStackPanel();
             StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
             comboBoxContainer.AddElementToStackPanel(
                 sourceGame,
-                new FontIcon()
+                new FontIcon
                 {
                     Glyph = "",
                     FontFamily = FontCollections.FontAwesomeSolid,
@@ -641,16 +627,30 @@ namespace CollapseLauncher.Dialogs
                 XamlRoot = content.XamlRoot
             };
             return (await dialog.QueueAndSpawnDialog(), sourceGame, targetGame);
+
+            void SourceGameChangedArgs(object sender, SelectionChangedEventArgs _)
+            {
+                // ReSharper disable AccessToModifiedClosure
+                targetGame!.IsEnabled            = true;
+                dialog!.IsSecondaryButtonEnabled = false;
+                targetGame!.ItemsSource          = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, InstallationConvert.GetConvertibleNameList(InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox)!.SelectedItem)));
+            }
+
+            void TargetGameChangedArgs(object sender, SelectionChangedEventArgs _)
+            {
+                if ((sender as ComboBox)!.SelectedIndex != -1) dialog!.IsSecondaryButtonEnabled = true;
+                // ReSharper restore AccessToModifiedClosure
+            }
         }
 
         public static async Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement content, string fileName)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle1 });
-            texts.Inlines.Add(new Hyperlink()
+            texts.Inlines.Add(new Hyperlink
             {
                 Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor") } },
-                NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe"),
+                NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe")
             });
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.CookbookLocateSubtitle3 });
             texts.Inlines.Add(new Run { Text = $" {Lang._Misc.Next} ", FontWeight = FontWeights.Bold });
@@ -723,15 +723,15 @@ namespace CollapseLauncher.Dialogs
         {
             if (migrateFromLauncherType != MigrateFromLauncherType.Official)
             {
-                switch (migrateFromLauncherType)
-                {
-                    case MigrateFromLauncherType.BetterHi3Launcher:
-                        return await Dialog_ExistingInstallationBetterLauncher(content, existingGamePath, isHasOnlyMigrateOption);
-                    case MigrateFromLauncherType.Steam:
-                        return await Dialog_ExistingInstallationSteam(content, existingGamePath, isHasOnlyMigrateOption);
-                    default:
-                        throw new InvalidOperationException($"Dialog is not supported for unknown migration!");
-                }
+                return migrateFromLauncherType switch
+                       {
+                           MigrateFromLauncherType.BetterHi3Launcher => await
+                               Dialog_ExistingInstallationBetterLauncher(content, existingGamePath,
+                                                                         isHasOnlyMigrateOption),
+                           MigrateFromLauncherType.Steam => await
+                               Dialog_ExistingInstallationSteam(content, existingGamePath, isHasOnlyMigrateOption),
+                           _ => throw new InvalidOperationException("Dialog is not supported for unknown migration!")
+                       };
             }
 
             string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
@@ -802,7 +802,7 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> Dialog_GameInstallCorruptedDataAnyway(UIElement content, string fileName, long fileSize)
         {
-            TextBlock textBlock = new TextBlock()
+            TextBlock textBlock = new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap
             };
@@ -1113,7 +1113,7 @@ namespace CollapseLauncher.Dialogs
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                              .WithVerticalAlignment(VerticalAlignment.Stretch)
-                                             .WithRows(GridLength.Auto, new(1, GridUnitType.Star), GridLength.Auto);
+                                             .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto);
 
                 _ = rootGrid.AddElementToGridRow(new TextBlock
                 {
@@ -1210,7 +1210,7 @@ namespace CollapseLauncher.Dialogs
                 pathText,
                 new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox() {
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox {
                 Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
             }.WithMargin(0d, 4d, 0d, -8d).WithHorizontalAlignment(HorizontalAlignment.Center));
         
@@ -1264,7 +1264,7 @@ namespace CollapseLauncher.Dialogs
                 new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, 2d),
                 new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d));
 
-            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox()
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox
             {
                 Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
             }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, -8d));
@@ -1325,11 +1325,14 @@ namespace CollapseLauncher.Dialogs
         {
             ToggleSwitch startAfterInstall = new ToggleSwitch
             {
-                IsOn = currentGameProperty._GameInstall.StartAfterInstall,
+                IsOn = currentGameProperty.GameInstall.StartAfterInstall,
                 OffContent = Lang._Misc.Disabled,
                 OnContent = Lang._Misc.Enabled
             };
-            startAfterInstall.Toggled += (_, _) => currentGameProperty._GameInstall.StartAfterInstall = startAfterInstall.IsOn;
+            startAfterInstall.Toggled += (_, _) =>
+            {
+                currentGameProperty.GameInstall.StartAfterInstall = startAfterInstall.IsOn;
+            };
 
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(
@@ -1354,23 +1357,23 @@ namespace CollapseLauncher.Dialogs
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
             return await parentUI.DispatcherQueue.EnqueueAsync(async () =>
-                                                               {
-                                                                   // Create a new instance of dialog
-                                                                   ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
-                                                                   {
-                                                                       Title = title,
-                                                                       Content = content,
-                                                                       CloseButtonText = closeText,
-                                                                       PrimaryButtonText = primaryText,
-                                                                       SecondaryButtonText = secondaryText,
-                                                                       DefaultButton = defaultButton,
-                                                                       Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                                                                       XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI.XamlRoot
-                                                                   };
+            {
+                // Create a new instance of dialog
+                ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
+                {
+                    Title = title,
+                    Content = content,
+                    CloseButtonText = closeText,
+                    PrimaryButtonText = primaryText,
+                    SecondaryButtonText = secondaryText,
+                    DefaultButton = defaultButton,
+                    Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                    XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI.XamlRoot
+                };
 
-                                                                   // Queue and spawn the dialog instance
-                                                                   return await dialog.QueueAndSpawnDialog();
-                                                               });
+                // Queue and spawn the dialog instance
+                return await dialog.QueueAndSpawnDialog();
+            });
         }
 
         public static async ValueTask<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)

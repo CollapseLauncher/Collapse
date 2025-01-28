@@ -7,6 +7,7 @@
       mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
+        <!-- ReSharper disable once Xaml.RedundantResource -->
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
@@ -73,12 +74,13 @@
                 </StackPanel>
             </NavigationView.PaneFooter>
             <Grid HorizontalAlignment="Left">
+                <!-- ReSharper disable once Xaml.PathError -->
                 <Image x:Name="BackgroundBack"
                        Margin="-2,0,0,0"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"
                        Opacity="1"
-                       Source="ms-appx:///F:\CollapseData\_img\bg\aa3a710cdd9dc3ffaeaab26d40f2cb28_3604085419409320596.png"
+                       Source="ms-appx:///F:/CollapseData/_img/bg/aa3a710cdd9dc3ffaeaab26d40f2cb28_3604085419409320596.png"
                        Stretch="UniformToFill" />
                 <Frame x:Name="contentFrame" />
             </Grid>
@@ -95,7 +97,6 @@
                     Grid.Column="0"
                     Height="33"
                     Margin="58,8,0,0"
-                    HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Style="{ThemeResource TransparentDefaultButtonStyle}">
                 <!--<Button.Transitions>
@@ -141,8 +142,6 @@
                                    Visibility="Visible" />
                     </StackPanel>
                     <StackPanel x:Name="PreviewBuildIndicator"
-                                Grid.Column="4"
-                                Grid.ColumnSpan="2"
                                 Margin="-16,-12,0,0"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Center"

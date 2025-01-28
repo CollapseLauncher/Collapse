@@ -5,6 +5,7 @@ using LibISULR.Records;
 using System;
 using System.IO;
 using System.Linq;
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace InnoSetupHelper
 {
@@ -24,8 +25,7 @@ namespace InnoSetupHelper
     {
         public static event EventHandler<InnoSetupLogStruct>? LoggerEvent;
 
-        private static readonly string[] excludeDeleteFile = new string[]
-        {
+        private static readonly string[] ExcludeDeleteFile = [
             // Generic Files
 #if DEBUG
             "ApplyUpdate.",
@@ -46,7 +46,7 @@ namespace InnoSetupHelper
             // Hi3Helper.Http DLLs
             , "Hi3Helper.Http"
 #endif
-        };
+        ];
 
         public static void UpdateInnoSetupLog(string path)
         {
@@ -58,7 +58,7 @@ namespace InnoSetupHelper
             {
                 using InnoUninstallLog innoLog = InnoUninstallLog.Load(path, true);
                 // Always set the log to x64 mode
-                innoLog.Header.IsLog64bit = true;
+                innoLog.Header.IsLog64Bit = true;
 
                 // Clean up the existing file and directory records
                 CleanUpInnoDirOrFilesRecord(innoLog, searchValue);
@@ -79,12 +79,12 @@ namespace InnoSetupHelper
         private static string GetPathWithoutDriveLetter(string path)
         {
             int firstIndexOf = path.IndexOf('\\');
-            return firstIndexOf > -1 ? path.Substring(firstIndexOf + 1) : path;
+            return firstIndexOf > -1 ? path[(firstIndexOf + 1)..] : path;
         }
 
         private static void RegisterDirOrFilesRecord(InnoUninstallLog innoLog, string pathToRegister)
         {
-            DirectoryInfo currentDirectory = new DirectoryInfo(pathToRegister);
+            DirectoryInfo currentDirectory = new(pathToRegister);
             if (innoLog.Records == null)
             {
                 LogWriteLine("[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] Records is uninitialized!", InnoSetupLogType.Error, true);
@@ -93,7 +93,7 @@ namespace InnoSetupHelper
             {
                 foreach (FileInfo fileInfo in currentDirectory.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
                 {
-                    if (excludeDeleteFile.Any(x => x.IndexOf(fileInfo.FullName, StringComparison.OrdinalIgnoreCase) > -1)) continue;
+                    if (ExcludeDeleteFile.Any(x => x.IndexOf(fileInfo.FullName, StringComparison.OrdinalIgnoreCase) > -1)) continue;
                     fileInfo.IsReadOnly = false;
                     LogWriteLine($"[InnoSetupLogUpdate::RegisterDirOrFilesRecord()] " +
                                  $"Registering Inno Setup record: (DeleteFileRecord){fileInfo.FullName}", InnoSetupLogType.Default, true);

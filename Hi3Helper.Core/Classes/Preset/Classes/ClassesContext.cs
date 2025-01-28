@@ -3,6 +3,7 @@ using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Locale;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace Hi3Helper
 {
@@ -13,10 +14,10 @@ namespace Hi3Helper
     [JsonSerializable(typeof(FilePropertiesRemote[]))]
     [JsonSerializable(typeof(List<FilePropertiesRemote>))]
     [JsonSerializable(typeof(Dictionary<string, string>))]
-    public sealed partial class CoreLibraryJSONContext : JsonSerializerContext;
+    public sealed partial class CoreLibraryJsonContext : JsonSerializerContext;
 
     [JsonSourceGenerationOptions(IncludeFields = true, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
     [JsonSerializable(typeof(LocalizationParams))]
     [JsonSerializable(typeof(LocalizationParamsBase))]
-    internal sealed partial class CoreLibraryFieldsJSONContext : JsonSerializerContext;
+    internal sealed partial class CoreLibraryFieldsJsonContext : JsonSerializerContext;
 }

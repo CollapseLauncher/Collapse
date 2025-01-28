@@ -2,10 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-             xmlns:conv="using:CollapseLauncher.Pages"
-             xmlns:interactions="using:Microsoft.Xaml.Interactions.Core"
-             xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
              xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+             xmlns:conv="using:CollapseLauncher.Pages"
+             xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
              xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives"
              xmlns:ui="using:Windows.UI">
     <!--  ReSharper disable Xaml.InvalidResourceType  -->
@@ -2190,13 +2189,13 @@
                                             <!--  Force ShouldConstrainToRootBounds to True  -->
                                             <!--  Fix https://github.com/microsoft/microsoft-ui-xaml/issues/8657  -->
                                             <interactivity:Interaction.Behaviors>
-                                                <interactions:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}"
-                                                                                  ComparisonCondition="Equal"
-                                                                                  Value="False">
-                                                    <interactions:ChangePropertyAction PropertyName="ShouldConstrainToRootBounds"
-                                                                                       TargetObject="{Binding ElementName=Popup}"
-                                                                                       Value="True" />
-                                                </interactions:DataTriggerBehavior>
+                                                <interactivity:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}"
+                                                                                   ComparisonCondition="Equal"
+                                                                                   Value="False">
+                                                    <interactivity:ChangePropertyAction PropertyName="ShouldConstrainToRootBounds"
+                                                                                        TargetObject="{Binding ElementName=Popup}"
+                                                                                        Value="True" />
+                                                </interactivity:DataTriggerBehavior>
                                             </interactivity:Interaction.Behaviors>
                                             <Border x:Name="PopupBorder"
                                                     Margin="0,-0.5,0,-1"
@@ -2627,13 +2626,13 @@
                                             <!--  Force ShouldConstrainToRootBounds to True  -->
                                             <!--  Fix https://github.com/microsoft/microsoft-ui-xaml/issues/8657  -->
                                             <interactivity:Interaction.Behaviors>
-                                                <interactions:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}"
-                                                                                  ComparisonCondition="Equal"
-                                                                                  Value="False">
-                                                    <interactions:ChangePropertyAction PropertyName="ShouldConstrainToRootBounds"
-                                                                                       TargetObject="{Binding ElementName=Popup}"
-                                                                                       Value="True" />
-                                                </interactions:DataTriggerBehavior>
+                                                <interactivity:DataTriggerBehavior Binding="{Binding ShouldConstrainToRootBounds, ElementName=Popup}"
+                                                                                   ComparisonCondition="Equal"
+                                                                                   Value="False">
+                                                    <interactivity:ChangePropertyAction PropertyName="ShouldConstrainToRootBounds"
+                                                                                        TargetObject="{Binding ElementName=Popup}"
+                                                                                        Value="True" />
+                                                </interactivity:DataTriggerBehavior>
                                             </interactivity:Interaction.Behaviors>
                                             <Border x:Name="PopupBorder"
                                                     Margin="0,-0.5,0,-1"
@@ -5019,7 +5018,8 @@
                     </Style>
 
                     <!--  PipsPager styles  -->
-                    <Style x:Key="DefaultPipsPagerStyle" TargetType="controls:PipsPager">
+                    <Style x:Key="DefaultPipsPagerStyle"
+                           TargetType="controls:PipsPager">
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="HorizontalAlignment" Value="Left" />
                         <Setter Property="VerticalAlignment" Value="Top" />
@@ -5031,7 +5031,9 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="controls:PipsPager">
-                                    <StackPanel x:Name="RootPanel" Orientation="{TemplateBinding Orientation}" Background="{TemplateBinding Background}">
+                                    <StackPanel x:Name="RootPanel"
+                                                Background="{TemplateBinding Background}"
+                                                Orientation="{TemplateBinding Orientation}">
 
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="PreviousPageButtonVisibilityStates">
@@ -5112,9 +5114,23 @@
                                             </VisualStateGroup>
 
                                         </VisualStateManager.VisualStateGroups>
-                                        <Button x:Name="PreviousPageButton" ToolTipService.ToolTip="{Binding ElementName=PreviousPageButton, Path=(AutomationProperties.Name)}" ToolTipService.Placement="Top" Style="{TemplateBinding PreviousButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                        <ScrollViewer x:Name="PipsPagerScrollViewer" VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled" IsHorizontalScrollChainingEnabled="False" IsVerticalScrollChainingEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <controls:ItemsRepeater x:Name="PipsPagerItemsRepeater" ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.PipsPagerItems}">
+                                        <Button x:Name="PreviousPageButton"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Style="{TemplateBinding PreviousButtonStyle}"
+                                                ToolTipService.Placement="Top"
+                                                ToolTipService.ToolTip="{Binding ElementName=PreviousPageButton, Path=(AutomationProperties.Name)}" />
+                                        <ScrollViewer x:Name="PipsPagerScrollViewer"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalScrollBarVisibility="Hidden"
+                                                      HorizontalScrollMode="Disabled"
+                                                      IsHorizontalScrollChainingEnabled="False"
+                                                      IsVerticalScrollChainingEnabled="False"
+                                                      VerticalScrollBarVisibility="Hidden"
+                                                      VerticalScrollMode="Disabled">
+                                            <controls:ItemsRepeater x:Name="PipsPagerItemsRepeater"
+                                                                    ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.PipsPagerItems}">
                                                 <controls:ItemsRepeater.Layout>
                                                     <controls:StackLayout Orientation="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Orientation}" />
                                                 </controls:ItemsRepeater.Layout>
@@ -5125,20 +5141,29 @@
                                                 </controls:ItemsRepeater.ItemTemplate>
                                             </controls:ItemsRepeater>
                                         </ScrollViewer>
-                                        <Button x:Name="NextPageButton" ToolTipService.ToolTip="{Binding ElementName=NextPageButton, Path=(AutomationProperties.Name)}" ToolTipService.Placement="Bottom" Style="{TemplateBinding NextButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Button x:Name="NextPageButton"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Style="{TemplateBinding NextButtonStyle}"
+                                                ToolTipService.Placement="Bottom"
+                                                ToolTipService.ToolTip="{Binding ElementName=NextPageButton, Path=(AutomationProperties.Name)}" />
                                     </StackPanel>
 
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <Style BasedOn="{StaticResource DefaultPipsPagerStyle}" TargetType="controls:PipsPager" />
+                    <Style BasedOn="{StaticResource DefaultPipsPagerStyle}"
+                           TargetType="controls:PipsPager" />
 
                     <!--  Pivot styles  -->
-                    <Style x:Key="ThinPivotHeaderItemStyle" TargetType="PivotHeaderItem" BasedOn="{StaticResource DefaultPivotHeaderItemStyle}">
+                    <Style x:Key="ThinPivotHeaderItemStyle"
+                           BasedOn="{StaticResource DefaultPivotHeaderItemStyle}"
+                           TargetType="PivotHeaderItem">
                         <Setter Property="Height" Value="30" />
                     </Style>
-                    <Style BasedOn="{StaticResource ThinPivotHeaderItemStyle}" TargetType="PivotHeaderItem" />
+                    <Style BasedOn="{StaticResource ThinPivotHeaderItemStyle}"
+                           TargetType="PivotHeaderItem" />
                     <Thickness x:Key="PivotNavButtonMargin">0,-6,0,0</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

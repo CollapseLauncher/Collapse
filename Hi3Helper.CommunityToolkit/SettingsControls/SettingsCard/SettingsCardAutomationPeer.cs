@@ -30,10 +30,8 @@ public partial class SettingsCardAutomationPeer : FrameworkElementAutomationPeer
         {
             return AutomationControlType.Button;
         }
-        else
-        {
-            return AutomationControlType.Group;
-        }
+
+        return AutomationControlType.Group;
     }
 
     /// <summary>
@@ -56,12 +54,10 @@ public partial class SettingsCardAutomationPeer : FrameworkElementAutomationPeer
             {
                 return name;
             }
-            else
+
+            if (owner.Header is string headerString && !string.IsNullOrEmpty(headerString))
             {
-                if (owner.Header is string headerString && !string.IsNullOrEmpty(headerString))
-                {
-                    return headerString;
-                }
+                return headerString;
             }
         }
 

@@ -362,6 +362,8 @@
     "SpecVeryHigh": "Very High",
     "SpecMaximum": "Maximum",
     "SpecUltra": "Ultra",
+    "SpecDynamic": "Dynamic",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Audio Settings",
     "Audio_Master": "Master Volume",
@@ -1003,7 +1005,12 @@
     "SophonIncrementUpdateUnavailSubtitle1": "Your game version: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": " is too obsolete",
     "SophonIncrementUpdateUnavailSubtitle3": " and incremental update for your version is not available. However, you could still update your game by re-downloading the entire thing from scratch.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Click \"{0}\" to continue updating the entire thing or click \"{1}\" to cancel the process"
+    "SophonIncrementUpdateUnavailSubtitle4": "Click \"{0}\" to continue updating the entire thing or click \"{1}\" to cancel the process",
+
+    "UACWarningTitle": "Warning: UAC Disabled Detected",
+    "UACWarningContent": "Disabling User Account Control (UAC) is never a good idea.\nThe security of the OS will be compromised and the game may not run properly.\n\nClick the \"Learn More\" button to see how to enable UAC.\nThe related entry is: Run all administrators in Admin Approval Mode.",
+    "UACWarningLearnMore": "Learn More",
+    "UACWarningDontShowAgain": "Don't Show Again"
   },
 
   "_FileMigrationProcess": {

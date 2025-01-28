@@ -61,6 +61,17 @@ public enum FpsOption
 }
 
 /// <summary>
+/// Available options for in-game High-Precision Character Resolution setting <br/>
+/// Default : Off (on Low and Medium Preset), Dynamic (on High Preset)
+/// </summary>
+public enum HiPrecisionCharaAnimOption
+{
+    Off,
+    Dynamic,
+    Global
+}
+
+/// <summary>
 /// Available options for render resolutions. 0.8, 1.0, 1.2 <br/>
 /// Default : 1 (1.0)
 /// </summary>

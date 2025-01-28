@@ -1055,6 +1055,7 @@
                                                   Foreground="{TemplateBinding Foreground}" />
                             </Viewbox>
                             <ContentPresenter x:Name="InfoBadgePresenter"
+                                              Grid.Row="0"
                                               Grid.Column="2"
                                               VerticalAlignment="Center"
                                               Content="{TemplateBinding InfoBadge}" />

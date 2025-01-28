@@ -17,22 +17,24 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class UpdatePage : Page
     {
-        private readonly CancellationTokenSource _tokenSource    = new CancellationTokenSource();
-        private readonly MarkdownConfig          _markdownConfig = new MarkdownConfig();
+        private readonly CancellationTokenSource _tokenSource    = new();
+        private readonly MarkdownConfig          _markdownConfig = new();
 
         public UpdatePage()
         {
-            this.InitializeComponent();
-            this.Loaded += LoadedAsyncRoutine;
-            this.Unloaded += UpdatePage_Unloaded;
+            InitializeComponent();
+            Loaded += LoadedAsyncRoutine;
+            Unloaded += UpdatePage_Unloaded;
         }
 
-        private void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+        private static void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
         private async void LoadedAsyncRoutine(object sender, RoutedEventArgs e)
         {
@@ -41,10 +43,10 @@ namespace CollapseLauncher.Pages
             string channelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
             CurrentVersionLabel.Text = $"{LauncherUpdateHelper.LauncherCurrentVersionString}";
 
-            if (!LauncherUpdateHelper.AppUpdateVersionProp?.Version.HasValue ?? false)
-                throw new NullReferenceException($"New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
+            if (LauncherUpdateHelper.AppUpdateVersionProp == null)
+                throw new NullReferenceException("New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
 
-            if (LauncherUpdateHelper.AppUpdateVersionProp != null && LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+            if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
             {
                     GameVersion newUpdateVersion = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value;
 
@@ -79,7 +81,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (LauncherUpdateWatcher.isMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
+                if (LauncherUpdateWatcher.IsMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
                 {
                     switch (await Dialog_MeteredConnectionWarning(Content))
                     {

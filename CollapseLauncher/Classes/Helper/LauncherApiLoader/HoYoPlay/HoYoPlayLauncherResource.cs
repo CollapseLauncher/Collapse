@@ -1,10 +1,16 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+// ReSharper disable StringLiteralTypo
+// ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(HoYoPlayLauncherResources))]
+    internal sealed partial class HoYoPlayLauncherResourcesJsonContext : JsonSerializerContext;
+
     public class HoYoPlayLauncherResources
     {
         [JsonPropertyName("data")]
@@ -131,7 +137,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? UnpackedBaseUrl { get; init; }
 
         [JsonPropertyName("channel_sdk_pkg")]
-        public string? ChannelSDKPkg { get; init; }
+        public string? ChannelSdkPkg { get; init; }
 
         [JsonPropertyName("command")]
         public string? PackageRunCommand { get; init; }

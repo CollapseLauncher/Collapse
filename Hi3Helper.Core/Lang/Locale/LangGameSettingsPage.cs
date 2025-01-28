@@ -1,4 +1,7 @@
 ﻿using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper
 {
@@ -69,6 +72,8 @@ namespace Hi3Helper
                 public string SpecVeryHigh                    { get; set; } = LangFallback?._GameSettingsPage.SpecVeryHigh;
                 public string SpecMaximum                     { get; set; } = LangFallback?._GameSettingsPage.SpecMaximum;
                 public string SpecUltra                       { get; set; } = LangFallback?._GameSettingsPage.SpecUltra;
+                public string SpecDynamic                     { get; set; } = LangFallback?._GameSettingsPage.SpecDynamic;
+                public string SpecGlobal                      { get; set; } = LangFallback?._GameSettingsPage.SpecGlobal;
                 public string Audio_Title                     { get; set; } = LangFallback?._GameSettingsPage.Audio_Title;
                 public string Audio_Mute                      { get; set; } = LangFallback?._GameSettingsPage.Audio_Mute;
                 public string Audio_Master                    { get; set; } = LangFallback?._GameSettingsPage.Audio_Master;
