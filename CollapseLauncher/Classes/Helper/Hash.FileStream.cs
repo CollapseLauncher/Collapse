@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -26,11 +27,8 @@ namespace CollapseLauncher.Helper
             byte[]?           hmacKey      = null,
             Action<int>?      readProgress = null,
             CancellationToken token        = default)
-            where T : HashAlgorithm
-        {
-            using FileStream fileStream = File.OpenRead(filePath);
-            return GetCryptoHashAsync<T>(fileStream, hmacKey, readProgress, token);
-        }
+            where T : HashAlgorithm =>
+            GetCryptoHashAsync<T>(() => File.OpenRead(filePath), hmacKey, readProgress, token);
 
         /// <summary>
         /// Asynchronously computes the cryptographic hash of a file specified by a <see cref="FileInfo"/> object.
@@ -46,11 +44,8 @@ namespace CollapseLauncher.Helper
             byte[]?           hmacKey      = null,
             Action<int>?      readProgress = null,
             CancellationToken token        = default)
-            where T : HashAlgorithm
-        {
-            using FileStream fileStream = fileInfo.OpenRead();
-            return GetCryptoHashAsync<T>(fileStream, hmacKey, readProgress, token);
-        }
+            where T : HashAlgorithm =>
+            GetCryptoHashAsync<T>(fileInfo.OpenRead, hmacKey, readProgress, token);
 
         /// <summary>
         /// Asynchronously computes the cryptographic hash of a stream.
@@ -81,6 +76,38 @@ namespace CollapseLauncher.Helper
         }
 
         /// <summary>
+        /// Asynchronously computes the cryptographic hash of a stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the hash algorithm to use. Must inherit from <see cref="HashAlgorithm"/>.</typeparam>
+        /// <param name="streamDelegate">A delegate function which returns the stream to compute the hash for.</param>
+        /// <param name="token">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <param name="hmacKey">The key to use for HMAC-based hash algorithms. If null, a standard hash algorithm is used.</param>
+        /// <param name="readProgress">An action to report the read progress.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the computed hash as a byte array.</returns>
+        public static ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
+            Func<Stream>      streamDelegate,
+            byte[]?           hmacKey      = null,
+            Action<int>?      readProgress = null,
+            CancellationToken token        = default)
+            where T : HashAlgorithm
+        {
+            // Create a new task from factory, assign a synchronous method to it with detached thread.
+            Task<byte[]> task = Task<byte[]>
+                               .Factory
+                               .StartNew(() =>
+                                         {
+                                             using Stream stream = streamDelegate();
+                                             return GetCryptoHash<T>(stream, hmacKey, readProgress, token);
+                                         },
+                                         token,
+                                         TaskCreationOptions.DenyChildAttach,
+                                         TaskScheduler.Default);
+
+            // Create awaitable returnable-task
+            return task.ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Synchronously computes the cryptographic hash of a file specified by its path.
         /// </summary>
         /// <typeparam name="T">The type of the hash algorithm to use. Must inherit from <see cref="HashAlgorithm"/>.</typeparam>
@@ -94,11 +121,8 @@ namespace CollapseLauncher.Helper
             byte[]?           hmacKey      = null,
             Action<int>?      readProgress = null,
             CancellationToken token        = default)
-            where T : HashAlgorithm
-        {
-            using FileStream fileStream = File.OpenRead(filePath);
-            return GetCryptoHash<T>(fileStream, hmacKey, readProgress, token);
-        }
+            where T : HashAlgorithm =>
+            GetCryptoHash<T>(() => File.OpenRead(filePath), hmacKey, readProgress, token);
 
         /// <summary>
         /// Synchronously computes the cryptographic hash of a file specified by a <see cref="FileInfo"/> object.
@@ -114,10 +138,27 @@ namespace CollapseLauncher.Helper
             byte[]?           hmacKey      = null,
             Action<int>?      readProgress = null,
             CancellationToken token        = default)
+            where T : HashAlgorithm =>
+            GetCryptoHash<T>(fileInfo.OpenRead, hmacKey, readProgress, token);
+
+        /// <summary>
+        /// Synchronously computes the cryptographic hash of a file specified by a <see cref="FileInfo"/> object.
+        /// </summary>
+        /// <typeparam name="T">The type of the hash algorithm to use. Must inherit from <see cref="HashAlgorithm"/>.</typeparam>
+        /// <param name="streamDelegate">A delegate function which returns the stream to compute the hash for.</param>
+        /// <param name="token">A cancellation token to observe while waiting for the operation to complete.</param>
+        /// <param name="hmacKey">The key to use for HMAC-based hash algorithms. If null, a standard hash algorithm is used.</param>
+        /// <param name="readProgress">An action to report the read progress.</param>
+        /// <returns>The computed hash as a byte array.</returns>
+        public static byte[] GetCryptoHash<T>(
+            Func<Stream>      streamDelegate,
+            byte[]?           hmacKey      = null,
+            Action<int>?      readProgress = null,
+            CancellationToken token        = default)
             where T : HashAlgorithm
         {
-            using FileStream fileStream = fileInfo.OpenRead();
-            return GetCryptoHash<T>(fileStream, hmacKey, readProgress, token);
+            using Stream stream = streamDelegate();
+            return GetCryptoHash<T>(stream, hmacKey, readProgress, token);
         }
 
         /// <summary>
@@ -142,7 +183,8 @@ namespace CollapseLauncher.Helper
                 CreateCryptoHash<T>();
 
             // Get length based on stream length or at least if bigger, use the default one
-            int bufferLen = BufferLength > stream.Length ? (int)stream.Length : BufferLength;
+            long streamLen = GetStreamLength(stream);
+            int  bufferLen = streamLen != -1 && BufferLength > streamLen ? (int)streamLen : BufferLength;
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
@@ -188,11 +230,8 @@ namespace CollapseLauncher.Helper
             string            filePath,
             Action<int>?      readProgress = null,
             CancellationToken token        = default)
-            where T : NonCryptographicHashAlgorithm, new()
-        {
-            using FileStream fileStream = File.OpenRead(filePath);
-            return GetHashAsync<T>(fileStream, readProgress, token);
-        }
+            where T : NonCryptographicHashAlgorithm, new() =>
+            GetHashAsync<T>(() => File.OpenRead(filePath), readProgress, token);
 
         /// <summary>
         /// Asynchronously computes the non-cryptographic hash of a file specified by a <see cref="FileInfo"/> object.
@@ -206,11 +245,8 @@ namespace CollapseLauncher.Helper
             FileInfo          fileInfo,
             Action<int>?      readProgress = null,
             CancellationToken token        = default)
-            where T : NonCryptographicHashAlgorithm, new()
-        {
-            using FileStream fileStream = fileInfo.OpenRead();
-            return GetHashAsync<T>(fileStream, readProgress, token);
-        }
+            where T : NonCryptographicHashAlgorithm, new() =>
+            GetHashAsync<T>(fileInfo.OpenRead, readProgress, token);
 
         /// <summary>
         /// Asynchronously computes the non-cryptographic hash of a stream.
@@ -230,6 +266,36 @@ namespace CollapseLauncher.Helper
             Task<byte[]> task = Task<byte[]>
                                .Factory
                                .StartNew(() => GetHash<T>(stream, readProgress, token),
+                                         token,
+                                         TaskCreationOptions.DenyChildAttach,
+                                         TaskScheduler.Default);
+
+            // Create awaitable returnable-task
+            return task.ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously computes the non-cryptographic hash of a stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the non-cryptographic hash algorithm to use. Must inherit from <see cref="NonCryptographicHashAlgorithm"/> and have a parameterless constructor.</typeparam>
+        /// <param name="streamDelegate">A delegate function which returns the stream to compute the hash for.</param>
+        /// <param name="readProgress">An action to report the read progress.</param>
+        /// <param name="token">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the computed hash as a byte array.</returns>
+        public static ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
+            Func<Stream>      streamDelegate,
+            Action<int>?      readProgress = null,
+            CancellationToken token        = default)
+            where T : NonCryptographicHashAlgorithm, new()
+        {
+            // Create a new task from factory, assign a synchronous method to it with detached thread.
+            Task<byte[]> task = Task<byte[]>
+                               .Factory
+                               .StartNew(() =>
+                                         {
+                                             using Stream stream = streamDelegate();
+                                             return GetHash<T>(stream, readProgress, token);
+                                         },
                                          token,
                                          TaskCreationOptions.DenyChildAttach,
                                          TaskScheduler.Default);
@@ -292,7 +358,8 @@ namespace CollapseLauncher.Helper
             NonCryptographicHashAlgorithm hashProvider = CreateHash<T>();
 
             // Get length based on stream length or at least if bigger, use the default one
-            int bufferLen = BufferLength > stream.Length ? (int)stream.Length : BufferLength;
+            long streamLen = GetStreamLength(stream);
+            int  bufferLen = streamLen != -1 && BufferLength > streamLen ? (int)streamLen : BufferLength;
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
@@ -320,6 +387,23 @@ namespace CollapseLauncher.Helper
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
+
+        /// <summary>
+        /// Try to get the length of the stream. 
+        /// </summary>
+        /// <param name="stream">The stream to get the length to.</param>
+        /// <returns>If it doesn't have exact length (which will throw), return -1. Otherwise, return the actual length.</returns>
+        private static long GetStreamLength(Stream stream)
+        {
+            try
+            {
+                return stream.Length;
+            }
+            catch
+            {
+                return -1;
             }
         }
     }
