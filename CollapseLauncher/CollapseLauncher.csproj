@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.15</Version>
+        <Version>1.82.16</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -162,12 +162,12 @@
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.241112-preview1" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.241112-preview1" />
-        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.241112-preview1" />
-        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.241112-preview1" />
-        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.241112-preview1" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.241112-preview1" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250129-preview2" />
         
         <!--
         Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
@@ -184,7 +184,7 @@
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
-        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0-preview2" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
