@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 
 // ReSharper disable IdentifierTypo
 using ZstdDecompressStream = ZstdNet.DecompressionStream;
@@ -25,7 +26,8 @@ namespace CollapseLauncher.Helper.Metadata
         private const long CollapseSignature     = 7310310183885631299;
         private const int  AllowedBufferPoolSize = 1 << 20; // 1 MiB
 
-        internal static RSA        RsaInstance;
+        internal static         RSA  RsaInstance;
+        private static readonly Lock RsaDecryptLock = new Lock();
 
         internal static string ServeV3Data(string data)
         {
@@ -66,19 +68,18 @@ namespace CollapseLauncher.Helper.Metadata
                 throw new FormatException("The MetadataV3 data format is corrupted!");
             }
 
-            compressedSize   = MemoryMarshal.Read<long>(data.Slice(16));
-            decompressedSize = MemoryMarshal.Read<long>(data.Slice(24));
+            compressedSize   = MemoryMarshal.Read<long>(data[16..]);
+            decompressedSize = MemoryMarshal.Read<long>(data[24..]);
         }
 
         private static void GetServeV3Attribute(ReadOnlySpan<byte> data, out CompressionType compressionType,
                                                 out bool           isUseEncryption)
         {
-            long attribNumber = MemoryMarshal.Read<long>(data.Slice(sizeof(long)));
+            long attribNumber = MemoryMarshal.Read<long>(data[sizeof(long)..]);
 
             compressionType = (CompressionType)(byte)attribNumber;
             isUseEncryption = (byte)(attribNumber >> 8) == 1;
         }
-
 
         internal static void ServeV3Data(ReadOnlySpan<byte> data,             Span<byte> outData, int compressedSize,
                                          int                decompressedSize, out int    dataWritten)
@@ -105,38 +106,41 @@ namespace CollapseLauncher.Helper.Metadata
                         : new byte[dataRawBuffer.Length];
                     isDecryptPoolUsed = isDecryptPoolAllowed;
 
-                    if (RsaInstance == null)
+                    lock (RsaDecryptLock)
                     {
-                        RsaInstance = RSA.Create();
-                        byte[] key;
-                        if (IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key))
+                        if (RsaInstance == null)
                         {
-                            GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
-                                               out long keyDecompSize);
-                            key = new byte[keyCompSize];
-                            ServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key, key, (int)keyCompSize,
-                                        (int)keyDecompSize,                          out _);
+                            RsaInstance = RSA.Create();
+                            byte[] key;
+                            if (IsServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key))
+                            {
+                                GetServeV3DataSize(LauncherMetadataHelper.CurrentMasterKey?.Key, out long keyCompSize,
+                                                   out long keyDecompSize);
+                                key = new byte[keyCompSize];
+                                ServeV3Data(LauncherMetadataHelper.CurrentMasterKey?.Key, key, (int)keyCompSize,
+                                            (int)keyDecompSize,                           out _);
+                            }
+                            else
+                            {
+                                key = LauncherMetadataHelper.CurrentMasterKey?.Key;
+                            }
+
+                            RsaInstance.ImportRSAPrivateKey(key, out _);
                         }
-                        else
+
+                        int offset    = 0;
+                        int offsetOut = 0;
+                        while (offset < dataRawBuffer.Length)
                         {
-                            key = LauncherMetadataHelper.CurrentMasterKey?.Key;
+                            int decryptWritten = RsaInstance.Decrypt(dataRawBuffer.Slice(offset, encBitLength),
+                                                                     decryptedDataSpan.AsSpan(offsetOut),
+                                                                     RSAEncryptionPadding.Pkcs1);
+                            offsetOut += decryptWritten;
+                            offset    += encBitLength;
                         }
 
-                        RsaInstance.ImportRSAPrivateKey(key, out _);
+                        dataRawBuffer = decryptedDataSpan.AsSpan(0, offsetOut);
                     }
-
-                    int offset    = 0;
-                    int offsetOut = 0;
-                    while (offset < dataRawBuffer.Length)
-                    {
-                        int decryptWritten = RsaInstance.Decrypt(dataRawBuffer.Slice(offset, encBitLength),
-                                                                 decryptedDataSpan.AsSpan(offsetOut),
-                                                                 RSAEncryptionPadding.Pkcs1);
-                        offsetOut += decryptWritten;
-                        offset    += encBitLength;
-                    }
-
-                    dataRawBuffer = decryptedDataSpan.AsSpan(0, offsetOut);
                 }
 
                 if (dataRawBuffer.Length != compressedSize)
@@ -186,7 +190,7 @@ namespace CollapseLauncher.Helper.Metadata
             int decompressedWritten = 0;
             while (offset < compressedSize)
             {
-                decoder.Decompress(dataRawBuffer.Slice(offset), outData.Slice(decompressedWritten),
+                decoder.Decompress(dataRawBuffer[offset..], outData[decompressedWritten..],
                                    out int dataConsumedWritten, out int dataDecodedWritten);
                 decompressedWritten += dataDecodedWritten;
                 offset += dataConsumedWritten;

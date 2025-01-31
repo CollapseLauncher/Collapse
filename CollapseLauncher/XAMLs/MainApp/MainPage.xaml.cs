@@ -224,11 +224,11 @@ namespace CollapseLauncher
 #nullable enable
             NavigationViewControl?.ApplyNavigationViewItemLocaleTextBindings();
 
-            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!)!;
+            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!);
 
-            int indexOfName = gameNameCollection.IndexOf(lastName!);
-            int indexOfRegion = gameRegionCollection.IndexOf(lastRegion!);
+            int indexOfName = gameNameCollection?.IndexOf(lastName!) ?? -1;
+            int indexOfRegion = gameRegionCollection?.IndexOf(lastRegion!) ?? -1;
 #nullable restore
                 
             // Rebuild Game Titles and Regions ComboBox items
@@ -1171,14 +1171,14 @@ namespace CollapseLauncher
 
             #nullable enable
             List<string>? gameCollection   = LauncherMetadataHelper.GetGameNameCollection();
-            List<string?>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+            List<string>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
             
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();
 
             ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(gameName);
 
-            var indexCategory                    = gameCollection?.IndexOf(gameName!) ?? -1;
+            var indexCategory= gameCollection?.IndexOf(gameName!) ?? -1;
             if (indexCategory < 0) indexCategory = 0;
 
             var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
