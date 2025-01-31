@@ -40,7 +40,7 @@ namespace CollapseLauncher.Extension
         /// <param name="localeSetName">The instance name of a <seealso cref="Hi3Helper.Locale"/> members.</param>
         /// <param name="localePropertyName">Name of the locale property</param>
         /// <returns>A reference of the <typeparamref name="T"/></returns>
-        internal static ref T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
+        internal static T BindNavigationViewItemText<T>(this T element, string localeSetName, string localePropertyName)
             where T : NavigationViewItemBase
         {
             NavigationViewItemLocaleTextProperty property = new NavigationViewItemLocaleTextProperty
@@ -58,10 +58,10 @@ namespace CollapseLauncher.Extension
                 TextBlock textBlock = new TextBlock().WithTag(property);
                 element.Content = textBlock;
             }
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static void SetAllControlsCursorRecursive(this UIElement element, InputSystemCursor toCursor)
+        internal static void SetAllControlsCursorRecursive(this UIElement? element, InputSystemCursor toCursor)
         {
             while (true)
             {
@@ -110,16 +110,15 @@ namespace CollapseLauncher.Extension
                 {
                     case NavigationView navigationViewKind:
                     {
-                        foreach (var o in navigationViewKind.FindDescendants())
+                        foreach (DependencyObject o in navigationViewKind.FindDescendants())
                         {
-                            var navigationViewElements = (UIElement)o;
-                            if (navigationViewElements is NavigationViewItem)
+                            if (o is NavigationViewItem navigationViewItem)
                             {
-                                navigationViewElements.SetCursor(toCursor);
+                                navigationViewItem.SetCursor(toCursor);
                                 continue;
                             }
 
-                            SetAllControlsCursorRecursive(navigationViewElements, toCursor);
+                            SetAllControlsCursorRecursive(o as UIElement, toCursor);
                         }
 
                         break;
@@ -182,7 +181,7 @@ namespace CollapseLauncher.Extension
             navViewControl.UpdateLayout();
         }
 
-        internal static ref T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
+        internal static T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
             where T : FrameworkElement
         {
             // Create a new binding instance
@@ -203,7 +202,7 @@ namespace CollapseLauncher.Extension
             // Set binding to the element
             element.SetBinding(dependencyProperty, binding);
 
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 #nullable restore
 
@@ -277,11 +276,11 @@ namespace CollapseLauncher.Extension
             foreach (FrameworkElement element in elements)
                 stackPanel.Children.Add(element);
         }
-        internal static ref TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
+        internal static TElement AddElementToStackPanel<TElement>(this Panel stackPanel, TElement element)
             where TElement : FrameworkElement
         {
             stackPanel.Children.Add(element);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
         internal static void AddGridColumns(this Grid grid, params GridLength[] columnWidths)
@@ -312,27 +311,27 @@ namespace CollapseLauncher.Extension
             });
         }
 
-        internal static ref TElement AddElementToGridRowColumn<TElement>(this Grid grid, TElement element, int rowIndex = 0, int columnIndex = 0, int rowSpan = 0, int columnSpan = 0)
+        internal static TElement AddElementToGridRowColumn<TElement>(this Grid grid, TElement element, int rowIndex = 0, int columnIndex = 0, int rowSpan = 0, int columnSpan = 0)
             where TElement : FrameworkElement
         {
             grid.Children.Add(element);
             SetElementGridRowPosition(element, rowIndex, rowSpan);
             SetElementGridColumnPosition(element, columnIndex, columnSpan);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement AddElementToGridRow<TElement>(this Grid grid, TElement element, int index, int span = 0)
+        internal static TElement AddElementToGridRow<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
             grid.Children.Add(element);
             SetElementGridRowPosition(element, index, span);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement AddElementToGridColumn<TElement>(this Grid grid, TElement element, int index, int span = 0)
+        internal static TElement AddElementToGridColumn<TElement>(this Grid grid, TElement element, int index, int span = 0)
             where TElement : FrameworkElement
         {
             grid.Children.Add(element);
             SetElementGridColumnPosition(element, index, span);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
         internal static void ClearChildren<TElement>(this TElement element)
@@ -355,23 +354,23 @@ namespace CollapseLauncher.Extension
             if (span > 0) Grid.SetColumnSpan(element, span);
         }
 
-        internal static ref TextBlock AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
+        internal static TextBlock AddTextBlockNewLine(this TextBlock textBlock, int count = 1)
         {
             while (count-- > 0) { textBlock.Inlines.Add(new LineBreak()); }
-            return ref Unsafe.AsRef(ref textBlock);
+            return textBlock;
         }
 
-        internal static ref TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d)
+        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d)
         {
             message += ' ';
-            return ref textBlock.AddTextBlockLine(message, weight, size);
+            return textBlock.AddTextBlockLine(message, weight, size);
         }
 
-        internal static ref TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
+        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
         {
             weight ??= FontWeights.Normal;
             textBlock.Inlines.Add(new Run { Text = message, FontWeight = weight.Value, FontSize = size });
-            return ref Unsafe.AsRef(ref textBlock);
+            return textBlock;
         }
 
         internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
@@ -471,217 +470,217 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        internal static ref TElement WithWidthAndHeight<TElement>(this TElement element, double uniform)
+        internal static TElement WithWidthAndHeight<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
             SetWidth(element, uniform);
             SetHeight(element, uniform);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithMinWidthAndMinHeight<TElement>(this TElement element, double uniform)
+        internal static TElement WithMinWidthAndMinHeight<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
             SetMinWidth(element, uniform);
             SetMinHeight(element, uniform);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithWidth<TElement>(this TElement element, double width)
+        internal static TElement WithWidth<TElement>(this TElement element, double width)
             where TElement : FrameworkElement
         {
             SetWidth(element, width);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithMinWidth<TElement>(this TElement element, double width)
+        internal static TElement WithMinWidth<TElement>(this TElement element, double width)
             where TElement : FrameworkElement
         {
             SetMinWidth(element, width);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithHeight<TElement>(this TElement element, double height)
+        internal static TElement WithHeight<TElement>(this TElement element, double height)
             where TElement : FrameworkElement
         {
             SetHeight(element, height);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithMinHeight<TElement>(this TElement element, double height)
+        internal static TElement WithMinHeight<TElement>(this TElement element, double height)
             where TElement : FrameworkElement
         {
             SetMinHeight(element, height);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TGrid WithRowSpacing<TGrid>(this TGrid grid, double rowSpacing)
+        internal static TGrid WithRowSpacing<TGrid>(this TGrid grid, double rowSpacing)
             where TGrid : Grid
         {
             SetRowSpacing(grid, rowSpacing);
-            return ref Unsafe.AsRef(ref grid);
+            return grid;
         }
-        internal static ref TGrid WithColumnSpacing<TGrid>(this TGrid grid, double columnSpacing)
+        internal static TGrid WithColumnSpacing<TGrid>(this TGrid grid, double columnSpacing)
             where TGrid : Grid
         {
             SetColumnSpacing(grid, columnSpacing);
-            return ref Unsafe.AsRef(ref grid);
+            return grid;
         }
-        internal static ref TGrid WithColumns<TGrid>(this TGrid grid, params GridLength[] columns)
+        internal static TGrid WithColumns<TGrid>(this TGrid grid, params GridLength[] columns)
             where TGrid : Grid
         {
             SetGridSlices(grid, columns, true);
-            return ref Unsafe.AsRef(ref grid);
+            return grid;
         }
-        internal static ref TGrid WithRows<TGrid>(this TGrid grid, params GridLength[] rows)
+        internal static TGrid WithRows<TGrid>(this TGrid grid, params GridLength[] rows)
             where TGrid : Grid
         {
             SetGridSlices(grid, rows, false);
-            return ref Unsafe.AsRef(ref grid);
+            return grid;
         }
 
-        internal static ref TElement WithCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
+        internal static TElement WithCornerRadius<TElement>(this TElement element, double uniform, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
             SetCornerRadius(element, uniform, kind);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithCornerRadius<TElement>(this TElement element, double horizontal, double vertical, CornerRadiusKind kind = CornerRadiusKind.Normal)
+        internal static TElement WithCornerRadius<TElement>(this TElement element, double horizontal, double vertical, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
             SetCornerRadius(element, horizontal, vertical, kind);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithCornerRadius<TElement>(this TElement element, double left, double top, double right, double bottom, CornerRadiusKind kind = CornerRadiusKind.Normal)
+        internal static TElement WithCornerRadius<TElement>(this TElement element, double left, double top, double right, double bottom, CornerRadiusKind kind = CornerRadiusKind.Normal)
             where TElement : FrameworkElement
         {
             SetCornerRadius(element, left, top, right, bottom, kind);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithVisibility<TElement>(this TElement element, Visibility visibility)
+        internal static TElement WithVisibility<TElement>(this TElement element, Visibility visibility)
             where TElement : FrameworkElement
         {
             SetVisibility(element, visibility);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithTag<TElement>(this TElement element, object tag)
+        internal static TElement WithTag<TElement>(this TElement element, object tag)
             where TElement : FrameworkElement
         {
             SetTag(element, tag);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithDataContext<TElement>(this TElement element, object dataContext)
+        internal static TElement WithDataContext<TElement>(this TElement element, object dataContext)
             where TElement : FrameworkElement
         {
             SetDataContext(element, dataContext);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithBackground<TElement>(this TElement element, Brush brush)
+        internal static TElement WithBackground<TElement>(this TElement element, Brush brush)
             where TElement : FrameworkElement
         {
             SetBackground(element, brush);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithForeground<TElement>(this TElement element, Brush brush)
+        internal static TElement WithForeground<TElement>(this TElement element, Brush brush)
             where TElement : FrameworkElement
         {
             SetForeground(element, brush);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithOpacity<TElement>(this TElement element, double opacity)
+        internal static TElement WithOpacity<TElement>(this TElement element, double opacity)
             where TElement : FrameworkElement
         {
             SetOpacity(element, opacity);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithStretch<TElement>(this TElement element, Stretch stretch)
+        internal static TElement WithStretch<TElement>(this TElement element, Stretch stretch)
             where TElement : FrameworkElement
         {
             SetStretch(element, stretch);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithPadding<TElement>(this TElement element, double uniform)
+        internal static TElement WithPadding<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
             SetPadding(element, uniform);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithPadding<TElement>(this TElement element, double horizontal, double vertical)
+        internal static TElement WithPadding<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement
         {
             SetPadding(element, horizontal, vertical);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithPadding<TElement>(this TElement element, double left, double top, double right, double bottom)
+        internal static TElement WithPadding<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement
         {
             SetPadding(element, left, top, right, bottom);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithPadding<TElement>(this TElement element, Thickness thickness)
+        internal static TElement WithPadding<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
             SetPadding(element, thickness);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TElement WithMargin<TElement>(this TElement element, double uniform)
+        internal static TElement WithMargin<TElement>(this TElement element, double uniform)
             where TElement : FrameworkElement
         {
             SetMargin(element, uniform);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithMargin<TElement>(this TElement element, double horizontal, double vertical)
+        internal static TElement WithMargin<TElement>(this TElement element, double horizontal, double vertical)
             where TElement : FrameworkElement
         {
             SetMargin(element, horizontal, vertical);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
+        internal static TElement WithMargin<TElement>(this TElement element, double left, double top, double right, double bottom)
             where TElement : FrameworkElement
         {
             SetMargin(element, left, top, right, bottom);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithMargin<TElement>(this TElement element, Thickness thickness)
+        internal static TElement WithMargin<TElement>(this TElement element, Thickness thickness)
             where TElement : FrameworkElement
         {
             SetMargin(element, thickness);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
-        internal static ref TButton WithFlyout<TButton>(this TButton button, FlyoutBase flyout)
+        internal static TButton WithFlyout<TButton>(this TButton button, FlyoutBase flyout)
             where TButton : Button
         {
             SetButtonFlyout(button, flyout);
-            return ref Unsafe.AsRef(ref button);
+            return button;
         }
 
-        internal static ref TElement WithHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
+        internal static TElement WithHorizontalAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
             where TElement : FrameworkElement
         {
             SetHorizontalAlignment(element, alignment);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
+        internal static TElement WithHorizontalContentAlignment<TElement>(this TElement element, HorizontalAlignment alignment)
             where TElement : Control
         {
             SetHorizontalContentAlignment(element, alignment);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
+        internal static TElement WithVerticalAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : FrameworkElement
         {
             SetVerticalAlignment(element, alignment);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
-        internal static ref TElement WithVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
+        internal static TElement WithVerticalContentAlignment<TElement>(this TElement element, VerticalAlignment alignment)
             where TElement : Control
         {
             SetVerticalContentAlignment(element, alignment);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
 
         internal static void SetGridSlices<TGrid>(this TGrid grid, GridLength[] gridSlices, bool isColumn)
