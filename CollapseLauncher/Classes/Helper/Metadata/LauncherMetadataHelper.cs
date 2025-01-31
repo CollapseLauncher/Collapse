@@ -228,7 +228,6 @@ namespace CollapseLauncher.Helper.Metadata
 
             // Initialize and clear the stamp dictionary
             LauncherMetadataStampDictionary ??= new Dictionary<string, Stamp>();
-
             LauncherMetadataStampDictionary.Clear();
 
             FileStream? stampLocalStream = null;
@@ -351,6 +350,8 @@ namespace CollapseLauncher.Helper.Metadata
             // Initialize the community tools properties
             PageStatics.CommunityToolsProperty ??= new CommunityToolsProperty();
             PageStatics.CommunityToolsProperty.Clear();
+            PageStatics.CommunityToolsProperty.OfficialToolsDictionary?.Clear();
+            PageStatics.CommunityToolsProperty.CommunityToolsDictionary?.Clear();
 
             #region Master Key Loading
             // Load master key config
@@ -471,12 +472,12 @@ namespace CollapseLauncher.Helper.Metadata
 
                 foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> entry in communityToolsProperty.OfficialToolsDictionary ?? [])
                 {
-                    PageStatics.CommunityToolsProperty.OfficialToolsDictionary?.Add(entry.Key, entry.Value);
+                    PageStatics.CommunityToolsProperty.OfficialToolsDictionary?.TryAdd(entry.Key, entry.Value);
                 }
 
                 foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> entry in communityToolsProperty.CommunityToolsDictionary ?? [])
                 {
-                    PageStatics.CommunityToolsProperty.CommunityToolsDictionary?.Add(entry.Key, entry.Value);
+                    PageStatics.CommunityToolsProperty.CommunityToolsDictionary?.TryAdd(entry.Key, entry.Value);
                 }
             }
             #endregion
