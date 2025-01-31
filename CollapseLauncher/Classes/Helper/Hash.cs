@@ -34,26 +34,26 @@ namespace CollapseLauncher.Helper
             { typeof(HMACSHA3_512).GetHashCode(), key => new HMACSHA3_512(key) }
         };
 
-        private static readonly Dictionary<int, Tuple<HashAlgorithm?, Lock>> CryptoHashDictShared = new()
+        private static readonly Dictionary<int, (HashAlgorithm?, Lock)> CryptoHashDictShared = new()
         {
-            { typeof(MD5).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(MD5.Create), new Lock()) },
-            { typeof(SHA1).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA1.Create), new Lock()) },
-            { typeof(SHA256).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA256.Create), new Lock()) },
-            { typeof(SHA384).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA384.Create), new Lock()) },
-            { typeof(SHA512).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA512.Create), new Lock()) },
-            { typeof(SHA3_256).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA3_256.Create), new Lock()) },
-            { typeof(SHA3_384).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA3_384.Create), new Lock()) },
-            { typeof(SHA3_512).GetHashCode(), new Tuple<HashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(SHA3_512.Create), new Lock()) }
+            { typeof(MD5).GetHashCode(), (CreateHashAndNullIfUnsupported(MD5.Create), new Lock()) },
+            { typeof(SHA1).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA1.Create), new Lock()) },
+            { typeof(SHA256).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA256.Create), new Lock()) },
+            { typeof(SHA384).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA384.Create), new Lock()) },
+            { typeof(SHA512).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA512.Create), new Lock()) },
+            { typeof(SHA3_256).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA3_256.Create), new Lock()) },
+            { typeof(SHA3_384).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA3_384.Create), new Lock()) },
+            { typeof(SHA3_512).GetHashCode(), (CreateHashAndNullIfUnsupported(SHA3_512.Create), new Lock()) }
         };
 
-        private static readonly Dictionary<int, Tuple<NonCryptographicHashAlgorithm?, Lock>> HashDictShared = new()
+        private static readonly Dictionary<int, (NonCryptographicHashAlgorithm?, Lock)> HashDictShared = new()
         {
-            { typeof(Crc32).GetHashCode(), new Tuple<NonCryptographicHashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(() => new Crc32()), new Lock()) },
-            { typeof(Crc64).GetHashCode(), new Tuple<NonCryptographicHashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(() => new Crc64()), new Lock()) },
-            { typeof(XxHash3).GetHashCode(), new Tuple<NonCryptographicHashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(() => new XxHash3()), new Lock()) },
-            { typeof(XxHash32).GetHashCode(), new Tuple<NonCryptographicHashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(() => new XxHash32()), new Lock()) },
-            { typeof(XxHash64).GetHashCode(), new Tuple<NonCryptographicHashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(() => new XxHash64()), new Lock()) },
-            { typeof(XxHash128).GetHashCode(), new Tuple<NonCryptographicHashAlgorithm?, Lock>(CreateHashAndNullIfUnsupported(() => new XxHash128()), new Lock()) }
+            { typeof(Crc32).GetHashCode(), (CreateHashAndNullIfUnsupported(() => new Crc32()), new Lock()) },
+            { typeof(Crc64).GetHashCode(), (CreateHashAndNullIfUnsupported(() => new Crc64()), new Lock()) },
+            { typeof(XxHash3).GetHashCode(), (CreateHashAndNullIfUnsupported(() => new XxHash3()), new Lock()) },
+            { typeof(XxHash32).GetHashCode(), (CreateHashAndNullIfUnsupported(() => new XxHash32()), new Lock()) },
+            { typeof(XxHash64).GetHashCode(), (CreateHashAndNullIfUnsupported(() => new XxHash64()), new Lock()) },
+            { typeof(XxHash128).GetHashCode(), (CreateHashAndNullIfUnsupported(() => new XxHash128()), new Lock()) }
         };
 
         private static T? CreateHashAndNullIfUnsupported<T>(Func<T> delegateCreate)
@@ -82,12 +82,6 @@ namespace CollapseLauncher.Helper
             ref Func<HashAlgorithm> createHashDelegate = ref CollectionsMarshal
                 .GetValueRefOrNullRef(CryptoHashDict, typeof(T).GetHashCode());
 
-            // If the delegate is null, then throw an exception
-            if (createHashDelegate == null)
-            {
-                throw new NotSupportedException($"Cannot create hash algorithm instance from {typeof(T)}.");
-            }
-
             // Create the hash algorithm instance
             return createHashDelegate();
         }
@@ -105,12 +99,6 @@ namespace CollapseLauncher.Helper
             // Try to get the hash create method from the dictionary
             ref Func<byte[], HashAlgorithm> createHashDelegate = ref CollectionsMarshal
                 .GetValueRefOrNullRef(CryptoHmacHashDict, typeof(T).GetHashCode());
-
-            // If the delegate is null, then throw an exception
-            if (createHashDelegate == null)
-            {
-                throw new NotSupportedException($"Cannot create HMAC-based hash algorithm instance from {typeof(T)}.");
-            }
 
             // Create the hash algorithm instance
             return createHashDelegate(key);
@@ -130,18 +118,12 @@ namespace CollapseLauncher.Helper
         /// <typeparam name="T">The type of the non-cryptographic hash algorithm to use.</typeparam>
         /// <returns>A tuple of the non-cryptographic hash algorithm and the thread <see cref="Lock"/> instance.</returns>
         /// <exception cref="NotSupportedException">Thrown when the specified non-cryptographic hash algorithm type is not supported.</exception>
-        public static ref Tuple<NonCryptographicHashAlgorithm?, Lock> GetSharedHash<T>()
+        public static ref (NonCryptographicHashAlgorithm? Hash, Lock Lock) GetSharedHash<T>()
             where T : NonCryptographicHashAlgorithm
         {
             // Get reference from the dictionary
-            ref Tuple<NonCryptographicHashAlgorithm?, Lock> hash = ref CollectionsMarshal
+            ref (NonCryptographicHashAlgorithm? Hash, Lock Lock) hash = ref CollectionsMarshal
                .GetValueRefOrNullRef(HashDictShared, typeof(T).GetHashCode());
-
-            // If the tuple is null, then throw an exception
-            if (hash == null || hash.Item1 == null)
-            {
-                throw new NotSupportedException($"Cannot create HMAC-based hash algorithm instance from {typeof(T)}.");
-            }
 
             // Return the tuple reference
             return ref hash;
@@ -153,18 +135,12 @@ namespace CollapseLauncher.Helper
         /// <typeparam name="T">The type of the cryptographic hash algorithm to use.</typeparam>
         /// <returns>A tuple of the cryptographic hash algorithm and the thread <see cref="Lock"/> instance.</returns>
         /// <exception cref="NotSupportedException">Thrown when the specified cryptographic hash algorithm type is not supported.</exception>
-        public static ref Tuple<HashAlgorithm?, Lock> GetSharedCryptoHash<T>()
+        public static ref (HashAlgorithm? Hash, Lock Lock) GetSharedCryptoHash<T>()
             where T : HashAlgorithm
         {
             // Get reference from the dictionary
-            ref Tuple<HashAlgorithm?, Lock> hash = ref CollectionsMarshal
+            ref (HashAlgorithm? Hash, Lock Lock) hash = ref CollectionsMarshal
                .GetValueRefOrNullRef(CryptoHashDictShared, typeof(T).GetHashCode());
-
-            // If the tuple is null, then throw an exception
-            if (hash == null || hash.Item1 == null)
-            {
-                throw new NotSupportedException($"Cannot create HMAC-based hash algorithm instance from {typeof(T)}.");
-            }
 
             // Return the tuple reference
             return ref hash;
