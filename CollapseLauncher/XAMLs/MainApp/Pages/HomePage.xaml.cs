@@ -2,7 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GamePlaytime;

@@ -13,7 +13,7 @@ using WinRT;
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
 
-namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
+namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
 {
     [JsonConverter(typeof(JsonStringEnumConverter<LauncherGameNewsPostType>))]
     public enum LauncherGameNewsPostType

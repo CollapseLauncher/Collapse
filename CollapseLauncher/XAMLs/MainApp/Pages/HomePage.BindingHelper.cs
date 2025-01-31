@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CommunityToolkit.WinUI;
 using ImageEx;
 using Microsoft.UI.Xaml;

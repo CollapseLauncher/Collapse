@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;

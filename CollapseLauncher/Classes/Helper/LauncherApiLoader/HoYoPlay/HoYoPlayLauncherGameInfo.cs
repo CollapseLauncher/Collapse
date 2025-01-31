@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 // ReSharper disable StringLiteralTypo

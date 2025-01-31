@@ -3,14 +3,14 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
-namespace CollapseLauncher.Helper.LauncherApiLoader.Sophon
+namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
 {
-    internal sealed partial class SophonLauncherApiLoader : LauncherApiBase
+    internal sealed partial class LegacyLauncherApiLoader : LauncherApiBase
     {
-        private SophonLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
+        private LegacyLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion) { }
 
         public static ILauncherApi CreateApiInstance(PresetConfig presetConfig, string gameName, string gameRegion)
-            => new SophonLauncherApiLoader(presetConfig, gameName, gameRegion);
+            => new LegacyLauncherApiLoader(presetConfig, gameName, gameRegion);
     }
 }

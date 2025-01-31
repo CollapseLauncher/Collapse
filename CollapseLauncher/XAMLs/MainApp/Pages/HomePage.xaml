@@ -17,7 +17,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:s="using:CommunityToolkit.WinUI"
-      xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Sophon"
+      xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Legacy"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       CacheMode="BitmapCache"
