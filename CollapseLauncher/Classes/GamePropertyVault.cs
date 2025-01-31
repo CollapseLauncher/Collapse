@@ -14,12 +14,21 @@ namespace CollapseLauncher.Statics
 {
     internal static class GamePropertyVault
     {
-        private static readonly Dictionary<int, GamePresetProperty> Vault = new();
-        public static           int                                 LastGameHashID           { get; set; }
-        public static           int                                 CurrentGameHashID        { get; set; }
-        public static           GamePresetProperty                  GetCurrentGameProperty() => Vault[CurrentGameHashID];
+        private static Dictionary<int, GamePresetProperty> Vault             { get; } = new();
+        public static  int                                 LastGameHashID    { get; set; }
+        public static  int                                 CurrentGameHashID { get; set; }
+        public static GamePresetProperty GetCurrentGameProperty()
+        {
+            int hashId = CurrentGameHashID;
+            if (Vault.TryGetValue(hashId, out GamePresetProperty? value))
+            {
+                return value;
+            }
 
-        public static void LoadGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+            throw new KeyNotFoundException($"Cached region with Hash ID: {hashId} was not found in the vault!");
+        }
+
+        public static async Task LoadGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
                 .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false)
@@ -28,7 +37,7 @@ namespace CollapseLauncher.Statics
                 CurrentGameHashID = gamePreset.HashID;
             }
 
-            RegisterGameProperty(uiElementParent, apiResourceProp, gameName, gameRegion);
+            await Task.Run(() => RegisterGameProperty(uiElementParent, apiResourceProp, gameName, gameRegion));
         }
 
         private static void RegisterGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
@@ -50,7 +59,7 @@ namespace CollapseLauncher.Statics
             }
 
             GamePresetProperty property = new GamePresetProperty(uiElementParent, apiResourceProp, gameName, gameRegion);
-            Vault.Add(gamePreset.HashID, property);
+            _ = Vault.TryAdd(gamePreset.HashID, property);
         #if DEBUG
             Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
         #endif
@@ -98,7 +107,7 @@ namespace CollapseLauncher.Statics
             }
         }
 
-        public static void DetachNotificationForCurrentGame(int hashID = int.MinValue)
+        public static void DetachNotificationForCurrentRegion(int hashID = int.MinValue)
         {
             if (hashID < 0) hashID = CurrentGameHashID;
             if (Vault.ContainsKey(hashID)) BackgroundActivityManager.Detach(hashID);

@@ -23,8 +23,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         LauncherGameNews? LauncherGameNews { get; }
         HttpClient? ApiGeneralHttpClient { get; }
         HttpClient? ApiResourceHttpClient { get; }
-        Task<bool> LoadAsync(OnLoadAction? beforeLoadRoutine = null, OnLoadAction? afterLoadRoutine = null,
-            ActionOnTimeOutRetry? onTimeoutRoutine = null, ErrorLoadRoutineDelegate? errorLoadRoutine = null,
-            CancellationToken token = default);
+        Task<bool> LoadAsync(OnLoadAction? beforeLoadRoutine = null, OnLoadTaskAction?         afterLoadRoutine = null,
+            ActionOnTimeOutRetry?          onTimeoutRoutine  = null, ErrorLoadRoutineDelegate? errorLoadRoutine = null,
+            CancellationToken              token             = default);
     }
 }

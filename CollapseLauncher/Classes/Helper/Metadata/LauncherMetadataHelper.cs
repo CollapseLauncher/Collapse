@@ -80,7 +80,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         #endregion
 
-        internal static async ValueTask<PresetConfig?> GetMetadataConfig(string? gameName, string? gameRegion)
+        internal static async Task<PresetConfig?> GetMetadataConfig(string? gameName, string? gameRegion)
         {
             ArgumentException.ThrowIfNullOrEmpty(gameName);
             ArgumentException.ThrowIfNullOrEmpty(gameRegion);

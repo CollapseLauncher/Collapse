@@ -2165,7 +2165,7 @@ namespace CollapseLauncher.Pages
 
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
                 CurrentGameProperty.GameSettings.SaveBaseSettings();
-                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+                _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                 BGPathDisplay.Text = Path.GetFileName(regionBgPath);
             } 
@@ -2469,7 +2469,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
                 CurrentGameProperty.GameSettings.SaveBaseSettings();
             }
-            m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+            _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
             BGPathDisplay.Text = Path.GetFileName(file);
         }

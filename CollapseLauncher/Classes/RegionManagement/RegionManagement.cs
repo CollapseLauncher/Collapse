@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -45,7 +46,14 @@ namespace CollapseLauncher
 
             string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
 
-            return await preset.GameLauncherApi.LoadAsync(BeforeLoadRoutine, AfterLoadRoutine, ActionOnTimeOutRetry, OnErrorRoutine, tokenSource.Token);
+            bool runResult = await preset.GameLauncherApi
+                                         .LoadAsync(BeforeLoadRoutine,
+                                                    AfterLoadRoutine,
+                                                    ActionOnTimeOutRetry,
+                                                    OnErrorRoutine,
+                                                    tokenSource.Token);
+
+            return runResult;
 
             void OnErrorRoutine(Exception ex) => OnErrorRoutineInner(ex, ErrorType.Unhandled);
 
@@ -83,16 +91,16 @@ namespace CollapseLauncher
                 ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
                 ChangeRegionBtn.IsEnabled                 = true;
 
-                DisableKbShortcuts();
+                _ = DisableKbShortcuts();
             }
 
-            async void AfterLoadRoutine(CancellationToken token)
+            async Task AfterLoadRoutine(CancellationToken token)
             {
                 try
                 {
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
                     await FinalizeLoadRegion(gameName, gameRegion);
-                    ChangeBackgroundImageAsRegionAsync();
+                    _ = ChangeBackgroundImageAsRegionAsync();
                     IsLoadRegionComplete = true;
 
                     LoadingMessageHelper.HideActionButton();
@@ -119,9 +127,8 @@ namespace CollapseLauncher
                 {
                     LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
 
-                    ClearMainPageState();
-                    DisableKbShortcuts(1000);
-                    await Task.Delay(TimeSpan.FromSeconds(1), token);
+                    await Task.Run(ClearMainPageState, token);
+                    await DisableKbShortcuts(1000, token);
                     if (preset.GameLauncherApi.IsLoadingCompleted || token.IsCancellationRequested) return;
 
                     LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle, regionToChangeName);
@@ -139,21 +146,24 @@ namespace CollapseLauncher
 
         public void ClearMainPageState()
         {
-            // Clear NavigationViewControl Items and Reset Region props
-            LastMenuNavigationItem = [..NavigationViewControl.MenuItems];
-            LastFooterNavigationItem = [..NavigationViewControl.FooterMenuItems];
-            NavigationViewControl.MenuItems.Clear();
-            NavigationViewControl.FooterMenuItems.Clear();
-            NavigationViewControl.IsSettingsVisible = false;
-            PreviousTag = "launcher";
-            PreviousTagString.Clear();
-            PreviousTagString.Add(PreviousTag);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                // Clear NavigationViewControl Items and Reset Region props
+                LastMenuNavigationItem = [.. NavigationViewControl.MenuItems];
+                LastFooterNavigationItem = [.. NavigationViewControl.FooterMenuItems];
+                NavigationViewControl.MenuItems.Clear();
+                NavigationViewControl.FooterMenuItems.Clear();
+                NavigationViewControl.IsSettingsVisible = false;
+                PreviousTag = "launcher";
+                PreviousTagString.Clear();
+                PreviousTagString.Add(PreviousTag);
 
-            // Clear cache on navigation reset
-            LauncherFrame.BackStack.Clear();
-            int cacheSizeOld = LauncherFrame.CacheSize;
-            LauncherFrame.CacheSize = 0;
-            LauncherFrame.CacheSize = cacheSizeOld;
+                // Clear cache on navigation reset
+                LauncherFrame.BackStack.Clear();
+                int cacheSizeOld = LauncherFrame.CacheSize;
+                LauncherFrame.CacheSize = 0;
+                LauncherFrame.CacheSize = cacheSizeOld;
+            });
         }
 
         private async Task DownloadBackgroundImage(CancellationToken Token)
@@ -229,7 +239,7 @@ namespace CollapseLauncher
         #nullable disable
         }
 
-        private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)
+        private async Task FinalizeLoadRegion(string gameName, string gameRegion)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
@@ -240,24 +250,27 @@ namespace CollapseLauncher
             await LoadGameStaticsByGameType(preset, gameName, gameRegion);
 
             // Init NavigationPanel Items
-            InitializeNavigationItems();
+            await Task.Run(() => InitializeNavigationItems());
         }
 
-        private async ValueTask LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
+        private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
         {
+            // Attach notification for the current game and dispose statics
             await GamePropertyVault.AttachNotificationForCurrentGame();
-            DisposeAllPageStatics();
+            await Task.Run(DisposeAllPageStatics);
 
-            GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
+            // Load region property (and potentially, cached one)
+            await GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
 
             // Spawn Region Notification
-            SpawnRegionNotification(preset.ProfileName);
-            GamePropertyVault.DetachNotificationForCurrentGame();
+            _ = SpawnRegionNotification(preset.ProfileName);
+
+            // Detach notification from last region
+            GamePropertyVault.DetachNotificationForCurrentRegion();
         }
 
         private void DisposeAllPageStatics()
         {
-            // CurrentGameProperty._GameInstall?.CancelRoutine();
             CurrentGameProperty?.GameRepair?.CancelRoutine();
             CurrentGameProperty?.GameRepair?.Dispose();
             CurrentGameProperty?.GameCache?.CancelRoutine();
@@ -267,7 +280,7 @@ namespace CollapseLauncher
 #endif
         }
 
-        private async void SpawnRegionNotification(string RegionProfileName)
+        private async Task SpawnRegionNotification(string RegionProfileName)
         {
             try
             {

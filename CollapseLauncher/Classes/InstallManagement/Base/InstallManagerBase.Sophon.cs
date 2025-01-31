@@ -170,8 +170,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         await GameVersionManager.GamePreset
                                                  .LauncherResourceChunksURL
-                                                 .EnsureReassociated(
-                                                                     httpClient,
+                                                 .EnsureReassociated(httpClient,
                                                                      branchUrl,
                                                                      GameVersionManager.GamePreset.LauncherBizName,
                                                                      Token.Token);
@@ -558,8 +557,7 @@ namespace CollapseLauncher.InstallManager.Base
                     {
                         await GameVersionManager.GamePreset
                                                  .LauncherResourceChunksURL
-                                                 .EnsureReassociated(
-                                                                     httpClient,
+                                                 .EnsureReassociated(httpClient,
                                                                      branchUrl,
                                                                      GameVersionManager.GamePreset.LauncherBizName,
                                                                      Token.Token);

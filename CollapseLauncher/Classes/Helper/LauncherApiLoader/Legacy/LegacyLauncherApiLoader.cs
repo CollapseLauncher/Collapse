@@ -10,7 +10,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         private LegacyLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion) { }
 
-        public static ILauncherApi CreateApiInstance(PresetConfig presetConfig, string gameName, string gameRegion)
-            => new LegacyLauncherApiLoader(presetConfig, gameName, gameRegion);
+        public static LegacyLauncherApiLoader CreateApiInstance(PresetConfig presetConfig, string gameName, string gameRegion)
+            => new(presetConfig, gameName, gameRegion);
     }
 }
