@@ -50,7 +50,7 @@
               Grid.RowSpan="{x:Bind pages:HomePage.CurrentBannerIconRowSpan}"
               Grid.Column="{x:Bind CurrentBannerIconColumn}"
               Grid.ColumnSpan="{x:Bind pages:HomePage.CurrentBannerIconColumnSpan}"
-              Width="{x:Bind CurrentBannerIconWidth}"
+              Height="{x:Bind CurrentBannerIconHeight}"
               Margin="{x:Bind CurrentBannerIconMargin}"
               HorizontalAlignment="{x:Bind CurrentBannerIconHorizontalAlign}"
               VerticalAlignment="{x:Bind CurrentBannerIconVerticalAlign}"

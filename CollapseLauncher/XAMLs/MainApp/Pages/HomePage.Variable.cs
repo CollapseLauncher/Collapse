@@ -139,11 +139,11 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        internal int CurrentBannerIconWidth
+        internal int CurrentBannerIconHeight
         {
             get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidth :
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidthHYP;
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconHeight :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconHeightHYP;
         }
 
         internal Thickness CurrentBannerIconMargin

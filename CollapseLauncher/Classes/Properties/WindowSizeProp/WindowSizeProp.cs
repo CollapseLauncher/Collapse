@@ -27,52 +27,52 @@ namespace CollapseLauncher.WindowSize
                 "Normal",
                 new WindowSizeProp
                 {
-                    WindowBounds                  = new Size(1280, 720),
-                    PostEventPanelScaleFactor     = 1.35f,
-                    SidePanel1Width               = new GridLength(340, GridUnitType.Pixel),
-                    EventPostCarouselBounds       = new Size(340,  158),
-                    PostPanelBounds               = new Size(340,  84),
-                    PostPanelBottomMargin         = new Thickness(0, 0, 0, 20),
-                    PostPanelPaimonHeight         = 110,
-                    PostPanelPaimonMargin         = new Thickness(0, -48, -56, 0),
-                    PostPanelPaimonInnerMargin    = new Thickness(0, 0,   0,   0),
-                    PostPanelPaimonTextMargin     = new Thickness(0, 0,   0,   18),
-                    PostPanelPaimonTextSize       = 11,
-                    BannerIconWidth               = 136,
-                    BannerIconWidthHYP            = 111,
-                    BannerIconMargin              = new Thickness(0, 0, 94, 84),
-                    BannerIconMarginHYP           = new Thickness(48, 252, 0, 0),
-                    BannerIconAlignHorizontal     = HorizontalAlignment.Right,
-                    BannerIconAlignHorizontalHYP  = HorizontalAlignment.Left,
-                    BannerIconAlignVertical       = VerticalAlignment.Bottom,
-                    BannerIconAlignVerticalHYP    = VerticalAlignment.Top,
-                    SettingsPanelWidth            = 676
+                    WindowBounds                 = new Size(1280, 720),
+                    PostEventPanelScaleFactor    = 1.35f,
+                    SidePanel1Width              = new GridLength(340, GridUnitType.Pixel),
+                    EventPostCarouselBounds      = new Size(340, 158),
+                    PostPanelBounds              = new Size(340, 84),
+                    PostPanelBottomMargin        = new Thickness(0, 0, 0, 20),
+                    PostPanelPaimonHeight        = 110,
+                    PostPanelPaimonMargin        = new Thickness(0, -48, -56, 0),
+                    PostPanelPaimonInnerMargin   = new Thickness(0, 0,   0,   0),
+                    PostPanelPaimonTextMargin    = new Thickness(0, 0,   0,   18),
+                    PostPanelPaimonTextSize      = 11,
+                    BannerIconHeight             = 40,
+                    BannerIconHeightHYP          = 40,
+                    BannerIconMargin             = new Thickness(0,  0,   94, 84),
+                    BannerIconMarginHYP          = new Thickness(48, 244, 0,  0),
+                    BannerIconAlignHorizontal    = HorizontalAlignment.Right,
+                    BannerIconAlignHorizontalHYP = HorizontalAlignment.Left,
+                    BannerIconAlignVertical      = VerticalAlignment.Bottom,
+                    BannerIconAlignVerticalHYP   = VerticalAlignment.Top,
+                    SettingsPanelWidth           = 676
                 }
             },
             {
                 "Small",
                 new WindowSizeProp
                 {
-                    WindowBounds                  = new Size(1024, 576),
-                    PostEventPanelScaleFactor     = 1.25f,
-                    SidePanel1Width               = new GridLength(280, GridUnitType.Pixel),
-                    EventPostCarouselBounds       = new Size(280,  130),
-                    PostPanelBounds               = new Size(280,  82),
-                    PostPanelBottomMargin         = new Thickness(0, 0, 0, 12),
-                    PostPanelPaimonHeight         = 110,
-                    PostPanelPaimonMargin         = new Thickness(0, -48, -56, 0),
-                    PostPanelPaimonInnerMargin    = new Thickness(0, 0,   0,   0),
-                    PostPanelPaimonTextMargin     = new Thickness(0, 0,   0,   18),
-                    PostPanelPaimonTextSize       = 11,
-                    BannerIconWidth               = 100,
-                    BannerIconWidthHYP            = 86,
-                    BannerIconMargin              = new Thickness(0, 0, 70, 52),
-                    BannerIconMarginHYP           = new Thickness(22, 186, 0, 0),
-                    BannerIconAlignHorizontal     = HorizontalAlignment.Right,
-                    BannerIconAlignHorizontalHYP  = HorizontalAlignment.Left,
-                    BannerIconAlignVertical       = VerticalAlignment.Bottom,
-                    BannerIconAlignVerticalHYP    = VerticalAlignment.Top,
-                    SettingsPanelWidth            = 464
+                    WindowBounds                 = new Size(1024, 576),
+                    PostEventPanelScaleFactor    = 1.25f,
+                    SidePanel1Width              = new GridLength(280, GridUnitType.Pixel),
+                    EventPostCarouselBounds      = new Size(280, 130),
+                    PostPanelBounds              = new Size(280, 82),
+                    PostPanelBottomMargin        = new Thickness(0, 0, 0, 12),
+                    PostPanelPaimonHeight        = 110,
+                    PostPanelPaimonMargin        = new Thickness(0, -48, -56, 0),
+                    PostPanelPaimonInnerMargin   = new Thickness(0, 0,   0,   0),
+                    PostPanelPaimonTextMargin    = new Thickness(0, 0,   0,   18),
+                    PostPanelPaimonTextSize      = 11,
+                    BannerIconHeight             = 32,
+                    BannerIconHeightHYP          = 32,
+                    BannerIconMargin             = new Thickness(0,  0,   70, 52),
+                    BannerIconMarginHYP          = new Thickness(22, 184, 0,  0),
+                    BannerIconAlignHorizontal    = HorizontalAlignment.Right,
+                    BannerIconAlignHorizontalHYP = HorizontalAlignment.Left,
+                    BannerIconAlignVertical      = VerticalAlignment.Bottom,
+                    BannerIconAlignVerticalHYP   = VerticalAlignment.Top,
+                    SettingsPanelWidth           = 464
                 }
             }
         };
@@ -107,8 +107,8 @@ namespace CollapseLauncher.WindowSize
         public Thickness           PostPanelPaimonMargin        { get; set; }
         public Thickness           PostPanelPaimonInnerMargin   { get; set; }
         public Thickness           PostPanelPaimonTextMargin    { get; set; }
-        public int                 BannerIconWidth              { get; set; }
-        public int                 BannerIconWidthHYP           { get; set; }
+        public int                 BannerIconHeight             { get; set; }
+        public int                 BannerIconHeightHYP          { get; set; }
         public Thickness           BannerIconMargin             { get; set; }
         public Thickness           BannerIconMarginHYP          { get; set; }
         public HorizontalAlignment BannerIconAlignHorizontal    { get; set; }
