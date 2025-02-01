@@ -10,7 +10,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
