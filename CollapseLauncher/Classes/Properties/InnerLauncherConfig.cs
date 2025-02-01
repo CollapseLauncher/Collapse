@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -108,7 +109,7 @@ namespace CollapseLauncher
         }
 
         public static List<StackPanel> BuildGameRegionListUI(string?        gameCategory,
-                                                             List<string?>? gameCategoryList = null)
+                                                             List<string>? gameCategoryList = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(gameCategory);
             gameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(gameCategory);
@@ -238,18 +239,17 @@ namespace CollapseLauncher
                               localNotificationData.Serialize(NotificationPushJsonContext.Default.NotificationPush));
         }
 
-        public static void LoadLocalNotificationData()
+        public static async Task LoadLocalNotificationData()
         {
+            await using FileStream fileStream = File.Open(AppNotifIgnoreFile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             if (!File.Exists(AppNotifIgnoreFile))
             {
-                File.WriteAllText(AppNotifIgnoreFile,
-                                  new NotificationPush()
-                                     .Serialize(NotificationPushJsonContext.Default.NotificationPush));
+                await new NotificationPush().SerializeAsync(fileStream, NotificationPushJsonContext.Default.NotificationPush).ConfigureAwait(false);
             }
 
-            string data = File.ReadAllText(AppNotifIgnoreFile);
-            NotificationPush? localNotificationData =
-                data.Deserialize(NotificationPushJsonContext.Default.NotificationPush);
+            fileStream.Position = 0;
+            NotificationPush? localNotificationData = await fileStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush).ConfigureAwait(false);
+
             if (NotificationData == null)
             {
                 return;

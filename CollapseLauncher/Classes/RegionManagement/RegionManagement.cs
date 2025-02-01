@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -45,7 +44,6 @@ namespace CollapseLauncher
             CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
 
             string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
-
             bool runResult = await preset.GameLauncherApi
                                          .LoadAsync(BeforeLoadRoutine,
                                                     AfterLoadRoutine,
@@ -67,31 +65,34 @@ namespace CollapseLauncher
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
             }
 
-            void CancelLoadEvent(object sender, RoutedEventArgs args)
+            // ReSharper disable once AsyncVoidMethod
+            async void CancelLoadEvent(object sender, RoutedEventArgs args)
             {
-                tokenSource.Cancel();
-
-                // If explicit cancel was triggered, restore the navigation menu item then return false
-                foreach (object item in LastMenuNavigationItem)
+                await tokenSource.CancelAsync();
+                await Task.Run(() => DispatcherQueue.TryEnqueue(() =>
                 {
-                    NavigationViewControl.MenuItems.Add(item);
-                }
-                foreach (object item in LastFooterNavigationItem)
-                {
-                    NavigationViewControl.FooterMenuItems.Add(item);
-                }
-                NavigationViewControl.IsSettingsVisible = true;
-                LastMenuNavigationItem.Clear();
-                LastFooterNavigationItem.Clear();
-                if (m_arguments.StartGame != null)
-                    m_arguments.StartGame.Play = false;
+                    // If explicit cancel was triggered, restore the navigation menu item then return false
+                    foreach (object item in LastMenuNavigationItem)
+                    {
+                        NavigationViewControl.MenuItems.Add(item);
+                    }
+                    foreach (object item in LastFooterNavigationItem)
+                    {
+                        NavigationViewControl.FooterMenuItems.Add(item);
+                    }
+                    NavigationViewControl.IsSettingsVisible = true;
+                    LastMenuNavigationItem.Clear();
+                    LastFooterNavigationItem.Clear();
+                    if (m_arguments.StartGame != null)
+                        m_arguments.StartGame.Play = false;
 
-                ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                ChangeRegionConfirmBtn.IsEnabled          = true;
-                ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
-                ChangeRegionBtn.IsEnabled                 = true;
+                    ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
+                    ChangeRegionConfirmBtn.IsEnabled = true;
+                    ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
+                    ChangeRegionBtn.IsEnabled = true;
+                }));
 
-                _ = DisableKbShortcuts();
+                await DisableKbShortcuts();
             }
 
             async Task AfterLoadRoutine(CancellationToken token)
@@ -121,7 +122,7 @@ namespace CollapseLauncher
                 LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelLoadEvent);
             }
 
-            async void BeforeLoadRoutine(CancellationToken token)
+            async Task BeforeLoadRoutine(CancellationToken token)
             {
                 try
                 {
@@ -413,7 +414,7 @@ namespace CollapseLauncher
             PresetConfig Preset = await LauncherMetadataHelper.GetMetadataConfig(GameCategory, GameRegion);
 
             // Start region loading
-            ShowAsyncLoadingTimedOutPill();
+            _ = ShowAsyncLoadingTimedOutPill();
             if (!await LoadRegionFromCurrentConfigV2(Preset, GameCategory, GameRegion))
             {
                 return false;
@@ -449,7 +450,7 @@ namespace CollapseLauncher
             (sender as Button).IsEnabled = !IsHide;
         }
 
-        private async void ShowAsyncLoadingTimedOutPill()
+        private async Task ShowAsyncLoadingTimedOutPill()
         {
             try
             {

@@ -12,10 +12,10 @@ namespace CollapseLauncher
 {
     internal static partial class JsonSerializerHelper
     {
-        internal static async ValueTask<T?> DeserializeAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
+        internal static async Task<T?> DeserializeAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
             where T : class => await InnerDeserializeStreamAsync(data, typeInfo, defaultType, token);
 
-        internal static async ValueTask<T?> DeserializeAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
+        internal static async Task<T?> DeserializeAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
             where T : struct => await InnerDeserializeStreamAsync(data, typeInfo, defaultType, token);
 
         internal static async Task<JsonNode?> DeserializeAsNodeAsync(this Stream data, CancellationToken token = default)
@@ -40,7 +40,7 @@ namespace CollapseLauncher
             return listItem;
         }
 
-        private static async ValueTask<T?> InnerDeserializeStreamAsync<T>(Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType, CancellationToken token) =>
+        private static async Task<T?> InnerDeserializeStreamAsync<T>(Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType, CancellationToken token) =>
         // Check if the data cannot be read, then throw
         !data.CanRead ? throw new NotSupportedException("Stream is not readable! Cannot deserialize the stream to JSON!") :
         // Try to deserialize. If it returns a null, then return the default value
@@ -52,13 +52,13 @@ namespace CollapseLauncher
         // Try deserialize to JSON Node
             await JsonNode.ParseAsync(data, JsonNodeOptions, JsonDocumentOptions, token);
 
-        internal static async ValueTask SerializeAsync<T>(this T? value, Stream targetStream, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
+        internal static async Task SerializeAsync<T>(this T? value, Stream targetStream, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
             where T : class => await InnerSerializeStreamAsync(value, targetStream, typeInfo, token);
 
-        internal static async ValueTask SerializeAsync<T>(this T? value, Stream targetStream, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
+        internal static async Task SerializeAsync<T>(this T? value, Stream targetStream, JsonTypeInfo<T?> typeInfo, CancellationToken token = default)
             where T : struct => await InnerSerializeStreamAsync(value, targetStream, typeInfo, token);
 
-        private static async ValueTask InnerSerializeStreamAsync<T>(this T? value, Stream targetStream, JsonTypeInfo<T?> typeInfo, CancellationToken token)
+        private static async Task InnerSerializeStreamAsync<T>(this T? value, Stream targetStream, JsonTypeInfo<T?> typeInfo, CancellationToken token)
         {
             if (!targetStream.CanWrite)
                 throw new NotSupportedException("Stream is not writeable! Cannot serialize the object into Stream!");

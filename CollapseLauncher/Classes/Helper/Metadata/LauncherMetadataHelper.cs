@@ -10,15 +10,14 @@ using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.IO;
 using System.IO.Hashing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -42,7 +41,6 @@ namespace CollapseLauncher.Helper.Metadata
 
         internal static List<Stamp?>? LauncherMetadataStamp { get; private set; }
         internal static List<Stamp?>? NewUpdateMetadataStamp { get; private set; }
-        internal static List<string>? LauncherGameNameCollection => LauncherGameNameRegionCollection?.Keys.ToList();
         private static Dictionary<string, Stamp>? LauncherMetadataStampDictionary { get; set; }
 
         internal static Dictionary<string, Dictionary<string, PresetConfig>?>? LauncherMetadataConfig
@@ -91,7 +89,7 @@ namespace CollapseLauncher.Helper.Metadata
             ArgumentException.ThrowIfNullOrEmpty(gameRegion);
 
             // Check the modification status
-            int isConfigLocallyModified = IsMetadataLocallyModified(gameName, gameRegion);
+            int isConfigLocallyModified = await IsMetadataLocallyModified(gameName, gameRegion);
 
             switch (isConfigLocallyModified)
             {
@@ -103,10 +101,11 @@ namespace CollapseLauncher.Helper.Metadata
                     {
                         Logger.LogWriteLine($"Metadata config for {gameName} - {gameRegion} has been modified! Reloading the config!", LogType.Warning, true);
 
-                        if (!LauncherMetadataConfig?.ContainsKey(gameName) ?? false)
+                        Dictionary<string, PresetConfig>? regionDict = null;
+                        if (!LauncherMetadataConfig?.TryGetValue(gameName, out regionDict) ?? false)
                             throw new KeyNotFoundException("Game name is not found in the metadata collection!");
 
-                        if (!LauncherMetadataConfig?[gameName]?.ContainsKey(gameRegion) ?? false)
+                        if (!regionDict?.ContainsKey(gameRegion) ?? false)
                             throw new KeyNotFoundException("Game region is not found in the metadata collection!");
 
                         // Get the stamp and remove the old config from metadata config dictionary
@@ -171,31 +170,34 @@ namespace CollapseLauncher.Helper.Metadata
         /// - <c>-1</c>   = The file does not exist and need to be reinitialized<br/>
         /// - <c>-2</c>   = The stamp is not exist in the stamp dictionary or the stamp inside dictionary is null
         /// </returns>
-        private static int IsMetadataLocallyModified(string gameName, string gameRegion)
+        private static Task<int> IsMetadataLocallyModified(string gameName, string gameRegion)
         {
-            string stampKey = $"{gameName} - {gameRegion}";
+            return Task.Factory.StartNew(() =>
+            {
+                string stampKey = $"{gameName} - {gameRegion}";
 
-            // If the stamp key does not exist in the stamp dictionary, return -2
-            if (!LauncherMetadataStampDictionary?.ContainsKey(stampKey) ?? false)
-                return -2;
+                // If the stamp key does not exist in the stamp dictionary, return -2
+                Stamp? stamp = null;
+                if (!LauncherMetadataStampDictionary?.TryGetValue(stampKey, out stamp) ?? false)
+                    return -2;
 
-            // Load the stamp from dictionary and if it's null, return -2
-            Stamp? stamp = LauncherMetadataStampDictionary?[stampKey];
-            if (stamp == null)
-                return -2;
+                // Load the stamp from dictionary and if it's null, return -2
+                if (stamp == null)
+                    return -2;
 
-            // SANITIZE: MetadataPath cannot be empty or null
-            if (string.IsNullOrEmpty(stamp.MetadataPath))
-                throw new NullReferenceException($"MetadataPath property inside of the stamp from: {stampKey} cannot be empty or null!");
+                // SANITIZE: MetadataPath cannot be empty or null
+                if (string.IsNullOrEmpty(stamp.MetadataPath))
+                    throw new NullReferenceException($"MetadataPath property inside of the stamp from: {stampKey} cannot be empty or null!");
 
-            // Get the config file info
-            string configLocalFilePath = Path.Combine(LauncherMetadataFolder, stamp.MetadataPath);
-            FileInfo configLocalFileInfo = new FileInfo(configLocalFilePath);
+                // Get the config file info
+                string configLocalFilePath = Path.Combine(LauncherMetadataFolder, stamp.MetadataPath);
+                FileInfo configLocalFileInfo = new FileInfo(configLocalFilePath);
 
-            // Compare the last modified time. If it doesn't match, return 1 (modified)
-            return configLocalFileInfo.LastWriteTimeUtc != stamp.LastModifiedTimeUtc ? 1 :
-                // Otherwise, return 0 (unmodified)
-                0;
+                // Compare the last modified time. If it doesn't match, return 1 (modified)
+                return configLocalFileInfo.LastWriteTimeUtc != stamp.LastModifiedTimeUtc ? 1 :
+                    // Otherwise, return 0 (unmodified)
+                    0;
+            }, TaskCreationOptions.DenyChildAttach);
         }
 
         internal static async Task Initialize(bool isCacheUpdateModeOnly = false, bool isShowLoadingMessage = true)
@@ -775,7 +777,7 @@ namespace CollapseLauncher.Helper.Metadata
         {
             try
             {
-                // Check the file existance
+                // Check the file existence
                 if (!File.Exists(stampPath))
                     throw new FileNotFoundException($"Unable to update the stamp file because it is not exist! It should have been located here: {stampPath}");
 

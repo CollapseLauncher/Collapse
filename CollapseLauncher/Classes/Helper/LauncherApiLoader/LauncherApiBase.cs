@@ -23,9 +23,7 @@ using System.Runtime.CompilerServices;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
 {
-    public delegate void OnLoadAction(CancellationToken token);
     public delegate Task OnLoadTaskAction(CancellationToken token);
-
     public delegate void ErrorLoadRoutineDelegate(Exception ex);
 
     internal partial class LauncherApiBase : ILauncherApi
@@ -116,11 +114,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             ApiResourceHttpClient = apiResourceHttpBuilder.Create();
         }
 
-        public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadTaskAction?         afterLoadRoutine,
+        public async Task<bool> LoadAsync(OnLoadTaskAction?     beforeLoadRoutine, OnLoadTaskAction?         afterLoadRoutine,
                                           ActionOnTimeOutRetry? onTimeoutRoutine,  ErrorLoadRoutineDelegate? errorLoadRoutine,
                                           CancellationToken     token)
         {
-            beforeLoadRoutine?.Invoke(token);
+            _ = beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask;
 
             try
             {
@@ -151,7 +149,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         }
 
         protected virtual Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                              CancellationToken token)
+                                                        CancellationToken token)
         {
             EnsurePresetConfigNotNull();
             EnsureResourceUrlNotNull();
