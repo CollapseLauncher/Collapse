@@ -10,6 +10,7 @@ using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.GameSettings.Zenless
 {

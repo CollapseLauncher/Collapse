@@ -22,6 +22,7 @@ using System.Threading;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
 
 namespace RegistryUtils
 {

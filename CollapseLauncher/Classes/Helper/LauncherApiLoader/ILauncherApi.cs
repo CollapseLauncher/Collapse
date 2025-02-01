@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable UnusedMemberInSuper.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader

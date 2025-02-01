@@ -6,6 +6,7 @@ using System.IO;
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {

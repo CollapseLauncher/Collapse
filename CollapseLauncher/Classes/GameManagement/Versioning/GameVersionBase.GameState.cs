@@ -224,8 +224,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // Check all the pattern and return based on the condition
-            return VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig && execFileInfo.Exists &&
-                   execFileInfo.Length > 1 << 16;
+            return VendorTypeProp.GameName == GamePreset.InternalGameNameInConfig && execFileInfo is { Exists: true, Length: > 1 << 16 };
         }
 
         protected virtual bool IsTryParseIniVersionExist(string iniPath)

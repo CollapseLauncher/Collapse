@@ -302,8 +302,8 @@ namespace CollapseLauncher
         private static void PerformStreamCheckAndSeek(Stream outputStream)
         {
             // Throw if output stream can't write and seek
-            if (!outputStream.CanWrite) throw new ArgumentException("outputStream must be writable!", "outputStream");
-            if (!outputStream.CanSeek) throw new ArgumentException("outputStream must be seekable!", "outputStream");
+            if (!outputStream.CanWrite) throw new ArgumentException("outputStream must be writable!", nameof(outputStream));
+            if (!outputStream.CanSeek) throw new ArgumentException("outputStream must be seekable!", nameof(outputStream));
 
             // Reset the outputStream position
             outputStream.Position = 0;

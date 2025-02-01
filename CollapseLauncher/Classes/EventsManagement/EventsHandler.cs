@@ -17,6 +17,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable IdentifierTypo
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.InteropServices;
 // ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper

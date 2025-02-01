@@ -8,7 +8,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         /// Casting the IGameVersion as its origin or another version class.
         /// </summary>
         /// <typeparam name="TCast">The type of version class to cast</typeparam>
-        /// <returns>The version class to get casted</returns>
+        /// <returns>The version class to get cast</returns>
         internal static TCast CastAs<TCast>(this IGameVersion versionCheck)
             where TCast : GameVersionBase, IGameVersion => (TCast)versionCheck;
     }

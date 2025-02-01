@@ -34,65 +34,65 @@ namespace CollapseLauncher;
 public partial class Updater : IDisposable
 {
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
-    private readonly string          ChannelURL;
-    private readonly string          ChannelName;
-    private          Stopwatch       UpdateStopwatch;
-    private readonly UpdateManager   UpdateManager;
-    private readonly IFileDownloader UpdateDownloader;
+    private readonly string          _channelURL;
+    private readonly string          _channelName;
+    private          Stopwatch       _updateStopwatch;
+    private readonly UpdateManager   _updateManager;
+    private readonly IFileDownloader _updateDownloader;
 #if USEVELOPACK
-    private readonly ILogger       UpdateManagerLogger;
-    private          VelopackAsset VelopackVersionToUpdate;
+    private readonly ILogger       _updateManagerLogger;
+    private          VelopackAsset _velopackVersionToUpdate;
 #endif
-    private GameVersion     NewVersionTag;
+    private GameVersion     _newVersionTag;
 
     // ReSharper disable once RedundantDefaultMemberInitializer
-    private bool IsUseLegacyDownload = false;
+    private bool _isUseLegacyDownload = false;
     // ReSharper restore PrivateFieldCanBeConvertedToLocalVariable
 
-    private static readonly string execPath          = Process.GetCurrentProcess().MainModule!.FileName;
-    private static readonly string workingDir        = Path.GetDirectoryName(execPath);
-    private static readonly string applyElevatedPath = Path.Combine(workingDir, "..\\", "ApplyUpdate.exe");
+    private static readonly string ExecPath          = AppExecutablePath;
+    private static readonly string WorkingDir        = Path.GetDirectoryName(ExecPath);
+    private static readonly string ApplyElevatedPath = Path.Combine(WorkingDir, "..\\", "ApplyUpdate.exe");
 
     public event EventHandler<UpdaterStatus>   UpdaterStatusChanged;
     public event EventHandler<UpdaterProgress> UpdaterProgressChanged;
 
-    private readonly UpdaterStatus   Status;
-    private          UpdaterProgress Progress;
+    private readonly UpdaterStatus   _status;
+    private          UpdaterProgress _progress;
 
     public Updater(string channelName)
     {
-        ChannelName = channelName;
-        ChannelURL = CombineURLFromString(FallbackCDNUtil.GetPreferredCDN().URLPrefix,
+        _channelName = channelName;
+        _channelURL = CombineURLFromString(FallbackCDNUtil.GetPreferredCDN().URLPrefix,
 #if USEVELOPACK
                 "velopack",
 #else
                 "squirrel",
 #endif
-                ChannelName
+                _channelName
                 );
-        UpdateDownloader = new UpdateManagerHttpAdapter();
+        _updateDownloader = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
-        UpdateManagerLogger = ILoggerHelper.GetILogger();
-        VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(UpdateManagerLogger);
+        _updateManagerLogger = ILoggerHelper.GetILogger();
+        VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(_updateManagerLogger);
         UpdateOptions updateManagerOptions = new UpdateOptions
         {
             AllowVersionDowngrade = true,
-            ExplicitChannel = ChannelName
+            ExplicitChannel = _channelName
         };
 
         // Initialize update manager source
-        IUpdateSource updateSource = new SimpleWebSource(ChannelURL, UpdateDownloader);
-        UpdateManager = new UpdateManager(
+        IUpdateSource updateSource = new SimpleWebSource(_channelURL, _updateDownloader);
+        _updateManager = new UpdateManager(
                 updateSource,
                 updateManagerOptions,
-                UpdateManagerLogger,
+                _updateManagerLogger,
                 updateManagerLocator);
 #else
         UpdateManager = new UpdateManager(ChannelURL, null, null, UpdateDownloader);
 #endif
-        UpdateStopwatch = Stopwatch.StartNew();
-        Status = new UpdaterStatus();
-        Progress = new UpdaterProgress(UpdateStopwatch, 0, 100);
+        _updateStopwatch = Stopwatch.StartNew();
+        _status = new UpdaterStatus();
+        _progress = new UpdaterProgress(_updateStopwatch, 0, 100);
     }
 
     ~Updater()
@@ -112,7 +112,7 @@ public partial class Updater : IDisposable
 #if !USEVELOPACK
         return await UpdateManager.CheckForUpdate();
 #else
-        return await UpdateManager.CheckForUpdatesAsync();
+        return await _updateManager.CheckForUpdatesAsync();
 #endif
     }
 
@@ -120,10 +120,10 @@ public partial class Updater : IDisposable
     {
         if (token.IsCancellationRequested) return false;
 
-        Status.status = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
+        _status.Status = string.Format(Lang._UpdatePage.UpdateStatus3, 1, 1);
         UpdateStatus();
         UpdateProgress();
-        UpdateStopwatch = Stopwatch.StartNew();
+        _updateStopwatch = Stopwatch.StartNew();
 
         try
         {
@@ -147,14 +147,14 @@ public partial class Updater : IDisposable
             }
             NewVersionTag = new GameVersion(updateInfo.ReleasesToApply.FirstOrDefault()!.Version.Version);
 #else
-            NewVersionTag = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
-            if (IsCurrentHasLatestVersion(NewVersionTag.VersionString))
+            _newVersionTag = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
+            if (IsCurrentHasLatestVersion(_newVersionTag.VersionString))
             {
-                Status.status = string.Format(Lang._UpdatePage.UpdateStatus4, LauncherUpdateHelper.LauncherCurrentVersionString);
-                Status.message = Lang._UpdatePage.UpdateMessage4;
+                _status.Status = string.Format(Lang._UpdatePage.UpdateStatus4, LauncherUpdateHelper.LauncherCurrentVersionString);
+                _status.Message = Lang._UpdatePage.UpdateMessage4;
                 UpdateStatus();
 
-                await Task.Delay(3000);
+                await Task.Delay(3000, token);
                 return false;
             }
 #endif
@@ -164,15 +164,15 @@ public partial class Updater : IDisposable
 
             await UpdateManager.ApplyReleases(updateInfo, InvokeApplyUpdateProgress);
 #else
-            await UpdateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, false, token);
-            VelopackVersionToUpdate = updateInfo.TargetFullRelease;
+            await _updateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, false, token);
+            _velopackVersionToUpdate = updateInfo.TargetFullRelease;
 
             await EnsureVelopackUpdateExec(token);
 #endif
 
             void InvokeDownloadUpdateProgress(int progress)
             {
-                Progress = new UpdaterProgress(UpdateStopwatch, progress
+                _progress = new UpdaterProgress(_updateStopwatch, progress
 #if !USEVELOPACK
                     / 2
 #endif
@@ -192,7 +192,7 @@ public partial class Updater : IDisposable
         {
             Logger.LogWriteLine($"Failed while running update via Squirrel. Fallback to legacy method...\r\n{ex}",
                                 LogType.Error, true);
-            IsUseLegacyDownload = true;
+            _isUseLegacyDownload = true;
             await StartLegacyUpdate();
         }
 
@@ -221,7 +221,7 @@ public partial class Updater : IDisposable
 
         bool IsFileVersionValid(FileInfo fileInfo)
         {
-            const string VelopackDesc = "Velopack";
+            const string velopackDesc = "Velopack";
 
             if (!fileInfo.Exists || fileInfo.Length == 0)
                 return false;
@@ -229,7 +229,7 @@ public partial class Updater : IDisposable
             try
             {
                 FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(fileInfo.FullName);
-                bool isVelopack = fileVersionInfo.FileDescription?.StartsWith(VelopackDesc, StringComparison.OrdinalIgnoreCase) ?? false;
+                bool isVelopack = fileVersionInfo.FileDescription?.StartsWith(velopackDesc, StringComparison.OrdinalIgnoreCase) ?? false;
 
                 return isVelopack;
             }
@@ -253,34 +253,34 @@ public partial class Updater : IDisposable
 
         DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
-        UpdateStopwatch = Stopwatch.StartNew();
+        _updateStopwatch = Stopwatch.StartNew();
 
         CDNURLProperty preferredCdn = FallbackCDNUtil.GetPreferredCDN();
-        string updateFileIndexUrl = CombineURLFromString(preferredCdn.URLPrefix, ChannelName.ToLower(), "fileindex.json");
+        string updateFileIndexUrl = CombineURLFromString(preferredCdn.URLPrefix, _channelName.ToLower(), "fileindex.json");
 
         AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
                                             AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp, default)!;
 
         GameVersion? gameVersion = updateInfo!.Version;
 
-        if (gameVersion.HasValue) NewVersionTag = gameVersion.Value!;
+        if (gameVersion.HasValue) _newVersionTag = gameVersion.Value!;
         UpdateStatus();
         UpdateProgress();
 
         FallbackCDNUtil.DownloadProgress += FallbackCDNUtil_DownloadProgress;
-        await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, applyElevatedPath,
+        await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, ApplyElevatedPath,
                                                          Environment.ProcessorCount > 8
                                                              ? 8
                                                              : Environment.ProcessorCount,
-                                                         $"{ChannelName.ToLower()}/ApplyUpdate.exe", default);
+                                                         $"{_channelName.ToLower()}/ApplyUpdate.exe", default);
         FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
 
-        await File.WriteAllTextAsync(Path.Combine(workingDir, "..\\", "release"), ChannelName.ToLower());
+        await File.WriteAllTextAsync(Path.Combine(WorkingDir, "..\\", "release"), _channelName.ToLower());
     }
 
     private void FallbackCDNUtil_DownloadProgress(object sender, DownloadEvent e)
     {
-        Progress = new UpdaterProgress(UpdateStopwatch, (int)e.ProgressPercentage, 100);
+        _progress = new UpdaterProgress(_updateStopwatch, (int)e.ProgressPercentage, 100);
         UpdateProgress();
     }
 
@@ -326,17 +326,17 @@ public partial class Updater : IDisposable
         var needInnoLogUpdatePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                                                  "AppData", "LocalLow", "CollapseLauncher", "_NeedInnoLogUpdate");
 
-        Status.status = string.Format(Lang._UpdatePage.UpdateStatus5 + $" {Lang._UpdatePage.UpdateMessage5}",
-                                      NewVersionTag.VersionString);
+        _status.Status = string.Format(Lang._UpdatePage.UpdateStatus5 + $" {Lang._UpdatePage.UpdateMessage5}",
+                                      _newVersionTag.VersionString);
         UpdateStatus();
 
-        Progress = new UpdaterProgress(UpdateStopwatch, 100, 100);
+        _progress = new UpdaterProgress(_updateStopwatch, 100, 100);
         UpdateProgress();
 
-        await File.WriteAllTextAsync(newVerTagPath,         NewVersionTag.VersionString);
-        await File.WriteAllTextAsync(needInnoLogUpdatePath, NewVersionTag.VersionString);
+        await File.WriteAllTextAsync(newVerTagPath,         _newVersionTag.VersionString);
+        await File.WriteAllTextAsync(needInnoLogUpdatePath, _newVersionTag.VersionString);
 
-        if (IsUseLegacyDownload)
+        if (_isUseLegacyDownload)
         {
             SuicideLegacy();
             return;
@@ -352,7 +352,7 @@ public partial class Updater : IDisposable
 #if !USEVELOPACK
         UpdateManager.RestartApp();
 #else
-        if (VelopackVersionToUpdate != null)
+        if (_velopackVersionToUpdate != null)
         {
             try
             {
@@ -360,7 +360,7 @@ public partial class Updater : IDisposable
                 if (!Directory.Exists(currentAppPath))
                     Directory.CreateDirectory(currentAppPath);
 
-                UpdateManager.ApplyUpdatesAndRestart(VelopackVersionToUpdate);
+                _updateManager.ApplyUpdatesAndRestart(_velopackVersionToUpdate);
             }
             catch (Exception ex)
             {
@@ -378,7 +378,7 @@ public partial class Updater : IDisposable
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName        = applyElevatedPath,
+                FileName        = ApplyElevatedPath,
                 UseShellExecute = true
             }
         };
@@ -388,23 +388,23 @@ public partial class Updater : IDisposable
 
     public void UpdateStatus()
     {
-        UpdaterStatusChanged?.Invoke(this, Status);
+        UpdaterStatusChanged?.Invoke(this, _status);
     }
 
     public void UpdateProgress()
     {
-        UpdaterProgressChanged?.Invoke(this, Progress);
+        UpdaterProgressChanged?.Invoke(this, _progress);
     }
 
     public class UpdaterStatus
     {
-        public string status { get; set; }
+        public string Status { get; set; }
 
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string message { get; set; }
+        public string Message { get; set; }
 
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string newver { get; set; }
+        public string Newver { get; set; }
     }
 
     public class UpdaterProgress

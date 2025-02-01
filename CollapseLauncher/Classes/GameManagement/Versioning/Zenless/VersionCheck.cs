@@ -57,7 +57,7 @@ namespace CollapseLauncher.GameVersioning
                 if (!DataCooker.IsServeV3Data(keyUtf8Base64))
                     goto QuitFail;
 
-                // Enjoy the meal (i guess?)
+                // Enjoy the meal (I guess?)
                 DataCooker.GetServeV3DataSize(keyUtf8Base64, out long servedCompressedSize, out long servedDecompressedSize);
                 Span<byte> outServeData = keyUtf8Base64.AsSpan(keyFromBase64Len, (int)servedDecompressedSize);
                 DataCooker.ServeV3Data(keyUtf8Base64.AsSpan(0, keyFromBase64Len), outServeData, (int)servedCompressedSize, (int)servedDecompressedSize, out int dataWritten);

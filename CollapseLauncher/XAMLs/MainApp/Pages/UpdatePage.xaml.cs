@@ -208,13 +208,13 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
-                Status.Text = e.status;
-                if (string.IsNullOrEmpty(e.newver))
+                Status.Text = e.Status;
+                if (string.IsNullOrEmpty(e.Newver))
                 {
                     return;
                 }
 
-                GameVersion version = new GameVersion(e.newver);
+                GameVersion version = new GameVersion(e.Newver);
                 NewVersionLabel.Text = version.VersionString;
             });
         }

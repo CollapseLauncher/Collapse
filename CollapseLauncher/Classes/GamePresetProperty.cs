@@ -19,6 +19,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.IO;
 using System.Diagnostics.CodeAnalysis;
+// ReSharper disable UnusedMember.Global
 
 // ReSharper disable CheckNamespace
 // ReSharper disable PartialTypeWithSinglePart

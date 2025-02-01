@@ -16,6 +16,7 @@ using System.Collections.Generic;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedMember.Global
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers;
 
@@ -57,8 +58,8 @@ public class WinUIRenderer : RendererBase
 
     public void WriteLeafInline(LeafBlock leafBlock)
     {
-        if (leafBlock == null || leafBlock.Inline == null) throw new ArgumentNullException(nameof(leafBlock));
-        var inline = (Inline)leafBlock.Inline;
+        if (leafBlock.Inline == null) throw new ArgumentNullException(nameof(leafBlock));
+        Inline? inline = leafBlock.Inline;
         while (inline != null)
         {
             Write(inline);

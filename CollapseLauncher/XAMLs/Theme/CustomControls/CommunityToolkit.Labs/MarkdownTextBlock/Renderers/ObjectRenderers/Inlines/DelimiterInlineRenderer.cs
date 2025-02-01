@@ -5,6 +5,7 @@
 using Markdig.Renderers;
 using Markdig.Syntax.Inlines;
 using System;
+// ReSharper disable GrammarMistakeInComment
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRenderers.Inlines;
 
@@ -12,10 +13,10 @@ internal class DelimiterInlineRenderer : MarkdownObjectRenderer<WinUIRenderer, D
 {
     protected override void Write(WinUIRenderer renderer, DelimiterInline obj)
     {
-        if (renderer == null) throw new ArgumentNullException(nameof(renderer));
-        if (obj == null) throw new ArgumentNullException(nameof(obj));
+        ArgumentNullException.ThrowIfNull(renderer, nameof(renderer));
+        ArgumentNullException.ThrowIfNull(obj, nameof(obj));
 
-        // delimiter's children are emphasized text, we don't need to explicitly render them
+        // delimiters children are emphasized text, we don't need to explicitly render them
         // Just need to render the children of the delimiter, I think..
         //renderer.WriteText(obj.ToLiteral());
         renderer.WriteChildren(obj);

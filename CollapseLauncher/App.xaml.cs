@@ -91,7 +91,7 @@ namespace CollapseLauncher
                       WindowUtility.CurrentAppWindow!.TitleBar!.ButtonForegroundColor = color;
                       WindowUtility.CurrentAppWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
 
-                      if (WindowUtility.CurrentWindow!.Content is not null and FrameworkElement frameworkElement)
+                      if (WindowUtility.CurrentWindow!.Content is FrameworkElement frameworkElement)
                           frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
                   };
 

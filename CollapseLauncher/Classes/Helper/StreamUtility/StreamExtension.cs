@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper.StreamUtility
@@ -18,13 +19,6 @@ namespace CollapseLauncher.Helper.StreamUtility
             Mode = FileMode.Open,
             Access = FileAccess.Read,
             Share = FileShare.Read
-        };
-
-        internal static readonly FileStreamOptions FileStreamCreateWriteOpt = new()
-        {
-            Mode = FileMode.Create,
-            Access = FileAccess.Write,
-            Share = FileShare.Write
         };
 
         internal static readonly FileStreamOptions FileStreamCreateReadWriteOpt = new()

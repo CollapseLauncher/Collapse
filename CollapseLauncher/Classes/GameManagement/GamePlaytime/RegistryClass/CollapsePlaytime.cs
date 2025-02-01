@@ -217,7 +217,7 @@ namespace CollapseLauncher.GamePlaytime
 
         /// <summary>
         /// Checks if any stats should be reset.<br/>
-        /// Afterwards, the values are saved to the registry.<br/><br/>
+        /// Afterward, the values are saved to the registry.<br/><br/>
         /// </summary>
         private void CheckStatsReset()
         {
@@ -237,7 +237,7 @@ namespace CollapseLauncher.GamePlaytime
 
         /// <summary>
         /// Adds a minute to all fields, and checks if any should be reset.<br/>
-        /// Afterwards, the values are saved to the registry.<br/><br/>
+        /// Afterward, the values are saved to the registry.<br/><br/>
         /// </summary>
         public void AddMinute()
         {

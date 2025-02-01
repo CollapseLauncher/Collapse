@@ -19,6 +19,8 @@ using System.Xml.Linq;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.ViewManagement;
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable UnusedMember.Global
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 

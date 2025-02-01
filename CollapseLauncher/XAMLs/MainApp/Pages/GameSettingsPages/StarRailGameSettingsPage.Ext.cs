@@ -193,7 +193,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                int value = Model.FPSIndexDict[NormalizeFPSNumber(Settings.GraphicsSettings.FPS)];
+                int value = Model.FpsIndexDict[NormalizeFPSNumber(Settings.GraphicsSettings.FPS)];
                 if (value != 2)
                 {
                     return value;
@@ -213,12 +213,12 @@ namespace CollapseLauncher.Pages
                 }
                 else { VSyncToggle.IsEnabled = true; }
 
-                Settings.GraphicsSettings.FPS = Model.FPSIndex[value];
+                Settings.GraphicsSettings.FPS = Model.FpsIndex[value];
             }
         }
 
         // Set it to 60 (default) if the value isn't within Model.FPSIndexDict
-        private static int NormalizeFPSNumber(int input) => !Model.FPSIndexDict.ContainsKey(input) ? Model.FPSIndex[Model.FPSDefaultIndex] : input;
+        private static int NormalizeFPSNumber(int input) => !Model.FpsIndexDict.ContainsKey(input) ? Model.FpsIndex[Model.FpsDefaultIndex] : input;
 
         //VSync
         public bool EnableVSync
@@ -328,26 +328,26 @@ namespace CollapseLauncher.Pages
         #region Audio
         public int AudioMasterVolume
         {
-            get => Settings.AudioSettings_Master.MasterVol = Settings.AudioSettings_Master.MasterVol;
-            set => Settings.AudioSettings_Master.MasterVol = value;
+            get => Settings.AudioSettingsMaster.MasterVol = Settings.AudioSettingsMaster.MasterVol;
+            set => Settings.AudioSettingsMaster.MasterVol = value;
         }
 
         public int AudioBGMVolume
         {
-            get => Settings.AudioSettings_BGM.BGMVol = Settings.AudioSettings_BGM.BGMVol;
-            set => Settings.AudioSettings_BGM.BGMVol = value;
+            get => Settings.AudioSettingsBgm.BGMVol = Settings.AudioSettingsBgm.BGMVol;
+            set => Settings.AudioSettingsBgm.BGMVol = value;
         }
 
         public int AudioSFXVolume
         {
-            get => Settings.AudioSettings_SFX.SFXVol = Settings.AudioSettings_SFX.SFXVol;
-            set => Settings.AudioSettings_SFX.SFXVol = value;
+            get => Settings.AudioSettingsSfx.SFXVol = Settings.AudioSettingsSfx.SFXVol;
+            set => Settings.AudioSettingsSfx.SFXVol = value;
         }
 
         public int AudioVOVolume
         {
-            get => Settings.AudioSettings_VO.VOVol = Settings.AudioSettings_VO.VOVol;
-            set => Settings.AudioSettings_VO.VOVol = value;
+            get => Settings.AudioSettingsVo.VOVol = Settings.AudioSettingsVo.VOVol;
+            set => Settings.AudioSettingsVo.VOVol = value;
         }
 
         public int AudioLang

@@ -9,6 +9,7 @@ using Windows.ApplicationModel.Activation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable GrammarMistakeInComment
 
 namespace CollapseLauncher
 {

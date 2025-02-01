@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Interfaces;
 using System.IO;
+// ReSharper disable GrammarMistakeInComment
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base

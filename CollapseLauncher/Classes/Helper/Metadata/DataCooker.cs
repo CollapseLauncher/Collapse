@@ -11,6 +11,7 @@ using System.Threading;
 
 // ReSharper disable IdentifierTypo
 using ZstdDecompressStream = ZstdNet.DecompressionStream;
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.Helper.Metadata
 {
@@ -27,7 +28,7 @@ namespace CollapseLauncher.Helper.Metadata
         private const int  AllowedBufferPoolSize = 1 << 20; // 1 MiB
 
         internal static         RSA  RsaInstance;
-        private static readonly Lock RsaDecryptLock = new Lock();
+        private static readonly Lock RsaDecryptLock = new();
 
         internal static string ServeV3Data(string data)
         {

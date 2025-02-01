@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Text;
+// ReSharper disable CommentTypo
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -24,15 +25,14 @@ internal class MyCodeBlock : IAddChild
 
     public MyCodeBlock(CodeBlock codeBlock, MarkdownConfig config)
     {
-        MarkdownConfig _config = config;
         _paragraph = new Paragraph();
         var container = new InlineUIContainer();
         var border    = new Border
         {
             Background   = (Brush)Application.Current.Resources["ExpanderHeaderBackground"],
-            Padding      = _config.Themes.Padding,
-            Margin       = _config.Themes.InternalMargin,
-            CornerRadius = _config.Themes.CornerRadius
+            Padding      = config.Themes.Padding,
+            Margin       = config.Themes.InternalMargin,
+            CornerRadius = config.Themes.CornerRadius
         };
         var richTextBlock = new RichTextBlock();
 

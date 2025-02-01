@@ -8,16 +8,11 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyLineBreak : IAddChild
 {
-    private readonly LineBreak _lineBreak;
+    private readonly LineBreak _lineBreak = new();
 
     public TextElement TextElement
     {
         get => _lineBreak;
-    }
-
-    public MyLineBreak()
-    {
-        _lineBreak = new LineBreak();
     }
 
     public void AddChild(IAddChild child) { }

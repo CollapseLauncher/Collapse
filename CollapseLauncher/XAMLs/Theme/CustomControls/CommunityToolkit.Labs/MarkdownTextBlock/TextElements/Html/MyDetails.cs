@@ -23,15 +23,13 @@ internal class MyDetails : IAddChild
 
     public MyDetails(HtmlNode details)
     {
-        HtmlNode _htmlNode = details;
+        var header = details.ChildNodes
+                            .FirstOrDefault(
+                                            x => x.Name == "summary" ||
+                                                 x.Name == "header");
 
-        var header = _htmlNode.ChildNodes
-            .FirstOrDefault(
-                x => x.Name == "summary" ||
-                x.Name == "header");
-
-        InlineUIContainer _inlineUIContainer = new InlineUIContainer();
-        Expander          _expander          = new Expander
+        InlineUIContainer inlineUIContainer = new InlineUIContainer();
+        Expander          expander          = new Expander
         {
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
@@ -42,16 +40,16 @@ internal class MyDetails : IAddChild
                 HorizontalAlignment = HorizontalAlignment.Stretch
             }
         };
-        _expander.Content                               = _flowDocument.RichTextBlock;
+        expander.Content                               = _flowDocument.RichTextBlock;
         var headerBlock = new TextBlock
         {
             Text                = header?.InnerText,
             HorizontalAlignment = HorizontalAlignment.Stretch
         };
-        _expander.Header = headerBlock;
-        _inlineUIContainer.Child = _expander;
+        expander.Header = headerBlock;
+        inlineUIContainer.Child = expander;
         _paragraph = new Paragraph();
-        _paragraph.Inlines.Add(_inlineUIContainer);
+        _paragraph.Inlines.Add(inlineUIContainer);
     }
 
     public void AddChild(IAddChild child)

@@ -418,7 +418,7 @@ namespace CollapseLauncher
                     if (nameDef.Length > 1)
                     {
                         // Compare if the first name definition is equal to target langName.
-                        // Also return if the file is an audio language file if it is a SFX file or not.
+                        // Also return if the file is an audio language file if it is SFX file or not.
                         return langNames.Contains(nameDef[0], StringComparer.OrdinalIgnoreCase) || nameDef[0] == "SFX";
                     }
                     // If it's not in criteria of name definition, then return true as "normal asset"

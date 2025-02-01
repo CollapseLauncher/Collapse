@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 // ReSharper disable CommentTypo
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 
 #nullable enable
 namespace CollapseLauncher.Interfaces

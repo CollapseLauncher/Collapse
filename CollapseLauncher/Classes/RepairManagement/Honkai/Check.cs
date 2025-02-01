@@ -544,7 +544,7 @@ namespace CollapseLauncher
         {
             // Build the list of existing files inside the game folder
             // for comparison with asset index into catalog list
-            HashSet<string> catalog = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> catalog = new(StringComparer.OrdinalIgnoreCase);
             BuildAssetIndexCatalog(catalog, assetIndex);
 
             // Compare the catalog list with asset index and add it to target asset index
@@ -617,8 +617,8 @@ namespace CollapseLauncher
                 ".dll"
                 ], StringComparison.OrdinalIgnoreCase);
 
-            List<Regex> matchIgnoredFilesRegex = new List<Regex>();
-            string ignoredFilesPath = Path.Combine(GamePath, "@IgnoredFiles");
+            List<Regex> matchIgnoredFilesRegex = [];
+            string      ignoredFilesPath       = Path.Combine(GamePath, "@IgnoredFiles");
             if (File.Exists(ignoredFilesPath))
             {
                 try

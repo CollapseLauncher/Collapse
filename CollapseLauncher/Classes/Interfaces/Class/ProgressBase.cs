@@ -34,6 +34,7 @@ using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Interfaces

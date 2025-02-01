@@ -20,27 +20,25 @@ namespace CollapseLauncher.GameSettings
     {
 #nullable enable
         #region Fields
-        private          string                  CurrentPresetName = PresetConst.DefaultPresetName;
-        private readonly Dictionary<string, T1>? _Presets;
+        private          string                  _currentPresetName = PresetConst.DefaultPresetName;
+
         #endregion
 
         #region Properties
+
         /// <summary>
         /// The preset of the given settings
         /// </summary>
         public Dictionary<string, T1>? Presets
         {
-            get
-            {
-                return _Presets;
-            }
+            get;
             init
             {
-                _Presets?.Clear();
-                _Presets = value;
-#nullable disable
-                _Presets?.Add(PresetConst.DefaultPresetName, default);
-#nullable enable
+                field?.Clear();
+                field = value;
+            #nullable disable
+                field?.Add(PresetConst.DefaultPresetName, default);
+            #nullable enable
             }
         }
 
@@ -51,9 +49,9 @@ namespace CollapseLauncher.GameSettings
         #endregion
 
         #region Methods
-        public Preset(string presetJSONPath, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
+        public Preset(string presetJsonPath, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
-            using FileStream fs = new FileStream(presetJSONPath, FileMode.Open, FileAccess.Read);
+            using FileStream fs = new FileStream(presetJsonPath, FileMode.Open, FileAccess.Read);
             Presets    = fs.Deserialize(jsonType);
             PresetKeys = GetPresetKeys();
         }
@@ -69,10 +67,6 @@ namespace CollapseLauncher.GameSettings
             string presetPath = Path.Combine(AppExecutableDir, $@"Assets\Presets\{gameType}\", $"{typeof(T1).Name}.json");
             return new Preset<T1, TObjectType>(presetPath, jsonType);
         }
-
-        /// <param name="key">The key of the preset</param>
-        /// <returns>Returns a boolean to check whether the key exists. Otherwise, false if key doesn't exist or preset is <c>null</c></returns>
-        public bool IsPresetKeyExist(string key) => Presets?.ContainsKey(key) ?? false;
 
         /// <param name="key">The key of the preset</param>
         /// <returns>Returns a value of the preset by its key</returns>
@@ -115,11 +109,11 @@ namespace CollapseLauncher.GameSettings
 
                 if (foundPreset.HasValue)
                 {
-                    CurrentPresetName = foundPreset.Value.Key;
+                    _currentPresetName = foundPreset.Value.Key;
                 }
                 return;
             }
-            CurrentPresetName = PresetConst.DefaultPresetName;
+            _currentPresetName = PresetConst.DefaultPresetName;
         }
 
         /// <returns>Get the current preset key name. If it doesn't match, then return the <c>DefaultPresetName</c></returns>
@@ -153,7 +147,7 @@ namespace CollapseLauncher.GameSettings
             string presetRegistryName = $"Preset_{typeof(T1).Name}";
             if (RegistryRoot == null) throw new NullReferenceException($"Cannot save preset name of {typeof(T1).Name} since RegistryKey is unexpectedly not initialized!");
 
-            RegistryRoot.SetValue(presetRegistryName, CurrentPresetName, RegistryValueKind.String);
+            RegistryRoot.SetValue(presetRegistryName, _currentPresetName, RegistryValueKind.String);
         }
         #endregion
     }

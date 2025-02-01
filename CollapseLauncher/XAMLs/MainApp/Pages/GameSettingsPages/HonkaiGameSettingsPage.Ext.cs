@@ -37,16 +37,16 @@ namespace CollapseLauncher.Pages
         #region Presets
         public ICollection<string> PresetRenderingNames
         {
-            get => Settings.Preset_SettingsGraphics.PresetKeys;
+            get => Settings.PresetSettingsGraphics.PresetKeys;
         }
 
         public int PresetRenderingIndex
         {
             get
             {
-                string name = Settings.Preset_SettingsGraphics.GetPresetKey();
-                int index = Settings.Preset_SettingsGraphics.PresetKeys.IndexOf(name);
-                PersonalGraphicsSettingV2 presetValue = Settings.Preset_SettingsGraphics.GetPresetFromKey(name);
+                string name = Settings.PresetSettingsGraphics.GetPresetKey();
+                int index = Settings.PresetSettingsGraphics.PresetKeys.IndexOf(name);
+                PersonalGraphicsSettingV2 presetValue = Settings.PresetSettingsGraphics.GetPresetFromKey(name);
 
                 if (presetValue != null)
                 {
@@ -60,14 +60,14 @@ namespace CollapseLauncher.Pages
             {
                 if (value < 0) return;
 
-                string name = Settings.Preset_SettingsGraphics.PresetKeys[value];
-                PersonalGraphicsSettingV2 presetValue = Settings.Preset_SettingsGraphics.GetPresetFromKey(name);
+                string name = Settings.PresetSettingsGraphics.PresetKeys[value];
+                PersonalGraphicsSettingV2 presetValue = Settings.PresetSettingsGraphics.GetPresetFromKey(name);
 
                 if (presetValue != null)
                 {
                     Settings.SettingsGraphics = presetValue;
                 }
-                Settings.Preset_SettingsGraphics.SetPresetKey(presetValue);
+                Settings.PresetSettingsGraphics.SetPresetKey(presetValue);
 
                 ToggleRenderingSettings(name == PresetConst.DefaultPresetName);
                 UpdatePresetRenderingSettings();

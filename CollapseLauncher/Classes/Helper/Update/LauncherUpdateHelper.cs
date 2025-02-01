@@ -14,6 +14,7 @@ using Squirrel.Sources;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Sources;
+// ReSharper disable UnusedMember.Global
 #endif
 
 // ReSharper disable StringLiteralTypo
