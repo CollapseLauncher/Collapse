@@ -230,7 +230,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             catch
             {
                 DisposeMediaModules();
-                // await BackgroundMediaUtility.AssignDefaultImage(CurrentMediaImage);
+                await BackgroundMediaUtility.AssignDefaultImage(_currentImage);
                 throw;
             }
             finally
