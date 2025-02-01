@@ -1,5 +1,4 @@
-﻿using Hi3Helper;
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,61 +26,24 @@ namespace CollapseLauncher.Extension
                                        int?                                               retryAttempt  = null,
                                        ActionOnTimeOutRetry?                              actionOnRetry = null,
                                        CancellationToken                                  fromToken     = default)
+            => await WaitForRetryAsync(funcCallback.AsTaskCallback(fromToken),
+                                       timeout,
+                                       timeoutStep,
+                                       retryAttempt,
+                                       actionOnRetry,
+                                       fromToken);
+
+        internal static ActionTimeoutTaskCallback<TResult?> AsTaskCallback<TResult>(this Func<ActionTimeoutTaskAwaitableCallback<TResult?>> func,
+            CancellationToken fromToken)
         {
-            timeout      ??= DefaultTimeoutSec;
-            timeoutStep  ??= 0;
-            retryAttempt ??= DefaultRetryAttempt;
+            return ActionTimeoutCallback;
 
-            int        retryAttemptCurrent = 1;
-            Exception? lastException       = null;
-            while (retryAttemptCurrent < retryAttempt)
+            async Task<TResult?> ActionTimeoutCallback(CancellationToken innerToken)
             {
-                fromToken.ThrowIfCancellationRequested();
-                CancellationTokenSource? innerCancellationToken = null;
-                CancellationTokenSource? consolidatedToken = null;
-
-                try
-                {
-                    innerCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(timeout ?? DefaultTimeoutSec));
-                    consolidatedToken = CancellationTokenSource.CreateLinkedTokenSource(innerCancellationToken.Token, fromToken);
-
-                    ActionTimeoutTaskAwaitableCallback<TResult?> delegateCallback = funcCallback();
-                    return await delegateCallback(consolidatedToken.Token);
-                }
-                catch (OperationCanceledException) when (fromToken.IsCancellationRequested) { throw; }
-                catch (Exception ex)
-                {
-                    lastException = ex;
-                    actionOnRetry?.Invoke(retryAttemptCurrent, (int)retryAttempt, timeout ?? 0, timeoutStep ?? 0);
-
-                    if (ex is TimeoutException)
-                    {
-                        string msg = $"The operation has timed out! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}";
-                        Logger.LogWriteLine(msg, LogType.Warning, true);
-                    }
-                    else
-                    {
-                        string msg = $"The operation has thrown an exception! Retrying attempt left: {retryAttemptCurrent}/{retryAttempt}\r\n{ex}";
-                        Logger.LogWriteLine(msg, LogType.Error, true);
-                    }
-
-                    retryAttemptCurrent++;
-                    timeout += timeoutStep;
-                }
-                finally
-                {
-                    innerCancellationToken?.Dispose();
-                    consolidatedToken?.Dispose();
-                }
+                ActionTimeoutTaskAwaitableCallback<TResult?> callback          = func.Invoke();
+                ConfiguredTaskAwaitable<TResult?>            callbackAwaitable = callback.Invoke(fromToken);
+                return await callbackAwaitable;
             }
-
-            if (lastException is not null
-                && !fromToken.IsCancellationRequested)
-                throw lastException is TaskCanceledException ?
-                    new TimeoutException("The operation has timed out with inner exception!", lastException) :
-                    lastException;
-
-            throw new TimeoutException("The operation has timed out!");
         }
     }
 }
