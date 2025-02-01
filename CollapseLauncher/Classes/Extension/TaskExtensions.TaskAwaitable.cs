@@ -1,5 +1,6 @@
 ﻿using Hi3Helper;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
@@ -7,36 +8,32 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    public delegate Task<TResult?> ActionTimeoutTaskCallback<TResult>(CancellationToken token);
-    public delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
+    public delegate ConfiguredTaskAwaitable<TResult?> ActionTimeoutTaskAwaitableCallback<TResult>(CancellationToken token);
     internal static partial class TaskExtensions
     {
-        internal const int DefaultTimeoutSec = 10;
-        internal const int DefaultRetryAttempt = 5;
+        internal static Task<TResult?>
+            WaitForRetryAsync<TResult>(this ActionTimeoutTaskAwaitableCallback<TResult?> funcCallback,
+                                       int?                                              timeout       = null,
+                                       int?                                              timeoutStep   = null,
+                                       int?                                              retryAttempt  = null,
+                                       ActionOnTimeOutRetry?                             actionOnRetry = null,
+                                       CancellationToken                                 fromToken     = default)
+            => WaitForRetryAsync(() => funcCallback, timeout, timeoutStep, retryAttempt, actionOnRetry, fromToken);
 
         internal static async Task<TResult?>
-            WaitForRetryAsync<TResult>(this ActionTimeoutTaskCallback<TResult?> funcCallback,
-                                       int?                                     timeout       = null,
-                                       int?                                     timeoutStep   = null,
-                                       int?                                     retryAttempt  = null,
-                                       ActionOnTimeOutRetry?                    actionOnRetry = null,
-                                       CancellationToken                        fromToken     = default)
-            => await WaitForRetryAsync(() => funcCallback, timeout, timeoutStep, retryAttempt, actionOnRetry, fromToken);
-
-        internal static async Task<TResult?>
-            WaitForRetryAsync<TResult>(Func<ActionTimeoutTaskCallback<TResult?>> funcCallback,
-                                       int?                                      timeout       = null,
-                                       int?                                      timeoutStep   = null,
-                                       int?                                      retryAttempt  = null,
-                                       ActionOnTimeOutRetry?                     actionOnRetry = null,
-                                       CancellationToken                         fromToken     = default)
+            WaitForRetryAsync<TResult>(Func<ActionTimeoutTaskAwaitableCallback<TResult?>> funcCallback,
+                                       int?                                               timeout       = null,
+                                       int?                                               timeoutStep   = null,
+                                       int?                                               retryAttempt  = null,
+                                       ActionOnTimeOutRetry?                              actionOnRetry = null,
+                                       CancellationToken                                  fromToken     = default)
         {
             timeout      ??= DefaultTimeoutSec;
             timeoutStep  ??= 0;
             retryAttempt ??= DefaultRetryAttempt;
 
-            int retryAttemptCurrent = 1;
-            Exception? lastException = null;
+            int        retryAttemptCurrent = 1;
+            Exception? lastException       = null;
             while (retryAttemptCurrent < retryAttempt)
             {
                 fromToken.ThrowIfCancellationRequested();
@@ -48,7 +45,7 @@ namespace CollapseLauncher.Extension
                     innerCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(timeout ?? DefaultTimeoutSec));
                     consolidatedToken = CancellationTokenSource.CreateLinkedTokenSource(innerCancellationToken.Token, fromToken);
 
-                    ActionTimeoutTaskCallback<TResult?> delegateCallback = funcCallback();
+                    ActionTimeoutTaskAwaitableCallback<TResult?> delegateCallback = funcCallback();
                     return await delegateCallback(consolidatedToken.Token);
                 }
                 catch (OperationCanceledException) when (fromToken.IsCancellationRequested) { throw; }
@@ -80,7 +77,7 @@ namespace CollapseLauncher.Extension
 
             if (lastException is not null
                 && !fromToken.IsCancellationRequested)
-                throw lastException is TaskCanceledException ? 
+                throw lastException is TaskCanceledException ?
                     new TimeoutException("The operation has timed out with inner exception!", lastException) :
                     lastException;
 
