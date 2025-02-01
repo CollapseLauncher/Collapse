@@ -9,6 +9,7 @@ namespace CollapseLauncher.Extension
 {
     public delegate Task<TResult?> ActionTimeoutTaskCallback<TResult>(CancellationToken token);
     public delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
+
     internal static partial class TaskExtensions
     {
         internal const int DefaultTimeoutSec = 10;

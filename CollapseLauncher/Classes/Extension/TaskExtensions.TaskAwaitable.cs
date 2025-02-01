@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.Extension
 {
     public delegate ConfiguredTaskAwaitable<TResult?> ActionTimeoutTaskAwaitableCallback<TResult>(CancellationToken token);
+
     internal static partial class TaskExtensions
     {
         internal static Task<TResult?>
@@ -26,24 +27,19 @@ namespace CollapseLauncher.Extension
                                        int?                                               retryAttempt  = null,
                                        ActionOnTimeOutRetry?                              actionOnRetry = null,
                                        CancellationToken                                  fromToken     = default)
-            => await WaitForRetryAsync(funcCallback.AsTaskCallback(fromToken),
+            => await WaitForRetryAsync(funcCallback.AsTaskCallback,
                                        timeout,
                                        timeoutStep,
                                        retryAttempt,
                                        actionOnRetry,
                                        fromToken);
 
-        internal static ActionTimeoutTaskCallback<TResult?> AsTaskCallback<TResult>(this Func<ActionTimeoutTaskAwaitableCallback<TResult?>> func,
-            CancellationToken fromToken)
-        {
-            return ActionTimeoutCallback;
-
-            async Task<TResult?> ActionTimeoutCallback(CancellationToken innerToken)
+        private static ActionTimeoutTaskCallback<TResult?> AsTaskCallback<TResult>(this Func<ActionTimeoutTaskAwaitableCallback<TResult?>> func) =>
+            async ctx =>
             {
                 ActionTimeoutTaskAwaitableCallback<TResult?> callback          = func.Invoke();
-                ConfiguredTaskAwaitable<TResult?>            callbackAwaitable = callback.Invoke(fromToken);
+                ConfiguredTaskAwaitable<TResult?>            callbackAwaitable = callback.Invoke(ctx);
                 return await callbackAwaitable;
-            }
-        }
+            };
     }
 }
