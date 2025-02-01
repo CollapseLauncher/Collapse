@@ -241,24 +241,54 @@ namespace CollapseLauncher
 
         public static async Task LoadLocalNotificationData()
         {
-            await using FileStream fileStream = File.Open(AppNotifIgnoreFile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            if (!File.Exists(AppNotifIgnoreFile))
+            FileStream? fileStream = null;
+
+            bool forceCreate = false;
+            while (true)
             {
-                await new NotificationPush().SerializeAsync(fileStream, NotificationPushJsonContext.Default.NotificationPush).ConfigureAwait(false);
+                try
+                {
+                    fileStream = File.Open(AppNotifIgnoreFile, forceCreate ? FileMode.Create : FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    if (fileStream.Length == 0)
+                    {
+                        await new NotificationPush()
+                             .SerializeAsync(fileStream, NotificationPushJsonContext.Default.NotificationPush)
+                             .ConfigureAwait(false);
+                    }
+
+                    fileStream.Position = 0;
+                    NotificationPush? localNotificationData = await fileStream
+                                                                   .DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush)
+                                                                   .ConfigureAwait(false);
+
+                    if (NotificationData == null)
+                    {
+                        return;
+                    }
+
+                    NotificationData.AppPushIgnoreMsgIds    = localNotificationData?.AppPushIgnoreMsgIds;
+                    NotificationData.RegionPushIgnoreMsgIds = localNotificationData?.RegionPushIgnoreMsgIds;
+                    NotificationData.CurrentShowMsgIds      = localNotificationData?.CurrentShowMsgIds;
+                    NotificationData.EliminatePushList();
+
+                    return;
+                }
+                catch
+                {
+                    if (forceCreate)
+                    {
+                        throw;
+                    }
+                    forceCreate = true;
+                }
+                finally
+                {
+                    if (fileStream != null)
+                    {
+                        await fileStream.DisposeAsync();
+                    }
+                }
             }
-
-            fileStream.Position = 0;
-            NotificationPush? localNotificationData = await fileStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush).ConfigureAwait(false);
-
-            if (NotificationData == null)
-            {
-                return;
-            }
-
-            NotificationData.AppPushIgnoreMsgIds    = localNotificationData?.AppPushIgnoreMsgIds;
-            NotificationData.RegionPushIgnoreMsgIds = localNotificationData?.RegionPushIgnoreMsgIds;
-            NotificationData.CurrentShowMsgIds      = localNotificationData?.CurrentShowMsgIds;
-            NotificationData.EliminatePushList();
         }
     }
 }
