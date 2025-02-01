@@ -346,14 +346,12 @@ namespace CollapseLauncher.Helper.Background
                 EnsureCurrentImageRegistered();
                 EnsureCurrentMediaPlayerRegistered();
 
-                _loaderMediaPlayer ??= new MediaPlayerLoader(
-                                                             _parentUI!,
+                _loaderMediaPlayer ??= new MediaPlayerLoader(_parentUI!,
                                                              _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                              _parentBgMediaPlayerBackgroundGrid!,
                                                              _bgMediaPlayerBackground);
 
-                _loaderStillImage ??= new StillImageLoader(
-                                                           _parentUI!,
+                _loaderStillImage ??= new StillImageLoader(_parentUI!,
                                                            _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                            _parentBgImageBackgroundGrid!,
                                                            _bgImageBackground, _bgImageBackgroundLast);
