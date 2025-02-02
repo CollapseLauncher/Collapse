@@ -62,19 +62,19 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private FFmpegMediaSource? _currentFFmpegMediaSource;
 #endif
 
+        private const float CanvasBaseDpi = 96f;
+
         private          CanvasVirtualImageSource? _currentCanvasVirtualImageSource;
         private          CanvasBitmap?             _currentCanvasBitmap;
         private          CanvasDevice?             _currentCanvasDevice;
         private volatile CanvasDrawingSession?     _currentCanvasDrawingSession;
-        private readonly int                       _currentCanvasWidth;
-        private readonly int                       _currentCanvasHeight;
-        private readonly float                     _currentCanvasDpi;
-        private readonly Rect                      _currentCanvasDrawArea;
+        private volatile float                     _currentCanvasWidth;
+        private volatile float                     _currentCanvasHeight;
+        private          Rect                      _currentCanvasDrawArea;
         private readonly MediaPlayerElement?       _currentMediaPlayerFrame;
         private readonly Grid                      _currentMediaPlayerFrameParentGrid;
         private readonly ImageUI                   _currentImage;
         private readonly Lock                      _currentLock = new();
-
 
         internal MediaPlayerLoader(
             FrameworkElement parentUI,
@@ -88,14 +88,17 @@ namespace CollapseLauncher.Helper.Background.Loaders
             AcrylicMask     = acrylicMask;
             OverlayTitleBar = overlayTitleBar;
 
-            _currentMediaPlayerFrameParentGrid = mediaPlayerParentGrid;
-            _currentMediaPlayerFrame           = mediaPlayerCurrent;
+            _currentMediaPlayerFrameParentGrid             =  mediaPlayerParentGrid;
+            _currentMediaPlayerFrameParentGrid.SizeChanged += UpdateCanvasOnSizeChangeEvent;
+            _currentMediaPlayerFrame                       =  mediaPlayerCurrent;
 
-            _currentCanvasWidth  =   (int)_currentMediaPlayerFrameParentGrid.ActualWidth;
-            _currentCanvasHeight =   (int)_currentMediaPlayerFrameParentGrid.ActualHeight;
-            _currentCanvasDpi    =   96f;
+            float actualWidth   = (float)_currentMediaPlayerFrameParentGrid.ActualWidth;
+            float actualHeight  = (float)_currentMediaPlayerFrameParentGrid.ActualHeight;
+            float scalingFactor = (float)WindowUtility.CurrentWindowMonitorScaleFactor;
 
-            _currentCanvasDrawArea = new Rect(0, 0, _currentCanvasWidth, _currentCanvasHeight);
+            _currentCanvasWidth    = actualWidth * scalingFactor;
+            _currentCanvasHeight   = actualHeight * scalingFactor;
+            _currentCanvasDrawArea = new Rect(0f, 0f, _currentCanvasWidth, _currentCanvasHeight);
 
             _currentImage = mediaPlayerParentGrid.AddElementToGridRowColumn(new ImageUI
             {
@@ -115,6 +118,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         {
             try
             {
+                _currentMediaPlayerFrameParentGrid.SizeChanged -= UpdateCanvasOnSizeChangeEvent;
                 DisposeMediaModules();
             }
             catch (Exception ex)
@@ -137,29 +141,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 if (IsUseVideoBgDynamicColorUpdate)
                 {
                     _currentCanvasDevice ??= CanvasDevice.GetSharedDevice();
-                    _currentCanvasVirtualImageSource ??= new CanvasVirtualImageSource(_currentCanvasDevice,
-                                                                                      _currentCanvasWidth,
-                                                                                      _currentCanvasHeight,
-                                                                                      _currentCanvasDpi,
-                                                                                      CanvasAlphaMode.Ignore);
-
-                    _currentImage.Source = _currentCanvasVirtualImageSource.Source;
-
-                    byte[] temporaryBuffer = ArrayPool<byte>.Shared.Rent(_currentCanvasWidth * _currentCanvasHeight * 4);
-                    try
-                    {
-                        _currentCanvasBitmap ??= CanvasBitmap.CreateFromBytes(_currentCanvasDevice,
-                                                                              temporaryBuffer,
-                                                                              _currentCanvasWidth,
-                                                                              _currentCanvasHeight,
-                                                                              Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
-                                                                              _currentCanvasDpi,
-                                                                              CanvasAlphaMode.Ignore);
-                    }
-                    finally
-                    {
-                        ArrayPool<byte>.Shared.Return(temporaryBuffer);
-                    }
+                    CreateAndAssignCanvasVirtualImageSource();
+                    CreateCanvasBitmap();
 
                     _currentImage.Visibility = Visibility.Visible;
                     App.ToggleBlurBackdrop();
@@ -250,6 +233,60 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
+        private void UpdateCanvasOnSizeChangeEvent(object sender, SizeChangedEventArgs e)
+        {
+            lock (_currentLock)
+            {
+                float scalingFactor = (float)WindowUtility.CurrentWindowMonitorScaleFactor;
+                float newWidth      = (float)(e.NewSize.Width * scalingFactor);
+                float newHeight     = (float)(e.NewSize.Height * scalingFactor);
+
+                LogWriteLine($"Updating video canvas size from: {_currentCanvasWidth}x{_currentCanvasHeight} to {newWidth}x{newHeight}", LogType.Debug, true);
+
+                _currentCanvasWidth    = newWidth;
+                _currentCanvasHeight   = newHeight;
+                _currentCanvasDrawArea = new Rect(0, 0, _currentCanvasWidth, _currentCanvasHeight);
+
+                _currentCanvasBitmap?.Dispose();
+                _currentCanvasBitmap             = null;
+                _currentCanvasVirtualImageSource = null;
+                CreateAndAssignCanvasVirtualImageSource();
+                CreateCanvasBitmap();
+            }
+        }
+
+        private void CreateAndAssignCanvasVirtualImageSource()
+        {
+            _currentCanvasVirtualImageSource ??= new CanvasVirtualImageSource(_currentCanvasDevice,
+                                                                              _currentCanvasWidth,
+                                                                              _currentCanvasHeight,
+                                                                              CanvasBaseDpi);
+
+            _currentImage.Source = _currentCanvasVirtualImageSource.Source;
+        }
+
+        private void CreateCanvasBitmap()
+        {
+            int widthInt  = (int)_currentCanvasWidth;
+            int heightInt = (int)_currentCanvasHeight;
+
+            byte[] temporaryBuffer = ArrayPool<byte>.Shared.Rent(widthInt * heightInt * 4);
+            try
+            {
+                _currentCanvasBitmap ??= CanvasBitmap.CreateFromBytes(_currentCanvasDevice,
+                                                                      temporaryBuffer,
+                                                                      widthInt,
+                                                                      heightInt,
+                                                                      Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
+                                                                      CanvasBaseDpi,
+                                                                      CanvasAlphaMode.Ignore);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(temporaryBuffer);
+            }
+        }
+
         public void DisposeMediaModules()
         {
 #if !USEFFMPEGFORVIDEOBG
@@ -336,10 +373,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
         {
             lock (_currentLock)
             {
-                    if (_currentCanvasVirtualImageSource is null)
-                    {
-                        return;
-                    }
+                if (_currentCanvasVirtualImageSource is null)
+                {
+                    return;
+                }
 
                 if (_currentCanvasDrawingSession is not null)
                 {
@@ -355,7 +392,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 lock (_currentLock)
                 {
                     mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
-                    _currentCanvasDrawingSession = _currentCanvasVirtualImageSource.CreateDrawingSession(_currentDefaultColor, _currentCanvasDrawArea);
+                    _currentCanvasDrawingSession = _currentCanvasVirtualImageSource
+                        .CreateDrawingSession(_currentDefaultColor,
+                                              _currentCanvasDrawArea);
                     _currentCanvasDrawingSession.DrawImage(_currentCanvasBitmap);
                 }
             }
