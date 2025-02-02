@@ -302,12 +302,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
         {
             ReadOnlySpan<byte> dashSignature = "ftypdash"u8;
 
-            byte[] buffer = new byte[64];
+            Span<byte> buffer = stackalloc byte[64];
             stream.ReadExactly(buffer);
 
             try
             {
-                if (buffer.AsSpan(4).StartsWith(dashSignature))
+                if (buffer.StartsWith(dashSignature))
                     throw new FormatException("The video format is in \"MPEG-DASH\" format, which is unsupported.");
             }
             finally
@@ -338,10 +338,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
         {
             lock (_currentLock)
             {
-                if (_currentCanvasVirtualImageSource is null)
-                {
-                    return;
-                }
+                    if (_currentCanvasVirtualImageSource is null)
+                    {
+                        return;
+                    }
 
                 if (_currentCanvasDrawingSession is not null)
                 {
