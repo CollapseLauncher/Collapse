@@ -31,6 +31,7 @@ using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable StringLiteralTypo
+// ReSharper disable AsyncVoidMethod
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -71,6 +72,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private readonly MediaPlayerElement?       _currentMediaPlayerFrame;
         private readonly Grid                      _currentMediaPlayerFrameParentGrid;
         private readonly ImageUI                   _currentImage;
+        private readonly Lock                      _frameGrabberEventLock = new();
 
         internal MediaPlayerLoader(
             FrameworkElement parentUI,
@@ -325,37 +327,42 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private static async Task<StorageFile> GetFileAsStorageFile(string filePath)
             => await StorageFile.GetFileFromPathAsync(filePath);
 
-        private void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (_isCanvasCurrentlyDrawing == 1)
             {
                 return;
             }
 
-            CanvasDrawingSession? drawingSession = null;
-            try
+            lock (_frameGrabberEventLock)
             {
-                Interlocked.Exchange(ref _isCanvasCurrentlyDrawing, 1);
-                mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
-                drawingSession = _currentCanvasVirtualImageSource?.CreateDrawingSession(_currentDefaultColor, _currentCanvasDrawArea);
-                drawingSession?.DrawImage(_currentCanvasBitmap);
-                _currentCanvasVirtualImageSource?.SuspendDrawingSession(drawingSession);
-            }
-            catch
-        #if DEBUG
-            (Exception e)
-            {
-                LogWriteLine($"[FrameGrabberEvent] Error while drawing frame to bitmap.\r\n{e}", LogType.Warning, true);
-            }
-        #else
-            {
-                // ignored
-            }
-        #endif
-            finally
-            {
-                CurrentDispatcherQueue.TryEnqueue(() => drawingSession?.Dispose());
-                Interlocked.Exchange(ref _isCanvasCurrentlyDrawing, 0);
+                _isCanvasCurrentlyDrawing = 1;
+                CanvasDrawingSession? drawingSession = null;
+
+                try
+                {
+                    mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
+                    drawingSession = _currentCanvasVirtualImageSource?.CreateDrawingSession(_currentDefaultColor, _currentCanvasDrawArea);
+                    drawingSession?.DrawImage(_currentCanvasBitmap);
+                }
+                catch
+            #if DEBUG
+                (Exception e)
+                {
+                    LogWriteLine($"[FrameGrabberEvent] Error while drawing frame to bitmap.\r\n{e}", LogType.Warning, true);
+                }
+            #else
+                {
+                    // ignored
+                }
+            #endif
+                finally
+                {
+                    CurrentDispatcherQueue.TryEnqueue(() => drawingSession?.Dispose());
+                    _isCanvasCurrentlyDrawing = 0;
+                }
             }
         }
 
