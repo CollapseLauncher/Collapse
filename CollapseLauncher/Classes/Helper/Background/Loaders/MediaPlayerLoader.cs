@@ -147,7 +147,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                     _currentImage.Visibility = Visibility.Visible;
                     App.ToggleBlurBackdrop();
                 }
-                else if (_currentImage != null)
+                else
                 {
                     _currentImage.Visibility = Visibility.Collapsed;
                 }
@@ -273,13 +273,14 @@ namespace CollapseLauncher.Helper.Background.Loaders
             byte[] temporaryBuffer = ArrayPool<byte>.Shared.Rent(widthInt * heightInt * 4);
             try
             {
-                _currentCanvasBitmap ??= CanvasBitmap.CreateFromBytes(_currentCanvasDevice,
-                                                                      temporaryBuffer,
-                                                                      widthInt,
-                                                                      heightInt,
-                                                                      Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
-                                                                      CanvasBaseDpi,
-                                                                      CanvasAlphaMode.Ignore);
+                _currentCanvasBitmap ??= CanvasBitmap
+                    .CreateFromBytes(_currentCanvasDevice,
+                                     temporaryBuffer,
+                                     widthInt,
+                                     heightInt,
+                                     Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
+                                     CanvasBaseDpi,
+                                     CanvasAlphaMode.Ignore);
             }
             finally
             {
@@ -357,11 +358,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
             StorageFile                storageFile = await GetFileAsStorageFile(file);
             using StorageItemThumbnail thumbnail   = await storageFile.GetThumbnailAsync(ThumbnailMode.VideosView);
 
-            await ColorPaletteUtility.ApplyAccentColor(ParentUI,
-                                                       thumbnail,
-                                                       string.Empty,
-                                                       false,
-                                                       true);
+            await ColorPaletteUtility
+                .ApplyAccentColor(ParentUI,
+                                  thumbnail,
+                                  string.Empty,
+                                  false,
+                                  true);
         }
 
         private static async Task<StorageFile> GetFileAsStorageFile(string filePath)
