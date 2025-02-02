@@ -32,6 +32,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable StringLiteralTypo
 // ReSharper disable AsyncVoidMethod
+// ReSharper disable BadControlBracesIndent
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -42,7 +43,6 @@ namespace CollapseLauncher.Helper.Background.Loaders
     internal sealed partial class MediaPlayerLoader : IBackgroundMediaLoader
     {
         private readonly Color _currentDefaultColor = Color.FromArgb(0, 0, 0, 0);
-        private          int   _isCanvasCurrentlyDrawing;
 
         private FrameworkElement ParentUI               { get; }
         private Compositor       CurrentCompositor      { get; }
@@ -65,6 +65,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private          CanvasVirtualImageSource? _currentCanvasVirtualImageSource;
         private          CanvasBitmap?             _currentCanvasBitmap;
         private          CanvasDevice?             _currentCanvasDevice;
+        private volatile CanvasDrawingSession?     _currentCanvasDrawingSession;
         private readonly int                       _currentCanvasWidth;
         private readonly int                       _currentCanvasHeight;
         private readonly float                     _currentCanvasDpi;
@@ -72,7 +73,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private readonly MediaPlayerElement?       _currentMediaPlayerFrame;
         private readonly Grid                      _currentMediaPlayerFrameParentGrid;
         private readonly ImageUI                   _currentImage;
-        private readonly Lock                      _frameGrabberEventLock = new();
+        private readonly Lock                      _currentLock = new();
+
 
         internal MediaPlayerLoader(
             FrameworkElement parentUI,
@@ -261,9 +263,12 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             if (IsUseVideoBgDynamicColorUpdate)
             {
-                while (_isCanvasCurrentlyDrawing == 1)
+                lock (_currentLock)
                 {
-                    Thread.Sleep(100);
+                    while (_currentCanvasDrawingSession is not null)
+                    {
+                        Thread.Sleep(100);
+                    }
                 }
             }
 
@@ -327,41 +332,55 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private static async Task<StorageFile> GetFileAsStorageFile(string filePath)
             => await StorageFile.GetFileFromPathAsync(filePath);
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            if (_isCanvasCurrentlyDrawing == 1)
+            lock (_currentLock)
             {
-                return;
+                if (_currentCanvasVirtualImageSource is null)
+                {
+                    return;
+                }
+
+                if (_currentCanvasDrawingSession is not null)
+                {
+#if DEBUG
+                    LogWriteLine($@"[FrameGrabberEvent] Frame skipped at: {mediaPlayer.Position:hh\:mm\:ss\.ffffff}", LogType.Debug, true);
+#endif
+                    return;
+                }
             }
 
-            lock (_frameGrabberEventLock)
+            try
             {
-                _isCanvasCurrentlyDrawing = 1;
-                CanvasDrawingSession? drawingSession = null;
-
-                try
+                lock (_currentLock)
                 {
                     mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
-                    drawingSession = _currentCanvasVirtualImageSource?.CreateDrawingSession(_currentDefaultColor, _currentCanvasDrawArea);
-                    drawingSession?.DrawImage(_currentCanvasBitmap);
+                    _currentCanvasDrawingSession = _currentCanvasVirtualImageSource.CreateDrawingSession(_currentDefaultColor, _currentCanvasDrawArea);
+                    _currentCanvasDrawingSession.DrawImage(_currentCanvasBitmap);
                 }
-                catch
-            #if DEBUG
-                (Exception e)
+            }
+            catch
+#if DEBUG
+            (Exception e)
+            {
+                LogWriteLine($"[FrameGrabberEvent] Error while drawing frame to bitmap.\r\n{e}", LogType.Warning, true);
+            }
+#else
+            {
+                // ignored
+            }
+#endif
+            finally
+            {
+                lock (_currentLock)
                 {
-                    LogWriteLine($"[FrameGrabberEvent] Error while drawing frame to bitmap.\r\n{e}", LogType.Warning, true);
-                }
-            #else
-                {
-                    // ignored
-                }
-            #endif
-                finally
-                {
-                    CurrentDispatcherQueue.TryEnqueue(() => drawingSession?.Dispose());
-                    _isCanvasCurrentlyDrawing = 0;
+                    CurrentDispatcherQueue.TryEnqueue(() =>
+                    {
+                        _currentCanvasDrawingSession?.Dispose();
+                        _currentCanvasDrawingSession = null;
+                    });
                 }
             }
         }
