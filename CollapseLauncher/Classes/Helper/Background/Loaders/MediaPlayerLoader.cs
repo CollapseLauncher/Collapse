@@ -305,9 +305,11 @@ namespace CollapseLauncher.Helper.Background.Loaders
         {
             StorageFile                storageFile = await GetFileAsStorageFile(file);
             using StorageItemThumbnail thumbnail   = await storageFile.GetThumbnailAsync(ThumbnailMode.VideosView);
-            await using Stream         stream      = thumbnail.AsStream();
 
-            await ColorPaletteUtility.ApplyAccentColor(ParentUI, stream.AsRandomAccessStream(), string.Empty, false,
+            await ColorPaletteUtility.ApplyAccentColor(ParentUI,
+                                                       thumbnail,
+                                                       string.Empty,
+                                                       false,
                                                        true);
         }
 
