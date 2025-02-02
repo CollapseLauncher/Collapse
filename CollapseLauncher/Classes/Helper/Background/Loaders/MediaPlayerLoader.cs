@@ -265,10 +265,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
             {
                 lock (_currentLock)
                 {
-                    while (_currentCanvasDrawingSession is not null)
-                    {
-                        Thread.Sleep(100);
-                    }
+                    _currentCanvasDrawingSession?.Dispose();
+                    Interlocked.Exchange(ref _currentCanvasDrawingSession, null);
                 }
             }
 
