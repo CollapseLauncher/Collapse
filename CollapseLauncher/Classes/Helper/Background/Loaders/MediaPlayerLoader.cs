@@ -327,6 +327,11 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
         {
+            if (_isCanvasCurrentlyDrawing == 1)
+            {
+                return;
+            }
+
             CanvasDrawingSession? drawingSession = null;
             try
             {
@@ -334,6 +339,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
                 drawingSession = _currentCanvasVirtualImageSource?.CreateDrawingSession(_currentDefaultColor, _currentCanvasDrawArea);
                 drawingSession?.DrawImage(_currentCanvasBitmap);
+                _currentCanvasVirtualImageSource?.SuspendDrawingSession(drawingSession);
             }
             catch
         #if DEBUG
