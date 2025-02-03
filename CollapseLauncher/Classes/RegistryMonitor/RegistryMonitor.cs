@@ -253,7 +253,7 @@ namespace RegistryUtils
                 }
 
                 _eventTerminate.Reset();
-                _thread              = new Thread(MonitorThread)
+                _thread = new Thread(MonitorThread)
                 {
                     IsBackground = true
                 };
@@ -296,36 +296,42 @@ namespace RegistryUtils
 
         private void ThreadLoop()
         {
-            int result = PInvoke.RegOpenKeyEx(_registryHive, _registrySubName, 0,
+            int result = PInvoke.RegOpenKeyEx(_registryHive,
+                                              _registrySubName,
+                                              0,
                                               (uint)ACCESS_MASK.STANDARD_RIGHTS_READ | (uint)RegKeyAccess.KEY_QUERY_VALUE | (uint)RegKeyAccess.KEY_NOTIFY,
                                               out var registryKey);
             if (result != 0)
                 throw new Win32Exception(result);
 
-            WaitHandle[] waitHandles = null;
+            AutoResetEvent eventNotify = new AutoResetEvent(false);
             try
             {
-                AutoResetEvent eventNotify = new AutoResetEvent(false);
-                waitHandles = [eventNotify, _eventTerminate];
+                WaitHandle[] waitHandles = [eventNotify, _eventTerminate];
+
                 while (!_eventTerminate.WaitOne(0, true))
                 {
                     if (_disposed) break;
-#pragma warning disable CS0618 // Type or member is obsolete
-                    result = PInvoke.RegNotifyChangeKeyValue(registryKey, true, _regFilter, eventNotify.Handle, true);
-#pragma warning restore CS0618 // Type or member is obsolete
-                    if (result != 0)
-                        throw new Win32Exception(result);
 
-                    if (WaitHandle.WaitAny(waitHandles) != 0
-                        || _regFilter != RegChangeNotifyFilter.Value)
+                    int resultNotify = PInvoke.RegNotifyChangeKeyValue(registryKey,
+                                                                       true,
+                                                                       _regFilter,
+                                                                       eventNotify.SafeWaitHandle,
+                                                                       true);
+                    if (resultNotify != 0)
+                        throw new Win32Exception(resultNotify);
+
+                    int waitHandlerAny = WaitHandle.WaitAny(waitHandles);
+                    if (waitHandlerAny != 0)
                     {
                         continue;
                     }
-                #if DEBUG
+
+#if DEBUG
                     LogWriteLine($"[RegistryMonitor] Found change(s) in registry!\r\n" +
                                  $"  Hive: {_registryHive}\r\n" +
                                  $"  subName: {_registrySubName}", LogType.Debug, true);
-                #endif
+#endif
                     OnRegChanged();
                 }
             }
@@ -336,7 +342,7 @@ namespace RegistryUtils
                     ((HResult)PInvoke.RegCloseKey(registryKey)).ThrowOnFailure();
                 }
 
-                for (int i = 0; i < waitHandles?.Length; i++) waitHandles[i]?.Dispose();
+                eventNotify.Dispose();
             }
         }
     }

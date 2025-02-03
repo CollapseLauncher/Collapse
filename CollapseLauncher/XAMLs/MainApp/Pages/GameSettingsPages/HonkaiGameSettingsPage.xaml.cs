@@ -53,9 +53,15 @@ namespace CollapseLauncher.Pages
         private void ToggleRegistrySubscribe(bool doSubscribe)
         {
             if (doSubscribe)
+            {
                 RegistryWatcher.RegChanged += RegistryListener;
+                RegistryWatcher.Start();
+            }
             else
+            {
+                RegistryWatcher.Stop();
                 RegistryWatcher.RegChanged -= RegistryListener;
+            }
         }
 
         private void RegistryListener(object sender, EventArgs e)
