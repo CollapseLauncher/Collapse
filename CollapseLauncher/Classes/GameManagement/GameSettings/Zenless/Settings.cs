@@ -4,6 +4,7 @@ using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using System;
 using System.Diagnostics;
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable CheckNamespace
 
@@ -36,7 +37,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         public GeneralData GeneralData { get; set; }
         #endregion
 
-        public ZenlessSettings(IGameVersion GameVersionManager) : base(GameVersionManager)
+        public ZenlessSettings(IGameVersion gameVersionManager) : base(gameVersionManager)
         {
             // Initialize magic
             _ = MagicReDo;

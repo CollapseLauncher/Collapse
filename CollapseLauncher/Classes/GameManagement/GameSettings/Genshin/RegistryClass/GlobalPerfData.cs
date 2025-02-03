@@ -6,40 +6,29 @@ using System.Collections.Generic;
 using System.Linq;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class PerfDataItem
+    internal class PerfDataItem(int entryType, int index, string itemVersion)
     {
         #region Properties
-        public int entryType { get; set; }
-        public int index { get; set; }
-        public string itemVersion { get; set; }
-        #endregion
+        public int    entryType   { get; set; } = entryType;
+        public int    index       { get; set; } = index;
+        public string itemVersion { get; set; } = itemVersion;
 
-        #region Methods
-        public PerfDataItem(int entryType, int index, string itemVersion)
-        {
-            this.entryType = entryType;
-            this.index = index;
-            this.itemVersion = itemVersion;
-        }
         #endregion
     }
 
-    internal class GenshinKeyValuePair
+    internal class GenshinKeyValuePair(int key, int value)
     {
         #region Properties
-        public int key { get; set; }
-        public int value { get; set; }
-        #endregion
+        public int key   { get; set; } = key;
+        public int value { get; set; } = value;
 
-        #region Methods
-        public GenshinKeyValuePair(int Key, int Value)
-        {
-            key = Key;
-            value = Value;
-        }
         #endregion
     }
 

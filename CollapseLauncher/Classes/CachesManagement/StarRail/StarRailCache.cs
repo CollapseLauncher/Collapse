@@ -46,7 +46,7 @@ namespace CollapseLauncher
             // Step 2: Start assets checking
             UpdateAssetIndex = await Check(AssetIndex, Token.Token);
 
-            // Step 3: Summarize and returns true if the assetIndex count != 0 indicates caches needs to be update.
+            // Step 3: Summarize and returns true if the assetIndex count != 0 indicates caches needs to be updated.
             //         either way, returns false.
             return SummarizeStatusAndProgress(
                 UpdateAssetIndex,

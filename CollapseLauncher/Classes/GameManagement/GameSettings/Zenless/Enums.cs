@@ -1,4 +1,5 @@
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 namespace CollapseLauncher.GameSettings.Zenless.Enums;
 
 /// <summary>

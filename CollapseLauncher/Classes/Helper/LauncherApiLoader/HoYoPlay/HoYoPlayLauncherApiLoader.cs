@@ -1,5 +1,5 @@
 using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.Win32;
@@ -66,16 +66,16 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             ApiResourceHttpClient = apiResourceHttpBuilder.Create();
         }
 
-        public static ILauncherApi CreateApiInstance(PresetConfig presetConfig, string gameName, string gameRegion)
-            => new HoYoPlayLauncherApiLoader(presetConfig, gameName, gameRegion);
+        public static HoYoPlayLauncherApiLoader CreateApiInstance(PresetConfig presetConfig, string gameName, string gameRegion)
+            => new(presetConfig, gameName, gameRegion);
 
-        protected override async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
+        protected override Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
-                async innerToken => await ApiGeneralHttpClient.GetFromJsonAsync(
-                    PresetConfig?.LauncherResourceURL,
-                    HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
-                    innerToken);
+            ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
+                innerToken => ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig?.LauncherResourceURL,
+                                                                    HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
+                                                                    innerToken)
+                                                  .ConfigureAwait(false);
 
             // Assign as 3 Task array
             Task[] tasks = [
@@ -90,35 +90,48 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             HoYoPlayLauncherResources? hypSdkResource = null;
 
             tasks[0] = hypResourceResponseCallback
-                .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                .AsTaskAndDoAction(result => hypResourceResponse = result);
+                .WaitForRetryAsync(ExecutionTimeout,
+                                   ExecutionTimeoutStep,
+                                   ExecutionTimeoutAttempt,
+                                   onTimeoutRoutine,
+                                   token)
+                .ContinueWith(async result => hypResourceResponse = await result, token);
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
-                ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
-                    async innerToken =>
-                        await ApiGeneralHttpClient.GetFromJsonAsync(
-                            PresetConfig?.LauncherPluginURL,
-                            HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
-                            innerToken);
+                ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
+                    innerToken => ApiGeneralHttpClient
+                       .GetFromJsonAsync(PresetConfig?.LauncherPluginURL,
+                                         HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
+                                         innerToken)
+                       .ConfigureAwait(false);
 
                 tasks[1] = hypPluginResourceCallback
-                    .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                    .AsTaskAndDoAction(result => hypPluginResource = result);
+                    .WaitForRetryAsync(ExecutionTimeout,
+                                       ExecutionTimeoutStep,
+                                       ExecutionTimeoutAttempt,
+                                       onTimeoutRoutine,
+                                       token)
+                    .ContinueWith(async result => hypPluginResource = await result, token);
             }
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
             {
-                ActionTimeoutValueTaskCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
-                    async innerToken =>
-                        await ApiGeneralHttpClient.GetFromJsonAsync(
-                            PresetConfig?.LauncherGameChannelSDKURL,
-                            HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
-                            innerToken);
+                ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
+                    innerToken =>
+                        ApiGeneralHttpClient
+                        .GetFromJsonAsync(PresetConfig?.LauncherGameChannelSDKURL,
+                                          HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
+                                          innerToken)
+                        .ConfigureAwait(false);
 
                 tasks[2] = hypSdkResourceCallback
-                    .WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                    .AsTaskAndDoAction(result => hypSdkResource = result);
+                    .WaitForRetryAsync(ExecutionTimeout,
+                                       ExecutionTimeoutStep,
+                                       ExecutionTimeoutAttempt,
+                                       onTimeoutRoutine,
+                                       token)
+                    .ContinueWith(async result => hypSdkResource = await result, token);
             }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest();
@@ -133,15 +146,22 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             };
 
             // Await all callbacks
-            await Task.WhenAll(tasks);
+            return Task.WhenAll(tasks)
+                .ContinueWith(AfterExecute, token);
 
-            ConvertPluginResources(ref sophonResourceData, hypPluginResource);
-            ConvertSdkResources(ref sophonResourceData, hypSdkResource);
-            ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
+            async Task AfterExecute(Task action)
+            {
+                // Run action
+                await action.ConfigureAwait(false);
 
-            LauncherGameResource = sophonResourcePropRoot;
+                ConvertPluginResources(ref sophonResourceData, hypPluginResource);
+                ConvertSdkResources(ref sophonResourceData, hypSdkResource);
+                ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
 
-            PerformDebugRoutines();
+                LauncherGameResource = sophonResourcePropRoot;
+
+                PerformDebugRoutines();
+            }
         }
 
         #region Convert Sdk Resources
@@ -368,7 +388,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         }
         #endregion
 
-        protected override async Task LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
+        protected override Task LoadLauncherNews(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
 
@@ -376,46 +396,63 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             string launcherSpriteUrl = string.Format(PresetConfig?.LauncherSpriteURL!, localeCode);
             string launcherNewsUrl = string.Format(PresetConfig?.LauncherNewsURL!, localeCode);
 
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
-                async innerToken =>
-                    await ApiResourceHttpClient.GetFromJsonAsync(
-                        launcherSpriteUrl,
-                        HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
-                        innerToken);
+            ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
+                innerToken =>
+                    ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl,
+                                                           HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
+                                                           innerToken)
+                                         .ConfigureAwait(false);
 
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
-                async innerToken =>
-                    await ApiResourceHttpClient.GetFromJsonAsync(
-                        launcherNewsUrl,
-                        HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
-                        innerToken);
+            ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
+                innerToken =>
+                    ApiResourceHttpClient.GetFromJsonAsync(launcherNewsUrl,
+                                                           HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
+                                                           innerToken)
+                                         .ConfigureAwait(false);
 
             HoYoPlayLauncherNews? hypLauncherBackground = null;
             HoYoPlayLauncherNews? hypLauncherNews = null;
 
             // Load both in parallel
             Task[] tasks = [
-                hypLauncherBackgroundCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction(result => hypLauncherBackground = result),
-                hypLauncherNewsCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token).AsTaskAndDoAction(result => hypLauncherNews = result)
+                hypLauncherBackgroundCallback
+                    .WaitForRetryAsync(ExecutionTimeout,
+                                       ExecutionTimeoutStep,
+                                       ExecutionTimeoutAttempt,
+                                       onTimeoutRoutine,
+                                       token)
+                    .ContinueWith(async result => hypLauncherBackground = await result, token),
+                hypLauncherNewsCallback
+                    .WaitForRetryAsync(ExecutionTimeout,
+                                       ExecutionTimeoutStep,
+                                       ExecutionTimeoutAttempt,
+                                       onTimeoutRoutine,
+                                       token)
+                    .ContinueWith(async result => hypLauncherNews = await result, token)
                 ];
 
             // Await the result
-            await Task.WhenAll(tasks);
+            return Task.WhenAll(tasks)
+                .ContinueWith(AfterExecute, token);
 
-            // Merge background image
-            if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)
-                hypLauncherNews.Data.GameInfoList = hypLauncherBackground.Data?.GameInfoList;
+            async Task AfterExecute(Task action)
+            {
+                // Run action
+                await action.ConfigureAwait(false);
 
-            LauncherGameNews? sophonLauncherNewsRoot = null;
-            EnsureInitializeSophonLauncherNews(ref sophonLauncherNewsRoot);
-            ConvertLauncherBackground(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
-            ConvertLauncherNews(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
-            ConvertLauncherSocialMedia(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+                // Merge background image
+                if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)
+                    hypLauncherNews.Data.GameInfoList = hypLauncherBackground.Data?.GameInfoList;
 
-            LauncherGameNews = sophonLauncherNewsRoot;
-            LauncherGameNews?.Content?.InjectDownloadableItemCancelToken(this, token);
+                LauncherGameNews? sophonLauncherNewsRoot = null;
+                EnsureInitializeSophonLauncherNews(ref sophonLauncherNewsRoot);
+                ConvertLauncherBackground(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+                ConvertLauncherNews(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+                ConvertLauncherSocialMedia(ref sophonLauncherNewsRoot, hypLauncherNews?.Data);
+
+                LauncherGameNews = sophonLauncherNewsRoot;
+                LauncherGameNews?.Content?.InjectDownloadableItemCancelToken(this, token);
+            }
         }
 
         #region Convert Launcher News
@@ -514,12 +551,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         }
         #endregion
 
-        protected override async Task LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
+        protected override Task LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             if (PresetConfig?.LauncherGameInfoDisplayURL == null)
             {
                 LauncherGameInfoField = new HoYoPlayGameInfoField();
-                return;
+                return Task.CompletedTask;
             }
 
             bool isUseMultiLang = PresetConfig?.LauncherSpriteURLMultiLang ?? false;
@@ -527,23 +564,31 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             string localeCode = isUseMultiLang ? Locale.Lang.LanguageID.ToLower() : PresetConfig?.LauncherSpriteURLMultiLangFallback!;
             string launcherGameInfoUrl = string.Format(PresetConfig?.LauncherGameInfoDisplayURL!, localeCode);
 
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
-                async innerToken =>
-                    await ApiResourceHttpClient.GetFromJsonAsync(
-                        launcherGameInfoUrl,
-                        HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
-                        innerToken);
+            ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
+                innerToken =>
+                    ApiResourceHttpClient.GetFromJsonAsync(launcherGameInfoUrl,
+                                                           HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
+                                                           innerToken)
+                                         .ConfigureAwait(false);
 
-            HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await hypLauncherGameInfoCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                           ExecutionTimeoutAttempt, onTimeoutRoutine, token);
+            return hypLauncherGameInfoCallback
+                  .WaitForRetryAsync(ExecutionTimeout,
+                                     ExecutionTimeoutStep,
+                                     ExecutionTimeoutAttempt,
+                                     onTimeoutRoutine,
+                                     token)
+                  .ContinueWith(async action =>
+                                {
+                                    HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await action;
 
-            HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
-            if (hypLauncherGameInfo != null)
-            {
-                ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo.GameInfoData);
+                                    HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
+                                    if (hypLauncherGameInfo != null)
+                                    {
+                                        ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo.GameInfoData);
 
-                LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
-            }
+                                        LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
+                                    }
+                                }, token);
         }
 
         #region Convert Game Info Resources

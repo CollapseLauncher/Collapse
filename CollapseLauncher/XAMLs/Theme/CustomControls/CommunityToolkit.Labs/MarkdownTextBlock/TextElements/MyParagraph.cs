@@ -10,16 +10,11 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyParagraph : IAddChild
 {
-    private readonly Paragraph _paragraph;
+    private readonly Paragraph _paragraph = new();
 
     public TextElement TextElement
     {
         get => _paragraph;
-    }
-
-    public MyParagraph()
-    {
-        _paragraph = new Paragraph();
     }
 
     public void AddChild(IAddChild child)

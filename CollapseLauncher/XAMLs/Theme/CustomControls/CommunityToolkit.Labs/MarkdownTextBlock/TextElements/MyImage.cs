@@ -41,7 +41,7 @@ internal class MyImage : IAddChild
     {
         _uri = uri;
         _imageProvider = config.ImageProvider;
-        _svgRenderer = config.SVGRenderer == null ? new DefaultSVGRenderer() : config.SVGRenderer;
+        _svgRenderer = config.SVGRenderer ?? new DefaultSVGRenderer();
         Init();
         var size = Extensions.GetMarkdownImageSize(linkInline);
         if (size.Width != 0)
@@ -58,7 +58,7 @@ internal class MyImage : IAddChild
     {
         Uri.TryCreate(htmlNode.GetAttributeValue("src", "#"), UriKind.RelativeOrAbsolute, out _uri);
         _imageProvider = config?.ImageProvider;
-        _svgRenderer = config?.SVGRenderer == null ? new DefaultSVGRenderer() : config.SVGRenderer;
+        _svgRenderer = config?.SVGRenderer ?? new DefaultSVGRenderer();
         Init();
         int.TryParse(
             htmlNode.GetAttributeValue("width", "0"),

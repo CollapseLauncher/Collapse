@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using Markdig.Syntax;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Documents;
+// ReSharper disable UnusedMember.Global
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
@@ -25,27 +26,26 @@ internal class MyHeading : IAddChild
     public MyHeading(HeadingBlock headingBlock, MarkdownConfig config)
     {
         _paragraph = new Paragraph();
-        MarkdownConfig _config = config;
 
         var level = headingBlock.Level;
         _paragraph.FontSize = level switch
         {
-            1 => _config.Themes.H1FontSize,
-            2 => _config.Themes.H2FontSize,
-            3 => _config.Themes.H3FontSize,
-            4 => _config.Themes.H4FontSize,
-            5 => _config.Themes.H5FontSize,
-            _ => _config.Themes.H6FontSize
+            1 => config.Themes.H1FontSize,
+            2 => config.Themes.H2FontSize,
+            3 => config.Themes.H3FontSize,
+            4 => config.Themes.H4FontSize,
+            5 => config.Themes.H5FontSize,
+            _ => config.Themes.H6FontSize
         };
-        _paragraph.Foreground = _config.Themes.HeadingForeground;
+        _paragraph.Foreground = config.Themes.HeadingForeground;
         _paragraph.FontWeight = level switch
         {
-            1 => _config.Themes.H1FontWeight,
-            2 => _config.Themes.H2FontWeight,
-            3 => _config.Themes.H3FontWeight,
-            4 => _config.Themes.H4FontWeight,
-            5 => _config.Themes.H5FontWeight,
-            _ => _config.Themes.H6FontWeight
+            1 => config.Themes.H1FontWeight,
+            2 => config.Themes.H2FontWeight,
+            3 => config.Themes.H3FontWeight,
+            4 => config.Themes.H4FontWeight,
+            5 => config.Themes.H5FontWeight,
+            _ => config.Themes.H6FontWeight
         };
         _paragraph.Margin = new Thickness(0, 8, 0, level switch
         {
@@ -60,7 +60,6 @@ internal class MyHeading : IAddChild
     {
         _htmlNode = htmlNode;
         _paragraph = new Paragraph();
-        MarkdownConfig _config = config;
 
         var align = _htmlNode?.GetAttributeValue("align", "left");
         _paragraph.TextAlignment = align switch
@@ -75,22 +74,22 @@ internal class MyHeading : IAddChild
         var level = int.Parse(htmlNode.Name.Substring(1));
         _paragraph.FontSize = level switch
         {
-            1 => _config.Themes.H1FontSize,
-            2 => _config.Themes.H2FontSize,
-            3 => _config.Themes.H3FontSize,
-            4 => _config.Themes.H4FontSize,
-            5 => _config.Themes.H5FontSize,
-            _ => _config.Themes.H6FontSize
+            1 => config.Themes.H1FontSize,
+            2 => config.Themes.H2FontSize,
+            3 => config.Themes.H3FontSize,
+            4 => config.Themes.H4FontSize,
+            5 => config.Themes.H5FontSize,
+            _ => config.Themes.H6FontSize
         };
-        _paragraph.Foreground = _config.Themes.HeadingForeground;
+        _paragraph.Foreground = config.Themes.HeadingForeground;
         _paragraph.FontWeight = level switch
         {
-            1 => _config.Themes.H1FontWeight,
-            2 => _config.Themes.H2FontWeight,
-            3 => _config.Themes.H3FontWeight,
-            4 => _config.Themes.H4FontWeight,
-            5 => _config.Themes.H5FontWeight,
-            _ => _config.Themes.H6FontWeight
+            1 => config.Themes.H1FontWeight,
+            2 => config.Themes.H2FontWeight,
+            3 => config.Themes.H3FontWeight,
+            4 => config.Themes.H4FontWeight,
+            5 => config.Themes.H5FontWeight,
+            _ => config.Themes.H6FontWeight
         };
     }
 

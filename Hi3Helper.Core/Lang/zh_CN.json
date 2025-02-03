@@ -362,6 +362,8 @@
     "SpecVeryHigh": "非常高",
     "SpecMaximum": "最高",
     "SpecUltra": "极高",
+    "SpecDynamic": "动态",
+    "SpecGlobal": "全局",
 
     "Audio_Title": "音频设置",
     "Audio_Master": "主音量",

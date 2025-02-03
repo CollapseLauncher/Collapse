@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Locale;
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+// ReSharper disable CommentTypo
+// ReSharper disable GrammarMistakeInComment
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base

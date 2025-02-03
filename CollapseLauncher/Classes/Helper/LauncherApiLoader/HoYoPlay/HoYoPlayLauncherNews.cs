@@ -1,10 +1,11 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay

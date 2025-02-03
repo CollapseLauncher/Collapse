@@ -4,6 +4,7 @@
 
 using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
+// ReSharper disable InconsistentNaming
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 

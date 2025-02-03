@@ -6,28 +6,33 @@ using CommunityToolkit.WinUI.Animations;
 using FFmpegInteropX;
 #endif
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI.Composition;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Windows.Graphics.Imaging;
+using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI;
-using Hi3Helper.SentryHelper;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable StringLiteralTypo
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable BadControlBracesIndent
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -37,60 +42,75 @@ namespace CollapseLauncher.Helper.Background.Loaders
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal sealed partial class MediaPlayerLoader : IBackgroundMediaLoader
     {
-    #pragma warning disable CS0169 // Field is never used
-        private bool _isFocusChangeRunning;
-    #pragma warning restore CS0169 // Field is never used
+        private readonly Color _currentDefaultColor = Color.FromArgb(0, 0, 0, 0);
 
-        private FrameworkElement ParentUI          { get; }
-        private Compositor       CurrentCompositor { get; }
+        private FrameworkElement ParentUI               { get; }
+        private Compositor       CurrentCompositor      { get; }
+        private DispatcherQueue  CurrentDispatcherQueue { get; }
+        private static bool IsUseVideoBgDynamicColorUpdate
+        {
+            get => LauncherConfig.IsUseVideoBGDynamicColorUpdate && LauncherConfig.EnableAcrylicEffect;
+        }
 
-        private        MediaPlayerElement? CurrentMediaPlayerFrame           { get; }
-        private        Grid                CurrentMediaPlayerFrameParentGrid { get; }
-        private static bool                IsUseVideoBgDynamicColorUpdate    { get => LauncherConfig.IsUseVideoBGDynamicColorUpdate && LauncherConfig.EnableAcrylicEffect; }
+        private Grid AcrylicMask      { get; }
+        private Grid OverlayTitleBar  { get; }
+        public  bool IsBackgroundDimm { get; set; }
 
-        private Grid AcrylicMask     { get; }
-        private Grid OverlayTitleBar { get; }
-        
-        public   bool                            IsBackgroundDimm       { get; set; }
-        private  FileStream?                     CurrentMediaStream     { get; set; }
-        private  MediaPlayer?                    CurrentMediaPlayer     { get; set; }
+        private FileStream?        _currentMediaStream;
+        private MediaPlayer?       _currentMediaPlayer;
 #if USEFFMPEGFORVIDEOBG
-        private  FFmpegMediaSource?              CurrentFFmpegMediaSource { get; set; }
+        private FFmpegMediaSource? _currentFFmpegMediaSource;
 #endif
 
-        private ImageUI?           CurrentMediaImage        { get; }
-        private SoftwareBitmap?    CurrentFrameBitmap       { get; set; }
-        private CanvasImageSource? CurrentCanvasImageSource { get; set; }
-        private CanvasDevice?      CanvasDevice             { get; set; }
-        private CanvasBitmap?      CanvasBitmap             { get; set; }
-        private bool               IsCanvasCurrentlyDrawing { get; set; }
+        private const float CanvasBaseDpi = 96f;
+
+        private          CanvasVirtualImageSource? _currentCanvasVirtualImageSource;
+        private          CanvasBitmap?             _currentCanvasBitmap;
+        private          CanvasDevice?             _currentCanvasDevice;
+        private volatile CanvasDrawingSession?     _currentCanvasDrawingSession;
+        private volatile float                     _currentCanvasWidth;
+        private volatile float                     _currentCanvasHeight;
+        private          Rect                      _currentCanvasDrawArea;
+        private readonly MediaPlayerElement?       _currentMediaPlayerFrame;
+        private readonly Grid                      _currentMediaPlayerFrameParentGrid;
+        private readonly ImageUI                   _currentImage;
+        private readonly Lock                      _currentLock = new();
 
         internal MediaPlayerLoader(
             FrameworkElement parentUI,
             Grid             acrylicMask,           Grid                overlayTitleBar,
             Grid             mediaPlayerParentGrid, MediaPlayerElement? mediaPlayerCurrent)
         {
-            ParentUI          = parentUI;
-            CurrentCompositor = parentUI.GetElementCompositor();
+            ParentUI               = parentUI;
+            CurrentCompositor      = parentUI.GetElementCompositor();
+            CurrentDispatcherQueue = parentUI.DispatcherQueue;
 
             AcrylicMask     = acrylicMask;
             OverlayTitleBar = overlayTitleBar;
 
-            CurrentMediaPlayerFrameParentGrid = mediaPlayerParentGrid;
-            CurrentMediaPlayerFrame           = mediaPlayerCurrent;
+            _currentMediaPlayerFrameParentGrid             =  mediaPlayerParentGrid;
+            _currentMediaPlayerFrameParentGrid.SizeChanged += UpdateCanvasOnSizeChangeEvent;
+            _currentMediaPlayerFrame                       =  mediaPlayerCurrent;
 
-            CurrentMediaImage = mediaPlayerParentGrid.AddElementToGridRowColumn(new ImageUI()
-                                                                                   .WithHorizontalAlignment(HorizontalAlignment
-                                                                                       .Center)
-                                                                                   .WithVerticalAlignment(VerticalAlignment
-                                                                                       .Center)
-                                                                                   .WithStretch(Stretch
-                                                                                       .UniformToFill));
+            float actualWidth   = (float)_currentMediaPlayerFrameParentGrid.ActualWidth;
+            float actualHeight  = (float)_currentMediaPlayerFrameParentGrid.ActualHeight;
+            float scalingFactor = (float)WindowUtility.CurrentWindowMonitorScaleFactor;
+
+            _currentCanvasWidth    = actualWidth * scalingFactor;
+            _currentCanvasHeight   = actualHeight * scalingFactor;
+            _currentCanvasDrawArea = new Rect(0f, 0f, _currentCanvasWidth, _currentCanvasHeight);
+
+            _currentImage = mediaPlayerParentGrid.AddElementToGridRowColumn(new ImageUI
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment   = VerticalAlignment.Center,
+                Stretch             = Stretch.UniformToFill
+            });
         }
 
         ~MediaPlayerLoader()
         {
-            LogWriteLine("[~MediaPlayerLoader()] MediaPlayerLoader Deconstructor has been called!", LogType.Warning, true);
+            LogWriteLine("[~MediaPlayerLoader()] MediaPlayerLoader Destructor has been called!", LogType.Warning, true);
             Dispose();
         }
 
@@ -98,6 +118,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         {
             try
             {
+                _currentMediaPlayerFrameParentGrid.SizeChanged -= UpdateCanvasOnSizeChangeEvent;
                 DisposeMediaModules();
             }
             catch (Exception ex)
@@ -115,101 +136,94 @@ namespace CollapseLauncher.Helper.Background.Loaders
             try
             {
                 DisposeMediaModules();
-
-                int canvasWidth  = (int)CurrentMediaPlayerFrameParentGrid.ActualWidth;
-                int canvasHeight = (int)CurrentMediaPlayerFrameParentGrid.ActualHeight;
+                _currentMediaPlayer ??= new MediaPlayer();
 
                 if (IsUseVideoBgDynamicColorUpdate)
                 {
-                    CanvasDevice ??= CanvasDevice.GetSharedDevice();
-                    CurrentFrameBitmap ??= new SoftwareBitmap(BitmapPixelFormat.Rgba8, canvasWidth, canvasHeight,
-                                                              BitmapAlphaMode.Ignore);
-                    CurrentCanvasImageSource ??=
-                            new CanvasImageSource(CanvasDevice, canvasWidth, canvasHeight, 96, CanvasAlphaMode.Ignore);
+                    _currentCanvasDevice ??= CanvasDevice.GetSharedDevice();
+                    CreateAndAssignCanvasVirtualImageSource();
+                    CreateCanvasBitmap();
 
-                    CurrentMediaImage!.Source = CurrentCanvasImageSource;
-                    CurrentMediaImage.Visibility = Visibility.Visible;
+                    _currentImage.Visibility = Visibility.Visible;
                     App.ToggleBlurBackdrop();
                 }
-                else if (CurrentMediaImage != null)
+                else
                 {
-                    CurrentMediaImage.Visibility = Visibility.Collapsed;
-                    
+                    _currentImage.Visibility = Visibility.Collapsed;
                 }
 
                 await GetPreviewAsColorPalette(filePath);
 
-                CurrentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamExtension.FileStreamOpenReadOpt);
+                _currentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamExtension.FileStreamOpenReadOpt);
 
 #if !USEFFMPEGFORVIDEOBG
-                EnsureIfFormatIsDashOrUnsupported(CurrentMediaStream);
+                EnsureIfFormatIsDashOrUnsupported(_currentMediaStream);
+                _currentMediaPlayer ??= new MediaPlayer();
 #endif
-                CurrentMediaPlayer ??= new MediaPlayer();
 
                 if (WindowUtility.IsCurrentWindowInFocus())
                 {
-                    CurrentMediaPlayer.AutoPlay = true;
+                    _currentMediaPlayer.AutoPlay = true;
                 }
 
                 bool   isAudioMute     = LauncherConfig.GetAppConfigValue("BackgroundAudioIsMute").ToBool();
                 double lastAudioVolume = LauncherConfig.GetAppConfigValue("BackgroundAudioVolume").ToDouble();
 
-                CurrentMediaPlayer.IsMuted          = isAudioMute;
-                CurrentMediaPlayer.Volume           = lastAudioVolume;
-                CurrentMediaPlayer.IsLoopingEnabled = true;
+                _currentMediaPlayer.IsMuted          = isAudioMute;
+                _currentMediaPlayer.Volume           = lastAudioVolume;
+                _currentMediaPlayer.IsLoopingEnabled = true;
 
 #if !USEFFMPEGFORVIDEOBG
-                CurrentMediaPlayer.SetStreamSource(CurrentMediaStream.AsRandomAccessStream());
+                _currentMediaPlayer.SetStreamSource(_currentMediaStream.AsRandomAccessStream());
 #else
+                _currentFFmpegMediaSource ??= await FFmpegMediaSource.CreateFromStreamAsync(_currentMediaStream.AsRandomAccessStream());
 
-                CurrentFFmpegMediaSource ??= await FFmpegMediaSource.CreateFromStreamAsync(CurrentMediaStream.AsRandomAccessStream());
-
-                await CurrentFFmpegMediaSource.OpenWithMediaPlayerAsync(CurrentMediaPlayer);
-                const string MediaInfoStrFormat = @"Playing background video with FFmpeg!
-    Media Duration: {0}
-    Video Resolution: {9}x{10} px
-    Video Codec: {1}
-    Video Codec Decoding Method: {3}
-    Video Decoder Engine: {11}
-    Video Bitrate: {2} bps
-    Video Bitdepth: {11} Bits
-    Audio Codec: {4}
-    Audio Bitrate: {5} bps
-    Audio Channel: {6}
-    Audio Sample: {7}Hz
-    Audio Bitwide: {8} Bits
-";
-                Logger.LogWriteLine(
-                    string.Format(MediaInfoStrFormat,
-                    CurrentFFmpegMediaSource.Duration.ToString("c"),                                // 0
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.CodecName ?? "No Video Stream",    // 1
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.Bitrate ?? 0,                      // 2
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.DecoderEngine                      // 3
+                await _currentFFmpegMediaSource.OpenWithMediaPlayerAsync(_currentMediaPlayer);
+                const string mediaInfoStrFormat = """
+                                                  Playing background video with FFmpeg!
+                                                      Media Duration: {0}
+                                                      Video Resolution: {9}x{10} px
+                                                      Video Codec: {1}
+                                                      Video Codec Decoding Method: {3}
+                                                      Video Decoder Engine: {11}
+                                                      Video Bitrate: {2} bps
+                                                      Video Bitdepth: {11} Bits
+                                                      Audio Codec: {4}
+                                                      Audio Bitrate: {5} bps
+                                                      Audio Channel: {6}
+                                                      Audio Sample: {7}Hz
+                                                      Audio Bitwide: {8} Bits
+                                                  """;
+                LogWriteLine(
+                    string.Format(mediaInfoStrFormat,
+                    _currentFFmpegMediaSource.Duration.ToString("c"),                                // 0
+                    _currentFFmpegMediaSource.CurrentVideoStream?.CodecName ?? "No Video Stream",    // 1
+                    _currentFFmpegMediaSource.CurrentVideoStream?.Bitrate ?? 0,                      // 2
+                    _currentFFmpegMediaSource.CurrentVideoStream?.DecoderEngine                      // 3
                     == DecoderEngine.FFmpegD3D11HardwareDecoder ? "Hardware" : "Software",
-                    CurrentFFmpegMediaSource.CurrentAudioStream?.CodecName ?? "No Audio Stream",    // 4
-                    CurrentFFmpegMediaSource.CurrentAudioStream?.Bitrate ?? 0,                      // 5
-                    CurrentFFmpegMediaSource.CurrentAudioStream?.Channels ?? 0,                     // 6
-                    CurrentFFmpegMediaSource.CurrentAudioStream?.SampleRate ?? 0,                   // 7
-                    CurrentFFmpegMediaSource.CurrentAudioStream?.BitsPerSample ?? 0,                // 8
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.PixelWidth ?? 0,                   // 9
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.PixelHeight ?? 0,                  // 10
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.BitsPerSample ?? 0,                // 11
-                    CurrentFFmpegMediaSource.CurrentVideoStream?.DecoderEngine ?? 0                 // 12
+                    _currentFFmpegMediaSource.CurrentAudioStream?.CodecName ?? "No Audio Stream",    // 4
+                    _currentFFmpegMediaSource.CurrentAudioStream?.Bitrate ?? 0,                      // 5
+                    _currentFFmpegMediaSource.CurrentAudioStream?.Channels ?? 0,                     // 6
+                    _currentFFmpegMediaSource.CurrentAudioStream?.SampleRate ?? 0,                   // 7
+                    _currentFFmpegMediaSource.CurrentAudioStream?.BitsPerSample ?? 0,                // 8
+                    _currentFFmpegMediaSource.CurrentVideoStream?.PixelWidth ?? 0,                   // 9
+                    _currentFFmpegMediaSource.CurrentVideoStream?.PixelHeight ?? 0,                  // 10
+                    _currentFFmpegMediaSource.CurrentVideoStream?.BitsPerSample ?? 0                 // 11
                     ), LogType.Debug, true);
 #endif
-                CurrentMediaPlayer.IsVideoFrameServerEnabled = IsUseVideoBgDynamicColorUpdate;
+                _currentMediaPlayer.IsVideoFrameServerEnabled = IsUseVideoBgDynamicColorUpdate;
                 if (IsUseVideoBgDynamicColorUpdate)
                 {
-                    CurrentMediaPlayer.VideoFrameAvailable += FrameGrabberEvent;
+                    _currentMediaPlayer.VideoFrameAvailable += FrameGrabberEvent;
                 }
 
-                CurrentMediaPlayerFrame?.SetMediaPlayer(CurrentMediaPlayer);
-                CurrentMediaPlayer.Play();
+                _currentMediaPlayerFrame?.SetMediaPlayer(_currentMediaPlayer);
+                _currentMediaPlayer.Play();
             }
             catch
             {
                 DisposeMediaModules();
-                await BackgroundMediaUtility.AssignDefaultImage(CurrentMediaImage);
+                await BackgroundMediaUtility.AssignDefaultImage(_currentImage);
                 throw;
             }
             finally
@@ -219,50 +233,117 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
+        private void UpdateCanvasOnSizeChangeEvent(object sender, SizeChangedEventArgs e)
+        {
+            lock (_currentLock)
+            {
+                float scalingFactor = (float)WindowUtility.CurrentWindowMonitorScaleFactor;
+                float newWidth      = (float)(e.NewSize.Width * scalingFactor);
+                float newHeight     = (float)(e.NewSize.Height * scalingFactor);
+
+                LogWriteLine($"Updating video canvas size from: {_currentCanvasWidth}x{_currentCanvasHeight} to {newWidth}x{newHeight}", LogType.Debug, true);
+
+                _currentCanvasWidth    = newWidth;
+                _currentCanvasHeight   = newHeight;
+                _currentCanvasDrawArea = new Rect(0, 0, _currentCanvasWidth, _currentCanvasHeight);
+
+                _currentCanvasBitmap?.Dispose();
+                _currentCanvasBitmap             = null;
+                _currentCanvasVirtualImageSource = null;
+                CreateAndAssignCanvasVirtualImageSource();
+                CreateCanvasBitmap();
+            }
+        }
+
+        private void CreateAndAssignCanvasVirtualImageSource()
+        {
+            _currentCanvasVirtualImageSource ??= new CanvasVirtualImageSource(_currentCanvasDevice,
+                                                                              _currentCanvasWidth,
+                                                                              _currentCanvasHeight,
+                                                                              CanvasBaseDpi);
+
+            _currentImage.Source = _currentCanvasVirtualImageSource.Source;
+        }
+
+        private void CreateCanvasBitmap()
+        {
+            int widthInt  = (int)_currentCanvasWidth;
+            int heightInt = (int)_currentCanvasHeight;
+
+            byte[] temporaryBuffer = ArrayPool<byte>.Shared.Rent(widthInt * heightInt * 4);
+            try
+            {
+                _currentCanvasBitmap ??= CanvasBitmap
+                    .CreateFromBytes(_currentCanvasDevice,
+                                     temporaryBuffer,
+                                     widthInt,
+                                     heightInt,
+                                     Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized,
+                                     CanvasBaseDpi,
+                                     CanvasAlphaMode.Ignore);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(temporaryBuffer);
+            }
+        }
+
         public void DisposeMediaModules()
         {
-            if (CurrentMediaPlayer != null)
+#if !USEFFMPEGFORVIDEOBG
+            if (_currentMediaPlayer != null)
             {
-                CurrentMediaPlayer.VideoFrameAvailable -= FrameGrabberEvent;
+                _currentMediaPlayer.VideoFrameAvailable -= FrameGrabberEvent;
+                _currentMediaPlayer.Dispose();
+                Interlocked.Exchange(ref _currentMediaPlayer, null);
             }
+#endif
 
             if (IsUseVideoBgDynamicColorUpdate)
             {
-                while (IsCanvasCurrentlyDrawing)
+                lock (_currentLock)
                 {
-                    Thread.Sleep(100);
+                    _currentCanvasDrawingSession?.Dispose();
+                    Interlocked.Exchange(ref _currentCanvasDrawingSession, null);
                 }
+            }
 
-                CanvasDevice?.Dispose();
-                CanvasDevice = null;
-                CurrentFrameBitmap?.Dispose();
-                CurrentFrameBitmap = null;
-                CanvasBitmap?.Dispose();
-                CanvasBitmap = null;
+            if (_currentCanvasVirtualImageSource != null)
+            {
+                Interlocked.Exchange(ref _currentCanvasVirtualImageSource, null);
+            }
+
+            if (_currentCanvasBitmap != null)
+            {
+                _currentCanvasBitmap.Dispose();
+                Interlocked.Exchange(ref _currentCanvasBitmap, null);
+            }
+
+            if (_currentCanvasDevice != null)
+            {
+                _currentCanvasDevice.Dispose();
+                Interlocked.Exchange(ref _currentCanvasDevice, null);
             }
 
 #if USEFFMPEGFORVIDEOBG
-            CurrentFFmpegMediaSource?.Dispose();
-            CurrentFFmpegMediaSource = null;
+            _currentFFmpegMediaSource?.Dispose();
+            _currentFFmpegMediaSource = null;
 #endif
-            CurrentMediaPlayer?.Dispose();
-            CurrentMediaPlayer = null;
-            CurrentCanvasImageSource = null;
-            CurrentMediaStream?.Dispose();
-            CurrentMediaStream = null;
+            _currentMediaStream?.Dispose();
+            _currentMediaStream = null;
         }
 
 #if !USEFFMPEGFORVIDEOBG
-        private void EnsureIfFormatIsDashOrUnsupported(Stream stream)
+        private static void EnsureIfFormatIsDashOrUnsupported(Stream stream)
         {
             ReadOnlySpan<byte> dashSignature = "ftypdash"u8;
 
-            byte[] buffer = new byte[64];
+            Span<byte> buffer = stackalloc byte[64];
             stream.ReadExactly(buffer);
 
             try
             {
-                if (buffer.AsSpan(4).StartsWith(dashSignature))
+                if (buffer.StartsWith(dashSignature))
                     throw new FormatException("The video format is in \"MPEG-DASH\" format, which is unsupported.");
             }
             finally
@@ -272,52 +353,75 @@ namespace CollapseLauncher.Helper.Background.Loaders
         }
 #endif
 
-        private async ValueTask GetPreviewAsColorPalette(string file)
+        private async Task GetPreviewAsColorPalette(string file)
         {
             StorageFile                storageFile = await GetFileAsStorageFile(file);
             using StorageItemThumbnail thumbnail   = await storageFile.GetThumbnailAsync(ThumbnailMode.VideosView);
-            await using Stream         stream      = thumbnail.AsStream();
 
-            await ColorPaletteUtility.ApplyAccentColor(ParentUI, stream.AsRandomAccessStream(), string.Empty, false,
-                                                       true);
+            await ColorPaletteUtility
+                .ApplyAccentColor(ParentUI,
+                                  thumbnail,
+                                  string.Empty,
+                                  false,
+                                  true);
         }
 
-        private static async ValueTask<StorageFile> GetFileAsStorageFile(string filePath)
+        private static async Task<StorageFile> GetFileAsStorageFile(string filePath)
             => await StorageFile.GetFileFromPathAsync(filePath);
 
-        private void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
+    #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
+    #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            IsCanvasCurrentlyDrawing = true;
-
-            if (CurrentCanvasImageSource == null)
+            lock (_currentLock)
             {
-                IsCanvasCurrentlyDrawing = false;
-                return;
-            }
-
-            lock (this)
-            {
-                CurrentCanvasImageSource?.DispatcherQueue.TryEnqueue(() =>
+                if (_currentCanvasVirtualImageSource is null)
                 {
-                    try
-                    {
-                        // Check one more time due to high possibility of thread-race issue.
-                        if (CurrentCanvasImageSource == null)
-                            return;
+                    return;
+                }
 
-                        CanvasBitmap ??= CanvasBitmap.CreateFromSoftwareBitmap(CanvasDevice, CurrentFrameBitmap);
-                        using CanvasDrawingSession canvasDrawingSession = CurrentCanvasImageSource.CreateDrawingSession(Color.FromArgb(0, 0, 0, 0));
-
-                        mediaPlayer.CopyFrameToVideoSurface(CanvasBitmap);
-                        canvasDrawingSession.DrawImage(CanvasBitmap);
-                    }
-                    catch (Exception e)
-                    {
-                        LogWriteLine($"[FrameGrabberEvent] Error drawing frame to canvas.\r\n{e}", LogType.Error, true);
-                    }
-                });
+                if (_currentCanvasDrawingSession is not null)
+                {
+#if DEBUG
+                    LogWriteLine($@"[FrameGrabberEvent] Frame skipped at: {mediaPlayer.Position:hh\:mm\:ss\.ffffff}", LogType.Debug, true);
+#endif
+                    return;
+                }
             }
-            IsCanvasCurrentlyDrawing = false;
+
+            try
+            {
+                lock (_currentLock)
+                {
+                    mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
+                    _currentCanvasDrawingSession = _currentCanvasVirtualImageSource
+                        .CreateDrawingSession(_currentDefaultColor,
+                                              _currentCanvasDrawArea);
+                    _currentCanvasDrawingSession.DrawImage(_currentCanvasBitmap);
+                }
+            }
+            catch
+#if DEBUG
+            (Exception e)
+            {
+                LogWriteLine($"[FrameGrabberEvent] Error while drawing frame to bitmap.\r\n{e}", LogType.Warning, true);
+            }
+#else
+            {
+                // ignored
+            }
+#endif
+            finally
+            {
+                lock (_currentLock)
+                {
+                    CurrentDispatcherQueue.TryEnqueue(() =>
+                    {
+                        _currentCanvasDrawingSession?.Dispose();
+                        _currentCanvasDrawingSession = null;
+                    });
+                }
+            }
         }
 
         public void Dimm()
@@ -361,7 +465,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private async Task ShowInner()
         {
-            if (CurrentMediaPlayerFrameParentGrid.Opacity > 0f) return;
+            if (_currentMediaPlayerFrameParentGrid.Opacity > 0f) return;
 
             if (!IsUseVideoBgDynamicColorUpdate)
             {
@@ -369,7 +473,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
             TimeSpan duration = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
-            await CurrentMediaPlayerFrameParentGrid
+            await _currentMediaPlayerFrameParentGrid
                .StartAnimation(duration,
                                CurrentCompositor
                                   .CreateScalarKeyFrameAnimation("Opacity", 1f, 0f)
@@ -390,14 +494,14 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 App.ToggleBlurBackdrop(isLastAcrylicEnabled);
             }
 
-            if (CurrentMediaPlayerFrameParentGrid.Opacity < 1f) return;
+            if (_currentMediaPlayerFrameParentGrid.Opacity < 1f) return;
             TimeSpan duration = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
-            await CurrentMediaPlayerFrameParentGrid
+            await _currentMediaPlayerFrameParentGrid
                .StartAnimation(duration,
                                CurrentCompositor
                                   .CreateScalarKeyFrameAnimation("Opacity", 0f,
-                                                                 (float)CurrentMediaPlayerFrameParentGrid
+                                                                 (float)_currentMediaPlayerFrameParentGrid
                                                                     .Opacity)
                               );
 
@@ -418,7 +522,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private async Task WindowUnfocusedInner()
         {
-            double currentAudioVolume = CurrentMediaPlayer?.Volume ?? 0;
+            double currentAudioVolume = _currentMediaPlayer?.Volume ?? 0;
             await InterpolateVolumeChange((float)currentAudioVolume, 0f, true);
             Pause();
         }
@@ -445,23 +549,21 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void Mute()
         {
-            if (CurrentMediaPlayer == null) return;
-            CurrentMediaPlayer.IsMuted = true;
+            if (_currentMediaPlayer == null) return;
+            _currentMediaPlayer.IsMuted = true;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", true);
         }
 
         public void Unmute()
         {
-            if (CurrentMediaPlayer == null) return;
+            if (_currentMediaPlayer == null) return;
 
-            CurrentMediaPlayer.IsMuted = false;
+            _currentMediaPlayer.IsMuted = false;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioIsMute", false);
         }
 
-        private async ValueTask InterpolateVolumeChange(float from, float to, bool isMute)
+        private async Task InterpolateVolumeChange(float from, float to, bool isMute)
         {
-            if (CurrentMediaPlayer == null) return;
-
             double tFrom = from;
             double tTo   = to;
 
@@ -469,8 +571,10 @@ namespace CollapseLauncher.Helper.Background.Loaders
             double inc     = isMute ? -0.05 : 0.05;
 
             Loops:
-            current                   += inc;
-            CurrentMediaPlayer.Volume =  current;
+            if (_currentMediaPlayer == null) return;
+
+            current += inc;
+            _currentMediaPlayer.Volume =  current;
 
             await Task.Delay(10);
             switch (isMute)
@@ -480,24 +584,24 @@ namespace CollapseLauncher.Helper.Background.Loaders
                     goto Loops;
             }
 
-            CurrentMediaPlayer.Volume = tTo;
+            _currentMediaPlayer.Volume = tTo;
         }
 
         public void SetVolume(double value)
         {
-            if (CurrentMediaPlayer != null)
-                CurrentMediaPlayer.Volume = value;
+            if (_currentMediaPlayer != null)
+                _currentMediaPlayer.Volume = value;
             LauncherConfig.SetAndSaveConfigValue("BackgroundAudioVolume", value);
         }
 
         public void Play()
         {
-            CurrentMediaPlayer?.Play();
+            _currentMediaPlayer?.Play();
         }
 
         public void Pause()
         {
-            CurrentMediaPlayer?.Pause();
+            _currentMediaPlayer?.Pause();
         }
     }
 }

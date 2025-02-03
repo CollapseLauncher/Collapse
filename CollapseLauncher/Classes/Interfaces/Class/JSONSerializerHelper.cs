@@ -6,6 +6,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher

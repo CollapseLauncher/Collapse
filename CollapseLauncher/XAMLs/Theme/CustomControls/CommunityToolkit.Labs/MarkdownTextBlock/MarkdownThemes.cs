@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using FontWeight = Windows.UI.Text.FontWeight;
 using FontWeights = Microsoft.UI.Text.FontWeights;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
 
 namespace CommunityToolkit.WinUI.Controls.MarkdownTextBlockRns;
 

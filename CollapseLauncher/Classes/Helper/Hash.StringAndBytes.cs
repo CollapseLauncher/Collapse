@@ -3,6 +3,7 @@ using System.IO.Hashing;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading;
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -52,10 +53,11 @@ namespace CollapseLauncher.Helper
             where T : NonCryptographicHashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<NonCryptographicHashAlgorithm?, Lock> hash = ref GetSharedHash<T>();
+            ref (NonCryptographicHashAlgorithm? Hash, Lock Lock) hash = ref GetSharedHash<T>();
 
             // Allocate the return buffer and calculate the hash from the source span
-            byte[] hashBytesReturn = new byte[hash.Item1!.HashLengthInBytes];
+            int    hashLenInBytes  = hash.Hash!.HashLengthInBytes;
+            byte[] hashBytesReturn = new byte[hashLenInBytes];
             if (!TryGetHashFromBytes<T>(ref hash!, source, hashBytesReturn, out _))
             {
                 throw new InvalidOperationException("Failed to get the hash.");
@@ -75,11 +77,12 @@ namespace CollapseLauncher.Helper
             where T : NonCryptographicHashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<NonCryptographicHashAlgorithm?, Lock> hash = ref GetSharedHash<T>();
+            ref (NonCryptographicHashAlgorithm? Hash, Lock Lock) hash = ref GetSharedHash<T>();
 
             // Allocate the hash buffer to be written to
-            Span<byte> hashBuffer = stackalloc byte[hash.Item1!.HashLengthInBytes];
-            Span<char> hashCharBuffer = stackalloc char[hash.Item1.HashLengthInBytes * 2];
+            int        hashLenInBytes = hash.Hash!.HashLengthInBytes;
+            Span<byte> hashBuffer     = stackalloc byte[hashLenInBytes];
+            Span<char> hashCharBuffer = stackalloc char[hashLenInBytes * 2];
 
             // Compute the hash and reset
             if (!TryGetHashFromBytes<T>(ref hash!, source, hashBuffer, out _))
@@ -107,20 +110,20 @@ namespace CollapseLauncher.Helper
         /// <param name="hashBytesWritten">The length of how much bytes is the hash written to the <paramref name="destination"/>.</param>
         /// <returns>True if it's successfully calculate the hash, False as failed.</returns>
         public static bool TryGetHashFromBytes<T>(
-            ref Tuple<NonCryptographicHashAlgorithm, Lock> hashSource,
-            ReadOnlySpan<byte> source,
-            Span<byte> destination,
-            out int hashBytesWritten)
+            ref (NonCryptographicHashAlgorithm Hash, Lock Lock) hashSource,
+            ReadOnlySpan<byte>                                  source,
+            Span<byte>                                          destination,
+            out int                                             hashBytesWritten)
             where T : NonCryptographicHashAlgorithm
         {
             // Lock the thread and append the span to the hash algorithm
-            lock (hashSource.Item2)
+            lock (hashSource.Lock)
             {
                 // Append and calculate the hash of the span
-                hashSource.Item1.Append(source);
+                hashSource.Hash.Append(source);
 
                 // Return the bool as success or not, then reset the hash while writing the hash bytes to destination span.
-                return hashSource.Item1.TryGetHashAndReset(destination, out hashBytesWritten);
+                return hashSource.Hash.TryGetHashAndReset(destination, out hashBytesWritten);
             }
         }
         #endregion
@@ -168,10 +171,11 @@ namespace CollapseLauncher.Helper
             where T : HashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<HashAlgorithm?, Lock> hash = ref GetSharedCryptoHash<T>();
+            ref (HashAlgorithm? Hash, Lock Lock) hash = ref GetSharedCryptoHash<T>();
 
             // Allocate the return buffer and calculate the hash from the source span
-            byte[] hashBytesReturn = new byte[hash.Item1!.HashSize];
+            int    hashLenInBytes  = hash.Hash!.HashSize;
+            byte[] hashBytesReturn = new byte[hashLenInBytes];
             if (!TryGetCryptoHashFromBytes<T>(ref hash!, source, hashBytesReturn, out _))
             {
                 throw new InvalidOperationException("Failed to get the hash.");
@@ -191,11 +195,12 @@ namespace CollapseLauncher.Helper
             where T : HashAlgorithm
         {
             // Get the shared hash algorithm and the thread lock instance
-            ref Tuple<HashAlgorithm?, Lock> hash = ref GetSharedCryptoHash<T>();
+            ref (HashAlgorithm? Hash, Lock Lock) hash = ref GetSharedCryptoHash<T>();
 
             // Allocate the hash buffer to be written to
-            Span<byte> hashBuffer = stackalloc byte[hash.Item1!.HashSize];
-            Span<char> hashCharBuffer = stackalloc char[hash.Item1.HashSize * 2];
+            int        hashLenInBytes = hash.Hash!.HashSize;
+            Span<byte> hashBuffer     = stackalloc byte[hashLenInBytes];
+            Span<char> hashCharBuffer = stackalloc char[hashLenInBytes * 2];
 
             // Compute the hash and reset
             if (!TryGetCryptoHashFromBytes<T>(ref hash!, source, hashBuffer, out _))
@@ -223,20 +228,20 @@ namespace CollapseLauncher.Helper
         /// <param name="hashBytesWritten">The length of how much bytes is the hash written to the <paramref name="destination"/>.</param>
         /// <returns>True if it's successfully calculate the hash, False as failed.</returns>
         public static bool TryGetCryptoHashFromBytes<T>(
-            ref Tuple<HashAlgorithm, Lock> hashSource,
-            ReadOnlySpan<byte> source,
-            Span<byte> destination,
-            out int hashBytesWritten)
+            ref (HashAlgorithm Hash, Lock Lock) hashSource,
+            ReadOnlySpan<byte>                  source,
+            Span<byte>                          destination,
+            out int                             hashBytesWritten)
             where T : HashAlgorithm
         {
             // Lock the thread and compute the hash of the span
-            lock (hashSource.Item2)
+            lock (hashSource.Lock)
             {
                 // Reset the hash instance state.
-                hashSource.Item1.Initialize();
+                hashSource.Hash.Initialize();
 
                 // Compute the source bytes and return the success state
-                return hashSource.Item1.TryComputeHash(source, destination, out hashBytesWritten);
+                return hashSource.Hash.TryComputeHash(source, destination, out hashBytesWritten);
             }
         }
         #endregion

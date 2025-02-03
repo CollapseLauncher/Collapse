@@ -115,7 +115,7 @@
                                             </Grid>
                                             <!--
                                                 Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
-                                                Delete `Visibility="Collapsed"' to revert this change
+                                                Delete `Visibility="Collapsed"` to revert this change
                                             -->
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
@@ -227,7 +227,7 @@
                                           MinWidth="128"
                                           Margin="0,8,0,0"
                                           CornerRadius="14"
-                                          ItemsSource="{x:Bind static:Model.FPSIndex}"
+                                          ItemsSource="{x:Bind static:Model.FpsIndex}"
                                           SelectedIndex="{x:Bind FPS, Mode=TwoWay}" />
                             </StackPanel>
                             <StackPanel x:Name="GameBoostPanel"

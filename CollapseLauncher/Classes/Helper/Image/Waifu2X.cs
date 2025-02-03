@@ -12,6 +12,7 @@ using static CollapseLauncher.Helper.Image.Waifu2X;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable StringLiteralTypo
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.Helper.Image
 {

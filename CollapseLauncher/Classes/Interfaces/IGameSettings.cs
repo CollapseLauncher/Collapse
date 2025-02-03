@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+// ReSharper disable UnusedMemberInSuper.Global
 
 #nullable enable
 namespace CollapseLauncher.Interfaces

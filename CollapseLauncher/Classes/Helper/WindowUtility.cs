@@ -30,6 +30,11 @@ using Windows.UI;
 using WinRT.Interop;
 using Size = System.Drawing.Size;
 using WindowId = Microsoft.UI.WindowId;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable UnusedMember.Global
 
 #pragma warning disable CA2012
 namespace CollapseLauncher.Helper
@@ -468,7 +473,7 @@ namespace CollapseLauncher.Helper
                             case SC_MAXIMIZE:
                                 {
                                     // TODO: Apply to force disable the "double-click to maximize" feature.
-                                    //       The feature should expected to be disabled while m_presenter.IsResizable and IsMaximizable
+                                    //       The feature should expect to be disabled while m_presenter.IsResizable and IsMaximizable
                                     //       set to false. But the feature is still not respecting the changes in WindowsAppSDK 1.4.
                                     //
                                     //       Issues have been described here:
@@ -476,7 +481,7 @@ namespace CollapseLauncher.Helper
                                     //       https://github.com/microsoft/microsoft-ui-xaml/issues/8783
 
                                     // Ignore WM_SYSCOMMAND SC_MAXIMIZE message
-                                    // Thank you Microsoft :)
+                                    // Thank you, Microsoft :)
                                     return 0;
                                 }
                             case SC_MINIMIZE:

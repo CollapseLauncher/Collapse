@@ -22,16 +22,15 @@ internal class MyInlineCode : IAddChild
 
     public MyInlineCode(CodeInline codeInline, MarkdownConfig config)
     {
-        MarkdownConfig _config = config;
         _inlineContainer = new InlineUIContainer();
         var border = new Border
         {
             VerticalAlignment = VerticalAlignment.Bottom,
-            Background        = _config.Themes.InlineCodeBackground,
+            Background        = config.Themes.InlineCodeBackground,
             // border.BorderBrush = _config.Themes.InlineCodeBorderBrush;
             // border.BorderThickness = _config.Themes.InlineCodeBorderThickness;
-            CornerRadius      = _config.Themes.InlineCodeCornerRadius,
-            Padding           = _config.Themes.InlineCodePadding
+            CornerRadius      = config.Themes.InlineCodeCornerRadius,
+            Padding           = config.Themes.InlineCodePadding
         };
         CompositeTransform3D transform = new CompositeTransform3D
         {
@@ -40,9 +39,9 @@ internal class MyInlineCode : IAddChild
         border.Transform3D = transform;
         var textBlock = new TextBlock
         {
-            FontFamily = _config.Themes.InlineCodeFontFamily,
-            FontSize   = _config.Themes.InlineCodeFontSize,
-            FontWeight = _config.Themes.InlineCodeFontWeight,
+            FontFamily = config.Themes.InlineCodeFontFamily,
+            FontSize   = config.Themes.InlineCodeFontSize,
+            FontWeight = config.Themes.InlineCodeFontWeight,
             Text       = codeInline.Content
         };
         border.Child = textBlock;

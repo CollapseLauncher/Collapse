@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
@@ -139,11 +139,11 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        internal int CurrentBannerIconWidth
+        internal int CurrentBannerIconHeight
         {
             get => CurrentGameProperty?.GamePreset.LauncherType == LauncherType.Sophon ?
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidth :
-                   WindowSize.WindowSize.CurrentWindowSize.BannerIconWidthHYP;
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconHeight :
+                   WindowSize.WindowSize.CurrentWindowSize.BannerIconHeightHYP;
         }
 
         internal Thickness CurrentBannerIconMargin

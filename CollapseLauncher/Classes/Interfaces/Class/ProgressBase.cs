@@ -34,6 +34,7 @@ using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
@@ -1020,10 +1021,11 @@ namespace CollapseLauncher.Interfaces
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : HashAlgorithm =>
-            Hash.GetCryptoHashAsync<T>(filePath,
-                                       hmacKey,
-                                       read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                       token);
+            GetCryptoHashAsync<T>(new FileInfo(filePath),
+                                  hmacKey,
+                                  updateProgress,
+                                  updateTotalProgress,
+                                  token);
 
         protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
             FileInfo          fileInfo,
@@ -1035,6 +1037,7 @@ namespace CollapseLauncher.Interfaces
             Hash.GetCryptoHashAsync<T>(fileInfo,
                                        hmacKey,
                                        read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                       fileInfo is { Exists: true, Length: > 100 << 20 },
                                        token);
 
         protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
@@ -1047,6 +1050,7 @@ namespace CollapseLauncher.Interfaces
             Hash.GetCryptoHashAsync<T>(stream,
                                        hmacKey,
                                        read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                       stream is { Length: > 100 << 20 },
                                        token);
 
         protected virtual byte[] GetCryptoHash<T>(
@@ -1091,9 +1095,10 @@ namespace CollapseLauncher.Interfaces
             bool              updateTotalProgress = true,
             CancellationToken token               = default)
             where T : NonCryptographicHashAlgorithm, new() =>
-            Hash.GetHashAsync<T>(filePath,
-                                 read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                 token);
+            GetHashAsync<T>(new FileInfo(filePath),
+                            updateProgress,
+                            updateTotalProgress,
+                            token);
 
         protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
             FileInfo          fileInfo,
@@ -1103,6 +1108,7 @@ namespace CollapseLauncher.Interfaces
             where T : NonCryptographicHashAlgorithm, new() =>
             Hash.GetHashAsync<T>(fileInfo,
                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                 fileInfo is { Exists: true, Length: > 100 << 20 },
                                  token);
 
         protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
@@ -1113,6 +1119,7 @@ namespace CollapseLauncher.Interfaces
             where T : NonCryptographicHashAlgorithm, new() =>
             Hash.GetHashAsync<T>(stream,
                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
+                                 stream is { Length: > 100 << 20 },
                                  token);
 
         protected virtual byte[] GetHash<T>(

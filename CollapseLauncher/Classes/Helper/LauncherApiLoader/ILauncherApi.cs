@@ -1,10 +1,11 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable UnusedMemberInSuper.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -23,8 +24,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         LauncherGameNews? LauncherGameNews { get; }
         HttpClient? ApiGeneralHttpClient { get; }
         HttpClient? ApiResourceHttpClient { get; }
-        Task<bool> LoadAsync(OnLoadAction? beforeLoadRoutine = null, OnLoadAction? afterLoadRoutine = null,
-            ActionOnTimeOutRetry? onTimeoutRoutine = null, ErrorLoadRoutineDelegate? errorLoadRoutine = null,
-            CancellationToken token = default);
+        Task<bool> LoadAsync(OnLoadTaskAction? beforeLoadRoutine = null, OnLoadTaskAction? afterLoadRoutine = null,
+                             ActionOnTimeOutRetry? onTimeoutRoutine = null, ErrorLoadRoutineDelegate? errorLoadRoutine = null,
+                             CancellationToken token = default);
     }
 }

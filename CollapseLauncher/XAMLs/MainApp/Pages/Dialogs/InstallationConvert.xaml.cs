@@ -201,7 +201,7 @@ namespace CollapseLauncher.Dialogs
                 string infoVendorPath = Path.Combine(gamePath, $"{Path.GetFileNameWithoutExtension(profile.GameExecutableName)}_Data\\app.info");
                 if (!File.Exists(infoVendorPath)) return false;
 
-                // If does, then process the file
+                // If it does, then process the file
                 string[] infoEntries = File.ReadAllLines(infoVendorPath);
                 if (infoEntries.Length < 2) return false;
 

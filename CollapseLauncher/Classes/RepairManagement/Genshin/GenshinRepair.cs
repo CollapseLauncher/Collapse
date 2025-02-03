@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {

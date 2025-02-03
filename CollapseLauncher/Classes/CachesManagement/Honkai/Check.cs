@@ -161,7 +161,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void AddGenericCheckAsset(CacheAsset asset, CacheAssetStatus assetStatus, List<CacheAsset> returnAsset, byte[] localCRC, byte[] remoteCRC)
+        private void AddGenericCheckAsset(CacheAsset asset, CacheAssetStatus assetStatus, List<CacheAsset> returnAsset, byte[] localCrc, byte[] remoteCrc)
         {
             // Increment the count and total size
             lock (this)
@@ -187,8 +187,8 @@ namespace CollapseLauncher
                     asset.DataType,
                     Path.GetDirectoryName(asset.N),
                     asset.CS,
-                    localCRC,
-                    remoteCRC
+                    localCrc,
+                    remoteCrc
                 ))
             );
         }

@@ -904,7 +904,7 @@ namespace CollapseLauncher.Pages.OOBE
                                                 Lang._StartupPage.Pg1LoadingSubitle2);
                 LoadingMessageHelper.SetProgressBarState(100, false);
                 LoadingMessageHelper.SetProgressBarValue(100);
-                await Task.Delay(5000);
+                await Task.Delay(2000);
 
                 LoadingMessageHelper.HideLoadingFrame();
             }

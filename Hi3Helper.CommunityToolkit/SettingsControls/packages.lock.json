@@ -10,12 +10,12 @@
       },
       "CommunityToolkit.WinUI.Triggers": {
         "type": "Direct",
-        "requested": "[8.2.241112-preview1, )",
-        "resolved": "8.2.241112-preview1",
-        "contentHash": "m2WuTUDrCvZql51LyeTAAl5XM5/ehwjNx3Da9pJsgTVXRCJTq5Ywd3qxH/O2PTqu703EdZNf6Cq5fke5X4c4dw==",
+        "requested": "[8.2.250129-preview2, )",
+        "resolved": "8.2.250129-preview2",
+        "contentHash": "IzGOB0qbb2uNzBc/RytfLqGG5qQUCs2j95RcCpGg6R8CFilPNwHyJdd8etGOmw4oWVaUvXHbDeAH2Swy9595VQ==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Helpers": "8.2.241112-preview1",
-          "Microsoft.WindowsAppSDK": "1.6.240923002"
+          "CommunityToolkit.WinUI.Helpers": "8.2.250129-preview2",
+          "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
       "Microsoft.NET.ILLink.Tasks": {
@@ -54,20 +54,20 @@
       },
       "CommunityToolkit.WinUI.Extensions": {
         "type": "Transitive",
-        "resolved": "8.2.241112-preview1",
-        "contentHash": "e0fuTXaeGvOttazZDpwJ/avaK8Coax7Mk9HTYywF4T1fvXZCLpmVLRuftajFK2rhQ85qOYuUKbh2FeSkeli0cg==",
+        "resolved": "8.2.250129-preview2",
+        "contentHash": "7l+22QHfDcyU4SqpfIci4Sl+XcT7oFxsxI2KYitUHg4lo922cMCK70L9v6EgM8z+H4IAFF9HqPcKSDehvbZtWw==",
         "dependencies": {
           "CommunityToolkit.Common": "8.2.1",
-          "Microsoft.WindowsAppSDK": "1.6.240923002"
+          "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
       "CommunityToolkit.WinUI.Helpers": {
         "type": "Transitive",
-        "resolved": "8.2.241112-preview1",
-        "contentHash": "sSYI2RUIfDXG0yPbdtaMmhoNCKWCu+0/Ba7hUlqnCWvH8z1NwkjG735202JrrBSXE2P+E51WGSMY8PJ+lIIUow==",
+        "resolved": "8.2.250129-preview2",
+        "contentHash": "EcqFmIFwpNgZgmOJUil58Z40YwO2DcZRUeF5tXaLxaHOFXiL/Zo2ISvw6wNlhMAsVBmMizSzYSKKL+A3yxJ5xg==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.241112-preview1",
-          "Microsoft.WindowsAppSDK": "1.6.240923002"
+          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       }
     },

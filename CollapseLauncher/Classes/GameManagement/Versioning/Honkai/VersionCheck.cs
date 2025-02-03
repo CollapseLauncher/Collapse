@@ -1,6 +1,7 @@
 using CollapseLauncher.GameManagement.Versioning;
 using System;
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.GameVersioning
 {
@@ -11,12 +12,12 @@ namespace CollapseLauncher.GameVersioning
         : GameVersionBase(gameRegionProp, gameName, gameRegion)
     {
         #region Statics
-        private static readonly Version senadinaVersion = new(7, 3, 0);
+        private static readonly Version SenadinaVersion = new(7, 3, 0);
         #endregion
 
         #region Public properties
-        public bool IsCurrentSenadinaVersion { get => GameVersionAPI?.ToVersion() >= senadinaVersion; }
-        public bool IsPreloadSenadinaVersion { get => GameVersionAPIPreload.HasValue && GameVersionAPIPreload.Value.ToVersion() >= senadinaVersion; }
+        public bool IsCurrentSenadinaVersion { get => GameVersionAPI?.ToVersion() >= SenadinaVersion; }
+        public bool IsPreloadSenadinaVersion { get => GameVersionAPIPreload.HasValue && GameVersionAPIPreload.Value.ToVersion() >= SenadinaVersion; }
         #endregion
 
         public override bool IsGameHasDeltaPatch() => GameDeltaPatchProp != null;

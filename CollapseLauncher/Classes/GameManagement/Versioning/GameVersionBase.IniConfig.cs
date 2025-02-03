@@ -21,9 +21,9 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Constants
-        private const string cps = "cps";
-        private const string channel = "channel";
-        private const string sub_channel = "sub_channel";
+        private const string Cps = "cps";
+        private const string Channel = "channel";
+        private const string SubChannel = "sub_channel";
         
         private const string ConfigFileName = "config.ini";
         #endregion
@@ -38,9 +38,9 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         protected virtual IniSection DefaultIniProfile => new()
             {
-                { cps, new IniValue(GamePreset.LauncherCPSType) },
-                { channel, new IniValue(DefaultGameChannelID) },
-                { sub_channel, new IniValue(DefaultGameSubChannelID) },
+                { Cps, new IniValue(GamePreset.LauncherCPSType) },
+                { Channel, new IniValue(DefaultGameChannelID) },
+                { SubChannel, new IniValue(DefaultGameSubChannelID) },
                 { "game_install_path", new IniValue(DefaultGameDirPath.Replace('\\', '/')) },
                 { "game_start_name", new IniValue(GamePreset.GameExecutableName) },
                 { "is_first_exit", new IniValue(false) },

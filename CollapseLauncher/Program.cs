@@ -35,6 +35,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {
@@ -131,8 +132,7 @@ namespace CollapseLauncher
                                            IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
             #pragma warning disable CS0618 // Type or member is obsolete
-                LogWriteLine(
-                             $"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
+                LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
                              LogType.Scheme, true);
                 LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
@@ -145,7 +145,6 @@ namespace CollapseLauncher
 
                 // Initiate InnoSetupHelper's log event
                 InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
-
                 HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
 
                 switch (m_appMode)
@@ -188,8 +187,8 @@ namespace CollapseLauncher
             #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 // Reason: These are methods that either has its own error handling and/or not that important,
                 // so the execution could continue without anything to worry about **technically**
-                InitDatabaseHandler();
-                CheckRuntimeFeatures();
+                _ = InitDatabaseHandler();
+                _ = CheckRuntimeFeatures();
             #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;

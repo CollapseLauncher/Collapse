@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.GameSettings.Genshin.Enums
 {

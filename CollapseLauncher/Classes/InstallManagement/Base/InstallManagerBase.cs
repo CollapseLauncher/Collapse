@@ -2752,8 +2752,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // If primary button is clicked, then set folder with the default path
                     case ContentDialogResult.Primary:
-                        if (GameVersionManager.GamePreset.ProfileName != null &&
-                            GameVersionManager.GamePreset.GameDirectoryName != null)
+                        if (GameVersionManager.GamePreset is { ProfileName: not null, GameDirectoryName: not null })
                         {
                             folder = Path.Combine(LauncherConfig.AppGameFolder,
                                                   GameVersionManager.GamePreset.ProfileName,

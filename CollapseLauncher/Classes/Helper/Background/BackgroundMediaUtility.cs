@@ -18,6 +18,7 @@ using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -87,25 +88,6 @@ namespace CollapseLauncher.Helper.Background
                                                                                BoundedCapacity = 1,
                                                                                TaskScheduler = TaskScheduler.Current
                                                                            });
-        internal ActionBlock<Action> SharedActionBlockQueueChange = new(static action =>
-                                                                        {
-                                                                            try
-                                                                            {
-                                                                                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
-                                                                            }
-                                                                            catch (Exception ex)
-                                                                            {
-                                                                                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                                                                                                                          ErrorSender.SendException(ex));
-                                                                            }
-                                                                        },
-                                                                        new ExecutionDataflowBlockOptions
-                                                                        {
-                                                                            EnsureOrdered = true,
-                                                                            MaxMessagesPerTask = 1,
-                                                                            MaxDegreeOfParallelism = 1,
-                                                                            BoundedCapacity = 1
-                                                                        });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -364,14 +346,12 @@ namespace CollapseLauncher.Helper.Background
                 EnsureCurrentImageRegistered();
                 EnsureCurrentMediaPlayerRegistered();
 
-                _loaderMediaPlayer ??= new MediaPlayerLoader(
-                                                             _parentUI!,
+                _loaderMediaPlayer ??= new MediaPlayerLoader(_parentUI!,
                                                              _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                              _parentBgMediaPlayerBackgroundGrid!,
                                                              _bgMediaPlayerBackground);
 
-                _loaderStillImage ??= new StillImageLoader(
-                                                           _parentUI!,
+                _loaderStillImage ??= new StillImageLoader(_parentUI!,
                                                            _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                            _parentBgImageBackgroundGrid!,
                                                            _bgImageBackground, _bgImageBackgroundLast);

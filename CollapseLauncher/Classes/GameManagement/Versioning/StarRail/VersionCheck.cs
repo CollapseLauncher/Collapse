@@ -52,7 +52,7 @@ namespace CollapseLauncher.GameVersioning
 
         public override bool IsGameHasDeltaPatch() => GameDeltaPatchProp != null;
 
-        public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp == null ? null : GameDeltaPatchProp;
+        public override DeltaPatchProperty GetDeltaPatchInfo() => GameDeltaPatchProp;
 
 #nullable enable
         public void InitializeProtoId()

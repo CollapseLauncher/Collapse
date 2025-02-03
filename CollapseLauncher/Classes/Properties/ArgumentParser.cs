@@ -8,6 +8,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {

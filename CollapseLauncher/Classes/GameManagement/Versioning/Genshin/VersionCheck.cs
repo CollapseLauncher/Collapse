@@ -29,14 +29,15 @@ namespace CollapseLauncher.GameVersioning
         {
             string? basePath = base.TryFindGamePathFromExecutableAndConfig(path, executableName);
 
-            // Try detect the CN and Bilibili client location by overriding the executable name argument
-            if (string.IsNullOrEmpty(basePath))
+            // Try to detect the CN and Bilibili client location by overriding the executable name argument
+            if (!string.IsNullOrEmpty(basePath))
             {
-                executableName = AlternativeExecName;
-                return base.TryFindGamePathFromExecutableAndConfig(path, executableName);
+                return basePath;
             }
 
-            return basePath;
+            executableName = AlternativeExecName;
+            return base.TryFindGamePathFromExecutableAndConfig(path, executableName);
+
         }
 
         protected override bool IsExecutableFileExist(string? executableName)

@@ -1,6 +1,6 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.Win32;
@@ -14,6 +14,7 @@ using Hi3Helper.SentryHelper;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -22,8 +23,7 @@ using System.Net.Http.Json;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
 {
-    public delegate void OnLoadAction(CancellationToken token);
-
+    public delegate Task OnLoadTaskAction(CancellationToken token);
     public delegate void ErrorLoadRoutineDelegate(Exception ex);
 
     internal partial class LauncherApiBase : ILauncherApi
@@ -114,17 +114,17 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             ApiResourceHttpClient = apiResourceHttpBuilder.Create();
         }
 
-        public async Task<bool> LoadAsync(OnLoadAction?         beforeLoadRoutine, OnLoadAction?             afterLoadRoutine,
+        public async Task<bool> LoadAsync(OnLoadTaskAction?     beforeLoadRoutine, OnLoadTaskAction?         afterLoadRoutine,
                                           ActionOnTimeOutRetry? onTimeoutRoutine,  ErrorLoadRoutineDelegate? errorLoadRoutine,
                                           CancellationToken     token)
         {
-            beforeLoadRoutine?.Invoke(token);
+            _ = beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask;
 
             try
             {
                 IsLoadingCompleted = false;
                 await LoadAsyncInner(onTimeoutRoutine, token);
-                afterLoadRoutine?.Invoke(token);
+                await (afterLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
 
                 return true;
             }
@@ -140,58 +140,85 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
         }
 
-        protected virtual async Task LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                         CancellationToken     token)
+        protected virtual Task LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
+                                              CancellationToken     token)
         {
-            await Task.WhenAll(LoadLauncherGameResource(onTimeoutRoutine, token), LoadLauncherNews(onTimeoutRoutine, token), LoadLauncherGameInfo(onTimeoutRoutine, token));
+            return Task.WhenAll(LoadLauncherGameResource(onTimeoutRoutine, token),
+                                LoadLauncherNews(onTimeoutRoutine, token),
+                                LoadLauncherGameInfo(onTimeoutRoutine, token));
         }
 
-        protected virtual async Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                              CancellationToken     token)
+        protected virtual Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
+                                                        CancellationToken token)
         {
             EnsurePresetConfigNotNull();
             EnsureResourceUrlNotNull();
 
-            ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
-                async innerToken =>
-                    await ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig?.LauncherResourceURL, RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
+            ActionTimeoutTaskAwaitableCallback<RegionResourceProp?> launcherGameResourceCallback =
+                innerToken =>
+                    ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig?.LauncherResourceURL,
+                                                          RegionResourcePropJsonContext.Default.RegionResourceProp,
+                                                          innerToken)
+                                        .ConfigureAwait(false);
 
             Task[] tasks = [
-                launcherGameResourceCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                               ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                            .AsTaskAndDoAction(result => LauncherGameResource = result),
+                launcherGameResourceCallback
+                    .WaitForRetryAsync(ExecutionTimeout,
+                                       ExecutionTimeoutStep,
+                                       ExecutionTimeoutAttempt,
+                                       onTimeoutRoutine,
+                                       token)
+                    .ContinueWith(async result => LauncherGameResource = await result, token),
                 Task.CompletedTask
                 ];
 
             RegionResourceProp? pluginProp = null;
-            if (string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL))
+            if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL))
             {
-                ActionTimeoutValueTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
-                    async innerToken =>
-                        await ApiGeneralHttpClient.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!, GetDeviceId(PresetConfig!)), RegionResourcePropJsonContext.Default.RegionResourceProp, innerToken);
-
-                tasks[1] = launcherPluginPropCallback.WaitForRetryAsync(ExecutionTimeout, ExecutionTimeoutStep,
-                                                                        ExecutionTimeoutAttempt, onTimeoutRoutine, token)
-                                                     .AsTaskAndDoAction(result => pluginProp = result);
+                return Task.WhenAll(tasks)
+                           .ContinueWith(AfterExecute, token);
             }
 
-            await Task.WhenAll(tasks);
+            ActionTimeoutTaskAwaitableCallback<RegionResourceProp?> launcherPluginPropCallback =
+                innerToken =>
+                    ApiGeneralHttpClient.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!,
+                                                                        GetDeviceId(PresetConfig!)),
+                                                          RegionResourcePropJsonContext.Default.RegionResourceProp,
+                                                          innerToken)
+                                        .ConfigureAwait(false);
 
-            if (LauncherGameResource == null)
-            {
-                throw new NullReferenceException("Launcher game resource returns a null!");
-            }
+            tasks[1] = launcherPluginPropCallback
+                      .WaitForRetryAsync(ExecutionTimeout,
+                                         ExecutionTimeoutStep,
+                                         ExecutionTimeoutAttempt,
+                                         onTimeoutRoutine,
+                                         token)
+                      .ContinueWith(async result => pluginProp = await result, token);
 
-            if (pluginProp != null && LauncherGameResource.data != null)
+            return Task.WhenAll(tasks)
+                       .ContinueWith(AfterExecute, token);
+
+            async Task AfterExecute(Task action)
             {
-                LauncherGameResource.data.plugins = pluginProp.data?.plugins;
+                // Run the action
+                await action.ConfigureAwait(false);
+
+                if (LauncherGameResource == null)
+                {
+                    throw new NullReferenceException("Launcher game resource returns a null!");
+                }
+
+                if (pluginProp != null && LauncherGameResource.data != null)
+                {
+                    LauncherGameResource.data.plugins = pluginProp.data?.plugins;
 #if DEBUG
-                Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading plugin handle!",
-                                    LogType.Debug, true);
+                    Logger.LogWriteLine("[LauncherApiBase::LoadLauncherGameResource] Loading plugin handle!",
+                                        LogType.Debug, true);
 #endif
-            }
+                }
 
-            PerformDebugRoutines();
+                PerformDebugRoutines();
+            }
         }
 
         protected virtual void PerformDebugRoutines()
@@ -306,8 +333,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             {
                 Logger.LogWriteLine("[LauncherApiBase::LoadLauncherNews()] Using en-us fallback for game news!", LogType.Warning, true);
                 string localeFallback = PresetConfig.LauncherSpriteURLMultiLangFallback ?? "en-us";
-                regionResourceProp =
-                    await LoadLauncherNewsInner(true, localeFallback, PresetConfig, onTimeoutRoutine, token);
+                regionResourceProp = await LoadLauncherNewsInner(true, localeFallback, PresetConfig, onTimeoutRoutine, token);
             }
 
             regionResourceProp?.Content?.InjectDownloadableItemCancelToken(this, token);
@@ -317,42 +343,57 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected virtual async Task LoadLauncherGameInfo(ActionOnTimeOutRetry? onTimeoutRoutine,
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-                                                          CancellationToken token)
+                                                          CancellationToken     token)
         {
             LauncherGameInfoField = new HoYoPlayGameInfoField();
         }
+    #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-        private async ValueTask<LauncherGameNews?> LoadLauncherNewsInner(
-            bool isMultiLang, string lang, PresetConfig presetConfig, ActionOnTimeOutRetry? onTimeoutRoutine,
-            CancellationToken token)
+        private ConfiguredTaskAwaitable<LauncherGameNews?>
+            LoadLauncherNewsInner(bool                  isMultiLang,
+                                  string                lang,
+                                  PresetConfig          presetConfig,
+                                  ActionOnTimeOutRetry? onTimeoutRoutine,
+                                  CancellationToken     token)
         {
             if (string.IsNullOrEmpty(presetConfig.LauncherSpriteURL))
             {
                 throw new NullReferenceException("Launcher news URL is null or empty!");
             }
 
-            ActionTimeoutValueTaskCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
-                async innerToken =>
+            ActionTimeoutTaskAwaitableCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
+                innerToken =>
                     isMultiLang
-                        ? await LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
-                        : await LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, innerToken);
+                        ? LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
+                        : LoadSingleLangLauncherNews(presetConfig.LauncherSpriteURL, innerToken);
 
-            return await taskGameLauncherNewsSophonCallback.WaitForRetryAsync(
-                ExecutionTimeout, ExecutionTimeoutStep, ExecutionTimeoutAttempt,
-                                                 onTimeoutRoutine, token);
+            return taskGameLauncherNewsSophonCallback.WaitForRetryAsync(ExecutionTimeout,
+                                                                        ExecutionTimeoutStep,
+                                                                        ExecutionTimeoutAttempt,
+                                                                        onTimeoutRoutine,
+                                                                        token)
+                                                     .ConfigureAwait(false);
         }
 
-        private async Task<LauncherGameNews?> LoadSingleLangLauncherNews(
-            string launcherSpriteUrl, CancellationToken token)
+        private ConfiguredTaskAwaitable<LauncherGameNews?>
+            LoadSingleLangLauncherNews(string            launcherSpriteUrl,
+                                       CancellationToken token)
         {
-            return await ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl, LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
+            return ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl,
+                                                          LauncherGameNewsJsonContext.Default.LauncherGameNews,
+                                                          token)
+                                        .ConfigureAwait(false);
         }
 
-        private async Task<LauncherGameNews?> LoadMultiLangLauncherNews(string launcherSpriteUrl, string lang,
-                                                                               CancellationToken token)
+        private ConfiguredTaskAwaitable<LauncherGameNews?>
+            LoadMultiLangLauncherNews(string            launcherSpriteUrl,
+                                      string            lang,
+                                      CancellationToken token)
         {
-            return await ApiResourceHttpClient.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang), LauncherGameNewsJsonContext.Default.LauncherGameNews, token);
+            return ApiResourceHttpClient.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang),
+                                                          LauncherGameNewsJsonContext.Default.LauncherGameNews,
+                                                          token)
+                                        .ConfigureAwait(false);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)

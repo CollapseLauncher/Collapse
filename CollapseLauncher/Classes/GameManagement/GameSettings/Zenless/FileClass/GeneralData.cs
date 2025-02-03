@@ -7,6 +7,9 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless

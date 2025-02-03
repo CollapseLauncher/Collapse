@@ -51,11 +51,6 @@ namespace CollapseLauncher.Helper.Image
                 { "Video formats", string.Join(';', BackgroundMediaUtility.SupportedMediaPlayerExt.Select(x => $"*{x}")) }
             };
 
-        internal static readonly Dictionary<string, string> SupportedStaticImageFormats = new()
-            {
-                { "Image formats", string.Join(';', BackgroundMediaUtility.SupportedImageExt.Select(x => $"*{x}")) }
-            };
-
         #region Waifu2X
         private static Waifu2X _waifu2X;
         private static Waifu2XStatus _cachedStatus = Waifu2XStatus.NotInitialized;
@@ -425,7 +420,7 @@ namespace CollapseLauncher.Helper.Image
             string outputFileName = Path.GetFileName(fileInfo.FullName);
 
 #nullable enable
-            // Try get a hash from filename if the checkIsHashable set to true and the file does exist
+            // Try to get a hash from filename if the checkIsHashable set to true and the file does exist
             if (checkIsHashable && fileInfo.Exists && TryGetMd5HashFromFilename(outputFileName, out byte[]? hashFromFilename))
             {
                 // Open the file and check for the hash
@@ -472,7 +467,7 @@ namespace CollapseLauncher.Helper.Image
             if (string.IsNullOrEmpty(fileName))
                 return false;
 
-            // Assign range and try get the split
+            // Assign range and try to get the split
             Span<Range> range = stackalloc Range[4];
             ReadOnlySpan<char> fileNameSpan = fileName.AsSpan();
             int len = fileNameSpan.Split(range, '_', StringSplitOptions.RemoveEmptyEntries);
@@ -482,14 +477,14 @@ namespace CollapseLauncher.Helper.Image
             if (len != 2)
                 return false;
 
-            // Try get the span of the hash
+            // Try to get the span of the hash
             ReadOnlySpan<char> hashSpan = fileNameSpan[range[0]];
 
-            // If the hashSpan is empty or the length is not even or it's not a MD5 Hex (32 chars), then return false
+            // If the hashSpan is empty or the length is not even, or it's not a MD5 Hex (32 chars), then return false
             if (hashSpan.IsEmpty || hashSpan.Length % 2 != 0 || hashSpan.Length != 32)
                 return false;
 
-            // Try decode hash hex to find out if the string is actually a hex
+            // Try to decode hash hex to find out if the string is actually a hex
             Span<byte> dummy = stackalloc byte[16];
             if (!HexTool.TryHexToBytesUnsafe(hashSpan, dummy))
                 return false;

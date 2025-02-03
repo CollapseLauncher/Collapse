@@ -752,41 +752,6 @@ namespace CollapseLauncher.Dialogs
                 isHasOnlyMigrateOption ? null : Lang._Misc.MoveToDifferentDir
             );
         }
-        public static async Task<ContentDialogResult> Dialog_SteamConversionNoPermission(UIElement content) =>
-            await SpawnDialog(
-                        Lang._Dialogs.SteamConvertNeedMigrateTitle,
-                        Lang._Dialogs.SteamConvertNeedMigrateSubtitle,
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.Yes,
-                        Lang._Misc.NoOtherLocation,
-                        ContentDialogButton.Secondary,
-                        ContentDialogTheme.Error
-            );
-
-        public static async Task<ContentDialogResult> Dialog_SteamConversionDownloadDialog(UIElement content, string sizeString) =>
-            await SpawnDialog(
-                        Lang._Dialogs.SteamConvertIntegrityDoneTitle,
-                        Lang._Dialogs.SteamConvertIntegrityDoneSubtitle,
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Secondary,
-                        ContentDialogTheme.Success
-            );
-
-        public static async Task<ContentDialogResult> Dialog_SteamConversionFailedDialog(UIElement content) =>
-            await SpawnDialog(
-                        Lang._Dialogs.SteamConvertFailedTitle,
-                        Lang._Dialogs.SteamConvertFailedSubtitle,
-                        content,
-                        Lang._Misc.OkaySad,
-                        null,
-                        null,
-                        ContentDialogButton.Close,
-                        ContentDialogTheme.Success
-            );
 
         public static async Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(UIElement content, string sourceHash, string downloadedHash) =>
             await SpawnDialog(
@@ -834,18 +799,6 @@ namespace CollapseLauncher.Dialogs
                         Lang._StartupPage.ChooseFolderDialogCancel,
                         Lang._StartupPage.ChooseFolderDialogPrimary,
                         Lang._StartupPage.ChooseFolderDialogSecondary
-            );
-
-        public static async Task<ContentDialogResult> Dialog_CannotUseAppLocationForGameDir(UIElement content) =>
-            await SpawnDialog(
-                        Lang._Dialogs.CannotUseAppLocationForGameDirTitle,
-                        Lang._Dialogs.CannotUseAppLocationForGameDirSubtitle,
-                        content,
-                        Lang._Misc.Okay,
-                        null,
-                        null,
-                        ContentDialogButton.Close,
-                        ContentDialogTheme.Error
             );
 
         public static async Task<ContentDialogResult> Dialog_ExistingDownload(UIElement content, double partialLength, double contentLength) =>

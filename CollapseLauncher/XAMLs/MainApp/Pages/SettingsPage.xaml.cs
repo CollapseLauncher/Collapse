@@ -496,7 +496,7 @@ namespace CollapseLauncher.Pages
                 if (!value)
                 {
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = GetAppConfigValue("CurrentBackground").ToString();
-                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+                    _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                     ToggleCustomBgButtons();
                 }
@@ -504,7 +504,7 @@ namespace CollapseLauncher.Pages
                 {
                     string currentRegionCustomBg = currentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath;
                     LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = currentRegionCustomBg;
-                    m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+                    _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                     ToggleCustomBgButtons();
                 }

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -108,7 +109,7 @@ namespace CollapseLauncher
         }
 
         public static List<StackPanel> BuildGameRegionListUI(string?        gameCategory,
-                                                             List<string?>? gameCategoryList = null)
+                                                             List<string>? gameCategoryList = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(gameCategory);
             gameCategoryList ??= LauncherMetadataHelper.GetGameRegionCollection(gameCategory);
@@ -238,27 +239,56 @@ namespace CollapseLauncher
                               localNotificationData.Serialize(NotificationPushJsonContext.Default.NotificationPush));
         }
 
-        public static void LoadLocalNotificationData()
+        public static async Task LoadLocalNotificationData()
         {
-            if (!File.Exists(AppNotifIgnoreFile))
-            {
-                File.WriteAllText(AppNotifIgnoreFile,
-                                  new NotificationPush()
-                                     .Serialize(NotificationPushJsonContext.Default.NotificationPush));
-            }
+            FileStream? fileStream = null;
 
-            string data = File.ReadAllText(AppNotifIgnoreFile);
-            NotificationPush? localNotificationData =
-                data.Deserialize(NotificationPushJsonContext.Default.NotificationPush);
-            if (NotificationData == null)
+            bool forceCreate = false;
+            while (true)
             {
-                return;
-            }
+                try
+                {
+                    fileStream = File.Open(AppNotifIgnoreFile, forceCreate ? FileMode.Create : FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    if (fileStream.Length == 0)
+                    {
+                        await new NotificationPush()
+                             .SerializeAsync(fileStream, NotificationPushJsonContext.Default.NotificationPush)
+                             .ConfigureAwait(false);
+                    }
 
-            NotificationData.AppPushIgnoreMsgIds    = localNotificationData?.AppPushIgnoreMsgIds;
-            NotificationData.RegionPushIgnoreMsgIds = localNotificationData?.RegionPushIgnoreMsgIds;
-            NotificationData.CurrentShowMsgIds      = localNotificationData?.CurrentShowMsgIds;
-            NotificationData.EliminatePushList();
+                    fileStream.Position = 0;
+                    NotificationPush? localNotificationData = await fileStream
+                                                                   .DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush)
+                                                                   .ConfigureAwait(false);
+
+                    if (NotificationData == null)
+                    {
+                        return;
+                    }
+
+                    NotificationData.AppPushIgnoreMsgIds    = localNotificationData?.AppPushIgnoreMsgIds;
+                    NotificationData.RegionPushIgnoreMsgIds = localNotificationData?.RegionPushIgnoreMsgIds;
+                    NotificationData.CurrentShowMsgIds      = localNotificationData?.CurrentShowMsgIds;
+                    NotificationData.EliminatePushList();
+
+                    return;
+                }
+                catch
+                {
+                    if (forceCreate)
+                    {
+                        throw;
+                    }
+                    forceCreate = true;
+                }
+                finally
+                {
+                    if (fileStream != null)
+                    {
+                        await fileStream.DisposeAsync();
+                    }
+                }
+            }
         }
     }
 }

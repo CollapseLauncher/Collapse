@@ -25,6 +25,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable StringLiteralTypo
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.Helper.Metadata
@@ -90,70 +91,74 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SdkUrl { get; set; }
 
-        public async ValueTask EnsureReassociated(HttpClient client, string? branchUrl, string bizName, CancellationToken token)
+        public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, CancellationToken token)
         {
             if (IsReassociated)
-                return;
+                return Task.CompletedTask;
 
             if (string.IsNullOrEmpty(branchUrl))
-                return;
+                return Task.CompletedTask;
 
             // Fetch branch info
-            ActionTimeoutValueTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
-                async innerToken =>
-                    await FallbackCDNUtil.DownloadAsJSONType(
-                        branchUrl,
-                        HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
-                        innerToken);
+            ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
+                innerToken =>
+                    FallbackCDNUtil.DownloadAsJSONType(branchUrl,
+                                                       HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
+                                                       innerToken)
+                                   .ConfigureAwait(false);
 
-            HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await hypLauncherBranchCallback.WaitForRetryAsync(
-                LauncherApiBase.ExecutionTimeout,
-                LauncherApiBase.ExecutionTimeoutStep,
-                LauncherApiBase.ExecutionTimeoutAttempt,
-                null, token);
+            return hypLauncherBranchCallback
+                .WaitForRetryAsync(LauncherApiBase.ExecutionTimeout,
+                                   LauncherApiBase.ExecutionTimeoutStep,
+                                   LauncherApiBase.ExecutionTimeoutAttempt,
+                                   null, token)
+                .ContinueWith(async result =>
+                {
+                    HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await result;
 
-            // If branch info is null or empty, return
-            HoYoPlayGameInfoBranch? branch = hypLauncherBranchInfo?
-                .GameInfoData?
-                .GameBranchesInfo?
-                .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(bizName) ?? false);
-            if (branch == null)
-                return;
+                    // If branch info is null or empty, return
+                    HoYoPlayGameInfoBranch? branch = hypLauncherBranchInfo?
+                       .GameInfoData?
+                       .GameBranchesInfo?
+                       .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(bizName) ?? false);
+                    if (branch == null)
+                        return;
 
-            // Re-associate url if main field is exist
-            if (branch.GameMainField != null)
-            {
-                ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.PackageId);
-                ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.Password);
+                    // Re-associate url if main field is exist
+                    if (branch.GameMainField != null)
+                    {
+                        ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.PackageId);
+                        ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.Password);
 
-                string packageIdValue = branch.GameMainField.PackageId;
-                string passwordValue = branch.GameMainField.Password;
+                        string packageIdValue = branch.GameMainField.PackageId;
+                        string passwordValue = branch.GameMainField.Password;
 
-                MainUrl = MainUrl.AssociateGameAndLauncherId(
-                    QueryPasswordHead,
-                    QueryPackageIdHead,
-                    passwordValue,
-                    packageIdValue);
-            }
+                        MainUrl = MainUrl.AssociateGameAndLauncherId(
+                         QueryPasswordHead,
+                         QueryPackageIdHead,
+                         passwordValue,
+                         packageIdValue);
+                    }
 
-            // Re-associate url if preload field is exist
-            if (branch.GamePreloadField != null)
-            {
-                ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.PackageId);
-                ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.Password);
+                    // Re-associate url if preload field is exist
+                    if (branch.GamePreloadField != null)
+                    {
+                        ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.PackageId);
+                        ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.Password);
 
-                string packageIdValue = branch.GamePreloadField.PackageId;
-                string passwordValue = branch.GamePreloadField.Password;
+                        string packageIdValue = branch.GamePreloadField.PackageId;
+                        string passwordValue = branch.GamePreloadField.Password;
 
-                PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(
-                    QueryPasswordHead,
-                    QueryPackageIdHead,
-                    passwordValue,
-                    packageIdValue);
-            }
+                        PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(
+                         QueryPasswordHead,
+                         QueryPackageIdHead,
+                         passwordValue,
+                         packageIdValue);
+                    }
 
-            // Mark as re-associated
-            IsReassociated = true;
+                    // Mark as re-associated
+                    IsReassociated = true;
+                }, token);
         }
     }
 

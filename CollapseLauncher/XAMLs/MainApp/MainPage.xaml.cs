@@ -7,6 +7,7 @@ using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
@@ -204,7 +205,7 @@ namespace CollapseLauncher
 
             // After all activities were complete, run background check, including
             // invoking notifications
-            RunBackgroundCheck();
+            _ = RunBackgroundCheck();
         }
 
         private async Task InitBackgroundHandler()
@@ -224,11 +225,11 @@ namespace CollapseLauncher
 #nullable enable
             NavigationViewControl?.ApplyNavigationViewItemLocaleTextBindings();
 
-            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!)!;
+            List<string>? gameNameCollection = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? gameRegionCollection = LauncherMetadataHelper.GetGameRegionCollection(lastName!);
 
-            int indexOfName = gameNameCollection.IndexOf(lastName!);
-            int indexOfRegion = gameRegionCollection.IndexOf(lastRegion!);
+            int indexOfName = gameNameCollection?.IndexOf(lastName!) ?? -1;
+            int indexOfRegion = gameRegionCollection?.IndexOf(lastRegion!) ?? -1;
 #nullable restore
                 
             // Rebuild Game Titles and Regions ComboBox items
@@ -542,7 +543,7 @@ namespace CollapseLauncher
             }
         }
 
-        internal async void ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
+        internal async Task ChangeBackgroundImageAsRegionAsync(bool ShowLoadingMsg = false)
         {
             var gameLauncherApi = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
             if (gameLauncherApi == null)
@@ -668,7 +669,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Background Tasks
-        private async void RunBackgroundCheck()
+        private async Task RunBackgroundCheck()
         {
             try
             {
@@ -677,14 +678,14 @@ namespace CollapseLauncher
 
                 // Generate local notification
                 // For Example: Starter notification
-                GenerateLocalAppNotification();
+                await GenerateLocalAppNotification();
 
                 // Spawn Updated App Notification if Applicable
-                SpawnAppUpdatedNotification();
+                await SpawnAppUpdatedNotification();
 
                 // Load local settings
                 // For example: Ignore list
-                LoadLocalNotificationData();
+                await LoadLocalNotificationData();
 
                 // Then Spawn the Notification Feed
                 await SpawnPushAppNotification();
@@ -708,6 +709,7 @@ namespace CollapseLauncher
             catch (Exception ex)
             {
                 LogWriteLine($"Error while trying to run background tasks!\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
                 ErrorSender.SendException(ex);
             }
         }
@@ -756,7 +758,7 @@ namespace CollapseLauncher
             }
         }
 
-        private void GenerateLocalAppNotification()
+        private async Task GenerateLocalAppNotification()
         {
             NotificationData?.AppPush.Add(new NotificationProp
             {
@@ -791,7 +793,7 @@ namespace CollapseLauncher
 
             if (!IsNotificationPanelShow && IsFirstInstall)
             {
-                ForceShowNotificationPanel();
+                await ForceShowNotificationPanel();
             }
         }
 
@@ -858,76 +860,88 @@ namespace CollapseLauncher
             }
         }
 
-        private void SpawnAppUpdatedNotification()
+        private async Task SpawnAppUpdatedNotification()
         {
             try
             {
-                string UpdateNotifFile = Path.Combine(AppDataFolder, "_NewVer");
-                string NeedInnoUpdateFile = Path.Combine(AppDataFolder, "_NeedInnoLogUpdate");
+                FileInfo updateNotifFile = new FileInfo(Path.Combine(AppDataFolder, "_NewVer"))
+                                          .EnsureCreationOfDirectory()
+                                          .EnsureNoReadOnly(out bool isUpdateNotifFileExist);
+                FileInfo needInnoUpdateFile = new FileInfo(Path.Combine(AppDataFolder, "_NeedInnoLogUpdate"))
+                                             .EnsureCreationOfDirectory()
+                                             .EnsureNoReadOnly(out bool isNeedInnoUpdateFileExist);
+                FileInfo innoLogFile = new FileInfo(Path.Combine(Path.GetDirectoryName(AppExecutableDir) ?? string.Empty, "unins000.dat"))
+                                       .EnsureNoReadOnly(out bool isInnoLogFileExist);
+
 
                 void ClickClose(InfoBar infoBar, object o)
                 {
-                    File.Delete(UpdateNotifFile);
+                    _ = updateNotifFile.TryDeleteFile();
                 }
 
-                // If the update was handled by squirrel and it needs Inno Setup Log file to get updated, then do the routine
-                if (File.Exists(NeedInnoUpdateFile))
+                // If the update was handled by squirrel module, and if it needs Inno Setup Log file to get updated, then do the routine
+                if (isNeedInnoUpdateFileExist)
                 {
                     try
                     {
-                        string InnoLogPath = Path.Combine(Path.GetDirectoryName(AppExecutableDir) ?? string.Empty, "unins000.dat");
-                        if (File.Exists(InnoLogPath)) InnoSetupLogUpdate.UpdateInnoSetupLog(InnoLogPath);
-                        File.Delete(NeedInnoUpdateFile);
+                        if (isInnoLogFileExist)
+                        {
+                            InnoSetupLogUpdate.UpdateInnoSetupLog(innoLogFile.FullName);
+                        }
+                        needInnoUpdateFile.TryDeleteFile();
                     }
                     catch (Exception ex)
                     {
-                        SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                        await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                         LogWriteLine($"Something wrong while opening the \"unins000.dat\" or deleting the \"_NeedInnoLogUpdate\" file\r\n{ex}", LogType.Error, true);
                     }
                 }
 
-                if (!File.Exists(UpdateNotifFile))
+                if (!isUpdateNotifFileExist)
                 {
                     return;
                 }
 
-                string VerString = File.ReadAllLines(UpdateNotifFile)[0];
-                GameVersion Version = new GameVersion(VerString);
-                SpawnNotificationPush(
-                                      Lang._Misc.UpdateCompleteTitle,
-                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, Version.VersionString, IsPreview ? "Preview" : "Stable"),
-                                      NotifSeverity.Success,
-                                      0xAF,
-                                      true,
-                                      false,
-                                      ClickClose,
-                                      null,
-                                      true,
-                                      true,
-                                      true
-                                     );
-
-                string fold = Path.Combine(AppExecutableDir, "_Temp");
-                if (Directory.Exists(fold))
+                string[] verStrings = await File.ReadAllLinesAsync(updateNotifFile.FullName);
+                string   verString  = string.Empty;
+                if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion? version))
                 {
-                    foreach (string file in Directory.EnumerateFiles(fold))
+                    verString = version?.VersionString;
+                    SpawnNotificationPush(Lang._Misc.UpdateCompleteTitle,
+                                          string.Format(Lang._Misc.UpdateCompleteSubtitle, version?.VersionString, IsPreview ? "Preview" : "Stable"),
+                                          NotifSeverity.Success,
+                                          0xAF,
+                                          true,
+                                          false,
+                                          ClickClose,
+                                          null,
+                                          true,
+                                          true,
+                                          true
+                                         );
+                }
+
+                DirectoryInfo fold = new DirectoryInfo(Path.Combine(AppExecutableDir, "_Temp"));
+                if (fold.Exists)
+                {
+                    foreach (FileInfo file in fold.EnumerateFiles().EnumerateNoReadOnly())
                     {
-                        if (!Path.GetFileNameWithoutExtension(file).Contains("ApplyUpdate"))
+                        if (!file.Name.StartsWith("ApplyUpdate"))
                         {
                             continue;
                         }
 
-                        var target = Path.Combine(AppExecutableDir, Path.GetFileName(file));
-                        File.Move(file, target, true);
+                        var target = new FileInfo(Path.Combine(AppExecutableDir, file.Name));
+                        file.TryMoveTo(target);
                     }
 
-                    Directory.Delete(fold, true);
+                    fold.Delete(true);
                 }
 
                 try
                 {
                     // Remove update notif mark file to avoid it showing the same notification again.
-                    File.Delete(UpdateNotifFile);
+                    updateNotifFile.TryDeleteFile();
 
                     // Get current game property, including game preset
                     GamePresetProperty currentGameProperty = GetCurrentGameProperty();
@@ -940,7 +954,7 @@ namespace CollapseLauncher
                                                                           .SetContent(
                                                                                 string
                                                                                    .Format(Lang._NotificationToast.LauncherUpdated_NotifSubtitle,
-                                                                                             VerString + (IsPreview
+                                                                                        verString + (IsPreview
                                                                                                  ? "-preview"
                                                                                                  : ""),
                                                                                              Lang._SettingsPage
@@ -963,7 +977,7 @@ namespace CollapseLauncher
                 {
                     LogWriteLine($"[SpawnAppUpdatedNotification] Failed to spawn toast notification!\r\n{ex}",
                                  LogType.Error, true);
-                    SentryHelper.ExceptionHandler(ex);
+                    await SentryHelper.ExceptionHandlerAsync(ex);
                 }
             }
             catch
@@ -1038,7 +1052,7 @@ namespace CollapseLauncher
 
                 if (ForceShowNotificationPanel && !IsNotificationPanelShow)
                 {
-                    this.ForceShowNotificationPanel();
+                    _ = this.ForceShowNotificationPanel();
                 }
             });
         }
@@ -1150,7 +1164,7 @@ namespace CollapseLauncher
             SaveLocalNotificationData();
         }
 
-        private async void ForceShowNotificationPanel()
+        private async Task ForceShowNotificationPanel()
         {
             ToggleNotificationPanelBtn.IsChecked = true;
             IsNotificationPanelShow              = true;
@@ -1163,7 +1177,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Game Selector Method
-        private async ValueTask<(PresetConfig, string, string)> LoadSavedGameSelection()
+        private async Task<(PresetConfig, string, string)> LoadSavedGameSelection()
         {
             ComboBoxGameCategory.ItemsSource = BuildGameTitleListUI();
 
@@ -1171,14 +1185,14 @@ namespace CollapseLauncher
 
             #nullable enable
             List<string>? gameCollection   = LauncherMetadataHelper.GetGameNameCollection();
-            List<string?>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
+            List<string>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName);
             
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();
 
             ComboBoxGameRegion.ItemsSource = BuildGameRegionListUI(gameName);
 
-            var indexCategory                    = gameCollection?.IndexOf(gameName!) ?? -1;
+            var indexCategory= gameCollection?.IndexOf(gameName!) ?? -1;
             if (indexCategory < 0) indexCategory = 0;
 
             var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
@@ -1262,8 +1276,7 @@ namespace CollapseLauncher
             }
 
             Button UpdateMetadatabtn =
-                UIElementExtensions.CreateButtonWithIcon<Button>(
-                                                                 Lang._AppNotification!.NotifMetadataUpdateBtn,
+                UIElementExtensions.CreateButtonWithIcon<Button>(Lang._AppNotification!.NotifMetadataUpdateBtn,
                                                                  "",
                                                                  "FontAwesomeSolid",
                                                                  "AccentButtonStyle"
@@ -1315,8 +1328,7 @@ namespace CollapseLauncher
                                                 ErrorSender.SendException(ex);
                                             }
                                         };
-            SpawnNotificationPush(
-                                  Lang._AppNotification.NotifMetadataUpdateTitle,
+            SpawnNotificationPush(Lang._AppNotification.NotifMetadataUpdateTitle,
                                   Lang._AppNotification.NotifMetadataUpdateSubtitle,
                                   NotifSeverity.Informational,
                                   -886135731,
@@ -1335,109 +1347,112 @@ namespace CollapseLauncher
         #region Navigation
         private void InitializeNavigationItems(bool ResetSelection = true)
         {
-            NavigationViewControl.IsSettingsVisible = true;
-            NavigationViewControl.MenuItems.Clear();
-            NavigationViewControl.FooterMenuItems.Clear();
-
-            IGameVersion CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
-
-            FontIcon IconLauncher = new FontIcon { Glyph = "" };
-            FontIcon IconRepair = new FontIcon { Glyph = "" };
-            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
-            FontIcon IconGameSettings = new FontIcon { Glyph = "" };
-            FontIcon IconAppSettings = new FontIcon { Glyph = "" };
-
-            if (m_appMode == AppMode.Hi3CacheUpdater)
+            DispatcherQueue.TryEnqueue(() =>
             {
+                NavigationViewControl.IsSettingsVisible = true;
+                NavigationViewControl.MenuItems.Clear();
+                NavigationViewControl.FooterMenuItems.Clear();
+
+                IGameVersion CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
+
+                FontIcon IconLauncher = new FontIcon { Glyph = "" };
+                FontIcon IconRepair = new FontIcon { Glyph = "" };
+                FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
+                FontIcon IconGameSettings = new FontIcon { Glyph = "" };
+                FontIcon IconAppSettings = new FontIcon { Glyph = "" };
+
+                if (m_appMode == AppMode.Hi3CacheUpdater)
+                {
+                    if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
+                    {
+                        NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                        { Icon = IconCaches, Tag = "caches" }
+                        .BindNavigationViewItemText("_CachesPage", "PageTitle"));
+                    }
+                    return;
+                }
+
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                { Icon = IconLauncher, Tag = "launcher" }
+                .BindNavigationViewItemText("_HomePage", "PageTitle"));
+
+                NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
+                    .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
+
+                if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
+                {
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                    { Icon = IconRepair, Tag = "repair" }
+                    .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
+                }
+
                 if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
                 {
                     NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                                { Icon = IconCaches, Tag = "caches" }
+                    { Icon = IconCaches, Tag = "caches" }
                     .BindNavigationViewItemText("_CachesPage", "PageTitle"));
                 }
-                return;
-            }
 
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                        { Icon = IconLauncher, Tag = "launcher" }
-            .BindNavigationViewItemText("_HomePage", "PageTitle"));
-
-            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
-                .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
-
-            if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
-            {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                            { Icon = IconRepair, Tag = "repair" }
-                .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
-            }
-
-            if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
-            {
-                NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                            { Icon = IconCaches, Tag = "caches" }
-                .BindNavigationViewItemText("_CachesPage", "PageTitle"));
-            }
-
-            switch (CurrentGameVersionCheck.GameType)
-            {
-                case GameNameType.Honkai:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "honkaigamesettings" }
-                    .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
-                    break;
-                case GameNameType.StarRail:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "starrailgamesettings" }
-                    .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
-                    break;
-                case GameNameType.Genshin:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "genshingamesettings" }
-                    .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
-                    break;
-                case GameNameType.Zenless:
-                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                                      { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
-                    .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
-                    break;
-            }
-
-            if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
-            {
-                SettingsItem.Icon = IconAppSettings;
-                _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
-            }
-
-            foreach (var dependency in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
-            {
-                // Avoid any icons to have shadow attached if it's not from this page
-                if (dependency.BaseUri.AbsolutePath != BaseUri.AbsolutePath)
+                switch (CurrentGameVersionCheck.GameType)
                 {
-                    continue;
-                }
-
-                switch (dependency)
-                {
-                    case FontIcon icon:
-                        AttachShadowNavigationPanelItem(icon);
+                    case GameNameType.Honkai:
+                        NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                        { Icon = IconGameSettings, Tag = "honkaigamesettings" }
+                        .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                         break;
-                    case AnimatedIcon animIcon:
-                        AttachShadowNavigationPanelItem(animIcon);
+                    case GameNameType.StarRail:
+                        NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                        { Icon = IconGameSettings, Tag = "starrailgamesettings" }
+                        .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
+                        break;
+                    case GameNameType.Genshin:
+                        NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                        { Icon = IconGameSettings, Tag = "genshingamesettings" }
+                        .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
+                        break;
+                    case GameNameType.Zenless:
+                        NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                        { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
+                        .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
                         break;
                 }
-            }
-            AttachShadowNavigationPanelItem(IconAppSettings);
 
-            if (ResetSelection)
-            {
-                NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-            }
+                if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
+                {
+                    SettingsItem.Icon = IconAppSettings;
+                    _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
+                }
 
-            NavigationViewControl.ApplyNavigationViewItemLocaleTextBindings();
+                foreach (var dependency in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
+                {
+                    // Avoid any icons to have shadow attached if it's not from this page
+                    if (dependency.BaseUri.AbsolutePath != BaseUri.AbsolutePath)
+                    {
+                        continue;
+                    }
 
-            InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-            MainPageGrid.SetAllControlsCursorRecursive(handCursor);
+                    switch (dependency)
+                    {
+                        case FontIcon icon:
+                            AttachShadowNavigationPanelItem(icon);
+                            break;
+                        case AnimatedIcon animIcon:
+                            AttachShadowNavigationPanelItem(animIcon);
+                            break;
+                    }
+                }
+                AttachShadowNavigationPanelItem(IconAppSettings);
+
+                if (ResetSelection)
+                {
+                    NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
+                }
+
+                NavigationViewControl.ApplyNavigationViewItemLocaleTextBindings();
+
+                InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+                MainPageGrid.SetAllControlsCursorRecursive(handCursor);
+            });
         }
 
         public static void AttachShadowNavigationPanelItem(FrameworkElement element)
@@ -1977,12 +1992,12 @@ namespace CollapseLauncher
 
         private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
 
-        private static async void DisableKbShortcuts(int time = 500)
+        private static async Task DisableKbShortcuts(int time = 500, CancellationToken token = default)
         {
             try
             {
                 CannotUseKbShortcuts = true;
-                await Task.Delay(time);
+                await Task.Delay(time, token);
                 CannotUseKbShortcuts = false;
             }
             catch
@@ -2069,7 +2084,7 @@ namespace CollapseLauncher
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
 
-            DisableKbShortcuts();
+            _ = DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
             NavigateInnerSwitch("launcher");
 
@@ -2081,7 +2096,7 @@ namespace CollapseLauncher
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
 
-            DisableKbShortcuts();
+            _ = DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
             Navigate(typeof(SettingsPage), "settings");
         }
@@ -2203,7 +2218,7 @@ namespace CollapseLauncher
 
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) return;
 
-            DisableKbShortcuts();
+            _ = DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
             NavigateInnerSwitch("repair");
         }
@@ -2215,7 +2230,7 @@ namespace CollapseLauncher
             if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
                 return;
 
-            DisableKbShortcuts();
+            _ = DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
             NavigateInnerSwitch("caches");
         }
@@ -2228,7 +2243,7 @@ namespace CollapseLauncher
             if (NavigationViewControl.SelectedItem == NavigationViewControl.FooterMenuItems.Last())
                 return;
 
-            DisableKbShortcuts();
+            _ = DisableKbShortcuts();
             NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
             switch (CurrentGameProperty.GamePreset)
             {
@@ -2324,7 +2339,7 @@ namespace CollapseLauncher
 
             (PresetConfig preset, string gameName, string gameRegion) = await LoadSavedGameSelection();
 
-            ShowAsyncLoadingTimedOutPill();
+            _ = ShowAsyncLoadingTimedOutPill();
             if (await LoadRegionFromCurrentConfigV2(preset, gameName, gameRegion))
             {
             #if !DISABLEDISCORD

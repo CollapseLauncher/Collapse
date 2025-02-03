@@ -1,6 +1,7 @@
-﻿<!--  ReSharper disable IdentifierTypo  -->
-<!--  ReSharper disable UnusedMember.Local  -->
-<!--  ReSharper disable Xaml.ConstructorWarning  -->
+﻿<!-- ReSharper disable IdentifierTypo -->
+<!-- ReSharper disable UnusedMember.Local -->
+<!-- ReSharper disable Xaml.ConstructorWarning -->
+<!-- ReSharper disable GrammarMistakeInMarkupAttribute -->
 <Page x:Class="CollapseLauncher.Pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

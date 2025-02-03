@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
@@ -9,8 +10,8 @@ namespace CollapseLauncher.GameSettings.Genshin
         public VisibleBackground     SettingVisibleBackground { get; set; }
         public WindowsHDR            SettingsWindowsHDR       { get; set; }
 
-        public GenshinSettings(IGameVersion GameVersionManager)
-            : base(GameVersionManager)
+        public GenshinSettings(IGameVersion gameVersionManager)
+            : base(gameVersionManager)
         {
             // Initialize and Load Settings
             InitializeSettings();

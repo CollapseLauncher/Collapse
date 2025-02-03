@@ -26,12 +26,12 @@
                                   _ => UIElementExtensions.GetApplicationResource<object>("SystemFillColorAttentionBrush")
                               };
 
-            if (brushObj is not null and SolidColorBrush brush)
+            if (brushObj is SolidColorBrush brush)
             {
                 NColor titleColor = brush.Color;
                 titleColor.A = 255;
 
-                if (UIElementExtensions.GetApplicationResource<object>("DialogTitleBrush") is not null and SolidColorBrush brushTitle)
+                if (UIElementExtensions.GetApplicationResource<object>("DialogTitleBrush") is SolidColorBrush brushTitle)
                     brushTitle.Color = titleColor;
             }
 

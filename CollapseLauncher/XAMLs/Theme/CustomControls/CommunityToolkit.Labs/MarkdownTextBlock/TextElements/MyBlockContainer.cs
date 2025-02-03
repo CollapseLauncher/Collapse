@@ -18,11 +18,11 @@ internal class MyBlockContainer : IAddChild
 
     public MyBlockContainer()
     {
-        InlineUIContainer _inlineUIContainer = new InlineUIContainer();
+        InlineUIContainer inlineUIContainer = new InlineUIContainer();
         _flowDocument = new MyFlowDocument();
-        _inlineUIContainer.Child = _flowDocument.RichTextBlock;
+        inlineUIContainer.Child = _flowDocument.RichTextBlock;
         _paragraph = new Paragraph();
-        _paragraph.Inlines.Add(_inlineUIContainer);
+        _paragraph.Inlines.Add(inlineUIContainer);
     }
 
     public void AddChild(IAddChild child)

@@ -1,5 +1,6 @@
 ﻿#nullable enable
     using System;
+// ReSharper disable UnusedMember.Global
 
     namespace CollapseLauncher.Helper.Metadata
 {

@@ -2,7 +2,7 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
-using CollapseLauncher.Helper.LauncherApiLoader.Sophon;
+using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.GamePlaytime;
@@ -1102,8 +1102,7 @@ namespace CollapseLauncher.Pages
                         PlaytimeIdleStack.Visibility = Visibility.Collapsed;
                         PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                        int processId;
-                        if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _))
+                        if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out var processId, out _))
                         {
                             using Process currentGameProcess = Process.GetProcessById(processId);
 
@@ -2003,7 +2002,7 @@ namespace CollapseLauncher.Pages
                     // Enable mobile mode
                     if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
                     {
-                        const string regLoc  = GameSettings.StarRail.Model._ValueName;
+                        const string regLoc  = GameSettings.StarRail.Model.ValueName;
                         var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
 
                         if (regRoot != null || !string.IsNullOrEmpty(regLoc))
@@ -2165,7 +2164,7 @@ namespace CollapseLauncher.Pages
 
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomRegionBG = value;
                 CurrentGameProperty.GameSettings.SaveBaseSettings();
-                m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+                _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
                 BGPathDisplay.Text = Path.GetFileName(regionBgPath);
             } 
@@ -2469,7 +2468,7 @@ namespace CollapseLauncher.Pages
                 CurrentGameProperty.GameSettings.SettingsCollapseMisc.CustomRegionBGPath = file;
                 CurrentGameProperty.GameSettings.SaveBaseSettings();
             }
-            m_mainPage?.ChangeBackgroundImageAsRegionAsync();
+            _ = m_mainPage?.ChangeBackgroundImageAsRegionAsync();
 
             BGPathDisplay.Text = Path.GetFileName(file);
         }
