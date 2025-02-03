@@ -1178,7 +1178,7 @@ namespace CollapseLauncher.Pages
         #region Community Button
         private void OpenCommunityButtonLink(object sender, RoutedEventArgs e)
         {
-            DispatcherQueue?.TryEnqueue(CommunityToolsBtn.Flyout.Hide);
+            CommunityToolsBtn.Flyout.Hide();
             OpenButtonLinkFromTag(sender, e);
         }
         #endregion
