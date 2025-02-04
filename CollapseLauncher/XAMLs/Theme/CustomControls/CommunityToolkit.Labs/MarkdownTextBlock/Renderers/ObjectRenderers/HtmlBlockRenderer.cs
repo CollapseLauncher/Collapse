@@ -14,10 +14,10 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers.ObjectRen
 
 internal partial class HtmlBlockRenderer : MarkdownObjectRenderer<WinUIRenderer, HtmlBlock>
 {
-    [GeneratedRegex(@"\t|\n|\r", RegexOptions.NonBacktracking, 3000)]
+    [GeneratedRegex(@"\t|\n|\r", RegexOptions.NonBacktracking, 10000)]
     internal static partial Regex GetTabAndNewLineMatch();
 
-    [GeneratedRegex("&nbsp;", RegexOptions.NonBacktracking, 3000)]
+    [GeneratedRegex("&nbsp;", RegexOptions.NonBacktracking, 10000)]
     internal static partial Regex GetNonBreakingSpaceMatch();
 
     protected override void Write(WinUIRenderer renderer, HtmlBlock obj)

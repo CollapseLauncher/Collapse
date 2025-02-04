@@ -15,7 +15,7 @@ namespace CollapseLauncher
 {
     public static partial class AppActivation
     {
-        [GeneratedRegex("""[\"].+?[\"]|[^ ]+""", RegexOptions.NonBacktracking)]
+        [GeneratedRegex("""[\"].+?[\"]|[^ ]+""", RegexOptions.NonBacktracking, 10000)]
         internal static partial Regex MatchDoubleOrEscapedQuote();
 
         public static void Enable()

@@ -389,7 +389,7 @@ public static partial class Extensions
         return !currentRect.Equals(nextRect);
     }
 
-    [GeneratedRegex(@"([^)\s]+)\s*=\s*\d+x\d+\s*", RegexOptions.NonBacktracking, 3000)]
+    [GeneratedRegex(@"([^)\s]+)\s*=\s*\d+x\d+\s*", RegexOptions.NonBacktracking, 10000)]
     internal static partial Regex GetUrlWidthAndHeight();
 
     public static string RemoveImageSize(string? url)
