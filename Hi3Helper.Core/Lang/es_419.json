@@ -1211,7 +1211,7 @@
     "NotifFirstWelcomeBtn": "Visita la Wiki En GitHub",
 
     "NotifPreviewBuildUsedTitle": "¡Estás usando una Preview Build!",
-    "NotifPreviewBuildUsedSubtitle": "Actualmente estás utilizando una compilación [PREVIEW], que todavía está siendo probada. Si encuentras algún problema, por favor infórmanos usando el botón \"{0}\" a continuación. ¡Gracias!",
+    "NotifPreviewBuildUsedSubtitle": "Actualmente estás utilizando una compilación [PREVIEW], que todavía está siendo probada. Si encuentras algún problema, por favor infórmanos usando el botón \"{0}\". ¡Gracias!",
     "NotifPreviewBuildUsedBtn": "Enviar un Problema",
 
     "NotifKbShortcutTitle": "¡Una nueva función ha llegado!",
