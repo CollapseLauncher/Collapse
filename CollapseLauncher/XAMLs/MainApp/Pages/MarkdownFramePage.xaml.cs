@@ -131,7 +131,7 @@ namespace CollapseLauncher
                                             .SetUserAgent(GetAppConfigValue("UserAgent").ToString())
                                             .Create();
                     _client.BaseAddress = new Uri(markdownUri);
-                    using HttpResponseMessage response = await _client.GetAsync(markdownUri);
+                    using HttpResponseMessage response = await _client.GetAsync(markdownUri, HttpCompletionOption.ResponseHeadersRead);
 
                     LogWriteLine($"[MarkdownFramePage] Loading Markdown from URL {markdownUri}\r\n" +
                                  $"{response.EnsureSuccessStatusCode()}",

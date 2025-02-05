@@ -1,21 +1,23 @@
-﻿using CollapseLauncher.Helper.Update;
+﻿using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#if !USEVELOPACK
-using Squirrel;
-#else
-using Velopack;
-#endif
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
+#if !USEVELOPACK
+using Squirrel;
+#else
+using Velopack;
+#endif
+
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable StringLiteralTypo
@@ -165,11 +167,8 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token, true);
-                byte[] buffer = new byte[networkStream.Length];
-                await networkStream.ReadExactlyAsync(buffer, _tokenSource.Token);
-
-                ReleaseNotesBox.Text = Encoding.UTF8.GetString(buffer);
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token);
+                ReleaseNotesBox.Text = await networkStream.ReadAsStringAsync(_tokenSource.Token);
             }
             catch (Exception ex)
             {
