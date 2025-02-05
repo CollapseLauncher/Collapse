@@ -2,6 +2,7 @@ using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -14,12 +15,12 @@ namespace CollapseLauncher.Statics
 {
     internal static class GamePropertyVault
     {
-        private static Dictionary<int, GamePresetProperty> Vault             { get; } = new();
-        private static UIElement?                          LastElementParent { get; set; }
-        public static  int                                 LastGameHashID    { get; set; }
-        public static  int                                 CurrentGameHashID { get; set; }
-        public static  string?                             CurrentGameName   { get; set; }
-        public static  string?                             CurrentGameRegion { get; set; }
+        private static ConcurrentDictionary<int, GamePresetProperty> Vault             { get; } = new();
+        private static UIElement?                                    LastElementParent { get; set; }
+        public static  int                                           LastGameHashID    { get; set; }
+        public static  int                                           CurrentGameHashID { get; set; }
+        public static  string?                                       CurrentGameName   { get; set; }
+        public static  string?                                       CurrentGameRegion { get; set; }
 
         public static GamePresetProperty GetCurrentGameProperty()
         {
@@ -99,7 +100,7 @@ namespace CollapseLauncher.Statics
         private static async void CleanupUnusedGameProperty()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            if (Vault.Count == 0) return;
+            if (Vault.IsEmpty) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
                 .Where(x => !x.GameInstall.IsRunning && !x.IsGameRunning && x.GamePreset.HashID != CurrentGameHashID)
@@ -111,7 +112,7 @@ namespace CollapseLauncher.Statics
             #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Cleaning up unused game property by Hash ID: {key}", LogType.Debug, true);
             #endif
-                Vault.Remove(key);
+                Vault.Remove(key, out _);
             }
         }
 
