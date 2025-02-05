@@ -15,16 +15,42 @@ namespace CollapseLauncher.Statics
     internal static class GamePropertyVault
     {
         private static Dictionary<int, GamePresetProperty> Vault             { get; } = new();
+        private static UIElement?                          LastElementParent { get; set; }
         public static  int                                 LastGameHashID    { get; set; }
         public static  int                                 CurrentGameHashID { get; set; }
+        public static  string?                             CurrentGameName   { get; set; }
+        public static  string?                             CurrentGameRegion { get; set; }
+
         public static GamePresetProperty GetCurrentGameProperty()
         {
+            // Get the cached game property from the vault
             int hashId = CurrentGameHashID;
             if (Vault.TryGetValue(hashId, out GamePresetProperty? value))
             {
                 return value;
             }
 
+            // If the cached one failed to be gathered, try to reinitialize the game property
+            if (!string.IsNullOrEmpty(CurrentGameName) && !string.IsNullOrEmpty(CurrentGameRegion))
+            {
+                // Try to reinitialize the game property into the vault if
+                // the cached one is unavailable.
+                if (LauncherMetadataHelper.LauncherMetadataConfig?[CurrentGameName]?
+                       .TryGetValue(CurrentGameRegion, out PresetConfig? gamePreset) ?? false)
+                {
+                    // Try register the game property and get its hash id
+                    RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi?.LauncherGameResource!, CurrentGameName, CurrentGameRegion);
+                    int reRegisteredHashId = gamePreset.HashID;
+
+                    // Try to get the value from the cache vault and return if we get one.
+                    if (Vault.TryGetValue(reRegisteredHashId, out GamePresetProperty? reRegisteredValue))
+                    {
+                        return reRegisteredValue;
+                    }
+                }
+            }
+
+            // If all attempts failed, throw an exception.
             throw new KeyNotFoundException($"Cached region with Hash ID: {hashId} was not found in the vault!");
         }
 
@@ -42,6 +68,10 @@ namespace CollapseLauncher.Statics
 
         private static void RegisterGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
+            CurrentGameName   =   gameName;
+            CurrentGameRegion =   gameRegion;
+            LastElementParent ??= uiElementParent;
+
             if (!(LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
                    .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false))
             {
