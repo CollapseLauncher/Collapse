@@ -183,7 +183,7 @@ namespace CollapseLauncher
         
         private async Task<Dictionary<string, SenadinaFileIdentifier>?> GetSenadinaIdentifierDictionary(HttpClient client, string mainUrl, CancellationToken token)
         {
-            string             identifierUrl               = CombineURLFromString(mainUrl, "daftar-pustaka")!;
+            string             identifierUrl               = CombineURLFromString(mainUrl, "daftar-pustaka");
             await using Stream fileIdentifierStream        = (await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, null, null, null, token))!;
             await using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
 
@@ -205,7 +205,7 @@ namespace CollapseLauncher
             string origFileRelativePath = $"{gameVersion[0]}_{gameVersion[1]}_{kind.ToString().ToLower()}";
             string hashedRelativePath = SenadinaFileIdentifier.GetHashedString(origFileRelativePath);
 
-            string fileUrl = CombineURLFromString(mainUrl, hashedRelativePath)!;
+            string fileUrl = CombineURLFromString(mainUrl, hashedRelativePath);
             if (!dict.TryGetValue(origFileRelativePath, out var identifier))
             {
                 LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
@@ -433,7 +433,7 @@ namespace CollapseLauncher
 
             // Set manifest.m local path and remote URL
             string manifestLocalPath = Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "manifest.m");
-            string manifestRemotePath = string.Format(CombineURLFromString(AudioBaseRemotePath, GameServer.Manifest!.ManifestAudio!.ManifestAudioPlatform!.ManifestWindows!)!, 
+            string manifestRemotePath = string.Format(CombineURLFromString(AudioBaseRemotePath, GameServer.Manifest!.ManifestAudio!.ManifestAudioPlatform!.ManifestWindows!), 
                                                       $"{GameVersion.Major}_{GameVersion.Minor}", GameServer.Manifest.ManifestAudio.ManifestAudioRevision);
 
             try
@@ -783,8 +783,8 @@ namespace CollapseLauncher
                 // Assign as FilePropertiesRemote
                 FilePropertiesRemote assetInfo = new FilePropertiesRemote
                 {
-                    N = CombineURLFromString(BlockBasePath, xmfParser.BlockEntry![i]!.HashString + ".wmv")!,
-                    RN = CombineURLFromString(BlockAsbBaseURL, xmfParser.BlockEntry[i]!.HashString + ".wmv")!,
+                    N = CombineURLFromString(BlockBasePath, xmfParser.BlockEntry![i]!.HashString + ".wmv"),
+                    RN = CombineURLFromString(BlockAsbBaseURL, xmfParser.BlockEntry[i]!.HashString + ".wmv"),
                     S = xmfParser.BlockEntry[i]!.Size,
                     CRC = xmfParser.BlockEntry[i]!.HashString!,
                     FT = FileType.Block,
