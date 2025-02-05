@@ -33,6 +33,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Helper.Image.Waifu2X;
@@ -43,7 +44,6 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
-using Task = System.Threading.Tasks.Task;
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -259,29 +259,40 @@ namespace CollapseLauncher.Pages
             (sender as Button).IsEnabled = true;
         }
 
-        private void ForceUpdate(object sender, RoutedEventArgs e)
+        private async void ForceUpdate(object sender, RoutedEventArgs e)
         {
             string channelName = IsPreview ? "Preview" : "Stable";
+            if (ContentDialogResult.Primary != await Dialog_ForceUpdateOnChannel(channelName))
+            {
+                return;
+            }
+
             LaunchUpdater(channelName);
         }
 
         private async void ChangeRelease(object sender, RoutedEventArgs e)
         {
             string channelName = IsPreview ? "Stable" : "Preview";
-            switch (await Dialog_ChangeReleaseChannel(channelName, this))
+            if (ContentDialogResult.Primary != await Dialog_ChangeReleaseToChannel(channelName))
             {
-                case ContentDialogResult.Primary:
-                    // Delete Metadata upon switching release
-                    Directory.Delete(AppGameConfigMetadataFolder, true);
-                    LaunchUpdater(channelName);
-                    break;
+                return;
             }
+
+            // Delete Metadata upon switching release
+            if (Directory.Exists(AppGameConfigMetadataFolder))
+                Directory.Delete(AppGameConfigMetadataFolder, true);
+
+            LaunchUpdater(channelName);
         }
 
         private static void LaunchUpdater(string channelName)
         {
-            string executableLocation = Path.GetDirectoryName(AppExecutableDir);
-            string updateArgument = $"elevateupdate --input \"{executableLocation.Replace('\\', '/')}\" --channel {channelName}";
+            string executableLocation     = AppExecutablePath;
+            string installationTargetPath = Path.GetDirectoryName(AppExecutableDir);
+            string updateArgument = "elevateupdate --input \""
+                                    + installationTargetPath.Replace('\\', '/')
+                                    + $"\" --channel {channelName}";
+
             Console.WriteLine(updateArgument);
             try
             {
@@ -290,9 +301,9 @@ namespace CollapseLauncher.Pages
                     StartInfo = new ProcessStartInfo
                     {
                         UseShellExecute = true,
-                        FileName = Path.Combine(executableLocation, "CollapseLauncher.exe"),
-                        Arguments = updateArgument,
-                        Verb = "runas"
+                        FileName        = executableLocation,
+                        Arguments       = updateArgument,
+                        Verb            = "runas"
                     }
                 }.Start();
                 (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();

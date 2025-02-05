@@ -115,6 +115,9 @@ namespace Hi3Helper
                 public string ReleaseChannelChangeSubtitle1 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle1;
                 public string ReleaseChannelChangeSubtitle2 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle2;
                 public string ReleaseChannelChangeSubtitle3 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle3;
+                public string ForceUpdateCurrentInstallTitle { get; set; } = LangFallback?._Dialogs.ForceUpdateCurrentInstallTitle;
+                public string ForceUpdateCurrentInstallSubtitle1 { get; set; } = LangFallback?._Dialogs.ForceUpdateCurrentInstallSubtitle1;
+                public string ForceUpdateCurrentInstallSubtitle2 { get; set; } = LangFallback?._Dialogs.ForceUpdateCurrentInstallSubtitle2;
                 public string LocateExePathTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
                 public string CannotUseAppLocationForGameDirTitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirTitle;
                 public string CannotUseAppLocationForGameDirSubtitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirSubtitle;

@@ -909,6 +909,10 @@
     "ReleaseChannelChangeSubtitle2": "Note:",
     "ReleaseChannelChangeSubtitle3": "This action may cause irreversible changes and/or cause things to break from your current setup. We are not responsible for any loss or corruption of data associated with your game.",
 
+    "ForceUpdateCurrentInstallTitle": "Force-update Current Installation",
+    "ForceUpdateCurrentInstallSubtitle1": "You are about to perform a forced-update to your current:",
+    "ForceUpdateCurrentInstallSubtitle2": "installation and we recommend you to close your currently opened game(s).",
+
     "ChangePlaytimeTitle": "Are you sure you want to change your playtime?",
     "ChangePlaytimeSubtitle": "Changing your playtime means overwriting the current value with the one you just inputted. \n\nDo you wish to proceed?\n\nNote: This has no impact on how Collapse operates and you can change this value again at any time when not playing the game.",
     "ResetPlaytimeTitle": "Are you sure you want to reset your playtime?",

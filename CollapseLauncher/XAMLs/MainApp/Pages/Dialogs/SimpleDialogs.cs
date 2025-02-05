@@ -8,6 +8,7 @@ using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.ManagedTools;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -667,24 +668,45 @@ namespace CollapseLauncher.Dialogs
                 );
         }
 
-        public static async Task<ContentDialogResult> Dialog_ChangeReleaseChannel(string channelName, UIElement content)
+        public static Task<ContentDialogResult> Dialog_ChangeReleaseToChannel(string channelName)
         {
-            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ReleaseChannelChangeSubtitle1 });
-            texts.Inlines.Add(new Run { Text = $" {channelName}", FontWeight = FontWeights.Bold });
-            texts.Inlines.Add(new Run { Text = "\r\n\r\n" });
-            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ReleaseChannelChangeSubtitle2 + "\r\n", FontSize = 18, FontWeight = FontWeights.Bold });
-            texts.Inlines.Add(new Run { Text = Lang._Dialogs.ReleaseChannelChangeSubtitle3 });
-            return await SpawnDialog(
-                        Lang._Dialogs.ReleaseChannelChangeTitle,
-                        texts,
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.OkayHappy,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning
-                );
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
+               .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle1)
+               .AddTextBlockLine($" {channelName}", FontWeights.Bold)
+               .AddTextBlockNewLine(2)
+               .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
+               .AddTextBlockNewLine()
+               .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle3);
+
+            return SpawnDialog(Lang._Dialogs.ReleaseChannelChangeTitle,
+                               texts,
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.OkayHappy,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
+
+        public static Task<ContentDialogResult> Dialog_ForceUpdateOnChannel(string channelName)
+        {
+            TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
+                             .AddTextBlockLine(Lang._Dialogs.ForceUpdateCurrentInstallSubtitle1)
+                             .AddTextBlockLine($" {channelName} ", FontWeights.Bold)
+                             .AddTextBlockLine(Lang._Dialogs.ForceUpdateCurrentInstallSubtitle2)
+                             .AddTextBlockNewLine(2)
+                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
+                             .AddTextBlockNewLine()
+                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle3);
+
+            return SpawnDialog(Lang._Dialogs.ForceUpdateCurrentInstallTitle,
+                               texts,
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.OkayHappy,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
         }
 
         public static async Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement content, string actualLocation) =>
@@ -1302,14 +1324,19 @@ namespace CollapseLauncher.Dialogs
         }
 
         private static IAsyncOperation<ContentDialogResult> _currentSpawnedDialogTask;
+        private static DispatcherQueue _sharedDispatcherQueue;
 
-        public static async ValueTask<ContentDialogResult> SpawnDialog(
+        public static Task<ContentDialogResult> SpawnDialog(
             string title, object content, UIElement parentUI,
             string closeText = null, string primaryText = null,
             string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary,
             ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
         {
-            return await parentUI.DispatcherQueue.EnqueueAsync(async () =>
+            _sharedDispatcherQueue ??=
+                parentUI?.DispatcherQueue ??
+                (WindowUtility.CurrentWindow as MainWindow)?.DispatcherQueue;
+
+            return _sharedDispatcherQueue?.EnqueueAsync(async () =>
             {
                 // Create a new instance of dialog
                 ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
@@ -1321,12 +1348,12 @@ namespace CollapseLauncher.Dialogs
                     SecondaryButtonText = secondaryText,
                     DefaultButton = defaultButton,
                     Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                    XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI.XamlRoot
+                    XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI?.XamlRoot
                 };
 
                 // Queue and spawn the dialog instance
                 return await dialog.QueueAndSpawnDialog();
-            });
+            }) ?? Task.FromResult(ContentDialogResult.None);
         }
 
         public static async ValueTask<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
@@ -1345,11 +1372,11 @@ namespace CollapseLauncher.Dialogs
 
             // Assign the dialog to the global task
             _currentSpawnedDialogTask = dialog switch
-                                        {
-                                            ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
-                                            ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
-                                            _ => dialog.ShowAsync()
-                                        };
+            {
+                ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
+                ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
+                _ => dialog.ShowAsync()
+            };
             // Spawn and await for the result
             ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
             return dialogResult; // Return the result
