@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -260,9 +261,12 @@ namespace CollapseLauncher
         {
             if (IsCriticalOpInProgress)
             {
+                WindowUtility.WindowRestore();
                 if (await Dialog_EnsureExit() != ContentDialogResult.Primary)
                     return;
             }
+
+            GamePropertyVault.SafeDisposeVaults();
             SentryHelper.StopSentrySdk();
             _TrayIcon?.Dispose();
             Close();
