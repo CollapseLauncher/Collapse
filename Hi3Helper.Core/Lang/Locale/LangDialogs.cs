@@ -194,6 +194,8 @@ namespace Hi3Helper
                 public string UACWarningContent { get; set; } = LangFallback?._Dialogs.UACWarningContent;
                 public string UACWarningLearnMore { get; set; } = LangFallback?._Dialogs.UACWarningLearnMore;
                 public string UACWarningDontShowAgain { get; set; } = LangFallback?._Dialogs.UACWarningDontShowAgain;
+                public string EnsureExitTitle { get; set; } = LangFallback?._Dialogs.EnsureExitTitle;
+                public string EnsureExitSubtitle { get; set; } = LangFallback?._Dialogs.EnsureExitSubtitle;
             }
         }
         #endregion

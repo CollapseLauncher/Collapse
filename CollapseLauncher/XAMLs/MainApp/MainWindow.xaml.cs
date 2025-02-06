@@ -20,6 +20,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading.Tasks;
 using Windows.UI;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -32,6 +33,8 @@ namespace CollapseLauncher
     public sealed partial class MainWindow : Window
     {
         private static bool _isForceDisableIntro;
+        
+        public static bool IsCriticalOpInProgress { get; set; }
 
         public void InitializeWindowProperties(bool startOobe = false)
         {
@@ -253,8 +256,14 @@ namespace CollapseLauncher
         /// <summary>
         /// Close app and do necessary events before closing
         /// </summary>
-        public void CloseApp()
+        public async void CloseApp()
         {
+            if (IsCriticalOpInProgress)
+            {
+                var ensure = await Dialog_EnsureExit(Content);
+                if (ensure != ContentDialogResult.Primary)
+                    return;
+            }
             SentryHelper.StopSentrySdk();
             _TrayIcon?.Dispose();
             Close();

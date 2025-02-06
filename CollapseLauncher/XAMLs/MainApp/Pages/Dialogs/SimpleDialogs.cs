@@ -855,6 +855,16 @@ namespace CollapseLauncher.Dialogs
                         Lang._Misc.Cancel,
                         ContentDialogButton.Secondary,
                         ContentDialogTheme.Error);
+        
+        public static Task<ContentDialogResult> Dialog_EnsureExit(UIElement content) =>
+            SpawnDialog(Lang._Dialogs.EnsureExitTitle,
+                        Lang._Dialogs.EnsureExitSubtitle,
+                        content,
+                        Lang._Misc.NoCancel,
+                        Lang._Misc.Yes,
+                        null,
+                        ContentDialogButton.Close,
+                        ContentDialogTheme.Warning);
 
         public static Task<ContentDialogResult> Dialog_ClearMetadata(UIElement content) =>
             SpawnDialog(string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialog),
