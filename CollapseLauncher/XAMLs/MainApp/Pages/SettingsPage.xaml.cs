@@ -66,6 +66,9 @@ namespace CollapseLauncher.Pages
 
         private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
 
+        private readonly string ExplorerPath =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
+
         #endregion
 
         #region Settings Page Handler
@@ -216,8 +219,8 @@ namespace CollapseLauncher.Pages
                 StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = AppGameFolder
+                    FileName        = ExplorerPath,
+                    Arguments       = AppGameFolder
                 }
             }.Start();
         }
@@ -1543,7 +1546,7 @@ namespace CollapseLauncher.Pages
                                    {
                                        ProcessStartInfo psi = new ProcessStartInfo
                                        {
-                                           FileName        = "explorer.exe",
+                                           FileName        = ExplorerPath,
                                            Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
                                            UseShellExecute = true,
                                            Verb            = "runas"
