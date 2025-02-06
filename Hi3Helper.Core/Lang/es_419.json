@@ -909,6 +909,10 @@
     "ReleaseChannelChangeSubtitle2": "Aviso:",
     "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego.",
 
+    "ForceUpdateCurrentInstallTitle": "Actualización forzada de la instalación actual ",
+    "ForceUpdateCurrentInstallSubtitle1": "Estás a punto de realizar una actualización forzada de tu instalación:",
+    "ForceUpdateCurrentInstallSubtitle2": "y recomendamos que cierres los juegos que estén abiertos en este momento.",
+
     "ChangePlaytimeTitle": "¿Estás seguro de que quieres cambiar tu tiempo de juego?",
     "ChangePlaytimeSubtitle": "Cambiar el tiempo de juego significa reemplazar los valores actuales con los que acabas de ingresar.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "ResetPlaytimeTitle": "¿Estás seguro de que quieres restablecer tu tiempo de juego?",
