@@ -173,6 +173,24 @@ namespace CollapseLauncher.Statics
                     SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 }
             }
+
+            try
+            {
+                foreach (KeyValuePair<int, GamePresetProperty> keyValuePair in Vault)
+                {
+                    GamePresetProperty value = keyValuePair.Value;
+                    value.Dispose();
+#if DEBUG
+                    Logger.LogWriteLine($"[GamePropertyVault] Other preset property for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
+#endif
+                }
+
+                Vault.Clear();
+            }
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+            }
         }
     }
 
