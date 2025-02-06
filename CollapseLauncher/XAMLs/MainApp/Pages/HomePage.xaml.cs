@@ -1268,6 +1268,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                MainWindow.IsCriticalOpInProgress = true;
                 // Prevent device from sleep
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
@@ -1356,6 +1357,7 @@ namespace CollapseLauncher.Pages
 
                 // Turn the sleep back on
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
 
@@ -1392,6 +1394,7 @@ namespace CollapseLauncher.Pages
             bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
             try
             {
+                MainWindow.IsCriticalOpInProgress = true;
                 // Prevent device from sleep
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
@@ -1562,6 +1565,7 @@ namespace CollapseLauncher.Pages
 
                 // Turn the sleep back on
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
 
@@ -2634,6 +2638,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
+                MainWindow.IsCriticalOpInProgress = true;
                 // Prevent device from sleep
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 // Set the notification trigger to "Running" state
@@ -2741,6 +2746,7 @@ namespace CollapseLauncher.Pages
 
                 // Turn the sleep back on
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
         #endregion

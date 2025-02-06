@@ -139,7 +139,7 @@ namespace CollapseLauncher
                 if (!await CheckForAdminAccess(this))
                 {
                     if (WindowUtility.CurrentWindow is MainWindow mainWindow)
-                        mainWindow.CloseApp();
+                        _ = mainWindow.CloseApp();
                     return;
                 }
 

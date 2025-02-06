@@ -1014,7 +1014,10 @@
     "UACWarningTitle": "Warning: UAC Disabled Detected",
     "UACWarningContent": "Disabling User Account Control (UAC) is never a good idea.\nThe security of the OS will be compromised and the game may not run properly.\n\nClick the \"Learn More\" button to see how to enable UAC.\nThe related entry is: Run all administrators in Admin Approval Mode.",
     "UACWarningLearnMore": "Learn More",
-    "UACWarningDontShowAgain": "Don't Show Again"
+    "UACWarningDontShowAgain": "Don't Show Again",
+    
+    "EnsureExitTitle": "Exiting Application",
+    "EnsureExitSubtitle": "There are critical operations running in the background. Are you sure you want to exit?"
   },
 
   "_FileMigrationProcess": {
