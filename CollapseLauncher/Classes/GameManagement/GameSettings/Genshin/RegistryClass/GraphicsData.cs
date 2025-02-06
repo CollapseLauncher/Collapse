@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.GameSettings.Genshin
 {

@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.GameManagement.Versioning

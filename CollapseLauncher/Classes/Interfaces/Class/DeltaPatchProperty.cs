@@ -4,6 +4,7 @@ using System.IO;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable InconsistentNaming
 // ReSharper disable CheckNamespace
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher
 {

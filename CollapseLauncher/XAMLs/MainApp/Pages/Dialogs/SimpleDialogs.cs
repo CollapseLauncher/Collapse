@@ -24,130 +24,154 @@ using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
+
 // ReSharper disable CommentTypo
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable IdentifierTypo
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
+#nullable enable
 namespace CollapseLauncher.Dialogs
 {
     public static class SimpleDialogs
     {
-        private static IAsyncOperation<ContentDialogResult> _currentSpawnedDialogTask;
-        private static DispatcherQueue                      _sharedDispatcherQueue;
+        private static IAsyncOperation<ContentDialogResult>? _currentSpawnedDialogTask;
+        private static DispatcherQueue?                      _sharedDispatcherQueue;
 
-        public static Task<ContentDialogResult> Dialog_DeltaPatchFileDetected(UIElement content, string sourceVer, string targetVer) =>
-               SpawnDialog(Lang._Dialogs.DeltaPatchDetectedTitle,
-                           string.Format(Lang._Dialogs.DeltaPatchDetectedSubtitle, sourceVer, targetVer),
-                           content,
-                           Lang._Misc.Cancel,
-                           Lang._Misc.Yes,
-                           Lang._Misc.No,
-                           ContentDialogButton.Primary,
-                           ContentDialogTheme.Warning);
+        private static XamlRoot? SharedXamlRoot => field ??=
+            WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : null;
 
-        public static Task<ContentDialogResult> Dialog_PreDownloadPackageVerified(UIElement content) =>
-               SpawnDialog(Lang._Dialogs.PreloadVerifiedTitle,
-                           Lang._Dialogs.PreloadVerifiedSubtitle,
-                           content,
-                           Lang._Misc.Close,
-                           null,
-                           null,
-                           ContentDialogButton.Secondary,
-                           ContentDialogTheme.Success);
+        public static Task<ContentDialogResult> Dialog_DeltaPatchFileDetected(string sourceVer, string targetVer)
+        {
+            return SpawnDialog(Lang._Dialogs.DeltaPatchDetectedTitle,
+                               string.Format(Lang._Dialogs.DeltaPatchDetectedSubtitle, sourceVer, targetVer),
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.Yes,
+                               Lang._Misc.No,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
 
-        public static Task<ContentDialogResult> Dialog_PreviousDeltaPatchInstallFailed(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.DeltaPatchPrevFailedTitle,
-                        Lang._Dialogs.DeltaPatchPrevFailedSubtitle,
-                        content,
-                        null,
-                        Lang._Misc.Yes,
-                        Lang._Misc.No,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Error);
+        public static Task<ContentDialogResult> Dialog_PreDownloadPackageVerified()
+        {
+            return SpawnDialog(Lang._Dialogs.PreloadVerifiedTitle,
+                               Lang._Dialogs.PreloadVerifiedSubtitle,
+                               null,
+                               Lang._Misc.Close,
+                               null,
+                               null,
+                               ContentDialogButton.Secondary,
+                               ContentDialogTheme.Success);
+        }
 
-        public static Task<ContentDialogResult> Dialog_PreviousGameConversionFailed(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.GameConversionPrevFailedTitle,
-                        Lang._Dialogs.GameConversionPrevFailedSubtitle,
-                        content,
-                        null,
-                        Lang._Misc.Yes,
-                        Lang._Misc.No,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Error);
+        public static Task<ContentDialogResult> Dialog_PreviousDeltaPatchInstallFailed()
+        {
+            return SpawnDialog(Lang._Dialogs.DeltaPatchPrevFailedTitle,
+                               Lang._Dialogs.DeltaPatchPrevFailedSubtitle,
+                               null,
+                               null,
+                               Lang._Misc.Yes,
+                               Lang._Misc.No,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Error);
+        }
 
-        public static Task<ContentDialogResult> Dialog_InstallationLocation(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.LocateInstallTitle,
-                        Lang._Dialogs.LocateInstallSubtitle,
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.UseDefaultDir,
-                        Lang._Misc.LocateDir);
+        public static Task<ContentDialogResult> Dialog_PreviousGameConversionFailed()
+        {
+            return SpawnDialog(Lang._Dialogs.GameConversionPrevFailedTitle,
+                               Lang._Dialogs.GameConversionPrevFailedSubtitle,
+                               null,
+                               null,
+                               Lang._Misc.Yes,
+                               Lang._Misc.No,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Error);
+        }
 
-        public static Task<ContentDialogResult> Dialog_OpenExecutable(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.LocateExePathTitle,
-                        Lang._Dialogs.LocateExePathSubtitle,
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.LocateExecutable,
-                        Lang._Misc.OpenDownloadPage);
+        public static Task<ContentDialogResult> Dialog_InstallationLocation()
+        {
+            return SpawnDialog(Lang._Dialogs.LocateInstallTitle,
+                               Lang._Dialogs.LocateInstallSubtitle,
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.UseDefaultDir,
+                               Lang._Misc.LocateDir);
+        }
 
-        public static Task<ContentDialogResult> Dialog_InsufficientWritePermission(UIElement content, string path) =>
-            SpawnDialog(Lang._Dialogs.UnauthorizedDirTitle,
-                        string.Format(Lang._Dialogs.UnauthorizedDirSubtitle, path),
-                        content,
-                        Lang._Misc.Okay);
+        public static Task<ContentDialogResult> Dialog_OpenExecutable()
+        {
+            return SpawnDialog(Lang._Dialogs.LocateExePathTitle,
+                               Lang._Dialogs.LocateExePathSubtitle,
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.LocateExecutable,
+                               Lang._Misc.OpenDownloadPage);
+        }
 
-        public static async Task<(Dictionary<string, string>, string)> Dialog_ChooseAudioLanguageChoice(UIElement content, Dictionary<string, string> langDict, string defaultLocaleCode = "ja-jp")
+        public static Task<ContentDialogResult> Dialog_InsufficientWritePermission(string path)
+        {
+            return SpawnDialog(Lang._Dialogs.UnauthorizedDirTitle,
+                               string.Format(Lang._Dialogs.UnauthorizedDirSubtitle, path),
+                               null,
+                               Lang._Misc.Okay);
+        }
+
+        public static async Task<(Dictionary<string, string>?, string?)> Dialog_ChooseAudioLanguageChoice(
+            Dictionary<string, string> langDict, string defaultLocaleCode = "ja-jp")
         {
             bool[] choices = new bool[langDict.Count];
             if (!langDict.ContainsKey(defaultLocaleCode))
-                throw new KeyNotFoundException($"Default locale code: {defaultLocaleCode} is not found within langDict argument");
+            {
+                throw new
+                    KeyNotFoundException($"Default locale code: {defaultLocaleCode} is not found within langDict argument");
+            }
 
             List<string> localeCodeList = langDict.Keys.ToList();
-            List<string> langList = langDict.Values.ToList();
+            List<string> langList       = langDict.Values.ToList();
 
             // Naive approach to lookup default index value
-            string refLocaleCode = localeCodeList.FirstOrDefault(x => x.Equals(defaultLocaleCode, StringComparison.OrdinalIgnoreCase));
-            int defaultIndex = localeCodeList.IndexOf(refLocaleCode);
-            int choiceAsDefault = defaultIndex;
-            StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
+            string? refLocaleCode =
+                localeCodeList.FirstOrDefault(x => x.Equals(defaultLocaleCode, StringComparison.OrdinalIgnoreCase));
+            int        defaultIndex    = localeCodeList.IndexOf(refLocaleCode ?? "");
+            int        choiceAsDefault = defaultIndex;
+            StackPanel parentPanel     = CollapseUIExt.CreateStackPanel();
 
             parentPanel.AddElementToStackPanel(new TextBlock
             {
-                Text = Lang._Dialogs.ChooseAudioLangSubtitle,
-                TextWrapping = TextWrapping.Wrap,
-                FontWeight = FontWeights.Medium,
-                Margin = new Thickness(0, 0, 0, 16),
+                Text                = Lang._Dialogs.ChooseAudioLangSubtitle,
+                TextWrapping        = TextWrapping.Wrap,
+                FontWeight          = FontWeights.Medium,
+                Margin              = new Thickness(0, 0, 0, 16),
                 HorizontalAlignment = HorizontalAlignment.Center
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             RadioButtons defaultChoiceRadioButton = new RadioButtons()
-                .WithHorizontalAlignment(HorizontalAlignment.Center);
+               .WithHorizontalAlignment(HorizontalAlignment.Center);
             defaultChoiceRadioButton.HorizontalContentAlignment = HorizontalAlignment.Stretch;
-
             parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
 
             ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
             {
-                Title = Lang._Dialogs.ChooseAudioLangTitle,
-                Content = parentPanel,
-                CloseButtonText = Lang._Misc.Cancel,
-                PrimaryButtonText = Lang._Misc.Next,
+                Title               = Lang._Dialogs.ChooseAudioLangTitle,
+                Content             = parentPanel,
+                CloseButtonText     = Lang._Misc.Cancel,
+                PrimaryButtonText   = Lang._Misc.Next,
                 SecondaryButtonText = null,
-                DefaultButton = ContentDialogButton.Primary,
-                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : content.XamlRoot
+                DefaultButton       = ContentDialogButton.Primary,
+                Style               = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                XamlRoot            = SharedXamlRoot
             };
 
             InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             for (int i = 0; i < langList.Count; i++)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
-                    .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Auto))
-                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                    .WithMargin(0, 0, 0, 8);
+                                                 .WithColumns(new GridLength(1, GridUnitType.Star),
+                                                              new GridLength(1, GridUnitType.Auto))
+                                                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                                                 .WithMargin(0, 0, 0, 8);
 
                 CheckBox checkBox = new CheckBox
                 {
@@ -160,206 +184,233 @@ namespace CollapseLauncher.Dialogs
 
                 TextBlock useAsDefaultText = new TextBlock
                 {
-                    Text = Lang._Misc.UseAsDefault,
-                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Text                    = Lang._Misc.UseAsDefault,
+                    HorizontalAlignment     = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.5,
-                    Name = "UseAsDefaultLabel"
+                    VerticalAlignment       = VerticalAlignment.Top,
+                    Opacity                 = 0.5,
+                    Name                    = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(
-                    langList[i],
-                    "\uf1ab",
-                    iconSize: 14,
-                    textSize: 14,
-                    iconFontFamily: "FontAwesomeSolid")
-                    .WithOpacity(0.5);
+                                                                     langList[i],
+                                                                     "\uf1ab",
+                                                                     iconSize: 14,
+                                                                     textSize: 14,
+                                                                     iconFontFamily: "FontAwesomeSolid")
+                                                 .WithOpacity(0.5);
                 iconTextGrid.Name = "IconText";
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
 
-                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
+                checkBoxGrid.AddElementToGridColumn(iconTextGrid,     0);
                 checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
 
                 RadioButton radioButton = new RadioButton
-                {
-                    Content = checkBox,
-                    Style = CollapseUIExt.GetApplicationResource<Style>("AudioLanguageSelectionRadioButtonStyle"),
-                    Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
-                }
-                .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Center)
-                .WithCursor(inputCursor);
+                                          {
+                                              Content = checkBox,
+                                              Style =
+                                                  CollapseUIExt
+                                                     .GetApplicationResource<
+                                                          Style>("AudioLanguageSelectionRadioButtonStyle"),
+                                              Background =
+                                                  CollapseUIExt
+                                                     .GetApplicationResource<
+                                                          Brush>("AudioLanguageSelectionRadioButtonBrush")
+                                          }
+                                         .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                                         .WithVerticalAlignment(VerticalAlignment.Center)
+                                         .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
                 radioButton.Tag = i;
-                checkBox.Tag = i;
+                checkBox.Tag    = i;
 
                 radioButton.Checked += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    choiceAsDefault = (int)(radioButtonLocal?.Tag ?? 0);
-                    checkBox.IsChecked = true;
+                                       {
+                                           RadioButton? radioButtonLocal = sender as RadioButton;
+                                           choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
+                                           checkBox.IsChecked = true;
 
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
-                    if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 1;
-                };
+                                           if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
+                                               textBlockLocal)
+                                           {
+                                               textBlockLocal.Opacity = 1;
+                                           }
+                                       };
 
                 radioButton.Unchecked += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
-                    if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 0.5;
-                };
+                                         {
+                                             RadioButton? radioButtonLocal = sender as RadioButton;
+                                             if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
+                                                 textBlockLocal)
+                                             {
+                                                 textBlockLocal.Opacity = 0.5;
+                                             }
+                                         };
 
                 radioButton.PointerEntered += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
+                                              {
+                                                  RadioButton? radioButtonLocal = sender as RadioButton;
+                                                  TextBlock? textBlockLocal =
+                                                      radioButtonLocal
+                                                        ?.FindDescendant("UseAsDefaultLabel") as TextBlock;
 
-                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (textBlockLocal == null || thisIconText == null || (thisCheckBox.IsChecked ?? false))
-                    {
-                        return;
-                    }
+                                                  CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                                                  Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
+                                                  if (textBlockLocal is null || thisIconText is null ||
+                                                      (thisCheckBox?.IsChecked ?? false))
+                                                  {
+                                                      return;
+                                                  }
 
-                    textBlockLocal.Opacity = 1;
-                    thisIconText.Opacity   = 1;
-                };
+                                                  textBlockLocal.Opacity = 1;
+                                                  thisIconText.Opacity   = 1;
+                                              };
 
                 radioButton.PointerExited += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
+                                             {
+                                                 RadioButton? radioButtonLocal = sender as RadioButton;
+                                                 TextBlock? textBlockLocal =
+                                                     radioButtonLocal?.FindDescendant("UseAsDefaultLabel") as TextBlock;
 
-                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (textBlockLocal == null || thisIconText == null || (thisCheckBox.IsChecked ?? false))
-                    {
-                        return;
-                    }
+                                                 CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                                                 Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
+                                                 if (textBlockLocal is null || thisIconText is null ||
+                                                     (thisCheckBox?.IsChecked ?? false))
+                                                 {
+                                                     return;
+                                                 }
 
-                    textBlockLocal.Opacity = 0.5;
-                    thisIconText.Opacity   = 0.5;
-                };
+                                                 textBlockLocal.Opacity = 0.5;
+                                                 thisIconText.Opacity   = 0.5;
+                                             };
 
                 if (i == defaultIndex)
                 {
-                    choices[i] = true;
-                    checkBox.IsChecked = true;
+                    choices[i]                             = true;
+                    checkBox.IsChecked                     = true;
                     defaultChoiceRadioButton.SelectedIndex = i;
-                    iconTextGrid.Opacity = 1;
+                    iconTextGrid.Opacity                   = 1;
                 }
 
                 checkBox.Checked += (sender, _) =>
-                {
-                    CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
-                    choices[thisIndex] = true;
-                    radioButton.IsEnabled = true;
+                                    {
+                                        CheckBox? thisCheckBox = sender as CheckBox;
+                                        int       thisIndex    = (int)(thisCheckBox?.Tag ?? 0);
+                                        choices[thisIndex]    = true;
+                                        radioButton.IsEnabled = true;
 
-                    bool isHasAnyChoices = choices.Any(x => x);
-                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
-                    if (defaultChoiceRadioButton.SelectedIndex < 0)
-                        defaultChoiceRadioButton.SelectedIndex = thisIndex;
+                                        bool isHasAnyChoices = choices.Any(x => x);
+                                        dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                                        if (defaultChoiceRadioButton.SelectedIndex < 0)
+                                        {
+                                            defaultChoiceRadioButton.SelectedIndex = thisIndex;
+                                        }
 
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (thisIconText != null)
-                        thisIconText.Opacity = 1;
-                };
+                                        if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
+                                        {
+                                            thisIconText.Opacity = 1;
+                                        }
+                                    };
                 checkBox.Unchecked += (sender, _) =>
-                {
-                    CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
-                    choices[thisIndex] = false;
-                    radioButton.IsChecked = false;
+                                      {
+                                          CheckBox? thisCheckBox = sender as CheckBox;
+                                          int       thisIndex    = (int)(thisCheckBox?.Tag ?? 0);
+                                          choices[thisIndex]    = false;
+                                          radioButton.IsChecked = false;
 
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (thisIconText != null)
-                        thisIconText.Opacity = 0.5;
+                                          if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
+                                          {
+                                              thisIconText.Opacity = 0.5;
+                                          }
 
-                    bool isHasAnyChoices = choices.Any(x => x);
-                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                                          bool isHasAnyChoices = choices.Any(x => x);
+                                          dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
 
-                    // TODO: Find a better way rather than this SPAGHEETTTTT CODE
-                    if (defaultChoiceRadioButton.SelectedIndex >= 0 || !isHasAnyChoices)
-                    {
-                        return;
-                    }
+                                          // TODO: Find a better way rather than this SPAGHEETTTTT CODE
+                                          if (defaultChoiceRadioButton.SelectedIndex >= 0 || !isHasAnyChoices)
+                                          {
+                                              return;
+                                          }
 
-                    for (int index = 0; index < choices.Length; index++)
-                    {
-                        if (!choices[index])
-                        {
-                            continue;
-                        }
+                                          for (int index = 0; index < choices.Length; index++)
+                                          {
+                                              if (!choices[index])
+                                              {
+                                                  continue;
+                                              }
 
-                        defaultChoiceRadioButton.SelectedIndex = index;
-                        break;
-                    }
-                };
+                                              defaultChoiceRadioButton.SelectedIndex = index;
+                                              break;
+                                          }
+                                      };
             }
 
             ContentDialogResult dialogResult = await dialog.ShowAsync();
             if (dialogResult == ContentDialogResult.None)
+            {
                 return (null, null);
+            }
 
             Dictionary<string, string> returnDictionary = new();
             for (int i = 0; i < choices.Length; i++)
             {
                 if (choices[i])
+                {
                     returnDictionary.Add(localeCodeList[i], langList[i]);
+                }
             }
 
             return (returnDictionary, localeCodeList[choiceAsDefault]);
         }
 
-        public static async Task<Tuple<List<int>, int>> Dialog_ChooseAudioLanguageChoice(List<string> langList, int defaultIndex = 2)
+        public static async Task<(List<int>?, int)> Dialog_ChooseAudioLanguageChoice(
+            List<string> langList, int defaultIndex = 2)
         {
-            bool[] choices = new bool[langList.Count];
-            int choiceAsDefault = defaultIndex;
-            StackPanel parentPanel = CollapseUIExt.CreateStackPanel();
+            bool[]     choices         = new bool[langList.Count];
+            int        choiceAsDefault = defaultIndex;
+            StackPanel parentPanel     = CollapseUIExt.CreateStackPanel();
 
             parentPanel.AddElementToStackPanel(new TextBlock
             {
-                Text = Lang._Dialogs.ChooseAudioLangSubtitle,
-                TextWrapping = TextWrapping.Wrap,
-                FontWeight = FontWeights.Medium,
-                Margin = new Thickness(0, 0, 0, 16),
+                Text                = Lang._Dialogs.ChooseAudioLangSubtitle,
+                TextWrapping        = TextWrapping.Wrap,
+                FontWeight          = FontWeights.Medium,
+                Margin              = new Thickness(0, 0, 0, 16),
                 HorizontalAlignment = HorizontalAlignment.Center
             }.WithMargin(0d, 0d, 0d, 16d));
             parentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             RadioButtons defaultChoiceRadioButton = new RadioButtons()
-                .WithHorizontalAlignment(HorizontalAlignment.Center);
+               .WithHorizontalAlignment(HorizontalAlignment.Center);
             defaultChoiceRadioButton.HorizontalContentAlignment = HorizontalAlignment.Stretch;
 
             parentPanel.AddElementToStackPanel(defaultChoiceRadioButton);
 
             ContentDialogCollapse dialog = new ContentDialogCollapse(ContentDialogTheme.Warning)
             {
-                Title = Lang._Dialogs.ChooseAudioLangTitle,
-                Content = parentPanel,
-                CloseButtonText = Lang._Misc.Cancel,
-                PrimaryButtonText = Lang._Misc.Next,
+                Title               = Lang._Dialogs.ChooseAudioLangTitle,
+                Content             = parentPanel,
+                CloseButtonText     = Lang._Misc.Cancel,
+                PrimaryButtonText   = Lang._Misc.Next,
                 SecondaryButtonText = null,
-                DefaultButton = ContentDialogButton.Primary,
-                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : throw new NullReferenceException("WindowUtility.CurrentWindow cannot be null!")
+                DefaultButton       = ContentDialogButton.Primary,
+                Style               = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow
+                    ? mainWindow.Content.XamlRoot
+                    : throw new NullReferenceException("WindowUtility.CurrentWindow cannot be null!")
             };
 
             InputCursor inputCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
             for (int i = 0; i < langList.Count; i++)
             {
                 Grid checkBoxGrid = CollapseUIExt.CreateGrid()
-                    .WithColumns(new GridLength(1, GridUnitType.Star), new GridLength(1, GridUnitType.Auto))
-                    .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                    .WithMargin(0, 0, 0, 8);
+                                                 .WithColumns(new GridLength(1, GridUnitType.Star),
+                                                              new GridLength(1, GridUnitType.Auto))
+                                                 .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                                                 .WithMargin(0, 0, 0, 8);
 
                 CheckBox checkBox = new CheckBox
                 {
@@ -372,272 +423,325 @@ namespace CollapseLauncher.Dialogs
 
                 TextBlock useAsDefaultText = new TextBlock
                 {
-                    Text = Lang._Misc.UseAsDefault,
-                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Text                    = Lang._Misc.UseAsDefault,
+                    HorizontalAlignment     = HorizontalAlignment.Right,
                     HorizontalTextAlignment = TextAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Opacity = 0.5,
-                    Name = "UseAsDefaultLabel"
+                    VerticalAlignment       = VerticalAlignment.Top,
+                    Opacity                 = 0.5,
+                    Name                    = "UseAsDefaultLabel"
                 };
                 useAsDefaultText.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 Grid iconTextGrid = CollapseUIExt.CreateIconTextGrid(
-                    langList[i],
-                    "\uf1ab",
-                    iconSize: 14,
-                    textSize: 14,
-                    iconFontFamily: "FontAwesomeSolid")
-                    .WithOpacity(0.5);
+                                                                     langList[i],
+                                                                     "\uf1ab",
+                                                                     iconSize: 14,
+                                                                     textSize: 14,
+                                                                     iconFontFamily: "FontAwesomeSolid")
+                                                 .WithOpacity(0.5);
                 iconTextGrid.Name = "IconText";
                 iconTextGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
                 iconTextGrid.VerticalAlignment = VerticalAlignment.Center;
 
-                checkBoxGrid.AddElementToGridColumn(iconTextGrid, 0);
+                checkBoxGrid.AddElementToGridColumn(iconTextGrid,     0);
                 checkBoxGrid.AddElementToGridColumn(useAsDefaultText, 1);
 
                 RadioButton radioButton = new RadioButton
-                {
-                    Content = checkBox,
-                    Style = CollapseUIExt.GetApplicationResource<Style>("AudioLanguageSelectionRadioButtonStyle"),
-                    Background = CollapseUIExt.GetApplicationResource<Brush>("AudioLanguageSelectionRadioButtonBrush")
-                }
-                .WithHorizontalAlignment(HorizontalAlignment.Stretch)
-                .WithVerticalAlignment(VerticalAlignment.Center)
-                .WithCursor(inputCursor);
+                                          {
+                                              Content = checkBox,
+                                              Style =
+                                                  CollapseUIExt
+                                                     .GetApplicationResource<
+                                                          Style>("AudioLanguageSelectionRadioButtonStyle"),
+                                              Background =
+                                                  CollapseUIExt
+                                                     .GetApplicationResource<
+                                                          Brush>("AudioLanguageSelectionRadioButtonBrush")
+                                          }
+                                         .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+                                         .WithVerticalAlignment(VerticalAlignment.Center)
+                                         .WithCursor(inputCursor);
 
                 defaultChoiceRadioButton.Items.Add(radioButton);
 
                 radioButton.Tag = i;
-                checkBox.Tag = i;
+                checkBox.Tag    = i;
 
                 radioButton.Checked += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
-                    checkBox.IsChecked = true;
+                                       {
+                                           RadioButton? radioButtonLocal = sender as RadioButton;
+                                           choiceAsDefault    = (int)(radioButtonLocal?.Tag ?? 0);
+                                           checkBox.IsChecked = true;
 
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
-                    if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 1;
-                };
+                                           if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
+                                               textBlockLocal)
+                                           {
+                                               textBlockLocal.Opacity = 1;
+                                           }
+                                       };
 
                 radioButton.Unchecked += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
-                    if (textBlockLocal != null)
-                        textBlockLocal.Opacity = 0.5;
-                };
+                                         {
+                                             RadioButton? radioButtonLocal = sender as RadioButton;
+                                             if (radioButtonLocal?.FindDescendant("UseAsDefaultLabel") is TextBlock
+                                                 textBlockLocal)
+                                             {
+                                                 textBlockLocal.Opacity = 0.5;
+                                             }
+                                         };
 
                 radioButton.PointerEntered += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
+                                              {
+                                                  RadioButton? radioButtonLocal = sender as RadioButton;
+                                                  TextBlock? textBlockLocal =
+                                                      radioButtonLocal
+                                                        ?.FindDescendant("UseAsDefaultLabel") as TextBlock;
 
-                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (textBlockLocal == null || thisIconText == null || (thisCheckBox.IsChecked ?? false))
-                    {
-                        return;
-                    }
+                                                  CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                                                  Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
+                                                  if (textBlockLocal is null || thisIconText is null ||
+                                                      (thisCheckBox?.IsChecked ?? false))
+                                                  {
+                                                      return;
+                                                  }
 
-                    textBlockLocal.Opacity = 1;
-                    thisIconText.Opacity   = 1;
-                };
+                                                  textBlockLocal.Opacity = 1;
+                                                  thisIconText.Opacity   = 1;
+                                              };
 
                 radioButton.PointerExited += (sender, _) =>
-                {
-                    RadioButton radioButtonLocal = sender as RadioButton;
-                    TextBlock textBlockLocal = (TextBlock)radioButtonLocal?.FindDescendant("UseAsDefaultLabel");
+                                             {
+                                                 RadioButton? radioButtonLocal = sender as RadioButton;
+                                                 TextBlock? textBlockLocal =
+                                                     radioButtonLocal?.FindDescendant("UseAsDefaultLabel") as TextBlock;
 
-                    CheckBox thisCheckBox = radioButtonLocal?.Content as CheckBox;
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (textBlockLocal == null || thisIconText == null || (thisCheckBox.IsChecked ?? false))
-                    {
-                        return;
-                    }
+                                                 CheckBox? thisCheckBox = radioButtonLocal?.Content as CheckBox;
+                                                 Grid? thisIconText = thisCheckBox?.FindDescendant("IconText") as Grid;
+                                                 if (textBlockLocal is null || thisIconText is null ||
+                                                     (thisCheckBox?.IsChecked ?? false))
+                                                 {
+                                                     return;
+                                                 }
 
-                    textBlockLocal.Opacity = 0.5;
-                    thisIconText.Opacity   = 0.5;
-                };
+                                                 textBlockLocal.Opacity = 0.5;
+                                                 thisIconText.Opacity   = 0.5;
+                                             };
 
                 if (i == defaultIndex)
                 {
-                    choices[i] = true;
-                    checkBox.IsChecked = true;
+                    choices[i]                             = true;
+                    checkBox.IsChecked                     = true;
                     defaultChoiceRadioButton.SelectedIndex = i;
-                    iconTextGrid.Opacity = 1;
+                    iconTextGrid.Opacity                   = 1;
                 }
 
                 checkBox.Checked += (sender, _) =>
-                {
-                    CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
-                    choices[thisIndex] = true;
-                    radioButton.IsEnabled = true;
+                                    {
+                                        CheckBox? thisCheckBox = sender as CheckBox;
+                                        int       thisIndex    = (int)(thisCheckBox?.Tag ?? 0);
+                                        choices[thisIndex]    = true;
+                                        radioButton.IsEnabled = true;
 
-                    bool isHasAnyChoices = choices.Any(x => x);
-                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
-                    if (defaultChoiceRadioButton.SelectedIndex < 0)
-                        defaultChoiceRadioButton.SelectedIndex = thisIndex;
+                                        bool isHasAnyChoices = choices.Any(x => x);
+                                        dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                                        if (defaultChoiceRadioButton.SelectedIndex < 0)
+                                        {
+                                            defaultChoiceRadioButton.SelectedIndex = thisIndex;
+                                        }
 
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (thisIconText != null)
-                        thisIconText.Opacity = 1;
+                                        if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
+                                        {
+                                            thisIconText.Opacity = 1;
+                                        }
 
-                    RadioButton thisRadioButton = thisCheckBox?.Parent as RadioButton;
-                    TextBlock textBlockLocal = thisRadioButton?.FindDescendant("UseAsDefaultLabel") as TextBlock;
-                    if (thisRadioButton == null || textBlockLocal == null)
-                    {
-                        return;
-                    }
+                                        RadioButton? thisRadioButton = thisCheckBox?.Parent as RadioButton;
+                                        TextBlock? textBlockLocal =
+                                            thisRadioButton?.FindDescendant("UseAsDefaultLabel") as TextBlock;
+                                        if (thisRadioButton is null || textBlockLocal is null)
+                                        {
+                                            return;
+                                        }
 
-                    if (thisIndex != defaultChoiceRadioButton.SelectedIndex)
-                    {
-                        textBlockLocal.Opacity = 0.5;
-                    }
-                };
+                                        if (thisIndex != defaultChoiceRadioButton.SelectedIndex)
+                                        {
+                                            textBlockLocal.Opacity = 0.5;
+                                        }
+                                    };
                 checkBox.Unchecked += (sender, _) =>
-                {
-                    CheckBox thisCheckBox = sender as CheckBox;
-                    int thisIndex = (int)(thisCheckBox?.Tag ?? 0);
-                    choices[thisIndex] = false;
-                    radioButton.IsChecked = false;
+                                      {
+                                          CheckBox? thisCheckBox = sender as CheckBox;
+                                          int       thisIndex    = (int)(thisCheckBox?.Tag ?? 0);
+                                          choices[thisIndex]    = false;
+                                          radioButton.IsChecked = false;
 
-                    Grid thisIconText = (Grid)thisCheckBox?.FindDescendant("IconText");
-                    if (thisIconText != null)
-                        thisIconText.Opacity = 0.5;
+                                          if (thisCheckBox?.FindDescendant("IconText") is Grid thisIconText)
+                                          {
+                                              thisIconText.Opacity = 0.5;
+                                          }
 
-                    bool isHasAnyChoices = choices.Any(x => x);
-                    dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
+                                          bool isHasAnyChoices = choices.Any(x => x);
+                                          dialog.IsPrimaryButtonEnabled = isHasAnyChoices;
 
-                    // TODO: Find a better way rather than this SPAGHEETTTTT CODE
-                    if (defaultChoiceRadioButton.SelectedIndex >= 0 || !isHasAnyChoices)
-                    {
-                        return;
-                    }
+                                          // TODO: Find a better way rather than this SPAGHEETTTTT CODE
+                                          if (defaultChoiceRadioButton.SelectedIndex >= 0 || !isHasAnyChoices)
+                                          {
+                                              return;
+                                          }
 
-                    for (int index = 0; index < choices.Length; index++)
-                    {
-                        if (!choices[index])
-                        {
-                            continue;
-                        }
+                                          for (int index = 0; index < choices.Length; index++)
+                                          {
+                                              if (!choices[index])
+                                              {
+                                                  continue;
+                                              }
 
-                        defaultChoiceRadioButton.SelectedIndex = index;
-                        break;
-                    }
-                };
+                                              defaultChoiceRadioButton.SelectedIndex = index;
+                                              break;
+                                          }
+                                      };
             }
 
             ContentDialogResult dialogResult = await dialog.ShowAsync();
             if (dialogResult == ContentDialogResult.None)
-                return new Tuple<List<int>, int>(null, -1);
+            {
+                return (null, -1);
+            }
 
             List<int> returnList = [];
             for (int i = 0; i < choices.Length; i++)
             {
                 if (choices[i])
+                {
                     returnList.Add(i);
+                }
             }
 
-            return new Tuple<List<int>, int>(returnList, choiceAsDefault);
+            return (returnList, choiceAsDefault);
         }
 
-        public static Task<ContentDialogResult> Dialog_GraphicsVeryHighWarning(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.ExtremeGraphicsSettingsWarnTitle,
-                        Lang._Dialogs.ExtremeGraphicsSettingsWarnSubtitle,
-                        content,
-                        null,
-                        Lang._Misc.YesIHaveBeefyPC,
-                        Lang._Misc.No,
-                        ContentDialogButton.Secondary,
-                        ContentDialogTheme.Warning);
+        public static Task<ContentDialogResult> Dialog_GraphicsVeryHighWarning()
+        {
+            return SpawnDialog(Lang._Dialogs.ExtremeGraphicsSettingsWarnTitle,
+                               Lang._Dialogs.ExtremeGraphicsSettingsWarnSubtitle,
+                               null,
+                               null,
+                               Lang._Misc.YesIHaveBeefyPC,
+                               Lang._Misc.No,
+                               ContentDialogButton.Secondary,
+                               ContentDialogTheme.Warning);
+        }
 
-        public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe(UIElement content)
+        public static async Task<(ContentDialogResult, ComboBox, ComboBox)> Dialog_SelectGameConvertRecipe()
         {
             Dictionary<string, PresetConfig> convertibleRegions = new();
-            foreach (KeyValuePair<string, PresetConfig> config in LauncherMetadataHelper.LauncherMetadataConfig![LauncherMetadataHelper.CurrentMetadataConfigGameName!]
-                .Where(x => x.Value.IsConvertible ?? false))
+
+            if (!(LauncherMetadataHelper.LauncherMetadataConfig?
+                   .TryGetValue(LauncherMetadataHelper.CurrentMetadataConfigGameName ?? "",
+                                out Dictionary<string, PresetConfig>? configDictionary) ?? false))
+            {
+                throw new KeyNotFoundException("Game name not found in metadata config!");
+            }
+
+            foreach (KeyValuePair<string, PresetConfig> config in configDictionary!
+                        .Where(x => x.Value.IsConvertible ?? false))
+            {
                 convertibleRegions.Add(config.Key, config.Value);
+            }
 
-            ContentDialogCollapse dialog = new ContentDialogCollapse();
-
-            ComboBox targetGame = new ComboBox();
+            ContentDialogCollapse dialog     = new ContentDialogCollapse();
+            ComboBox              targetGame = new ComboBox();
 
             var sourceGame = new ComboBox
             {
                 Width = 200,
-                ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
-                                                                        [..convertibleRegions.Keys]),
+                ItemsSource =
+                    InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
+                                                              [.. convertibleRegions.Keys]),
                 PlaceholderText = Lang._InstallConvert.SelectDialogSource,
-                CornerRadius = new CornerRadius(14)
+                CornerRadius    = new CornerRadius(14)
             };
             sourceGame.SelectionChanged += SourceGameChangedArgs;
             targetGame = new ComboBox
             {
-                Width = 200,
+                Width           = 200,
                 PlaceholderText = Lang._InstallConvert.SelectDialogTarget,
-                IsEnabled = false,
-                CornerRadius = new CornerRadius(14)
+                IsEnabled       = false,
+                CornerRadius    = new CornerRadius(14)
             };
             targetGame.SelectionChanged += TargetGameChangedArgs;
 
             StackPanel dialogContainer = CollapseUIExt.CreateStackPanel();
-            StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal).WithHorizontalAlignment(HorizontalAlignment.Center);
+            StackPanel comboBoxContainer = CollapseUIExt.CreateStackPanel(Orientation.Horizontal)
+                                                        .WithHorizontalAlignment(HorizontalAlignment.Center);
             comboBoxContainer.AddElementToStackPanel(
-                sourceGame,
-                new FontIcon
-                {
-                    Glyph = "",
-                    FontFamily = FontCollections.FontAwesomeSolid,
-                    Opacity = 0.5f
-                }.WithVerticalAlignment(VerticalAlignment.Center).WithMargin(16d, 0d),
-                targetGame
-                );
+                                                     sourceGame,
+                                                     new FontIcon
+                                                         {
+                                                             Glyph      = "",
+                                                             FontFamily = FontCollections.FontAwesomeSolid,
+                                                             Opacity    = 0.5f
+                                                         }.WithVerticalAlignment(VerticalAlignment.Center)
+                                                          .WithMargin(16d, 0d),
+                                                     targetGame
+                                                    );
             dialogContainer.AddElementToStackPanel(new TextBlock
             {
-                Text = Lang._InstallConvert.SelectDialogSubtitle,
+                Text         = Lang._InstallConvert.SelectDialogSubtitle,
                 TextWrapping = TextWrapping.Wrap
             }.WithMargin(0d, 0d, 0d, 16d));
             dialogContainer.AddElementToStackPanel(comboBoxContainer);
 
             dialog = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
-                Title = Lang._InstallConvert.SelectDialogTitle,
-                Content = dialogContainer,
-                CloseButtonText = null,
-                PrimaryButtonText = Lang._Misc.Cancel,
-                SecondaryButtonText = Lang._Misc.Next,
+                Title                    = Lang._InstallConvert.SelectDialogTitle,
+                Content                  = dialogContainer,
+                CloseButtonText          = null,
+                PrimaryButtonText        = Lang._Misc.Cancel,
+                SecondaryButtonText      = Lang._Misc.Next,
                 IsSecondaryButtonEnabled = false,
-                DefaultButton = ContentDialogButton.Secondary,
-                Background = CollapseUIExt.GetApplicationResource<Brush>("DialogAcrylicBrush"),
-                Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                XamlRoot = content.XamlRoot
+                DefaultButton            = ContentDialogButton.Secondary,
+                Background               = CollapseUIExt.GetApplicationResource<Brush>("DialogAcrylicBrush"),
+                Style                    = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
+                XamlRoot                 = SharedXamlRoot
             };
             return (await dialog.QueueAndSpawnDialog(), sourceGame, targetGame);
 
             void SourceGameChangedArgs(object sender, SelectionChangedEventArgs _)
             {
                 // ReSharper disable AccessToModifiedClosure
-                targetGame!.IsEnabled            = true;
-                dialog!.IsSecondaryButtonEnabled = false;
-                targetGame!.ItemsSource          = InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName, InstallationConvert.GetConvertibleNameList(InnerLauncherConfig.GetComboBoxGameRegionValue((sender as ComboBox)!.SelectedItem)));
+                targetGame.IsEnabled            = true;
+                dialog.IsSecondaryButtonEnabled = false;
+                targetGame.ItemsSource =
+                    InnerLauncherConfig.BuildGameRegionListUI(LauncherMetadataHelper.CurrentMetadataConfigGameName,
+                                                              InstallationConvert
+                                                                 .GetConvertibleNameList(InnerLauncherConfig
+                                                                     .GetComboBoxGameRegionValue((sender as
+                                                                          ComboBox)!.SelectedItem)));
             }
 
             void TargetGameChangedArgs(object sender, SelectionChangedEventArgs _)
             {
-                if ((sender as ComboBox)!.SelectedIndex != -1) dialog!.IsSecondaryButtonEnabled = true;
+                if ((sender as ComboBox)!.SelectedIndex != -1)
+                {
+                    dialog.IsSecondaryButtonEnabled = true;
+                }
                 // ReSharper restore AccessToModifiedClosure
             }
         }
 
-        public static Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(UIElement content, string fileName)
+        public static Task<ContentDialogResult> Dialog_LocateDownloadedConvertRecipe(string fileName)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
                .AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle1);
             texts.Inlines.Add(new Hyperlink
             {
-                Inlines = { new Run { Text = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold, Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor") } },
+                Inlines =
+                {
+                    new Run
+                    {
+                        Text       = Lang._Dialogs.CookbookLocateSubtitle2, FontWeight = FontWeights.Bold,
+                        Foreground = CollapseUIExt.GetApplicationResource<Brush>("AccentColor")
+                    }
+                },
                 NavigateUri = new Uri("https://www.mediafire.com/folder/gb09r9fw0ndxb/Hi3ConversionRecipe")
             });
             texts.AddTextBlockLine(Lang._Dialogs.CookbookLocateSubtitle3)
@@ -649,7 +753,7 @@ namespace CollapseLauncher.Dialogs
 
             return SpawnDialog(Lang._Dialogs.CookbookLocateTitle,
                                texts,
-                               content,
+                               null,
                                Lang._Misc.Cancel,
                                Lang._Misc.Next);
         }
@@ -657,12 +761,12 @@ namespace CollapseLauncher.Dialogs
         public static Task<ContentDialogResult> Dialog_ChangeReleaseToChannel(string channelName)
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
-               .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle1)
-               .AddTextBlockLine($" {channelName}", FontWeights.Bold)
-               .AddTextBlockNewLine(2)
-               .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
-               .AddTextBlockNewLine()
-               .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle3);
+                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle1)
+                             .AddTextBlockLine($" {channelName}", FontWeights.Bold)
+                             .AddTextBlockNewLine(2)
+                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle2, FontWeights.Bold, 18)
+                             .AddTextBlockNewLine()
+                             .AddTextBlockLine(Lang._Dialogs.ReleaseChannelChangeSubtitle3);
 
             return SpawnDialog(Lang._Dialogs.ReleaseChannelChangeTitle,
                                texts,
@@ -695,84 +799,102 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static Task<ContentDialogResult> Dialog_ExistingInstallation(UIElement content, string actualLocation) =>
-            SpawnDialog(Lang._Dialogs.ExistingInstallTitle,
-                        string.Format(Lang._Dialogs.ExistingInstallSubtitle, actualLocation),
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.YesMigrateIt,
-                        Lang._Misc.NoKeepInstallIt);
+        public static Task<ContentDialogResult> Dialog_ExistingInstallation(string actualLocation)
+        {
+            return SpawnDialog(Lang._Dialogs.ExistingInstallTitle,
+                               string.Format(Lang._Dialogs.ExistingInstallSubtitle, actualLocation),
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.YesMigrateIt,
+                               Lang._Misc.NoKeepInstallIt);
+        }
 
-        public static Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(UIElement content, string gamePath, bool isHasOnlyMigrateOption) =>
-            SpawnDialog(Lang._Dialogs.ExistingInstallBHI3LTitle,
-                        string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, gamePath),
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.YesMigrateIt,
-                        isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
+        public static Task<ContentDialogResult> Dialog_ExistingInstallationBetterLauncher(
+            string gamePath, bool isHasOnlyMigrateOption)
+        {
+            return SpawnDialog(Lang._Dialogs.ExistingInstallBHI3LTitle,
+                               string.Format(Lang._Dialogs.ExistingInstallBHI3LSubtitle, gamePath),
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.YesMigrateIt,
+                               isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
+        }
 
-        public static Task<ContentDialogResult> Dialog_ExistingInstallationSteam(UIElement content, string gamePath, bool isHasOnlyMigrateOption) =>
-             SpawnDialog(Lang._Dialogs.ExistingInstallSteamTitle,
-                        string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, gamePath),
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.YesMigrateIt,
-                        isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
+        public static Task<ContentDialogResult> Dialog_ExistingInstallationSteam(
+            string gamePath, bool isHasOnlyMigrateOption)
+        {
+            return SpawnDialog(Lang._Dialogs.ExistingInstallSteamTitle,
+                               string.Format(Lang._Dialogs.ExistingInstallSteamSubtitle, gamePath),
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.YesMigrateIt,
+                               isHasOnlyMigrateOption ? null : Lang._Misc.NoKeepInstallIt);
+        }
 
 
-        public static Task<ContentDialogResult> Dialog_MigrationChoiceDialog(UIElement content, string existingGamePath, string gameTitle, string gameRegion, string launcherName,
-            MigrateFromLauncherType migrateFromLauncherType, bool isHasOnlyMigrateOption)
+        public static Task<ContentDialogResult> Dialog_MigrationChoiceDialog(
+            string                  existingGamePath,        string gameTitle, string gameRegion, string launcherName,
+            MigrateFromLauncherType migrateFromLauncherType, bool   isHasOnlyMigrateOption)
         {
             if (migrateFromLauncherType != MigrateFromLauncherType.Official)
             {
                 return migrateFromLauncherType switch
-                {
-                    MigrateFromLauncherType.BetterHi3Launcher => Dialog_ExistingInstallationBetterLauncher(content, existingGamePath, isHasOnlyMigrateOption),
-                    MigrateFromLauncherType.Steam => Dialog_ExistingInstallationSteam(content, existingGamePath, isHasOnlyMigrateOption),
-                    _ => throw new InvalidOperationException("Dialog is not supported for unknown migration!")
-                };
+                       {
+                           MigrateFromLauncherType.BetterHi3Launcher =>
+                               Dialog_ExistingInstallationBetterLauncher(existingGamePath, isHasOnlyMigrateOption),
+                           MigrateFromLauncherType.Steam => Dialog_ExistingInstallationSteam(existingGamePath,
+                               isHasOnlyMigrateOption),
+                           _ => throw new InvalidOperationException("Dialog is not supported for unknown migration!")
+                       };
             }
 
-            string gameFullnameString = $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
+            string gameFullnameString =
+                $"{InnerLauncherConfig.GetGameTitleRegionTranslationString(gameTitle, Lang._GameClientTitles)} - {InnerLauncherConfig.GetGameTitleRegionTranslationString(gameRegion, Lang._GameClientRegions)}";
 
             TextBlock contentTextBlock = new TextBlock { TextWrapping = TextWrapping.Wrap };
-            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle1, launcherName));
+            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle1,
+                                                            launcherName));
             contentTextBlock.AddTextBlockNewLine(2);
             contentTextBlock.AddTextBlockLine(existingGamePath, FontWeights.SemiBold);
             contentTextBlock.AddTextBlockNewLine(2);
-            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle2, launcherName));
+            contentTextBlock.AddTextBlockLine(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceSubtitle2,
+                                                            launcherName));
 
             return SpawnDialog(string.Format(Lang._Dialogs.MigrateExistingInstallChoiceTitle, gameFullnameString),
                                contentTextBlock,
-                               content,
+                               null,
                                Lang._Misc.Cancel,
                                Lang._Misc.UseCurrentDir,
                                isHasOnlyMigrateOption ? null : Lang._Misc.MoveToDifferentDir);
         }
 
-        public static Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(UIElement content, string sourceHash, string downloadedHash) =>
-            SpawnDialog(Lang._Dialogs.InstallDataCorruptTitle,
-                        string.Format(Lang._Dialogs.InstallDataCorruptSubtitle, sourceHash, downloadedHash),
-                        content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.YesRedownload,
-                        Lang._Misc.ExtractAnyway,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Error);
+        public static Task<ContentDialogResult> Dialog_GameInstallationFileCorrupt(
+            string sourceHash, string downloadedHash)
+        {
+            return SpawnDialog(Lang._Dialogs.InstallDataCorruptTitle,
+                               string.Format(Lang._Dialogs.InstallDataCorruptSubtitle, sourceHash, downloadedHash),
+                               null,
+                               Lang._Misc.NoCancel,
+                               Lang._Misc.YesRedownload,
+                               Lang._Misc.ExtractAnyway,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Error);
+        }
 
-        public static Task<ContentDialogResult> Dialog_GameInstallCorruptedDataAnyway(UIElement content, string fileName, long fileSize)
+        public static Task<ContentDialogResult> Dialog_GameInstallCorruptedDataAnyway(string fileName, long fileSize)
         {
             TextBlock textBlock = new TextBlock
-            {
-                TextWrapping = TextWrapping.Wrap
-            }
-            .AddTextBlockLine(Lang._Dialogs.InstallCorruptDataAnywaySubtitle1)
-            .AddTextBlockLine(string.Format(Lang._Dialogs.InstallCorruptDataAnywaySubtitle2, fileName, SummarizeSizeSimple(fileSize), fileSize), FontWeights.SemiBold)
-            .AddTextBlockLine(Lang._Dialogs.InstallCorruptDataAnywaySubtitle3);
+                                  {
+                                      TextWrapping = TextWrapping.Wrap
+                                  }
+                                 .AddTextBlockLine(Lang._Dialogs.InstallCorruptDataAnywaySubtitle1)
+                                 .AddTextBlockLine(string.Format(Lang._Dialogs.InstallCorruptDataAnywaySubtitle2, fileName, SummarizeSizeSimple(fileSize), fileSize),
+                                                   FontWeights.SemiBold)
+                                 .AddTextBlockLine(Lang._Dialogs.InstallCorruptDataAnywaySubtitle3);
 
             return SpawnDialog(Lang._Dialogs.InstallCorruptDataAnywayTitle,
                                textBlock,
-                               content,
+                               null,
                                Lang._Misc.NoCancel,
                                Lang._Misc.YesImReallySure,
                                null,
@@ -780,55 +902,62 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static Task<ContentDialogResult> Dialog_LocateFirstSetupFolder(UIElement content, string defaultAppFolder) =>
-            SpawnDialog(Lang._StartupPage.ChooseFolderDialogTitle,
-                        string.Format(Lang._StartupPage.ChooseFolderDialogSubtitle, defaultAppFolder),
-                        content,
-                        Lang._StartupPage.ChooseFolderDialogCancel,
-                        Lang._StartupPage.ChooseFolderDialogPrimary,
-                        Lang._StartupPage.ChooseFolderDialogSecondary);
+        public static Task<ContentDialogResult> Dialog_LocateFirstSetupFolder(string defaultAppFolder)
+        {
+            return SpawnDialog(Lang._StartupPage.ChooseFolderDialogTitle,
+                               string.Format(Lang._StartupPage.ChooseFolderDialogSubtitle, defaultAppFolder),
+                               null,
+                               Lang._StartupPage.ChooseFolderDialogCancel,
+                               Lang._StartupPage.ChooseFolderDialogPrimary,
+                               Lang._StartupPage.ChooseFolderDialogSecondary);
+        }
 
-        public static Task<ContentDialogResult> Dialog_ExistingDownload(UIElement content, double partialLength, double contentLength) =>
-            SpawnDialog(Lang._Dialogs.InstallDataDownloadResumeTitle,
-                        string.Format(Lang._Dialogs.InstallDataDownloadResumeSubtitle,
-                                      SummarizeSizeSimple(partialLength),
-                                      SummarizeSizeSimple(contentLength)),
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.YesResume,
-                        Lang._Misc.NoStartFromBeginning,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning);
+        public static Task<ContentDialogResult> Dialog_ExistingDownload(double partialLength, double contentLength)
+        {
+            return SpawnDialog(Lang._Dialogs.InstallDataDownloadResumeTitle,
+                               string.Format(Lang._Dialogs.InstallDataDownloadResumeSubtitle,
+                                             SummarizeSizeSimple(partialLength),
+                                             SummarizeSizeSimple(contentLength)),
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.YesResume,
+                               Lang._Misc.NoStartFromBeginning,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
 
-        public static Task<ContentDialogResult> Dialog_InsufficientDriveSpace(UIElement content, long driveFreeSpace, double requiredSpace, string driveLetter) =>
-            SpawnDialog(Lang._Dialogs.InsufficientDiskTitle,
-                        string.Format(Lang._Dialogs.InsufficientDiskSubtitle,
-                                      SummarizeSizeSimple(driveFreeSpace),
-                                      SummarizeSizeSimple(requiredSpace),
-                                      driveLetter),
-                        content,
-                        null,
-                        Lang._Misc.Okay,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Error);
+        public static Task<ContentDialogResult> Dialog_InsufficientDriveSpace(
+            long driveFreeSpace, double requiredSpace, string driveLetter)
+        {
+            return SpawnDialog(Lang._Dialogs.InsufficientDiskTitle,
+                               string.Format(Lang._Dialogs.InsufficientDiskSubtitle,
+                                             SummarizeSizeSimple(driveFreeSpace),
+                                             SummarizeSizeSimple(requiredSpace),
+                                             driveLetter),
+                               null,
+                               null,
+                               Lang._Misc.Okay,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Error);
+        }
 
-        public static Task<ContentDialogResult> Dialog_WarningOperationNotCancellable(UIElement content)
+        public static Task<ContentDialogResult> Dialog_WarningOperationNotCancellable()
         {
             TextBlock warningMessage = new TextBlock
-            {
-                TextWrapping = TextWrapping.Wrap
-            }.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg1)
-            .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg2, FontWeights.Bold)
-            .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg3)
-            .AddTextBlockLine(Lang._Misc.Yes, FontWeights.SemiBold)
-            .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg4)
-            .AddTextBlockLine(Lang._Misc.NoCancel, FontWeights.SemiBold)
-            .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg5);
+                {
+                    TextWrapping = TextWrapping.Wrap
+                }.AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg1)
+                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg2, FontWeights.Bold)
+                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg3)
+                 .AddTextBlockLine(Lang._Misc.Yes, FontWeights.SemiBold)
+                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg4)
+                 .AddTextBlockLine(Lang._Misc.NoCancel, FontWeights.SemiBold)
+                 .AddTextBlockLine(Lang._Dialogs.OperationWarningNotCancellableMsg5);
 
             return SpawnDialog(Lang._Dialogs.OperationWarningNotCancellableTitle,
                                warningMessage,
-                               content,
+                               null,
                                Lang._Misc.NoCancel,
                                Lang._Misc.Yes,
                                null,
@@ -836,95 +965,115 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static Task<ContentDialogResult> Dialog_RelocateFolder(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.RelocateFolderTitle,
-                        string.Format(Lang._Dialogs.RelocateFolderSubtitle,
-                                      GetAppConfigValue("GameFolder").ToString()),
-                        content,
-                        null,
-                        Lang._Misc.YesRelocate,
-                        Lang._Misc.Cancel);
+        public static Task<ContentDialogResult> Dialog_RelocateFolder()
+        {
+            return SpawnDialog(Lang._Dialogs.RelocateFolderTitle,
+                               string.Format(Lang._Dialogs.RelocateFolderSubtitle,
+                                             GetAppConfigValue("GameFolder").ToString()),
+                               null,
+                               null,
+                               Lang._Misc.YesRelocate,
+                               Lang._Misc.Cancel);
+        }
 
-        public static Task<ContentDialogResult> Dialog_UninstallGame(UIElement content, string gameLocation, string region) =>
-            SpawnDialog(string.Format(Lang._Dialogs.UninstallGameTitle, region),
-                        string.Format(Lang._Dialogs.UninstallGameSubtitle,
-                                      gameLocation),
-                        content,
-                        null,
-                        Lang._Misc.Uninstall,
-                        Lang._Misc.Cancel,
-                        ContentDialogButton.Secondary,
-                        ContentDialogTheme.Error);
-        
-        public static Task<ContentDialogResult> Dialog_EnsureExit(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.EnsureExitTitle,
-                        Lang._Dialogs.EnsureExitSubtitle,
-                        content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Close,
-                        ContentDialogTheme.Warning);
+        public static Task<ContentDialogResult> Dialog_UninstallGame(string gameLocation, string region)
+        {
+            return SpawnDialog(string.Format(Lang._Dialogs.UninstallGameTitle, region),
+                               string.Format(Lang._Dialogs.UninstallGameSubtitle,
+                                             gameLocation),
+                               null,
+                               null,
+                               Lang._Misc.Uninstall,
+                               Lang._Misc.Cancel,
+                               ContentDialogButton.Secondary,
+                               ContentDialogTheme.Error);
+        }
 
-        public static Task<ContentDialogResult> Dialog_ClearMetadata(UIElement content) =>
-            SpawnDialog(string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialog),
-                        string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialogHelp),
-                        content,
-                        null,
-                        Lang._Misc.Yes,
-                        Lang._Misc.Cancel,
-                        ContentDialogButton.Secondary,
-                        ContentDialogTheme.Warning);
+        public static Task<ContentDialogResult> Dialog_EnsureExit()
+        {
+            return SpawnDialog(Lang._Dialogs.EnsureExitTitle,
+                               Lang._Dialogs.EnsureExitSubtitle,
+                               null,
+                               Lang._Misc.NoCancel,
+                               Lang._Misc.Yes,
+                               null,
+                               ContentDialogButton.Close,
+                               ContentDialogTheme.Warning);
+        }
 
-        public static Task<ContentDialogResult> Dialog_NeedInstallMediaPackage(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.NeedInstallMediaPackTitle,
-                        Lang._Dialogs.NeedInstallMediaPackSubtitle1 + Lang._Dialogs.NeedInstallMediaPackSubtitle2,
-                        content,
-                        Lang._Misc.Cancel,
-                        Lang._Misc.Install,
-                        Lang._Misc.Skip,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning);
+        public static Task<ContentDialogResult> Dialog_ClearMetadata()
+        {
+            return SpawnDialog(string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialog),
+                               string.Format(Lang._SettingsPage.AppFiles_ClearMetadataDialogHelp),
+                               null,
+                               null,
+                               Lang._Misc.Yes,
+                               Lang._Misc.Cancel,
+                               ContentDialogButton.Secondary,
+                               ContentDialogTheme.Warning);
+        }
 
-        public static Task<ContentDialogResult> Dialog_OOBEVideoBackgroundPreviewUnavailable(UIElement content) =>
-            SpawnDialog(Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableHeader,
-                        Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableDescription,
-                        content,
-                        null,
-                        Lang._Misc.OkayHappy);
+        public static Task<ContentDialogResult> Dialog_NeedInstallMediaPackage()
+        {
+            return SpawnDialog(Lang._Dialogs.NeedInstallMediaPackTitle,
+                               Lang._Dialogs.NeedInstallMediaPackSubtitle1 +
+                               Lang._Dialogs.NeedInstallMediaPackSubtitle2,
+                               null,
+                               Lang._Misc.Cancel,
+                               Lang._Misc.Install,
+                               Lang._Misc.Skip,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
 
-        public static Task<ContentDialogResult> Dialog_InstallMediaPackageFinished(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.InstallMediaPackCompleteTitle,
-                        Lang._Dialogs.InstallMediaPackCompleteSubtitle,
-                        content,
-                        null,
-                        Lang._Misc.OkayBackToMenu,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Success);
+        public static Task<ContentDialogResult> Dialog_OOBEVideoBackgroundPreviewUnavailable()
+        {
+            return SpawnDialog(Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableHeader,
+                               Lang._OOBEStartUpMenu.VideoBackgroundPreviewUnavailableDescription,
+                               null,
+                               null,
+                               Lang._Misc.OkayHappy);
+        }
 
-        public static Task<ContentDialogResult> Dialog_StopGame(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.StopGameTitle,
-                        Lang._Dialogs.StopGameSubtitle,
-                        content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning);
+        public static Task<ContentDialogResult> Dialog_InstallMediaPackageFinished()
+        {
+            return SpawnDialog(Lang._Dialogs.InstallMediaPackCompleteTitle,
+                               Lang._Dialogs.InstallMediaPackCompleteSubtitle,
+                               null,
+                               null,
+                               Lang._Misc.OkayBackToMenu,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Success);
+        }
+
+        public static Task<ContentDialogResult> Dialog_StopGame()
+        {
+            return SpawnDialog(Lang._Dialogs.StopGameTitle,
+                               Lang._Dialogs.StopGameSubtitle,
+                               null,
+                               Lang._Misc.NoCancel,
+                               Lang._Misc.Yes,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
 
         #region Playtime Dialogs
-        public static Task<ContentDialogResult> Dialog_ChangePlaytime(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.ChangePlaytimeTitle,
-                        Lang._Dialogs.ChangePlaytimeSubtitle,
-                        content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning);
 
-        public static Task<ContentDialogResult> Dialog_ResetPlaytime(UIElement content)
+        public static Task<ContentDialogResult> Dialog_ChangePlaytime()
+        {
+            return SpawnDialog(Lang._Dialogs.ChangePlaytimeTitle,
+                               Lang._Dialogs.ChangePlaytimeSubtitle,
+                               null,
+                               Lang._Misc.NoCancel,
+                               Lang._Misc.Yes,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
+
+        public static Task<ContentDialogResult> Dialog_ResetPlaytime()
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap };
             texts.Inlines.Add(new Run { Text = Lang._Dialogs.ResetPlaytimeSubtitle });
@@ -933,7 +1082,7 @@ namespace CollapseLauncher.Dialogs
 
             return SpawnDialog(Lang._Dialogs.ResetPlaytimeTitle,
                                texts,
-                               content,
+                               null,
                                Lang._Misc.NoCancel,
                                Lang._Misc.Yes,
                                null,
@@ -941,21 +1090,36 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static async void Dialog_InvalidPlaytime(UIElement content, int elapsedSeconds = 0)
+        public static async void Dialog_InvalidPlaytime(int elapsedSeconds = 0)
         {
             try
             {
                 StackPanel stack = CollapseUIExt.CreateStackPanel();
 
                 stack.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.InvalidPlaytimeSubtitle1, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
-                                             new TextBlock { Text = Lang._Dialogs.InvalidPlaytimeSubtitle2, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 4d),
-                                             new TextBlock { Text = string.Format(Lang._HomePage.GamePlaytime_Display, elapsedSeconds / 3600, elapsedSeconds % 3600 / 60), FontWeight = FontWeights.Bold }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center),
-                                             new TextBlock { Text = Lang._Dialogs.InvalidPlaytimeSubtitle3, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.Bold }.WithMargin(0d, 4d, 0d, -2d).WithHorizontalAlignment(HorizontalAlignment.Center)
+                                             new TextBlock
+                                             {
+                                                 Text         = Lang._Dialogs.InvalidPlaytimeSubtitle2,
+                                                 TextWrapping = TextWrapping.Wrap
+                                             }.WithMargin(0d, 4d),
+                                             new TextBlock
+                                             {
+                                                 Text = string.Format(Lang._HomePage.GamePlaytime_Display,
+                                                                      elapsedSeconds / 3600,
+                                                                      elapsedSeconds % 3600 / 60),
+                                                 FontWeight = FontWeights.Bold
+                                             }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center),
+                                             new TextBlock
+                                                 {
+                                                     Text         = Lang._Dialogs.InvalidPlaytimeSubtitle3,
+                                                     TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.Bold
+                                                 }.WithMargin(0d, 4d, 0d, -2d)
+                                                  .WithHorizontalAlignment(HorizontalAlignment.Center)
                                             );
 
                 await SpawnDialog(Lang._Dialogs.InvalidPlaytimeTitle,
                                   stack,
-                                  content,
+                                  null,
                                   Lang._Misc.Close,
                                   dialogTheme: ContentDialogTheme.Warning);
             }
@@ -964,16 +1128,17 @@ namespace CollapseLauncher.Dialogs
                 // ignored
             }
         }
+
         #endregion
 
-        public static Task<ContentDialogResult> Dialog_MeteredConnectionWarning(UIElement content)
+        public static Task<ContentDialogResult> Dialog_MeteredConnectionWarning()
         {
             TextBlock texts = new TextBlock { TextWrapping = TextWrapping.Wrap }
                .AddTextBlockLine(Lang._Dialogs.MeteredConnectionWarningSubtitle);
 
             return SpawnDialog(Lang._Dialogs.MeteredConnectionWarningTitle,
                                texts,
-                               content,
+                               null,
                                Lang._Misc.NoCancel,
                                Lang._Misc.Yes,
                                null,
@@ -981,39 +1146,45 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.ResetKbShortcutsTitle,
-                        Lang._Dialogs.ResetKbShortcutsSubtitle,
-                        content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning);
-
-        public static Task<ContentDialogResult> Dialog_DbGenerateUid(UIElement content) =>
-            SpawnDialog(Lang._Dialogs.DbGenerateUid_Title,
-                        Lang._Dialogs.DbGenerateUid_Content,
-                        content,
-                        Lang._Misc.NoCancel,
-                        Lang._Misc.Yes,
-                        null,
-                        ContentDialogButton.Close,
-                        ContentDialogTheme.Warning);
-
-        public static Task<ContentDialogResult> Dialog_GenericWarning(UIElement content) =>
-            SpawnDialog(Lang._UnhandledExceptionPage.UnhandledTitle4,
-                        Lang._UnhandledExceptionPage.UnhandledSubtitle4,
-                        content,
-                        Lang._Misc.Okay,
-                        null,
-                        null,
-                        ContentDialogButton.Primary,
-                        ContentDialogTheme.Warning);
-
-        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(UIElement content)
+        public static Task<ContentDialogResult> Dialog_ResetKeyboardShortcuts()
         {
-            Button copyButton = null;
+            return SpawnDialog(Lang._Dialogs.ResetKbShortcutsTitle,
+                               Lang._Dialogs.ResetKbShortcutsSubtitle,
+                               null,
+                               Lang._Misc.NoCancel,
+                               Lang._Misc.Yes,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
+
+        public static Task<ContentDialogResult> Dialog_DbGenerateUid()
+        {
+            return SpawnDialog(Lang._Dialogs.DbGenerateUid_Title,
+                               Lang._Dialogs.DbGenerateUid_Content,
+                               null,
+                               Lang._Misc.NoCancel,
+                               Lang._Misc.Yes,
+                               null,
+                               ContentDialogButton.Close,
+                               ContentDialogTheme.Warning);
+        }
+
+        public static Task<ContentDialogResult> Dialog_GenericWarning()
+        {
+            return SpawnDialog(Lang._UnhandledExceptionPage.UnhandledTitle4,
+                               Lang._UnhandledExceptionPage.UnhandledSubtitle4,
+                               null,
+                               Lang._Misc.Okay,
+                               null,
+                               null,
+                               ContentDialogButton.Primary,
+                               ContentDialogTheme.Warning);
+        }
+
+        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu()
+        {
+            Button? copyButton = null;
 
             try
             {
@@ -1024,7 +1195,8 @@ namespace CollapseLauncher.Dialogs
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                              .WithVerticalAlignment(VerticalAlignment.Stretch)
-                                             .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto);
+                                             .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star),
+                                                       GridLength.Auto);
 
                 _ = rootGrid.AddElementToGridRow(new TextBlock
                 {
@@ -1043,18 +1215,16 @@ namespace CollapseLauncher.Dialogs
                             .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                             .WithVerticalAlignment(VerticalAlignment.Stretch);
 
-                copyButton = rootGrid.AddElementToGridRow(
-                                                          CollapseUIExt.CreateButtonWithIcon<Button>(
-                                                               text: Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
-                                                               iconGlyph: "",
-                                                               iconFontFamily: "FontAwesomeSolid",
-                                                               buttonStyle: "AccentButtonStyle"
+                copyButton = rootGrid.AddElementToGridRow(CollapseUIExt.CreateButtonWithIcon<Button>(
+                                                               Lang._UnhandledExceptionPage!.CopyClipboardBtn1,
+                                                               "",
+                                                               "FontAwesomeSolid",
+                                                               "AccentButtonStyle"
                                                               ), 2)
                                      .WithHorizontalAlignment(HorizontalAlignment.Center);
                 copyButton.Click += CopyTextToClipboard;
 
-                ContentDialogResult result = await SpawnDialog(
-                                                               title, rootGrid, content,
+                ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
                                                                Lang._UnhandledExceptionPage.GoBackPageBtn1,
                                                                null,
                                                                null,
@@ -1071,7 +1241,9 @@ namespace CollapseLauncher.Dialogs
             finally
             {
                 if (copyButton != null)
+                {
                     copyButton.Click -= CopyTextToClipboard;
+                }
             }
         }
 
@@ -1085,8 +1257,8 @@ namespace CollapseLauncher.Dialogs
                     return;
                 }
 
-                FontIcon  fontIcon  = panel.Children[0] as FontIcon;
-                TextBlock textBlock = panel.Children[1] as TextBlock;
+                FontIcon?  fontIcon  = panel.Children[0] as FontIcon;
+                TextBlock? textBlock = panel.Children[1] as TextBlock;
 
                 string lastGlyph = fontIcon!.Glyph;
                 string lastText  = textBlock!.Text;
@@ -1108,200 +1280,283 @@ namespace CollapseLauncher.Dialogs
         }
 
         #region Shortcut Creator Dialogs
-        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(UIElement content, string path)
+
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_ShortcutCreationConfirm(string path)
         {
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1 }.WithMargin(0d, 2d, 0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
-            
-            TextBlock pathText = new TextBlock { TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0, 4d).WithHorizontalAlignment(HorizontalAlignment.Center);
-            pathText.AddTextBlockLine(path, FontWeights.Bold);
-            
-            panel.AddElementToStackPanel(
-                pathText,
-                new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmSubtitle1 }
+                                        .WithMargin(0d, 2d, 0d, 4d)
+                                        .WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox {
-                Content = new TextBlock { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
+            TextBlock pathText = new TextBlock { TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0, 4d)
+               .WithHorizontalAlignment(HorizontalAlignment.Center);
+            pathText.AddTextBlockLine(path, FontWeights.Bold);
+
+            panel.AddElementToStackPanel(
+                                         pathText,
+                                         new TextBlock
+                                         {
+                                             Text         = Lang._Dialogs.ShortcutCreationConfirmSubtitle2,
+                                             TextWrapping = TextWrapping.WrapWholeWords
+                                         }.WithMargin(0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
+
+            CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox
+            {
+                Content = new TextBlock
+                    { Text = Lang._Dialogs.ShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.WrapWholeWords }
             }.WithMargin(0d, 4d, 0d, -8d).WithHorizontalAlignment(HorizontalAlignment.Center));
-        
+
             ContentDialogResult result = await SpawnDialog(
-                Lang._Dialogs.ShortcutCreationConfirmTitle,
-                panel,
-                content,
-                Lang._Misc.Cancel,
-                Lang._Misc.YesContinue,
-                dialogTheme: ContentDialogTheme.Warning
-                );
+                                                           Lang._Dialogs.ShortcutCreationConfirmTitle,
+                                                           panel,
+                                                           null,
+                                                           Lang._Misc.Cancel,
+                                                           Lang._Misc.YesContinue,
+                                                           dialogTheme: ContentDialogTheme.Warning
+                                                          );
 
             return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
         }
 
-        public static Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(UIElement content, string path, bool play = false)
+        public static Task<ContentDialogResult> Dialog_ShortcutCreationSuccess(string path, bool play = false)
         {
-
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1 }.WithMargin(0d, 2d, 0d, 4d).WithHorizontalAlignment(HorizontalAlignment.Center));
+            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle1 }
+                                        .WithMargin(0d, 2d, 0d, 4d)
+                                        .WithHorizontalAlignment(HorizontalAlignment.Center));
 
-            TextBlock pathText = new TextBlock { HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords, Margin = new Thickness(0, 4, 0, 4) };
-            pathText.AddTextBlockLine(message: Lang._Dialogs.ShortcutCreationSuccessSubtitle2);
-            pathText.AddTextBlockLine(message: path, FontWeights.Bold);
+            TextBlock pathText = new TextBlock
+            {
+                HorizontalAlignment = HorizontalAlignment.Center, TextWrapping = TextWrapping.WrapWholeWords,
+                Margin              = new Thickness(0, 4, 0, 4)
+            };
+            pathText.AddTextBlockLine(Lang._Dialogs.ShortcutCreationSuccessSubtitle2);
+            pathText.AddTextBlockLine(path, FontWeights.Bold);
             panel.AddElementToStackPanel(pathText);
 
             if (play)
             {
                 panel.AddElementToStackPanel(
-                    new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle3, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 8d, 0d, 4d),
-                    new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d),
-                    new TextBlock { Text = Lang._Dialogs.ShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d));
+                                             new TextBlock
+                                             {
+                                                 Text       = Lang._Dialogs.ShortcutCreationSuccessSubtitle3,
+                                                 FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.Wrap
+                                             }.WithMargin(0d, 8d, 0d, 4d),
+                                             new TextBlock
+                                             {
+                                                 Text         = Lang._Dialogs.ShortcutCreationSuccessSubtitle4,
+                                                 TextWrapping = TextWrapping.WrapWholeWords
+                                             }.WithMargin(0d, 2d),
+                                             new TextBlock
+                                             {
+                                                 Text         = Lang._Dialogs.ShortcutCreationSuccessSubtitle5,
+                                                 TextWrapping = TextWrapping.WrapWholeWords
+                                             }.WithMargin(0d, 2d));
             }
 
             return SpawnDialog(Lang._Dialogs.ShortcutCreationSuccessTitle,
                                panel,
-                               content,
+                               null,
                                Lang._Misc.Close,
                                dialogTheme: ContentDialogTheme.Success);
         }
 
-        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm(UIElement content)
+        public static async Task<Tuple<ContentDialogResult, bool>> Dialog_SteamShortcutCreationConfirm()
         {
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
 
             panel.AddElementToStackPanel(
-                new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, 2d),
-                new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d));
+                                         new TextBlock
+                                             {
+                                                 Text         = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle1,
+                                                 TextWrapping = TextWrapping.WrapWholeWords
+                                             }.WithHorizontalAlignment(HorizontalAlignment.Center)
+                                              .WithMargin(0d, 4d, 0d, 2d),
+                                         new TextBlock
+                                             {
+                                                 Text         = Lang._Dialogs.SteamShortcutCreationConfirmSubtitle2,
+                                                 TextWrapping = TextWrapping.WrapWholeWords
+                                             }.WithHorizontalAlignment(HorizontalAlignment.Center)
+                                              .WithMargin(0d, 2d, 0d, 4d));
 
             CheckBox playOnLoad = panel.AddElementToStackPanel(new CheckBox
             {
-                Content = new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
+                Content = new TextBlock
+                    { Text = Lang._Dialogs.SteamShortcutCreationConfirmCheckBox, TextWrapping = TextWrapping.Wrap }
             }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 4d, 0d, -8d));
 
             ContentDialogResult result = await SpawnDialog(
-                Lang._Dialogs.SteamShortcutCreationConfirmTitle,
-                panel,
-                content,
-                Lang._Misc.Cancel,
-                Lang._Misc.YesContinue,
-                dialogTheme: ContentDialogTheme.Warning
-                );
+                                                           Lang._Dialogs.SteamShortcutCreationConfirmTitle,
+                                                           panel,
+                                                           null,
+                                                           Lang._Misc.Cancel,
+                                                           Lang._Misc.YesContinue,
+                                                           dialogTheme: ContentDialogTheme.Warning
+                                                          );
 
             return new Tuple<ContentDialogResult, bool>(result, playOnLoad.IsChecked ?? false);
         }
 
-        public static Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(UIElement content, bool play = false)
+        public static Task<ContentDialogResult> Dialog_SteamShortcutCreationSuccess(bool play = false)
         {
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 500d;
 
             panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle1, TextWrapping = TextWrapping.WrapWholeWords }.WithHorizontalAlignment(HorizontalAlignment.Center).WithMargin(0d, 2d, 0d, 4d),
-                                         new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2, FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 8d, 0d, 4d));
-            
-            if (play) panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
-                                                   new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d));
+                                         new TextBlock
+                                         {
+                                             Text       = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle2,
+                                             FontWeight = FontWeights.Bold, TextWrapping = TextWrapping.WrapWholeWords
+                                         }.WithMargin(0d, 8d, 0d, 4d));
+
+            if (play)
+            {
+                panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle3, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
+                                             new TextBlock
+                                             {
+                                                 Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle7,
+                                                 TextWrapping = TextWrapping.WrapWholeWords
+                                             }.WithMargin(0d, 2d, 0d, 2d));
+            }
 
             panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle5, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
-                                         new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 2d),
-                                         new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6, TextWrapping = TextWrapping.WrapWholeWords }.WithMargin(0d, 2d, 0d, 4d));
+                                         new TextBlock
+                                         {
+                                             Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle4,
+                                             TextWrapping = TextWrapping.WrapWholeWords
+                                         }.WithMargin(0d, 2d, 0d, 2d),
+                                         new TextBlock
+                                         {
+                                             Text         = Lang._Dialogs.SteamShortcutCreationSuccessSubtitle6,
+                                             TextWrapping = TextWrapping.WrapWholeWords
+                                         }.WithMargin(0d, 2d, 0d, 4d));
 
             return SpawnDialog(Lang._Dialogs.SteamShortcutCreationSuccessTitle,
                                panel,
-                               content,
+                               null,
                                Lang._Misc.Close,
                                dialogTheme: ContentDialogTheme.Success);
         }
 
-        public static Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure(UIElement content)
+        public static Task<ContentDialogResult> Dialog_SteamShortcutCreationFailure()
         {
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.MaxWidth = 350d;
-            panel.AddElementToStackPanel(new TextBlock { Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap }.WithMargin(0d, 2d, 0d, 4d));
+            panel.AddElementToStackPanel(new TextBlock
+            {
+                Text = Lang._Dialogs.SteamShortcutCreationFailureSubtitle, TextWrapping = TextWrapping.Wrap
+            }.WithMargin(0d, 2d, 0d, 4d));
 
             return SpawnDialog(Lang._Dialogs.SteamShortcutCreationFailureTitle,
                                panel,
-                               content,
+                               null,
                                Lang._Misc.Close,
                                dialogTheme: ContentDialogTheme.Error);
         }
+
         #endregion
 
-        internal static Task<ContentDialogResult> Dialog_DownloadSettings(UIElement content, GamePresetProperty currentGameProperty)
+        internal static Task<ContentDialogResult> Dialog_DownloadSettings(GamePresetProperty currentGameProperty)
         {
             ToggleSwitch startAfterInstall = new ToggleSwitch
             {
-                IsOn = currentGameProperty.GameInstall.StartAfterInstall,
+                IsOn       = currentGameProperty.GameInstall.StartAfterInstall,
                 OffContent = Lang._Misc.Disabled,
-                OnContent = Lang._Misc.Enabled
+                OnContent  = Lang._Misc.Enabled
             };
             startAfterInstall.Toggled += (_, _) =>
-            {
-                currentGameProperty.GameInstall.StartAfterInstall = startAfterInstall.IsOn;
-            };
+                                         {
+                                             currentGameProperty.GameInstall.StartAfterInstall = startAfterInstall.IsOn;
+                                         };
 
             StackPanel panel = CollapseUIExt.CreateStackPanel();
             panel.AddElementToStackPanel(
-                new TextBlock { Text = Lang._Dialogs.DownloadSettingsOption1 }.WithMargin(0d, 0d, 0d, 4d),
-                startAfterInstall
-                );
+                                         new TextBlock
+                                                 { Text = Lang._Dialogs.DownloadSettingsOption1 }
+                                            .WithMargin(0d, 0d, 0d, 4d),
+                                         startAfterInstall
+                                        );
 
             return SpawnDialog(Lang._Dialogs.DownloadSettingsTitle,
                                panel,
-                               content,
+                               null,
                                Lang._Misc.Close);
         }
 
-        public static Task<ContentDialogResult> SpawnDialog(
-            string title, object content, UIElement parentUI,
-            string closeText = null, string primaryText = null,
-            string secondaryText = null, ContentDialogButton defaultButton = ContentDialogButton.Primary,
-            ContentDialogTheme dialogTheme = ContentDialogTheme.Informational)
+        public static Task<ContentDialogResult> SpawnDialog(string?    title,
+                                                            object?    content,
+                                                            UIElement? parentUI      = null,
+                                                            string?    closeText     = null,
+                                                            string?    primaryText   = null,
+                                                            string?    secondaryText = null,
+                                                            ContentDialogButton defaultButton =
+                                                                ContentDialogButton.Primary,
+                                                            ContentDialogTheme dialogTheme =
+                                                                ContentDialogTheme.Informational)
         {
             _sharedDispatcherQueue ??=
                 parentUI?.DispatcherQueue ??
                 (WindowUtility.CurrentWindow as MainWindow)?.DispatcherQueue;
 
             return _sharedDispatcherQueue?.EnqueueAsync(async () =>
-            {
-                // Create a new instance of dialog
-                ContentDialogCollapse dialog = new ContentDialogCollapse(dialogTheme)
-                {
-                    Title = title,
-                    Content = content,
-                    CloseButtonText = closeText,
-                    PrimaryButtonText = primaryText,
-                    SecondaryButtonText = secondaryText,
-                    DefaultButton = defaultButton,
-                    Style = CollapseUIExt.GetApplicationResource<Style>("CollapseContentDialogStyle"),
-                    XamlRoot = WindowUtility.CurrentWindow is MainWindow mainWindow ? mainWindow.Content.XamlRoot : parentUI?.XamlRoot
-                };
+                                                        {
+                                                            // Create a new instance of dialog
+                                                            ContentDialogCollapse dialog =
+                                                                new ContentDialogCollapse(dialogTheme)
+                                                                {
+                                                                    Title               = title,
+                                                                    Content             = content,
+                                                                    CloseButtonText     = closeText,
+                                                                    PrimaryButtonText   = primaryText,
+                                                                    SecondaryButtonText = secondaryText,
+                                                                    DefaultButton       = defaultButton,
+                                                                    Style =
+                                                                        CollapseUIExt
+                                                                           .GetApplicationResource<
+                                                                                Style>("CollapseContentDialogStyle"),
+                                                                    XamlRoot =
+                                                                        WindowUtility.CurrentWindow is MainWindow
+                                                                            mainWindow
+                                                                            ? mainWindow.Content.XamlRoot
+                                                                            : parentUI?.XamlRoot
+                                                                };
 
-                // Queue and spawn the dialog instance
-                return await dialog.QueueAndSpawnDialog();
-            }) ?? Task.FromResult(ContentDialogResult.None);
+                                                            // Queue and spawn the dialog instance
+                                                            return await dialog.QueueAndSpawnDialog();
+                                                        }) ?? Task.FromResult(ContentDialogResult.None);
         }
 
         public static async Task<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
         {
             // If a dialog is currently spawned, then wait until the task is completed
-            while (_currentSpawnedDialogTask is { Status: AsyncStatus.Started }) await Task.Delay(200);
+            while (_currentSpawnedDialogTask is { Status: AsyncStatus.Started })
+            {
+                await Task.Delay(200);
+            }
 
             // Set the theme of the content
             if (WindowUtility.CurrentWindow is MainWindow window)
             {
                 if (dialog is ContentDialogCollapse contentDialogCollapse)
+                {
                     window.ContentDialog = contentDialogCollapse;
+                }
 
                 dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             }
 
+            dialog.XamlRoot ??= SharedXamlRoot;
+
             // Assign the dialog to the global task
             _currentSpawnedDialogTask = dialog switch
-            {
-                ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
-                ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
-                _ => dialog.ShowAsync()
-            };
+                                        {
+                                            ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
+                                            ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
+                                            _ => dialog.ShowAsync()
+                                        };
             // Spawn and await for the result
             ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
             return dialogResult; // Return the result

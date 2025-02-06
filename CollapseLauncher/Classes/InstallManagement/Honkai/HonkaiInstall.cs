@@ -119,7 +119,7 @@ namespace CollapseLauncher.InstallManager.Honkai
             LogWriteLine($"Previous failed game conversion has been detected on Game: {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
-            switch (await Dialog_PreviousGameConversionFailed(ParentUI))
+            switch (await Dialog_PreviousGameConversionFailed())
             {
                 // If primary button clicked, then move the folder and get back to HomePage
                 case ContentDialogResult.Primary:

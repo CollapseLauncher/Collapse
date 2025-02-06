@@ -262,13 +262,12 @@ namespace CollapseLauncher
             {
                 PreviousTag = "crashinfo";
                 ErrorSender.ExceptionType = ErrorType.DiskCrc;
-                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
+                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu();
             }
             else
             {
                 PreviousTag = "crashinfo";
-                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
-                // MainFrameChanger.ChangeMainFrame(typeof(UnhandledExceptionPage));
+                await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu();
             }
         }
 

@@ -21,6 +21,8 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable UnusedMember.Global
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 

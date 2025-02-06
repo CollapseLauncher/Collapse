@@ -12,6 +12,7 @@ using System.Threading;
 // ReSharper disable IdentifierTypo
 using ZstdDecompressStream = ZstdNet.DecompressionStream;
 // ReSharper disable UnusedMember.Global
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Helper.Metadata
 {

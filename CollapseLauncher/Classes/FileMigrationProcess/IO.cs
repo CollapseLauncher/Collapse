@@ -121,13 +121,12 @@ namespace CollapseLauncher
 
             string errStr = $"Free Space on {outputDriveInfo.Name} is not sufficient! (Free space: {outputDriveInfo.TotalFreeSpace}, Req. Space: {_totalFileSize}, Drive: {outputDriveInfo.Name})";
             Logger.LogWriteLine(errStr, LogType.Error, true);
-            await SimpleDialogs.SpawnDialog(
-                                            string.Format(Locale.Lang!._Dialogs!.OperationErrorDiskSpaceInsufficientTitle!, outputDriveInfo.Name),
+            await SimpleDialogs.SpawnDialog(string.Format(Locale.Lang!._Dialogs!.OperationErrorDiskSpaceInsufficientTitle!, outputDriveInfo.Name),
                                             string.Format(Locale.Lang._Dialogs.OperationErrorDiskSpaceInsufficientMsg!,
                                                           ConverterTool.SummarizeSizeSimple(outputDriveInfo.TotalFreeSpace),
                                                           ConverterTool.SummarizeSizeSimple(_totalFileSize),
                                                           outputDriveInfo.Name),
-                                            ParentUI,
+                                            null,
                                             null,
                                             Locale.Lang._Misc!.Okay,
                                             null,

@@ -85,7 +85,7 @@ namespace CollapseLauncher.Pages
             {
                 if (LauncherUpdateWatcher.IsMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
                 {
-                    switch (await Dialog_MeteredConnectionWarning(Content))
+                    switch (await Dialog_MeteredConnectionWarning())
                     {
                         case ContentDialogResult.Primary:
                             await _StartUpdateRoutine();

@@ -169,7 +169,7 @@ namespace CollapseLauncher
                 .WithHorizontalAlignment(HorizontalAlignment.Right)
                 .WithMargin(0d, 4d, 8d, 0d);
 
-            settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings(parentContainer, currentGameProperty);
+            settingsButton.Click += async (_, _) => await SimpleDialogs.Dialog_DownloadSettings(currentGameProperty);
 
             StackPanel controlButtons = parentContainer.AddElementToStackPanel(
                 UIElementExtensions.CreateStackPanel(Orientation.Horizontal)

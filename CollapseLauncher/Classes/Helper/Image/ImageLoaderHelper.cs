@@ -39,6 +39,8 @@ using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
 using BitmapFileFormat = Hi3Helper.CommunityToolkit.WinUI.Controls.BitmapFileFormat;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.Helper.Image
 {

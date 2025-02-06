@@ -1,3 +1,6 @@
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedVariable
 /*
  * Initial Implementation Credit by: @Shatyuka
  */
@@ -8,8 +11,7 @@ using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-// ReSharper disable UnusedMember.Local
-// ReSharper disable UnusedVariable
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.GameSettings.Zenless;
 

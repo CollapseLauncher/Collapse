@@ -10,6 +10,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.GameSettings.Genshin
 {

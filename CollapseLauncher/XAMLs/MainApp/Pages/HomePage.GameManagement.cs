@@ -194,7 +194,7 @@ public sealed partial class HomePage
                         ReturnToHomePage();
                         return;
                     case 1:
-                        await Dialog_PreDownloadPackageVerified(this);
+                        await Dialog_PreDownloadPackageVerified();
                         ReturnToHomePage();
                         return;
                 }
@@ -564,7 +564,7 @@ public sealed partial class HomePage
 
     private async void StopGameButton_Click(object sender, RoutedEventArgs e)
     {
-        if (await Dialog_StopGame(this) != ContentDialogResult.Primary) return;
+        if (await Dialog_StopGame() != ContentDialogResult.Primary) return;
         StopGame(CurrentGameProperty.GameVersion.GamePreset);
     }
 
@@ -882,7 +882,7 @@ public sealed partial class HomePage
     }
     
     private async void ProgressSettingsButton_OnClick(object sender, RoutedEventArgs e) 
-        => await Dialog_DownloadSettings(this, CurrentGameProperty);
+        => await Dialog_DownloadSettings(CurrentGameProperty);
     #endregion
     
     #region Download Cancellation

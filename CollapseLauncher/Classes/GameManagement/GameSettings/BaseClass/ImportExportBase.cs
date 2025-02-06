@@ -19,6 +19,7 @@ using static Hi3Helper.Locale;
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable CommentTypo
 // ReSharper disable GrammarMistakeInComment
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base

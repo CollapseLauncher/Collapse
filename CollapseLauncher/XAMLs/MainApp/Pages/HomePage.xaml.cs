@@ -864,7 +864,7 @@ namespace CollapseLauncher.Pages
                 {
                     // Set initial value to null
                     string file = null;
-                    switch (await Dialog_OpenExecutable(Content))
+                    switch (await Dialog_OpenExecutable())
                     {
                         case ContentDialogResult.Primary:
                             // Try to get the file path

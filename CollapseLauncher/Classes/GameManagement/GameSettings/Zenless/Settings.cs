@@ -5,6 +5,7 @@ using CollapseLauncher.Interfaces;
 using System;
 using System.Diagnostics;
 // ReSharper disable InconsistentNaming
+// ReSharper disable StringLiteralTypo
 
 // ReSharper disable CheckNamespace
 

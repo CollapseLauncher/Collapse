@@ -216,7 +216,7 @@ public partial class HomePage
         if (GetAppConfigValue("HI3IgnoreMediaPack").ToBool())
             return true;
 
-        switch (await Dialog_NeedInstallMediaPackage(Content))
+        switch (await Dialog_NeedInstallMediaPackage())
         {
             case ContentDialogResult.Primary:
                 TryInstallMediaPack();
@@ -249,7 +249,7 @@ public partial class HomePage
             await proc.WaitForExitAsync();
             ShowLoadingPage.ShowLoading(Lang._Dialogs.InstallingMediaPackTitle,
                                         Lang._Dialogs.InstallingMediaPackSubtitleFinished);
-            await Dialog_InstallMediaPackageFinished(Content);
+            await Dialog_InstallMediaPackageFinished();
             MainFrameChanger.ChangeWindowFrame(typeof(MainPage));
         }
         catch
@@ -264,18 +264,18 @@ public partial class HomePage
     {
         GameStartupSettingFlyout.Hide();
 
-        Tuple<ContentDialogResult, bool> result = await Dialog_SteamShortcutCreationConfirm(this);
+        Tuple<ContentDialogResult, bool> result = await Dialog_SteamShortcutCreationConfirm();
 
         if (result.Item1 != ContentDialogResult.Primary)
             return;
 
         if (await ShortcutCreator.AddToSteam(CurrentGameProperty.GamePreset, result.Item2))
         {
-            await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
+            await Dialog_SteamShortcutCreationSuccess(result.Item2);
             return;
         }
 
-        await Dialog_SteamShortcutCreationFailure(this);
+        await Dialog_SteamShortcutCreationFailure();
     }
 
     private async void ShortcutButton_Click(object sender, RoutedEventArgs e)
@@ -287,17 +287,17 @@ public partial class HomePage
 
         if (!IsUserHasPermission(folder))
         {
-            await Dialog_InsufficientWritePermission(sender as UIElement, folder);
+            await Dialog_InsufficientWritePermission(folder);
             return;
         }
 
-        Tuple<ContentDialogResult, bool> result = await Dialog_ShortcutCreationConfirm(this, folder);
+        Tuple<ContentDialogResult, bool> result = await Dialog_ShortcutCreationConfirm(folder);
 
         if (result.Item1 != ContentDialogResult.Primary)
             return;
 
         ShortcutCreator.CreateShortcut(folder, CurrentGameProperty.GamePreset, result.Item2);
-        await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
+        await Dialog_ShortcutCreationSuccess(folder, result.Item2);
     }
     #endregion
 }

@@ -234,7 +234,7 @@ namespace CollapseLauncher.InstallManager.Base
                         // Get Audio Choices first.
                         // If the fallbackFromUpdate flag is set, then don't show the dialog and instead
                         // use the default language (ja-jp) as the fallback and read the existing audio_lang file
-                        List<int> addedVo;
+                        List<int>? addedVo;
                         int setAsDefaultVo = GetSophonLocaleCodeIndex(
                                               sophonMainInfoPair.OtherSophonData,
                                               "ja-jp"
@@ -848,7 +848,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
                                 $"(Free space: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} (Total: {ConverterTool.SummarizeSizeSimple(sizeToCompare)}), " +
                                 $"Drive: {driveInfo.Name})";
-                await SimpleDialogs.Dialog_InsufficientDriveSpace(ParentUI, driveInfo.TotalFreeSpace,
+                await SimpleDialogs.Dialog_InsufficientDriveSpace(driveInfo.TotalFreeSpace,
                                                                   sizeRemainedToDownload, driveInfo.Name);
 
                 // Push log for the disk space error

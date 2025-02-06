@@ -19,6 +19,7 @@ using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background

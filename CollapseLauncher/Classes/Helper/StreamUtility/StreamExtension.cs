@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.StreamUtility

@@ -65,8 +65,7 @@ namespace CollapseLauncher
 
         private async void ShowError(object sender, RoutedEventArgs e)
         {
-            await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
-            // MainFrameChanger.ChangeWindowFrame(typeof(UnhandledExceptionPage));
+            await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu();
         }
 
         private void GoToAppSettings(object sender, RoutedEventArgs e)

@@ -37,7 +37,7 @@ public partial class HomePage
 
     private async void ChangePlaytimeButton_Click(object sender, RoutedEventArgs e)
     {
-        if (await Dialog_ChangePlaytime(this) != ContentDialogResult.Primary) return;
+        if (await Dialog_ChangePlaytime() != ContentDialogResult.Primary) return;
 
         int mins  = int.Parse("0" + MinutePlaytimeTextBox.Text);
         int hours = int.Parse("0" + HourPlaytimeTextBox.Text);
@@ -51,7 +51,7 @@ public partial class HomePage
 
     private async void ResetPlaytimeButton_Click(object sender, RoutedEventArgs e)
     {
-        if (await Dialog_ResetPlaytime(this) != ContentDialogResult.Primary) return;
+        if (await Dialog_ResetPlaytime() != ContentDialogResult.Primary) return;
 
         CurrentGameProperty.GamePlaytime.Reset();
         PlaytimeFlyout.Hide();

@@ -92,7 +92,7 @@ namespace CollapseLauncher.Pages
                 // A/B Testing as of 2023-12-26 (HSR v1.6.0)
                 if (CheckAbTest())
                 {
-                    await SimpleDialogs.Dialog_GenericWarning(Content!);
+                    await SimpleDialogs.Dialog_GenericWarning();
                 }
             }
             catch (Exception ex)

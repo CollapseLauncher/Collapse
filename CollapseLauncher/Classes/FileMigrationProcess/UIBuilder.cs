@@ -18,7 +18,7 @@ namespace CollapseLauncher
 {
     internal partial class FileMigrationProcess
     {
-        private static async ValueTask<string> BuildCheckOutputPathUI(UIElement parentUI, string dialogTitle, string inputPath, string outputPath, bool isFileTransfer)
+        private static async ValueTask<string> BuildCheckOutputPathUI(string dialogTitle, string inputPath, string outputPath, bool isFileTransfer)
         {
             ContentDialogCollapse mainDialogWindow = new ContentDialogCollapse(ContentDialogTheme.Informational)
             {
@@ -26,8 +26,7 @@ namespace CollapseLauncher
                 CloseButtonText = Locale.Lang!._Misc!.Cancel,
                 PrimaryButtonText = null,
                 SecondaryButtonText = null,
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = parentUI!.XamlRoot
+                DefaultButton = ContentDialogButton.Primary
             };
 
             Grid mainGrid = UIElementExtensions.CreateGrid()
@@ -129,8 +128,7 @@ namespace CollapseLauncher
                 CloseButtonText = null,
                 PrimaryButtonText = null,
                 SecondaryButtonText = null,
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = ParentUI!.XamlRoot
+                DefaultButton = ContentDialogButton.Primary
             };
 
             Grid mainGrid = UIElementExtensions.CreateGrid()

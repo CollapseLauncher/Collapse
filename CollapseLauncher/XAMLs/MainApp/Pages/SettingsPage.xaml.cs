@@ -163,7 +163,7 @@ namespace CollapseLauncher.Pages
         #region Settings Methods
         private async void RelocateFolder(object sender, RoutedEventArgs e)
         {
-            switch (await Dialog_RelocateFolder(Content))
+            switch (await Dialog_RelocateFolder())
             {
                 case ContentDialogResult.Primary:
                     IsFirstInstall = true;
@@ -188,7 +188,7 @@ namespace CollapseLauncher.Pages
 
         private async void ClearMetadataFolder(object sender, RoutedEventArgs e)
         {
-            switch (await Dialog_ClearMetadata(Content))
+            switch (await Dialog_ClearMetadata())
             {
                 case ContentDialogResult.Primary:
                     try
@@ -1459,7 +1459,7 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
+            if (await Dialog_DbGenerateUid() != ContentDialogResult.Primary) // Send warning dialog
             {
                 t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
             }
@@ -1617,7 +1617,7 @@ namespace CollapseLauncher.Pages
 
         private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
         {
-            if (await Dialog_DbGenerateUid(sender as UIElement) != ContentDialogResult.Primary)
+            if (await Dialog_DbGenerateUid() != ContentDialogResult.Primary)
             {
                 return;
             }
@@ -1646,7 +1646,7 @@ namespace CollapseLauncher.Pages
 
         private async void ResetKeylist_Click(object sender, RoutedEventArgs e)
         {
-            if (await Dialog_ResetKeyboardShortcuts(sender as UIElement) != ContentDialogResult.Primary)
+            if (await Dialog_ResetKeyboardShortcuts() != ContentDialogResult.Primary)
             {
                 return;
             }
