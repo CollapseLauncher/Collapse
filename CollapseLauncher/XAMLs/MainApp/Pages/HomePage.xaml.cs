@@ -926,7 +926,7 @@ namespace CollapseLauncher.Pages
             OpenButtonLinkFromTag(sender, e);
         }
         #endregion
-        
+
         #region Open Button Method
         private async void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
         {
@@ -1024,7 +1024,6 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
-
         #region Set Hand Cursor
         private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
             (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));

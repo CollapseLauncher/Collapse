@@ -1,7 +1,9 @@
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -142,6 +144,53 @@ namespace CollapseLauncher.Statics
         {
             if (hashID < 0) hashID = CurrentGameHashID;
             if (Vault.ContainsKey(hashID)) BackgroundActivityManager.Detach(hashID);
+        }
+
+        public static void SafeDisposeVaults()
+        {
+            int[] cachedPropertyKeys = Vault.Keys.ToArray();
+
+            int i = cachedPropertyKeys.Length;
+            while (i > 0)
+            {
+                try
+                {
+                    if (Vault.Remove(cachedPropertyKeys[--i], out GamePresetProperty? value))
+                    {
+                        value.Dispose();
+#if DEBUG
+                        Logger.LogWriteLine($"[GamePropertyVault] A preset property at index: {i} for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
+#endif
+                        return;
+                    }
+
+#if DEBUG
+                    Logger.LogWriteLine($"[GamePropertyVault] Cannot dispose the preset property as it cannot be detached from vault on index: {i}", LogType.Debug, true);
+#endif
+                }
+                catch (Exception ex)
+                {
+                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                }
+            }
+
+            try
+            {
+                foreach (KeyValuePair<int, GamePresetProperty> keyValuePair in Vault)
+                {
+                    GamePresetProperty value = keyValuePair.Value;
+                    value.Dispose();
+#if DEBUG
+                    Logger.LogWriteLine($"[GamePropertyVault] Other preset property for: {value.GamePreset.GameName} - {value.GamePreset.ZoneName} has been disposed!", LogType.Debug, true);
+#endif
+                }
+
+                Vault.Clear();
+            }
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+            }
         }
     }
 

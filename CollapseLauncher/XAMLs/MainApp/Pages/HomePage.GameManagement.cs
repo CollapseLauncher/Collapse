@@ -149,6 +149,7 @@ public sealed partial class HomePage
 
         try
         {
+            MainWindow.IsCriticalOpInProgress = true;
             // Prevent device from sleep
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             // Set the notification trigger to "Running" state
@@ -237,6 +238,7 @@ public sealed partial class HomePage
 
             // Turn the sleep back on
             Sleep.RestoreSleep();
+            MainWindow.IsCriticalOpInProgress = false;
         }
     }
 
@@ -273,6 +275,7 @@ public sealed partial class HomePage
         bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
         try
         {
+            MainWindow.IsCriticalOpInProgress = true;
             // Prevent device from sleep
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             // Set the notification trigger to "Running" state
@@ -443,6 +446,7 @@ public sealed partial class HomePage
 
             // Turn the sleep back on
             Sleep.RestoreSleep();
+            MainWindow.IsCriticalOpInProgress = false;
         }
     }
 
@@ -765,6 +769,7 @@ public sealed partial class HomePage
 
         try
         {
+            MainWindow.IsCriticalOpInProgress = true;
             // Prevent device from sleep
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             // Set the notification trigger to "Running" state
@@ -872,6 +877,7 @@ public sealed partial class HomePage
 
             // Turn the sleep back on
             Sleep.RestoreSleep();
+            MainWindow.IsCriticalOpInProgress = false;
         }
     }
     
