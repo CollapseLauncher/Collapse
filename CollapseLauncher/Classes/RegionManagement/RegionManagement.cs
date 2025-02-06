@@ -249,6 +249,7 @@ namespace CollapseLauncher
 
             // Initializing Game Statics
             await LoadGameStaticsByGameType(preset, gameName, gameRegion);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
             // Init NavigationPanel Items
             await Task.Run(() => InitializeNavigationItems());

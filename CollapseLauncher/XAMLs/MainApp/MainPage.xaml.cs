@@ -2186,11 +2186,11 @@ namespace CollapseLauncher
             }
         }
 
-        private static void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
-            if (!GetCurrentGameProperty().IsGameRunning) return;
+            if (!CurrentGameProperty.IsGameRunning) return;
 
-            PresetConfig gamePreset = GetCurrentGameProperty().GameVersion.GamePreset;
+            PresetConfig gamePreset = CurrentGameProperty.GameVersion.GamePreset;
             string? gamePresetExecName = gamePreset.GameExecutableName;
             if (string.IsNullOrEmpty(gamePresetExecName))
             {
@@ -2255,6 +2255,9 @@ namespace CollapseLauncher
                     break;
                 case { GameType: GameNameType.StarRail }:
                     Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
+                    break;
+                case { GameType: GameNameType.Zenless }:
+                    Navigate(typeof(ZenlessGameSettingsPage), "zenlessgamesettings");
                     break;
             }
         }

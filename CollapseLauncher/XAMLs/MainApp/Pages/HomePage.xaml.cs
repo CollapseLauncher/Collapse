@@ -3057,7 +3057,7 @@ namespace CollapseLauncher.Pages
             if (result.Item1 != ContentDialogResult.Primary)
                 return;
 
-            if (await ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty().GamePreset, result.Item2))
+            if (await ShortcutCreator.AddToSteam(CurrentGameProperty.GamePreset, result.Item2))
             {
                 await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
                 return;
@@ -3084,7 +3084,7 @@ namespace CollapseLauncher.Pages
             if (result.Item1 != ContentDialogResult.Primary)
                 return;
 
-            ShortcutCreator.CreateShortcut(folder, GamePropertyVault.GetCurrentGameProperty().GamePreset, result.Item2);
+            ShortcutCreator.CreateShortcut(folder, CurrentGameProperty.GamePreset, result.Item2);
             await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
         }
         #endregion
