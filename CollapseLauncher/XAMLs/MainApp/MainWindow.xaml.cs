@@ -260,8 +260,7 @@ namespace CollapseLauncher
         {
             if (IsCriticalOpInProgress)
             {
-                var ensure = await Dialog_EnsureExit(Content);
-                if (ensure != ContentDialogResult.Primary)
+                if (await Dialog_EnsureExit(Content) != ContentDialogResult.Primary)
                     return;
             }
             SentryHelper.StopSentrySdk();
