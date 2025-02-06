@@ -610,12 +610,12 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllSizeCurrent = await GetExistingDownloadPackageSize(downloadClient, AssetIndex, Token!.Token);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(ParentUI, AssetIndex, ProgressAllSizeCurrent);
+            await CheckDriveFreeSpace(AssetIndex, ProgressAllSizeCurrent);
 
             // Sanitize Check: Show dialog for resuming/reset the existing download
             if (!skipDialog)
             {
-                await CheckExistingDownloadAsync(ParentUI, AssetIndex);
+                await CheckExistingDownloadAsync(AssetIndex);
             }
 
             // Start downloading process
