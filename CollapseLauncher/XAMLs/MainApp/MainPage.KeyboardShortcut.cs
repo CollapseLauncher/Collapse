@@ -40,6 +40,8 @@ using KeybindAction = TypedEventHandler<KeyboardAccelerator, KeyboardAccelerator
 
 public partial class MainPage : Page
 {
+    private readonly string ExplorerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
+    
     private void InitKeyboardShortcuts()
     {
         if (GetAppConfigValue("EnableShortcuts").ToBoolNullable() == null)
@@ -303,7 +305,7 @@ public partial class MainPage : Page
         ToggleNotificationPanelBtnClick(null, null);
     }
 
-    private string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath; }
+    private string GameDirPath => CurrentGameProperty.GameVersion.GameDirPath;
     private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         if (!IsGameInstalled()) return;
@@ -324,7 +326,7 @@ public partial class MainPage : Page
             StartInfo = new ProcessStartInfo
             {
                 UseShellExecute = true,
-                FileName        = "explorer.exe",
+                FileName        = ExplorerPath,
                 Arguments       = ScreenshotFolder
             }
         }.Start();
@@ -344,7 +346,7 @@ public partial class MainPage : Page
                                    StartInfo = new ProcessStartInfo
                                    {
                                        UseShellExecute = true,
-                                       FileName        = "explorer.exe",
+                                       FileName        = ExplorerPath,
                                        Arguments       = GameFolder
                                    }
                                }.Start());
@@ -370,7 +372,7 @@ public partial class MainPage : Page
                                    StartInfo = new ProcessStartInfo
                                    {
                                        UseShellExecute = true,
-                                       FileName        = "explorer.exe",
+                                       FileName        = ExplorerPath,
                                        Arguments       = gameFolder
                                    }
                                }.Start());

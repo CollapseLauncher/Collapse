@@ -928,6 +928,10 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Open Button Method
+
+        private readonly string ExplorerPath =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
+        
         private async void OpenGameFolderButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -941,8 +945,8 @@ namespace CollapseLauncher.Pages
                         StartInfo = new ProcessStartInfo
                         {
                             UseShellExecute = true,
-                            FileName = "explorer.exe",
-                            Arguments = gameFolder
+                            FileName        = ExplorerPath,
+                            Arguments       = gameFolder
                         }
                     }.Start());
             }
@@ -965,8 +969,8 @@ namespace CollapseLauncher.Pages
                         StartInfo = new ProcessStartInfo
                         {
                             UseShellExecute = true,
-                            FileName = "explorer.exe",
-                            Arguments = cacheFolder
+                            FileName        = ExplorerPath,
+                            Arguments       = cacheFolder
                         }
                     }.Start());
             }
@@ -998,8 +1002,8 @@ namespace CollapseLauncher.Pages
                         StartInfo = new ProcessStartInfo
                         {
                             UseShellExecute = true,
-                            FileName = "explorer.exe",
-                            Arguments = ScreenshotFolder
+                            FileName        = ExplorerPath,
+                            Arguments       = ScreenshotFolder
                         }
                     }.Start());
             }

@@ -225,7 +225,7 @@ public partial class HomePage
         }
     }
     #endregion
-        
+
     #region Game Launch Argument Builder
 
     private bool RequireWindowExclusivePayload;
@@ -463,7 +463,7 @@ public partial class HomePage
         } 
     }
     #endregion
-        
+
     #region Game Log Method
     private async void ReadOutputLog()
     {
@@ -546,7 +546,7 @@ public partial class HomePage
         }
     }
     #endregion
-        
+
     #region Exclusive Window Payload
     private async void StartExclusiveWindowPayload()
     {
@@ -557,10 +557,10 @@ public partial class HomePage
         Windowing.ShowWindow(_windowPtr);
     }
     #endregion
-        
+
     #region Game Resizable Window Payload
     private async void StartResizableWindowPayload(string       executableName, IGameSettingsUniversal settings,
-                                                    GameNameType gameType,       int? height, int? width)
+                                                   GameNameType gameType,       int? height, int? width)
     {
         try
         {
@@ -627,251 +627,257 @@ public partial class HomePage
 
     }
     #endregion
-    
+
     #region Pre/Post Game Launch Command
-        private Process _procPreGLC;
 
-        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-        private async void PreLaunchCommand(IGameSettingsUniversal settings)
+    private static readonly string CmdPath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "cmd.exe");
+
+    private Process _procPreGLC;
+
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+    private async void PreLaunchCommand(IGameSettingsUniversal settings)
+    {
+        try
         {
-            try
-            {
-                var preGameLaunchCommand = settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
-                if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
+            var preGameLaunchCommand = settings?.SettingsCollapseMisc?.GamePreLaunchCommand;
+            if (string.IsNullOrEmpty(preGameLaunchCommand)) return;
 
-                LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
-                             $"Game launch is delayed by {settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
-                             $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
-                             LogType.Warning, true);
+            LogWriteLine($"Using Pre-launch command : {preGameLaunchCommand}\r\n" +
+                         $"Game launch is delayed by {settings.SettingsCollapseMisc.GameLaunchDelay} ms\r\n\t" +
+                         $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
+                         LogType.Warning, true);
 
-                _procPreGLC = new Process();
+            _procPreGLC = new Process();
 
-                _procPreGLC.StartInfo.FileName = "cmd.exe";
-                _procPreGLC.StartInfo.Arguments = "/S /C " + "\"" + preGameLaunchCommand + "\"";
-                _procPreGLC.StartInfo.CreateNoWindow = true;
-                _procPreGLC.StartInfo.UseShellExecute = false;
-                _procPreGLC.StartInfo.RedirectStandardOutput = true;
-                _procPreGLC.StartInfo.RedirectStandardError = true;
+            _procPreGLC.StartInfo.FileName               = CmdPath;
+            _procPreGLC.StartInfo.Arguments              = "/S /C " + "\"" + preGameLaunchCommand + "\"";
+            _procPreGLC.StartInfo.CreateNoWindow         = true;
+            _procPreGLC.StartInfo.UseShellExecute        = false;
+            _procPreGLC.StartInfo.RedirectStandardOutput = true;
+            _procPreGLC.StartInfo.RedirectStandardError  = true;
 
-                _procPreGLC.OutputDataReceived += GLC_OutputHandler;
-                _procPreGLC.ErrorDataReceived  += GLC_ErrorHandler;
+            _procPreGLC.OutputDataReceived += GLC_OutputHandler;
+            _procPreGLC.ErrorDataReceived  += GLC_ErrorHandler;
 
-                _procPreGLC.Start();
+            _procPreGLC.Start();
 
-                _procPreGLC.BeginOutputReadLine();
-                _procPreGLC.BeginErrorReadLine();
+            _procPreGLC.BeginOutputReadLine();
+            _procPreGLC.BeginErrorReadLine();
 
-                await _procPreGLC.WaitForExitAsync();
+            await _procPreGLC.WaitForExitAsync();
                 
-                _procPreGLC.OutputDataReceived -= GLC_OutputHandler;
-                _procPreGLC.ErrorDataReceived  -= GLC_ErrorHandler;
-            }
-            catch (Win32Exception ex)
-            {
-                LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: " +
-                             $"{CurrentGameProperty.GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
-            }
-            finally
-            {
-                _procPreGLC?.Dispose();
-            }
+            _procPreGLC.OutputDataReceived -= GLC_OutputHandler;
+            _procPreGLC.ErrorDataReceived  -= GLC_ErrorHandler;
         }
-
-        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-        private void PreLaunchCommand_ForceClose()
+        catch (Win32Exception ex)
         {
-            try
-            {
-                if (_procPreGLC == null || _procPreGLC.HasExited || _procPreGLC.Id == 0) return;
-
-                // Kill main and child processes
-                var taskKill = new Process();
-                taskKill.StartInfo.FileName  = "taskkill";
-                taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
-                taskKill.Start();
-                taskKill.WaitForExit();
-
-                LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
-            }
-            // Ignore external errors
-            catch (InvalidOperationException ioe)
-            {
-                SentryHelper.ExceptionHandler(ioe);
-            }
-            catch (Win32Exception we)
-            {
-                SentryHelper.ExceptionHandler(we);
-            }
-            catch (Exception ex)
-            {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
-            }
+            LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: " +
+                         $"{CurrentGameProperty.GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+            ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
         }
-
-        [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-        private static async void PostExitCommand(IGameSettingsUniversal settings)
+        finally
         {
-            try
-            {
-                var postGameExitCommand = settings?.SettingsCollapseMisc?.GamePostExitCommand;
-                if (string.IsNullOrEmpty(postGameExitCommand)) return;
-
-                LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
-                             $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
-                             LogType.Warning, true);
-
-                Process procPostGLC = new Process();
-
-                procPostGLC.StartInfo.FileName = "cmd.exe";
-                procPostGLC.StartInfo.Arguments = "/S /C " + "\"" + postGameExitCommand + "\"";
-                procPostGLC.StartInfo.CreateNoWindow = true;
-                procPostGLC.StartInfo.UseShellExecute = false;
-                procPostGLC.StartInfo.RedirectStandardOutput = true;
-                procPostGLC.StartInfo.RedirectStandardError = true;
-
-                procPostGLC.OutputDataReceived += GLC_OutputHandler;
-                procPostGLC.ErrorDataReceived  += GLC_ErrorHandler;
-
-                procPostGLC.Start();
-                procPostGLC.BeginOutputReadLine();
-                procPostGLC.BeginErrorReadLine();
-
-                await procPostGLC.WaitForExitAsync();
-
-                procPostGLC.OutputDataReceived -= GLC_OutputHandler;
-                procPostGLC.ErrorDataReceived  -= GLC_ErrorHandler;
-            }
-            catch (Win32Exception ex)
-            {
-                LogWriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
-                             $"{settings?.SettingsCollapseMisc?.GamePostExitCommand}\r\n" +
-                             $"Traceback: {ex}", LogType.Error, true);
-                ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
-            }
+            _procPreGLC?.Dispose();
         }
+    }
 
-        private static void GLC_OutputHandler(object _, DataReceivedEventArgs e)
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+    private void PreLaunchCommand_ForceClose()
+    {
+        try
         {
-            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+            if (_procPreGLC == null || _procPreGLC.HasExited || _procPreGLC.Id == 0 ) return;
+
+            // Kill main and child processes
+            var taskKill = new Process();
+            taskKill.StartInfo.FileName =
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "taskkill.exe");
+            
+            taskKill.StartInfo.Arguments = $"/F /T /PID {_procPreGLC.Id}";
+            taskKill.Start();
+            taskKill.WaitForExit();
+
+            LogWriteLine("Pre-launch command has been forced to close!", LogType.Warning, true);
         }
-
-        private static void GLC_ErrorHandler(object _, DataReceivedEventArgs e)
+        // Ignore external errors
+        catch (InvalidOperationException ioe)
         {
-            if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
+            SentryHelper.ExceptionHandler(ioe);
         }
-        #endregion
-        
-        #region Game Running State
-        private async void CheckRunningGameInstance(CancellationToken token)
+        catch (Win32Exception we)
         {
-            TextBlock startGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
-            FontIcon startGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
-            Grid startGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
-            // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
-            string       startGameBtnIconGlyph        = startGameBtnIcon!.Glyph;
-            const string startGameBtnRunningIconGlyph = "";
+            SentryHelper.ExceptionHandler(we);
+        }
+        catch (Exception ex)
+        {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+            LogWriteLine($"Error when trying to close Pre-GLC!\r\n{ex}", LogType.Error, true);
+        }
+    }
 
-            startGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
-            startGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+    private static async void PostExitCommand(IGameSettingsUniversal settings)
+    {
+        try
+        {
+            var postGameExitCommand = settings?.SettingsCollapseMisc?.GamePostExitCommand;
+            if (string.IsNullOrEmpty(postGameExitCommand)) return;
 
-            try
+            LogWriteLine($"Using Post-launch command : {postGameExitCommand}\r\n\t" +
+                         $"BY USING THIS, NO SUPPORT IS PROVIDED IF SOMETHING HAPPENED TO YOUR ACCOUNT, GAME, OR SYSTEM!",
+                         LogType.Warning, true);
+
+            Process procPostGLC = new Process();
+
+            procPostGLC.StartInfo.FileName               = CmdPath;
+            procPostGLC.StartInfo.Arguments              = "/S /C " + "\"" + postGameExitCommand + "\"";
+            procPostGLC.StartInfo.CreateNoWindow         = true;
+            procPostGLC.StartInfo.UseShellExecute        = false;
+            procPostGLC.StartInfo.RedirectStandardOutput = true;
+            procPostGLC.StartInfo.RedirectStandardError  = true;
+
+            procPostGLC.OutputDataReceived += GLC_OutputHandler;
+            procPostGLC.ErrorDataReceived  += GLC_ErrorHandler;
+
+            procPostGLC.Start();
+            procPostGLC.BeginOutputReadLine();
+            procPostGLC.BeginErrorReadLine();
+
+            await procPostGLC.WaitForExitAsync();
+
+            procPostGLC.OutputDataReceived -= GLC_OutputHandler;
+            procPostGLC.ErrorDataReceived  -= GLC_ErrorHandler;
+        }
+        catch (Win32Exception ex)
+        {
+            LogWriteLine($"There is a problem while trying to launch Post-Game Command with command:\r\n\t" +
+                         $"{settings?.SettingsCollapseMisc?.GamePostExitCommand}\r\n" +
+                         $"Traceback: {ex}", LogType.Error, true);
+            ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Post-Exit command\r\tThrow: {ex}", ex));
+        }
+    }
+
+    private static void GLC_OutputHandler(object _, DataReceivedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(e.Data)) LogWriteLine(e.Data, LogType.GLC, true);
+    }
+
+    private static void GLC_ErrorHandler(object _, DataReceivedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(e.Data)) LogWriteLine($"ERROR RECEIVED!\r\n\t" + $"{e.Data}", LogType.GLC, true);
+    }
+    #endregion
+
+    #region Game Running State
+    private async void CheckRunningGameInstance(CancellationToken token)
+    {
+        TextBlock startGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
+        FontIcon startGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
+        Grid startGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
+        // AnimatedVisualPlayer    StartGameBtnAnimatedIcon      = StartGameBtnAnimatedIconGrid!.Children.OfType<AnimatedVisualPlayer>().FirstOrDefault();
+        string       startGameBtnIconGlyph        = startGameBtnIcon!.Glyph;
+        const string startGameBtnRunningIconGlyph = "";
+
+        startGameBtnIcon.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+        startGameBtnAnimatedIconGrid.EnableSingleImplicitAnimation(VisualPropertyType.Opacity);
+
+        try
+        {
+            while (CurrentGameProperty.IsGameRunning)
             {
-                while (CurrentGameProperty.IsGameRunning)
+                _cachedIsGameRunning = true;
+
+                StartGameBtn.IsEnabled = false;
+                if (startGameBtnText != null && startGameBtnAnimatedIconGrid != null)
                 {
-                    _cachedIsGameRunning = true;
+                    startGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
+                    startGameBtnIcon.Glyph               = startGameBtnRunningIconGlyph;
+                    startGameBtnAnimatedIconGrid.Opacity = 0;
+                    startGameBtnIcon.Opacity             = 1;
 
-                    StartGameBtn.IsEnabled = false;
-                    if (startGameBtnText != null && startGameBtnAnimatedIconGrid != null)
+                    startGameBtnText.UpdateLayout();
+
+                    RepairGameButton.IsEnabled       = false;
+                    UninstallGameButton.IsEnabled    = false;
+                    ConvertVersionButton.IsEnabled   = false;
+                    CustomArgsTextBox.IsEnabled      = false;
+                    MoveGameLocationButton.IsEnabled = false;
+                    StopGameButton.IsEnabled         = true;
+
+                    PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
+                    PlaytimeRunningStack.Visibility = Visibility.Visible;
+
+                    if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out var processId, out _))
                     {
-                        startGameBtnText.Text                = Lang._HomePage.StartBtnRunning;
-                        startGameBtnIcon.Glyph               = startGameBtnRunningIconGlyph;
-                        startGameBtnAnimatedIconGrid.Opacity = 0;
-                        startGameBtnIcon.Opacity             = 1;
+                        using Process currentGameProcess = Process.GetProcessById(processId);
 
-                        startGameBtnText.UpdateLayout();
-
-                        RepairGameButton.IsEnabled       = false;
-                        UninstallGameButton.IsEnabled    = false;
-                        ConvertVersionButton.IsEnabled   = false;
-                        CustomArgsTextBox.IsEnabled      = false;
-                        MoveGameLocationButton.IsEnabled = false;
-                        StopGameButton.IsEnabled = true;
-
-                        PlaytimeIdleStack.Visibility = Visibility.Collapsed;
-                        PlaytimeRunningStack.Visibility = Visibility.Visible;
-
-                        if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out var processId, out _))
-                        {
-                            using Process currentGameProcess = Process.GetProcessById(processId);
-
-                            // HACK: For some reason, the text still unchanged.
-                            //       Make sure the start game button text also changed.
-                            startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            var fromActivityOffset = currentGameProcess.StartTime;
-                            var gameSettings       = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
-                            var gamePreset         = CurrentGameProperty.GamePreset;
+                        // HACK: For some reason, the text still unchanged.
+                        //       Make sure the start game button text also changed.
+                        startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                        var fromActivityOffset = currentGameProcess.StartTime;
+                        var gameSettings       = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
+                        var gamePreset         = CurrentGameProperty.GamePreset;
                             
-#if !DISABLEDISCORD
-                            if (ToggleRegionPlayingRpc)
-                                AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
-#endif
+                    #if !DISABLEDISCORD
+                        if (ToggleRegionPlayingRpc)
+                            AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+                    #endif
 
-                            CurrentGameProperty!.GamePlaytime!.StartSession(currentGameProcess);
+                        CurrentGameProperty!.GamePlaytime!.StartSession(currentGameProcess);
 
-                            int? height = gameSettings.SettingsScreen.height;
-                            int? width = gameSettings.SettingsScreen.width;
+                        int? height = gameSettings.SettingsScreen.height;
+                        int? width  = gameSettings.SettingsScreen.width;
 
-                            // Start the resizable window payload
-                            StartResizableWindowPayload(gamePreset.GameExecutableName,
-                                                        gameSettings,
-                                                        gamePreset.GameType, height, width);
+                        // Start the resizable window payload
+                        StartResizableWindowPayload(gamePreset.GameExecutableName,
+                                                    gameSettings,
+                                                    gamePreset.GameType, height, width);
 
-                            await currentGameProcess.WaitForExitAsync(token);
-                        }
+                        await currentGameProcess.WaitForExitAsync(token);
                     }
-
-                    await Task.Delay(RefreshRate, token);
                 }
 
-                _cachedIsGameRunning = false;
+                await Task.Delay(RefreshRate, token);
+            }
 
-                StartGameBtn.IsEnabled = true;
-                startGameBtnText!.Text = Lang._HomePage.StartBtn;
-                startGameBtnIcon.Glyph = startGameBtnIconGlyph;
-                if (startGameBtnAnimatedIconGrid != null)
-                {
-                    startGameBtnAnimatedIconGrid.Opacity = 1;
-                }
+            _cachedIsGameRunning = false;
 
-                startGameBtnIcon.Opacity = 0;
+            StartGameBtn.IsEnabled = true;
+            startGameBtnText!.Text = Lang._HomePage.StartBtn;
+            startGameBtnIcon.Glyph = startGameBtnIconGlyph;
+            if (startGameBtnAnimatedIconGrid != null)
+            {
+                startGameBtnAnimatedIconGrid.Opacity = 1;
+            }
 
-                GameStartupSetting.IsEnabled = true;
-                RepairGameButton.IsEnabled = true;
-                MoveGameLocationButton.IsEnabled = true;
-                UninstallGameButton.IsEnabled = true;
-                ConvertVersionButton.IsEnabled = true;
-                CustomArgsTextBox.IsEnabled = true;
-                StopGameButton.IsEnabled = false;
+            startGameBtnIcon.Opacity = 0;
 
-                PlaytimeIdleStack.Visibility = Visibility.Visible;
-                PlaytimeRunningStack.Visibility = Visibility.Collapsed;
+            GameStartupSetting.IsEnabled     = true;
+            RepairGameButton.IsEnabled       = true;
+            MoveGameLocationButton.IsEnabled = true;
+            UninstallGameButton.IsEnabled    = true;
+            ConvertVersionButton.IsEnabled   = true;
+            CustomArgsTextBox.IsEnabled      = true;
+            StopGameButton.IsEnabled         = false;
+
+            PlaytimeIdleStack.Visibility    = Visibility.Visible;
+            PlaytimeRunningStack.Visibility = Visibility.Collapsed;
                 
-            #if !DISABLEDISCORD
-                AppDiscordPresence?.SetActivity(ActivityType.Idle);
-            #endif
-            }
-            catch (TaskCanceledException)
-            {
-                // Ignore
-                LogWriteLine("Game run watcher has been terminated!");
-            }
-            catch (Exception ex)
-            {
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
-            }
+        #if !DISABLEDISCORD
+            AppDiscordPresence?.SetActivity(ActivityType.Idle);
+        #endif
         }
-        #endregion
+        catch (TaskCanceledException)
+        {
+            // Ignore
+            LogWriteLine("Game run watcher has been terminated!");
+        }
+        catch (Exception ex)
+        {
+            await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+            LogWriteLine($"Error when checking if game is running!\r\n{ex}", LogType.Error, true);
+        }
+    }
+    #endregion
 }
