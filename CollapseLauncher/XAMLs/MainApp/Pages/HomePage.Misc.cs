@@ -106,19 +106,15 @@ public partial class HomePage
         int    processId   = -1;
         try
         {
-            // Try catching the non-zero MainWindowHandle pointer and assign it to "toTargetProc" variable by using GetGameProcessWithActiveWindow()
             while (!gameProp.TryGetGameProcessIdWithActiveWindow(out processId, out _))
             {
-                await Task.Delay(1000); // Waiting the process to be found and assigned to "toTargetProc" variable.
-                // This is where the magic happen. When the "toTargetProc" doesn't meet the comparison to be compared as null,
-                // it will instead return a non-null value and assign it to "toTargetProc" variable,
-                // which it will break the loop and execute the next code below it.
+                await Task.Delay(1000); // Waiting the process to be found
             }
 
             LogWriteLine($"[HomePage::GameBoost_Invoke] Found target process! Waiting 10 seconds for process initialization...\r\n\t" +
                          $"Target Process : {processName} [{processId}]", LogType.Default, true);
 
-            // Wait 20 (or 10 if its first try) seconds before applying
+            // Wait 20 (or 10 if it's not first try) seconds before applying
             if (GameBoostInvokeTryCount == 0)
             {
                 await Task.Delay(20000);
