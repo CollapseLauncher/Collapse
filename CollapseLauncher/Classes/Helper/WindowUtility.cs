@@ -466,7 +466,7 @@ namespace CollapseLauncher.Helper
                                     // Deal with close message from system shell.
                                     if (CurrentWindow is MainWindow mainWindow)
                                     {
-                                        mainWindow.CloseApp();
+                                        _ = mainWindow.CloseApp();
                                     }
                                     return 0;
                                 }

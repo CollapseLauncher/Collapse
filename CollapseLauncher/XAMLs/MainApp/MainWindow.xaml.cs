@@ -251,12 +251,12 @@ namespace CollapseLauncher
             WindowUtility.WindowMinimize();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => CloseApp();
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => _ = CloseApp();
         
         /// <summary>
         /// Close app and do necessary events before closing
         /// </summary>
-        public async void CloseApp()
+        public async Task CloseApp()
         {
             if (IsCriticalOpInProgress)
             {
