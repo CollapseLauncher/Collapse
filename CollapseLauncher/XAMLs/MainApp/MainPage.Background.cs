@@ -56,10 +56,6 @@ public partial class MainPage : Page
             gameLauncherApi.GameBackgroundImgLocal = e.ImgPath;
             IsCustomBG                             = e.IsCustom;
 
-            // if (e.IsCustom)
-            //     SetAndSaveConfigValue("CustomBGPath",
-            //                           gameLauncherApi.GameBackgroundImgLocal);
-
             if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
             {
                 LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);

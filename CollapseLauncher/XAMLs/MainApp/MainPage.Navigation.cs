@@ -202,16 +202,6 @@ public partial class MainPage : Page
         IsCursorInNavBarHoverArea         = true;
         NavViewPaneBackground.Opacity     = 1;
         NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
-        /*
-        if (!NavigationViewControl.IsPaneOpen)
-        {
-            var duration = TimeSpan.FromSeconds(0.25);
-            var current = (float)NavViewPaneBackground.Opacity;
-            var animation = NavViewPaneBackground.GetElementCompositor()!
-                                                 .CreateScalarKeyFrameAnimation("Opacity", 1, current);
-            await NavViewPaneBackground.StartAnimation(duration, animation);
-        }
-        */
     }
 
     private bool IsCursorInNavBarHoverArea;
@@ -232,14 +222,6 @@ public partial class MainPage : Page
                 NavViewPaneBackground.Translation = new System.Numerics.Vector3(0, 0, 32);
                 break;
         }
-
-        /*
-        var duration = TimeSpan.FromSeconds(0.25);
-        var current = (float)NavViewPaneBackground.Opacity;
-        var animation = NavViewPaneBackground.GetElementCompositor()!
-                                             .CreateScalarKeyFrameAnimation("Opacity", 0, current);
-        await NavViewPaneBackground.StartAnimation(duration, animation);
-        */
     }
 
     private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
