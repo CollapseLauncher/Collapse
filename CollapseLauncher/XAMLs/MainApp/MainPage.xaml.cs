@@ -761,7 +761,6 @@ namespace CollapseLauncher
             }
         }
         #endregion
-
         #region AppActivation
         #nullable enable
         private static bool SetActivatedRegion()

@@ -461,7 +461,11 @@ namespace CollapseLauncher.Interfaces
             ProgressChanged?.Invoke(this, SophonProgress);
 
             // Update taskbar progress
-            if (Status.IsProgressAllIndetermined)
+            if (Status.IsCanceled)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+            else if (Status.IsProgressAllIndetermined)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
             }
@@ -1410,7 +1414,11 @@ namespace CollapseLauncher.Interfaces
         {
             StatusChanged?.Invoke(this, Status);
 
-            if (Status.IsProgressAllIndetermined)
+            if (Status.IsCanceled)
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+            else if (Status.IsProgressAllIndetermined)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
             }
