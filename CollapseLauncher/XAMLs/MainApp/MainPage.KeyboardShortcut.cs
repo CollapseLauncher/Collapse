@@ -17,7 +17,6 @@ using Windows.Foundation;
 using Windows.System;
 using static CollapseLauncher.Dialogs.KeyboardShortcuts;
 using static CollapseLauncher.InnerLauncherConfig;
-using static CollapseLauncher.Statics.GamePropertyVault;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -384,11 +383,11 @@ public partial class MainPage : Page
         }
     }
 
-    private static void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    private void ForceCloseGame_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        if (!GetCurrentGameProperty().IsGameRunning) return;
+        if (!CurrentGameProperty.IsGameRunning) return;
 
-        PresetConfig gamePreset         = GetCurrentGameProperty().GameVersion.GamePreset;
+        PresetConfig gamePreset         = CurrentGameProperty.GameVersion.GamePreset;
         string?      gamePresetExecName = gamePreset.GameExecutableName;
         if (string.IsNullOrEmpty(gamePresetExecName))
         {
@@ -453,6 +452,9 @@ public partial class MainPage : Page
                 break;
             case { GameType: GameNameType.StarRail }:
                 Navigate(typeof(StarRailGameSettingsPage), "starrailgamesettings");
+                break;
+            case { GameType: GameNameType.Zenless }:
+                Navigate(typeof(ZenlessGameSettingsPage), "zenlessgamesettings");
                 break;
         }
     }

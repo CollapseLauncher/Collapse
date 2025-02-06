@@ -2,7 +2,6 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.ShortcutUtils;
-using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -274,7 +273,7 @@ public partial class HomePage
         if (result.Item1 != ContentDialogResult.Primary)
             return;
 
-        if (await ShortcutCreator.AddToSteam(GamePropertyVault.GetCurrentGameProperty().GamePreset, result.Item2))
+        if (await ShortcutCreator.AddToSteam(CurrentGameProperty.GamePreset, result.Item2))
         {
             await Dialog_SteamShortcutCreationSuccess(this, result.Item2);
             return;
@@ -301,7 +300,7 @@ public partial class HomePage
         if (result.Item1 != ContentDialogResult.Primary)
             return;
 
-        ShortcutCreator.CreateShortcut(folder, GamePropertyVault.GetCurrentGameProperty().GamePreset, result.Item2);
+        ShortcutCreator.CreateShortcut(folder, CurrentGameProperty.GamePreset, result.Item2);
         await Dialog_ShortcutCreationSuccess(this, folder, result.Item2);
     }
     #endregion
