@@ -236,7 +236,7 @@ namespace CollapseLauncher
                 RegionPushIgnoreMsgIds = NotificationData?.RegionPushIgnoreMsgIds
             };
             File.WriteAllText(AppNotifIgnoreFile,
-                              localNotificationData.Serialize(NotificationPushJsonContext.Default.NotificationPush));
+                              localNotificationData.Serialize(NotificationPushJsonContext.Default.NotificationPush, false));
         }
 
         public static async Task LoadLocalNotificationData()
