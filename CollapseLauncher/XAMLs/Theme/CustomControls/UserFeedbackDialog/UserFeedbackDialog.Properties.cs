@@ -40,6 +40,12 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             set => SetValue(IsTitleReadOnlyProperty, value);
         }
 
+        public Visibility TitleVisibility
+        {
+            get => (Visibility)GetValue(TitleVisibilityProperty);
+            set => SetValue(TitleVisibilityProperty, value);
+        }
+
         public string? Message
         {
             get => (string?)GetValue(MessageProperty);
@@ -68,7 +74,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             => UnassignEvents();
 
         private void OnFeedbackInputsChanged(object sender, TextChangedEventArgs e)
-            => _layoutPrimaryButton!.IsEnabled = (!string.IsNullOrWhiteSpace(Title) || IsTitleReadOnly) &&
+            => _layoutPrimaryButton!.IsEnabled = (TitleVisibility == Visibility.Collapsed || !string.IsNullOrWhiteSpace(Title) || IsTitleReadOnly) &&
                                                  (!string.IsNullOrWhiteSpace(Message) || IsMessageReadOnly);
 
         private void OnSubmissionSubmitButtonClick(object sender, RoutedEventArgs e)
@@ -90,6 +96,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
         #region DependencyProperty
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(UserFeedbackDialog), new PropertyMetadata(null));
+        public static readonly DependencyProperty TitleVisibilityProperty = DependencyProperty.Register(nameof(TitleVisibility), typeof(Visibility), typeof(UserFeedbackDialog), new PropertyMetadata(null));
         public static readonly DependencyProperty IsTitleReadOnlyProperty = DependencyProperty.Register(nameof(IsTitleReadOnly), typeof(bool), typeof(UserFeedbackDialog), new PropertyMetadata(null));
 
         public static readonly DependencyProperty MessageProperty = DependencyProperty.Register(nameof(Message), typeof(string), typeof(UserFeedbackDialog), new PropertyMetadata(null));

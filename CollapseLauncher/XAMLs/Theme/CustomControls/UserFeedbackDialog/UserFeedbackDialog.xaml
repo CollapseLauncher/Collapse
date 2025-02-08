@@ -261,6 +261,7 @@
                                                  IsReadOnly="{TemplateBinding IsTitleReadOnly}"
                                                  IsSpellCheckEnabled="False"
                                                  IsTextPredictionEnabled="False"
+                                                 Margin="0,0,0,16"
                                                  Text="{TemplateBinding Title}">
                                             <TextBox.Header>
                                                 <TextBlock FontSize="14"/>
@@ -270,7 +271,6 @@
                                                  Grid.Row="1"
                                                  MinHeight="150"
                                                  MaxHeight="270"
-                                                 Margin="0,16,0,0"
                                                  HorizontalAlignment="Stretch"
                                                  HorizontalContentAlignment="Stretch"
                                                  AcceptsReturn="True"

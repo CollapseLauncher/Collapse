@@ -36,9 +36,9 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
         public UserFeedbackDialog(XamlRoot xamlRoot, bool alwaysOnTop)
         {
-            _isAlwaysOnTop          =   alwaysOnTop;
-            XamlRoot                =   xamlRoot;
-            DefaultStyleKey         =   typeof(UserFeedbackDialog);
+            _isAlwaysOnTop           =   alwaysOnTop;
+            XamlRoot                 =   xamlRoot;
+            DefaultStyleKey          =   typeof(UserFeedbackDialog);
             _inverseBooleanConverter ??= new InverseBooleanConverter();
         }
 
@@ -62,26 +62,23 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
             // Assign dialog title image background
             GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            if (currentGameProperty.GamePreset != null)
+            GameNameType       gameNameType        = currentGameProperty.GamePreset.GameType;
+            string relFilePath = gameNameType switch
             {
-                GameNameType gameNameType = currentGameProperty.GamePreset.GameType;
-                string relFilePath = gameNameType switch
-                {
-                    GameNameType.Zenless => @"Assets\\Images\\GamePoster\\headerposter_zzz.png",
-                    GameNameType.Honkai => @"Assets\\Images\\GamePoster\\headerposter_honkai.png",
-                    GameNameType.StarRail => @"Assets\\Images\\GamePoster\\headerposter_starrail.png",
-                    _ => @"Assets\\Images\\GamePoster\\headerposter_genshin.png"
-                };
-                FileInfo filePathInfo = new FileInfo(Path.Combine(LauncherConfig.AppExecutableDir, relFilePath));
-                if (filePathInfo.Exists)
-                {
-                    using FileStream fileStream = filePathInfo.OpenRead();
-                    using IRandomAccessStream accessStream = fileStream.AsRandomAccessStream();
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.SetSource(accessStream);
+                GameNameType.Zenless => @"Assets\\Images\\GamePoster\\headerposter_zzz.png",
+                GameNameType.Honkai => @"Assets\\Images\\GamePoster\\headerposter_honkai.png",
+                GameNameType.StarRail => @"Assets\\Images\\GamePoster\\headerposter_starrail.png",
+                _ => @"Assets\\Images\\GamePoster\\headerposter_genshin.png"
+            };
+            FileInfo filePathInfo = new(Path.Combine(LauncherConfig.AppExecutableDir, relFilePath));
+            if (filePathInfo.Exists)
+            {
+                using FileStream fileStream = filePathInfo.OpenRead();
+                using IRandomAccessStream accessStream = fileStream.AsRandomAccessStream();
+                BitmapImage bitmapImage = new();
+                bitmapImage.SetSource(accessStream);
 
-                    _layoutTitleGridBackgroundImage!.Source = bitmapImage;
-                }
+                _layoutTitleGridBackgroundImage!.Source = bitmapImage;
             }
 
             // Set initial rating value
@@ -120,13 +117,13 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             }
 
             headerTextBlock.Inlines.Clear();
-            Run firstInline = new Run
+            Run firstInline = new()
             {
                 FontWeight = FontWeights.SemiBold,
                 FontSize = 14d,
                 Text = firstRun + " "
             };
-            Run secondInline = new Run
+            Run secondInline = new()
             {
                 FontWeight = FontWeights.Bold,
                 FontSize = 12d,
@@ -151,6 +148,11 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
                                                       nameof(Message),
                                                       null,
                                                       BindingMode.TwoWay);
+
+            // Bind Visibility property to the UI FeedbackTitleInput
+            _layoutFeedbackTitleInput?.BindProperty(VisibilityProperty,
+                                                    this,
+                                                    nameof(TitleVisibility));
 
             // Bind this ReadOnly properties to the UI FeedbackTitleInput and FeedbackMessageInput
             _layoutFeedbackTitleInput?.BindProperty(TextBox.IsReadOnlyProperty,
@@ -209,8 +211,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         public async Task<UserFeedbackResult?> ShowAsync()
         {
             _parentOverlayGrid = FindOverlayGrid(XamlRoot, _isAlwaysOnTop);
+            int parentGridRowCount    = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
             int parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
-            int parentGridRowCount = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
             _parentOverlayGrid?.AddElementToGridRowColumn(this,
                                                           0,
                                                           0,
