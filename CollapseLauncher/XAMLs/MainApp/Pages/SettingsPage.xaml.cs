@@ -13,6 +13,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
+using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -404,6 +405,27 @@ namespace CollapseLauncher.Pages
                 mainWindow.OverlayFrame.BackStack?.Clear();
             }
             #nullable restore
+        }
+
+        private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
+        {
+            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog
+            {
+                XamlRoot = XamlRoot
+            };
+            UserFeedbackResult userFeedbackResult = await userFeedbackDialog.ShowAsync();
+
+            if (userFeedbackResult == null)
+            {
+                LogWriteLine("User feedback dialog cancelled!", LogType.Debug);
+                return;
+            }
+
+            // Do something with userFeedbackResult
+            LogWriteLine("User feedback data:",                    LogType.Debug);
+            LogWriteLine($"    Title: {userFeedbackResult.Title}", LogType.Debug);
+            LogWriteLine($"    Message: {userFeedbackResult.Message}", LogType.Debug);
+            LogWriteLine($"    Rating: {userFeedbackResult.Rating}", LogType.Debug);
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)

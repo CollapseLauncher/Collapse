@@ -1,14 +1,29 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
+using Hi3Helper;
+using Hi3Helper.Shared.Region;
+using Microsoft.UI.Input;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
+using Windows.UI;
+
+using InnerExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
@@ -26,18 +41,98 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
         protected override void OnApplyTemplate()
         {
+            // Get the UI element from XAML template
             _layoutTitleGridBackgroundImage = GetTemplateChild(TemplateNameTitleGridBackgroundImage) as Image;
+            _layoutTitleGridText            = GetTemplateChild(TemplateNameTitleGridText) as TextBlock;
             _layoutFeedbackTitleInput       = GetTemplateChild(TemplateNameFeedbackTitleInput) as TextBox;
             _layoutFeedbackMessageInput     = GetTemplateChild(TemplateNameFeedbackMessageInput) as TextBox;
+            _layoutFeedbackRatingText       = GetTemplateChild(TemplateNameFeedbackRatingText) as TextBlock;
             _layoutFeedbackRatingControl    = GetTemplateChild(TemplateNameFeedbackRatingControl) as RatingControl;
             _layoutPrimaryButton            = GetTemplateChild(TemplateNamePrimaryButton) as Button;
             _layoutCloseButton              = GetTemplateChild(TemplateNameCloseButton) as Button;
 
+            // Assign the cursor
+            InputCursor pointerCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            _layoutFeedbackRatingControl?.SetCursor(pointerCursor);
+            _layoutPrimaryButton?.SetCursor(pointerCursor);
+            _layoutCloseButton?.SetCursor(pointerCursor);
+
+            // Assign dialog title image background
+            GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+            if (currentGameProperty.GamePreset != null)
+            {
+                GameNameType gameNameType = currentGameProperty.GamePreset.GameType;
+                string relFilePath = gameNameType switch
+                {
+                    GameNameType.Zenless => @"Assets\\Images\\GamePoster\\headerposter_zzz.png",
+                    GameNameType.Honkai => @"Assets\\Images\\GamePoster\\headerposter_honkai.png",
+                    GameNameType.StarRail => @"Assets\\Images\\GamePoster\\headerposter_starrail.png",
+                    _ => @"Assets\\Images\\GamePoster\\headerposter_genshin.png"
+                };
+                FileInfo filePathInfo = new FileInfo(Path.Combine(LauncherConfig.AppExecutableDir, relFilePath));
+                if (filePathInfo.Exists)
+                {
+                    using FileStream fileStream = filePathInfo.OpenRead();
+                    using IRandomAccessStream accessStream = fileStream.AsRandomAccessStream();
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.SetSource(accessStream);
+
+                    _layoutTitleGridBackgroundImage!.Source = bitmapImage;
+                }
+            }
+
+            // Set initial rating value
             RatingValue = 5d;
 
+            // Assign events and binding, and the Control's base OnApplyTemplate
             AssignEvents();
             AssignBindings();
+            AssignLocalization();
             base.OnApplyTemplate();
+        }
+
+        private void AssignLocalization()
+        {
+            _layoutTitleGridText?.BindProperty(TextBlock.TextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_DialogTitle));
+            _layoutFeedbackTitleInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_TextFieldTitlePlaceholder));
+            _layoutFeedbackMessageInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_TextFieldMessagePlaceholder));
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackTitleInput, Locale.Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Locale.Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
+            _layoutFeedbackRatingText?.BindProperty(TextBlock.TextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_RatingText));
+            SetButtonPropertyTextLocale(_layoutPrimaryButton, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn));
+            SetButtonPropertyTextLocale(_layoutCloseButton, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_CancelBtn));
+        }
+
+        private static void SetButtonPropertyTextLocale(Button? button, object localeObject, string nameOfLocale)
+        {
+            TextBlock? firstTextBlock = (button?.Content as Grid)?.FindDescendantOrSelf<TextBlock>() ?? button?.Content as TextBlock;
+            firstTextBlock?.BindProperty(TextBlock.TextProperty, localeObject, nameOfLocale);
+        }
+
+        private static void SetTextBoxPropertyHeaderLocale(TextBox? textBox, string? firstRun, string? secondRun)
+        {
+            if (textBox?.Header is not TextBlock headerTextBlock)
+            {
+                return;
+            }
+
+            headerTextBlock.Inlines.Clear();
+            Run firstInline = new Run
+            {
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 14d,
+                Text = firstRun + " "
+            };
+            Run secondInline = new Run
+            {
+                FontWeight = FontWeights.Bold,
+                FontSize = 12d,
+                Foreground = new SolidColorBrush(InnerExtension.GetApplicationResource<Color>("SystemErrorTextColor")),
+                Text = secondRun
+            };
+
+            headerTextBlock.Inlines.Add(firstInline);
+            headerTextBlock.Inlines.Add(secondInline);
         }
 
         private void AssignBindings()

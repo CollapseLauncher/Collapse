@@ -12,8 +12,10 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         #region Fields
         private Grid?          _parentOverlayGrid;
         private Image?         _layoutTitleGridBackgroundImage;
+        private TextBlock?     _layoutTitleGridText;
         private TextBox?       _layoutFeedbackTitleInput;
         private TextBox?       _layoutFeedbackMessageInput;
+        private TextBlock?     _layoutFeedbackRatingText;
         private RatingControl? _layoutFeedbackRatingControl;
         private Button?        _layoutPrimaryButton;
         private Button?        _layoutCloseButton;

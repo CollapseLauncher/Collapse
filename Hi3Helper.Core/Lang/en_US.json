@@ -530,6 +530,7 @@
     "ContributePRBtn": "Contribute with a Pull Request",
     "ContributorListBtn": "Open Source Contributors",
     "HelpLocalizeBtn": "Help Us Translate Collapse!",
+    "ShareYourFeedbackBtn": "Share Your Feedback",
 
     "About": "About",
     "About_Copyright1": "© 2022-2024",
@@ -1015,9 +1016,19 @@
     "UACWarningContent": "Disabling User Account Control (UAC) is never a good idea.\nThe security of the OS will be compromised and the game may not run properly.\n\nClick the \"Learn More\" button to see how to enable UAC.\nThe related entry is: Run all administrators in Admin Approval Mode.",
     "UACWarningLearnMore": "Learn More",
     "UACWarningDontShowAgain": "Don't Show Again",
-    
+
     "EnsureExitTitle": "Exiting Application",
-    "EnsureExitSubtitle": "There are critical operations running in the background. Are you sure you want to exit?"
+    "EnsureExitSubtitle": "There are critical operations running in the background. Are you sure you want to exit?",
+
+    "UserFeedback_DialogTitle": "Share Your Thoughts",
+    "UserFeedback_TextFieldTitleHeader": "Feedback Title",
+    "UserFeedback_TextFieldTitlePlaceholder": "Write your feedback's title here...",
+    "UserFeedback_TextFieldMessageHeader": "Message",
+    "UserFeedback_TextFieldMessagePlaceholder": "Message...",
+    "UserFeedback_TextFieldRequired": "(required)",
+    "UserFeedback_RatingText": "Mind to share your ratings?",
+    "UserFeedback_CancelBtn": "Cancel",
+    "UserFeedback_SubmitBtn": "Submit your feedback"
   },
 
   "_FileMigrationProcess": {
