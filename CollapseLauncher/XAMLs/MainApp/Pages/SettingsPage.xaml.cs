@@ -409,10 +409,7 @@ namespace CollapseLauncher.Pages
 
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
         {
-            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog
-            {
-                XamlRoot = XamlRoot
-            };
+            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true);
             UserFeedbackResult userFeedbackResult = await userFeedbackDialog.ShowAsync();
 
             if (userFeedbackResult == null)

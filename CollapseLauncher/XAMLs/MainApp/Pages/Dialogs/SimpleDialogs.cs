@@ -4,6 +4,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -1196,22 +1197,23 @@ namespace CollapseLauncher.Dialogs
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                              .WithVerticalAlignment(VerticalAlignment.Stretch)
                                              .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star),
-                                                       GridLength.Auto);
+                                                       GridLength.Auto)
+                                             .WithColumns(GridLength.Auto, new GridLength(1, GridUnitType.Star));
 
-                _ = rootGrid.AddElementToGridRow(new TextBlock
+                _ = rootGrid.AddElementToGridRowColumn(new TextBlock
                 {
                     Text         = subtitle,
                     TextWrapping = TextWrapping.Wrap,
                     FontWeight   = FontWeights.Medium
-                }, 0);
-                _ = rootGrid.AddElementToGridRow(new TextBox
+                }, 0, 0, 0, 2);
+                _ = rootGrid.AddElementToGridRowColumn(new TextBox
                              {
                                  IsReadOnly    = true,
                                  TextWrapping  = TextWrapping.Wrap,
                                  MaxHeight     = 300,
                                  AcceptsReturn = true,
                                  Text          = exceptionContent
-                             }, 1).WithMargin(0d, 8d)
+                             }, 1, 0, 0, 2).WithMargin(0d, 8d)
                             .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                             .WithVerticalAlignment(VerticalAlignment.Stretch);
 
@@ -1220,18 +1222,33 @@ namespace CollapseLauncher.Dialogs
                                                                "",
                                                                "FontAwesomeSolid",
                                                                "AccentButtonStyle"
-                                                              ), 2)
-                                     .WithHorizontalAlignment(HorizontalAlignment.Center);
+                                                              ).WithHorizontalAlignment(HorizontalAlignment.Left), 2)
+                                     .WithHorizontalAlignment(HorizontalAlignment.Stretch);
                 copyButton.Click += CopyTextToClipboard;
+
+                Button submitFeedbackButton = rootGrid.AddElementToGridRowColumn(CollapseUIExt.CreateButtonWithIcon<Button>(
+                    Lang._SettingsPage.ShareYourFeedbackBtn,
+                    "\ue594",
+                    "FontAwesomeSolid",
+                    "TransparentDefaultButtonStyle",
+                    14,
+                    10
+                    ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
+                    2, 1);
+                submitFeedbackButton.Click += SubmitFeedbackButton_Click;
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
                                                                Lang._UnhandledExceptionPage.GoBackPageBtn1,
                                                                null,
                                                                null,
                                                                ContentDialogButton.Close,
-                                                               ContentDialogTheme.Error);
+                                                               ContentDialogTheme.Error,
+                                                               OnLoadedDialog);
 
                 return result;
+
+                void OnLoadedDialog(object? sender, RoutedEventArgs e)
+                    => submitFeedbackButton.SetTag(sender);
             }
             catch (Exception ex)
             {
@@ -1244,6 +1261,39 @@ namespace CollapseLauncher.Dialogs
                 {
                     copyButton.Click -= CopyTextToClipboard;
                 }
+            }
+        }
+
+        private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is not Button { Tag: ContentDialog contentDialog })
+                {
+                    return;
+                }
+
+                contentDialog.Hide();
+
+                string exceptionContent = ErrorSender.ExceptionContent;
+                string exceptionTitle   = $"[UnhandledException] {ErrorSender.Exception.Message}";
+
+                UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
+                {
+                    Title = exceptionTitle,
+                    Message = exceptionContent
+                };
+                UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
+                if (feedbackResult is not null)
+                {
+                    // TODO: Do something with the result @bagusnl
+                }
+
+                await Dialog_ShowUnhandledExceptionMenu();
+            }
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 
@@ -1495,7 +1545,8 @@ namespace CollapseLauncher.Dialogs
                                                             ContentDialogButton defaultButton =
                                                                 ContentDialogButton.Primary,
                                                             ContentDialogTheme dialogTheme =
-                                                                ContentDialogTheme.Informational)
+                                                                ContentDialogTheme.Informational,
+                                                            RoutedEventHandler? onLoaded = null)
         {
             _sharedDispatcherQueue ??=
                 parentUI?.DispatcherQueue ??
@@ -1524,8 +1575,19 @@ namespace CollapseLauncher.Dialogs
                                                                             : parentUI?.XamlRoot
                                                                 };
 
-                                                            // Queue and spawn the dialog instance
-                                                            return await dialog.QueueAndSpawnDialog();
+                                                            try
+                                                            {
+                                                                if (onLoaded is not null)
+                                                                    dialog.Loaded += onLoaded;
+
+                                                                // Queue and spawn the dialog instance
+                                                                return await dialog.QueueAndSpawnDialog();
+                                                            }
+                                                            finally
+                                                            {
+                                                                if (onLoaded is not null)
+                                                                    dialog.Loaded -= onLoaded;
+                                                            }
                                                         }) ?? Task.FromResult(ContentDialogResult.None);
         }
 
@@ -1548,18 +1610,41 @@ namespace CollapseLauncher.Dialogs
                 dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             }
 
-            dialog.XamlRoot ??= SharedXamlRoot;
+            try
+            {
+                dialog.XamlRoot ??= SharedXamlRoot;
+                dialog.Loaded += RecursivelySetDialogCursor;
 
-            // Assign the dialog to the global task
-            _currentSpawnedDialogTask = dialog switch
-                                        {
-                                            ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
-                                            ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
-                                            _ => dialog.ShowAsync()
-                                        };
-            // Spawn and await for the result
-            ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
-            return dialogResult; // Return the result
+                // Assign the dialog to the global task
+                _currentSpawnedDialogTask = dialog switch
+                {
+                    ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
+                    ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
+                    _ => dialog.ShowAsync()
+                };
+                // Spawn and await for the result
+                ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
+                return dialogResult; // Return the result
+            }
+            finally
+            {
+                dialog.Loaded -= RecursivelySetDialogCursor;
+            }
+        }
+
+        private static void RecursivelySetDialogCursor(object sender, RoutedEventArgs args)
+        {
+            if (sender is not ContentDialog contentDialog)
+            {
+                return;
+            }
+
+            InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            contentDialog.SetAllControlsCursorRecursive(cursor);
+
+            Grid? parent = (contentDialog.Content as UIElement)?.FindAscendant("LayoutRoot", StringComparison.OrdinalIgnoreCase) as Grid;
+            Grid? commandButtonGrid = parent?.FindDescendant("CommandSpace", StringComparison.OrdinalIgnoreCase) as Grid;
+            commandButtonGrid?.SetAllControlsCursorRecursive(cursor);
         }
     }
 }

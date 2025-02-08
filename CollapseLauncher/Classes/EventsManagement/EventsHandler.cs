@@ -128,6 +128,7 @@ namespace CollapseLauncher
     internal static class ErrorSender
     {
         private static readonly ErrorSenderInvoker Invoker = new();
+        public static           Exception          Exception;
         public static           string             ExceptionContent;
         public static           ErrorType          ExceptionType;
         public static           string             ExceptionTitle;
@@ -135,16 +136,18 @@ namespace CollapseLauncher
 
         public static void SendException(Exception e, ErrorType eT = ErrorType.Unhandled, bool isSendToSentry = true)
         {
+            Exception = e;
             if (isSendToSentry)
                 SentryHelper.ExceptionHandler(e, eT == ErrorType.Unhandled ? 
                                                   SentryHelper.ExceptionType.UnhandledOther : SentryHelper.ExceptionType.Handled);
             Invoker.SendException(e, eT);
         } 
         public static void SendWarning(Exception e, ErrorType eT = ErrorType.Warning) =>
-            Invoker.SendException(e, eT);
+            Invoker.SendException(Exception = e, eT);
         public static void SendExceptionWithoutPage(Exception e, ErrorType eT = ErrorType.Unhandled)
         {
             SentryHelper.ExceptionHandler(e, eT == ErrorType.Unhandled ? SentryHelper.ExceptionType.UnhandledOther : SentryHelper.ExceptionType.Handled);
+            Exception = e;
             ExceptionContent = e!.ToString();
             ExceptionType = eT;
             SetPageTitle(eT);

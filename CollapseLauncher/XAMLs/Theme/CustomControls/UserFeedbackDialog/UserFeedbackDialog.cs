@@ -30,13 +30,16 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 {
     public record UserFeedbackResult(string Title, string Message, double Rating);
 
-    public partial class UserFeedbackDialog : Control
+    public partial class UserFeedbackDialog : ContentControl
     {
+        public UserFeedbackDialog(XamlRoot xamlRoot) : this(xamlRoot, false) { }
 
-        public UserFeedbackDialog()
+        public UserFeedbackDialog(XamlRoot xamlRoot, bool alwaysOnTop)
         {
-            DefaultStyleKey = typeof(UserFeedbackDialog);
-            _inverseBooleanConverter = new InverseBooleanConverter();
+            _isAlwaysOnTop          =   alwaysOnTop;
+            XamlRoot                =   xamlRoot;
+            DefaultStyleKey         =   typeof(UserFeedbackDialog);
+            _inverseBooleanConverter ??= new InverseBooleanConverter();
         }
 
         protected override void OnApplyTemplate()
@@ -97,7 +100,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackTitleInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_TextFieldTitlePlaceholder));
             _layoutFeedbackMessageInput?.BindProperty(TextBox.PlaceholderTextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_TextFieldMessagePlaceholder));
             SetTextBoxPropertyHeaderLocale(_layoutFeedbackTitleInput, Locale.Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
-            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Locale.Lang._Dialogs.UserFeedback_TextFieldTitleHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
+            SetTextBoxPropertyHeaderLocale(_layoutFeedbackMessageInput, Locale.Lang._Dialogs.UserFeedback_TextFieldMessageHeader, Locale.Lang._Dialogs.UserFeedback_TextFieldRequired);
             _layoutFeedbackRatingText?.BindProperty(TextBlock.TextProperty, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_RatingText));
             SetButtonPropertyTextLocale(_layoutPrimaryButton, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn));
             SetButtonPropertyTextLocale(_layoutCloseButton, Locale.Lang._Dialogs, nameof(Locale.Lang._Dialogs.UserFeedback_CancelBtn));
@@ -205,8 +208,14 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
         public async Task<UserFeedbackResult?> ShowAsync()
         {
-            _parentOverlayGrid = FindOverlayGrid(XamlRoot);
-            _parentOverlayGrid?.Children.Add(this);
+            _parentOverlayGrid = FindOverlayGrid(XamlRoot, _isAlwaysOnTop);
+            int parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
+            int parentGridRowCount = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
+            _parentOverlayGrid?.AddElementToGridRowColumn(this,
+                                                          0,
+                                                          0,
+                                                          parentGridRowCount,
+                                                          parentGridColumnCount);
 
             _currentConfirmTokenSource ??= new CancellationTokenSource();
             try
@@ -247,18 +256,52 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             }
         }
 
-        private static Grid FindOverlayGrid([NotNull] XamlRoot? root)
+        private static Grid FindOverlayGrid([NotNull] XamlRoot? root, bool isAlwaysOnTop)
         {
             // XAML root cannot be empty or null!
             ArgumentNullException.ThrowIfNull(root, nameof(root));
 
-            FrameworkElement? parent = root.Content.FindDescendant("OverlayRootGrid", StringComparison.OrdinalIgnoreCase);
-            if (parent is not Grid parentAsGrid)
+            if (!isAlwaysOnTop)
             {
-                throw new InvalidOperationException("Cannot find an overlay parent grid with name: \"OverlayRootGrid\" in your XAML layout!");
+                FrameworkElement? parent = root.Content.FindDescendant("OverlayRootGrid", StringComparison.OrdinalIgnoreCase);
+                if (parent is not Grid parentAsGrid)
+                {
+                    throw new InvalidOperationException("Cannot find an overlay parent grid with name: \"OverlayRootGrid\" in your XAML layout!");
+                }
+
+                return parentAsGrid;
             }
 
-            return parentAsGrid;
+            Grid? topGrid = root.Content as Grid;
+            topGrid ??= FindLastChildGrid(root.Content);
+
+            if (topGrid is null)
+            {
+                throw new InvalidOperationException("Cannot find any or the last grid in your XAML layout!");
+            }
+
+            return topGrid;
+        }
+
+        private static Grid? FindLastChildGrid(DependencyObject? element)
+        {
+            int visualTreeCount = VisualTreeHelper.GetChildrenCount(element);
+            if (visualTreeCount == 0)
+            {
+                return null;
+            }
+
+            Grid? lastGrid = null;
+            for (int i = 0; i < visualTreeCount; i++)
+            {
+                DependencyObject currentObject = VisualTreeHelper.GetChild(element, i);
+                if (currentObject is Grid asGrid)
+                {
+                    lastGrid = asGrid;
+                }
+            }
+
+            return lastGrid;
         }
     }
 }

@@ -20,10 +20,11 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         private Button?        _layoutPrimaryButton;
         private Button?        _layoutCloseButton;
 
-        private readonly InverseBooleanConverter  _inverseBooleanConverter;
-        private          CancellationTokenSource? _currentConfirmTokenSource;
+        private static InverseBooleanConverter? _inverseBooleanConverter;
+        private        CancellationTokenSource? _currentConfirmTokenSource;
 
-        private bool _isSubmit;
+        private          bool _isSubmit;
+        private readonly bool _isAlwaysOnTop;
         #endregion
 
         #region Properties
