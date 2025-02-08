@@ -22,6 +22,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 
         private readonly InverseBooleanConverter  _inverseBooleanConverter;
         private          CancellationTokenSource? _currentConfirmTokenSource;
+
+        private bool _isSubmit;
         #endregion
 
         #region Properties
@@ -68,7 +70,19 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             => _layoutPrimaryButton!.IsEnabled = (!string.IsNullOrWhiteSpace(Title) || IsTitleReadOnly) &&
                                                  (!string.IsNullOrWhiteSpace(Message) || IsMessageReadOnly);
 
-        private void OnSubmissionButtonClick(object sender, RoutedEventArgs e)
+        private void OnSubmissionSubmitButtonClick(object sender, RoutedEventArgs e)
+        {
+            _isSubmit = true;
+            InvalidateTokenSource();
+        }
+
+        private void OnSubmissionCancelButtonClick(object sender, RoutedEventArgs e)
+        {
+            _isSubmit = false;
+            InvalidateTokenSource();
+        }
+
+        private void InvalidateTokenSource()
             => _currentConfirmTokenSource?.Cancel();
 
         #endregion

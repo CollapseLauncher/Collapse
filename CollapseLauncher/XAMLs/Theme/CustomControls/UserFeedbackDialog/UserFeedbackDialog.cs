@@ -186,8 +186,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         {
             Loaded                                   += OnUILayoutLoaded;
             Unloaded                                 += OnUILayoutUnloaded;
-            _layoutPrimaryButton!.Click              += OnSubmissionButtonClick;
-            _layoutCloseButton!.Click                += OnSubmissionButtonClick;
+            _layoutPrimaryButton!.Click              += OnSubmissionSubmitButtonClick;
+            _layoutCloseButton!.Click                += OnSubmissionCancelButtonClick;
             _layoutFeedbackTitleInput!.TextChanged   += OnFeedbackInputsChanged;
             _layoutFeedbackMessageInput!.TextChanged += OnFeedbackInputsChanged;
         }
@@ -197,8 +197,8 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         {
             Loaded                                   -= OnUILayoutLoaded;
             Unloaded                                 -= OnUILayoutUnloaded;
-            _layoutPrimaryButton!.Click              -= OnSubmissionButtonClick;
-            _layoutCloseButton!.Click                -= OnSubmissionButtonClick;
+            _layoutPrimaryButton!.Click              -= OnSubmissionSubmitButtonClick;
+            _layoutCloseButton!.Click                -= OnSubmissionCancelButtonClick;
             _layoutFeedbackTitleInput!.TextChanged   -= OnFeedbackInputsChanged;
             _layoutFeedbackMessageInput!.TextChanged -= OnFeedbackInputsChanged;
         }
@@ -224,7 +224,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
                 _parentOverlayGrid?.Children.Remove(this);
             }
 
-            return _layoutPrimaryButton?.IsEnabled ?? false ?
+            return _isSubmit ?
                 new UserFeedbackResult(Title ?? "", Message ?? "", RatingValue) :
                 null;
         }
