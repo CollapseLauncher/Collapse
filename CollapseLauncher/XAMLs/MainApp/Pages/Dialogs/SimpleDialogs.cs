@@ -4,7 +4,9 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
+#if ENABLEUSERFEEDBACK
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
+#endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
