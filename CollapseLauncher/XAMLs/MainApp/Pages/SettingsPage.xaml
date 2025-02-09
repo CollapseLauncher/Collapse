@@ -1,7 +1,7 @@
-﻿<!-- ReSharper disable IdentifierTypo -->
-<!-- ReSharper disable UnusedMember.Local -->
-<!-- ReSharper disable Xaml.ConstructorWarning -->
-<!-- ReSharper disable GrammarMistakeInMarkupAttribute -->
+﻿<!--  ReSharper disable IdentifierTypo  -->
+<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.ConstructorWarning  -->
+<!--  ReSharper disable GrammarMistakeInMarkupAttribute  -->
 <Page x:Class="CollapseLauncher.Pages.SettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -2108,6 +2108,49 @@
                     </Grid>
                 </Button>
                 <NavigationViewItemSeparator Margin="16,16" />
+                <Button x:Name="ShareYourFeedbackButton"
+                        Margin="0,0,0,8"
+                        Padding="12,8"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        Click="ShareYourFeedbackClick"
+                        CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ShareYourFeedbackButton)}"
+                        IsEnabled="False"
+                        Style="{ThemeResource AccentButtonStyle}">
+                    <Grid Margin="0,-2,0,0"
+                          HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid HorizontalAlignment="Left">
+                            <TextBlock HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Medium"
+                                       HorizontalTextAlignment="Left"
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.ShareYourFeedbackBtn}" />
+                        </Grid>
+                        <Grid Grid.Column="1"
+                              Margin="4,2,0,0"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              RenderTransformOrigin="0.5, 0.5">
+                            <Grid.RenderTransform>
+                                <RotateTransform Angle="-90" />
+                            </Grid.RenderTransform>
+                            <AnimatedIcon Width="16"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center">
+                                <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                <AnimatedIcon.FallbackIconSource>
+                                    <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                    Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                    Glyph="&#xE70D;" />
+                                </AnimatedIcon.FallbackIconSource>
+                            </AnimatedIcon>
+                        </Grid>
+                    </Grid>
+                </Button>
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock Margin="0,0,6,0"

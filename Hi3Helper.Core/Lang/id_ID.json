@@ -530,6 +530,7 @@
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
     "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
+    "ShareYourFeedbackBtn": "Bagikan Umpan-balikmu",
 
     "About": "Tentang",
     "About_Copyright1": "© 2022-2024",
@@ -1015,6 +1016,16 @@
     "UACWarningContent": "Mematikan User Account Control (UAC) sangat tidak disarankan.\nUAC dibutuhkan untuk beberapa game agar bisa berjalan dengan baik dan mematikan UAC bisa membahayakan keamanan Operasi Sistem kamu, lho!\n\nKlik tombol \"Pelajari Lebih Lanjut\" untuk mencari tahu cara menyalakan UAC kembali.\nEntry yang perlu dinyalakan: \"Run all administrators in Admin Approval Mode.\"",
     "UACWarningLearnMore": "Pelajari Lebih Lanjut",
     "UACWarningDontShowAgain": "Jangan Munculkan Lagi",
+
+    "UserFeedback_DialogTitle": "Bagikan Pendapatmu",
+    "UserFeedback_TextFieldTitleHeader": "Judul Umpan-balikmu",
+    "UserFeedback_TextFieldTitlePlaceholder": "Tulis Judul Umpan-balikmu di sini...",
+    "UserFeedback_TextFieldMessageHeader": "Pesan-pesan",
+    "UserFeedback_TextFieldMessagePlaceholder": "Tulis pesan-pesanmu...",
+    "UserFeedback_TextFieldRequired": "(harus diisi)",
+    "UserFeedback_RatingText": "Mau sekalian ratingnya?",
+    "UserFeedback_CancelBtn": "Batalkan",
+    "UserFeedback_SubmitBtn": "Kirim Umpan-balikmu",
     
     "EnsureExitTitle": "Keluar dari Aplikasii",
     "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?"

@@ -4,6 +4,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
+using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -1182,7 +1183,7 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu()
+        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(bool isUserFeedbackSent = false)
         {
             Button? copyButton = null;
 
@@ -1196,22 +1197,23 @@ namespace CollapseLauncher.Dialogs
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                                              .WithVerticalAlignment(VerticalAlignment.Stretch)
                                              .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star),
-                                                       GridLength.Auto);
+                                                       GridLength.Auto)
+                                             .WithColumns(GridLength.Auto, new GridLength(1, GridUnitType.Star));
 
-                _ = rootGrid.AddElementToGridRow(new TextBlock
+                _ = rootGrid.AddElementToGridRowColumn(new TextBlock
                 {
                     Text         = subtitle,
                     TextWrapping = TextWrapping.Wrap,
                     FontWeight   = FontWeights.Medium
-                }, 0);
-                _ = rootGrid.AddElementToGridRow(new TextBox
+                }, 0, 0, 0, 2);
+                _ = rootGrid.AddElementToGridRowColumn(new TextBox
                              {
                                  IsReadOnly    = true,
                                  TextWrapping  = TextWrapping.Wrap,
                                  MaxHeight     = 300,
                                  AcceptsReturn = true,
                                  Text          = exceptionContent
-                             }, 1).WithMargin(0d, 8d)
+                             }, 1, 0, 0, 2).WithMargin(0d, 8d)
                             .WithHorizontalAlignment(HorizontalAlignment.Stretch)
                             .WithVerticalAlignment(VerticalAlignment.Stretch);
 
@@ -1220,18 +1222,47 @@ namespace CollapseLauncher.Dialogs
                                                                "",
                                                                "FontAwesomeSolid",
                                                                "AccentButtonStyle"
-                                                              ), 2)
-                                     .WithHorizontalAlignment(HorizontalAlignment.Center);
+                                                              ).WithHorizontalAlignment(
+                                                               HorizontalAlignment.Left
+                                                              ), 2);
                 copyButton.Click += CopyTextToClipboard;
+
+                var btnText = isUserFeedbackSent ? Lang._Misc.ExceptionFeedbackBtn_FeedbackSent :
+                    ErrorSender.SentryErrorId == Guid.Empty
+                    ? Lang._Misc.ExceptionFeedbackBtn_Unavailable
+                    : Lang._Misc.ExceptionFeedbackBtn;
+
+                Button submitFeedbackButton = rootGrid.AddElementToGridRowColumn(CollapseUIExt.CreateButtonWithIcon<Button>(
+                    btnText,
+                    "\ue594",
+                    "FontAwesomeSolid",
+                    "TransparentDefaultButtonStyle",
+                    14,
+                    10
+                    ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
+                    2, 1);
+
+                if (ErrorSender.SentryErrorId == Guid.Empty || isUserFeedbackSent)
+                {
+                    submitFeedbackButton.IsEnabled = false;
+                }
+
+                submitFeedbackButton.Click += SubmitFeedbackButton_Click;
+                // TODO: Change button content after feedback is submitted
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
                                                                Lang._UnhandledExceptionPage.GoBackPageBtn1,
                                                                null,
                                                                null,
                                                                ContentDialogButton.Close,
-                                                               ContentDialogTheme.Error);
+                                                               ContentDialogTheme.Error,
+                                                               OnLoadedDialog
+                                                               );
 
                 return result;
+
+                void OnLoadedDialog(object? sender, RoutedEventArgs e)
+                    => submitFeedbackButton.SetTag(sender);
             }
             catch (Exception ex)
             {
@@ -1244,6 +1275,77 @@ namespace CollapseLauncher.Dialogs
                 {
                     copyButton.Click -= CopyTextToClipboard;
                 }
+            }
+        }
+
+        // ReSharper disable once AsyncVoidMethod
+        private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool isFeedbackSent = false;
+            if (sender is not Button { Tag: ContentDialog contentDialog })
+            {
+                return;
+            }
+
+            try
+            {
+                contentDialog.Hide();
+
+                var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
+                var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+
+                string exceptionContent = $"""
+                                          {userTemplate} 
+                                          {emailTemplate} 
+                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
+                                          ------------------------------------
+                                          """;
+                string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
+
+                UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
+                {
+                    Title   = exceptionTitle,
+                    IsTitleReadOnly = true,
+                    Message = exceptionContent
+                };
+                UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
+                // TODO: (Optional) Implement generic user feedback pathway (preferably when SentryErrorId is null
+                // Using https://paste.mozilla.org/ 
+                // API Documentation: https://docs.dpaste.org/api/
+                // Though im not sure since user will still need to paste the link to us 🤷
+
+                if (feedbackResult is null)
+                {
+                    return;
+                }
+
+                // Parse username and email
+                var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+                if (msg.Length <= 4) return; // Do not send feedback if format is not correct
+                var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
+
+                if (string.IsNullOrEmpty(user)) user = "none";
+
+                // Validate email
+                var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+                email = addr ? address!.Address : "user@collapselauncher.com";
+
+                if (string.IsNullOrEmpty(feedback)) return;
+
+                var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
+
+                SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
+                isFeedbackSent = true;
+            }
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+            }
+            finally
+            {
+                await Dialog_ShowUnhandledExceptionMenu(isFeedbackSent);
             }
         }
 
@@ -1495,7 +1597,8 @@ namespace CollapseLauncher.Dialogs
                                                             ContentDialogButton defaultButton =
                                                                 ContentDialogButton.Primary,
                                                             ContentDialogTheme dialogTheme =
-                                                                ContentDialogTheme.Informational)
+                                                                ContentDialogTheme.Informational,
+                                                            RoutedEventHandler? onLoaded = null)
         {
             _sharedDispatcherQueue ??=
                 parentUI?.DispatcherQueue ??
@@ -1524,8 +1627,19 @@ namespace CollapseLauncher.Dialogs
                                                                             : parentUI?.XamlRoot
                                                                 };
 
-                                                            // Queue and spawn the dialog instance
-                                                            return await dialog.QueueAndSpawnDialog();
+                                                            try
+                                                            {
+                                                                if (onLoaded is not null)
+                                                                    dialog.Loaded += onLoaded;
+
+                                                                // Queue and spawn the dialog instance
+                                                                return await dialog.QueueAndSpawnDialog();
+                                                            }
+                                                            finally
+                                                            {
+                                                                if (onLoaded is not null)
+                                                                    dialog.Loaded -= onLoaded;
+                                                            }
                                                         }) ?? Task.FromResult(ContentDialogResult.None);
         }
 
@@ -1548,18 +1662,41 @@ namespace CollapseLauncher.Dialogs
                 dialog.RequestedTheme = InnerLauncherConfig.IsAppThemeLight ? ElementTheme.Light : ElementTheme.Dark;
             }
 
-            dialog.XamlRoot ??= SharedXamlRoot;
+            try
+            {
+                dialog.XamlRoot ??= SharedXamlRoot;
+                dialog.Loaded += RecursivelySetDialogCursor;
 
-            // Assign the dialog to the global task
-            _currentSpawnedDialogTask = dialog switch
-                                        {
-                                            ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
-                                            ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
-                                            _ => dialog.ShowAsync()
-                                        };
-            // Spawn and await for the result
-            ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
-            return dialogResult; // Return the result
+                // Assign the dialog to the global task
+                _currentSpawnedDialogTask = dialog switch
+                {
+                    ContentDialogCollapse dialogCollapse => dialogCollapse.ShowAsync(),
+                    ContentDialogOverlay overlapCollapse => overlapCollapse.ShowAsync(),
+                    _ => dialog.ShowAsync()
+                };
+                // Spawn and await for the result
+                ContentDialogResult dialogResult = await _currentSpawnedDialogTask;
+                return dialogResult; // Return the result
+            }
+            finally
+            {
+                dialog.Loaded -= RecursivelySetDialogCursor;
+            }
+        }
+
+        private static void RecursivelySetDialogCursor(object sender, RoutedEventArgs args)
+        {
+            if (sender is not ContentDialog contentDialog)
+            {
+                return;
+            }
+
+            InputSystemCursor cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            contentDialog.SetAllControlsCursorRecursive(cursor);
+
+            Grid? parent = (contentDialog.Content as UIElement)?.FindAscendant("LayoutRoot", StringComparison.OrdinalIgnoreCase) as Grid;
+            Grid? commandButtonGrid = parent?.FindDescendant("CommandSpace", StringComparison.OrdinalIgnoreCase) as Grid;
+            commandButtonGrid?.SetAllControlsCursorRecursive(cursor);
         }
     }
 }
