@@ -362,6 +362,8 @@
     "SpecVeryHigh": "Cực cao",
     "SpecMaximum": "Tối đa",
     "SpecUltra": "Ultra",
+    "SpecDynamic": "Động",
+    "SpecGlobal": "Toàn Cục",
 
     "Audio_Title": "Cài đặt âm thanh",
     "Audio_Master": "Âm lượng chính",
@@ -907,6 +909,10 @@
     "ReleaseChannelChangeSubtitle2": "Lưu ý:",
     "ReleaseChannelChangeSubtitle3": "Hành động này có thể làm thay đổi/khiến mọi thứ bị hỏng so với thiết lập hiện tại của bạn. Chúng tôi không chịu trách nhiệm về bất kỳ mất mát hoặc hư hỏng dữ liệu nào liên quan đến trò chơi của bạn.",
 
+    "ForceUpdateCurrentInstallTitle": "Buộc cập nhật cài đặt hiện tại",
+    "ForceUpdateCurrentInstallSubtitle1": "Bạn sắp thực hiện cập nhật bắt buộc cho phiên bản hiện tại:",
+    "ForceUpdateCurrentInstallSubtitle2": "và chúng tôi khuyên bạn nên đóng (các) trò chơi hiện đang mở của mình.",
+
     "ChangePlaytimeTitle": "Bạn có chắc chắn muốn thay đổi thời gian chơi của mình không?",
     "ChangePlaytimeSubtitle": "Thay đổi thời gian chơi của bạn sẽ ghi đè giá trị hiện tại bằng giá trị bạn vừa nhập.\n\nBạn có muốn tiếp tục?\n\nLưu ý: Điều này không ảnh hưởng đến cách Collapse hoạt động và bạn có thể thay đổi lại giá trị này bất kỳ lúc nào khi không chơi trò chơi.",
     "ResetPlaytimeTitle": "Bạn có chắc muốn đặt lại thời gian chơi?",
@@ -1008,7 +1014,10 @@
     "UACWarningTitle": "Cảnh báo: Phát hiện vô hiệu hóa UAC",
     "UACWarningContent": "Vô hiệu hoá Kiểm Soát Tài Khoản Người Dùng (UAC hoặc User Account Control) không bao giờ là một ý tưởng hay.\nBảo mật của hệ điều hành sẽ bị xâm phạm và trò chơi có thể không chạy đúng cách.\nChọn nút “Tìm hiểu thêm ”để tìm hiểu cách bật UAC.\nMục nhập liên quan là: “Run all administrators in Admin Approval Mode.” (Tiếng Anh)",
     "UACWarningLearnMore": "Tìm hiểu thêm",
-    "UACWarningDontShowAgain": "Đừng hiển thị lại nữa"
+    "UACWarningDontShowAgain": "Đừng hiển thị lại nữa",
+    
+    "EnsureExitTitle": "Đang thoát ứng dụng",
+    "EnsureExitSubtitle": "Có những tác vụ quan trọng đang chạy ngầm. Bạn có chắc chắn muốn thoát không?"
   },
 
   "_FileMigrationProcess": {
@@ -1541,7 +1550,7 @@
     "Graphics_EffectsQ": "Chất lượng hiệu ứng",
     "Graphics_ShadingQ": "Chất lượng bóng",
     "Graphics_Distortion": "Bóp méo",
-    "Graphics_HighPrecisionCharacterAnimation": "Hoạt Ảnh Nhân Vật có độ chính xác cao",
+    "Graphics_HighPrecisionCharacterAnimation": "Độ sắc nét động thái nhân vật",
     "Audio_PlaybackDev": "Thiết bị phát",
     "Audio_PlaybackDev_Headphones": "Tai Nghe",
     "Audio_PlaybackDev_Speakers": "Loa",
