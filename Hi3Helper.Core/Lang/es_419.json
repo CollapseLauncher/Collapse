@@ -530,6 +530,7 @@
     "ContributePRBtn": "Contribuye con un Pull Request",
     "ContributorListBtn": "Colaboradores del Open Source",
     "HelpLocalizeBtn": "¡Ayúdanos a traducir Collapse!",
+    "ShareYourFeedbackBtn": "Compártenos tus comentarios",
 
     "About": "Acerca de",
     "About_Copyright1": "© 2022-2024",
@@ -800,7 +801,14 @@
     "IsBytesNotANumber": "= NaN",
 
     "MissingVcRedist": "Falta el Visual C/C++ Redistributable",
-    "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema."
+    "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema.",
+    "ExceptionFeedbackBtn": "Cuéntanos lo que pasó",
+    "ExceptionFeedbackBtn_Unavailable": "El informe de crash está desactivado o no está disponible",
+    "ExceptionFeedbackBtn_FeedbackSent": "¡Se ha enviado su comentario!",
+    "ExceptionFeedbackTitle": "Cuéntanos lo que pasó:",
+    "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
+    "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
+    "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea"
   },
 
   "_BackgroundNotification": {
@@ -1015,9 +1023,22 @@
     "UACWarningContent": "Desactivar el Control de cuentas de usuario (UAC) nunca es una buena idea. \nLa seguridad del SO se verá comprometida y es posible que el juego no funcione correctamente. \n\nHaz clic en \"Más información\" para ver cómo activar UAC. \nLa entrada relacionada es: Ejecución de todos los administradores en Administración modo de aprobación.",
     "UACWarningLearnMore": "Más información",
     "UACWarningDontShowAgain": "No mostrar de nuevo",
-    
+
     "EnsureExitTitle": "Saliendo de la aplicación ",
-    "EnsureExitSubtitle": "Hay operaciones críticas ejecutándose en segundo plano. ¿Estás seguro de que quieres salir?"
+    "EnsureExitSubtitle": "Hay operaciones críticas ejecutándose en segundo plano. ¿Estás seguro de que quieres salir?",
+
+    "UserFeedback_DialogTitle": "Comparta su opinión",
+    "UserFeedback_TextFieldTitleHeader": "Título",
+    "UserFeedback_TextFieldTitlePlaceholder": "Escriba aquí el título...",
+    "UserFeedback_TextFieldMessageHeader": "Mensaje",
+    "UserFeedback_TextFieldMessagePlaceholder": "Mensaje...",
+    "UserFeedback_TextFieldRequired": "(obligatorio)",
+    "UserFeedback_RatingText": "¿Le importaría compartir su valoración?",
+    "UserFeedback_CancelBtn": "Cancelar",
+    "UserFeedback_SubmitBtn": "Compártenos tus comentarios",
+    "UserFeedback_SubmitBtn_Processing": "Procesando...",
+    "UserFeedback_SubmitBtn_Completed": "¡Completado!",
+    "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!"
   },
 
   "_FileMigrationProcess": {
