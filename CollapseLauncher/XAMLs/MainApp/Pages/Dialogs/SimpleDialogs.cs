@@ -1299,11 +1299,8 @@ namespace CollapseLauncher.Dialogs
                     var email    = "none@none.com";
 
                     var feedbackContent = $"""
-                                          {feedbackResult.Title}
-                                          ---------------------
+                                          {feedbackResult.Title} <{feedbackResult.Rating}/5> | 
                                           {feedbackResult.Message}
-                                          
-                                          {feedbackResult.Rating}/5
                                           """;
 
                     SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, feedbackContent, user);
