@@ -1284,9 +1284,29 @@ namespace CollapseLauncher.Dialogs
                     Message = exceptionContent
                 };
                 UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
+                // TODO: (Optional) Implement generic user feedback pathway (preferably when SentryErrorId is null
+                // Using https://paste.mozilla.org/ 
+                // API Documentation: https://docs.dpaste.org/api/
+                // Though im not sure since user will still need to paste the link to us 🤷
+                
                 if (feedbackResult is not null)
                 {
-                    // TODO: Do something with the result @bagusnl
+                    // TODO: Add optional field for user email and username @neon-nyan
+                    // both can be filled with 'none' if user doesn't want to provide it
+                    // for email field, it at least needs to be a valid email format e.g. none@none.com
+
+                    var user     = "none";
+                    var email    = "none@none.com";
+
+                    var feedbackContent = $"""
+                                          {feedbackResult.Title}
+                                          ---------------------
+                                          {feedbackResult.Message}
+                                          
+                                          {feedbackResult.Rating}/5
+                                          """;
+
+                    SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, feedbackContent, user);
                 }
 
                 await Dialog_ShowUnhandledExceptionMenu();
