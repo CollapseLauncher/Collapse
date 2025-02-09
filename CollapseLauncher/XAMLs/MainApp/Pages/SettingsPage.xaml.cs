@@ -434,28 +434,7 @@ namespace CollapseLauncher.Pages
             };
             
             UserFeedbackResult userFeedbackResult = await userFeedbackDialog
-               .ShowAsync( result =>
-                          {
-                              // Parse username and email
-                              var msg = result.Message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                              if (msg.Length <= 4) return; // Do not send feedback if format is not correct
-                              var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                              var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                              var feedback = msg.Length > 4 ? string.Join('\n', msg.Skip(4)).Trim() : null;
-                    
-                              if (string.IsNullOrEmpty(user)) user = "none";
-                    
-                              // Validate email
-                              var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
-                              email = addr ? address.Address : "user@collapselauncher.com";
-                             
-
-                              if (string.IsNullOrEmpty(feedback)) return;
-
-                              var feedbackContent = $"{result.Title} <{result.Rating}/5>\n\n{feedback}";
-
-                              throw new NotImplementedException();
-                          });
+               .ShowAsync( result => throw new NotImplementedException());
 
             if (userFeedbackResult == null)
             {
