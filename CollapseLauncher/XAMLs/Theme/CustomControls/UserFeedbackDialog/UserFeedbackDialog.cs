@@ -343,7 +343,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         private static Grid FindOverlayGrid([NotNull] XamlRoot? root, bool isAlwaysOnTop)
         {
             // XAML root cannot be empty or null!
-            ArgumentNullException.ThrowIfNull(root, nameof(root));
+            ArgumentNullException.ThrowIfNull(root);
 
             // If alwaysOnTop is not preferred, find for a grid called "OverlayRootGrid" under the XamlRoot's Content.
             if (!isAlwaysOnTop)
