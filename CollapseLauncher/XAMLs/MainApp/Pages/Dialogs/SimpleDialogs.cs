@@ -1226,8 +1226,12 @@ namespace CollapseLauncher.Dialogs
                                      .WithHorizontalAlignment(HorizontalAlignment.Stretch);
                 copyButton.Click += CopyTextToClipboard;
 
+                var btnText = ErrorSender.SentryErrorId == Guid.Empty
+                    ? Lang._Misc.ExceptionFeedbackBtn_Unavailable
+                    : Lang._Misc.ExceptionFeedbackBtn;
+
                 Button submitFeedbackButton = rootGrid.AddElementToGridRowColumn(CollapseUIExt.CreateButtonWithIcon<Button>(
-                    Lang._SettingsPage.ShareYourFeedbackBtn,
+                    btnText,
                     "\ue594",
                     "FontAwesomeSolid",
                     "TransparentDefaultButtonStyle",
@@ -1235,7 +1239,14 @@ namespace CollapseLauncher.Dialogs
                     10
                     ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
                     2, 1);
+
+                if (ErrorSender.SentryErrorId == Guid.Empty)
+                {
+                    submitFeedbackButton.IsEnabled = false;
+                }
+                
                 submitFeedbackButton.Click += SubmitFeedbackButton_Click;
+                // TODO: Change button content after feedback is submitted
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
                                                                Lang._UnhandledExceptionPage.GoBackPageBtn1,
@@ -1275,13 +1286,16 @@ namespace CollapseLauncher.Dialogs
 
                 contentDialog.Hide();
 
-                string exceptionContent = """
-                                          Username (Optional): 
-                                          Email (Optional):
-                                          Insert your feedback after this line
+                var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
+                var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+
+                string exceptionContent = $"""
+                                          {userTemplate} 
+                                          {emailTemplate}
+                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
                                           ------------------------------------
                                           """;
-                string exceptionTitle   = $"Tell us what happened: {ErrorSender.ExceptionTitle}";
+                string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
 
                 UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
                 {
@@ -1300,12 +1314,23 @@ namespace CollapseLauncher.Dialogs
                     // Parse username and email
                     var msg = feedbackResult.Message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                     if (msg.Length <= 4) return; // Do not send feedback if format is not correct
-                    var user = msg[0].Replace("Username (Optional):", "").Trim();
-                    var email = msg[1].Replace("Email (Optional):", "").Trim();
+                    var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                    var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
                     var feedback = msg.Length > 4 ? string.Join('\n', msg.Skip(4)).Trim() : null;
                     
                     if (string.IsNullOrEmpty(user)) user = "none";
-                    if (string.IsNullOrEmpty(email)) email = "none@email.com";
+                    
+                    // Validate email
+                    try
+                    {
+                        var addr = new System.Net.Mail.MailAddress(email);
+                        email = addr.Address;
+                    }
+                    catch
+                    {
+                        Logger.LogWriteLine("[SubmitFeedbackButton_Click] Invalid email address, returning template email", LogType.Error);
+                        email = "user@collapselauncher.com";
+                    }
 
                     if (string.IsNullOrEmpty(feedback)) return;
 

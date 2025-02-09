@@ -143,6 +143,13 @@ namespace Hi3Helper
                 public string IsBytesNotANumber    { get; set; } = LangFallback?._Misc.IsBytesNotANumber;
                 public string MissingVcRedist      { get; set; } = LangFallback?._Misc.MissingVcRedist;
                 public string MissingVcRedistSubtitle { get; set; } = LangFallback?._Misc.MissingVcRedistSubtitle;
+                
+                public string ExceptionFeedbackBtn { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn;
+                public string ExceptionFeedbackBtn_Unavailable { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn_Unavailable;
+                public string ExceptionFeedbackTitle { get; set; } = LangFallback?._Misc.ExceptionFeedbackTitle;
+                public string ExceptionFeedbackTemplate_User { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_User;
+                public string ExceptionFeedbackTemplate_Email { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Email;
+                public string ExceptionFeedbackTemplate_Message { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Message;
             }
         }
         #endregion
