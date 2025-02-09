@@ -1198,7 +1198,10 @@ namespace CollapseLauncher.Dialogs
                                              .WithVerticalAlignment(VerticalAlignment.Stretch)
                                              .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star),
                                                        GridLength.Auto)
-                                             .WithColumns(GridLength.Auto, new GridLength(1, GridUnitType.Star));
+#if ENABLEUSERFEEDBACK
+                                             .WithColumns(GridLength.Auto, new GridLength(1, GridUnitType.Star))
+#endif
+                                             ;
 
                 _ = rootGrid.AddElementToGridRowColumn(new TextBlock
                 {
@@ -1222,10 +1225,20 @@ namespace CollapseLauncher.Dialogs
                                                                "",
                                                                "FontAwesomeSolid",
                                                                "AccentButtonStyle"
-                                                              ).WithHorizontalAlignment(HorizontalAlignment.Left), 2)
-                                     .WithHorizontalAlignment(HorizontalAlignment.Stretch);
+                                                              ).WithHorizontalAlignment(
+                                                           #if ENABLEUSERFEEDBACK
+                                                               HorizontalAlignment.Left
+                                                           #else
+                                                               HorizontalAlignment.Center
+                                                           #endif
+                                                              ), 2)
+#if ENABLEUSERFEEDBACK
+                                     .WithHorizontalAlignment(HorizontalAlignment.Stretch)
+#endif
+                                     ;
                 copyButton.Click += CopyTextToClipboard;
 
+#if ENABLEUSERFEEDBACK
                 var btnText = ErrorSender.SentryErrorId == Guid.Empty
                     ? Lang._Misc.ExceptionFeedbackBtn_Unavailable
                     : Lang._Misc.ExceptionFeedbackBtn;
@@ -1247,19 +1260,26 @@ namespace CollapseLauncher.Dialogs
                 
                 submitFeedbackButton.Click += SubmitFeedbackButton_Click;
                 // TODO: Change button content after feedback is submitted
+#endif
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
                                                                Lang._UnhandledExceptionPage.GoBackPageBtn1,
                                                                null,
                                                                null,
                                                                ContentDialogButton.Close,
-                                                               ContentDialogTheme.Error,
-                                                               OnLoadedDialog);
+                                                               ContentDialogTheme.Error
+#if ENABLEUSERFEEDBACK
+                                                               ,
+                                                               OnLoadedDialog
+#endif
+                                                               );
 
                 return result;
 
+#if ENABLEUSERFEEDBACK
                 void OnLoadedDialog(object? sender, RoutedEventArgs e)
                     => submitFeedbackButton.SetTag(sender);
+#endif
             }
             catch (Exception ex)
             {
@@ -1275,6 +1295,7 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
+#if ENABLEUSERFEEDBACK
         private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1338,6 +1359,7 @@ namespace CollapseLauncher.Dialogs
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
         }
+#endif
 
         private static async void CopyTextToClipboard(object sender, RoutedEventArgs e)
         {

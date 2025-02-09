@@ -13,7 +13,9 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
+#if ENABLEUSERFEEDBACK
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
+#endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -98,12 +100,12 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
-        #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
-        #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
@@ -125,11 +127,15 @@ namespace CollapseLauncher.Pages
             );
             
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
+
+#if !ENABLEUSERFEEDBACK
+            ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
+#endif
         }
 
         private string GitVersionIndicator_Builder()
         {
-        #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             var branchName  = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
 
@@ -143,7 +149,7 @@ namespace CollapseLauncher.Pages
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
-        #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             return outString;
         }
         
@@ -374,7 +380,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenChangelog(object sender, RoutedEventArgs e)
         {
-            #nullable enable
+#nullable enable
             var uri =
                 $"https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/blob/main/changelog_{(IsPreview ? "preview" : "stable")}.md";
 
@@ -404,11 +410,14 @@ namespace CollapseLauncher.Pages
                 mainWindow.OverlayFrame.GoBack();
                 mainWindow.OverlayFrame.BackStack?.Clear();
             }
-            #nullable restore
+#nullable restore
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+#if ENABLEUSERFEEDBACK
             var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
             var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
             string exceptionContent = $"""
@@ -452,6 +461,7 @@ namespace CollapseLauncher.Pages
             {
                 LogWriteLine("User feedback dialog cancelled!", LogType.Debug);
             }
+#endif
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
@@ -524,7 +534,7 @@ namespace CollapseLauncher.Pages
         {
             ((UIElement)VisualTreeHelper.GetParent((DependencyObject)sender)).IsHitTestVisible = true;
         }
-        #endregion
+#endregion
 
         #region Settings UI Backend
         private bool IsBgCustom
