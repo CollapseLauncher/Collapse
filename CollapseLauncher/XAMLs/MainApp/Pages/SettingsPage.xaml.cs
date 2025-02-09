@@ -410,18 +410,43 @@ namespace CollapseLauncher.Pages
 
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
         {
-            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true);
+            var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
+            var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+            string exceptionContent = $"""
+                                       {userTemplate} 
+                                       {emailTemplate} 
+                                       {Lang._Misc.ExceptionFeedbackTemplate_Message}
+                                       ------------------------------------
+                                       """;
+            
+            
+            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true)
+            { 
+                Message   = exceptionContent
+            };
+            
             UserFeedbackResult userFeedbackResult = await userFeedbackDialog
-               .ShowAsync(async (result, ctx) =>
+               .ShowAsync( result =>
                           {
-                              LogWriteLine("Delaying for 5 seconds...");
-                              await Task.Delay(5000, ctx);
+                              // Parse username and email
+                              var msg = result.Message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                              if (msg.Length <= 4) return; // Do not send feedback if format is not correct
+                              var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                              var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                              var feedback = msg.Length > 4 ? string.Join('\n', msg.Skip(4)).Trim() : null;
+                    
+                              if (string.IsNullOrEmpty(user)) user = "none";
+                    
+                              // Validate email
+                              var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+                              email = addr ? address.Address : "user@collapselauncher.com";
+                             
 
-                              // Do something with userFeedbackResult
-                              LogWriteLine("User feedback data:",            LogType.Debug);
-                              LogWriteLine($"    Title: {result.Title}",     LogType.Debug);
-                              LogWriteLine($"    Message: {result.Message}", LogType.Debug);
-                              LogWriteLine($"    Rating: {result.Rating}",   LogType.Debug);
+                              if (string.IsNullOrEmpty(feedback)) return;
+
+                              var feedbackContent = $"{result.Title} <{result.Rating}/5>\n\n{feedback}";
+                              
+                              SentryHelper.SendFeedback(email, user, feedbackContent);
                           });
 
             if (userFeedbackResult == null)

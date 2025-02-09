@@ -548,8 +548,17 @@ namespace Hi3Helper.SentryHelper
                                     true);
             }
 
-            var sId = new SentryId(sentryId);
-            SentrySdk.CaptureUserFeedback(sId, userEmail, feedback, user);
+            var sId          = new SentryId(sentryId);
+            var userFeedback = new UserFeedback(sId, user, userEmail, feedback);
+            
+            SentrySdk.CaptureUserFeedback(userFeedback);
+        }
+        
+        public static void SendFeedback(string userEmail, string user, string feedback)
+        {
+            var sId = new SentryId(Guid.NewGuid());
+            
+            SentrySdk.CaptureUserFeedback(sId, feedback, user);
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]

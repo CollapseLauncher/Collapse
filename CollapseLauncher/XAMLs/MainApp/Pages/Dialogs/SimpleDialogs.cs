@@ -1291,7 +1291,7 @@ namespace CollapseLauncher.Dialogs
 
                 string exceptionContent = $"""
                                           {userTemplate} 
-                                          {emailTemplate}
+                                          {emailTemplate} 
                                           {Lang._Misc.ExceptionFeedbackTemplate_Message}
                                           ------------------------------------
                                           """;
@@ -1316,27 +1316,19 @@ namespace CollapseLauncher.Dialogs
                     if (msg.Length <= 4) return; // Do not send feedback if format is not correct
                     var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
                     var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                    var feedback = msg.Length > 4 ? string.Join('\n', msg.Skip(4)).Trim() : null;
+                    var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
                     
                     if (string.IsNullOrEmpty(user)) user = "none";
                     
                     // Validate email
-                    try
-                    {
-                        var addr = new System.Net.Mail.MailAddress(email);
-                        email = addr.Address;
-                    }
-                    catch
-                    {
-                        Logger.LogWriteLine("[SubmitFeedbackButton_Click] Invalid email address, returning template email", LogType.Error);
-                        email = "user@collapselauncher.com";
-                    }
+                    var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+                    email = addr ? address!.Address : "user@collapselauncher.com";
 
                     if (string.IsNullOrEmpty(feedback)) return;
 
                     var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
 
-                    SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, feedbackContent, user);
+                    SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
                 }
 
                 await Dialog_ShowUnhandledExceptionMenu();
