@@ -1275,12 +1275,18 @@ namespace CollapseLauncher.Dialogs
 
                 contentDialog.Hide();
 
-                string exceptionContent = ErrorSender.ExceptionContent;
-                string exceptionTitle   = $"[UnhandledException] {ErrorSender.Exception.Message}";
+                string exceptionContent = """
+                                          Username (Optional): 
+                                          Email (Optional):
+                                          Insert your feedback after this line
+                                          ------------------------------------
+                                          """;
+                string exceptionTitle   = $"Tell us what happened: {ErrorSender.ExceptionTitle}";
 
                 UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
                 {
-                    Title = exceptionTitle,
+                    Title   = exceptionTitle,
+                    IsTitleReadOnly = true,
                     Message = exceptionContent
                 };
                 UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
@@ -1291,17 +1297,19 @@ namespace CollapseLauncher.Dialogs
                 
                 if (feedbackResult is not null)
                 {
-                    // TODO: Add optional field for user email and username @neon-nyan
-                    // both can be filled with 'none' if user doesn't want to provide it
-                    // for email field, it at least needs to be a valid email format e.g. none@none.com
+                    // Parse username and email
+                    var msg = feedbackResult.Message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (msg.Length <= 4) return; // Do not send feedback if format is not correct
+                    var user = msg[0].Replace("Username (Optional):", "").Trim();
+                    var email = msg[1].Replace("Email (Optional):", "").Trim();
+                    var feedback = msg.Length > 4 ? string.Join('\n', msg.Skip(4)).Trim() : null;
+                    
+                    if (string.IsNullOrEmpty(user)) user = "none";
+                    if (string.IsNullOrEmpty(email)) email = "none@email.com";
 
-                    var user     = "none";
-                    var email    = "none@none.com";
+                    if (string.IsNullOrEmpty(feedback)) return;
 
-                    var feedbackContent = $"""
-                                          {feedbackResult.Title} <{feedbackResult.Rating}/5> | 
-                                          {feedbackResult.Message}
-                                          """;
+                    var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
 
                     SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, feedbackContent, user);
                 }
