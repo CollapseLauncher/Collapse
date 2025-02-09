@@ -553,13 +553,6 @@ namespace Hi3Helper.SentryHelper
             
             SentrySdk.CaptureUserFeedback(userFeedback);
         }
-        
-        public static void SendFeedback(string userEmail, string user, string feedback)
-        {
-            var sId = new SentryId(Guid.NewGuid());
-            
-            SentrySdk.CaptureUserFeedback(sId, feedback, user);
-        }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]
         private static partial Regex ExceptionFrame();

@@ -444,8 +444,8 @@ namespace CollapseLauncher.Pages
                               if (string.IsNullOrEmpty(feedback)) return;
 
                               var feedbackContent = $"{result.Title} <{result.Rating}/5>\n\n{feedback}";
-                              
-                              SentryHelper.SendFeedback(email, user, feedbackContent);
+
+                              throw new NotImplementedException();
                           });
 
             if (userFeedbackResult == null)
