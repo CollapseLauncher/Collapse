@@ -30,6 +30,12 @@ using InnerExtension = CollapseLauncher.Extension.UIElementExtensions;
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 {
+    /// <summary>
+    /// A record of the result from <see cref="UserFeedbackDialog"/>
+    /// </summary>
+    /// <param name="Title">The title of the feedback</param>
+    /// <param name="Message">The message of the feedback</param>
+    /// <param name="Rating">The rating of the feedback</param>
     public record UserFeedbackResult(string Title, string Message, double Rating);
 
     /// <summary>
