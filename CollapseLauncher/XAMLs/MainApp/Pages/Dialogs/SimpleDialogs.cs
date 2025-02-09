@@ -1183,7 +1183,7 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu()
+        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(bool isUserFeedbackSent = false)
         {
             Button? copyButton = null;
 
@@ -1222,12 +1222,18 @@ namespace CollapseLauncher.Dialogs
                                                                "",
                                                                "FontAwesomeSolid",
                                                                "AccentButtonStyle"
-                                                              ).WithHorizontalAlignment(HorizontalAlignment.Left), 2)
-                                     .WithHorizontalAlignment(HorizontalAlignment.Stretch);
+                                                              ).WithHorizontalAlignment(
+                                                               HorizontalAlignment.Left
+                                                              ), 2);
                 copyButton.Click += CopyTextToClipboard;
 
+                var btnText = isUserFeedbackSent ? Lang._Misc.ExceptionFeedbackBtn_FeedbackSent :
+                    ErrorSender.SentryErrorId == Guid.Empty
+                    ? Lang._Misc.ExceptionFeedbackBtn_Unavailable
+                    : Lang._Misc.ExceptionFeedbackBtn;
+
                 Button submitFeedbackButton = rootGrid.AddElementToGridRowColumn(CollapseUIExt.CreateButtonWithIcon<Button>(
-                    Lang._SettingsPage.ShareYourFeedbackBtn,
+                    btnText,
                     "\ue594",
                     "FontAwesomeSolid",
                     "TransparentDefaultButtonStyle",
@@ -1235,7 +1241,14 @@ namespace CollapseLauncher.Dialogs
                     10
                     ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
                     2, 1);
+
+                if (ErrorSender.SentryErrorId == Guid.Empty || isUserFeedbackSent)
+                {
+                    submitFeedbackButton.IsEnabled = false;
+                }
+
                 submitFeedbackButton.Click += SubmitFeedbackButton_Click;
+                // TODO: Change button content after feedback is submitted
 
                 ContentDialogResult result = await SpawnDialog(title, rootGrid, null,
                                                                Lang._UnhandledExceptionPage.GoBackPageBtn1,
@@ -1243,7 +1256,8 @@ namespace CollapseLauncher.Dialogs
                                                                null,
                                                                ContentDialogButton.Close,
                                                                ContentDialogTheme.Error,
-                                                               OnLoadedDialog);
+                                                               OnLoadedDialog
+                                                               );
 
                 return result;
 
@@ -1264,36 +1278,74 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
+        // ReSharper disable once AsyncVoidMethod
         private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
         {
+            bool isFeedbackSent = false;
+            if (sender is not Button { Tag: ContentDialog contentDialog })
+            {
+                return;
+            }
+
             try
             {
-                if (sender is not Button { Tag: ContentDialog contentDialog })
+                contentDialog.Hide();
+
+                var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
+                var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+
+                string exceptionContent = $"""
+                                          {userTemplate} 
+                                          {emailTemplate} 
+                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
+                                          ------------------------------------
+                                          """;
+                string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
+
+                UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
+                {
+                    Title   = exceptionTitle,
+                    IsTitleReadOnly = true,
+                    Message = exceptionContent
+                };
+                UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
+                // TODO: (Optional) Implement generic user feedback pathway (preferably when SentryErrorId is null
+                // Using https://paste.mozilla.org/ 
+                // API Documentation: https://docs.dpaste.org/api/
+                // Though im not sure since user will still need to paste the link to us 🤷
+
+                if (feedbackResult is null)
                 {
                     return;
                 }
 
-                contentDialog.Hide();
+                // Parse username and email
+                var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+                if (msg.Length <= 4) return; // Do not send feedback if format is not correct
+                var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
 
-                string exceptionContent = ErrorSender.ExceptionContent;
-                string exceptionTitle   = $"[UnhandledException] {ErrorSender.Exception.Message}";
+                if (string.IsNullOrEmpty(user)) user = "none";
 
-                UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
-                {
-                    Title = exceptionTitle,
-                    Message = exceptionContent
-                };
-                UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
-                if (feedbackResult is not null)
-                {
-                    // TODO: Do something with the result @bagusnl
-                }
+                // Validate email
+                var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+                email = addr ? address!.Address : "user@collapselauncher.com";
 
-                await Dialog_ShowUnhandledExceptionMenu();
+                if (string.IsNullOrEmpty(feedback)) return;
+
+                var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
+
+                SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
+                isFeedbackSent = true;
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+            }
+            finally
+            {
+                await Dialog_ShowUnhandledExceptionMenu(isFeedbackSent);
             }
         }
 

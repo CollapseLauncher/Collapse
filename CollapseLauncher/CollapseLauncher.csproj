@@ -77,6 +77,7 @@
                                 This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
         - USEVELOPACK : Use Velopack as the update manager
+        - ENABLEUSERFEEDBACK : Enable user feedback feature
 -->
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <!-- !! IMPORTANT !!-->
