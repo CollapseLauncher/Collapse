@@ -1183,7 +1183,7 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu()
+        public static async Task<ContentDialogResult> Dialog_ShowUnhandledExceptionMenu(bool isUserFeedbackSent = false)
         {
             Button? copyButton = null;
 
@@ -1227,7 +1227,8 @@ namespace CollapseLauncher.Dialogs
                                                               ), 2);
                 copyButton.Click += CopyTextToClipboard;
 
-                var btnText = ErrorSender.SentryErrorId == Guid.Empty
+                var btnText = isUserFeedbackSent ? Lang._Misc.ExceptionFeedbackBtn_FeedbackSent :
+                    ErrorSender.SentryErrorId == Guid.Empty
                     ? Lang._Misc.ExceptionFeedbackBtn_Unavailable
                     : Lang._Misc.ExceptionFeedbackBtn;
 
@@ -1241,11 +1242,11 @@ namespace CollapseLauncher.Dialogs
                     ).WithMargin(8,0,0,0).WithHorizontalAlignment(HorizontalAlignment.Right),
                     2, 1);
 
-                if (ErrorSender.SentryErrorId == Guid.Empty)
+                if (ErrorSender.SentryErrorId == Guid.Empty || isUserFeedbackSent)
                 {
                     submitFeedbackButton.IsEnabled = false;
                 }
-                
+
                 submitFeedbackButton.Click += SubmitFeedbackButton_Click;
                 // TODO: Change button content after feedback is submitted
 
@@ -1277,8 +1278,10 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
+        // ReSharper disable once AsyncVoidMethod
         private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
         {
+            bool isFeedbackSent = false;
             try
             {
                 if (sender is not Button { Tag: ContentDialog contentDialog })
@@ -1310,34 +1313,39 @@ namespace CollapseLauncher.Dialogs
                 // Using https://paste.mozilla.org/ 
                 // API Documentation: https://docs.dpaste.org/api/
                 // Though im not sure since user will still need to paste the link to us 🤷
-                
-                if (feedbackResult is not null)
+
+                if (feedbackResult is null)
                 {
-                    // Parse username and email
-                    var msg = feedbackResult.Message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (msg.Length <= 4) return; // Do not send feedback if format is not correct
-                    var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                    var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                    var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
-                    
-                    if (string.IsNullOrEmpty(user)) user = "none";
-                    
-                    // Validate email
-                    var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
-                    email = addr ? address!.Address : "user@collapselauncher.com";
-
-                    if (string.IsNullOrEmpty(feedback)) return;
-
-                    var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
-
-                    SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
+                    return;
                 }
 
-                await Dialog_ShowUnhandledExceptionMenu();
+                // Parse username and email
+                var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+                if (msg.Length <= 4) return; // Do not send feedback if format is not correct
+                var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+                var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
+
+                if (string.IsNullOrEmpty(user)) user = "none";
+
+                // Validate email
+                var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+                email = addr ? address!.Address : "user@collapselauncher.com";
+
+                if (string.IsNullOrEmpty(feedback)) return;
+
+                var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
+
+                SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
+                isFeedbackSent = true;
             }
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+            }
+            finally
+            {
+                await Dialog_ShowUnhandledExceptionMenu(isFeedbackSent);
             }
         }
 

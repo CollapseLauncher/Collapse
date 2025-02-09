@@ -146,6 +146,7 @@ namespace Hi3Helper
                 
                 public string ExceptionFeedbackBtn { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn;
                 public string ExceptionFeedbackBtn_Unavailable { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn_Unavailable;
+                public string ExceptionFeedbackBtn_FeedbackSent { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn_FeedbackSent;
                 public string ExceptionFeedbackTitle { get; set; } = LangFallback?._Misc.ExceptionFeedbackTitle;
                 public string ExceptionFeedbackTemplate_User { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_User;
                 public string ExceptionFeedbackTemplate_Email { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Email;

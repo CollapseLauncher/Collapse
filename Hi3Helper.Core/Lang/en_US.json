@@ -804,6 +804,7 @@
     "MissingVcRedistSubtitle": "You need to install the Visual C/C++ Redistributable to run this function. Do you want to download it now?\r\nNote: This will open a browser window and download a file from Microsoft. Please run the installer after downloading it then restart Collapse and try again.\r\nIf you have already installed it but the error remains, please send a issue ticket to us.",
     "ExceptionFeedbackBtn": "Tell us what happened",
     "ExceptionFeedbackBtn_Unavailable": "Crash report is disabled or not available",
+    "ExceptionFeedbackBtn_FeedbackSent": "Feedback has been sent!",
     "ExceptionFeedbackTitle": "Tell us what happened:",
     "ExceptionFeedbackTemplate_User": "Username (Optional):",
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
