@@ -1028,7 +1028,10 @@
     "UserFeedback_TextFieldRequired": "(required)",
     "UserFeedback_RatingText": "Mind to share your ratings?",
     "UserFeedback_CancelBtn": "Cancel",
-    "UserFeedback_SubmitBtn": "Submit your feedback"
+    "UserFeedback_SubmitBtn": "Submit your feedback",
+    "UserFeedback_SubmitBtn_Processing": "Processing...",
+    "UserFeedback_SubmitBtn_Completed": "Completed!",
+    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!"
   },
 
   "_FileMigrationProcess": {

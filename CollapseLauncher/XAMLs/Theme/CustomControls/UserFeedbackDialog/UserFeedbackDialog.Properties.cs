@@ -1,7 +1,12 @@
-﻿using CollapseLauncher.Pages;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Pages;
+using CommunityToolkit.WinUI;
+using Hi3Helper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Threading;
+using System.Threading.Tasks;
 // ReSharper disable PartialTypeWithSinglePart
 
 #nullable enable
@@ -89,9 +94,97 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             InvalidateTokenSource();
         }
 
+        private async Task OnRunningSubmitTask(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit, UserFeedbackResult? result)
+        {
+            if (!(actionCallbackTaskOnSubmit is not null && _isSubmit))
+            {
+                return;
+            }
+
+            try
+            {
+                _currentConfirmTokenSource ??= new CancellationTokenSource();
+                OnSubmitBtnRunningTask();
+                await actionCallbackTaskOnSubmit(result, _currentConfirmTokenSource.Token);
+            }
+            catch
+            {
+                // ignored
+            }
+            finally
+            {
+                await OnSubmitBtnCompletedTask();
+                DisposeTokenSource();
+            }
+        }
+
+        private void OnSubmitBtnRunningTask()
+        {
+            if (!(_layoutPrimaryButton is not null &&
+                  _layoutFeedbackTitleInput is not null &&
+                  _layoutFeedbackMessageInput is not null &&
+                  _layoutFeedbackRatingControl is not null))
+                return;
+
+            TextBlock? textBlock = (_layoutPrimaryButton.Content as UIElement)?.FindDescendant<TextBlock>();
+            ProgressRing? progressRing = (_layoutPrimaryButton.Content as UIElement)?.FindDescendant<ProgressRing>();
+            Grid? iconGrid = (_layoutPrimaryButton.Content as UIElement)?.FindDescendant<Grid>();
+
+            if (textBlock is null ||
+                progressRing is null ||
+                iconGrid is null)
+                return;
+
+            _layoutPrimaryButton.IsEnabled         = false;
+            _layoutFeedbackTitleInput.IsEnabled    = false;
+            _layoutFeedbackMessageInput.IsEnabled  = false;
+            _layoutFeedbackRatingControl.IsEnabled = false;
+            progressRing.Visibility                = Visibility.Visible;
+            progressRing.IsIndeterminate           = true;
+            progressRing.Opacity                   = 1d;
+            iconGrid.Opacity                       = 0d;
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Lang._Dialogs,
+                                   nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn_Processing));
+        }
+
+        private Task OnSubmitBtnCompletedTask()
+        {
+            if (!(_layoutPrimaryButton is not null &&
+                  _layoutCloseButton is not null))
+                return Task.CompletedTask;
+
+            TextBlock? textBlock = (_layoutPrimaryButton.Content as UIElement)?.FindDescendant<TextBlock>();
+            ProgressRing? progressRing = (_layoutPrimaryButton.Content as UIElement)?.FindDescendant<ProgressRing>();
+            bool isCancelled = _currentConfirmTokenSource?.IsCancellationRequested ?? false;
+
+            if (textBlock is null ||
+                progressRing is null)
+                return Task.CompletedTask;
+
+            progressRing.IsIndeterminate = false;
+            _layoutCloseButton.IsEnabled = false;
+
+            textBlock.BindProperty(TextBlock.TextProperty,
+                                   Locale.Lang._Dialogs,
+                                   isCancelled ?
+                                       nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn_Cancelled) :
+                                       nameof(Locale.Lang._Dialogs.UserFeedback_SubmitBtn_Completed));
+
+            return ReturnDelay();
+
+            Task ReturnDelay() => Task.Delay(TimeSpan.FromSeconds(1));
+        }
+
         private void InvalidateTokenSource()
             => _currentConfirmTokenSource?.Cancel();
 
+        private void DisposeTokenSource()
+        {
+            _currentConfirmTokenSource?.Dispose();
+            Interlocked.Exchange(ref _currentConfirmTokenSource, null);
+        }
         #endregion
 
         #region DependencyProperty

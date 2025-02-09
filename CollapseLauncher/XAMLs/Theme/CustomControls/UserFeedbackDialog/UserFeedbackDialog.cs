@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
@@ -24,12 +25,12 @@ using Windows.UI;
 using InnerExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
 {
     public record UserFeedbackResult(string Title, string Message, double Rating);
-
     public partial class UserFeedbackDialog : ContentControl
     {
         public UserFeedbackDialog(XamlRoot xamlRoot) : this(xamlRoot, false) { }
@@ -59,6 +60,12 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackRatingControl?.SetCursor(pointerCursor);
             _layoutPrimaryButton?.SetCursor(pointerCursor);
             _layoutCloseButton?.SetCursor(pointerCursor);
+
+            // Assign implicit animations
+            _layoutFeedbackTitleInput?.EnableImplicitAnimation();
+            _layoutFeedbackMessageInput?.EnableImplicitAnimation();
+            _layoutPrimaryButton?.EnableImplicitAnimation();
+            _layoutCloseButton?.EnableImplicitAnimation();
 
             // Assign dialog title image background
             GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
@@ -197,7 +204,6 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackMessageInput!.TextChanged += OnFeedbackInputsChanged;
         }
 
-
         private void UnassignEvents()
         {
             Loaded                                   -= OnUILayoutLoaded;
@@ -208,7 +214,16 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             _layoutFeedbackMessageInput!.TextChanged -= OnFeedbackInputsChanged;
         }
 
-        public async Task<UserFeedbackResult?> ShowAsync()
+        public Task<UserFeedbackResult?> ShowAsync()
+            => ShowAsync(null);
+
+        public Task<UserFeedbackResult?> ShowAsync(Action<UserFeedbackResult?> actionCallbackOnSubmit)
+        {
+            return ShowAsync(ActionCallback);
+            Task ActionCallback(UserFeedbackResult? result, CancellationToken ctx) => Task.Factory.StartNew(() => actionCallbackOnSubmit(result), ctx, TaskCreationOptions.DenyChildAttach, TaskScheduler.Current);
+        }
+
+        public async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
         {
             _parentOverlayGrid = FindOverlayGrid(XamlRoot, _isAlwaysOnTop);
             int parentGridRowCount    = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
@@ -220,24 +235,26 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
                                                           parentGridColumnCount);
 
             _currentConfirmTokenSource ??= new CancellationTokenSource();
+
+            UserFeedbackResult? result;
             try
             {
                 await UseTokenAndWait(_currentConfirmTokenSource);
             }
             finally
             {
-                _currentConfirmTokenSource.Dispose();
-                Interlocked.Exchange(ref _currentConfirmTokenSource, null);
+                DisposeTokenSource();
+                result = _isSubmit ?
+                    new UserFeedbackResult(Title ?? "", Message ?? "", RatingValue) :
+                    null;
+
+                await OnRunningSubmitTask(actionCallbackTaskOnSubmit, result);
 
                 VisualStateManager.GoToState(this, "DialogHidden", true);
-                // ReSharper disable once MethodSupportsCancellation
-                await Task.Delay(500);
                 _parentOverlayGrid?.Children.Remove(this);
             }
 
-            return _isSubmit ?
-                new UserFeedbackResult(Title ?? "", Message ?? "", RatingValue) :
-                null;
+            return result;
         }
 
         private static async Task UseTokenAndWait([NotNull] CancellationTokenSource? tokenSource)

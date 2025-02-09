@@ -13,14 +13,17 @@ namespace CollapseLauncher.Pages
         public object Convert(object value, Type targetType, object parameter, string langInfo)
         {
             if (targetType != typeof(bool))
-                throw new InvalidOperationException("The target must be a boolean");
+                throw new InvalidOperationException("The value must be a boolean");
 
             return !(bool)value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string langInfo)
         {
-            throw new NotSupportedException();
+            if (targetType != typeof(bool))
+                throw new NotSupportedException("The value must be a boolean");
+
+            return !(bool)value;
         }
     }
 

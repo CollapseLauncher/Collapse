@@ -206,6 +206,9 @@ namespace Hi3Helper
                 public string UserFeedback_RatingText { get; set; } = LangFallback?._Dialogs.UserFeedback_RatingText;
                 public string UserFeedback_CancelBtn { get; set; } = LangFallback?._Dialogs.UserFeedback_CancelBtn;
                 public string UserFeedback_SubmitBtn { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn;
+                public string UserFeedback_SubmitBtn_Processing { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Processing;
+                public string UserFeedback_SubmitBtn_Completed { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Completed;
+                public string UserFeedback_SubmitBtn_Cancelled { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Cancelled;
             }
         }
         #endregion

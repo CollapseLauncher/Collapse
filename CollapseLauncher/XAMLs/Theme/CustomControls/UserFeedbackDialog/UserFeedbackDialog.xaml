@@ -330,6 +330,16 @@
                                                            HorizontalAlignment="Center"
                                                            VerticalAlignment="Center"
                                                            FontWeight="SemiBold" />
+                                                <ProgressRing Grid.Column="1"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              Margin="8,0,0,0"
+                                                              Opacity="0"
+                                                              Visibility="Collapsed"
+                                                              Maximum="100"
+                                                              Value="100"
+                                                              Width="16"
+                                                              Height="16"/>
                                                 <Grid Grid.Column="1"
                                                       Margin="4,0,0,0"
                                                       HorizontalAlignment="Center"

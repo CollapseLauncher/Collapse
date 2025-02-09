@@ -34,6 +34,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -410,19 +411,23 @@ namespace CollapseLauncher.Pages
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
         {
             UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true);
-            UserFeedbackResult userFeedbackResult = await userFeedbackDialog.ShowAsync();
+            UserFeedbackResult userFeedbackResult = await userFeedbackDialog
+               .ShowAsync(async (result, ctx) =>
+                          {
+                              LogWriteLine("Delaying for 5 seconds...");
+                              await Task.Delay(5000, ctx);
+
+                              // Do something with userFeedbackResult
+                              LogWriteLine("User feedback data:",            LogType.Debug);
+                              LogWriteLine($"    Title: {result.Title}",     LogType.Debug);
+                              LogWriteLine($"    Message: {result.Message}", LogType.Debug);
+                              LogWriteLine($"    Rating: {result.Rating}",   LogType.Debug);
+                          });
 
             if (userFeedbackResult == null)
             {
                 LogWriteLine("User feedback dialog cancelled!", LogType.Debug);
-                return;
             }
-
-            // Do something with userFeedbackResult
-            LogWriteLine("User feedback data:",                    LogType.Debug);
-            LogWriteLine($"    Title: {userFeedbackResult.Title}", LogType.Debug);
-            LogWriteLine($"    Message: {userFeedbackResult.Message}", LogType.Debug);
-            LogWriteLine($"    Rating: {userFeedbackResult.Rating}", LogType.Debug);
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
