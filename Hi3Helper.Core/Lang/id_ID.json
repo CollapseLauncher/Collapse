@@ -910,6 +910,10 @@
     "ReleaseChannelChangeSubtitle2": "Catatan:",
     "ReleaseChannelChangeSubtitle3": "Melakukan hal ini memungkinkan adanya perubahan yang tidak bisa dikembalikan atau inkompatibilitas.",
 
+    "ForceUpdateCurrentInstallTitle": "Paksa Pembaruan Instalasi Saat Ini",
+    "ForceUpdateCurrentInstallSubtitle1": "Kamu akan menjalankan pembaruan secara paksa untuk instalasi launcher dengan release: ",
+    "ForceUpdateCurrentInstallSubtitle2": "saat ini dan kami menyarankanmu untuk menutup game yang masih terbuka.",
+
     "ChangePlaytimeTitle": "Apakah anda yakin untuk mengubah waktu main?",
     "ChangePlaytimeSubtitle": "Mengubah waktu main anda berarti menimpa nilai saat ini dengan yang sudah anda masukkan.\n\nLanjut untuk mengubah?\n\nCatatan: Hal ini tidak akan mempengaruhi cara Collapse berjalan dan anda dapat mengubah nilai kembali kapan saja saat anda tidak sedang memainkan gamenya.",
     "ResetPlaytimeTitle": "Apakah anda yakin untuk setel ulang waktu main?",
@@ -1022,6 +1026,9 @@
     "UserFeedback_RatingText": "Mau sekalian ratingnya?",
     "UserFeedback_CancelBtn": "Batalkan",
     "UserFeedback_SubmitBtn": "Kirim Umpan-balikmu"
+    
+    "EnsureExitTitle": "Keluar dari Aplikasii",
+    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?"
   },
 
   "_FileMigrationProcess": {
