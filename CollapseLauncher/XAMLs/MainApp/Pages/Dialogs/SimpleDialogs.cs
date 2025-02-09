@@ -1282,13 +1282,13 @@ namespace CollapseLauncher.Dialogs
         private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
         {
             bool isFeedbackSent = false;
+            if (sender is not Button { Tag: ContentDialog contentDialog })
+            {
+                return;
+            }
+
             try
             {
-                if (sender is not Button { Tag: ContentDialog contentDialog })
-                {
-                    return;
-                }
-
                 contentDialog.Hide();
 
                 var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
