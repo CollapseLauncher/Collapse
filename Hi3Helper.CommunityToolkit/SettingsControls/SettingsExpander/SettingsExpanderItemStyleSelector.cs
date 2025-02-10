@@ -36,9 +36,7 @@ public partial class SettingsExpanderItemStyleSelector : StyleSelector
         {
             return ClickableStyle;
         }
-        else
-        {
-            return DefaultStyle;
-        }
+
+        return DefaultStyle;
     }
 }

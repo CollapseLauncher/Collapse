@@ -91,7 +91,6 @@
                                                         Width="24"
                                                         Height="24"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -112,7 +111,7 @@
                                             </Grid>
                                             <!--
                                                 Exclusive Fullscreen option is disabled in Zenless due to it being ignored by the game
-                                                Delete `Visibility="Collapsed"' to revert this change
+                                                Delete `Visibility="Collapsed"` to revert this change
                                             -->
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
@@ -142,7 +141,6 @@
                                                         Width="24"
                                                         Height="24"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -231,8 +229,7 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_Preset}"
@@ -250,8 +247,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_FPS}"
@@ -267,14 +263,11 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <Grid>
-                                        <TextBlock MaxWidth="160"
-                                                   Margin="0,0,0,0"
-                                                   HorizontalAlignment="Left"
-                                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                   Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ColorFilter}"
-                                                   TextWrapping="WrapWholeWords" />
-                                    </Grid>
+                                    <TextBlock Margin="0,0,8,0"
+                                               HorizontalAlignment="Left"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ColorFilter}"
+                                               TextWrapping="WrapWholeWords" />
                                     <Slider x:Name="ColorFilterSlider"
                                             Margin="0,0,16,0"
                                             HorizontalAlignment="Stretch"
@@ -293,8 +286,7 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0"
                                             VerticalAlignment="Bottom">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_RenderRes}"
@@ -311,8 +303,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_AAMode}"
@@ -329,8 +320,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ShadowQuality}"
@@ -354,8 +344,7 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_VolFogs}"
@@ -373,8 +362,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ReflectionQuality}"
@@ -392,8 +380,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_EffectsQ}"
@@ -404,7 +391,8 @@
                                               CornerRadius="14"
                                               SelectedIndex="{x:Bind Graphics_Effects, Mode=TwoWay}"
                                               SelectionChanged="EnforceCustomPreset_ComboBox">
-                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecVeryLow}" /> <!-- Borrow Locale from Genshin Settings for now -->
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.SpecVeryLow}" /> 
+                                        <!--  Borrow Locale from Genshin Settings for now  -->
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecLow}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecMedium}" />
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
@@ -418,8 +406,7 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Graphics_CharacterQuality}"
@@ -435,8 +422,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_ShadingQ}"
@@ -453,8 +439,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_EnvDetailQuality}"
@@ -476,9 +461,8 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <StackPanel>
-                                    <TextBlock MaxWidth="128"
-                                               Margin="0,0,0,8"
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
@@ -495,10 +479,26 @@
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                     </ComboBox>
                                 </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Margin="0,0,8,8"
+                                               HorizontalAlignment="Left"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation}"
+                                               TextWrapping="WrapWholeWords" />
+                                    <ComboBox x:Name="HpcaSelector"
+                                              Margin="0,0,16,8"
+                                              HorizontalAlignment="Stretch"
+                                              CornerRadius="14"
+                                              SelectedIndex="{x:Bind Graphics_HiPreCharaAnim, Mode=TwoWay}"
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDisabled}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecDynamic}" />
+                                        <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecGlobal}" />
+                                    </ComboBox>
+                                </StackPanel>
                             </Grid>
                             <Grid Margin="2,8,0,0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
@@ -539,19 +539,6 @@
                                                    TextWrapping="Wrap" />
                                     </CheckBox>
                                 </StackPanel>
-                                <StackPanel Grid.Column="3"
-                                            VerticalAlignment="Center">
-                                    <!-- ReSharper disable once InconsistentNaming -->
-                                    <CheckBox x:Name="HPCAToggle"
-                                              HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"
-                                              Checked="EnforceCustomPreset_Checkbox"
-                                              IsChecked="{x:Bind Graphics_HiPreCharaAnim, Mode=TwoWay}"
-                                              Unchecked="EnforceCustomPreset_Checkbox">
-                                        <TextBlock Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation}"
-                                                   TextWrapping="Wrap" />
-                                    </CheckBox>
-                                </StackPanel>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -575,14 +562,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioMasterVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolMain, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioMasterVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolMain, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -590,14 +575,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioSFXVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolSfx, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioSFXVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolSfx, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -612,14 +595,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioBGMVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolMusic, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioBGMVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolMusic, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -627,15 +608,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioVOVolumeSlider"
-                                                    Grid.Column="1"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind Audio_VolDialog, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioVOVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolDialog, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

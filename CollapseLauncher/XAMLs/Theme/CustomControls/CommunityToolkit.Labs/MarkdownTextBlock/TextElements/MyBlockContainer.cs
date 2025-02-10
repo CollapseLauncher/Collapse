@@ -8,8 +8,8 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyBlockContainer : IAddChild
 {
-    private MyFlowDocument _flowDocument;
-    private Paragraph _paragraph;
+    private readonly MyFlowDocument _flowDocument;
+    private readonly Paragraph      _paragraph;
 
     public TextElement TextElement
     {
@@ -18,11 +18,11 @@ internal class MyBlockContainer : IAddChild
 
     public MyBlockContainer()
     {
-        InlineUIContainer _inlineUIContainer = new InlineUIContainer();
+        InlineUIContainer inlineUIContainer = new InlineUIContainer();
         _flowDocument = new MyFlowDocument();
-        _inlineUIContainer.Child = _flowDocument.RichTextBlock;
+        inlineUIContainer.Child = _flowDocument.RichTextBlock;
         _paragraph = new Paragraph();
-        _paragraph.Inlines.Add(_inlineUIContainer);
+        _paragraph.Inlines.Add(inlineUIContainer);
     }
 
     public void AddChild(IAddChild child)

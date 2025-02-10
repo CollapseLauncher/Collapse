@@ -3,10 +3,16 @@ using CollapseLauncher.GameSettings.Zenless.Enums;
 using CollapseLauncher.GameSettings.Zenless.JsonProperties;
 using Hi3Helper;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable StringLiteralTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Zenless
@@ -63,9 +69,6 @@ namespace CollapseLauncher.GameSettings.Zenless
         private JsonNode? _keyboardBindingMap;
         private JsonNode? _mouseBindingMap;
         private JsonNode? _gamepadBindingMap;
-        private JsonNode? _playerPrefsStringContainer;
-        private JsonNode? _playerPrefsIntContainer;
-        private JsonNode? _playerPrefsFloatContainer;
 
         [JsonPropertyName("SystemSettingDataMap")]
         [JsonIgnore] // We ignore this one from getting serialized to default JSON value
@@ -112,38 +115,41 @@ namespace CollapseLauncher.GameSettings.Zenless
         }
 
         [JsonPropertyName("PlayerPrefs_StringContainer")]
-        [JsonIgnore] // We ignore this one from getting serialized to default JSON value
+        [JsonIgnore]
+        [field: AllowNull, MaybeNull] // We ignore this one from getting serialized to default JSON value
         public JsonNode PlayerPrefsStringContainer
         {
             // Cache the PlayerPrefsStringContainer inside the parent SettingsJsonNode
             // and ensure that the node for PlayerPrefsStringContainer exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _playerPrefsStringContainer ??=
+            get => field ??=
                 SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_StringContainer");
-            set => _playerPrefsStringContainer?.SetAsJsonNode("PlayerPrefs_StringContainer", value);
+            set => field?.SetAsJsonNode("PlayerPrefs_StringContainer", value);
         }
 
         [JsonPropertyName("PlayerPrefs_IntContainer")]
-        [JsonIgnore] // We ignore this one from getting serialized to default JSON value
+        [JsonIgnore]
+        [field: AllowNull, MaybeNull] // We ignore this one from getting serialized to default JSON value
         public JsonNode PlayerPrefsIntContainer
         {
             // Cache the PlayerPrefsIntContainer inside the parent SettingsJsonNode
             // and ensure that the node for PlayerPrefsIntContainer exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _playerPrefsIntContainer ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_IntContainer");
-            set => _playerPrefsIntContainer?.SetAsJsonNode("PlayerPrefs_IntContainer", value);
+            get => field ??= SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_IntContainer");
+            set => field?.SetAsJsonNode("PlayerPrefs_IntContainer", value);
         }
 
         [JsonPropertyName("PlayerPrefs_FloatContainer")]
-        [JsonIgnore] // We ignore this one from getting serialized to default JSON value
+        [JsonIgnore]
+        [field: AllowNull, MaybeNull] // We ignore this one from getting serialized to default JSON value
         public JsonNode PlayerPrefsFloatContainer
         {
             // Cache the PlayerPrefsFloatContainer inside the parent SettingsJsonNode
             // and ensure that the node for PlayerPrefsFloatContainer exists. If not exist,
             // create a new one (via GetAsJsonNode<T>()).
-            get => _playerPrefsFloatContainer ??=
+            get => field ??=
                 SettingsJsonNode.GetAsJsonNode<JsonObject>("PlayerPrefs_FloatContainer");
-            set => _playerPrefsFloatContainer?.SetAsJsonNode("PlayerPrefs_FloatContainer", value);
+            set => field?.SetAsJsonNode("PlayerPrefs_FloatContainer", value);
         }
 
         #endregion
@@ -543,19 +549,20 @@ namespace CollapseLauncher.GameSettings.Zenless
         }
 
         // Key 13162 High-Precision Character Animation
-        private SystemSettingLocalData<int>? _hpcaData;
+        private SystemSettingLocalData<HiPrecisionCharaAnimOption>? _hpcaData;
 
         /// <summary>
         ///     Sets in-game settings for High-Precision Character Animation. <br />
         ///     Whatever that is ¯\_(ツ)_/¯
         /// </summary>
+        /// <see cref="HiPrecisionCharaAnimOption" />
         [JsonIgnore]
-        public bool HiPrecisionCharaAnim
+        public HiPrecisionCharaAnimOption HiPrecisionCharaAnim
         {
             get => (_hpcaData ??= SystemSettingDataMap
-            .AsSystemSettingLocalData("13162", 0))
-            .GetData() == 1;
-            set => _hpcaData?.SetData(value ? 1 : 0);
+            .AsSystemSettingLocalData("13162", HiPrecisionCharaAnimOption.Off))
+            .GetDataEnum<HiPrecisionCharaAnimOption>();
+            set => _hpcaData?.SetDataEnum(value);
         }
 
         #endregion

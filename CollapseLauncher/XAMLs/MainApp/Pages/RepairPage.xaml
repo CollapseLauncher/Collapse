@@ -37,7 +37,7 @@
                         <PopupThemeTransition />
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
-                <ListView ItemsSource="{x:Bind CurrentGameProperty._GameRepair.AssetEntry}">
+                <ListView ItemsSource="{x:Bind CurrentGameProperty.GameRepair.AssetEntry}">
                     <ListView.Header>
                         <Border Padding="0,8,0,0"
                                 Background="{ThemeResource AcrylicBackgroundFillColorBaseBrush}"

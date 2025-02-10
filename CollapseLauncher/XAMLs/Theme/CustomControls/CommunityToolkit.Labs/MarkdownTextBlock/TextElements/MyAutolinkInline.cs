@@ -8,17 +8,12 @@ using System;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
-internal class MyAutolinkInline : IAddChild
+internal class MyAutolinkInline(AutolinkInline autoLinkInline) : IAddChild
 {
-    public TextElement TextElement { get; private set; }
-
-    public MyAutolinkInline(AutolinkInline autoLinkInline)
+    public TextElement TextElement { get; } = new Hyperlink
     {
-        TextElement = new Hyperlink()
-        {
-            NavigateUri = new Uri(autoLinkInline.Url),
-        };
-    }
+        NavigateUri = new Uri(autoLinkInline.Url)
+    };
 
 
     public void AddChild(IAddChild child)

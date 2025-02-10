@@ -95,7 +95,6 @@
                                                         Height="24"
                                                         Margin="16,0,8,0"
                                                         Padding="0"
-                                                        HorizontalAlignment="Left"
                                                         CornerRadius="4"
                                                         Style="{ThemeResource AcrylicButtonStyle}">
                                                     <Button.Content>
@@ -116,7 +115,7 @@
                                             </Grid>
                                             <!--
                                                 Exclusive Fullscreen option is disabled in Honkai:Star Rail due to it being ignored by the game
-                                                Delete `Visibility="Collapsed"' to revert this change
+                                                Delete `Visibility="Collapsed"` to revert this change
                                             -->
                                             <CheckBox x:Name="GameResolutionFullscreenExclusive"
                                                       HorizontalAlignment="Left"
@@ -171,7 +170,6 @@
                                                     Height="24"
                                                     Margin="0,0,8,0"
                                                     Padding="0"
-                                                    HorizontalAlignment="Left"
                                                     CornerRadius="4"
                                                     Style="{ThemeResource AcrylicButtonStyle}">
                                                 <Button.Content>
@@ -229,7 +227,7 @@
                                           MinWidth="128"
                                           Margin="0,8,0,0"
                                           CornerRadius="14"
-                                          ItemsSource="{x:Bind static:Model.FPSIndex}"
+                                          ItemsSource="{x:Bind static:Model.FpsIndex}"
                                           SelectedIndex="{x:Bind FPS, Mode=TwoWay}" />
                             </StackPanel>
                             <StackPanel x:Name="GameBoostPanel"
@@ -563,14 +561,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioMasterVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioMasterVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -578,14 +574,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioSFXVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioSFXVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -600,14 +594,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioBGMVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioBGMVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                     <TextBlock Margin="0,16,0,16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -615,14 +607,12 @@
                                                TextWrapping="Wrap" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioVOVolumeSlider"
-                                                    Maximum="10"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="1"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioVOVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioVOVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

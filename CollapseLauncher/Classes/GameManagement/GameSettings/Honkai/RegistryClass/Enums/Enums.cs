@@ -63,13 +63,13 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     internal enum SelectAAType { Off, FXAA, TAA }
     
     /// <summary>
-    /// This selection has 3 name tupes: Low, Middle, High
+    /// This selection has 3 name types: Low, Middle, High
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectCharacterQuality>))]
     internal enum SelectCharacterQuality { Low, Middle, High }
-    
+
     /// <summary>
-    /// This selection has 3 name tupes: Low, Middle, High
+    /// This selection has 3 name types: Low, Middle, High
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectWeatherQuality>))]
     internal enum SelectWeatherQuality { Low, Middle, High }
@@ -102,9 +102,9 @@ namespace CollapseLauncher.GameSettings.Honkai.Enums
     /// This selection has 3 name types: Low (2), Medium (1), High (0)<br/>
     /// </summary>
     internal enum SelectLodGrade { Low = 2, Medium = 1, High = 0 }
-    
+
     /// <summary>
-    /// This selection has 3 name tupes: Low, Middle, High
+    /// This selection has 3 name types: Low, Middle, High
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter<SelectParticleEmitLevel>))]
     internal enum SelectParticleEmitLevel { Low, Middle, High }

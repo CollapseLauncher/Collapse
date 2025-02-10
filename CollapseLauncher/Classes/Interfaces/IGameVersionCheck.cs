@@ -1,25 +1,23 @@
-﻿using CollapseLauncher.GameVersioning;
-using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+// ReSharper disable CommentTypo
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 
+#nullable enable
 namespace CollapseLauncher.Interfaces
 {
-    internal static class IGameVersionCheckExtension
-    {
-        /// <summary>
-        /// Casting the IGameVersionCheck as its origin or another version class.
-        /// </summary>
-        /// <typeparam name="TCast">The type of version class to cast</typeparam>
-        /// <returns>The version class to get casted</returns>
-        internal static TCast CastAs<TCast>(this IGameVersionCheck versionCheck)
-            where TCast : GameVersionBase, IGameVersionCheck => (TCast)versionCheck;
-    }
-
-    internal interface IGameVersionCheck
+    /// <summary>
+    /// Interface to define how the game versioning and the game launcher data must be returned.<br/>
+    /// In every member of this interface, <see cref="IGameVersion.InitializeIniProp"/> method must be called!
+    /// </summary>
+    internal interface IGameVersion
     {
         /// <summary>
         /// Get the game name
@@ -31,7 +29,6 @@ namespace CollapseLauncher.Interfaces
         /// </summary>
         string GameRegion { get; }
 
-#nullable enable
         /// <summary>
         /// Get the version section of the game INI's configuration
         /// </summary>
@@ -41,12 +38,6 @@ namespace CollapseLauncher.Interfaces
         /// Get the profile section of the game INI's configuration
         /// </summary>
         IniSection? GameIniProfileSection { get; }
-#nullable restore
-
-        /// <summary>
-        /// Get the base of the instance
-        /// </summary>
-        GameVersionBase AsVersionBase { get; }
 
         /// <summary>
         /// Returns or sets the path of the game.<br/>
@@ -67,7 +58,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or set the API properties
         /// </summary>
-        RegionResourceProp GameAPIProp { get; set; }
+        RegionResourceProp GameApiProp { get; set; }
 
         /// <summary>
         /// Returns the type of the game
@@ -85,16 +76,21 @@ namespace CollapseLauncher.Interfaces
         GameVendorProp VendorTypeProp { get; }
 
         /// <summary>
+        /// Initialize Ini file configuration. This method must be called after the instance is being initialized.
+        /// </summary>
+        void InitializeIniProp();
+
+        /// <summary>
         /// Returns the current version of the game as provided by miHoYo's API.
         /// </summary>
         /// <returns>The current version of the game</returns>
-        GameVersion? GetGameVersionAPI();
+        GameVersion? GetGameVersionApi();
 
         /// <summary>
         /// Returns the preload version of the game as provided by miHoYo's API.
         /// </summary>
         /// <returns>The preload version of the game</returns>
-        GameVersion? GetGameVersionAPIPreload();
+        GameVersion? GetGameVersionApiPreload();
 
         /// <summary>
         /// Returns the version of the game installed.<br/>
@@ -144,7 +140,7 @@ namespace CollapseLauncher.Interfaces
         /// If the Delta-patch file doesn't exist, then it will return a null.<br/><br/>
         /// This method is only available for Honkai.
         /// </summary>
-        DeltaPatchProperty GetDeltaPatchInfo();
+        DeltaPatchProperty? GetDeltaPatchInfo();
 
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Latest Zip based on the game state
@@ -152,13 +148,12 @@ namespace CollapseLauncher.Interfaces
         /// <param name="gameState">The state of the game</param>
         List<RegionResourceVersion> GetGameLatestZip(GameInstallStateEnum gameState);
 
-        #nullable enable
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Pre-load Zip.
         /// If the Pre-load doesn't exist, then it will return a null.
         /// </summary>
         List<RegionResourceVersion>? GetGamePreloadZip();
-        
+
         /// <summary>
         /// Returns the <c>List</c> of the Resource Version for the Plugins
         /// </summary>
@@ -183,14 +178,13 @@ namespace CollapseLauncher.Interfaces
         /// If it returns null, then there's no game installation found.
         /// </summary>
         string? FindGameInstallationPath(string path);
-#nullable restore
 
         /// <summary>
         /// Update the location of the game folder and also save it to the Game Profile's Ini file.
         /// </summary>
         /// <param name="path">The path of the game folder</param>
         /// <param name="saveValue">Save the config file</param>
-        void UpdateGamePath(string path, bool saveValue = true);
+        void UpdateGamePath(string? path, bool saveValue = true);
 
         /// <summary>
         /// Update the version of the game to the latest one provided by miHoYo's API and also save it to the Game Profile's Ini file.

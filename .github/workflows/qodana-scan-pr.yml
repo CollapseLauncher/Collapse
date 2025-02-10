@@ -3,8 +3,6 @@ on:
  pull_request:
     branches:
       - main
-      - preview
-      - stable
     paths-ignore:
       - '**.md'
       - 'Hi3Helper.Core/Lang/**.json'
@@ -21,13 +19,11 @@ jobs:
         pull-requests: write
         checks: write
         security-events: write
-
     strategy:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
         platform: [x64]
         framework: [net9.0-windows10.0.22621.0]
-
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
@@ -45,7 +41,6 @@ jobs:
             ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
             fetch-depth: 0  # a full history is required for pull request analysis
             submodules: recursive # many many submodules  
-
       - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -62,7 +57,6 @@ jobs:
           pr-mode: true
         env:
             QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # read the steps about it below
-
       - uses: github/codeql-action/upload-sarif@v3
         if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         with:

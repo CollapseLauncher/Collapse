@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher.GameSettings.Base
 {

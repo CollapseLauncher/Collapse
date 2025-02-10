@@ -5,10 +5,10 @@
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers;
 using Markdig.Renderers;
 using Markdig.Syntax;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
 
 namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.Renderers;
 
 public abstract class UWPObjectRenderer<TObject> : MarkdownObjectRenderer<WinUIRenderer, TObject>
-    where TObject : MarkdownObject
-{
-}
+    where TObject : MarkdownObject;

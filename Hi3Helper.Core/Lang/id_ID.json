@@ -30,9 +30,9 @@
     "OverlayPrepareFolderSubtitle": "Menerapkan izin-izin...",
     "OverlayPrepareFolderTitle": "Menyiapkan Folder Launcher",
     "PageTitle": "Halaman Startup Awal",
-    "Pg1LoadingSubitle1": "Menyiapkan list game yang didukung untukmu",
-    "Pg1LoadingSubitle2": "Selesai! Pindah ke bagian selanjutnya!",
-    "Pg1LoadingTitle1": "Membaca List Game",
+    "Pg1LoadingSubitle1": "Menyiapkan daftar dukungan game untuk kamu...",
+    "Pg1LoadingSubitle2": "Selesai! Yuk kita pindah ke bagian selanjutnya!",
+    "Pg1LoadingTitle1": "Membaca Daftar Game...",
     "Pg1NextBtn": "Selanjutnya - Memilih Game",
     "Pg2ComboBox": "Pilih Game",
     "Pg2ComboBoxRegion": "Pilih Region",
@@ -80,7 +80,7 @@
     "UnhandledTitle3": "Game Crash",
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
-    "UnhandledSubtitle4": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:\r\nAkibat miHoYo A/B testing, Collapse tidak dapat memproses pengaturan ini: App_Settings_h2319593470.\r\nKami mohon maaf atas ketidaknyamanannya.",
+    "UnhandledSubtitle4": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting) bahwa dikarenakan PC kamu mendapatkan beberapa fitur A/B testing miHoYo/HoYoverse untuk game ini, Collapse tidak bisa memproses key registri berikut: App_Settings_h2319593470.\r\nTerima kasih atas perhatiannya dan mohon maaf atas hal ini.",
     "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
     "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
@@ -362,6 +362,8 @@
     "SpecVeryHigh": "S. Tinggi",
     "SpecMaximum": "Maksimum",
     "SpecUltra": "Terbaik",
+    "SpecDynamic": "Dinamis",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Pengaturan Suara",
     "Audio_Master": "Volume Utama",
@@ -528,6 +530,7 @@
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
     "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
+    "ShareYourFeedbackBtn": "Bagikan Umpan-Balikmu",
 
     "About": "Tentang",
     "About_Copyright1": "© 2022-2024",
@@ -798,7 +801,14 @@
     "IsBytesNotANumber": "= Bukan Nomor",
 
     "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
-    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami."
+    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami.",
+    "ExceptionFeedbackBtn": "Kasih tahu kami dong",
+    "ExceptionFeedbackBtn_Unavailable": "Laporan crash tidak tersedia atau dimatikan",
+    "ExceptionFeedbackBtn_FeedbackSent": "Umpan-Balikmu sudah dikirim!",
+    "ExceptionFeedbackTitle": "Apa yang terjadi?:",
+    "ExceptionFeedbackTemplate_User": "Username (Opsional):",
+    "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
+    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini"
   },
 
   "_BackgroundNotification": {
@@ -907,6 +917,10 @@
     "ReleaseChannelChangeSubtitle2": "Catatan:",
     "ReleaseChannelChangeSubtitle3": "Melakukan hal ini memungkinkan adanya perubahan yang tidak bisa dikembalikan atau inkompatibilitas.",
 
+    "ForceUpdateCurrentInstallTitle": "Paksa Pembaruan Instalasi Saat Ini",
+    "ForceUpdateCurrentInstallSubtitle1": "Kamu akan menjalankan pembaruan secara paksa untuk instalasi launcher dengan release: ",
+    "ForceUpdateCurrentInstallSubtitle2": "saat ini dan kami menyarankanmu untuk menutup game yang masih terbuka.",
+
     "ChangePlaytimeTitle": "Apakah anda yakin untuk mengubah waktu main?",
     "ChangePlaytimeSubtitle": "Mengubah waktu main anda berarti menimpa nilai saat ini dengan yang sudah anda masukkan.\n\nLanjut untuk mengubah?\n\nCatatan: Hal ini tidak akan mempengaruhi cara Collapse berjalan dan anda dapat mengubah nilai kembali kapan saja saat anda tidak sedang memainkan gamenya.",
     "ResetPlaytimeTitle": "Apakah anda yakin untuk setel ulang waktu main?",
@@ -960,7 +974,7 @@
     "OperationWarningNotCancellableMsg5": "\" untuk membatalkan.",
 
     "GenericWarningExceptionTitle": "Peringatan",
-    "GenericWarningExceptionSubtitle": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:",
+    "GenericWarningExceptionSubtitle": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting)",
 
     "ShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
     "ShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat pada tempat ini:",
@@ -1003,7 +1017,28 @@
     "SophonIncrementUpdateUnavailSubtitle1": "Versi game kamu: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": " sudah terlalu usang.",
     "SophonIncrementUpdateUnavailSubtitle3": " dan pembaruan incremental untuk versi tersebut tidak tersedia. Tapi, kamu tetap bisa memperbarui game kamu dengan mengunduh ulang semuanya dari awal.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses"
+    "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses",
+
+    "UACWarningTitle": "Peringatan: UAC Terdeteksi Dimatikan!",
+    "UACWarningContent": "Mematikan User Account Control (UAC) sangat tidak disarankan.\nUAC dibutuhkan untuk beberapa game agar bisa berjalan dengan baik dan mematikan UAC bisa membahayakan keamanan Operasi Sistem kamu, lho!\n\nKlik tombol \"Pelajari Lebih Lanjut\" untuk mencari tahu cara menyalakan UAC kembali.\nEntry yang perlu dinyalakan: \"Run all administrators in Admin Approval Mode.\"",
+    "UACWarningLearnMore": "Pelajari Lebih Lanjut",
+    "UACWarningDontShowAgain": "Jangan Munculkan Lagi",
+
+    "EnsureExitTitle": "Keluar dari Aplikasii",
+    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?",
+
+    "UserFeedback_DialogTitle": "Bagikan Pendapatmu",
+    "UserFeedback_TextFieldTitleHeader": "Judul Umpan-Balik",
+    "UserFeedback_TextFieldTitlePlaceholder": "Tulis judul umpan-balikmu di sini...",
+    "UserFeedback_TextFieldMessageHeader": "Pesan",
+    "UserFeedback_TextFieldMessagePlaceholder": "Masukkan pesan...",
+    "UserFeedback_TextFieldRequired": "(harus diisi)",
+    "UserFeedback_RatingText": "Mau sekalian ratingnya?",
+    "UserFeedback_CancelBtn": "Batalkan",
+    "UserFeedback_SubmitBtn": "Kirim Umpan-Balikmu",
+    "UserFeedback_SubmitBtn_Processing": "Memproses...",
+    "UserFeedback_SubmitBtn_Completed": "Selesai!",
+    "UserFeedback_SubmitBtn_Cancelled": "Dibatalkan!"
   },
 
   "_FileMigrationProcess": {

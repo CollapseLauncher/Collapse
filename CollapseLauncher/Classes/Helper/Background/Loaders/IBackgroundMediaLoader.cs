@@ -1,10 +1,11 @@
-﻿#nullable enable
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
+// ReSharper disable UnusedMemberInSuper.Global
 
-    namespace CollapseLauncher.Helper.Background.Loaders
+#nullable enable
+namespace CollapseLauncher.Helper.Background.Loaders
 {
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]

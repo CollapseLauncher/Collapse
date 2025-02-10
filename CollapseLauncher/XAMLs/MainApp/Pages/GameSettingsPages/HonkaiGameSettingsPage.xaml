@@ -82,7 +82,6 @@
                                                     Height="24"
                                                     Margin="16,0,8,0"
                                                     Padding="0"
-                                                    HorizontalAlignment="Left"
                                                     CornerRadius="4"
                                                     Style="{ThemeResource AcrylicButtonStyle}">
                                                 <Button.Content>
@@ -207,12 +206,10 @@
                                     <ComboBoxItem Content="DirectX 11 (FL 11.1) No ST" />
                                     <ComboBoxItem Content="DirectX 12 [EXPERIMENTAL]" />
                                 </ComboBox>
-                                <Button Grid.Column="1"
-                                        Width="24"
+                                <Button Width="24"
                                         Height="24"
                                         Margin="16,0,8,0"
                                         Padding="0"
-                                        HorizontalAlignment="Left"
                                         CornerRadius="4"
                                         Style="{ThemeResource AcrylicButtonStyle}">
                                     <Button.Content>
@@ -708,7 +705,8 @@
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             </StackPanel>
                         </Grid>
-                        <StackPanel Grid.Column="0">
+                        <StackPanel Grid.Row="0"
+                                    Grid.Column="0">
                             <StackPanel x:Name="AudioSettingsPanelLeft"
                                         Margin="0,8,64,16">
                                 <StackPanel>
@@ -717,14 +715,12 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_Master}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioMasterVolumeSlider"
-                                                    Maximum="100"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="10"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioMasterVolumeSlider"
+                                                Maximum="100"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="10"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioMasterVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -733,14 +729,12 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_BGM}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioBGMVolumeSlider"
-                                                    Maximum="100"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="10"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioBGMVolumeSlider"
+                                                Maximum="100"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="10"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioBGMVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -749,19 +743,18 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_SFX}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioSFXVolumeSlider"
-                                                    Maximum="100"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="10"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioSFXVolumeSlider"
+                                                Maximum="100"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="10"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioSFXVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel Grid.Column="1">
+                        <StackPanel Grid.Row="0"
+                                    Grid.Column="1">
                             <StackPanel x:Name="AudioSettingsPanelRight"
                                         Margin="0,8,64,16">
                                 <StackPanel>
@@ -770,14 +763,12 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_VO}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioCVVolumeSlider"
-                                                    Maximum="100"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="10"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioVoiceVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioCVVolumeSlider"
+                                                Maximum="100"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="10"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioVoiceVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -786,15 +777,12 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_Elf}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioElfCVVolumeSlider"
-                                                    Grid.Column="1"
-                                                    Maximum="100"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="10"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioElfVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioElfCVVolumeSlider"
+                                                Maximum="100"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="10"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioElfVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                                 <StackPanel>
@@ -803,15 +791,12 @@
                                                Text="{x:Bind helper:Locale.Lang._GameSettingsPage.Audio_Cutscenes}" />
                                     <StackPanel Margin="0,0,32,8"
                                                 Orientation="Vertical">
-                                        <Grid>
-                                            <Slider x:Name="AudioCutscenesVolumeSlider"
-                                                    Grid.Column="1"
-                                                    Maximum="100"
-                                                    Style="{ThemeResource FatSliderStyle}"
-                                                    TickFrequency="10"
-                                                    TickPlacement="Outside"
-                                                    Value="{x:Bind AudioCutsceneVolume, Mode=TwoWay}" />
-                                        </Grid>
+                                        <Slider x:Name="AudioCutscenesVolumeSlider"
+                                                Maximum="100"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="10"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind AudioCutsceneVolume, Mode=TwoWay}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

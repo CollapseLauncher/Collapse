@@ -9,7 +9,7 @@ namespace CollapseLauncher
 {
     internal sealed partial class BridgedNetworkStream(HttpResponseMessage networkResponse, Stream networkStream) : Stream
     {
-        internal static async ValueTask<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
+        internal static async Task<BridgedNetworkStream> CreateStream(HttpResponseMessage networkResponse, CancellationToken token)
         {
             Stream networkStream = await networkResponse.Content.ReadAsStreamAsync(token);
             return new BridgedNetworkStream(networkResponse, networkStream);
@@ -22,6 +22,7 @@ namespace CollapseLauncher
         private int ReadBytes(byte[] buffer, int offset, int count) => networkStream.Read(buffer, offset, count);
 
         public override int Read(Span<byte> buffer) => ReadBytes(buffer);
+
         public override int Read(byte[] buffer, int offset, int count) => ReadBytes(buffer, offset, count);
 
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
@@ -35,7 +36,7 @@ namespace CollapseLauncher
             int totalRead = 0;
             while (totalRead < buffer.Length)
             {
-                int read = await ReadAsync(buffer.Slice(totalRead), cancellationToken);
+                int read = await ReadAsync(buffer[totalRead..], cancellationToken);
                 if (read == 0) return;
 
                 totalRead += read;
@@ -43,6 +44,7 @@ namespace CollapseLauncher
         }
 
         public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
+
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
         public override bool CanRead => true;
@@ -64,7 +66,8 @@ namespace CollapseLauncher
         public override long Seek(long offset, SeekOrigin origin) => throw new NotImplementedException();
 
         public override void SetLength(long value) => throw new NotImplementedException();
-
+        
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);

@@ -16,7 +16,7 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class PhysicsSimulation : IGameSettingsValue<PhysicsSimulation>
     {
         #region Fields
-        private const string _ValueName = "GENERAL_DATA_V2_UsePhysicsSimulation_h1109146915";
+        private const string ValueName = "GENERAL_DATA_V2_UsePhysicsSimulation_h1109146915";
         #endregion
 
         #region Properties
@@ -38,14 +38,14 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(ValueName, null);
                 if (value != null)
                 {
                     int physicsSimulation = (int)value;
                     #if DEBUG
-                    LogWriteLine($"Loaded HI3 Settings: {_ValueName} : {value}", LogType.Debug, true);
+                    LogWriteLine($"Loaded HI3 Settings: {ValueName} : {value}", LogType.Debug, true);
                     #endif
 
                     return new PhysicsSimulation { UsePhysicsSimulation = physicsSimulation };
@@ -53,12 +53,12 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
             catch ( Exception ex )
             {
-                LogWriteLine($"Failed while reading {_ValueName}" +
+                LogWriteLine($"Failed while reading {ValueName}" +
                                 $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                                 $"\r\n  If the issue persist, please report it on GitHub" +
                                 $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                            $"Failed when reading game settings {_ValueName}\r\n" +
+                            $"Failed when reading game settings {ValueName}\r\n" +
                             $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                             $"{ex}", ex));
             }
@@ -70,16 +70,16 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot.SetValue(_ValueName, UsePhysicsSimulation, RegistryValueKind.DWord);
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                RegistryRoot.SetValue(ValueName, UsePhysicsSimulation, RegistryValueKind.DWord);
                 #if DEBUG
-                LogWriteLine($"Saved HI3 Settings: {_ValueName} : {UsePhysicsSimulation}", LogType.Debug, true);
+                LogWriteLine($"Saved HI3 Settings: {ValueName} : {UsePhysicsSimulation}", LogType.Debug, true);
                 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 

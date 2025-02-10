@@ -5,6 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+// ReSharper disable StringLiteralTypo
+// ReSharper disable LoopCanBeConvertedToQuery
 
 namespace Hi3Helper.Data
 {
@@ -20,15 +22,16 @@ namespace Hi3Helper.Data
         public string InstallDir { get; internal set; }
     }
 
-    public static class SteamTool
+    public static partial class SteamTool
     {
         // Reference:
         // https://stackoverflow.com/a/67679123
         public static List<AppInfo> GetSteamApps(List<string> steamLibs)
         {
-            var apps = new List<AppInfo>();
-            foreach (var lib in steamLibs!)
+            List<AppInfo> apps = [];
+            for (var index = 0; index < steamLibs!.Count; index++)
             {
+                var lib             = steamLibs![index];
                 var appMetaDataPath = Path.Combine(lib!, "SteamApps");
                 foreach (var file in Directory.EnumerateFiles(appMetaDataPath, "*.acf"))
                 {
@@ -40,16 +43,21 @@ namespace Hi3Helper.Data
                 }
             }
 
-#if DEBUG
-            if (apps.Count == 0) Logger.LogWriteLine($"AppInfo on steam cannot be found!");
+        #if DEBUG
+            if (apps.Count == 0) Logger.LogWriteLine("AppInfo on steam cannot be found!");
 #endif
             return apps;
         }
 
+        [GeneratedRegex("""
+                        \s*"(?<key>\w+)"\s+"(?<val>.*)"
+                        """, RegexOptions.NonBacktracking)]
+        public static partial Regex GetAppInfoKeyValueMatch();
+
         public static AppInfo GetAppInfo(string appMetaFile)
         {
-            var fileDataLines = File.ReadAllLines(appMetaFile!);
-            var dic = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var                        fileDataLines = File.ReadAllLines(appMetaFile!);
+            Dictionary<string, string> dic           = new(StringComparer.OrdinalIgnoreCase);
 
 #if DEBUG
             Logger.LogWriteLine($"Reading .acf Steam file: {appMetaFile}");
@@ -57,40 +65,42 @@ namespace Hi3Helper.Data
 
             foreach (var line in fileDataLines)
             {
-                var match = Regex.Match(line, @"\s*""(?<key>\w+)""\s+""(?<val>.*)""", RegexOptions.Compiled);
-                if (match.Success)
+                var match = GetAppInfoKeyValueMatch().Match(line);
+                if (!match.Success)
                 {
-                    var key = match.Groups["key"].Value;
-                    var val = match.Groups["val"].Value;
-#if DEBUG
-                    Logger.LogWriteLine($"    AppInfo key: {key} val: {val}");
-#endif
-                    dic[key] = val;
+                    continue;
                 }
+
+                var key = match.Groups["key"].Value;
+                var val = match.Groups["val"].Value;
+            #if DEBUG
+                Logger.LogWriteLine($"    AppInfo key: {key} val: {val}");
+            #endif
+                dic[key] = val;
             }
 
-            AppInfo appInfo = null;
-
-            if (dic.Keys.Count > 0)
+            if (dic.Keys.Count <= 0)
             {
-                appInfo = new AppInfo();
-                var appId = dic["appid"];
-                var name = dic["name"];
-                var installDir = dic["installDir"];
-
-                var path = Path.GetDirectoryName(appMetaFile);
-                var libGameRoot = Path.Combine(path!, "common", installDir!);
-
-                if (!Directory.Exists(libGameRoot)) return null;
-
-                appInfo.Id = int.Parse(appId!);
-                appInfo.Name = name;
-                appInfo.Manifest = appMetaFile;
-                appInfo.GameRoot = libGameRoot;
-                appInfo.InstallDir = installDir;
-                appInfo.SteamUrl = $"steam://runsteamid/{appId}";
-                appInfo.Executable = GetExecutable(appInfo);
+                return null;
             }
+
+            var appInfo    = new AppInfo();
+            var appId      = dic["appid"];
+            var name       = dic["name"];
+            var installDir = dic["installDir"];
+
+            var path        = Path.GetDirectoryName(appMetaFile);
+            var libGameRoot = Path.Combine(path!, "common", installDir!);
+
+            if (!Directory.Exists(libGameRoot)) return null;
+
+            appInfo.Id         = int.Parse(appId!);
+            appInfo.Name       = name;
+            appInfo.Manifest   = appMetaFile;
+            appInfo.GameRoot   = libGameRoot;
+            appInfo.InstallDir = installDir;
+            appInfo.SteamUrl   = $"steam://runsteamid/{appId}";
+            appInfo.Executable = GetExecutable(appInfo);
 
             return appInfo;
         }
@@ -111,13 +121,13 @@ namespace Hi3Helper.Data
             do
             {
                 var startOfDataArea =
-                    _appInfoText.IndexOf($"\x00\x01name\x00{appInfo!.Name}\x00", startIndex, StringComparison.Ordinal);
+                    _appInfoText.IndexOf("\0\x01" + $"name\0{appInfo!.Name}\0", startIndex, StringComparison.Ordinal);
                 
                 if (startOfDataArea < 0 && maxTries == 50) startOfDataArea = 
-                    _appInfoText.IndexOf($"\x00\x01gamedir\x00{appInfo!.Name}\x00", startIndex, StringComparison.Ordinal); //Alternative1
+                    _appInfoText.IndexOf("\0\x01" + $"gamedir\0{appInfo!.Name}\0", startIndex, StringComparison.Ordinal); //Alternative1
                 
                 if (startOfDataArea < 0 && maxTries == 50) startOfDataArea = 
-                    _appInfoText.IndexOf($"\x00\x01name\x00{appInfo!.Name}\x00",    startIndex, StringComparison.Ordinal); //Alternative2
+                    _appInfoText.IndexOf("\0\x01" + $"name\0{appInfo!.Name}\0",    startIndex, StringComparison.Ordinal); //Alternative2
                 
                 if (startOfDataArea > 0)
                 {
@@ -125,34 +135,31 @@ namespace Hi3Helper.Data
                     int nextLaunch = -1;
                     do
                     {
-                        var executable = _appInfoText.IndexOf($"\x00\x01executable\x00", startOfDataArea, StringComparison.Ordinal);
+                        var executable = _appInfoText.IndexOf("\0\x01" + "executable\0", startOfDataArea, StringComparison.Ordinal);
                         if (executable > -1 && nextLaunch == -1)
                         {
-                            nextLaunch = _appInfoText.IndexOf($"\x00\x01launch\x00", executable, StringComparison.Ordinal);
+                            nextLaunch = _appInfoText.IndexOf("\0\x01" + "launch\0", executable, StringComparison.Ordinal);
                         }
 
                         if ((nextLaunch <= 0 || executable < nextLaunch) && executable > 0)
                         {
-                            if (executable > 0)
+                            executable += 10;
+                            string filename = "";
+                            while (_appInfoText[executable] != '\x00')
                             {
-                                executable += 10;
-                                string filename = "";
-                                while (_appInfoText[executable] != '\x00')
-                                {
-                                    filename += _appInfoText[executable];
-                                    executable++;
-                                }
-                                if (filename.Contains("://"))
-                                {
-                                    //EA or other external
-                                    return filename; //Need to use other means to grab the EXE here.
-                                }
-
-                                fullName = Path.Combine(appInfo.GameRoot!, filename);
-
-                                startOfDataArea = executable + 1;
-                                startIndex = startOfDataArea + 10;
+                                filename += _appInfoText[executable];
+                                executable++;
                             }
+                            if (filename.Contains("://"))
+                            {
+                                //EA or other external
+                                return filename; //Need to use other means to grab the EXE here.
+                            }
+
+                            fullName = Path.Combine(appInfo.GameRoot!, filename);
+
+                            startOfDataArea = executable + 1;
+                            startIndex      = startOfDataArea + 10;
                         }
                         else
                         {
@@ -167,15 +174,16 @@ namespace Hi3Helper.Data
                 }
             } while (!File.Exists(fullName) && maxTries-- > 0);
 
-            if (File.Exists(fullName)) return fullName;
-
-            return null;
+            return File.Exists(fullName) ? fullName : null;
         }
+
+        [GeneratedRegex("""(?<path>\w:\\\\.*)""", RegexOptions.NonBacktracking)]
+        public static partial Regex GetLibraryPathMatch();
 
         public static List<string> GetSteamLibs()
         {
-            var steamPath = GetSteamPath();
-            var libraries = new List<string>() { steamPath };
+            var          steamPath = GetSteamPath();
+            List<string> libraries = [steamPath];
 
             if (steamPath == null)
             {
@@ -193,21 +201,24 @@ namespace Hi3Helper.Data
             var lines = File.ReadAllLines(listFile);
             foreach (var line in lines)
             {
-                var match = Regex.Match(line, @"""(?<path>\w:\\\\.*)""", RegexOptions.Compiled);
-                if (match.Success)
+                var match = GetLibraryPathMatch().Match(line);
+                if (!match.Success)
                 {
-                    var path = match.Groups["path"].Value.Replace(@"\\", @"\");
-#if DEBUG
-                    Logger.LogWriteLine($"Checking Steam Lib Path: {path}", LogType.Debug, true);
-#endif
-                    if (Directory.Exists(path))
-                    {
-#if DEBUG
-                        Logger.LogWriteLine($"    Path: {path} is exist", LogType.Debug, true);
-#endif
-                        libraries.Add(path);
-                    }
+                    continue;
                 }
+
+                var path = match.Groups["path"].Value.Replace(@"\\", @"\");
+            #if DEBUG
+                Logger.LogWriteLine($"Checking Steam Lib Path: {path}", LogType.Debug, true);
+            #endif
+                if (!Directory.Exists(path))
+                {
+                    continue;
+                }
+            #if DEBUG
+                Logger.LogWriteLine($"    Path: {path} is exist", LogType.Debug, true);
+            #endif
+                libraries.Add(path);
             }
             return libraries;
         }
@@ -216,8 +227,7 @@ namespace Hi3Helper.Data
         {
             object a = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", "C:/Program Files (x86)/Steam");
             if (a == null) return null;
-            if(!Directory.Exists(a as string)) return null;
-            return ((string)a).Replace('\\', '/');
+            return !Directory.Exists(a as string) ? null : ((string)a).Replace('\\', '/');
         }
     }
 }

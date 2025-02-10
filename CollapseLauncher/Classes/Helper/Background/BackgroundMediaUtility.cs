@@ -14,6 +14,12 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -54,8 +60,8 @@ namespace CollapseLauncher.Helper.Background
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
-        private IBackgroundMediaLoader?         _loaderStillImage;
-        private IBackgroundMediaLoader?         _loaderMediaPlayer;
+        private StillImageLoader?               _loaderStillImage;
+        private MediaPlayerLoader?              _loaderMediaPlayer;
 
         private bool _isCurrentRegistered;
 
@@ -63,45 +69,26 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) =>
-        {
-            try
-            {
-                await action;
-            }
-            catch (Exception ex)
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                    ErrorSender.SendException(ex));
-            }
-        },
-        new ExecutionDataflowBlockOptions
-        {
-            EnsureOrdered = true,
-            MaxMessagesPerTask = 1,
-            MaxDegreeOfParallelism = 1,
-            BoundedCapacity = 1,
-            TaskScheduler = TaskScheduler.Current
-        });
-        internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
-        {
-            try
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
-            }
-            catch (Exception ex)
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                    ErrorSender.SendException(ex));
-            }
-        },
-            new ExecutionDataflowBlockOptions
-            {
-                EnsureOrdered = true,
-                MaxMessagesPerTask = 1,
-                MaxDegreeOfParallelism = 1,
-                BoundedCapacity = 1
-            });
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new(async action =>
+                                                                           {
+                                                                               try
+                                                                               {
+                                                                                   await action;
+                                                                               }
+                                                                               catch (Exception ex)
+                                                                               {
+                                                                                   _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                                                                                                                             ErrorSender.SendException(ex));
+                                                                               }
+                                                                           },
+                                                                           new ExecutionDataflowBlockOptions
+                                                                           {
+                                                                               EnsureOrdered = true,
+                                                                               MaxMessagesPerTask = 1,
+                                                                               MaxDegreeOfParallelism = 1,
+                                                                               BoundedCapacity = 1,
+                                                                               TaskScheduler = TaskScheduler.Current
+                                                                           });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -360,14 +347,12 @@ namespace CollapseLauncher.Helper.Background
                 EnsureCurrentImageRegistered();
                 EnsureCurrentMediaPlayerRegistered();
 
-                _loaderMediaPlayer ??= new MediaPlayerLoader(
-                                                             _parentUI!,
+                _loaderMediaPlayer ??= new MediaPlayerLoader(_parentUI!,
                                                              _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                              _parentBgMediaPlayerBackgroundGrid!,
                                                              _bgMediaPlayerBackground);
 
-                _loaderStillImage ??= new StillImageLoader(
-                                                           _parentUI!,
+                _loaderStillImage ??= new StillImageLoader(_parentUI!,
                                                            _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                            _parentBgImageBackgroundGrid!,
                                                            _bgImageBackground, _bgImageBackgroundLast);
@@ -388,7 +373,7 @@ namespace CollapseLauncher.Helper.Background
                 await (mediaType switch
                 {
                     MediaType.Media => _loaderMediaPlayer,
-                    MediaType.StillImage => _loaderStillImage,
+                    MediaType.StillImage => _loaderStillImage as IBackgroundMediaLoader,
                     _ => throw new InvalidCastException()
                 }).LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken.Token);
 
@@ -419,8 +404,7 @@ namespace CollapseLauncher.Helper.Background
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                if (throwAction != null)
-                    throwAction(ex);
+                throwAction?.Invoke(ex);
             }
         }
 

@@ -10,6 +10,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable InconsistentNaming
 
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
@@ -17,7 +18,7 @@ namespace CollapseLauncher.GameSettings.Universal
     internal class CollapseScreenSetting : IGameSettingsValue<CollapseScreenSetting>
     {
         #region Fields
-        private const string _ValueName = "CollapseLauncher_ScreenSetting";
+        private const string ValueName = "CollapseLauncher_ScreenSetting";
         #endregion
 
         #region Properties
@@ -65,9 +66,9 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(ValueName, null);
 
                 if (value != null)
                 {
@@ -75,13 +76,13 @@ namespace CollapseLauncher.GameSettings.Universal
 #if DEBUG
                     LogWriteLine($"Loaded Collapse Screen Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(UniversalSettingsJSONContext.Default.CollapseScreenSetting) ?? new CollapseScreenSetting();
+                    return byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting) ?? new CollapseScreenSetting();
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to read {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to read {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
 
             return new CollapseScreenSetting();
@@ -91,19 +92,19 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalSettingsJSONContext.Default.CollapseScreenSetting);
+                string data = this.Serialize(UniversalSettingsJsonContext.Default.CollapseScreenSetting);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Collapse Screen Settings:\r\n{data}", LogType.Debug, true);
 #endif
-                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 

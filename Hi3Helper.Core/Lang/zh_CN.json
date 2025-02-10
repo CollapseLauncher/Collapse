@@ -362,6 +362,8 @@
     "SpecVeryHigh": "非常高",
     "SpecMaximum": "最高",
     "SpecUltra": "极高",
+    "SpecDynamic": "动态",
+    "SpecGlobal": "全局",
 
     "Audio_Title": "音频设置",
     "Audio_Master": "主音量",
@@ -528,6 +530,7 @@
     "ContributePRBtn": "贡献 PR",
     "ContributorListBtn": "开源贡献者",
     "HelpLocalizeBtn": "帮助我们翻译 Collapse！",
+    "ShareYourFeedbackBtn": "分享您的反馈",
 
     "About": "关于",
     "About_Copyright1": "© 2022-2024",
@@ -798,7 +801,14 @@
     "IsBytesNotANumber": "= NaN",
 
     "MissingVcRedist": "缺少 Visual C/C++ 可再发行程序包",
-    "MissingVcRedistSubtitle": "您需要安装 Visual C/C++ 可再发行程序包才能运行此功能。您现在要下载吗？\n注意：这将打开一个浏览器窗口，并从微软下载一个文件。请下载后运行安装程序，然后重新启动 Collapse 并重试。\n如果您已经安装过了但仍然报错，请在 GitHub 上给我们提交一个 issue。"
+    "MissingVcRedistSubtitle": "您需要安装 Visual C/C++ 可再发行程序包才能运行此功能。您现在要下载吗？\n注意：这将打开一个浏览器窗口，并从微软下载一个文件。请下载后运行安装程序，然后重新启动 Collapse 并重试。\n如果您已经安装过了但仍然报错，请在 GitHub 上给我们提交一个 issue。",
+    "ExceptionFeedbackBtn": "告诉我们发生了什么",
+    "ExceptionFeedbackBtn_Unavailable": "崩溃报告已禁用或不可用",
+    "ExceptionFeedbackBtn_FeedbackSent": "反馈已发送！",
+    "ExceptionFeedbackTitle": "告诉我们发生了什么：",
+    "ExceptionFeedbackTemplate_User": "用户名（可选）：",
+    "ExceptionFeedbackTemplate_Email": "邮箱（可选）：",
+    "ExceptionFeedbackTemplate_Message": "在此行后插入您的反馈"
   },
 
   "_BackgroundNotification": {
@@ -907,6 +917,10 @@
     "ReleaseChannelChangeSubtitle2": "注：",
     "ReleaseChannelChangeSubtitle3": "此操作可能会导致不可逆的更改并/或破坏您当前的设置。对于游戏相关数据的任何丢失或损坏，我们概不负责。",
 
+    "ForceUpdateCurrentInstallTitle": "强制更新当前安装",
+    "ForceUpdateCurrentInstallSubtitle1": "您即将强制更新您当前的：",
+    "ForceUpdateCurrentInstallSubtitle2": "安装，我们推荐您关闭已经开启的游戏。",
+
     "ChangePlaytimeTitle": "是否确认更改游戏时间？",
     "ChangePlaytimeSubtitle": "您刚刚输入的内容将会覆盖现在的游戏时间。\n\n是否要继续？\n\n注意：更改时间不会影响 Collapse 正常工作，您可以随时在不玩游戏时再次更改游戏时间。",
     "ResetPlaytimeTitle": "是否确认更改游戏时间？",
@@ -1003,7 +1017,28 @@
     "SophonIncrementUpdateUnavailSubtitle1": "您的游戏版本：{0}",
     "SophonIncrementUpdateUnavailSubtitle2": "过旧",
     "SophonIncrementUpdateUnavailSubtitle3": "且该版本的增量更新不可用。不过，您仍然可以通过重新下载整个游戏来更新您的游戏。",
-    "SophonIncrementUpdateUnavailSubtitle4": "点击“{0}”继续更新整个游戏，或点击“{1}”取消更新过程"
+    "SophonIncrementUpdateUnavailSubtitle4": "点击“{0}”继续更新整个游戏，或点击“{1}”取消更新过程",
+
+    "UACWarningTitle": "警告：检测到已禁用 UAC",
+    "UACWarningContent": "禁用用户账户控制（UAC）从来不是一个好主意。\n操作系统的安全性会受到影响，游戏也可能无法正常运行。\n\n点击“了解更多”按钮查看如何启用 UAC。\n相关条目为：在管理员审批模式下运行所有管理员。",
+    "UACWarningLearnMore": "了解更多",
+    "UACWarningDontShowAgain": "不再显示",
+
+    "EnsureExitTitle": "正在退出应用",
+    "EnsureExitSubtitle": "后台正在运行重要操作。您确定要退出吗？",
+
+    "UserFeedback_DialogTitle": "分享你的想法",
+    "UserFeedback_TextFieldTitleHeader": "反馈标题",
+    "UserFeedback_TextFieldTitlePlaceholder": "在这里填写您的反馈标题…",
+    "UserFeedback_TextFieldMessageHeader": "信息",
+    "UserFeedback_TextFieldMessagePlaceholder": "信息…",
+    "UserFeedback_TextFieldRequired": "（必填）",
+    "UserFeedback_RatingText": "介意分享您的评分吗？",
+    "UserFeedback_CancelBtn": "取消",
+    "UserFeedback_SubmitBtn": "提交您的反馈",
+    "UserFeedback_SubmitBtn_Processing": "处理中…",
+    "UserFeedback_SubmitBtn_Completed": "完成！",
+    "UserFeedback_SubmitBtn_Cancelled": "已取消！"
   },
 
   "_FileMigrationProcess": {

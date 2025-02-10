@@ -3,6 +3,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+// ReSharper disable once IdentifierTypo
+// ReSharper disable StringLiteralTypo
+
 using TaskSched = Microsoft.Win32.TaskScheduler.Task;
 
 namespace Hi3Helper.TaskScheduler
@@ -18,18 +22,25 @@ namespace Hi3Helper.TaskScheduler
 
     public class Program
     {
-        static int PrintUsage()
+        private static int PrintUsage()
         {
-            string executableName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
+            ProcessModule? processModule = Process.GetCurrentProcess().MainModule;
+            if (processModule == null)
+            {
+                return int.MaxValue;
+            }
+
+            string executableName = Path.GetFileNameWithoutExtension(processModule.FileName);
             Console.WriteLine($"Usage:\r\n{executableName} [IsEnabled] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [Enable] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [EnableToTray] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [Disable] \"Scheduler name\" \"Executable path\"");
             Console.WriteLine($"{executableName} [DisableToTray] \"Scheduler name\" \"Executable path\"");
+
             return int.MaxValue;
         }
 
-        static int Main(string[] args)
+        internal static int Main(string[] args)
         {
             try
             {
@@ -37,6 +48,7 @@ namespace Hi3Helper.TaskScheduler
                     return PrintUsage().ReturnValAsConsole();
 
                 string action = args[0].ToLower();
+                // ReSharper disable once IdentifierTypo
                 string schedName = args[1];
                 string execPath = args[2];
 
@@ -71,33 +83,31 @@ namespace Hi3Helper.TaskScheduler
             return 0.ReturnValAsConsole();
         }
 
-        static TaskSched Create(TaskService taskService, string schedName, string execPath)
+        private static TaskSched Create(TaskService taskService, string scheduleName, string execPath)
         {
-            using (TaskDefinition taskDefinition = TaskService.Instance.NewTask())
-            {
-                taskDefinition.RegistrationInfo.Author = "CollapseLauncher";
-                taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
-                taskDefinition.Principal.LogonType = TaskLogonType.InteractiveToken;
-                taskDefinition.Principal.RunLevel = TaskRunLevel.Highest;
-                taskDefinition.Settings.Enabled = false;
-                taskDefinition.Triggers.Add(new LogonTrigger());
-                taskDefinition.Actions.Add(new ExecAction(execPath));
+            using TaskDefinition taskDefinition = TaskService.Instance.NewTask();
+            taskDefinition.RegistrationInfo.Author      = "CollapseLauncher";
+            taskDefinition.RegistrationInfo.Description = "Run Collapse Launcher automatically when computer starts";
+            taskDefinition.Principal.LogonType          = TaskLogonType.InteractiveToken;
+            taskDefinition.Principal.RunLevel           = TaskRunLevel.Highest;
+            taskDefinition.Settings.Enabled             = false;
+            taskDefinition.Triggers.Add(new LogonTrigger());
+            taskDefinition.Actions.Add(new ExecAction(execPath));
 
-                TaskSched task = taskService.RootFolder.RegisterTaskDefinition(schedName, taskDefinition);
-                WriteConsole($"New task schedule has been created!");
-                return task;
-            }
+            TaskSched task = taskService.RootFolder.RegisterTaskDefinition(scheduleName, taskDefinition);
+            WriteConsole("New task schedule has been created!");
+            return task;
         }
 
-        static void TryDelete(TaskService taskService, string schedName)
+        private static void TryDelete(TaskService taskService, string scheduleName)
         {
-            // Try get the tasks
-            TaskSched[] tasks = taskService.FindAllTasks(new System.Text.RegularExpressions.Regex(schedName), false);
+            // Try to get the tasks
+            TaskSched[] tasks = taskService.FindAllTasks(new Regex(scheduleName, RegexOptions.Compiled, TimeSpan.FromSeconds(5)), false);
 
             // If null, then ignore
             if (tasks == null || tasks.Length == 0)
             {
-                WriteConsole($"None of the existing task: {schedName} exist but trying to delete, ignoring!");
+                WriteConsole($"None of the existing task: {scheduleName} exist but trying to delete, ignoring!");
                 return;
             }
 
@@ -112,15 +122,15 @@ namespace Hi3Helper.TaskScheduler
             }
         }
 
-        static TaskSched? GetExistingTask(TaskService taskService, string schedName, string execPath)
+        private static TaskSched? GetExistingTask(TaskService taskService, string scheduleName, string execPath)
         {
-            // Try get the tasks
-            TaskSched[] tasks = taskService.FindAllTasks(new System.Text.RegularExpressions.Regex(schedName), false);
+            // Try to get the tasks
+            TaskSched[] tasks = taskService.FindAllTasks(new Regex(scheduleName, RegexOptions.Compiled, TimeSpan.FromSeconds(5)), false);
 
-            // Try get the first task
+            // Try to get the first task
             TaskSched? task = tasks?
                 .FirstOrDefault(x =>
-                    x.Name.Equals(schedName, StringComparison.OrdinalIgnoreCase));
+                    x.Name.Equals(scheduleName, StringComparison.OrdinalIgnoreCase));
 
             // Return null as empty
             if (task == null)
@@ -129,7 +139,7 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // Get actionPath
-            string? actionPath = task.Definition.Actions?.FirstOrDefault()?.ToString();
+            string? actionPath = task.Definition.Actions.FirstOrDefault()?.ToString();
 
             // If actionPath is null, then return null as empty
             if (string.IsNullOrEmpty(actionPath))
@@ -138,84 +148,83 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // if actionPath isn't matched, then replace with current executable path
-            if (!actionPath?.StartsWith(execPath, StringComparison.OrdinalIgnoreCase) ?? false)
+            if (!(!actionPath?.StartsWith(execPath, StringComparison.OrdinalIgnoreCase) ?? false))
             {
-                // Check if the last action path runs on tray
-                bool isLastHasTray = actionPath?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
-
-                // Register changes
-                task.Definition.Actions?.Clear();
-                task.Definition.Actions?.Add(new ExecAction(execPath, isLastHasTray ? "tray" : null));
-                task.RegisterChanges();
+                return task;
             }
+
+            // Check if the last action path runs on tray
+            bool isLastHasTray = actionPath.EndsWith("tray", StringComparison.OrdinalIgnoreCase);
+
+            // Register changes
+            task.Definition.Actions.Clear();
+            task.Definition.Actions.Add(new ExecAction(execPath, isLastHasTray ? "tray" : null));
+            task.RegisterChanges();
 
             // If the task matches, then return the task
             return task;
         }
 
-        static int IsEnabled(string schedName, string execPath)
+        private static int IsEnabled(string scheduleName, string execPath)
         {
-            using (TaskService taskService = new TaskService())
-            {
-                // Get the task
-                TaskSched? task = GetExistingTask(taskService, schedName, execPath);
+            using TaskService taskService = new TaskService();
+            // Get the task
+            TaskSched? task = GetExistingTask(taskService, scheduleName, execPath);
 
-                // If the task is not null, then do further check
+            // If the task is null, return 0
+            if (task == null)
+            {
+                return 0;
+            }
+
+            // If the task is not null, then do further check
+
+            // Check if it's enabled with tray
+            bool isOnTray = task.Definition.Actions.FirstOrDefault()?.ToString().EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
+
+            // If the task definition is enabled, then return 1 (true) or 2 (true with tray)
+            if (task.Definition.Settings.Enabled)
+                return isOnTray ? 2 : 1;
+
+            // Otherwise, if the task exist but not enabled, then return 0 (false) or -1 (false with tray)
+            return isOnTray ? -1 : 0;
+        }
+
+        private static void ToggleTask(bool isEnabled, bool isStartupToTray, string scheduleName, string execPath)
+        {
+            using TaskService taskService = new TaskService();
+            // Try get existing task
+            TaskSched? task = GetExistingTask(taskService, scheduleName, execPath);
+
+            try
+            {
+                // If the task is null due to its non-existence or
+                // there are some unmatched tasks, then try to recreate the task
+                // by try deleting and create a new one.
+                if (task == null)
+                {
+                    TryDelete(taskService, scheduleName);
+                    task = Create(taskService, scheduleName, execPath);
+                }
+
+                // Try clear the existing actions and set the new one
+                task.Definition.Actions.Clear();
+                task.Definition.Actions.Add(new ExecAction(execPath, isStartupToTray ? "tray" : null));
+                task.Definition.Settings.Enabled = isEnabled;
+            }
+            finally
+            {
+                // Register the changes if it's not null.
                 if (task != null)
                 {
-                    // Check if it's enabled with tray
-                    bool isOnTray = task.Definition?.Actions?.FirstOrDefault()?.ToString()?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
-
-                    // If the task definition is enabled, then return 1 (true) or 2 (true with tray)
-                    if (task.Definition?.Settings.Enabled ?? false)
-                        return isOnTray ? 2 : 1;
-
-                    // Otherwise, if the task exist but not enabled, then return 0 (false) or -1 (false with tray)
-                    return isOnTray ? -1 : 0;
-                }
-            }
-
-            // Otherwise, return 0
-            return 0;
-        }
-
-        static void ToggleTask(bool isEnabled, bool isStartupToTray, string schedName, string execPath)
-        {
-            using (TaskService taskService = new TaskService())
-            {
-                // Try get existing task
-                TaskSched? task = GetExistingTask(taskService, schedName, execPath);
-
-                try
-                {
-                    // If the task is null due to its' non existence or
-                    // there are some unmatched tasks, then try recreate the task
-                    // by try deleting and create a new one.
-                    if (task == null)
-                    {
-                        TryDelete(taskService, schedName);
-                        task = Create(taskService, schedName, execPath);
-                    }
-
-                    // Try clear the existing actions and set the new one
-                    task.Definition.Actions.Clear();
-                    task.Definition.Actions.Add(new ExecAction(execPath, isStartupToTray ? "tray" : null));
-                    task.Definition.Settings.Enabled = isEnabled;
-                }
-                finally
-                {
-                    // Register the changes if it's not null.
-                    if (task != null)
-                    {
-                        task.RegisterChanges();
-                        task.Dispose();
-                        WriteConsole($"ToggledStatus: isEnabled -> {isEnabled} & isStartupToTray -> {isStartupToTray}");
-                    }
+                    task.RegisterChanges();
+                    task.Dispose();
+                    WriteConsole($"ToggledStatus: isEnabled -> {isEnabled} & isStartupToTray -> {isStartupToTray}");
                 }
             }
         }
 
-        static void WriteConsole(string message) =>
+        private static void WriteConsole(string message) =>
             Console.WriteLine(message);
     }
 }

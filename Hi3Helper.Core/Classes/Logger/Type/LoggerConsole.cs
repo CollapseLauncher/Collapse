@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 #if !APPLYUPDATE
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable AsyncVoidMethod
 #endif
 
 namespace Hi3Helper

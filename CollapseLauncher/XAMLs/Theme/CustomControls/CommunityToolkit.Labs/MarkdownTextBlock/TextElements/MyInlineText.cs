@@ -6,21 +6,16 @@ using Microsoft.UI.Xaml.Documents;
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
-internal class MyInlineText : IAddChild
+internal class MyInlineText(string text) : IAddChild
 {
-    private Run _run;
+    private readonly Run _run = new()
+    {
+        Text = text
+    };
 
     public TextElement TextElement
     {
         get => _run;
-    }
-
-    public MyInlineText(string text)
-    {
-        _run = new Run()
-        {
-            Text = text
-        };
     }
 
     public void AddChild(IAddChild child) { }

@@ -12,6 +12,9 @@ using System.Text;
 using System.Threading;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher
@@ -69,7 +72,7 @@ namespace CollapseLauncher
             // Let the overlay navigated before the markdown is loaded to prevent UI thread stuck
             base.OnNavigatedTo(e);
 
-            if (e.Parameter is MarkdownFramePageParams parameters)
+            if (e is { Parameter: MarkdownFramePageParams parameters })
             {
                 Initialize(parameters);
             }
@@ -77,23 +80,23 @@ namespace CollapseLauncher
 
         private void Initialize(MarkdownFramePageParams parameters)
         {
-            if (parameters.MarkdownText == null && parameters.MarkdownUri == null && parameters.MarkdownUriCdn == null)
+            if (parameters is { MarkdownText: null } and { MarkdownUri: null } and { MarkdownUriCdn: null })
                 throw new
                     NullReferenceException("[MarkdownFramePage] Either MarkdownUri, MarkdownUriCdn or MarkdownText needs to be filled!");
 
-            if ((parameters.MarkdownText != null ? 1 : 0) +
-                (parameters.MarkdownUri != null ? 1 : 0) +
-                (parameters.MarkdownUriCdn != null ? 1 : 0) >= 2)
+            if ((parameters is { MarkdownText  : not null } ? 1 : 0) +
+                (parameters is { MarkdownUri   : not null } ? 1 : 0) +
+                (parameters is { MarkdownUriCdn: not null } ? 1 : 0) >= 2)
                 throw new
                     InvalidDataException("[MarkdownFramePage] Multiple markdown sources were assigned! Only assign one of the three possible sources!");
 
-            if (parameters.WebUri != null)
+            if (parameters is { WebUri: not null })
             {
                 MarkdownOpenExternalBtn.Visibility = Visibility.Visible;
                 _webUri                            = parameters.WebUri;
             }
 
-            if (parameters.Title != null)
+            if (parameters is { Title: not null })
             {
                 MarkdownFrameTitle.Text       = parameters.Title;
                 MarkdownFrameTitle.Visibility = Visibility.Visible;
@@ -128,7 +131,7 @@ namespace CollapseLauncher
                                             .SetUserAgent(GetAppConfigValue("UserAgent").ToString())
                                             .Create();
                     _client.BaseAddress = new Uri(markdownUri);
-                    using HttpResponseMessage response = await _client.GetAsync(markdownUri);
+                    using HttpResponseMessage response = await _client.GetAsync(markdownUri, HttpCompletionOption.ResponseHeadersRead);
 
                     LogWriteLine($"[MarkdownFramePage] Loading Markdown from URL {markdownUri}\r\n" +
                                  $"{response.EnsureSuccessStatusCode()}",

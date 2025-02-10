@@ -1,11 +1,16 @@
 ﻿using System.Collections.Generic;
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.GameSettings.Genshin.Enums
 {
     internal static class DictionaryCategory
     {
         // HoYoooooooo :wogreeee:
-        internal static Dictionary<double, int> RenderResolutionOption = new Dictionary<double, int>
+        internal static Dictionary<double, int> RenderResolutionOption = new()
         {
             { 0.6d, 0 },
             { 0.8d, 1 },

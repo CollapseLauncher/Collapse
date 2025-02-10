@@ -13,8 +13,8 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 // block
 internal class MyDetails : IAddChild
 {
-    private MyFlowDocument _flowDocument;
-    private Paragraph _paragraph;
+    private readonly MyFlowDocument _flowDocument;
+    private readonly Paragraph      _paragraph;
 
     public TextElement TextElement
     {
@@ -23,28 +23,33 @@ internal class MyDetails : IAddChild
 
     public MyDetails(HtmlNode details)
     {
-        HtmlNode _htmlNode = details;
+        var header = details.ChildNodes
+                            .FirstOrDefault(
+                                            x => x.Name == "summary" ||
+                                                 x.Name == "header");
 
-        var header = _htmlNode.ChildNodes
-            .FirstOrDefault(
-                x => x.Name == "summary" ||
-                x.Name == "header");
-
-        InlineUIContainer _inlineUIContainer = new InlineUIContainer();
-        Expander _expander = new Expander();
-        _expander.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _flowDocument = new MyFlowDocument();
-        _flowDocument.RichTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _expander.Content = _flowDocument.RichTextBlock;
-        var headerBlock = new TextBlock()
+        InlineUIContainer inlineUIContainer = new InlineUIContainer();
+        Expander          expander          = new Expander
         {
-            Text = header?.InnerText
+            HorizontalAlignment = HorizontalAlignment.Stretch
         };
-        headerBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _expander.Header = headerBlock;
-        _inlineUIContainer.Child = _expander;
+        _flowDocument                                   = new MyFlowDocument
+        {
+            RichTextBlock =
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            }
+        };
+        expander.Content                               = _flowDocument.RichTextBlock;
+        var headerBlock = new TextBlock
+        {
+            Text                = header?.InnerText,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        expander.Header = headerBlock;
+        inlineUIContainer.Child = expander;
         _paragraph = new Paragraph();
-        _paragraph.Inlines.Add(_inlineUIContainer);
+        _paragraph.Inlines.Add(inlineUIContainer);
     }
 
     public void AddChild(IAddChild child)

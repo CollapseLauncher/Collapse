@@ -20,13 +20,13 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class CachesPage
     {
-        private GamePresetProperty CurrentGameProperty { get; set; }
+        private GamePresetProperty CurrentGameProperty { get; }
 
         public CachesPage()
         {
             BackgroundImgChanger.ToggleBackground(true);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         private void StartCachesCheckSplitButton(SplitButton sender, SplitButtonClickEventArgs args)
@@ -58,10 +58,11 @@ namespace CollapseLauncher.Pages
                     SetMainCheckUpdateBtnProperty(sender);
                 }
 
+                MainWindow.IsCriticalOpInProgress = true;
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
-                bool isNeedUpdate = await CurrentGameProperty._GameCache.StartCheckRoutine(isFast);
+                bool isNeedUpdate = await (CurrentGameProperty.GameCache?.StartCheckRoutine(isFast) ?? Task.FromResult(false));
 
                 UpdateCachesBtn.IsEnabled = isNeedUpdate;
                 CheckUpdateBtn.IsEnabled = !isNeedUpdate;
@@ -76,7 +77,7 @@ namespace CollapseLauncher.Pages
                     WindowUtility.Tray_ShowNotification(
                         Lang._NotificationToast.CacheUpdateCheckCompleted_Title,
                         isNeedUpdate ?
-                            string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty._GameCache.AssetEntry.Count) :
+                            string.Format(Lang._NotificationToast.CacheUpdateCheckCompletedFound_Subtitle, CurrentGameProperty.GameCache?.AssetEntry.Count) :
                             Lang._NotificationToast.CacheUpdateCheckCompletedNotFound_Subtitle
                         );
                 }
@@ -98,6 +99,7 @@ namespace CollapseLauncher.Pages
             {
                 RemoveEvent();
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
 
@@ -108,12 +110,13 @@ namespace CollapseLauncher.Pages
                 UpdateCachesBtn.IsEnabled = false;
                 CancelBtn.IsEnabled       = true;
 
+                MainWindow.IsCriticalOpInProgress = true;
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
-                int assetCount = CurrentGameProperty._GameCache.AssetEntry.Count;
+                int assetCount = CurrentGameProperty.GameCache?.AssetEntry.Count ?? 0;
 
-                await CurrentGameProperty._GameCache.StartUpdateRoutine();
+                await (CurrentGameProperty.GameCache?.StartUpdateRoutine() ?? Task.CompletedTask);
 
                 UpdateCachesBtn.IsEnabled = false;
                 CheckUpdateBtn.IsEnabled = true;
@@ -147,6 +150,7 @@ namespace CollapseLauncher.Pages
             finally
             {
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
                 RemoveEvent();
             }
         }
@@ -164,16 +168,26 @@ namespace CollapseLauncher.Pages
 
         private void AddEvent()
         {
-            CurrentGameProperty._GameCache.ProgressChanged += _cacheTool_ProgressChanged;
-            CurrentGameProperty._GameCache.StatusChanged += _cacheTool_StatusChanged;
+            if (CurrentGameProperty.GameCache == null)
+            {
+                return;
+            }
+
+            CurrentGameProperty.GameCache.ProgressChanged += _cacheTool_ProgressChanged;
+            CurrentGameProperty.GameCache.StatusChanged   += _cacheTool_StatusChanged;
 
             CachesTotalProgressBar.IsIndeterminate = true;
         }
 
         private void RemoveEvent()
         {
-            CurrentGameProperty._GameCache.ProgressChanged -= _cacheTool_ProgressChanged;
-            CurrentGameProperty._GameCache.StatusChanged -= _cacheTool_StatusChanged;
+            if (CurrentGameProperty.GameCache == null)
+            {
+                return;
+            }
+
+            CurrentGameProperty.GameCache.ProgressChanged -= _cacheTool_ProgressChanged;
+            CurrentGameProperty.GameCache.StatusChanged -= _cacheTool_StatusChanged;
 
             CachesTotalProgressBar.IsIndeterminate = false;
         }
@@ -226,7 +240,7 @@ namespace CollapseLauncher.Pages
 
         public void CancelOperation(object sender, RoutedEventArgs e)
         {
-            CurrentGameProperty._GameCache?.CancelRoutine();
+            CurrentGameProperty.GameCache?.CancelRoutine();
         }
 
         private void InitializeLoaded(object sender, RoutedEventArgs e)
@@ -234,10 +248,11 @@ namespace CollapseLauncher.Pages
             BackgroundImgChanger.ToggleBackground(true);
             if (m_appMode == AppMode.Hi3CacheUpdater) return;
 
-            if (GameInstallationState == GameInstallStateEnum.NotInstalled
-                || GameInstallationState == GameInstallStateEnum.NeedsUpdate
-                || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
-                || GameInstallationState == GameInstallStateEnum.GameBroken)
+            if (GameInstallationState
+                is GameInstallStateEnum.NotInstalled
+                or GameInstallStateEnum.NeedsUpdate
+                or GameInstallStateEnum.InstalledHavePlugin
+                or GameInstallStateEnum.GameBroken)
             {
                 Overlay.Visibility = Visibility.Visible;
                 PageContent.Visibility = Visibility.Collapsed;
@@ -261,8 +276,8 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            CurrentGameProperty._GameCache?.CancelRoutine();
-            CurrentGameProperty._GameCache?.AssetEntry.Clear();
+            CurrentGameProperty.GameCache?.CancelRoutine();
+            CurrentGameProperty.GameCache?.AssetEntry.Clear();
         }
     }
 }

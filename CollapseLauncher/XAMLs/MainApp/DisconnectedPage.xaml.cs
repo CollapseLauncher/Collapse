@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Hi3Helper.Logger;
+// ReSharper disable IdentifierTypo
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher
 {
@@ -20,7 +22,7 @@ namespace CollapseLauncher
         {
             try
             {
-                this.InitializeComponent();
+                InitializeComponent();
                 WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
                 OverlayFrame.Navigate(typeof(Pages.NullPage));
                 InitializeRegionComboBox();
@@ -38,15 +40,15 @@ namespace CollapseLauncher
 #nullable enable
             string? gameName = LauncherConfig.GetAppConfigValue("GameCategory");
 
-            List<string>? gameCollection = LauncherMetadataHelper.GetGameNameCollection()!;
-            List<string?>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName ?? "");
+            List<string>? gameCollection   = LauncherMetadataHelper.GetGameNameCollection();
+            List<string>? regionCollection = LauncherMetadataHelper.GetGameRegionCollection(gameName ?? "");
 
             if (regionCollection == null)
                 gameName = LauncherMetadataHelper.LauncherGameNameRegionCollection?.Keys.FirstOrDefault();
 
             ComboBoxGameRegion.ItemsSource = InnerLauncherConfig.BuildGameRegionListUI(gameName);
 
-            var indexCategory = gameCollection.IndexOf(gameName!);
+            var indexCategory = gameCollection?.IndexOf(gameName!) ?? -1;
             if (indexCategory < 0) indexCategory = 0;
 
             var indexRegion = LauncherMetadataHelper.GetPreviousGameRegion(gameName);
@@ -63,8 +65,7 @@ namespace CollapseLauncher
 
         private async void ShowError(object sender, RoutedEventArgs e)
         {
-            await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu(this);
-            // MainFrameChanger.ChangeWindowFrame(typeof(UnhandledExceptionPage));
+            await SimpleDialogs.Dialog_ShowUnhandledExceptionMenu();
         }
 
         private void GoToAppSettings(object sender, RoutedEventArgs e)
@@ -80,12 +81,14 @@ namespace CollapseLauncher
             if (OverlayFrame?.CanGoBack ?? false)
                 OverlayFrame?.GoBack();
 
-            if (!(OverlayFrame?.CanGoBack ?? false) && sender is Button btn)
+            if ((OverlayFrame?.CanGoBack ?? false) || sender is not Button btn)
             {
-                btn.Visibility = Visibility.Collapsed;
-                OverlayFrameBg.Visibility = Visibility.Collapsed;
-                FrontGrid.Visibility = Visibility.Visible;
+                return;
             }
+
+            btn.Visibility            = Visibility.Collapsed;
+            OverlayFrameBg.Visibility = Visibility.Collapsed;
+            FrontGrid.Visibility      = Visibility.Visible;
         }
 
         private void SetGameCategoryChange(object sender, SelectionChangedEventArgs e)

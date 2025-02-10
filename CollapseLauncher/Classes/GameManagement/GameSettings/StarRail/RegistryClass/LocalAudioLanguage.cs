@@ -17,7 +17,7 @@ namespace CollapseLauncher.GameSettings.StarRail
     internal class LocalAudioLanguage : IGameSettingsValue<LocalAudioLanguage>
     {
         #region Fields
-        private const string _ValueName = "LanguageSettings_LocalAudioLanguage_h882585060";
+        private const string ValueName = "LanguageSettings_LocalAudioLanguage_h882585060";
         #endregion
 
         #region Properties
@@ -43,14 +43,14 @@ namespace CollapseLauncher.GameSettings.StarRail
                 "cn" => 2,
                 "tw" => 2, // Force Traditional Chinese value to use Simplified Chinese
                 "jp" => 1,
-                _ => 0,
+                _ => 0
             };
             set => LocalAudioLang = value switch
             {
                 3 => "kr",
                 2 => "cn",
                 1 => "jp",
-                _ => "en",
+                _ => "en"
             };
         }
         #endregion
@@ -61,26 +61,26 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(ValueName, null);
                 if (value != null)
                 {
-                    string _localAudioLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
+                    string localAudioLang = Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1);
 #if DEBUG
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+                    LogWriteLine($"Loaded StarRail Settings: {ValueName} : {Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
-                    return new LocalAudioLanguage { LocalAudioLang = _localAudioLang };
+                    return new LocalAudioLanguage { LocalAudioLang = localAudioLang };
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}" +
+                LogWriteLine($"Failed while reading {ValueName}" +
                              $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                    $"Failed when reading game settings {_ValueName}\r\n" +
+                    $"Failed when reading game settings {ValueName}\r\n" +
                     $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
@@ -91,18 +91,18 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 string data = LocalAudioLang + '\0';
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
-                LogWriteLine($"Saved StarRail Settings: {_ValueName} : {data}", LogType.Debug, true);
+                LogWriteLine($"Saved StarRail Settings: {ValueName} : {data}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
 
         }

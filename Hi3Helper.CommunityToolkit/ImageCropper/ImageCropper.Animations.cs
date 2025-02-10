@@ -40,7 +40,7 @@ public partial class ImageCropper
 
     private static DoubleAnimation CreateDoubleAnimation(double to, TimeSpan duration, DependencyObject target, string propertyName, bool enableDependentAnimation)
     {
-        var animation = new DoubleAnimation()
+        var animation = new DoubleAnimation
         {
             To = to,
             Duration = duration,
@@ -55,7 +55,7 @@ public partial class ImageCropper
 
     private static PointAnimation CreatePointAnimation(Point to, TimeSpan duration, DependencyObject target, string propertyName, bool enableDependentAnimation)
     {
-        var animation = new PointAnimation()
+        var animation = new PointAnimation
         {
             To = to,
             Duration = duration,

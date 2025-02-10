@@ -14,20 +14,26 @@ using System;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher
 {
     public partial class App
     {
-        public static bool IsAppKilled = false;
+        // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
+        //       to ensure no hot-exit being called before all background tasks
+        //       hasn't being cancelled.
+        // public static bool IsAppKilled { get; set; } = false;
 
         public App()
         {
             if (DebugSettings != null)
             {
-#if ENABLEFRAMECOUNTER
+            #if ENABLEFRAMECOUNTER
                 DebugSettings.EnableFrameRateCounter = true;
-#endif
+            #endif
 #if DEBUG
                 DebugSettings.LayoutCycleDebugBreakLevel = LayoutCycleDebugBreakLevel.High;
                 DebugSettings.LayoutCycleTracingLevel = LayoutCycleTracingLevel.High;
@@ -68,7 +74,7 @@ namespace CollapseLauncher
             RequestedTheme = IsAppThemeLight ? ApplicationTheme.Light : ApplicationTheme.Dark;
             PInvoke.SetPreferredAppMode(PInvoke.ShouldAppsUseDarkMode() ? PreferredAppMode.AllowDark : PreferredAppMode.Default);
 
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -85,7 +91,7 @@ namespace CollapseLauncher
                       WindowUtility.CurrentAppWindow!.TitleBar!.ButtonForegroundColor = color;
                       WindowUtility.CurrentAppWindow!.TitleBar!.ButtonInactiveBackgroundColor = color;
 
-                      if (WindowUtility.CurrentWindow!.Content is not null and FrameworkElement frameworkElement)
+                      if (WindowUtility.CurrentWindow!.Content is FrameworkElement frameworkElement)
                           frameworkElement.RequestedTheme = isThemeLight ? ElementTheme.Light : ElementTheme.Dark;
                   };
 

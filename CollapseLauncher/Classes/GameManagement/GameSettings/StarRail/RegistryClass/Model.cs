@@ -13,6 +13,9 @@ using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.StarRail
@@ -53,25 +56,25 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
 
-        public const  string _ValueName       = "GraphicsSettings_Model_h2986158309";
-        private const string _GraphicsQuality = "GraphicsSettings_GraphicsQuality_h523255858";
+        public const  string ValueName       = "GraphicsSettings_Model_h2986158309";
+        private const string GraphicsQuality = "GraphicsSettings_GraphicsQuality_h523255858";
         
-        public static readonly int[]                FPSIndex        = [30, 60, 120];
-        public const           int                  FPSDefaultIndex = 1; // 60 in FPSIndex[]
-        public static          Dictionary<int, int> FPSIndexDict    = GenerateStaticFPSIndexDict();
-        private static Dictionary<int, int> GenerateStaticFPSIndexDict()
+        public static readonly int[]                FpsIndex        = [30, 60, 120];
+        public const           int                  FpsDefaultIndex = 1; // 60 in FPSIndex[]
+        public static          Dictionary<int, int> FpsIndexDict    = GenerateStaticFpsIndexDict();
+        private static Dictionary<int, int> GenerateStaticFpsIndexDict()
         {
-            Dictionary<int, int> ret = new Dictionary<int, int>();
-            for (int i = 0; i < FPSIndex.Length; i++)
+            Dictionary<int, int> ret = new();
+            for (int i = 0; i < FpsIndex.Length; i++)
             {
-                ret.Add(FPSIndex[i], i);
+                ret.Add(FpsIndex[i], i);
             }
             return ret;
         }
         #endregion
 
         #region Presets
-        private static Model _VeryLowPreset = new()
+        private static readonly Model VeryLowPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = false,
@@ -88,10 +91,9 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableMetalFXSU          = false,
             EnableHalfResTransparent = false,
             EnableSelfShadow         = 2
-            
         };
 
-        private static Model _LowPreset = new()
+        private static readonly Model LowPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -110,7 +112,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableSelfShadow         = 2
         };
 
-        private static Model _MediumPreset = new()
+        private static readonly Model MediumPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -129,7 +131,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableSelfShadow         = 2
         };
 
-        private static Model _HighPreset = new()
+        private static readonly Model HighPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -148,7 +150,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             EnableSelfShadow         = 1
         };
 
-        private static Model _VeryHighPreset = new()
+        private static readonly Model VeryHighPreset = new()
         {
             FPS                      = 60,
             EnableVSync              = true,
@@ -174,7 +176,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Options: 30, 60, 120 (EXPERIMENTAL) <br/>
         /// Default: 60 (or depends on FPSDefaultIndex and FPSIndex content)
         /// </summary>
-        public int FPS { get; set; } = FPSIndex[FPSDefaultIndex];
+        public int FPS { get; set; } = FpsIndex[FpsDefaultIndex];
 
         /// <summary>
         /// This defines "<c>V-Sync</c>" combobox In-game settings. <br/>
@@ -287,27 +289,27 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_GraphicsQuality} RegistryKey is unexpectedly not initialized!");
-                var graphicsQuality = (Quality)RegistryRoot.GetValue(_GraphicsQuality, Quality.Medium);
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {GraphicsQuality} RegistryKey is unexpectedly not initialized!");
+                var graphicsQuality = (Quality)RegistryRoot.GetValue(GraphicsQuality, Quality.Medium);
                 return graphicsQuality switch
                 {
                     Quality.Custom => LoadCustom(),
-                    Quality.VeryLow => _VeryLowPreset,
-                    Quality.Low => _LowPreset,
-                    Quality.Medium => _MediumPreset,
-                    Quality.High => _HighPreset,
-                    Quality.VeryHigh => _VeryHighPreset,
+                    Quality.VeryLow => VeryLowPreset,
+                    Quality.Low => LowPreset,
+                    Quality.Medium => MediumPreset,
+                    Quality.High => HighPreset,
+                    Quality.VeryHigh => VeryHighPreset,
                     _ => new Model()
                 };
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_GraphicsQuality}" +
+                LogWriteLine($"Failed while reading {GraphicsQuality}" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                    $"Failed when reading game settings {_GraphicsQuality}\r\n" +
+                    $"Failed when reading game settings {GraphicsQuality}\r\n" +
                     $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
@@ -319,39 +321,39 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                object? value = RegistryRoot.GetValue(ValueName, null);
 
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded StarRail Settings: {_ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
+                    LogWriteLine($"Loaded StarRail Settings: {ValueName}\r\n{Encoding.UTF8.GetString((byte[])value, 0, ((byte[])value).Length - 1)}", LogType.Debug, true);
 #endif
 
-                    return byteStr.Deserialize(StarRailSettingsJSONContext.Default.Model) ?? new Model();
+                    return byteStr.Deserialize(StarRailSettingsJsonContext.Default.Model) ?? new Model();
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}" +
+                LogWriteLine($"Failed while reading {ValueName}" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                    $"Failed when reading game settings {_ValueName}\r\n" +
+                    $"Failed when reading game settings {ValueName}\r\n" +
                     $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
 
-            return _MediumPreset;
+            return MediumPreset;
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 
                 if (StarRailGameSettingsPage.CheckAbTest())
                 {
@@ -360,19 +362,19 @@ namespace CollapseLauncher.GameSettings.StarRail
                     return;
                 }
 
-                RegistryRoot.SetValue(_GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
+                RegistryRoot.SetValue(GraphicsQuality, Quality.Custom, RegistryValueKind.DWord);
 
-                string data = this.Serialize(StarRailSettingsJSONContext.Default.Model);
+                string data = this.Serialize(StarRailSettingsJsonContext.Default.Model);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
-                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
-                LogWriteLine($"Saved StarRail Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+                LogWriteLine($"Saved StarRail Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
 

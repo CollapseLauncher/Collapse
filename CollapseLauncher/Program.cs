@@ -31,6 +31,11 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher
 {
@@ -43,8 +48,8 @@ namespace CollapseLauncher
     public static class MainEntryPoint
     {
     #nullable enable
-        public static int       InstanceCount;
-        public static App?      CurrentAppInstance;
+        public static int  InstanceCount      { get; set; }
+        public static App? CurrentAppInstance { get; set; }
     #nullable restore
 
         [STAThread]
@@ -127,8 +132,7 @@ namespace CollapseLauncher
                                            IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
             #pragma warning disable CS0618 // Type or member is obsolete
-                LogWriteLine(
-                             $"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
+                LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
                              LogType.Scheme, true);
                 LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
@@ -141,7 +145,6 @@ namespace CollapseLauncher
 
                 // Initiate InnoSetupHelper's log event
                 InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
-
                 HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
 
                 switch (m_appMode)
@@ -150,10 +153,10 @@ namespace CollapseLauncher
                         RunElevateUpdate();
                         return;
                     case AppMode.InvokerTakeOwnership:
-                        new TakeOwnership().StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
+                        TakeOwnership.StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
                         return;
                     case AppMode.InvokerMigrate:
-                        if (m_arguments.Migrate.IsBHI3L)
+                        if (m_arguments.Migrate.IsBhi3L)
                         {
                             new Migrate().DoMigrationBHI3L(
                                                            m_arguments.Migrate.GameVer,
@@ -184,8 +187,8 @@ namespace CollapseLauncher
             #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 // Reason: These are methods that either has its own error handling and/or not that important,
                 // so the execution could continue without anything to worry about **technically**
-                InitDatabaseHandler();
-                CheckRuntimeFeatures();
+                _ = InitDatabaseHandler();
+                _ = CheckRuntimeFeatures();
             #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
@@ -193,13 +196,15 @@ namespace CollapseLauncher
                 InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
                 AppActivation.Enable();
-                if (!AppActivation.DecideRedirection())
+                if (AppActivation.DecideRedirection())
                 {
-                    MainEntryPointExtension.XamlCheckProcessRequirements();
-                    ComWrappersSupport.InitializeComWrappers();
-
-                    StartMainApplication();
+                    return;
                 }
+
+                MainEntryPointExtension.XamlCheckProcessRequirements();
+                ComWrappersSupport.InitializeComWrappers();
+
+                StartMainApplication();
             }
         #if !DEBUG
         catch (Exception ex)
@@ -303,7 +308,10 @@ namespace CollapseLauncher
 
         private static void OnProcessExit(object sender, EventArgs e)
         {
-            App.IsAppKilled = true;
+            // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
+            //       to ensure no hot-exit being called before all background tasks
+            //       hasn't being cancelled.
+            // App.IsAppKilled = true;
         }
 
         private static void StartUpdaterHook(string aumid)
@@ -355,12 +363,14 @@ namespace CollapseLauncher
                 velopackLockPath = Path.GetFullPath(velopackLockPath);
 
                 // Check if the file exists
-                if (File.Exists(velopackLockPath))
+                if (!File.Exists(velopackLockPath))
                 {
-                    // Delete the file
-                    File.Delete(velopackLockPath);
-                    LogWriteLine(".velopack_lock file deleted successfully.");
+                    return;
                 }
+
+                // Delete the file
+                File.Delete(velopackLockPath);
+                LogWriteLine(".velopack_lock file deleted successfully.");
             }
         #endif
         }
@@ -446,25 +456,26 @@ namespace CollapseLauncher
                     // Get the shortcut file
                     string thisUserStartMenuShortcut = Path.Combine(userDirInfoPath,
                                                                     @"AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Collapse.lnk");
-                    if (File.Exists(thisUserStartMenuShortcut))
+                    if (!File.Exists(thisUserStartMenuShortcut))
                     {
-                        // Try open the shortcut and check whether this shortcut is actually pointing to
-                        // CollapseLauncher.exe file
-                        using (ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut))
-                        {
-                            // Try to get the target path and its filename
-                            string shortcutTargetPath = shellLink.Target;
-
-                            // Compare if the filename is equal, then delete it.
-                            if (shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
-                            {
-                                File.Delete(thisUserStartMenuShortcut);
-                                LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
-                                             $"{thisUserStartMenuShortcut} -> {shortcutTargetPath}",
-                                             LogType.Default, true);
-                            }
-                        }
+                        continue;
                     }
+
+                    // Try open the shortcut and check whether this shortcut is actually pointing to
+                    // CollapseLauncher.exe file
+                    using ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut);
+                    // Try to get the target path and its filename
+                    string shortcutTargetPath = shellLink.Target;
+                    if (!shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    // Compare if the filename is equal, then delete it.
+                    File.Delete(thisUserStartMenuShortcut);
+                    LogWriteLine($"[TryCleanupFallbackUpdate] Deleted old shortcut located at: " +
+                                 $"{thisUserStartMenuShortcut} -> {shortcutTargetPath}",
+                                 LogType.Default, true);
                 }
 
                 // Try to recreate shortcuts
@@ -476,21 +487,25 @@ namespace CollapseLauncher
                 LogWriteLine($"[TryCleanupFallbackUpdate] Failed while operating clean-up routines...\r\n{ex}");
             }
 
+            return;
+
             void RemoveSquirrelFilePath(string filePath)
             {
-                if (File.Exists(filePath))
+                if (!File.Exists(filePath))
                 {
-                    File.Delete(filePath);
-                    LogWriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!",
-                                 LogType.Default, true);
+                    return;
                 }
+
+                File.Delete(filePath);
+                LogWriteLine($"[TryCleanupFallbackUpdate] Removed old squirrel executables: {filePath}!",
+                             LogType.Default, true);
             }
         }
     #endif
 
         public static string FindCollapseStubPath()
         {
-            var collapseMainPath = Process.GetCurrentProcess().MainModule!.FileName;
+            var collapseMainPath = AppExecutablePath;
             // var collapseExecName = "CollapseLauncher.exe";
             // var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
             //                                     collapseExecName);
@@ -523,7 +538,7 @@ namespace CollapseLauncher
             }
             catch (Exception ex)
             {
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 LogWriteLine($"[CheckRuntimeFeatures] Failed when enumerating available runtime features!\r\n{ex}",
                              LogType.Error, true);
             }
@@ -543,12 +558,14 @@ namespace CollapseLauncher
             }
 
             var themeValue = GetAppConfigValue("ThemeMode").ToString();
-            if (!Enum.TryParse(themeValue, true, out CurrentAppTheme))
+            if (Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
-                CurrentAppTheme = AppThemeMode.Dark;
-                LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
-                             LogType.Warning, true);
+                return;
             }
+
+            CurrentAppTheme = AppThemeMode.Dark;
+            LogWriteLine($"ThemeMode: {themeValue} is invalid! Falling back to Dark-mode (Valid values are: {string.Join(',', Enum.GetNames(typeof(AppThemeMode)))})",
+                         LogType.Warning, true);
         }
 
         private static void RunElevateUpdate()
@@ -557,8 +574,8 @@ namespace CollapseLauncher
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName         = UpdaterWindow.sourcePath,
-                    WorkingDirectory = UpdaterWindow.workingDir,
+                    FileName         = UpdaterWindow.SourcePath,
+                    WorkingDirectory = UpdaterWindow.WorkingDir,
                     Arguments =
                         $"update --input \"{m_arguments.Updater.AppPath}\" --channel {m_arguments.Updater.UpdateChannel}",
                     UseShellExecute = true,
@@ -570,25 +587,28 @@ namespace CollapseLauncher
 
         private static void GenerateVelopackMetadata(string aumid)
         {
-            const string XmlTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<package xmlns=""http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"">
-<metadata>
-<id>CollapseLauncher</id>
-<title>Collapse</title>
-<description>Collapse</description>
-<authors>Collapse Project Team</authors>
-<version>{0}</version>
-<channel>{1}</channel>
-<mainExe>CollapseLauncher.exe</mainExe>
-<os>win</os>
-<rid>win</rid>
-<shortcutLocations>Desktop,StartMenuRoot</shortcutLocations>
-<shortcutAmuid>{2}</shortcutAmuid>
-</metadata>
-</package>";
+            const string xmlTemplate = """
+                                       <?xml version="1.0" encoding="utf-8"?>
+                                       <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+                                       <metadata>
+                                       <id>CollapseLauncher</id>
+                                       <title>Collapse</title>
+                                       <description>Collapse</description>
+                                       <authors>Collapse Project Team</authors>
+                                       <version>{0}</version>
+                                       <channel>{1}</channel>
+                                       <mainExe>CollapseLauncher.exe</mainExe>
+                                       <os>win</os>
+                                       <rid>win</rid>
+                                       <shortcutLocations>Desktop,StartMenuRoot</shortcutLocations>
+                                       <shortcutAmuid>{2}</shortcutAmuid>
+                                       <shortcutAumid>{2}</shortcutAumid>
+                                       </metadata>
+                                       </package>
+                                       """; // Adding shortcutAumid for future use, since they typo-ed the XML tag LMAO
             string currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
             string xmlPath        = Path.Combine(AppExecutableDir, "sq.version");
-            string xmlContent     = string.Format(XmlTemplate, currentVersion, IsPreview ? "preview" : "stable", aumid);
+            string xmlContent     = string.Format(xmlTemplate, currentVersion, IsPreview ? "preview" : "stable", aumid);
             File.WriteAllText(xmlPath, xmlContent.ReplaceLineEndings("\n"));
             LogWriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);
         }
@@ -597,12 +617,7 @@ namespace CollapseLauncher
         {
             var version = Environment.OSVersion.Version;
             m_isWindows11 = version.Build >= 22000;
-            if (m_isWindows11)
-            {
-                return $"Windows 11 (build: {version.Build}.{version.Revision})";
-            }
-
-            return $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
+            return m_isWindows11 ? $"Windows 11 (build: {version.Build}.{version.Revision})" : $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
         }
 
         public static string MD5Hash(string path)
@@ -613,9 +628,9 @@ namespace CollapseLauncher
             }
 
             FileStream stream = File.OpenRead(path);
-            var        hash   = MD5.Create().ComputeHash(stream);
+            var        hash   = Hash.GetCryptoHash<MD5>(stream);
             stream.Close();
-            return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+            return Convert.ToHexStringLower(hash);
         }
     }
 }

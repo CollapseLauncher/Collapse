@@ -408,7 +408,7 @@ namespace Hi3Helper.Data
             }
         }
 
-        public IniSection? Add(string section) => this[section];
+        public IniSection Add(string section) => this[section];
 
         public bool ContainsKey(string key) => Sections.ContainsKey(key);
 

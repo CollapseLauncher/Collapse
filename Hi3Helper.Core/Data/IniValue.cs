@@ -1,25 +1,30 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable CommentTypo
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace Hi3Helper.Data
 {
-    public struct IniValue
+    public struct IniValue : IEquatable<IniValue>
     {
         #region Fields
         private string? _value;
-        private bool _isEmpty = true;
+
         #endregion
 
         #region Methods
         public string? Value
         {
             get => _value;
-            set => _isEmpty = string.IsNullOrEmpty(_value = value);
+            set => IsEmpty = string.IsNullOrEmpty(_value = value);
         }
 
-        public bool IsEmpty => _isEmpty;
+        public bool IsEmpty { get; private set; } = true;
+
         #endregion
 
         #region Constructors
@@ -132,7 +137,7 @@ namespace Hi3Helper.Data
         /// <returns>Value of <seealso cref="Size"/></returns>
         public Size ToSize()
         {
-            const string PossibleSeparators = ",x:";
+            const string possibleSeparators = ",x:";
 
             // Assign value string to span
             ReadOnlySpan<char> valueString = _value;
@@ -145,7 +150,7 @@ namespace Hi3Helper.Data
 
             // Allocate stack buffer for range and try search the splitted ranges
             Span<Range> ranges = stackalloc Range[8];
-            int count = valueString.Split(ranges, PossibleSeparators);
+            valueString.Split(ranges, possibleSeparators);
 
             // Try split the value and get the default if one of the range
             // doesn't actually include the value.
@@ -168,17 +173,14 @@ namespace Hi3Helper.Data
             }
 
             // Get the first index of the separator
-            int beginPossibleSeparators = valueString.IndexOfAny(PossibleSeparators);
+            int beginPossibleSeparators = valueString.IndexOfAny(possibleSeparators);
 
             // If the separator starts with index of 0 (in this case "x1080" for example),
             // then return the value of the height only
-            if (beginPossibleSeparators == 0)
-            {
-                return new Size(0, height);
-            }
-
-            // Otherwise, returns the format for width-only (in this case "1920x" for example).
-            return new Size(width, 0);
+            return beginPossibleSeparators == 0 ?
+                new Size(0, height) :
+                // Otherwise, returns the format for width-only (in this case "1920x" for example).
+                new Size(width, 0);
         }
 
         /// <summary>
@@ -189,19 +191,15 @@ namespace Hi3Helper.Data
         public readonly Guid ToGuid()
         {
             // If the back value is empty, return an empty Guid
-            if (_isEmpty)
+            if (IsEmpty)
             {
                 return Guid.Empty;
             }
 
             // If the back value can be parsed to Guid, then return
-            if (Guid.TryParse(_value, out Guid guid))
-            {
-                return guid;
-            }
-
-            // Otherwise, return the empty guid again
-            return Guid.Empty;
+            return Guid.TryParse(_value, out Guid guid) ? guid :
+                // Otherwise, return the empty guid again
+                Guid.Empty;
         }
 
         /// <summary>
@@ -212,13 +210,9 @@ namespace Hi3Helper.Data
         public bool ToBool(bool defaultValue = false)
         {
             // Try parse the value
-            if (bool.TryParse(_value, out bool result))
-            {
-                return result;
-            }
-
-            // Otherwise, return the default value if invalid.
-            return defaultValue;
+            return bool.TryParse(_value, out bool result) ? result :
+                // Otherwise, return the default value if invalid.
+                defaultValue;
         }
 
         /// <summary>
@@ -228,7 +222,7 @@ namespace Hi3Helper.Data
         public bool? ToBoolNullable()
         {
             // If the value is empty, return null
-            if (_isEmpty)
+            if (IsEmpty)
             {
                 return null;
             }
@@ -430,6 +424,16 @@ namespace Hi3Helper.Data
         public static implicit operator Size(IniValue value) => value.ToSize();
 
         public static implicit operator Guid(IniValue value) => value.ToGuid();
+
+        public static bool operator ==(IniValue valueA, IniValue valueB) => Equals(valueA, valueB);
+
+        public static bool operator !=(IniValue valueA, IniValue valueB) => !(valueA == valueB);
+
+        public bool Equals(IniValue compareTo) => this == compareTo;
+
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj is IniValue iniValue && GetHashCode() == iniValue.GetHashCode();
+
+        public override int GetHashCode() => Value?.GetHashCode() ?? 0;
         #endregion
     }
 }

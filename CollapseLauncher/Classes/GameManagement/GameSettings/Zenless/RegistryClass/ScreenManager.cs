@@ -10,6 +10,7 @@ using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.GameSettings.Zenless
 {
@@ -100,12 +101,12 @@ namespace CollapseLauncher.GameSettings.Zenless
             get => fullscreen switch
                    {
                        FullScreenMode.Fullscreen => true,
-                       _ => false,
+                       _ => false
                    };
             set => fullscreen = value switch
                    {
                        true => FullScreenMode.Fullscreen,
-                       false => FullScreenMode.Windowed,
+                       false => FullScreenMode.Windowed
                    };
         }
         #endregion

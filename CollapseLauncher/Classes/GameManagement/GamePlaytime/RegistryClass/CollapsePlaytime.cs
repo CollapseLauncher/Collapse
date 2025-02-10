@@ -26,7 +26,7 @@ namespace CollapseLauncher.GamePlaytime
         private  static HashSet<int>      _isDeserializing = [];
         private         RegistryKey       _registryRoot;
         private         int               _hashID;
-        private         IGameVersionCheck _gameVersion;
+        private         IGameVersion _gameVersion;
         private         IGameSettings     _gameSettings;
         
         #endregion
@@ -87,13 +87,13 @@ namespace CollapseLauncher.GamePlaytime
         /// Reads from the Registry and deserializes the contents.
         /// </summary>
         public static CollapsePlaytime Load(RegistryKey root, int hashID,
-                                            IGameVersionCheck gameVersion,
+                                            IGameVersion gameVersion,
                                             IGameSettings gameSettings)
         {
             try
             {
                 _isDeserializing.Add(hashID);
-                if (root == null) throw new NullReferenceException($"Cannot load playtime. RegistryKey is unexpectedly not initialized!");
+                if (root == null) throw new NullReferenceException("Cannot load playtime. RegistryKey is unexpectedly not initialized!");
 
                 int? totalTime = (int?)root.GetValue(TotalTimeValueName,null);
                 int? lastPlayed = (int?)root.GetValue(LastPlayedValueName,null);
@@ -107,7 +107,7 @@ namespace CollapseLauncher.GamePlaytime
 #if DEBUG
                     LogWriteLine($"Loaded Playtime:\r\nTotal: {totalTime}s\r\nLastPlayed: {lastPlayed}\r\nStats: {Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    playtimeInner = byteStr.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
+                    playtimeInner = byteStr.Deserialize(UniversalPlaytimeJsonContext.Default.CollapsePlaytime, new CollapsePlaytime())!;
                 }
                 else
                 {
@@ -150,9 +150,9 @@ namespace CollapseLauncher.GamePlaytime
         {
             try
             {
-                if (_registryRoot == null) throw new NullReferenceException($"Cannot save playtime since RegistryKey is unexpectedly not initialized!");
+                if (_registryRoot == null) throw new NullReferenceException("Cannot save playtime since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime);
+                string data = this.Serialize(UniversalPlaytimeJsonContext.Default.CollapsePlaytime);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Playtime:\r\n{data}", LogType.Debug, true);
@@ -217,7 +217,7 @@ namespace CollapseLauncher.GamePlaytime
 
         /// <summary>
         /// Checks if any stats should be reset.<br/>
-        /// Afterwards, the values are saved to the registry.<br/><br/>
+        /// Afterward, the values are saved to the registry.<br/><br/>
         /// </summary>
         private void CheckStatsReset()
         {
@@ -237,7 +237,7 @@ namespace CollapseLauncher.GamePlaytime
 
         /// <summary>
         /// Adds a minute to all fields, and checks if any should be reset.<br/>
-        /// Afterwards, the values are saved to the registry.<br/><br/>
+        /// Afterward, the values are saved to the registry.<br/><br/>
         /// </summary>
         public void AddMinute()
         {
@@ -288,7 +288,7 @@ namespace CollapseLauncher.GamePlaytime
         /// <summary>
         /// Sync from/to DB at init
         /// </summary>
-        /// <returns>true if require refresh, false if dont.</returns>
+        /// <returns>true if it requires refresh, false if it doesn't.</returns>
         public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync(bool redirectThrow = false)
         {
             LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
@@ -323,7 +323,7 @@ namespace CollapseLauncher.GamePlaytime
                         return (false, null);
                     }
                     LogWriteLine("[CollapsePlaytime::DbSync] Database data is newer! Pulling data~", LogType.Default, true);
-                    CollapsePlaytime? playtimeInner = _jsonDataDb.Deserialize(UniversalPlaytimeJSONContext.Default.CollapsePlaytime,
+                    CollapsePlaytime? playtimeInner = _jsonDataDb.Deserialize(UniversalPlaytimeJsonContext.Default.CollapsePlaytime,
                                                         new CollapsePlaytime());
 
                     playtimeInner!.TotalPlaytime = TimeSpan.FromSeconds(_totalTimeDb ?? 0);
@@ -342,11 +342,13 @@ namespace CollapseLauncher.GamePlaytime
                     return (true, playtimeInner);
                 }
 
-                if (_unixStampDb < unixStampLocal)
+                if (!(_unixStampDb < unixStampLocal))
                 {
-                    LogWriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
-                    Save(true);
+                    return (false, null);
                 }
+
+                LogWriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
+                Save(true);
                 return (false, null);
             }
             catch (Exception ex)

@@ -1,10 +1,11 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using System.Diagnostics;
 using System.Text.Json.Serialization.Metadata;
+// ReSharper disable UnusedMemberInSuper.Global
 
 namespace CollapseLauncher.Interfaces
 {
-    internal interface IGameSettingsValue<T>
+    internal interface IGameSettingsValue<out T>
     {
         static abstract T Load();
         void Save();

@@ -1,8 +1,8 @@
-﻿#nullable enable
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
@@ -11,13 +11,16 @@ using System.Diagnostics.CodeAnalysis;
 using Squirrel;
 using Squirrel.Sources;
 #else
-using Microsoft.Extensions.Logging;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Sources;
+// ReSharper disable UnusedMember.Global
 #endif
+
+// ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
 
+#nullable enable
 namespace CollapseLauncher.Helper.Update
 {
     internal static class LauncherUpdateHelper
@@ -25,7 +28,7 @@ namespace CollapseLauncher.Helper.Update
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
         internal static bool IsLauncherUpdateAvailable;
 
-        internal static GameVersion? LauncherCurrentVersion => field ??= new(LauncherConfig.AppCurrentVersionString);
+        internal static GameVersion? LauncherCurrentVersion => field ??= new GameVersion(LauncherConfig.AppCurrentVersionString);
 
         [field: AllowNull, MaybeNull]
         internal static string LauncherCurrentVersionString => field = LauncherConfig.AppCurrentVersionString;
@@ -49,7 +52,7 @@ namespace CollapseLauncher.Helper.Update
             string updateChannel = LauncherConfig.IsPreview ? "preview" : "stable";
 
             CDNURLProperty launcherUpdatePreferredCdn = FallbackCDNUtil.GetPreferredCDN();
-            string? launcherUpdateManagerBaseUrl = ConverterTool.CombineURLFromString(launcherUpdatePreferredCdn.URLPrefix,
+            string launcherUpdateManagerBaseUrl = ConverterTool.CombineURLFromString(launcherUpdatePreferredCdn.URLPrefix,
 #if USEVELOPACK
                 "velopack",
                 updateChannel
@@ -129,7 +132,7 @@ namespace CollapseLauncher.Helper.Update
         {
             string relativePath = ConverterTool.CombineURLFromString(updateChannel, "fileindex.json");
             await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
-            return await ms.DeserializeAsync(InternalAppJSONContext.Default.AppUpdateVersionProp);
+            return await ms.DeserializeAsync(AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp);
         }
     }
 }

@@ -13,20 +13,19 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using System;
 using System.Collections.Generic;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
+// ReSharper disable UnusedMember.Global
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.Renderers;
 
 public class WinUIRenderer : RendererBase
 {
-    private readonly Stack<IAddChild> _stack = new Stack<IAddChild>();
-    private char[] _buffer;
-    private MarkdownConfig _config = MarkdownConfig.Default;
-    public MyFlowDocument FlowDocument { get; private set; }
-    public MarkdownConfig Config
-    {
-        get => _config;
-        set => _config = value;
-    }
+    private readonly Stack<IAddChild> _stack = new();
+    private          char[]           _buffer;
+    public           MyFlowDocument   FlowDocument { get; }
+    public           MarkdownConfig   Config       { get; set; }
 
     public WinUIRenderer(MyFlowDocument document, MarkdownConfig config)
     {
@@ -59,8 +58,8 @@ public class WinUIRenderer : RendererBase
 
     public void WriteLeafInline(LeafBlock leafBlock)
     {
-        if (leafBlock == null || leafBlock.Inline == null) throw new ArgumentNullException(nameof(leafBlock));
-        var inline = (Inline)leafBlock.Inline;
+        if (leafBlock.Inline == null) throw new ArgumentNullException(nameof(leafBlock));
+        Inline? inline = leafBlock.Inline;
         while (inline != null)
         {
             Write(inline);
@@ -72,8 +71,8 @@ public class WinUIRenderer : RendererBase
     {
         if (leafBlock == null) throw new ArgumentNullException(nameof(leafBlock));
 
-        var lines = leafBlock.Lines;
-        var slices = lines.Lines;
+        var          lines  = leafBlock.Lines;
+        StringLine[] slices = lines.Lines;
         for (var i = 0; i < lines.Count; i++)
         {
             if (i != 0)

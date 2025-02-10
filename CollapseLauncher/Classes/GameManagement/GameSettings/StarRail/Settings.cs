@@ -7,15 +7,15 @@ namespace CollapseLauncher.GameSettings.StarRail
     internal class StarRailSettings : SettingsBase
     {
         public Model GraphicsSettings { get; set; }
-        public BGMVolume AudioSettings_BGM { get; set; }
-        public MasterVolume AudioSettings_Master { get; set; }
-        public SFXVolume AudioSettings_SFX { get; set; }
-        public VOVolume AudioSettings_VO { get; set; }
+        public BGMVolume AudioSettingsBgm { get; set; }
+        public MasterVolume AudioSettingsMaster { get; set; }
+        public SFXVolume AudioSettingsSfx { get; set; }
+        public VOVolume AudioSettingsVo { get; set; }
         public LocalAudioLanguage AudioLanguage { get; set; }
         public LocalTextLanguage TextLanguage { get; set; }
 
-        public StarRailSettings(IGameVersionCheck GameVersionManager)
-            : base(GameVersionManager)
+        public StarRailSettings(IGameVersion gameVersionManager)
+            : base(gameVersionManager)
         {
             // Initialize and Load Settings
             InitializeSettings();
@@ -31,10 +31,10 @@ namespace CollapseLauncher.GameSettings.StarRail
         public override void ReloadSettings()
         {
             // Load rest of the settings for GSP
-            AudioSettings_BGM    = BGMVolume.Load();
-            AudioSettings_Master = MasterVolume.Load();
-            AudioSettings_SFX    = SFXVolume.Load();
-            AudioSettings_VO     = VOVolume.Load();
+            AudioSettingsBgm    = BGMVolume.Load();
+            AudioSettingsMaster = MasterVolume.Load();
+            AudioSettingsSfx    = SFXVolume.Load();
+            AudioSettingsVo     = VOVolume.Load();
             AudioLanguage        = LocalAudioLanguage.Load();
             TextLanguage         = LocalTextLanguage.Load();
             GraphicsSettings     = Model.Load();
@@ -48,10 +48,10 @@ namespace CollapseLauncher.GameSettings.StarRail
             base.SaveSettings();
             GraphicsSettings?.Save();
             SettingsScreen?.Save();
-            AudioSettings_BGM?.Save();
-            AudioSettings_Master?.Save();
-            AudioSettings_SFX?.Save();
-            AudioSettings_VO?.Save();
+            AudioSettingsBgm?.Save();
+            AudioSettingsMaster?.Save();
+            AudioSettingsSfx?.Save();
+            AudioSettingsVo?.Save();
             AudioLanguage?.Save();
             TextLanguage?.Save();
         }
