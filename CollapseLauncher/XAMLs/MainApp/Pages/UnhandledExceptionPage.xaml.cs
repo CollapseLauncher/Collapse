@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using static Hi3Helper.Locale;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.Pages
 {

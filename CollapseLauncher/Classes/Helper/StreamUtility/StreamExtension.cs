@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.StreamUtility
@@ -168,6 +170,26 @@ namespace CollapseLauncher.Helper.StreamUtility
                 Logger.LogWriteLine($"Failed to move file: {filePath.FullName} to: {toTarget.FullName}\r\n{ex}", LogType.Error, true);
                 return false;
             }
+        }
+
+        internal static async Task<string> ReadAsStringAsync(this FileInfo fileInfo, CancellationToken token = default)
+        {
+            using StreamReader reader = fileInfo.OpenText();
+            return await reader.ReadToEndAsync(token);
+        }
+
+        internal static async Task<string> ReadAsStringAsync<T>(this T stream, CancellationToken token = default)
+            where T : Stream
+        {
+            using StreamReader reader = new StreamReader(stream, null, true, -1, false);
+            return await reader.ReadToEndAsync(token);
+        }
+
+        internal static async Task<string> ReadAsStringAsync<T>(this T stream, bool disposeStream = true, CancellationToken token = default)
+            where T : Stream
+        {
+            using StreamReader reader = new StreamReader(stream, null, true, -1, disposeStream);
+            return await reader.ReadToEndAsync(token);
         }
     }
 }

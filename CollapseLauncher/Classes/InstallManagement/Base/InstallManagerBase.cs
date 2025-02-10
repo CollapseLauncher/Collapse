@@ -225,7 +225,7 @@ namespace CollapseLauncher.InstallManager.Base
                 return 0;
             }
 
-            switch (await Dialog_DeltaPatchFileDetected(ParentUI, patchProperty!.SourceVer,
+            switch (await Dialog_DeltaPatchFileDetected(patchProperty!.SourceVer,
                                                         patchProperty.TargetVer))
             {
                 // If no, then proceed with normal update (0)
@@ -466,10 +466,10 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllSizeCurrent = await GetExistingDownloadPackageSize(downloadClient, gamePackage, Token!.Token);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(ParentUI, gamePackage, ProgressAllSizeCurrent);
+            await CheckDriveFreeSpace(gamePackage, ProgressAllSizeCurrent);
 
             // Check for the existing download
-            await CheckExistingDownloadAsync(ParentUI, gamePackage);
+            await CheckExistingDownloadAsync(gamePackage);
 
             StartDeltaPatchPreReqVerification:
             // Set progress bar to not indetermined
@@ -610,12 +610,12 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllSizeCurrent = await GetExistingDownloadPackageSize(downloadClient, AssetIndex, Token!.Token);
 
             // Sanitize Check: Check for the free space of the drive and show the dialog if necessary
-            await CheckDriveFreeSpace(ParentUI, AssetIndex, ProgressAllSizeCurrent);
+            await CheckDriveFreeSpace(AssetIndex, ProgressAllSizeCurrent);
 
             // Sanitize Check: Show dialog for resuming/reset the existing download
             if (!skipDialog)
             {
-                await CheckExistingDownloadAsync(ParentUI, AssetIndex);
+                await CheckExistingDownloadAsync(AssetIndex);
             }
 
             // Start downloading process
@@ -731,8 +731,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Check for the hash differences. If found, then show dialog to delete or cancel the process
             if (!IsArrayMatch(hashLocal, asset.Hash))
             {
-                switch (await Dialog_GameInstallationFileCorrupt(ParentUI, asset.HashString,
-                                                                 HexTool.BytesToHexUnsafe(hashLocal)))
+                switch (await Dialog_GameInstallationFileCorrupt(asset.HashString, HexTool.BytesToHexUnsafe(hashLocal) ?? ""))
                 {
                     case ContentDialogResult.Primary:
                         ProgressAllSizeCurrent -= asset.Size;
@@ -743,7 +742,7 @@ namespace CollapseLauncher.InstallManager.Base
                     case ContentDialogResult.Secondary: // To proceed on extracting the file even it's corrupted
                         string fileName = Path.GetFileName(asset.PathOutput);
                         ContentDialogResult installCorruptDialogResult =
-                            await Dialog_GameInstallCorruptedDataAnyway(ParentUI, fileName, asset.Size);
+                            await Dialog_GameInstallCorruptedDataAnyway(fileName ?? "", asset.Size);
                         // If cancel is pressed, then cancel the whole process
                         if (installCorruptDialogResult == ContentDialogResult.None)
                         {
@@ -1294,7 +1293,7 @@ namespace CollapseLauncher.InstallManager.Base
             string translatedFullName = $"{translatedGameTitle} - {translatedGameRegion}";
 
             // Check if the dialog result is Okay (Primary). If not, then return false
-            ContentDialogResult DialogResult = await Dialog_UninstallGame(ParentUI!, GameFolder, translatedFullName);
+            ContentDialogResult DialogResult = await Dialog_UninstallGame(GameFolder, translatedFullName);
             if (DialogResult != ContentDialogResult.Primary)
             {
                 return false;
@@ -1498,7 +1497,7 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine($"Previous failed delta patch has been detected on Game {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
-            switch (await Dialog_PreviousDeltaPatchInstallFailed(ParentUI))
+            switch (await Dialog_PreviousDeltaPatchInstallFailed())
             {
                 // If primary button clicked, then move the folder and get back to HomePage
                 case ContentDialogResult.Primary:
@@ -2398,8 +2397,7 @@ namespace CollapseLauncher.InstallManager.Base
                 return migrationOptionReturn;
             }
 
-            switch (await Dialog_ExistingInstallation(ParentUI,
-                                                      GameVersionManager.GamePreset.ActualGameDataLocation))
+            switch (await Dialog_ExistingInstallation(GameVersionManager.GamePreset.ActualGameDataLocation ?? ""))
             {
                 // If action to migrate was taken, then update the game path (but don't save it to the config file)
                 case ContentDialogResult.Primary:
@@ -2583,14 +2581,12 @@ namespace CollapseLauncher.InstallManager.Base
 
             if (!isMoveOperation)
             {
-                ContentDialogResult dialogResult = await Dialog_MigrationChoiceDialog(
-                 ParentUI,
-                 pathIfUseExistingSelected,
-                 GameVersionManager.GamePreset.GameName,
-                 GameVersionManager.GamePreset.ZoneName,
-                 launcherName,
-                 launcherType,
-                 isHasOnlyMigrateOption);
+                ContentDialogResult dialogResult = await Dialog_MigrationChoiceDialog(pathIfUseExistingSelected,
+                    GameVersionManager.GamePreset.GameName ?? "",
+                    GameVersionManager.GamePreset.ZoneName ?? "",
+                    launcherName,
+                    launcherType,
+                    isHasOnlyMigrateOption);
 
                 // If the routine is to use "migration option only" mode and the result
                 // is "Okay", then return 0
@@ -2633,7 +2629,6 @@ namespace CollapseLauncher.InstallManager.Base
                                                         Lang._GameClientRegions)}";
 
             FileMigrationProcess migrationProcessTool = await FileMigrationProcess.CreateJob(
-             ParentUI,
              string.Format(Lang._Dialogs.MigrateExistingMoveDirectoryTitle, translatedGameFullname),
              pathIfUseExistingSelected);
 
@@ -2748,7 +2743,7 @@ namespace CollapseLauncher.InstallManager.Base
             while (!isChoosen)
             {
                 // Show dialog
-                switch (await Dialog_InstallationLocation(ParentUI))
+                switch (await Dialog_InstallationLocation())
                 {
                     // If primary button is clicked, then set folder with the default path
                     case ContentDialogResult.Primary:
@@ -2971,7 +2966,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // Get the dialog and go for the selection
                     (Dictionary<string, string> addedVO, string setAsDefaultVOLocalecode) =
-                        await Dialog_ChooseAudioLanguageChoice(ParentUI, langStringsDict);
+                        await Dialog_ChooseAudioLanguageChoice(langStringsDict);
                     if (addedVO == null && string.IsNullOrEmpty(setAsDefaultVOLocalecode))
                     {
                         throw new TaskCanceledException();
@@ -3305,7 +3300,7 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllCountCurrent++;
         }
 
-        private async ValueTask CheckExistingDownloadAsync(UIElement Content, List<GameInstallPackage> packageList)
+        private async ValueTask CheckExistingDownloadAsync(List<GameInstallPackage> packageList)
         {
             // If the _progressAllSizeCurrent has the size, then
             // display the reset or continue download dialog.
@@ -3313,7 +3308,7 @@ namespace CollapseLauncher.InstallManager.Base
             //         showing the dialog
             if (ProgressAllSizeCurrent > 0 && ProgressAllSizeTotal != ProgressAllSizeCurrent)
             {
-                switch (await Dialog_ExistingDownload(Content, ProgressAllSizeCurrent, ProgressAllSizeTotal))
+                switch (await Dialog_ExistingDownload(ProgressAllSizeCurrent, ProgressAllSizeTotal))
                 {
                     case ContentDialogResult.Primary:
                         break;
@@ -3433,7 +3428,7 @@ namespace CollapseLauncher.InstallManager.Base
             return totalSize;
         }
 
-        private async ValueTask CheckDriveFreeSpace(UIElement Content, List<GameInstallPackage> packageList,
+        private async ValueTask CheckDriveFreeSpace(List<GameInstallPackage> packageList,
                                                     double    sizeDownloaded)
         {
             // Get the information about the disk
@@ -3485,7 +3480,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 $"(Free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}), " +
                                 $"Existing Package Size (Compressed): {sizeDownloaded} (Uncompressed): {currentDownloadedUncompressed}, Drive: {driveInfo.Name})";
                 LogWriteLine(errStr, LogType.Error, true);
-                await Dialog_InsufficientDriveSpace(Content, diskFreeSpace, remainedDownloadUncompressed,
+                await Dialog_InsufficientDriveSpace(diskFreeSpace, remainedDownloadUncompressed,
                                                     driveInfo.Name);
                 throw new TaskCanceledException(errStr);
             }

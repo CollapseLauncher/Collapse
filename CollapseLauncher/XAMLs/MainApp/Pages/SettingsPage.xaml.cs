@@ -13,6 +13,9 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
+#if ENABLEUSERFEEDBACK
+using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
+#endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -33,6 +36,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Helper.Image.Waifu2X;
@@ -43,7 +47,6 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 using CollapseUIExt = CollapseLauncher.Extension.UIElementExtensions;
 using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.MediaType;
-using Task = System.Threading.Tasks.Task;
 // ReSharper disable AsyncVoidMethod
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
@@ -65,6 +68,9 @@ namespace CollapseLauncher.Pages
         #region Properties
 
         private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
+
+        private readonly string ExplorerPath =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
         #endregion
 
@@ -94,12 +100,12 @@ namespace CollapseLauncher.Pages
             CurrentVersion.Text = version;
             
             GitVersionIndicator.Text = GitVersionIndicator_Builder();
-        #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             GitVersionIndicatorHyperlink.NavigateUri = 
                 new Uri(new StringBuilder()
                     .Append(RepoUrl)
                     .Append(ThisAssembly.Git.Sha).ToString());
-        #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             if (IsAppLangNeedRestart)
                 AppLangSelectionWarning.Visibility = Visibility.Visible;
 
@@ -121,11 +127,15 @@ namespace CollapseLauncher.Pages
             );
             
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvents;
+
+#if !ENABLEUSERFEEDBACK
+            ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
+#endif
         }
 
         private string GitVersionIndicator_Builder()
         {
-        #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
             var branchName  = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
 
@@ -139,7 +149,7 @@ namespace CollapseLauncher.Pages
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
-        #pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
             return outString;
         }
         
@@ -160,7 +170,7 @@ namespace CollapseLauncher.Pages
         #region Settings Methods
         private async void RelocateFolder(object sender, RoutedEventArgs e)
         {
-            switch (await Dialog_RelocateFolder(Content))
+            switch (await Dialog_RelocateFolder())
             {
                 case ContentDialogResult.Primary:
                     IsFirstInstall = true;
@@ -185,7 +195,7 @@ namespace CollapseLauncher.Pages
 
         private async void ClearMetadataFolder(object sender, RoutedEventArgs e)
         {
-            switch (await Dialog_ClearMetadata(Content))
+            switch (await Dialog_ClearMetadata())
             {
                 case ContentDialogResult.Primary:
                     try
@@ -216,8 +226,8 @@ namespace CollapseLauncher.Pages
                 StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = "explorer.exe",
-                    Arguments = AppGameFolder
+                    FileName        = ExplorerPath,
+                    Arguments       = AppGameFolder
                 }
             }.Start();
         }
@@ -259,29 +269,40 @@ namespace CollapseLauncher.Pages
             (sender as Button).IsEnabled = true;
         }
 
-        private void ForceUpdate(object sender, RoutedEventArgs e)
+        private async void ForceUpdate(object sender, RoutedEventArgs e)
         {
             string channelName = IsPreview ? "Preview" : "Stable";
+            if (ContentDialogResult.Primary != await Dialog_ForceUpdateOnChannel(channelName))
+            {
+                return;
+            }
+
             LaunchUpdater(channelName);
         }
 
         private async void ChangeRelease(object sender, RoutedEventArgs e)
         {
             string channelName = IsPreview ? "Stable" : "Preview";
-            switch (await Dialog_ChangeReleaseChannel(channelName, this))
+            if (ContentDialogResult.Primary != await Dialog_ChangeReleaseToChannel(channelName))
             {
-                case ContentDialogResult.Primary:
-                    // Delete Metadata upon switching release
-                    Directory.Delete(AppGameConfigMetadataFolder, true);
-                    LaunchUpdater(channelName);
-                    break;
+                return;
             }
+
+            // Delete Metadata upon switching release
+            if (Directory.Exists(AppGameConfigMetadataFolder))
+                Directory.Delete(AppGameConfigMetadataFolder, true);
+
+            LaunchUpdater(channelName);
         }
 
         private static void LaunchUpdater(string channelName)
         {
-            string executableLocation = Path.GetDirectoryName(AppExecutableDir);
-            string updateArgument = $"elevateupdate --input \"{executableLocation.Replace('\\', '/')}\" --channel {channelName}";
+            string executableLocation     = AppExecutablePath;
+            string installationTargetPath = Path.GetDirectoryName(AppExecutableDir);
+            string updateArgument = "elevateupdate --input \""
+                                    + installationTargetPath.Replace('\\', '/')
+                                    + $"\" --channel {channelName}";
+
             Console.WriteLine(updateArgument);
             try
             {
@@ -290,9 +311,9 @@ namespace CollapseLauncher.Pages
                     StartInfo = new ProcessStartInfo
                     {
                         UseShellExecute = true,
-                        FileName = Path.Combine(executableLocation, "CollapseLauncher.exe"),
-                        Arguments = updateArgument,
-                        Verb = "runas"
+                        FileName        = executableLocation,
+                        Arguments       = updateArgument,
+                        Verb            = "runas"
                     }
                 }.Start();
                 (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
@@ -359,7 +380,7 @@ namespace CollapseLauncher.Pages
 
         private void OpenChangelog(object sender, RoutedEventArgs e)
         {
-            #nullable enable
+#nullable enable
             var uri =
                 $"https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/blob/main/changelog_{(IsPreview ? "preview" : "stable")}.md";
 
@@ -389,7 +410,37 @@ namespace CollapseLauncher.Pages
                 mainWindow.OverlayFrame.GoBack();
                 mainWindow.OverlayFrame.BackStack?.Clear();
             }
-            #nullable restore
+#nullable restore
+        }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+#if ENABLEUSERFEEDBACK
+            var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
+            var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+            string exceptionContent = $"""
+                                       {userTemplate} 
+                                       {emailTemplate} 
+                                       {Lang._Misc.ExceptionFeedbackTemplate_Message}
+                                       ------------------------------------
+                                       """;
+            
+            
+            UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true)
+            { 
+                Message   = exceptionContent
+            };
+            
+            UserFeedbackResult userFeedbackResult = await userFeedbackDialog
+               .ShowAsync( result => throw new NotImplementedException());
+
+            if (userFeedbackResult == null)
+            {
+                LogWriteLine("User feedback dialog cancelled!", LogType.Debug);
+            }
+#endif
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
@@ -462,7 +513,7 @@ namespace CollapseLauncher.Pages
         {
             ((UIElement)VisualTreeHelper.GetParent((DependencyObject)sender)).IsHitTestVisible = true;
         }
-        #endregion
+#endregion
 
         #region Settings UI Backend
         private bool IsBgCustom
@@ -1445,7 +1496,7 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            if (await Dialog_DbGenerateUid((UIElement)sender) != ContentDialogResult.Primary) // Send warning dialog
+            if (await Dialog_DbGenerateUid() != ContentDialogResult.Primary) // Send warning dialog
             {
                 t.Text = _currentDbGuid; // Rollback text if user doesn't select yes
             }
@@ -1532,7 +1583,7 @@ namespace CollapseLauncher.Pages
                                    {
                                        ProcessStartInfo psi = new ProcessStartInfo
                                        {
-                                           FileName        = "explorer.exe",
+                                           FileName        = ExplorerPath,
                                            Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
                                            UseShellExecute = true,
                                            Verb            = "runas"
@@ -1603,7 +1654,7 @@ namespace CollapseLauncher.Pages
 
         private async void GenerateGuidButton_Click(object sender, RoutedEventArgs e)
         {
-            if (await Dialog_DbGenerateUid(sender as UIElement) != ContentDialogResult.Primary)
+            if (await Dialog_DbGenerateUid() != ContentDialogResult.Primary)
             {
                 return;
             }
@@ -1632,7 +1683,7 @@ namespace CollapseLauncher.Pages
 
         private async void ResetKeylist_Click(object sender, RoutedEventArgs e)
         {
-            if (await Dialog_ResetKeyboardShortcuts(sender as UIElement) != ContentDialogResult.Primary)
+            if (await Dialog_ResetKeyboardShortcuts() != ContentDialogResult.Primary)
             {
                 return;
             }

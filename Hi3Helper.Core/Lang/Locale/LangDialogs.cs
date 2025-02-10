@@ -115,6 +115,9 @@ namespace Hi3Helper
                 public string ReleaseChannelChangeSubtitle1 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle1;
                 public string ReleaseChannelChangeSubtitle2 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle2;
                 public string ReleaseChannelChangeSubtitle3 { get; set; } = LangFallback?._Dialogs.ReleaseChannelChangeSubtitle3;
+                public string ForceUpdateCurrentInstallTitle { get; set; } = LangFallback?._Dialogs.ForceUpdateCurrentInstallTitle;
+                public string ForceUpdateCurrentInstallSubtitle1 { get; set; } = LangFallback?._Dialogs.ForceUpdateCurrentInstallSubtitle1;
+                public string ForceUpdateCurrentInstallSubtitle2 { get; set; } = LangFallback?._Dialogs.ForceUpdateCurrentInstallSubtitle2;
                 public string LocateExePathTitle { get; set; } = LangFallback?._Dialogs.LocateInstallTitle;
                 public string CannotUseAppLocationForGameDirTitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirTitle;
                 public string CannotUseAppLocationForGameDirSubtitle { get; set; } = LangFallback?._Dialogs.CannotUseAppLocationForGameDirSubtitle;
@@ -191,6 +194,21 @@ namespace Hi3Helper
                 public string UACWarningContent { get; set; } = LangFallback?._Dialogs.UACWarningContent;
                 public string UACWarningLearnMore { get; set; } = LangFallback?._Dialogs.UACWarningLearnMore;
                 public string UACWarningDontShowAgain { get; set; } = LangFallback?._Dialogs.UACWarningDontShowAgain;
+                public string EnsureExitTitle { get; set; } = LangFallback?._Dialogs.EnsureExitTitle;
+                public string EnsureExitSubtitle { get; set; } = LangFallback?._Dialogs.EnsureExitSubtitle;
+                
+                public string UserFeedback_DialogTitle { get; set; } = LangFallback?._Dialogs.UserFeedback_DialogTitle;
+                public string UserFeedback_TextFieldTitleHeader { get; set; } = LangFallback?._Dialogs.UserFeedback_TextFieldTitleHeader;
+                public string UserFeedback_TextFieldTitlePlaceholder { get; set; } = LangFallback?._Dialogs.UserFeedback_TextFieldTitlePlaceholder;
+                public string UserFeedback_TextFieldMessageHeader { get; set; } = LangFallback?._Dialogs.UserFeedback_TextFieldMessageHeader;
+                public string UserFeedback_TextFieldMessagePlaceholder { get; set; } = LangFallback?._Dialogs.UserFeedback_TextFieldMessagePlaceholder;
+                public string UserFeedback_TextFieldRequired { get; set; } = LangFallback?._Dialogs.UserFeedback_TextFieldRequired;
+                public string UserFeedback_RatingText { get; set; } = LangFallback?._Dialogs.UserFeedback_RatingText;
+                public string UserFeedback_CancelBtn { get; set; } = LangFallback?._Dialogs.UserFeedback_CancelBtn;
+                public string UserFeedback_SubmitBtn { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn;
+                public string UserFeedback_SubmitBtn_Processing { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Processing;
+                public string UserFeedback_SubmitBtn_Completed { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Completed;
+                public string UserFeedback_SubmitBtn_Cancelled { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Cancelled;
             }
         }
         #endregion

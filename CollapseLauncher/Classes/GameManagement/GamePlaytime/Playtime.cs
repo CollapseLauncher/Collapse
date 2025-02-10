@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using static Hi3Helper.Logger;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.InnerLauncherConfig;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable AsyncVoidMethod
 
@@ -127,7 +126,7 @@ namespace CollapseLauncher.GamePlaytime
             if (totalElapsedSeconds < 0)
             {
                 LogWriteLine($"[HomePage::StartPlaytimeCounter] Date difference cannot be lower than 0. ({totalElapsedSeconds}s)", LogType.Error);
-                Dialog_InvalidPlaytime(m_mainPage?.Content, elapsedSeconds);
+                Dialog_InvalidPlaytime(elapsedSeconds);
                 totalElapsedSeconds = elapsedSeconds;
             }
 

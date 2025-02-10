@@ -363,21 +363,24 @@ namespace CollapseLauncher.Helper
             }
         }
 
+        internal static DispatcherQueue? CurrentDispatcherQueue { get; set; }
+
         internal static void RegisterWindow(this Window window)
         {
             // Uninstall existing drag area change
             UninstallDragAreaChangeMonitor();
 
-            CurrentWindow = window;
-            CurrentWindowPtr = WindowNative.GetWindowHandle(window);
-            CurrentWindowId = Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
+            CurrentWindow          = window;
+            CurrentWindowPtr       = WindowNative.GetWindowHandle(window);
+            CurrentWindowId        = Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
+            CurrentDispatcherQueue = window.DispatcherQueue;
 
             if (!CurrentWindowId.HasValue)
             {
                 throw new NullReferenceException($"Window ID cannot be retrieved from pointer: 0x{CurrentWindowPtr:x8}");
             }
 
-            CurrentAppWindow = AppWindow.GetFromWindowId(CurrentWindowId.Value);
+            CurrentAppWindow           = AppWindow.GetFromWindowId(CurrentWindowId.Value);
             CurrentOverlappedPresenter = CurrentAppWindow.Presenter as OverlappedPresenter;
 
             // Install WndProc callback
@@ -466,7 +469,7 @@ namespace CollapseLauncher.Helper
                                     // Deal with close message from system shell.
                                     if (CurrentWindow is MainWindow mainWindow)
                                     {
-                                        mainWindow.CloseApp();
+                                        _ = mainWindow.CloseApp();
                                     }
                                     return 0;
                                 }

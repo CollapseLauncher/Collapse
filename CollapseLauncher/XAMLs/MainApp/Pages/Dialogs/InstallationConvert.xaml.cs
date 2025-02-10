@@ -236,7 +236,7 @@ namespace CollapseLauncher.Dialogs
 
         internal async Task<(PresetConfig, PresetConfig)> AskConversionDestination()
         {
-            (ContentDialogResult result, ComboBox sourceGame, ComboBox targetGame) = await Dialog_SelectGameConvertRecipe(Content);
+            (ContentDialogResult result, ComboBox sourceGame, ComboBox targetGame) = await Dialog_SelectGameConvertRecipe();
             PresetConfig sourceRet = null;
             PresetConfig targetRet = null;
 
@@ -316,7 +316,7 @@ namespace CollapseLauncher.Dialogs
             {
                 string fileName =
                     $"Cookbook_{_sourceProfile.ProfileName}_{_targetProfile.ProfileName}_{_gameVersion}_*_crc32.diff";
-                switch (await Dialog_LocateDownloadedConvertRecipe(Content, fileName))
+                switch (await Dialog_LocateDownloadedConvertRecipe(fileName))
                 {
                     case ContentDialogResult.Primary:
                         cPath = await FileDialogNative.GetFilePicker(

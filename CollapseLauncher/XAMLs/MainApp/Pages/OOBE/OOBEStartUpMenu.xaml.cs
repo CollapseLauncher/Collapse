@@ -488,7 +488,7 @@ namespace CollapseLauncher.Pages.OOBE
             string fileExt      = Path.GetExtension(selectedPath);
             if (BackgroundMediaUtility.SupportedMediaPlayerExt.Contains(fileExt, StringComparer.OrdinalIgnoreCase))
             {
-                await SimpleDialogs.Dialog_OOBEVideoBackgroundPreviewUnavailable(this);
+                await SimpleDialogs.Dialog_OOBEVideoBackgroundPreviewUnavailable();
 
                 SetAppConfigValue("UseCustomBG",  true);
                 SetAppConfigValue("CustomBGPath", selectedPath);
@@ -844,8 +844,7 @@ namespace CollapseLauncher.Pages.OOBE
         private async void ChooseFolder(object sender, RoutedEventArgs e)
         {
             bool   selected = false;
-            switch (await SimpleDialogs.Dialog_LocateFirstSetupFolder(Content,
-                                                                      Path.Combine(AppDataFolder, "GameFolder")))
+            switch (await SimpleDialogs.Dialog_LocateFirstSetupFolder(Path.Combine(AppDataFolder, "GameFolder")))
             {
                 case ContentDialogResult.Primary:
                     AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");

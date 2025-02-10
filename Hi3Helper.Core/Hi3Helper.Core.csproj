@@ -44,7 +44,7 @@
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.1" />
 	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-	  <PackageReference Include="Sentry" Version="5.0.1" />
+	  <PackageReference Include="Sentry" Version="5.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>

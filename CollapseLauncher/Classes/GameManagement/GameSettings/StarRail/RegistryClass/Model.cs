@@ -15,6 +15,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.StarRail

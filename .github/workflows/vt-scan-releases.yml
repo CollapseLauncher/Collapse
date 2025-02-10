@@ -15,7 +15,7 @@ jobs:
           update_release_body: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            *.exe
+            ^.*\.[eE][xX][eE]$
 
       - name: VirusTotal Scan Archive
         uses: crazy-max/ghaction-virustotal@v4
@@ -24,4 +24,4 @@ jobs:
           update_release_body: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            *.7z
+            ^.*\.[7zZ]$

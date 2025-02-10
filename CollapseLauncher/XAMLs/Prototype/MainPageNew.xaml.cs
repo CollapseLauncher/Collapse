@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Input;
 using System;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.Prototype
 {

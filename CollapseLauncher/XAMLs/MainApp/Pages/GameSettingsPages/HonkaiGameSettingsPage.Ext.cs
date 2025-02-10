@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.Pages
 {
@@ -291,7 +292,7 @@ namespace CollapseLauncher.Pages
                 if (!BypassChallenge)
                 {
                     _prevGraphSelect = (int)Settings.SettingsGraphics.ResolutionQuality;
-                    var result = await SimpleDialogs.Dialog_GraphicsVeryHighWarning(Content);
+                    var result = await SimpleDialogs.Dialog_GraphicsVeryHighWarning();
 
                     RenderingAccuracySelector.SelectedIndex = result switch
                                                               {

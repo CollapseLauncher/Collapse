@@ -47,6 +47,7 @@ namespace CollapseLauncher.Pages
 
         private async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
+            MainWindow.IsCriticalOpInProgress = true;
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             
             CheckFilesBtn.Flyout.Hide();
@@ -99,6 +100,7 @@ namespace CollapseLauncher.Pages
             {
                 RemoveEvent();
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
 
@@ -106,6 +108,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                MainWindow.IsCriticalOpInProgress = true;
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 RepairFilesBtn.IsEnabled = false;
                 CancelBtn.IsEnabled = true;
@@ -149,6 +152,7 @@ namespace CollapseLauncher.Pages
             {
                 RemoveEvent();
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
 

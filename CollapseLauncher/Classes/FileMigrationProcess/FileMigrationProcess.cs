@@ -1,7 +1,8 @@
 ﻿using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
-using Microsoft.UI.Xaml;
+using Microsoft.UI.Dispatching;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -18,9 +19,12 @@ namespace CollapseLauncher
         private string                  InputPath         { get; }
         private string                  OutputPath        { get; }
         private bool                    IsFileTransfer    { get; }
-        private UIElement               ParentUI          { get; }
         private CancellationTokenSource TokenSource       { get; }
         private bool                    IsSameOutputDrive { get; set; }
+
+#nullable enable
+        private DispatcherQueue? DispatcherQueue => field ??= WindowUtility.CurrentDispatcherQueue;
+#nullable restore
 
         private long _currentSizeMoved;
         private long _currentFileCountMoved;
@@ -29,13 +33,12 @@ namespace CollapseLauncher
         private Stopwatch _processStopwatch;
         private Stopwatch _eventsStopwatch;
 
-        private FileMigrationProcess(UIElement parentUI, string dialogTitle, string inputPath, string outputPath, bool isFileTransfer, CancellationTokenSource tokenSource)
+        private FileMigrationProcess(string dialogTitle, string inputPath, string outputPath, bool isFileTransfer, CancellationTokenSource tokenSource)
         {
             DialogTitle       = dialogTitle;
             InputPath         = inputPath;
             OutputPath        = outputPath;
             IsFileTransfer    = isFileTransfer;
-            ParentUI          = parentUI;
             TokenSource       = tokenSource;
         }
 

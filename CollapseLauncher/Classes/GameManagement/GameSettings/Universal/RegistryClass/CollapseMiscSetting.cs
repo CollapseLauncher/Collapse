@@ -12,6 +12,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
 
 #pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal

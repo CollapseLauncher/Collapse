@@ -288,7 +288,7 @@ namespace CollapseLauncher.GamePlaytime
         /// <summary>
         /// Sync from/to DB at init
         /// </summary>
-        /// <returns>true if require refresh, false if dont.</returns>
+        /// <returns>true if it requires refresh, false if it doesn't.</returns>
         public async ValueTask<(bool IsUpdated, CollapsePlaytime? PlaytimeData)> DbSync(bool redirectThrow = false)
         {
             LogWriteLine("[CollapsePlaytime::DbSync] Starting sync operation...", LogType.Default, true);
@@ -342,11 +342,13 @@ namespace CollapseLauncher.GamePlaytime
                     return (true, playtimeInner);
                 }
 
-                if (_unixStampDb < unixStampLocal)
+                if (!(_unixStampDb < unixStampLocal))
                 {
-                    LogWriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
-                    Save(true);
+                    return (false, null);
                 }
+
+                LogWriteLine("[CollapsePlaytime::DbSync] Database data is older! Pushing data~", default, true);
+                Save(true);
                 return (false, null);
             }
             catch (Exception ex)

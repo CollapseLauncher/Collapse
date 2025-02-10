@@ -18,6 +18,7 @@ using System.Numerics;
 using Windows.UI;
 using Windows.UI.Text;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+// ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.Extension
 {

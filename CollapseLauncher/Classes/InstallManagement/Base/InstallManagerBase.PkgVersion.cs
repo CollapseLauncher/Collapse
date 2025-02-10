@@ -105,7 +105,7 @@ namespace CollapseLauncher.InstallManager.Base
         [StringSyntax("Regex")]
         protected const string NonGameFileRegexPattern = @"(\.\d\d\d|(zip|7z)|patch)|\.$";
 
-        [GeneratedRegex(NonGameFileRegexPattern, RegexOptions.NonBacktracking)]
+        [GeneratedRegex(NonGameFileRegexPattern, RegexOptions.NonBacktracking, 10000)]
         private static partial Regex GetNonGameFileRegex();
         private static readonly Regex NonGameFileRegex = GetNonGameFileRegex();
 

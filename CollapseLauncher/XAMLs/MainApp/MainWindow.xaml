@@ -162,6 +162,11 @@
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
                                              Grid.Row="0"
                                              x:FieldModifier="internal" />
+        <Grid x:Name="OverlayRootGrid"
+              Grid.Row="0"
+              Grid.RowSpan="3"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
             <Grid x:Name="AppTitleBar"

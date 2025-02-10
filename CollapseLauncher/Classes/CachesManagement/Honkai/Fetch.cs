@@ -135,7 +135,7 @@ namespace CollapseLauncher
 
             // Get the asset index properties
             string baseURL = string.Format(GameRepoURL!, type.ToString().ToLowerInvariant());
-            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d")!,
+            string assetIndexURL = string.Format(CombineURLFromString(baseURL, "{0}Version.unity3d"),
                                                  type == CacheAssetType.Data ? "Data" : "Resource");
 
 #if DEBUG

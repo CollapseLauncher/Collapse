@@ -8,6 +8,7 @@ using System.Buffers.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.GameVersioning
 {

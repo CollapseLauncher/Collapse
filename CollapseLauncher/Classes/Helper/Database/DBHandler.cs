@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable CommentTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.Database

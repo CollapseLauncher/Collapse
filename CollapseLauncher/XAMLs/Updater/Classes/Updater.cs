@@ -25,9 +25,10 @@ using System.Linq;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Sources;
-#endif
-
+// ReSharper disable StringLiteralTypo
+// ReSharper disable IdentifierTypo
 // ReSharper disable PartialTypeWithSinglePart
+#endif
 
 namespace CollapseLauncher;
 

@@ -58,6 +58,7 @@ namespace CollapseLauncher.Pages
                     SetMainCheckUpdateBtnProperty(sender);
                 }
 
+                MainWindow.IsCriticalOpInProgress = true;
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
@@ -98,6 +99,7 @@ namespace CollapseLauncher.Pages
             {
                 RemoveEvent();
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
             }
         }
 
@@ -108,6 +110,7 @@ namespace CollapseLauncher.Pages
                 UpdateCachesBtn.IsEnabled = false;
                 CancelBtn.IsEnabled       = true;
 
+                MainWindow.IsCriticalOpInProgress = true;
                 Sleep.PreventSleep(ILoggerHelper.GetILogger());
                 AddEvent();
 
@@ -147,6 +150,7 @@ namespace CollapseLauncher.Pages
             finally
             {
                 Sleep.RestoreSleep();
+                MainWindow.IsCriticalOpInProgress = false;
                 RemoveEvent();
             }
         }

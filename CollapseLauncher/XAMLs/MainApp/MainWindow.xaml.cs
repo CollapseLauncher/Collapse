@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -20,6 +21,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading.Tasks;
 using Windows.UI;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -32,6 +34,8 @@ namespace CollapseLauncher
     public sealed partial class MainWindow : Window
     {
         private static bool _isForceDisableIntro;
+        
+        public static bool IsCriticalOpInProgress { get; set; }
 
         public void InitializeWindowProperties(bool startOobe = false)
         {
@@ -248,13 +252,21 @@ namespace CollapseLauncher
             WindowUtility.WindowMinimize();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => CloseApp();
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => _ = CloseApp();
         
         /// <summary>
         /// Close app and do necessary events before closing
         /// </summary>
-        public void CloseApp()
+        public async Task CloseApp()
         {
+            if (IsCriticalOpInProgress)
+            {
+                WindowUtility.WindowRestore();
+                if (await Dialog_EnsureExit() != ContentDialogResult.Primary)
+                    return;
+            }
+
+            GamePropertyVault.SafeDisposeVaults();
             SentryHelper.StopSentrySdk();
             _TrayIcon?.Dispose();
             Close();

@@ -3,6 +3,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.GameSettings.Genshin.Enums
 {

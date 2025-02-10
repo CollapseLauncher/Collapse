@@ -52,7 +52,7 @@ namespace CollapseLauncher.Helper.Update
             string updateChannel = LauncherConfig.IsPreview ? "preview" : "stable";
 
             CDNURLProperty launcherUpdatePreferredCdn = FallbackCDNUtil.GetPreferredCDN();
-            string? launcherUpdateManagerBaseUrl = ConverterTool.CombineURLFromString(launcherUpdatePreferredCdn.URLPrefix,
+            string launcherUpdateManagerBaseUrl = ConverterTool.CombineURLFromString(launcherUpdatePreferredCdn.URLPrefix,
 #if USEVELOPACK
                 "velopack",
                 updateChannel

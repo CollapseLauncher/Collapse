@@ -155,7 +155,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         }
 
         /// <summary>
-        /// This defines "<c>Voice-over</c>" radiobox In-game settings -> Audio.<br/><br/>
+        /// This defines "<c>Voice-over</c>" radio box In-game settings -> Audio.<br/><br/>
         /// Values:<br/>
         ///     - Japanese<br/>
         ///     - Chinese(PRC)<br/><br/>

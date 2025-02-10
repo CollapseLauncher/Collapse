@@ -909,6 +909,10 @@
     "ReleaseChannelChangeSubtitle2": "注意：",
     "ReleaseChannelChangeSubtitle3": "この操作により、元に戻せない変更や非互換性が発生する可能性があります。ゲームデータの消失や破損が発生しても責任を負いかねます。",
 
+    "ForceUpdateCurrentInstallTitle": "既存のインストールを強制アップデート",
+    "ForceUpdateCurrentInstallSubtitle1": "インストール済みの",
+    "ForceUpdateCurrentInstallSubtitle2": "を強制アップデートしようとしてます。現在起動しているゲームを閉じることを推奨します。",
+
     "ChangePlaytimeTitle": "本当にプレイ時間を編集しますか？",
     "ChangePlaytimeSubtitle": "プレイ時間を編集すると、現在の値が入力した値で上書きされます。\n\n続行しますか？\n\n注: 変更してもCollapseの動作には影響しません。ゲームを起動していない時なら、またいつでも編集できます。",
     "ResetPlaytimeTitle": "本当にプレイ時間をリセットしますか？",
@@ -1010,7 +1014,10 @@
     "UACWarningTitle": "警告：UACの無効化を検出しました",
     "UACWarningContent": "ユーザーアカウント制御（UAC）の無効化は全くもって非推奨です。\nOSのセキュリティが侵害され、ゲームが正常に動作しなくなる可能性があるためです。\n\n\"もっと見る\"を押すと、UACを有効化する方法が表示されます。\n関連項目：「管理承認モードですべての管理者を実行する」",
     "UACWarningLearnMore": "もっと見る",
-    "UACWarningDontShowAgain": "次回から表示しない"
+    "UACWarningDontShowAgain": "次回から表示しない",
+    
+    "EnsureExitTitle": "アプリケーションの終了",
+    "EnsureExitSubtitle": "バックグラウンドで重要な操作を実行中です。本当に終了しますか?"
   },
 
   "_FileMigrationProcess": {

@@ -1,4 +1,9 @@
-﻿/*
+﻿// ReSharper disable CommentTypo
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
+
+/*
  * Credit
  * =============================================================================================
  * Original code by: Thomas Freudenberg ©2003 - 2005
@@ -20,9 +25,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using static Hi3Helper.Logger;
-// ReSharper disable PartialTypeWithSinglePart
-// ReSharper disable StringLiteralTypo
-// ReSharper disable UnusedMember.Global
 
 namespace RegistryUtils
 {
