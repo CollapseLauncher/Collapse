@@ -530,7 +530,7 @@
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
     "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
-    "ShareYourFeedbackBtn": "Bagikan Umpan-balikmu",
+    "ShareYourFeedbackBtn": "Bagikan Umpan-Balikmu",
 
     "About": "Tentang",
     "About_Copyright1": "© 2022-2024",
@@ -801,7 +801,14 @@
     "IsBytesNotANumber": "= Bukan Nomor",
 
     "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
-    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami."
+    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami.",
+    "ExceptionFeedbackBtn": "Kasih tahu kami dong",
+    "ExceptionFeedbackBtn_Unavailable": "Laporan crash tidak tersedia atau dimatikan",
+    "ExceptionFeedbackBtn_FeedbackSent": "Umpan-Balikmu sudah dikirim!",
+    "ExceptionFeedbackTitle": "Apa yang terjadi?:",
+    "ExceptionFeedbackTemplate_User": "Username (Opsional):",
+    "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
+    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini"
   },
 
   "_BackgroundNotification": {
@@ -1017,18 +1024,21 @@
     "UACWarningLearnMore": "Pelajari Lebih Lanjut",
     "UACWarningDontShowAgain": "Jangan Munculkan Lagi",
 
+    "EnsureExitTitle": "Keluar dari Aplikasii",
+    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?",
+
     "UserFeedback_DialogTitle": "Bagikan Pendapatmu",
-    "UserFeedback_TextFieldTitleHeader": "Judul Umpan-balikmu",
-    "UserFeedback_TextFieldTitlePlaceholder": "Tulis Judul Umpan-balikmu di sini...",
-    "UserFeedback_TextFieldMessageHeader": "Pesan-pesan",
-    "UserFeedback_TextFieldMessagePlaceholder": "Tulis pesan-pesanmu...",
+    "UserFeedback_TextFieldTitleHeader": "Judul Umpan-Balik",
+    "UserFeedback_TextFieldTitlePlaceholder": "Tulis judul umpan-balikmu di sini...",
+    "UserFeedback_TextFieldMessageHeader": "Pesan",
+    "UserFeedback_TextFieldMessagePlaceholder": "Masukkan pesan...",
     "UserFeedback_TextFieldRequired": "(harus diisi)",
     "UserFeedback_RatingText": "Mau sekalian ratingnya?",
     "UserFeedback_CancelBtn": "Batalkan",
-    "UserFeedback_SubmitBtn": "Kirim Umpan-balikmu",
-    
-    "EnsureExitTitle": "Keluar dari Aplikasii",
-    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?"
+    "UserFeedback_SubmitBtn": "Kirim Umpan-Balikmu",
+    "UserFeedback_SubmitBtn_Processing": "Memproses...",
+    "UserFeedback_SubmitBtn_Completed": "Selesai!",
+    "UserFeedback_SubmitBtn_Cancelled": "Dibatalkan!"
   },
 
   "_FileMigrationProcess": {
