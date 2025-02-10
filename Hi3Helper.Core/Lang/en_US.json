@@ -1033,7 +1033,7 @@
     "UserFeedback_TextFieldMessageHeader": "Message",
     "UserFeedback_TextFieldMessagePlaceholder": "Message...",
     "UserFeedback_TextFieldRequired": "(required)",
-    "UserFeedback_RatingText": "How did we handle it?",
+    "UserFeedback_RatingText": "Mind to share your ratings?",
     "UserFeedback_CancelBtn": "Cancel",
     "UserFeedback_SubmitBtn": "Submit your feedback",
     "UserFeedback_SubmitBtn_Processing": "Processing...",
