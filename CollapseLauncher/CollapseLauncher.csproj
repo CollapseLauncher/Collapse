@@ -153,12 +153,10 @@
         -->
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
-        <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="9.0.2" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
-        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.1" />
         <PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />

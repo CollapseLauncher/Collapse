@@ -35,7 +35,6 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.WinUI.Triggers" Version="8.2.250129-preview2" />
-        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.1" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3116-prerelease" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250208002-preview1" />
