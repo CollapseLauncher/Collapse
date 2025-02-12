@@ -22,18 +22,15 @@ on:
         - 'Hi3Helper.Core/Lang/**.json'
         - 'Docs/**'
         - '**/packages.lock.json'
-#  schedule:
-#    - cron: '0 0 * * 0' # At 00:00 on Sunday
 
 env:
   DOTNET_INSTALL_DIR: '.\.dotnet' 
-  DOTNET_VERSION: '9.x'
+  DOTNET_VERSION: '9.0.200'
   DOTNET_QUALITY: 'ga'
   NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
   build:
-    # runs-on: [self-hosted, linux]
     runs-on: windows-latest
     strategy:
       matrix:
