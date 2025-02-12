@@ -461,7 +461,7 @@ namespace CollapseLauncher.Interfaces
             ProgressChanged?.Invoke(this, SophonProgress);
 
             // Update taskbar progress
-            if (Status.IsCanceled)
+            if (Status.IsCanceled || Status.IsCompleted)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
             }
@@ -1414,7 +1414,7 @@ namespace CollapseLauncher.Interfaces
         {
             StatusChanged?.Invoke(this, Status);
 
-            if (Status.IsCanceled)
+            if (Status.IsCanceled || Status.IsCompleted)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
             }
