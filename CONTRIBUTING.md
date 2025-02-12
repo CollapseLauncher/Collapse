@@ -17,7 +17,7 @@ If you wish to add new language that isn't yet listed in the Crowdin project, pl
 Below is a list of tools needed to contribute to this project:
 1. **Visual Studio 2022 (Any Edition - 17.8 or later)**
    - Select .NET desktop development component
-2. **Windows SDK (10.0.22621.0 ONLY)** via Visual Studio Installer
+2. **Windows SDK (10.0.26100.0 ONLY)** via Visual Studio Installer
 3. .NET 8 SDK: [**(8.0.0 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 4. WinUI 3: [**(WindowsAppSDK 1.4.0 Stable Runtime)**](https://aka.ms/windowsappsdk/1.4/latest/windowsappruntimeinstall-x64.exe)
 
