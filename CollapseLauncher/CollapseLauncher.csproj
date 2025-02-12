@@ -36,7 +36,9 @@
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
         <!-- Analyzers Settings -->
+        <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <!-- Other Settings -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
