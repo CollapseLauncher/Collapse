@@ -6,6 +6,7 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -276,13 +277,19 @@ namespace CollapseLauncher
 
                 // Parse data_versions (silence)
                 var dataSilURL = queryProperty.ClientDesignDataSilURL;
+                SearchValues<string> dataSilIgnoreContainsParams = SearchValues.Create([
+                    // Containing InjectFix (aka IFix) files since the game only loads
+                    // it without storing it locally.
+                    "blocks/00/29342328.blk"
+                    // ,"blocks/00/32070509.blk" <- this one is stored locally
+                ], StringComparison.OrdinalIgnoreCase);
 #if DEBUG
                 LogWriteLine($"Downloading silence_data_versions_persist...\r\n\t" +
                              $"{dataSilURL}", LogType.Debug, true);
 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataSilURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
-                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
+                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, dataSilIgnoreContainsParams);
 
                 // Save persistent manifest numbers
                 SavePersistentRevision(queryProperty);
@@ -299,7 +306,7 @@ namespace CollapseLauncher
             string manifestRemoteName, string manifestLocalName,
             string persistentPath, string streamingAssetsPath,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            CancellationToken token, bool forceOverwrite = false)
+            CancellationToken token, bool forceOverwrite = false, SearchValues<string> ignoreContainsParams = null)
         {
             try
             {
@@ -325,7 +332,8 @@ namespace CollapseLauncher
                                         secondaryParentURL,
                                         assetIndex,
                                         hashtable,
-                                        forceOverwrite);
+                                        forceOverwrite,
+                                        ignoreContainsParams);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
@@ -375,7 +383,8 @@ namespace CollapseLauncher
                                                     string                                   secondaryParentURL,
                                                     List<PkgVersionProperties>               assetIndex,
                                                     Dictionary<string, PkgVersionProperties> hashtable,
-                                                    bool                                     forceOverwrite)
+                                                    bool                                     forceOverwrite,
+                                                    SearchValues<string>                     ignoreContainsParams)
         {
             persistentPath     = persistentPath.Replace('\\', '/');
             streamingAssetPath = streamingAssetPath.Replace('\\', '/');
@@ -386,6 +395,12 @@ namespace CollapseLauncher
             while (reader.ReadLine() is { } manifestLine)
             {
                 PkgVersionProperties manifestEntry = manifestLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+
+                // If the ignoreContainsParams is not null and the remoteName contains any of the params, then skip it.
+                if (ignoreContainsParams != null && manifestEntry.remoteName.AsSpan().ContainsAny(ignoreContainsParams))
+                {
+                    continue;
+                }
 
                 // Get relative path based on extension
                 bool   isUseRemoteName = string.IsNullOrEmpty(manifestEntry.localName);
