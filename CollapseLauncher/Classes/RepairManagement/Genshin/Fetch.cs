@@ -29,7 +29,7 @@ namespace CollapseLauncher
         private async Task<List<PkgVersionProperties>> Fetch(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
-            Status.ActivityStatus            = Lang._GameRepairPage.Status2;
+            Status.ActivityStatus = Lang._GameRepairPage.Status2;
             Status.IsProgressAllIndetermined = true;
 
             UpdateStatus();
@@ -119,9 +119,9 @@ namespace CollapseLauncher
 
                 // Download basic package version list
                 var basicVerURL = CombineURLFromString(GameRepoURL, "pkg_version");
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading pkg_version...\r\n\t{basicVerURL}", LogType.Debug, true);
-                #endif
+#endif
                 await downloadClient.DownloadAsync(
                     basicVerURL,
                     EnsureCreationOfDirectory(manifestPath),
@@ -130,13 +130,13 @@ namespace CollapseLauncher
                     maxConnectionSessions: DownloadThreadCount,
                     cancelToken: token
                     );
-                
+
                 // Download additional package lists
                 var dataVerPath = $@"{ExecPrefix}_Data\StreamingAssets\data_versions_streaming";
                 var dataVerURL = CombineURLFromString(GameRepoURL, dataVerPath);
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading data_versions_streaming...\r\n\t{dataVerURL}", LogType.Debug, true);
-                #endif
+#endif
                 await downloadClient.DownloadAsync(
                     dataVerURL,
                     EnsureCreationOfDirectory(Path.Combine(GamePath, dataVerPath)),
@@ -162,9 +162,9 @@ namespace CollapseLauncher
 
                 var resVerPath = $@"{ExecPrefix}_Data\StreamingAssets\res_versions_streaming";
                 var resVerURL = CombineURLFromString(GameRepoURL, resVerPath);
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading res_versions_streaming...\r\n\t{resVerURL}", LogType.Debug, true);
-                #endif
+#endif
                 await downloadClient.DownloadAsync(
                     resVerURL,
                     EnsureCreationOfDirectory(Path.Combine(GamePath, resVerPath)),
@@ -194,7 +194,7 @@ namespace CollapseLauncher
                 // Build additional blks entry.
                 var streamingAssetsPath = $"{ExecPrefix}_Data\\StreamingAssets";
                 var assetBundlesPath = $@"{ExecPrefix}_Data\StreamingAssets\AssetBundles";
-                
+
                 EnumerateManifestToAssetIndex(streamingAssetsPath, "data_versions_*", assetIndex, hashtableManifest,
                     assetBundlesPath, "", GameRepoURL, true);
                 EnumerateManifestToAssetIndex(streamingAssetsPath, "silence_versions_*", assetIndex, hashtableManifest,
@@ -256,30 +256,30 @@ namespace CollapseLauncher
                 var primaryParentURL =
                     CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
                 var secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading res_versions_external...\r\n\t" +
-                             $"pri: {primaryParentURL}\r\n\t"+
+                             $"pri: {primaryParentURL}\r\n\t" +
                              $"sec: {secondaryParentURL}", LogType.Debug, true);
-                #endif
+#endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, primaryParentURL, secondaryParentURL, "res_versions_external",
                     "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
                 // Parse data_versions
                 var dataVerURL = queryProperty.ClientDesignDataURL;
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading data_versions_persist...\r\n\t" +
                              $"{dataVerURL}", LogType.Debug, true);
-                #endif
+#endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataVerURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "data_versions_persist", basePersistentPath,
                     baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
                 // Parse data_versions (silence)
                 var dataSilURL = queryProperty.ClientDesignDataSilURL;
-                #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading silence_data_versions_persist...\r\n\t" +
                              $"{dataSilURL}", LogType.Debug, true);
-                #endif
+#endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataSilURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
                     basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true);
@@ -318,10 +318,14 @@ namespace CollapseLauncher
                 LogWriteLine($"Manifest: {manifestRemoteName} (localName: {manifestLocalName}) has been fetched", LogType.Default, true);
 
                 // Parse the manifest
-                ParsePersistentManifest(manifestPath,
-                                        persistentPath, streamingAssetsPath,
-                                        primaryParentURL, secondaryParentURL,
-                                        assetIndex, hashtable, forceOverwrite);
+                ParsePkgVersionManifest(manifestPath,
+                                        persistentPath,
+                                        streamingAssetsPath,
+                                        primaryParentURL,
+                                        secondaryParentURL,
+                                        assetIndex,
+                                        hashtable,
+                                        forceOverwrite);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
@@ -331,38 +335,65 @@ namespace CollapseLauncher
             }
         }
 
-        private static void ParsePersistentManifest(string                     localManifestPath,
-                                                    string                     persistentPath,   string                                   streamingAssetPath,
-                                                    string                     primaryParentURL, string                                   secondaryParentURL,
-                                                    List<PkgVersionProperties> assetIndex,       Dictionary<string, PkgVersionProperties> hashtable,
-                                                    bool                       forceOverwrite)
+        private static string GetParentFromAssetRelativePath(ReadOnlySpan<char> relativePath)
         {
-            persistentPath = persistentPath.Replace('\\', '/');
+            const string lookupEndsWithAudio = ".pck";
+            const string returnAudio = "AudioAssets";
+
+            if (relativePath.EndsWith(lookupEndsWithAudio, StringComparison.OrdinalIgnoreCase))
+            {
+                return returnAudio;
+            }
+
+            const string lookupStartsWithBlocks = "blocks";
+            const string lookupEndsWithBlocks = ".blk";
+            const string returnBlocks = "AssetBundles";
+
+            if (relativePath.StartsWith(lookupStartsWithBlocks, StringComparison.OrdinalIgnoreCase) ||
+                relativePath.EndsWith(lookupEndsWithBlocks, StringComparison.OrdinalIgnoreCase))
+            {
+                return returnBlocks;
+            }
+
+            const string lookupEndsWithVideoA = ".usm";
+            const string lookupEndsWithVideoB = ".cuepoint";
+            const string returnVideo          = "VideoAssets";
+
+            if (relativePath.EndsWith(lookupEndsWithVideoA, StringComparison.OrdinalIgnoreCase) ||
+                relativePath.EndsWith(lookupEndsWithVideoB, StringComparison.OrdinalIgnoreCase))
+            {
+                return returnVideo;
+            }
+
+            return "";
+        }
+
+        private static void ParsePkgVersionManifest(string                                   localManifestPath,
+                                                    string                                   persistentPath,
+                                                    string                                   streamingAssetPath,
+                                                    string                                   primaryParentURL,
+                                                    string                                   secondaryParentURL,
+                                                    List<PkgVersionProperties>               assetIndex,
+                                                    Dictionary<string, PkgVersionProperties> hashtable,
+                                                    bool                                     forceOverwrite)
+        {
+            persistentPath     = persistentPath.Replace('\\', '/');
             streamingAssetPath = streamingAssetPath.Replace('\\', '/');
 
             // Start reading the manifest
-            using StreamReader reader = new StreamReader(localManifestPath, new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Read });
-            while (!reader.EndOfStream)
+            FileInfo           manifestFileInfo = new FileInfo(localManifestPath);
+            using StreamReader reader           = manifestFileInfo.OpenText();
+            while (reader.ReadLine() is { } manifestLine)
             {
-                string               manifestLine  = reader.ReadLine();
                 PkgVersionProperties manifestEntry = manifestLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
-                // Ignore if the remote name is "svc_catalog" or "ctable.dat"
-                if (Path.GetFileName(manifestEntry.remoteName).Equals("svc_catalog", StringComparison.OrdinalIgnoreCase) ||
-                    Path.GetFileName(manifestEntry.remoteName).Equals("ctable.dat",  StringComparison.OrdinalIgnoreCase)) continue;
+                // Get relative path based on extension
+                bool   isUseRemoteName = string.IsNullOrEmpty(manifestEntry.localName);
+                string actualName      = isUseRemoteName ? manifestEntry.remoteName : manifestEntry.localName;
 
                 // Get relative path based on extension
-                string relativePath = Path.GetExtension(manifestEntry.remoteName).ToLower() switch
-                                      {
-                                          ".pck" => "AudioAssets",
-                                          ".blk" => "AssetBundles",
-                                          ".usm" => "VideoAssets",
-                                          ".cuepoint" => "VideoAssets",
-                                          _ => ""
-                                      };
-
-                string actualName              = string.IsNullOrEmpty(manifestEntry.localName) ? manifestEntry.remoteName : manifestEntry.localName;
-                string assetPersistentPath     = CombineURLFromString(persistentPath, relativePath, actualName);
+                string relativePath = GetParentFromAssetRelativePath(manifestEntry.remoteName);
+                string assetPersistentPath = CombineURLFromString(persistentPath, relativePath, actualName);
                 string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
 
                 // Set the remote URL
