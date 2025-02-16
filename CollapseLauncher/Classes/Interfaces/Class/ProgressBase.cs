@@ -1041,7 +1041,7 @@ namespace CollapseLauncher.Interfaces
             Hash.GetCryptoHashAsync<T>(fileInfo,
                                        hmacKey,
                                        read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                       fileInfo is { Exists: true, Length: > 100 << 20 },
+                                       fileInfo is { Exists: true, Length: > 1024 << 20 },
                                        token);
 
         protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
@@ -1054,7 +1054,7 @@ namespace CollapseLauncher.Interfaces
             Hash.GetCryptoHashAsync<T>(stream,
                                        hmacKey,
                                        read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                       stream is { Length: > 100 << 20 },
+                                       stream is { Length: > 1024 << 20 },
                                        token);
 
         protected virtual byte[] GetCryptoHash<T>(
@@ -1112,7 +1112,7 @@ namespace CollapseLauncher.Interfaces
             where T : NonCryptographicHashAlgorithm, new() =>
             Hash.GetHashAsync<T>(fileInfo,
                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                 fileInfo is { Exists: true, Length: > 100 << 20 },
+                                 fileInfo is { Exists: true, Length: > 1024 << 20 },
                                  token);
 
         protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
@@ -1123,7 +1123,7 @@ namespace CollapseLauncher.Interfaces
             where T : NonCryptographicHashAlgorithm, new() =>
             Hash.GetHashAsync<T>(stream,
                                  read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                 stream is { Length: > 100 << 20 },
+                                 stream is { Length: > 1024 << 20 },
                                  token);
 
         protected virtual byte[] GetHash<T>(
