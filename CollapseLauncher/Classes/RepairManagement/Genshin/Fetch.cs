@@ -262,7 +262,7 @@ namespace CollapseLauncher
                              $"sec: {secondaryParentURL}", LogType.Debug, true);
 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, primaryParentURL, secondaryParentURL, "res_versions_external",
-                    "res_versions_external_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+                    "res_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
 
                 // Parse data_versions
                 var dataVerURL = queryProperty.ClientDesignDataURL;
