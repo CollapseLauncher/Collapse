@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
@@ -101,10 +102,17 @@ namespace CollapseLauncher
             string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : [];
 
             // Set the ignored audio lang
-            List<string> ignoredAudioLangList = audioLangList.Where(x => !currentAudioLangList.Contains(x)).ToList();
+            string[] ignoredAudioLangList = audioLangList
+                .Where(x => !currentAudioLangList.Contains(x))
+                .Select(x => $"/{x}/")
+                .ToArray();
+            SearchValues<string> ignoredAudioLangListSearch = SearchValues.Create(ignoredAudioLangList, StringComparison.OrdinalIgnoreCase);
 
             // Return only for asset index that doesn't have language included in ignoredAudioLangList
-            return assetIndex.Where(x => !ignoredAudioLangList.Any(y => x.remoteName.Contains(y))).ToList();
+            return assetIndex.Where(x => !x.remoteName
+                    .AsSpan()
+                    .ContainsAny(ignoredAudioLangListSearch))
+                .ToList();
         }
 
         #region PrimaryManifest
@@ -190,23 +198,20 @@ namespace CollapseLauncher
                     );
 
                 // Parse basic package version.
-                ParseManifestToAssetIndex(manifestPath, assetIndex, hashtableManifest, "", "", GameRepoURL, true);
+                var streamingAssetsPath = $@"{ExecPrefix}_Data\StreamingAssets";
+                ParseManifestToAssetIndex(manifestPath, "", assetIndex, hashtableManifest, GameRepoURL, true);
 
                 // Build additional blks entry.
-                var streamingAssetsPath = $"{ExecPrefix}_Data\\StreamingAssets";
-                var assetBundlesPath = $@"{ExecPrefix}_Data\StreamingAssets\AssetBundles";
-
-                EnumerateManifestToAssetIndex(streamingAssetsPath, "data_versions_*", assetIndex, hashtableManifest,
-                    assetBundlesPath, "", GameRepoURL, true);
-                EnumerateManifestToAssetIndex(streamingAssetsPath, "silence_versions_*", assetIndex, hashtableManifest,
-                    assetBundlesPath, "", GameRepoURL, true);
-                EnumerateManifestToAssetIndex(streamingAssetsPath, "res_versions_*", assetIndex, hashtableManifest,
-                    assetBundlesPath, ".blk", GameRepoURL, true);
+                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "data_versions_*", assetIndex, hashtableManifest,
+                    GameRepoURL, true);
+                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "silence_versions_*", assetIndex, hashtableManifest,
+                    GameRepoURL, true);
+                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "res_versions_*", assetIndex, hashtableManifest,
+                    GameRepoURL, true);
 
                 // Build cutscenes entry.
-                var videoAssetsPath = $@"{ExecPrefix}_Data\StreamingAssets\VideoAssets";
-                EnumerateManifestToAssetIndex(videoAssetsPath, "*_versions_*", assetIndex, hashtableManifest,
-                    videoAssetsPath, "", GameRepoURL, true);
+                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "VideoAssets\\*_versions_*", assetIndex, hashtableManifest,
+                    GameRepoURL, true);
             }
             catch (Exception ex)
             {
@@ -263,7 +268,7 @@ namespace CollapseLauncher
                              $"sec: {secondaryParentURL}", LogType.Debug, true);
 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, primaryParentURL, secondaryParentURL, "res_versions_external",
-                    "res_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+                    "res_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token: token);
 
                 // Parse data_versions
                 var dataVerURL = queryProperty.ClientDesignDataURL;
@@ -273,7 +278,7 @@ namespace CollapseLauncher
 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataVerURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "data_versions_persist", basePersistentPath,
-                    baseStreamingAssetsPath, assetIndex, hashtableManifest, token);
+                    baseStreamingAssetsPath, assetIndex, hashtableManifest, token: token);
 
                 // Parse data_versions (silence)
                 var dataSilURL = queryProperty.ClientDesignDataSilURL;
@@ -289,10 +294,10 @@ namespace CollapseLauncher
 #endif
                 await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataSilURL, "",
                     CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
-                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, dataSilIgnoreContainsParams);
+                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, true, dataSilIgnoreContainsParams, token);
 
                 // Save persistent manifest numbers
-                await SavePersistentRevision(downloadClient, queryProperty, token);
+                await SavePersistentRevision(queryProperty, token);
                 return true;
             }
             catch (Exception ex)
@@ -306,7 +311,8 @@ namespace CollapseLauncher
             string manifestRemoteName, string manifestLocalName,
             string persistentPath, string streamingAssetsPath,
             List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            CancellationToken token, bool forceOverwrite = false, SearchValues<string> ignoreContainsParams = null)
+            bool forceOverwrite = false, SearchValues<string> ignoreContainsParams = null,
+            CancellationToken token = default)
         {
             try
             {
@@ -325,15 +331,16 @@ namespace CollapseLauncher
                 LogWriteLine($"Manifest: {manifestRemoteName} (localName: {manifestLocalName}) has been fetched", LogType.Default, true);
 
                 // Parse the manifest
-                ParsePkgVersionManifest(manifestPath,
-                                        persistentPath,
-                                        streamingAssetsPath,
-                                        primaryParentURL,
-                                        secondaryParentURL,
-                                        assetIndex,
-                                        hashtable,
-                                        forceOverwrite,
-                                        ignoreContainsParams);
+                await ParsePkgVersionManifestAsync(manifestPath,
+                                                   persistentPath,
+                                                   streamingAssetsPath,
+                                                   primaryParentURL,
+                                                   secondaryParentURL,
+                                                   assetIndex,
+                                                   hashtable,
+                                                   forceOverwrite,
+                                                   ignoreContainsParams,
+                                                   token);
             }
             catch (TaskCanceledException) { throw; }
             catch (OperationCanceledException) { throw; }
@@ -343,8 +350,10 @@ namespace CollapseLauncher
             }
         }
 
-        private static string GetParentFromAssetRelativePath(ReadOnlySpan<char> relativePath)
+        private static string GetParentFromAssetRelativePath(ReadOnlySpan<char> relativePath, out bool isPersistentAsStreaming)
         {
+            isPersistentAsStreaming = false;
+
             const string lookupEndsWithAudio = ".pck";
             const string returnAudio = "AudioAssets";
 
@@ -373,113 +382,150 @@ namespace CollapseLauncher
                 return returnVideo;
             }
 
+            isPersistentAsStreaming = true;
             return "";
         }
 
-        private static void ParsePkgVersionManifest(string                                   localManifestPath,
-                                                    string                                   persistentPath,
-                                                    string                                   streamingAssetPath,
-                                                    string                                   primaryParentURL,
-                                                    string                                   secondaryParentURL,
-                                                    List<PkgVersionProperties>               assetIndex,
-                                                    Dictionary<string, PkgVersionProperties> hashtable,
-                                                    bool                                     forceOverwrite,
-                                                    SearchValues<string>                     ignoreContainsParams)
+        private static async Task ParsePkgVersionManifestAsync(string localManifestPath,
+                                                               string persistentPath,
+                                                               string streamingAssetPath,
+                                                               string primaryParentURL,
+                                                               string secondaryParentURL,
+                                                               List<PkgVersionProperties> assetIndex,
+                                                               Dictionary<string, PkgVersionProperties> assetIndexHashtable,
+                                                               bool forceOverwrite,
+                                                               SearchValues<string> ignoreContainsParams = null,
+                                                               CancellationToken token = default)
         {
-            persistentPath     = persistentPath.Replace('\\', '/');
-            streamingAssetPath = streamingAssetPath.Replace('\\', '/');
+            // Reverse-normalize path from using '\\' to '/' separator
+            NormalizePathInplaceNoTrim(persistentPath, '\\', '/');
+            NormalizePathInplaceNoTrim(streamingAssetPath, '\\', '/');
 
-            // Start reading the manifest
-            FileInfo           manifestFileInfo = new FileInfo(localManifestPath);
+            // Read the manifest file
+            FileInfo           manifestFileInfo = new FileInfo(localManifestPath).EnsureNoReadOnly();
             using StreamReader reader           = manifestFileInfo.OpenText();
-            while (reader.ReadLine() is { } manifestLine)
-            {
-                PkgVersionProperties manifestEntry = manifestLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
-                // If the ignoreContainsParams is not null and the remoteName contains any of the params, then skip it.
-                if (ignoreContainsParams != null && manifestEntry.remoteName.AsSpan().ContainsAny(ignoreContainsParams))
+            // Iterate the asset line
+            while (await reader.ReadLineAsync(token) is { } currentLine)
+            {
+                // Sanity check: Ignore non-json entry
+                if (IsCurrentLineJson(currentLine))
                 {
                     continue;
                 }
 
-                // Get relative path based on extension
-                bool   isUseRemoteName = string.IsNullOrEmpty(manifestEntry.localName);
-                string actualName      = isUseRemoteName ? manifestEntry.remoteName : manifestEntry.localName;
+                // Deserialize manifest entry
+                PkgVersionProperties manifestEntry = currentLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+
+                // If the ignoreContainsParams is not null and the remoteName contains
+                // ignore list, then move to another entry
+                if (ignoreContainsParams != null &&
+                    manifestEntry.remoteName
+                        .AsSpan()
+                        .ContainsAny(ignoreContainsParams))
+                {
+                    continue;
+                }
+
+                // Resolve the svc_catalog name where the localName contains "../"
+                if (manifestEntry.remoteName.EndsWith("svc_catalog"))
+                {
+                    manifestEntry.localName = Path.GetFileName(manifestEntry.remoteName);
+                }
 
                 // Get relative path based on extension
-                string relativePath = GetParentFromAssetRelativePath(manifestEntry.remoteName);
-                string assetPersistentPath = CombineURLFromString(persistentPath, relativePath, actualName);
+                bool   isUseRemoteName        = string.IsNullOrEmpty(manifestEntry.localName);
+                string actualRelativeFilePath = isUseRemoteName ? manifestEntry.remoteName : manifestEntry.localName;
+
+                // Get relative path based on extension
+                string relativePath = GetParentFromAssetRelativePath(manifestEntry.remoteName, out bool isForceStreaming);
+                string assetPersistentPath = CombineURLFromString(persistentPath, relativePath, actualRelativeFilePath);
                 string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
 
+                // If the manifest is using a persistent manifest but
+                // has uncategorized type, then assume it as a streaming file.
+                if (isForceStreaming && !forceOverwrite)
+                {
+                    manifestEntry.isPatch = false;
+                    manifestEntry.isForceStoreInStreaming = true;
+                }
+
+                // If forceOverwrite is toggled, use persistent path anyway
+                if (forceOverwrite)
+                {
+                    manifestEntry.isPatch = true;
+                }
+
                 // Set the remote URL
-                string remoteURL;
+                string remoteUrl;
                 if (!string.IsNullOrEmpty(secondaryParentURL) && !manifestEntry.isPatch)
                 {
-                    remoteURL = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
+                    remoteUrl = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
                 }
                 else
                 {
-                    remoteURL = CombineURLFromString(primaryParentURL, relativePath, manifestEntry.remoteName);
+                    remoteUrl = CombineURLFromString(primaryParentURL, relativePath, manifestEntry.remoteName);
                 }
 
                 // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
-                manifestEntry.remoteURL            = remoteURL;
+                manifestEntry.remoteURL            = remoteUrl;
                 manifestEntry.remoteName           = assetStreamingAssetPath;
                 manifestEntry.remoteNamePersistent = assetPersistentPath;
-                // Decide if the file is forced to be in persistent or not
-                manifestEntry.isForceStoreInPersistent = manifestEntry.isPatch;
 
-                // If forceOverwrite and forceStoreInPersistent is true, then
-                // make it as a patch file and store it to persistent
-                if (forceOverwrite)
+                // Fill the null persistent property
+                manifestEntry.remoteURLPersistent  ??= manifestEntry.remoteURL;
+                manifestEntry.remoteNamePersistent ??= manifestEntry.remoteName;
+                manifestEntry.md5Persistent        ??= manifestEntry.md5;
+                manifestEntry.xxh64hashPersistent  ??= manifestEntry.xxh64hash;
+                if (manifestEntry.fileSizePersistent == 0 && manifestEntry.fileSize != 0)
                 {
-                    manifestEntry.isForceStoreInStreaming  = false;
-                    manifestEntry.isForceStoreInPersistent = true;
+                    manifestEntry.fileSizePersistent = manifestEntry.fileSize;
                 }
 
-                // If the manifest has isPatch set to true, then set force store in streaming to false
-                if (manifestEntry.isPatch) manifestEntry.isForceStoreInStreaming = false;
-
-                // Check if the hashtable has the value
-                bool isHashHasValue = hashtable.ContainsKey(assetStreamingAssetPath);
-                if (isHashHasValue)
-                {
-                    // If yes, then get the reference and index ID
-                    PkgVersionProperties reference = hashtable[assetStreamingAssetPath];
-                    int                  indexID   = assetIndex.IndexOf(reference);
-
-                    // If the index is not found (== -1), then skip it.
-                    // Otherwise, continue overriding its value
-                    if (indexID == -1) continue;
-
-                    // Check if the hash is equal from reference/old manifest
-                    bool isHashEqual = reference.md5.Equals(manifestEntry.md5);
-
-                    // If it has isForceStoreStreamingAssets flag, isPatch is false and the hash is equal, then continue.
-                    if (reference.isForceStoreInStreaming
-                        && !manifestEntry.isPatch
-                        && isHashEqual) continue;
-
-                    // Override the force state if isPatch is true
-                    manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
-                    manifestEntry.isForceStoreInPersistent = !isHashEqual; // Set the persistent state if hash is not equal.
-
-                    // Start overriding the value
-                    hashtable[assetStreamingAssetPath] = manifestEntry;
-                    assetIndex[indexID]                = manifestEntry;
-                }
-                else
-                {
-                    manifestEntry.isForceStoreInStreaming = !manifestEntry.isPatch;
-                    manifestEntry.isForceStoreInPersistent = manifestEntry.isPatch;
-
-                    hashtable.Add(manifestEntry.remoteName, manifestEntry);
-                    assetIndex.Add(manifestEntry);
-                }
+                // Try to add or replace the existing entry
+                AddOrReplaceEntry(manifestEntry, assetStreamingAssetPath, assetIndex, assetIndexHashtable);
             }
         }
 
-        private async Task SavePersistentRevision(DownloadClient downloadClient, QueryProperty dispatchQuery, CancellationToken token)
+        private static bool IsCurrentLineJson(ReadOnlySpan<char> chars) => chars[0] != '{' && chars[^1] != '}';
+
+        private static void AddOrReplaceEntry(PkgVersionProperties                     manifestEntry,
+                                              string                                   fileStreamingAssetPath,
+                                              List<PkgVersionProperties>               assetIndex,
+                                              Dictionary<string, PkgVersionProperties> assetIndexHashtable)
+        {
+            // Try to add the current entry to the hashtable
+            if (assetIndexHashtable.TryAdd(fileStreamingAssetPath, manifestEntry))
+            {
+                // If successful, then add it to the list as well
+                assetIndex.Add(manifestEntry);
+                return;
+            }
+
+            // Find the existing table. If not found, then return
+            PkgVersionProperties existingAsset = assetIndexHashtable[fileStreamingAssetPath];
+            int existingIndex = assetIndex.IndexOf(existingAsset);
+            if (existingIndex == -1)
+            {
+                return;
+            }
+
+            // Resolve the ctable.dat to use persistent URL
+            if (existingAsset.remoteName.EndsWith("ctable.dat"))
+            {
+                existingAsset.remoteURL = manifestEntry.remoteURLPersistent ?? manifestEntry.remoteURL;
+            }
+
+            // Otherwise, add the existing one with the persistent properties
+            existingAsset.fileSizePersistent   = manifestEntry.fileSizePersistent == 0 ? manifestEntry.fileSize : manifestEntry.fileSizePersistent;
+            existingAsset.md5Persistent        = manifestEntry.md5Persistent ?? manifestEntry.md5;
+            existingAsset.xxh64hashPersistent  = manifestEntry.xxh64hashPersistent ?? manifestEntry.xxh64hash;
+            existingAsset.remoteNamePersistent = manifestEntry.remoteNamePersistent ?? manifestEntry.remoteName;
+            existingAsset.remoteURLPersistent  = manifestEntry.remoteURLPersistent ?? manifestEntry.remoteURL;
+            existingAsset.isPatch              = manifestEntry.isPatch;
+        }
+
+        private async Task SavePersistentRevision(QueryProperty dispatchQuery, CancellationToken token)
         {
             string persistentPath = Path.Combine(GamePath, $"{ExecPrefix}_Data\\Persistent");
 
@@ -513,28 +559,8 @@ namespace CollapseLauncher
             await File.WriteAllTextAsync(persistentPath + "\\ChannelName", $"{dispatchQuery.ChannelName}", token);
             // Get ScriptVersion content
             await File.WriteAllTextAsync(persistentPath + "\\ScriptVersion", $"{dispatchQuery.GameVersion}", token);
-            // Get PatchDone content
-            HttpClient client = downloadClient.GetHttpClient();
-            string baseRevisionUrl = CombineURLFromString(dispatchQuery.ClientGameResURL, "StandaloneWindows64", "base_revision");
-            HttpResponseMessage response = await client.GetAsync(baseRevisionUrl, HttpCompletionOption.ResponseHeadersRead, token);
-            if (!response.IsSuccessStatusCode)
-            {
-                return;
-            }
-            string responseString = await response.Content.ReadAsStringAsync(token);
-            if (string.IsNullOrEmpty(responseString))
-            {
-                return;
-            }
-            string[] responseData = responseString.Split(' ');
-            if (responseData.Length < 2)
-            {
-                return;
-            }
-            if (long.TryParse(responseData[0], out long patchDoneRevision))
-            {
-                await File.WriteAllTextAsync(persistentPath + "\\PatchDone", $"{patchDoneRevision}", token);
-            }
+            // Get PatchDone content (the same one as audio_revision)
+            await File.WriteAllTextAsync(persistentPath + "\\PatchDone", $"{dispatchQuery.AudioRevisionNum}", token);
         }
         #endregion
 
@@ -595,58 +621,57 @@ namespace CollapseLauncher
             ProgressAllCountTotal = assetIndex.Count;
         }
 
-        private void EnumerateManifestToAssetIndex(string path, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath = "", string acceptedExtension = "", string parentURL = "", bool forceStoreInStreaming = false)
+        private void EnumerateManifestToAssetIndex(string path, string parentPath, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentURL = "", bool forceStoreInStreaming = false)
         {
             // Iterate files inside the desired path based on filter.
             foreach (string entry in Directory.EnumerateFiles(Path.Combine(GamePath, path), filter))
             {
-                ParseManifestToAssetIndex(entry, assetIndex, hashtable, parentPath, acceptedExtension, parentURL, forceStoreInStreaming);
+                ParseManifestToAssetIndex(entry, parentPath, assetIndex, hashtable, parentURL, forceStoreInStreaming);
             }
         }
 
         /// <summary>
         /// This one is used to parse Generic Manifest
         /// </summary>
-        /// <param name="manifestPath"></param>
-        /// <param name="assetIndex"></param>
-        /// <param name="hashtable"></param>
-        /// <param name="parentPath"></param>
-        /// <param name="acceptedExtension"></param>
-        /// <param name="parentURL"></param>
-        /// <param name="forceStoreInStreaming"></param>
-        private static void ParseManifestToAssetIndex(string manifestPath, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentPath, string acceptedExtension, string parentURL, bool forceStoreInStreaming = false)
+        private static void ParseManifestToAssetIndex(string manifestPath,
+                                                      string parentPath,
+                                                      List<PkgVersionProperties> assetIndex,
+                                                      Dictionary<string, PkgVersionProperties> hashtable,
+                                                      string parentURL,
+                                                      bool forceStoreInStreaming = false)
         {
-            // Initialize local entry.
-            // ReSharper disable TooWideLocalVariableScope
-            PkgVersionProperties entry;
-            bool isHashHasValue;
-            // ReSharper restore TooWideLocalVariableScope
-
             // Iterate JSON that only contains defined extensions.
-            foreach (string data in File.ReadAllLines(manifestPath).Where(x => x.EndsWith(acceptedExtension, StringComparison.OrdinalIgnoreCase)))
+            using StreamReader reader = File.OpenText(manifestPath);
+            while (reader.ReadLine() is { } data)
             {
-                // Deserialize JSON line into local entry.
-                entry = data.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
-
-                // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
-                if (!string.IsNullOrEmpty(parentPath))
-                {
-                    entry!.remoteName = $"{parentPath.Replace('\\', '/')}/{entry.remoteName}";
-                }
-
-                // Append remote URL for download later.
-                entry!.remoteURL = CombineURLFromString(parentURL, entry.remoteName);
-                entry!.isForceStoreInStreaming = forceStoreInStreaming;
-
-                // Check if the entry is duplicated. If not, then add to asset index.
-                isHashHasValue = hashtable.ContainsKey(entry.remoteName);
-                if (isHashHasValue)
+                // If it's not a valid JSON data, move to the next line
+                if (IsCurrentLineJson(data))
                 {
                     continue;
                 }
 
-                hashtable.Add(entry.remoteName, entry);
-                assetIndex.Add(entry);
+                // Deserialize JSON line into local entry.
+                PkgVersionProperties entry = data.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+
+                // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
+                string relativeParentPath = string.IsNullOrEmpty(parentPath) ? "" : GetParentFromAssetRelativePath(entry.remoteName, out _);
+                entry.remoteName = Path.Combine(parentPath ?? "", relativeParentPath, entry.remoteName);
+
+                // Reverse-normalize the path separator
+                NormalizePathInplaceNoTrim(entry.remoteName, '\\', '/');
+
+                // Append remote URL to download later
+                entry.remoteURL               = CombineURLFromString(parentURL, entry.remoteName);
+                entry.isForceStoreInStreaming = forceStoreInStreaming;
+
+                // Always ensure that primary manifest doesn't get recognized as patch.
+                entry.isPatch = false;
+
+                // Check if the entry is duplicated. If not, then add to asset index.
+                if (hashtable.TryAdd(entry.remoteName, entry))
+                {
+                    assetIndex.Add(entry);
+                }
             }
         }
         #endregion

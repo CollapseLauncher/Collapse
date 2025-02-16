@@ -7,7 +7,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.ManagedTools;
 using System;
 using System.Buffers;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
@@ -57,18 +56,11 @@ namespace CollapseLauncher
                                  $"Thread count set to {threadCount}.", LogType.Warning, true);
                 }
                 
-                ConcurrentDictionary<PkgVersionProperties, byte> runningTask = new();
                 // Await the task for parallel processing
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    if (!runningTask.TryAdd(asset, 0))
-                    {
-                        LogWriteLine($"Found duplicated task for {asset.remoteURL}! Skipping...", LogType.Warning, true);
-                        return;
-                    }
                     await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
-                    runningTask.Remove(asset, out _);
                 });
             }
             catch (AggregateException ex)
@@ -103,7 +95,7 @@ namespace CollapseLauncher
         {
             // Try to get the exclusion list of the audio (language specific) files
             string[] exclusionList = assetIndex
-                .Where(x => x.isForceStoreInPersistent && x.remoteName
+                .Where(x => x.isPatch && x.remoteNamePersistent != null && x.remoteName
                     .AsSpan()
                     .EndsWith(".pck"))
                 .Select(x => x.remoteNamePersistent
@@ -114,7 +106,9 @@ namespace CollapseLauncher
             string audioAsbPath = Path.Combine(GameStreamingAssetsPath, "AudioAssets");
             string audioPersistentPath = Path.Combine(GamePersistentPath, "AudioAssets");
             if (!Directory.Exists(audioPersistentPath)) return;
-            if (!Directory.Exists(audioAsbPath)) Directory.CreateDirectory(audioAsbPath);
+
+            // Create audio streaming asset directory anyway
+            Directory.CreateDirectory(audioAsbPath);
 
             // Get the list of audio language names from _gameVersionManager
             List<string> audioLangList = ((GameTypeGenshinVersion)GameVersionManager).AudioVoiceLanguageList;
@@ -137,7 +131,7 @@ namespace CollapseLauncher
                                                      .Where(x => !exclusionList.Any(y => x.AsSpan().EndsWith(y.AsSpan()))))
                 {
                     // Trim the path name to get the generic languageName/filename form
-                    string pathName = filePath.AsSpan().Slice(audioPersistentPath.Length + 1).ToString();
+                    string pathName = filePath.AsSpan()[(audioPersistentPath.Length + 1)..].ToString();
                     // Combine the generic name with audioAsbPath
                     string newPath = EnsureCreationOfDirectory(Path.Combine(audioAsbPath, pathName));
 
@@ -178,24 +172,8 @@ namespace CollapseLauncher
             FileInfo fileInfoPersistent = new FileInfo(filePathPersistent).EnsureNoReadOnly();
 
             // Decide file state
-            bool isUsePersistent   = asset.isForceStoreInPersistent;
-            bool isPatch           = asset.isPatch;
             bool isPersistentExist = fileInfoPersistent.Exists;
             bool isStreamingExist  = fileInfoStreaming.Exists;
-
-            // Try to get hash buffer
-            bool   isUseXxh64Hash = !string.IsNullOrEmpty(asset.xxh64hash);
-            int    hashBufferLen  = (isUseXxh64Hash ? asset.xxh64hash.Length : asset.md5.Length) / 2;
-            byte[] hashBuffer     = ArrayPool<byte>.Shared.Rent(hashBufferLen);
-
-            try
-            {
-                if (!HexTool.TryHexToBytesUnsafe(asset.md5, hashBuffer))
-                {
-                #if DEBUG
-                    throw new InvalidOperationException();
-                #endif
-                }
 
                 // Get the file info to use
                 bool isUnmatchedFileFound = !await IsFileMatched(
@@ -222,8 +200,7 @@ namespace CollapseLauncher
 
                                                  PkgVersionProperties clonedAsset = asset.Clone();
 
-                                                 Dispatch(() => AssetEntry.Add(
-                                                                               new AssetProperty<RepairAssetType>(
+                                                 Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
                                                                                     Path.GetFileName(c),
                                                                                     RepairAssetType.Unused,
                                                                                     Path.GetDirectoryName(c),
@@ -241,105 +218,157 @@ namespace CollapseLauncher
                                              }
                                              );
 
-                FileInfo fileInfoToUse = asset.isForceStoreInPersistent ? fileInfoPersistent : fileInfoStreaming;
-
                 if (isUnmatchedFileFound)
                 {
-                    AddNotFoundOrMismatchAsset(asset, fileInfoToUse);
+                    AddNotFoundOrMismatchAsset(asset);
                 }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(hashBuffer);
-            }
 
             return;
 
             async ValueTask<bool> IsFileMatched(Action<bool> storeAsStreaming, Action<bool> storeAsPersistent, Action<string, string> storeAsUnused)
             {
-                if (!isUsePersistent)
+                bool isUsePersistent = asset.isPatch ||
+                    (!asset.xxh64hashPersistent?.Equals(asset.xxh64hash, StringComparison.OrdinalIgnoreCase) ?? false);
+
+                // Try to get hash buffer
+                byte[] hashBuffer = ArrayPool<byte>.Shared.Rent(16);
+                try
                 {
-                    if (isStreamingExist && await IsFileHashMatch(fileInfoStreaming, hashBuffer, token))
+                    // Create memory and compare the hash
+                    string       streamingHash       = asset.xxh64hash ?? asset.md5;
+                    Memory<byte> streamingHashMemory = new(hashBuffer, 0, streamingHash.Length / 2);
+                    _ = HexTool.TryHexToBytesUnsafe(streamingHash, streamingHashMemory.Span);
+
+                    if (!isUsePersistent)
                     {
+                        if (isPersistentExist)
+                        {
+                            storeAsUnused(asset.remoteNamePersistent, fileInfoPersistent.FullName);
+                        }
+
+                        // ReSharper disable once InvertIf
+                        if (!isStreamingExist ||
+                            !await IsFileHashMatch(fileInfoStreaming, asset.fileSize, streamingHashMemory, true, token))
+                        {
+                            storeAsStreaming(true);
+                            storeAsPersistent(false);
+                            asset.isStreamingNeedDownload = true;
+                            return false;
+                        }
+
                         return true;
                     }
 
-                    if (isPersistentExist)
+                    bool isBrokenFoundOnPersistent = false;
+                    bool isHasStreamingInvalid = false;
+
+                    if (!asset.isPatch &&
+                        isStreamingExist &&
+                        !await IsFileHashMatch(fileInfoStreaming, asset.fileSize, streamingHashMemory, true, token))
                     {
-                        storeAsUnused(asset.remoteNamePersistent, fileInfoPersistent.FullName);
+                        storeAsStreaming(true);
+                        storeAsPersistent(false);
+                        isBrokenFoundOnPersistent = true;
+                        isHasStreamingInvalid = true;
+                        asset.isStreamingNeedDownload = true;
                     }
 
-                    storeAsStreaming(true);
-                    storeAsPersistent(false);
-                    return false;
+                    // Create memory and compare the hash
+                    string       persistentHash = asset.xxh64hashPersistent ?? asset.md5Persistent;
+                    Memory<byte> persistentHashMemory = new(hashBuffer, 0, persistentHash.Length / 2);
+                    _ = HexTool.TryHexToBytesUnsafe(persistentHash, persistentHashMemory.Span);
 
-                }
+                    if (isHasStreamingInvalid)
+                    {
+                        Interlocked.Add(ref ProgressAllSizeCurrent, -fileInfoStreaming.Length);
+                    }
 
-                bool isStreamingMatch = isStreamingExist && await IsFileHashMatch(fileInfoStreaming, hashBuffer, token);
-                bool isPersistentMatch = isPersistentExist && await IsFileHashMatch(fileInfoPersistent, hashBuffer, token);
-
-                switch (isStreamingMatch)
-                {
-                    case true when isPersistentMatch && isPatch:
-                        storeAsUnused(asset.remoteName, fileInfoStreaming.FullName);
-                        break;
-                    case false when !isPersistentMatch:
+                    // ReSharper disable once InvertIf
+                    if (!isPersistentExist || !await IsFileHashMatch(fileInfoPersistent, asset.fileSizePersistent, persistentHashMemory, true, token))
+                    {
                         storeAsStreaming(false);
                         storeAsPersistent(true);
-                        return false;
-                }
+                        isBrokenFoundOnPersistent = true;
+                        asset.isPersistentNeedDownload = true;
+                    }
 
-                return true;
+                    return !isBrokenFoundOnPersistent;
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(hashBuffer);
+                }
             }
 
-            async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, ReadOnlyMemory<byte> hashToCompare, CancellationToken cancelToken)
+            async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, long fileSizeToCheck, ReadOnlyMemory<byte> hashToCompare, bool isUpdateProgress, CancellationToken cancelToken)
             {
                 // Refresh the fileInfo
                 fileInfo.Refresh();
 
-                if (fileInfo.Length != asset.fileSize) return false; // Skip the hash calculation if the file size is different
-                
+                if (fileInfo.Length != fileSizeToCheck)
+                    return false; // Skip the hash calculation if the file size is different
+
                 if (UseFastMethod) return true; // Skip the hash calculation if the fast method is enabled
-                
+
                 // Try to get filestream
                 await using FileStream fileStream = await fileInfo.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
                 // If pass the check above, then do hash calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
                 byte[] localHash = hashToCompare.Length == 8 ?
-                    await GetHashAsync<XxHash64>(fileStream, true, true, cancelToken) :
-                    await GetCryptoHashAsync<MD5>(fileStream, null, true, true, cancelToken);
+                    await GetHashAsync<XxHash64>(fileStream, isUpdateProgress, isUpdateProgress, cancelToken) :
+                    await GetCryptoHashAsync<MD5>(fileStream, null, isUpdateProgress, isUpdateProgress, cancelToken);
 
                 // Check if the hash is equal
                 bool isMatch = IsArrayMatch(hashToCompare.Span, localHash);
                 return isMatch;
             }
 
-            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner, FileInfo repairFile)
+            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner)
             {
                 // Update the total progress and found counter
-                ProgressAllSizeFound += assetInner.fileSize;
-                ProgressAllCountFound++;
+                if (assetInner.isStreamingNeedDownload)
+                {
+                    Interlocked.Increment(ref ProgressAllCountFound);
+                    Interlocked.Add(ref ProgressAllSizeFound, assetInner.fileSize);
 
-                // Set the per size progress
-                ProgressPerFileSizeCurrent = assetInner.fileSize;
+                    Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(assetInner.remoteName),
+                                                       RepairAssetType.Generic,
+                                                       Path.GetDirectoryName(assetInner.remoteName),
+                                                       assetInner.fileSize,
+                                                       null,
+                                                       HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hash) ? assetInner.md5 : assetInner.xxh64hash)
+                                                      )
+                                                 ));
 
-                // Increment the total current progress
-                ProgressAllSizeCurrent += assetInner.fileSize;
+                    targetAssetIndex.Add(assetInner);
 
-                Dispatch(() => AssetEntry.Add(
-                                              new AssetProperty<RepairAssetType>(
-                                                   repairFile.Name,
+                    LogWriteLine($"File [T: {RepairAssetType.Generic}-Streaming]: {assetInner.localName} is not found or has unmatched size",
+                                 LogType.Warning, true);
+                }
+
+                if (!assetInner.isPersistentNeedDownload)
+                {
+                    return;
+                }
+
+                Interlocked.Increment(ref ProgressAllCountFound);
+                Interlocked.Add(ref ProgressAllSizeFound, assetInner.fileSizePersistent);
+
+                Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(assetInner.remoteNamePersistent),
                                                    RepairAssetType.Generic,
-                                                   Path.GetDirectoryName(assetInner.isForceStoreInPersistent ? assetInner.remoteNamePersistent : assetInner.remoteName),
-                                                   assetInner.fileSize,
-                                                   repairFile.Exists ? hashBuffer : null,
-                                                   HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hash) ? assetInner.md5 : assetInner.xxh64hash)
+                                                   Path.GetDirectoryName(assetInner.remoteNamePersistent),
+                                                   assetInner.fileSizePersistent,
+                                                   null,
+                                                   HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hashPersistent) ? assetInner.md5Persistent : assetInner.xxh64hashPersistent)
                                                   )
                                              ));
-                targetAssetIndex.Add(assetInner);
 
-                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {assetInner.localName} is not found or has unmatched size",
+                targetAssetIndex.Add(assetInner.CloneAsPersistent());
+
+                LogWriteLine($"File [T: {RepairAssetType.Generic}-Persistent]: {assetInner.localName} is not found or has unmatched size",
                              LogType.Warning, true);
             }
         }
