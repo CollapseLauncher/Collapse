@@ -292,7 +292,7 @@ namespace CollapseLauncher
                     basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token, true, dataSilIgnoreContainsParams);
 
                 // Save persistent manifest numbers
-                SavePersistentRevision(queryProperty);
+                await SavePersistentRevision(downloadClient, queryProperty, token);
                 return true;
             }
             catch (Exception ex)
@@ -479,13 +479,13 @@ namespace CollapseLauncher
             }
         }
 
-        private void SavePersistentRevision(QueryProperty dispatchQuery)
+        private async Task SavePersistentRevision(DownloadClient downloadClient, QueryProperty dispatchQuery, CancellationToken token)
         {
             string persistentPath = Path.Combine(GamePath, $"{ExecPrefix}_Data\\Persistent");
 
             // Get base_res_version_hash content
             string filePath = Path.Combine(GamePath, $@"{ExecPrefix}_Data\StreamingAssets\res_versions_streaming");
-            using FileStream resVersionStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            await using FileStream resVersionStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             byte[] hashBytes = Hash.GetCryptoHash<MD5>(resVersionStream);
             string hash = Convert.ToHexStringLower(hashBytes);
 
@@ -493,26 +493,48 @@ namespace CollapseLauncher
             // Write DownloadPref template
             byte[]? prefTemplateBytes = (GameVersionManager as GameTypeGenshinVersion)?.GamePreset
                 .GetGameDataTemplate("DownloadPref", GameVersion.VersionArrayManifest.Select(x => (byte)x).ToArray());
-            if (prefTemplateBytes != null) File.WriteAllBytes(persistentPath + "\\DownloadPref", prefTemplateBytes);
+            if (prefTemplateBytes != null) await File.WriteAllBytesAsync(persistentPath + "\\DownloadPref", prefTemplateBytes, token);
 #nullable disable
 
             // Get base_res_version_hash content
-            File.WriteAllText(persistentPath + "\\base_res_version_hash", hash);
+            await File.WriteAllTextAsync(persistentPath + "\\base_res_version_hash", hash, token);
             // Get data_revision content
-            File.WriteAllText(persistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
+            await File.WriteAllTextAsync(persistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}", token);
             // Get res_revision content
-            File.WriteAllText(persistentPath + "\\res_revision", $"{dispatchQuery.ResRevisionNum}");
+            await File.WriteAllTextAsync(persistentPath + "\\res_revision", $"{dispatchQuery.ResRevisionNum}", token);
             // Get res_revision_eternal content (Yes, you hear it right. It's called "eternal", not "external")...
             // or HoYo just probably typoed it (as usual).
-            File.WriteAllText(persistentPath + "\\res_revision_eternal", $"{dispatchQuery.ResRevisionNum}");
+            await File.WriteAllTextAsync(persistentPath + "\\res_revision_eternal", $"{dispatchQuery.ResRevisionNum}", token);
             // Get silence_revision content
-            File.WriteAllText(persistentPath + "\\silence_revision", $"{dispatchQuery.SilenceRevisionNum}");
+            await File.WriteAllTextAsync(persistentPath + "\\silence_revision", $"{dispatchQuery.SilenceRevisionNum}", token);
             // Get audio_revision content
-            File.WriteAllText(persistentPath + "\\audio_revision", $"{dispatchQuery.AudioRevisionNum}");
+            await File.WriteAllTextAsync(persistentPath + "\\audio_revision", $"{dispatchQuery.AudioRevisionNum}", token);
             // Get ChannelName content
-            File.WriteAllText(persistentPath + "\\ChannelName", $"{dispatchQuery.ChannelName}");
+            await File.WriteAllTextAsync(persistentPath + "\\ChannelName", $"{dispatchQuery.ChannelName}", token);
             // Get ScriptVersion content
-            File.WriteAllText(persistentPath + "\\ScriptVersion", $"{dispatchQuery.GameVersion}");
+            await File.WriteAllTextAsync(persistentPath + "\\ScriptVersion", $"{dispatchQuery.GameVersion}", token);
+            // Get PatchDone content
+            HttpClient client = downloadClient.GetHttpClient();
+            string baseRevisionUrl = CombineURLFromString(dispatchQuery.ClientGameResURL, "StandaloneWindows64", "base_revision");
+            HttpResponseMessage response = await client.GetAsync(baseRevisionUrl, HttpCompletionOption.ResponseHeadersRead, token);
+            if (!response.IsSuccessStatusCode)
+            {
+                return;
+            }
+            string responseString = await response.Content.ReadAsStringAsync(token);
+            if (string.IsNullOrEmpty(responseString))
+            {
+                return;
+            }
+            string[] responseData = responseString.Split(' ');
+            if (responseData.Length < 2)
+            {
+                return;
+            }
+            if (long.TryParse(responseData[0], out long patchDoneRevision))
+            {
+                await File.WriteAllTextAsync(persistentPath + "\\PatchDone", $"{patchDoneRevision}", token);
+            }
         }
         #endregion
 
