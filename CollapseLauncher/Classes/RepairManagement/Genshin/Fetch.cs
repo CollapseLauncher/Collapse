@@ -502,6 +502,9 @@ namespace CollapseLauncher
             File.WriteAllText(persistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}");
             // Get res_revision content
             File.WriteAllText(persistentPath + "\\res_revision", $"{dispatchQuery.ResRevisionNum}");
+            // Get res_revision_eternal content (Yes, you hear it right. It's called "eternal", not "external")...
+            // or HoYo just probably typoed it (as usual).
+            File.WriteAllText(persistentPath + "\\res_revision_eternal", $"{dispatchQuery.ResRevisionNum}");
             // Get silence_revision content
             File.WriteAllText(persistentPath + "\\silence_revision", $"{dispatchQuery.SilenceRevisionNum}");
             // Get audio_revision content
