@@ -28,7 +28,7 @@ jobs:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.0.1xx'
+      DOTNET_VERSION: '9.x'
       DOTNET_QUALITY: 'ga'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     
