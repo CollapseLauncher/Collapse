@@ -7,6 +7,16 @@ on:
 jobs:
   virustotal:
     runs-on: ubuntu-latest
+    permissions:
+        actions: read
+        contents: write
+        pull-requests: write
+        checks: write
+        security-events: write
+        deployments: write
+        packages: write
+        statuses: write
+        
     steps:
       - name: VirusTotal Scan Executables
         uses: crazy-max/ghaction-virustotal@v4

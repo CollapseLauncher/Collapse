@@ -771,9 +771,43 @@ namespace CollapseLauncher.InstallManager.Base
 
         private long GetSingleOrSegmentedUncompressedSize(GameInstallPackage asset)
         {
-            using Stream      stream      = GetSingleOrSegmentedDownloadStream(asset);
-            using ArchiveFile archiveFile = ArchiveFile.Create(stream, true);
-            return archiveFile.Entries.Sum(x => (long)x!.Size);
+            using Stream stream = GetSingleOrSegmentedDownloadStream(asset);
+
+        #if USENEWZIPDECOMPRESS
+            Func<Stream, long> summaryDelegate;
+            if (LauncherConfig.IsEnforceToUse7zipOnExtract)
+            {
+                summaryDelegate = GetArchiveUncompressedSizeNative7zip;
+            }
+            else if ((asset.PathOutput.EndsWith(".zip",     StringComparison.OrdinalIgnoreCase) ||
+                      asset.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase)) &&
+                      !_isAllowExtractCorruptZip)
+            {
+                summaryDelegate = GetArchiveUncompressedSizeManaged;
+            }
+            else
+            {
+                summaryDelegate = GetArchiveUncompressedSizeNative7zip;
+            }
+        #else
+            Func<Stream, long> summaryDelegate = GetArchiveUncompressedSizeNative7zip;
+        #endif
+
+            return summaryDelegate(stream);
+        }
+
+    #if USENEWZIPDECOMPRESS
+        private long GetArchiveUncompressedSizeManaged(Stream archiveStream)
+        {
+            using ZipArchive archive = ZipArchive.Open(archiveStream);
+            return archive.Entries.Select(x => x.Size).ToArray().Sum();
+        }
+    #endif
+
+        private long GetArchiveUncompressedSizeNative7zip(Stream archiveStream)
+        {
+            using ArchiveFile archiveFile = ArchiveFile.Create(archiveStream, true);
+            return archiveFile.Entries.Select(x => (long)x.Size).ToArray().Sum();
         }
 
         private Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
@@ -869,20 +903,20 @@ namespace CollapseLauncher.InstallManager.Base
                 InstallPackageExtractorDelegate installTaskDelegate;
                 if (LauncherConfig.IsEnforceToUse7zipOnExtract)
                 {
-                    installTaskDelegate = ExtractUsing7zip;
+                    installTaskDelegate = ExtractUsingNative7zip;
                 }
                 else if ((asset!.PathOutput.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
                        || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
                        && !_isAllowExtractCorruptZip)
                 {
-                    installTaskDelegate = ExtractUsingNativeZip;
+                    installTaskDelegate = ExtractUsingManagedZip;
                 }
                 else
                 {
-                    installTaskDelegate = ExtractUsing7zip;
+                    installTaskDelegate = ExtractUsingNative7zip;
                 }
             #else
-                InstallPackageExtractorDelegate installTaskDelegate = ExtractUsing7zip;
+                InstallPackageExtractorDelegate installTaskDelegate = ExtractUsingNative7zip;
             #endif
 
                 // Execute method delegate for the extractor
@@ -1018,7 +1052,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
     #if USENEWZIPDECOMPRESS
-        private async Task ExtractUsingNativeZip(GameInstallPackage asset)
+        private async Task ExtractUsingManagedZip(GameInstallPackage asset)
         {
             int threadCounts = ThreadCount;
 
@@ -1037,8 +1071,7 @@ namespace CollapseLauncher.InstallManager.Base
             IEnumerable<IEnumerable<int>> zipEntriesChunks = zipEntries.Chunk(entriesChunk);
 
             // Run the workers
-            await Parallel.ForEachAsync(
-                                        zipEntriesChunks, new ParallelOptions
+            await Parallel.ForEachAsync(zipEntriesChunks, new ParallelOptions
                                         {
                                             CancellationToken = Token.Token
                                         },
@@ -1047,12 +1080,12 @@ namespace CollapseLauncher.InstallManager.Base
                                             await using Stream    fs = GetSingleOrSegmentedDownloadStream(asset);
                                             using var             zipArchive = ZipArchive.Open(fs);
                                             List<ZipArchiveEntry> entries = zipArchive.Entries.ToList();
-                                            await ExtractUsingNativeZipWorker(entry, entries, token);
+                                            await ExtractUsingManagedZipWorker(entry, entries, token);
                                         });
         }
 
-        private async Task ExtractUsingNativeZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
-                                                       CancellationToken cancellationToken)
+        private async Task ExtractUsingManagedZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
+                                                        CancellationToken cancellationToken)
         {
             byte[] buffer = GC.AllocateUninitializedArray<byte>(BufferBigLength);
 
@@ -1139,7 +1172,7 @@ namespace CollapseLauncher.InstallManager.Base
         }
     #endif
 
-        private async Task ExtractUsing7zip(GameInstallPackage asset)
+        private async Task ExtractUsingNative7zip(GameInstallPackage asset)
         {
             // Start Async Thread
             // Since the ArchiveFile (especially with the callbacks) can't run under
