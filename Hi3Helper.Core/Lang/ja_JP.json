@@ -530,6 +530,7 @@
     "ContributePRBtn": "プルリクエストで貢献",
     "ContributorListBtn": "コントリビューターリスト",
     "HelpLocalizeBtn": "翻訳にご協力ください！",
+    "ShareYourFeedbackBtn": "フィードバックを送る",
 
     "About": "Collapse Launcherについて",
     "About_Copyright1": "© 2022-2024",
@@ -800,7 +801,14 @@
     "IsBytesNotANumber": "= 不正な数値",
 
     "MissingVcRedist": "Visual C/C++ 再頒布可能パッケージが見つかりません",
-    "MissingVcRedistSubtitle": "この関数を実行するには、Visual C/C++ 再頒布可能パッケージをインストールする必要があります。今すぐダウンロードしますか?\r\n注：ブラウザを起動してMicrosoftからパッケージをダウンロードします。ダウンロード後にインストーラーを実行し、Collapseを再起動してから再度お試しください。\nインストール済みなのにエラーが解決しない場合は、Githubでissueを送信してください。"
+    "MissingVcRedistSubtitle": "この関数を実行するには、Visual C/C++ 再頒布可能パッケージをインストールする必要があります。今すぐダウンロードしますか?\r\n注：ブラウザを起動してMicrosoftからパッケージをダウンロードします。ダウンロード後にインストーラーを実行し、Collapseを再起動してから再度お試しください。\nインストール済みなのにエラーが解決しない場合は、Githubでissueを送信してください。",
+    "ExceptionFeedbackBtn": "開発チームにメッセージを送る",
+    "ExceptionFeedbackBtn_Unavailable": "クラッシュレポートが無効になっているか、利用できません",
+    "ExceptionFeedbackBtn_FeedbackSent": "フィードバックを送信しました！",
+    "ExceptionFeedbackTitle": "発生したエラー：",
+    "ExceptionFeedbackTemplate_User": "ユーザー名（任意）：",
+    "ExceptionFeedbackTemplate_Email": "メールアドレス（任意）：",
+    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください"
   },
 
   "_BackgroundNotification": {
@@ -1015,9 +1023,22 @@
     "UACWarningContent": "ユーザーアカウント制御（UAC）の無効化は全くもって非推奨です。\nOSのセキュリティが侵害され、ゲームが正常に動作しなくなる可能性があるためです。\n\n\"もっと見る\"を押すと、UACを有効化する方法が表示されます。\n関連項目：「管理承認モードですべての管理者を実行する」",
     "UACWarningLearnMore": "もっと見る",
     "UACWarningDontShowAgain": "次回から表示しない",
-    
+
     "EnsureExitTitle": "アプリケーションの終了",
-    "EnsureExitSubtitle": "バックグラウンドで重要な操作を実行中です。本当に終了しますか?"
+    "EnsureExitSubtitle": "バックグラウンドで重要な操作を実行中です。本当に終了しますか?",
+
+    "UserFeedback_DialogTitle": "感想を送る",
+    "UserFeedback_TextFieldTitleHeader": "フィードバックのタイトル",
+    "UserFeedback_TextFieldTitlePlaceholder": "ここにタイトルを入力してください…",
+    "UserFeedback_TextFieldMessageHeader": "メッセージ",
+    "UserFeedback_TextFieldMessagePlaceholder": "ここにメッセージを入力してください…",
+    "UserFeedback_TextFieldRequired": "(必須)",
+    "UserFeedback_RatingText": "評価を聞かせてください！",
+    "UserFeedback_CancelBtn": "キャンセル",
+    "UserFeedback_SubmitBtn": "フィードバックを送信",
+    "UserFeedback_SubmitBtn_Processing": "送信中…",
+    "UserFeedback_SubmitBtn_Completed": "送信完了！",
+    "UserFeedback_SubmitBtn_Cancelled": "キャンセルしました！"
   },
 
   "_FileMigrationProcess": {
