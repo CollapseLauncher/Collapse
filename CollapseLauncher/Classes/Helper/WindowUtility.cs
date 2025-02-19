@@ -23,6 +23,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -314,6 +315,7 @@ namespace CollapseLauncher.Helper
 
         internal static NotificationService? CurrentToastNotificationService
         {
+            [method: MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
             get
             {
                 // If toast notification service field is null, then initialize
