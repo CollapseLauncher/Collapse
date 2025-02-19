@@ -379,7 +379,9 @@
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" />
 
         <!-- Region: libzstd -->
-        <Delete Files="$(PublishDir)Lib\win-x64\libzstd*" />
+        <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
+        </ItemGroup>
         
         <!-- Trim unused files and debug symbols -->
         <ItemGroup>
