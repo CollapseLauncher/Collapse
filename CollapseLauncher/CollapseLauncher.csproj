@@ -142,6 +142,11 @@
         <NativeLibrary Include="StaticLib\libwebpdemux_msvc-ucrt.lib" />
         <DirectPInvoke Include="webpmux" />
         <NativeLibrary Include="StaticLib\libwebpmux_msvc-ucrt.lib" />
+
+        <!-- Region: zstd (Decompressor only) -->
+        <DirectPInvoke Include="libzstd" />
+        <NativeLibrary Include="StaticLib\libzstd-static_msvc-ucrt.lib" />
+
         <!--
         These libraries are required by libwebp to resolve external calls.
         -->
@@ -372,6 +377,9 @@
         <!-- Region: waifu2x-ncnn-vulkan -->
         <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" />
         <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" />
+
+        <!-- Region: libzstd -->
+        <Delete Files="$(PublishDir)Lib\win-x64\libzstd*" />
         
         <!-- Trim unused files and debug symbols -->
         <ItemGroup>
