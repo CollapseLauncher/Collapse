@@ -82,7 +82,7 @@ namespace CollapseLauncher
             }
 
             GamePlaytime = new Playtime(GameVersion, GameSettings);
-            GamePropLogger = ILoggerHelper.GetILogger($"[GameProp: {GameVersion.GameName} - {GameVersion.GameRegion}]");
+            GamePropLogger = ILoggerHelper.GetILogger($"GameProp: {GameVersion.GameName} - {GameVersion.GameRegion}");
 
             SentryHelper.CurrentGameCategory   = GameVersion.GameName;
             SentryHelper.CurrentGameRegion     = GameVersion.GameRegion;
