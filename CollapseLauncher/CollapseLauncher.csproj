@@ -62,6 +62,7 @@
         <OptimizationPreference>Speed</OptimizationPreference>
         <StripSymbols>true</StripSymbols>
         <EventSourceSupport>false</EventSourceSupport>
+        <DefineConstants>$(DefineConstants);AOT</DefineConstants>
     </PropertyGroup>
 
 <!--
