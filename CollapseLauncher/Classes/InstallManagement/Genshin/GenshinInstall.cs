@@ -196,5 +196,21 @@ namespace CollapseLauncher.InstallManager.Genshin
         }
 
         #endregion
+
+        #region Override Methods - GetUnusedFileInfoList
+        protected override async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
+        {
+            // Get the result from base method
+            (List<LocalFileInfo>, long) resultBase = await base.GetUnusedFileInfoList(includeZipCheck);
+
+            // Once we get the result, take the "StreamingAssets\\ctable.dat" file out of the list
+            List<LocalFileInfo> unusedFilesFiltered = resultBase
+                .Item1
+                .Where(x => !x.FullPath
+                    .EndsWith("StreamingAssets\\ctable.dat", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            return (unusedFilesFiltered, unusedFilesFiltered.Select(x => x.FileSize).ToArray().Sum());
+        }
+        #endregion
     }
 }
