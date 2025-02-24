@@ -25,8 +25,8 @@ namespace CollapseLauncher.Helper
     {
         private static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
-            { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("2001:4860:4860::8844") ] },
-            { "Cloudflare", [ IPAddress.Parse("1.1.1.1"), IPAddress.Parse("1.0.0.1"), IPAddress.Parse("2606:4700:4700::1111"), IPAddress.Parse("2606:4700:4700::1001") ] }
+            { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8844") ] },
+            { "Cloudflare", [ IPAddress.Parse("1.1.1.1"), IPAddress.Parse("2606:4700:4700::1111"), IPAddress.Parse("1.0.0.1"), IPAddress.Parse("2606:4700:4700::1001") ] }
         };
 
         private static readonly Dictionary<string, string[]> DnsEvaluateResolveCache =
@@ -175,6 +175,7 @@ namespace CollapseLauncher.Helper
                 IDNS_WITH_IPADDR[] recordAddressEvaluate = Dns
                                                           .EnumerateIPAddressFromHost(host.ToString(),
                                                                false,
+                                                               true,
                                                                ILoggerHelper
                                                                   .GetILogger("HttpClientBuilder<T>::ParseDnsSettings"))
                                                           .ToArray();
@@ -338,7 +339,7 @@ namespace CollapseLauncher.Helper
                     ResourceRecordCollection recordsIpv6 = dnsMessageIpv6.Answers;
 
                     cachedIpAddress = recordsIpv4
-                                     .MergeWith(recordsIpv6)
+                                     .MergeWithZigZag(recordsIpv6)
                                      .EnumerateAOrAAAARecordOnly()
                                      .Select(x => new IPAddress(x.Data.Span))
                                      .ToArray();
@@ -369,17 +370,34 @@ namespace CollapseLauncher.Helper
 
     internal static class ResourceRecordCollectionExtension
     {
-        internal static IEnumerable<ResourceRecord> MergeWith(this ResourceRecordCollection records,
-                                                              ResourceRecordCollection      another)
+        internal static IEnumerable<ResourceRecord> MergeWithZigZag(this ResourceRecordCollection records,
+                                                                    ResourceRecordCollection      another)
         {
-            foreach (ResourceRecord record in records)
-            {
-                yield return record;
-            }
+            ResourceRecordCollection.Enumerator enumeratorOne = records.GetEnumerator();
+            ResourceRecordCollection.Enumerator enumeratorTwo = another.GetEnumerator();
 
-            foreach (ResourceRecord record in another)
+            try
             {
-                yield return record;
+                Enumerate:
+                bool isGetOne = enumeratorOne.MoveNext();
+                bool isGetTwo = enumeratorTwo.MoveNext();
+
+                // ReSharper disable once ConvertIfStatementToSwitchStatement
+                if (!isGetOne && !isGetTwo)
+                    yield break;
+
+                if (isGetOne)
+                    yield return enumeratorOne.Current;
+
+                if (isGetTwo)
+                    yield return enumeratorTwo.Current;
+
+                goto Enumerate;
+            }
+            finally
+            {
+                enumeratorOne.Dispose();
+                enumeratorTwo.Dispose();
             }
         }
 
