@@ -293,7 +293,8 @@ namespace CollapseLauncher.Helper
                     socketsHttpHandler.Proxy = ExternalProxy;
 
                 // Set Connect callback if the External DNS setting is available
-                socketsHttpHandler.ConnectCallback = ExternalDnsConnectCallback;
+                if (IsUseExternalDns && ExternalDns != null)
+                    socketsHttpHandler.ConnectCallback = ExternalDnsConnectCallback;
             }
             else
             {

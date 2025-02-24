@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Win32.Native.Structs.Dns.RecordDataType;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,7 +29,10 @@ namespace CollapseLauncher.Helper
             { "Cloudflare", [ IPAddress.Parse("1.1.1.1"), IPAddress.Parse("1.0.0.1"), IPAddress.Parse("2606:4700:4700::1111"), IPAddress.Parse("2606:4700:4700::1001") ] }
         };
 
-        private static readonly Dictionary<string, string[]> DnsResolveEvaluateCache =
+        private static readonly Dictionary<string, string[]> DnsEvaluateResolveCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly ConcurrentDictionary<string, IPAddress[]> DnsClientResolveCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         private static bool IsUseExternalDns { get; set; }
@@ -159,7 +163,7 @@ namespace CollapseLauncher.Helper
 
             static void EvaluateHostAndGetIp(ReadOnlySpan<char> host, out string[] addresses)
             {
-                Dictionary<string, string[]>.AlternateLookup<ReadOnlySpan<char>> lookupCache = DnsResolveEvaluateCache.GetAlternateLookup<ReadOnlySpan<char>>();
+                Dictionary<string, string[]>.AlternateLookup<ReadOnlySpan<char>> lookupCache = DnsEvaluateResolveCache.GetAlternateLookup<ReadOnlySpan<char>>();
 
                 bool isCacheMiss;
                 if ((isCacheMiss = lookupCache.TryGetValue(host, out string[]? resultCacheAddress)) && (resultCacheAddress?.Length ?? 0) != 0)
@@ -318,19 +322,41 @@ namespace CollapseLauncher.Helper
                 NoDelay = true
             };
 
-            DnsMessage dnsMessage = await dnsClient.QueryAsync(context.DnsEndPoint.Host, DnsQueryType.A, DnsClass.IN, token);
-            ResourceRecordCollection records = dnsMessage.Answers;
-
             try
             {
-                IPAddress[] recordEntries = records.EnumerateAOrAAAARecordOnly()
-                                                   .Select(x => new IPAddress(x.Data.Span))
-                                                   .ToArray();
+                string host = context.DnsEndPoint.Host;
+                bool isCached;
 
-                if (recordEntries.Length == 0)
-                    throw new Exception($"Cannot resolve the address of the host: {context.DnsEndPoint.Host}");
+                if (!((isCached = DnsClientResolveCache
+                        .TryGetValue(host, out IPAddress[]? cachedIpAddress)) &&
+                     (cachedIpAddress?.Length ?? 0) != 0))
+                {
+                    DnsMessage dnsMessageIpv4 = await dnsClient.QueryAsync(host, DnsQueryType.A, DnsClass.IN, token);
+                    ResourceRecordCollection recordsIpv4 = dnsMessageIpv4.Answers;
 
-                await socket.ConnectAsync(recordEntries, context.DnsEndPoint.Port, token);
+                    DnsMessage dnsMessageIpv6 = await dnsClient.QueryAsync(host, DnsQueryType.AAAA, DnsClass.IN, token);
+                    ResourceRecordCollection recordsIpv6 = dnsMessageIpv6.Answers;
+
+                    cachedIpAddress = recordsIpv4
+                                     .MergeWith(recordsIpv6)
+                                     .EnumerateAOrAAAARecordOnly()
+                                     .Select(x => new IPAddress(x.Data.Span))
+                                     .ToArray();
+
+                    if (isCached)
+                    {
+                        DnsClientResolveCache[host] = cachedIpAddress;
+                    }
+                    else
+                    {
+                        DnsClientResolveCache.TryAdd(host, cachedIpAddress);
+                    }
+                }
+
+                if (cachedIpAddress == null || cachedIpAddress.Length == 0)
+                    throw new Exception($"Cannot resolve the address of the host: {host}");
+
+                await socket.ConnectAsync(cachedIpAddress, context.DnsEndPoint.Port, token);
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch
@@ -343,7 +369,22 @@ namespace CollapseLauncher.Helper
 
     internal static class ResourceRecordCollectionExtension
     {
-        internal static IEnumerable<ResourceRecord> EnumerateAOrAAAARecordOnly(this ResourceRecordCollection records)
+        internal static IEnumerable<ResourceRecord> MergeWith(this ResourceRecordCollection records,
+                                                              ResourceRecordCollection      another)
+        {
+            foreach (ResourceRecord record in records)
+            {
+                yield return record;
+            }
+
+            foreach (ResourceRecord record in another)
+            {
+                yield return record;
+            }
+        }
+
+        internal static IEnumerable<ResourceRecord> EnumerateAOrAAAARecordOnly(
+            this IEnumerable<ResourceRecord> records)
         {
             foreach (ResourceRecord record in records)
             {
