@@ -113,7 +113,7 @@ namespace CollapseLauncher.Helper
 
             lock (HttpClientBuilderSharedLock)
             {
-                if (lIsUseExternalDns && ExternalDns == null)
+                if (lIsUseExternalDns && ExternalDnsServers == null)
                 {
                     ParseDnsSettings(lExternalDnsAddresses, out string[] hosts, out ConnectionType connectionType);
                     UseExternalDns(hosts, connectionType);
@@ -293,7 +293,7 @@ namespace CollapseLauncher.Helper
                     socketsHttpHandler.Proxy = ExternalProxy;
 
                 // Set Connect callback if the External DNS setting is available
-                if (IsUseExternalDns && ExternalDns != null)
+                if (IsUseExternalDns && ExternalDnsServers != null)
                     socketsHttpHandler.ConnectCallback = ExternalDnsConnectCallback;
             }
             else

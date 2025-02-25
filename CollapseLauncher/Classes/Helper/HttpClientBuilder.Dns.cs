@@ -1,8 +1,10 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Win32.Native.Structs.Dns.RecordDataType;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -23,11 +25,25 @@ namespace CollapseLauncher.Helper
 {
     public partial class HttpClientBuilder<THandler>
     {
-        private static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
+        internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8844") ] },
             { "Cloudflare", [ IPAddress.Parse("1.1.1.1"), IPAddress.Parse("2606:4700:4700::1111"), IPAddress.Parse("1.0.0.1"), IPAddress.Parse("2606:4700:4700::1001") ] }
         };
+
+        internal static readonly Dictionary<string, int> DnsServerTemplateKeyIndex = GetDnsServerTemplateKeyIndex();
+
+        private static Dictionary<string, int> GetDnsServerTemplateKeyIndex()
+        {
+            int index = 0;
+            Dictionary<string, int> returnDict = new(StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, IPAddress[]> kvp in DnsServerTemplate)
+            {
+                returnDict.Add(kvp.Key, index++);
+            }
+
+            return returnDict;
+        }
 
         private static readonly Dictionary<string, string[]> DnsEvaluateResolveCache =
             new(StringComparer.OrdinalIgnoreCase);
@@ -37,7 +53,7 @@ namespace CollapseLauncher.Helper
 
         private static bool IsUseExternalDns { get; set; }
 
-        private static DnsClient? ExternalDns { get; set; }
+        private static NameServer[]? ExternalDnsServers { get; set; }
 
         private static void ParseDnsSettings(string? inputString, out string[] hosts, out ConnectionType connectionType)
         {
@@ -65,8 +81,7 @@ namespace CollapseLauncher.Helper
             Span<Range>        delimitRanges = stackalloc Range[2];
             int delimitRangesLen = inputAsSpan
                                   .Split(delimitRanges,
-                                         '|',
-                                         StringSplitOptions.RemoveEmptyEntries);
+                                         '|');
 
             switch (delimitRangesLen)
             {
@@ -219,11 +234,11 @@ namespace CollapseLauncher.Helper
             if (hosts == null)
             {
                 IsUseExternalDns = false;
-                ExternalDns      = null;
+                ExternalDnsServers = null;
                 return this;
             }
 
-            if (ExternalDns != null && IsUseExternalDns)
+            if (ExternalDnsServers != null && IsUseExternalDns)
             {
                 return this;
             }
@@ -274,24 +289,24 @@ namespace CollapseLauncher.Helper
             if (nameServers == null || nameServers.Length == 0)
             {
                 IsUseExternalDns = false;
-                ExternalDns      = null;
+                ExternalDnsServers = null;
                 return this;
             }
 
             IsUseExternalDns = true;
-            ExternalDns      = new DnsClient(nameServers, DnsMessageOptions.Default);
+            ExternalDnsServers = nameServers;
             return this;
         }
 
         private static async ValueTask<Stream> ExternalDnsConnectCallback(
             SocketsHttpConnectionContext context, CancellationToken token)
         {
-            if (ExternalDns == null)
+            if (ExternalDnsServers == null)
             {
                 return await ConnectWithSystemDns(context, token);
             }
 
-            return await ConnectWithExternalDns(ExternalDns, context, token);
+            return await ConnectWithExternalDns(ExternalDnsServers, context, token);
         }
 
         private static async ValueTask<Stream> ConnectWithSystemDns(SocketsHttpConnectionContext context,
@@ -314,7 +329,75 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        private static async ValueTask<Stream> ConnectWithExternalDns(DnsClient                    dnsClient,
+        private static async ValueTask<(ResourceRecordCollection Ipv4, ResourceRecordCollection Ipv6)>
+            GetFallbackQuery(string host, NameServer[] dnsNameServers, CancellationToken token)
+        {
+            Exception? lastException = null;
+            var returnTuple = await Impl(host, dnsNameServers, token);
+
+            if (returnTuple == null)
+            {
+                Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host}. Trying to fallback...", LogType.Warning, true);
+                ConnectionType[] restToTryType = Enum.GetValues<ConnectionType>();
+                for (int i = 0; i < restToTryType.Length; i++)
+                {
+                    NameServer[] dnsNameFallback = GetModifiedConnNameServer(dnsNameServers, restToTryType[i]);
+
+                    returnTuple = await Impl(host, dnsNameFallback, token);
+                    if (returnTuple != null)
+                    {
+                        return (returnTuple.Value.Item1, returnTuple.Value.Item2);
+                    }
+
+                    if (lastException != null)
+                        Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host} while using {restToTryType[i]} fallback connection. Ensure your ISP doesn't block the necessary ports.", LogType.Warning, true);
+                }
+
+                if (lastException != null)
+                    throw lastException;
+
+                throw new Exception($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot get resolve for host: {host}");
+            }
+
+            return (returnTuple.Value.Item1, returnTuple.Value.Item2);
+
+            NameServer[] GetModifiedConnNameServer(NameServer[] source, ConnectionType typeToChange)
+            {
+                NameServer[] dnsNameFallback = new NameServer[source.Length];
+                for (int i = 0; i < dnsNameFallback.Length; i++)
+                {
+                    dnsNameFallback[i] = new NameServer(source[i].EndPoint, typeToChange);
+                }
+
+                return dnsNameFallback;
+            }
+
+            async ValueTask<(ResourceRecordCollection, ResourceRecordCollection)?>
+                Impl(string hostLocal, NameServer[] dnsNameLocal, CancellationToken tokenLocal)
+            {
+                try
+                {
+                    DnsClient dnsClient = new DnsClient(dnsNameLocal, DnsMessageOptions.Default);
+
+                    DnsMessage dnsMessageIpv4 = await dnsClient.QueryAsync(hostLocal, DnsQueryType.A, DnsClass.IN, tokenLocal);
+                    ResourceRecordCollection recordsIpv4 = dnsMessageIpv4.Answers;
+
+                    DnsMessage dnsMessageIpv6 = await dnsClient.QueryAsync(hostLocal, DnsQueryType.AAAA, DnsClass.IN, tokenLocal);
+                    ResourceRecordCollection recordsIpv6 = dnsMessageIpv6.Answers;
+
+                    lastException = null;
+                    return (recordsIpv4, recordsIpv6);
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                }
+
+                return null;
+            }
+        }
+
+        private static async ValueTask<Stream> ConnectWithExternalDns(NameServer[]                 dnsNameServers,
                                                                       SocketsHttpConnectionContext context,
                                                                       CancellationToken            token)
         {
@@ -332,11 +415,8 @@ namespace CollapseLauncher.Helper
                         .TryGetValue(host, out IPAddress[]? cachedIpAddress)) &&
                      (cachedIpAddress?.Length ?? 0) != 0))
                 {
-                    DnsMessage dnsMessageIpv4 = await dnsClient.QueryAsync(host, DnsQueryType.A, DnsClass.IN, token);
-                    ResourceRecordCollection recordsIpv4 = dnsMessageIpv4.Answers;
-
-                    DnsMessage dnsMessageIpv6 = await dnsClient.QueryAsync(host, DnsQueryType.AAAA, DnsClass.IN, token);
-                    ResourceRecordCollection recordsIpv6 = dnsMessageIpv6.Answers;
+                    (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
+                        await GetFallbackQuery(host, dnsNameServers, token);
 
                     cachedIpAddress = recordsIpv4
                                      .MergeWithZigZag(recordsIpv6)
@@ -355,7 +435,7 @@ namespace CollapseLauncher.Helper
                 }
 
                 if (cachedIpAddress == null || cachedIpAddress.Length == 0)
-                    throw new Exception($"Cannot resolve the address of the host: {host}");
+                    throw new Exception($"[HttpClientBuilder<T>::ConnectWithExternalDns] Cannot resolve the address of the host: {host}");
 
                 await socket.ConnectAsync(cachedIpAddress, context.DnsEndPoint.Port, token);
                 return new NetworkStream(socket, ownsSocket: true);
