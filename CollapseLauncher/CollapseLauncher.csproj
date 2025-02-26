@@ -10,8 +10,8 @@
         <AssemblyName>CollapseLauncher</AssemblyName>
         <ProductName>Collapse</ProductName>
         <Product>Collapse</Product>
-        <Description>Collapse Launcher</Description>
-        <AssemblyTitle>Collapse Launcher</AssemblyTitle>
+        <Description>Collapse</Description>
+        <AssemblyTitle>Collapse</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
