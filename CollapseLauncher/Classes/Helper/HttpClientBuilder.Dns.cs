@@ -25,7 +25,7 @@ namespace CollapseLauncher.Helper
     {
         private readonly struct CachedDnsResolveTtlInfo
         {
-            public CachedDnsResolveTtlInfo(uint ttl)
+            public CachedDnsResolveTtlInfo(double ttl)
             {
                 ValidUntil = DateTimeOffset.Now.AddSeconds(ttl);
             }
@@ -458,11 +458,11 @@ namespace CollapseLauncher.Helper
                         .Select(x => new IPAddress(x.record.Data.Span))
                         .ToArray();
 
-                    uint maxTtl = recordInfo
+                    double avgTtl = recordInfo
                         .Select(x => x.timeToLive)
-                        .Max();
+                        .Average(x => x);
 
-                    CachedDnsResolveTtlInfo ttlInfo = new(maxTtl);
+                    CachedDnsResolveTtlInfo ttlInfo = new(avgTtl);
                     DnsClientResolveCache.TryAdd(host, cachedIpAddress);
                     DnsClientResolveTTLCache.TryAdd(host, ttlInfo);
                 }
