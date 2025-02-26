@@ -47,7 +47,9 @@ namespace CollapseLauncher
 
     public static class MainEntryPoint
     {
-    #nullable enable
+        // Decide AUMID string
+        public const string AppAumid = "Collapse";
+#nullable enable
         public static int  InstanceCount      { get; set; }
         public static App? CurrentAppInstance { get; set; }
     #nullable restore
@@ -73,14 +75,8 @@ namespace CollapseLauncher
                     AppIconSmall = smallIcons[0];
                 }
 
-                // Decide AUMID string
-                const string aumid = "Collapse";
-
                 // Start Updater Hook
-                StartUpdaterHook(aumid);
-
-                // Set AUMID
-                WindowUtility.CurrentAumid = aumid;
+                StartUpdaterHook(AppAumid);
 
                 InitAppPreset();
                 var logPath = AppGameLogsFolder;
@@ -180,7 +176,7 @@ namespace CollapseLauncher
                                                   m_arguments.Migrate.KeyName);
                         return;
                     case AppMode.GenerateVelopackMetadata:
-                        GenerateVelopackMetadata(aumid);
+                        GenerateVelopackMetadata(AppAumid);
                         return;
                 }
 

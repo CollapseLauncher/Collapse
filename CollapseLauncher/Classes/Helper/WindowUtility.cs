@@ -342,8 +342,7 @@ namespace CollapseLauncher.Helper
                     if (!string.IsNullOrEmpty(currentAumId))
                     {
                         // Initialize Toast Notification service
-                        CurrentAumidInGuid = field.Initialize(
-                                                              currentAumId,
+                        CurrentAumidInGuid = field.Initialize(currentAumId,
                                                               executablePath ?? "",
                                                               iconLocationStartMenu,
                                                               asElevatedUser: true
