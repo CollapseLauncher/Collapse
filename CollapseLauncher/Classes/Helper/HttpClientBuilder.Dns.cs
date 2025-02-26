@@ -1,10 +1,8 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Win32.Native.Structs.Dns.RecordDataType;
-using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
 using System.Net;
