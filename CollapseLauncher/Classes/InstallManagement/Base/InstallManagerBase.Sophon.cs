@@ -177,18 +177,18 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                 #if SIMULATEAPPLYPRELOAD
-                    string requestedUrl = gameState switch
+                    string? requestedUrl = gameState switch
                     {
-                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager.GamePreset
+                        GameInstallStateEnum.InstalledHavePreload => GameVersionManager.GamePreset
                            .LauncherResourceChunksURL.PreloadUrl,
-                        _ => _gameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
+                        _ => GameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl
                     };
                     GameVersion? requestedVersion = gameState switch
                     {
-                        GameInstallStateEnum.InstalledHavePreload => _gameVersionManager!
-                           .GetGameVersionAPIPreload(),
-                        _ => _gameVersionManager!.GetGameVersionAPIPreload()
-                    } ?? _gameVersionManager!.GetGameVersionAPI();
+                        GameInstallStateEnum.InstalledHavePreload => GameVersionManager!
+                           .GetGameVersionApiPreload(),
+                        _ => GameVersionManager!.GetGameVersionApiPreload()
+                    } ?? GameVersionManager!.GetGameVersionApi();
                 #else
                     string? requestedUrl = gameState switch
                                            {
@@ -567,7 +567,7 @@ namespace CollapseLauncher.InstallManager.Base
                         ? GameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl
                         : GameVersionManager.GamePreset.LauncherResourceChunksURL.MainUrl;
                 #if SIMULATEAPPLYPRELOAD
-                    string requestedBaseUrlTo = _gameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl!;
+                    string requestedBaseUrlTo = GameVersionManager.GamePreset.LauncherResourceChunksURL.PreloadUrl!;
                 #else
                     string requestedBaseUrlTo = requestedBaseUrlFrom!;
                 #endif
