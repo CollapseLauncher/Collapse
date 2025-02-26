@@ -12,6 +12,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
@@ -72,12 +73,16 @@ namespace CollapseLauncher.Pages
         private readonly string ExplorerPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
+        private DnsSettingsContext DnsSettingsContext;
+
         #endregion
 
         #region Settings Page Handler
         public SettingsPage()
         {
             InitializeComponent();
+
+            DnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox, CustomDnsSettingsChangeWarning);
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -1299,7 +1304,7 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
             }
         }
-        
+
         private static bool IsBurstDownloadModeEnabled
         {
             get => LauncherConfig.IsBurstDownloadModeEnabled;
