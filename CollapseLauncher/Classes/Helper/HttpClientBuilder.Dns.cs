@@ -23,6 +23,16 @@ namespace CollapseLauncher.Helper
 {
     public partial class HttpClientBuilder<THandler>
     {
+        private readonly struct CachedDnsResolveTtlInfo
+        {
+            public CachedDnsResolveTtlInfo(uint ttl)
+            {
+                ValidUntil = DateTimeOffset.Now.AddSeconds(ttl);
+            }
+
+            public readonly DateTimeOffset ValidUntil;
+        }
+
         internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8844") ] },
@@ -47,6 +57,9 @@ namespace CollapseLauncher.Helper
             new(StringComparer.OrdinalIgnoreCase);
 
         private static readonly ConcurrentDictionary<string, IPAddress[]> DnsClientResolveCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly ConcurrentDictionary<string, CachedDnsResolveTtlInfo> DnsClientResolveTTLCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         private static bool IsUseExternalDns { get; set; }
@@ -395,6 +408,29 @@ namespace CollapseLauncher.Helper
             }
         }
 
+        private static bool TryGetCachedIp(string host, out IPAddress[]? cachedIpAddress)
+        {
+            bool isCached = DnsClientResolveCache.TryGetValue(host, out cachedIpAddress);
+            bool isTtlCached = DnsClientResolveTTLCache.TryGetValue(host, out CachedDnsResolveTtlInfo ttlInfo);
+
+            if (!(isCached && isTtlCached) || (cachedIpAddress?.Length ?? 0) == 0)
+            {
+                DnsClientResolveCache.TryRemove(host, out _);
+                DnsClientResolveTTLCache.TryRemove(host, out _);
+                return false;
+            }
+
+            DateTimeOffset currentTick = DateTimeOffset.Now;
+            if (currentTick > ttlInfo.ValidUntil)
+            {
+                DnsClientResolveCache.TryRemove(host, out _);
+                DnsClientResolveTTLCache.TryRemove(host, out _);
+                return false;
+            }
+
+            return true;
+        }
+
         private static async ValueTask<Stream> ConnectWithExternalDns(NameServer[]                 dnsNameServers,
                                                                       SocketsHttpConnectionContext context,
                                                                       CancellationToken            token)
@@ -407,29 +443,28 @@ namespace CollapseLauncher.Helper
             try
             {
                 string host = context.DnsEndPoint.Host;
-                bool isCached;
 
-                if (!((isCached = DnsClientResolveCache
-                        .TryGetValue(host, out IPAddress[]? cachedIpAddress)) &&
-                     (cachedIpAddress?.Length ?? 0) != 0))
+                if (!TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
                 {
                     (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
                         await GetFallbackQuery(host, dnsNameServers, token);
 
-                    cachedIpAddress = recordsIpv4
+                    (ResourceRecord record, uint timeToLive)[] recordInfo = recordsIpv4
                                      .MergeWithZigZag(recordsIpv6)
                                      .EnumerateAOrAAAARecordOnly()
-                                     .Select(x => new IPAddress(x.Data.Span))
                                      .ToArray();
 
-                    if (isCached)
-                    {
-                        DnsClientResolveCache[host] = cachedIpAddress;
-                    }
-                    else
-                    {
-                        DnsClientResolveCache.TryAdd(host, cachedIpAddress);
-                    }
+                    cachedIpAddress = recordInfo
+                        .Select(x => new IPAddress(x.record.Data.Span))
+                        .ToArray();
+
+                    uint maxTtl = recordInfo
+                        .Select(x => x.timeToLive)
+                        .Max();
+
+                    CachedDnsResolveTtlInfo ttlInfo = new(maxTtl);
+                    DnsClientResolveCache.TryAdd(host, cachedIpAddress);
+                    DnsClientResolveTTLCache.TryAdd(host, ttlInfo);
                 }
 
                 if (cachedIpAddress == null || cachedIpAddress.Length == 0)
@@ -479,14 +514,14 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        internal static IEnumerable<ResourceRecord> EnumerateAOrAAAARecordOnly(
+        internal static IEnumerable<(ResourceRecord Record, uint TimeToLive)> EnumerateAOrAAAARecordOnly(
             this IEnumerable<ResourceRecord> records)
         {
             foreach (ResourceRecord record in records)
             {
                 if (record.Type is DnsType.A or DnsType.AAAA)
                 {
-                    yield return record;
+                    yield return (record, record.TimeToLive);
                 }
             }
         }
