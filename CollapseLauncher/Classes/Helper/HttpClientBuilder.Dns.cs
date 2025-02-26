@@ -320,26 +320,6 @@ namespace CollapseLauncher.Helper
             return await ConnectWithExternalDns(ExternalDnsServers, context, token);
         }
 
-        private static async ValueTask<Stream> ConnectWithSystemDns(SocketsHttpConnectionContext context,
-                                                                    CancellationToken            token)
-        {
-            Socket socket = new(SocketType.Stream, ProtocolType.Tcp)
-            {
-                NoDelay = true
-            };
-
-            try
-            {
-                await socket.ConnectAsync(context.DnsEndPoint, token);
-                return new NetworkStream(socket, ownsSocket: true);
-            }
-            catch
-            {
-                socket.Dispose();
-                throw;
-            }
-        }
-
         private static async ValueTask<(ResourceRecordCollection Ipv4, ResourceRecordCollection Ipv6)>
             GetFallbackQuery(string host, NameServer[] dnsNameServers, CancellationToken token)
         {
@@ -471,6 +451,26 @@ namespace CollapseLauncher.Helper
                     throw new Exception($"[HttpClientBuilder<T>::ConnectWithExternalDns] Cannot resolve the address of the host: {host}");
 
                 await socket.ConnectAsync(cachedIpAddress, context.DnsEndPoint.Port, token);
+                return new NetworkStream(socket, ownsSocket: true);
+            }
+            catch
+            {
+                socket.Dispose();
+                throw;
+            }
+        }
+
+        private static async ValueTask<Stream> ConnectWithSystemDns(SocketsHttpConnectionContext context,
+                                                                    CancellationToken            token)
+        {
+            Socket socket = new(SocketType.Stream, ProtocolType.Tcp)
+            {
+                NoDelay = true
+            };
+
+            try
+            {
+                await socket.ConnectAsync(context.DnsEndPoint, token);
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch
