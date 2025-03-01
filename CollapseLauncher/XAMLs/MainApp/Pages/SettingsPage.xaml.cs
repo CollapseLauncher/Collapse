@@ -1421,7 +1421,7 @@ namespace CollapseLauncher.Pages
                 DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
 
                 string? dnsSettings = DnsSettingsContext.ExternalDnsAddresses;
-                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, out _))
+                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, out _))
                 {
                     throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid value or has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved!");
                 }

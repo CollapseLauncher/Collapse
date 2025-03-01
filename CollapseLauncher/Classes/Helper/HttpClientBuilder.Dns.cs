@@ -106,7 +106,7 @@ namespace CollapseLauncher.Helper
             }
 
             if (TryParseDnsConnectionType(inputString, out connectionType) &&
-                TryParseDnsHosts(inputString, out hosts))
+                TryParseDnsHosts(inputString, false, out hosts))
             {
                 return;
             }
@@ -158,7 +158,7 @@ namespace CollapseLauncher.Helper
             return true;
         }
 
-        public static bool TryParseDnsHosts(ReadOnlySpan<char> inputAsSpan, out string[]? hosts)
+        public static bool TryParseDnsHosts(ReadOnlySpan<char> inputAsSpan, bool bypassCache, out string[]? hosts)
         {
             const string             hostSeparators   = ";:,#/@%";
             const StringSplitOptions hostSplitOptions = StringSplitOptions.RemoveEmptyEntries;
@@ -195,7 +195,7 @@ namespace CollapseLauncher.Helper
 
                 if (!IPAddress.TryParse(inputHost, out _))
                 {
-                    EvaluateHostAndGetIp(inputHost, out IPAddress[]? hostsOut);
+                    EvaluateHostAndGetIp(inputHost, bypassCache, out IPAddress[]? hostsOut);
                     if (hostsOut?.Length == 0)
                     {
                         hosts = [];
@@ -226,7 +226,7 @@ namespace CollapseLauncher.Helper
 
                 if (!IPAddress.TryParse(currentRange, out _))
                 {
-                    EvaluateHostAndGetIp(currentRange, out IPAddress[]? currentAsIps);
+                    EvaluateHostAndGetIp(currentRange, bypassCache, out IPAddress[]? currentAsIps);
                     if (currentAsIps?.Length == 0)
                     {
                         continue;
@@ -248,9 +248,9 @@ namespace CollapseLauncher.Helper
             hosts = [];
             return false;
 
-            static void EvaluateHostAndGetIp(ReadOnlySpan<char> host, out IPAddress[]? addresses)
+            static void EvaluateHostAndGetIp(ReadOnlySpan<char> host, bool bypassCache, out IPAddress[]? addresses)
             {
-                if (TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
+                if (!bypassCache && TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
                 {
                     addresses = cachedIpAddress;
                     return;
@@ -258,7 +258,7 @@ namespace CollapseLauncher.Helper
 
                 (IDNS_WITH_IPADDR Record, uint RecordTimeToLive)[] recordAddressEvaluate = Dns
                    .EnumerateIPAddressFromHost(host.ToString(),
-                                               false,
+                                               bypassCache,
                                                true,
                                                ILoggerHelper
                                                   .GetILogger("HttpClientBuilder<T>::ParseDnsSettings"))
@@ -272,13 +272,17 @@ namespace CollapseLauncher.Helper
                     IPAddress[] recordAddress = recordAddressEvaluate
                                                .Select(x => x.Record.GetIPAddress())
                                                .ToArray();
-                    uint recordAvgTtl = (uint)recordAddressEvaluate
-                                             .Select(x => (int)x.RecordTimeToLive)
-                                             .Average();
 
-                    DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(recordAvgTtl);
-                    resolveCacheLookup.TryAdd(host, recordAddress);
-                    ttlCacheLookup.TryAdd(host, ttlOffset);
+                    if (!bypassCache)
+                    {
+                        uint recordAvgTtl = (uint)recordAddressEvaluate
+                                                 .Select(x => (int)x.RecordTimeToLive)
+                                                 .Average();
+
+                        DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(recordAvgTtl);
+                        resolveCacheLookup.TryAdd(host, recordAddress);
+                        ttlCacheLookup.TryAdd(host, ttlOffset);
+                    }
 
                     addresses = recordAddress;
                     return;
