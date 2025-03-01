@@ -1424,7 +1424,7 @@ namespace CollapseLauncher.Pages
                 string? dnsSettings = _dnsSettingsContext.ExternalDnsAddresses;
                 if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out _))
                 {
-                    string separatorList = string.Join(", ", HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
+                    string separatorList = string.Join(' ', HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
                     throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
                                                         $"Also, make sure that you use one of these separators: {separatorList}");
                 }
