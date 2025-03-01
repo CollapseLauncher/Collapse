@@ -180,9 +180,17 @@ namespace Hi3Helper
                 public string NetworkSettings_Dns_ConnectionType_SelectionUdp       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionUdp;
                 public string NetworkSettings_Dns_ConnectionType_SelectionDoH       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoH;
                 public string NetworkSettings_Dns_ConnectionType_SelectionDoT       { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoT;
+                public string NetworkSettings_Dns_ConnectionType_Tooltip1           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ConnectionType_Tooltip1;
                 public string NetworkSettings_Dns_ProviderSelection                 { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ProviderSelection;
                 public string NetworkSettings_Dns_ProviderSelection_SelectionCustom { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ProviderSelection_SelectionCustom;
+                public string NetworkSettings_Dns_ProviderSelection_Tooltip1        { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ProviderSelection_Tooltip1;
                 public string NetworkSettings_Dns_CustomProvider                    { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider;
+                public string NetworkSettings_Dns_CustomProvider_Tooltip1           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip1;
+                public string NetworkSettings_Dns_CustomProvider_Tooltip2           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip2;
+                public string NetworkSettings_Dns_CustomProvider_Tooltip3           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip3;
+                public string NetworkSettings_Dns_CustomProvider_Tooltip4           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip4;
+                public string NetworkSettings_Dns_CustomProvider_Tooltip5           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip5;
+                public string NetworkSettings_Dns_CustomProvider_Tooltip6           { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip6;
                 public string NetworkSettings_Dns_ChangesWarning                    { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ChangesWarning;
                 public string NetworkSettings_Dns_ValidateAndSaveSettingsButton     { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ValidateAndSaveSettingsButton;
                 public string NetworkSettings_Dns_ApplyingSettingsButton            { get; set; } = LangFallback?._SettingsPage.NetworkSettings_Dns_ApplyingSettingsButton;

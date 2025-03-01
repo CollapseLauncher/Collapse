@@ -17,6 +17,8 @@ namespace CollapseLauncher.Pages.SettingsContext
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public string? DefaultExternalDnsProvider => field ??= ExternalDnsProviderList?.FirstOrDefault();
+
         public List<string>? ExternalDnsConnectionTypeList
         {
             get => field ??= GetExternalDnsConnectionTypeList();

@@ -348,10 +348,135 @@
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Title}" />
-                        <StackPanel Margin="0,0,0,24">
+                        <StackPanel Orientation="Horizontal">
                             <TextBlock FontSize="16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_Title}" />
+                            <!--  ReSharper disable once Xaml.RedundantStyledValue  -->
+                            <Button Width="24"
+                                    Height="24"
+                                    Margin="8,0,0,0"
+                                    Padding="0"
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="4"
+                                    Style="{ThemeResource AcrylicButtonStyle}">
+                                <Button.Content>
+                                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                                              FontSize="10"
+                                              Glyph="&#x3f;" />
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout Placement="Right">
+                                        <StackPanel MaxWidth="340">
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType}" />
+                                            <TextBlock Margin="0,8,0,16"
+                                                       TextWrapping="Wrap"
+                                                       ext:TextBlockExtension.RemoveEmptyRuns="True">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_Tooltip1}" />
+                                                <LineBreak/>
+                                                <LineBreak/>
+                                                <Run Text="  • " />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoH}" />
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text=" ["/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="{x:Bind helper:Locale.Lang._Misc.Default}"/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="]"/>
+                                                <LineBreak/>
+                                                <Run Text="  • " />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoT}" />
+                                                <LineBreak/>
+                                                <Run Text="  • " />
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionUdp}" />
+                                            </TextBlock>
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection}" />
+                                            <TextBlock Margin="0,4,0,0"
+                                                       ext:TextBlockExtension.RemoveEmptyRuns="True">
+                                                <Run Text="{x:Bind helper:Locale.Lang._Misc.Default}"/>
+                                                <Run Text=":"/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text=" ["/>
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind _dnsSettingsContext.DefaultExternalDnsProvider}" />
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="]"/>
+                                            </TextBlock>
+                                            <TextBlock Margin="0,4,0,16"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection_Tooltip1}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
+                                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider}" />
+                                            <TextBlock Margin="0,4,0,0"
+                                                       ext:TextBlockExtension.RemoveEmptyRuns="True">
+                                                <Run Text="{x:Bind helper:Locale.Lang._Misc.Default}"/>
+                                                <Run Text=":"/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text=" ["/>
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip1}"/>
+                                                <Run Text=" "
+                                                     ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection}"/>
+                                                <Run Text=" "
+                                                     ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run FontWeight="Bold"
+                                                     Foreground="{ThemeResource AccentColor}"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip2}"/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="]"/>
+                                            </TextBlock>
+                                            <TextBlock Margin="0,4,0,0"
+                                                       TextWrapping="Wrap"
+                                                       ext:TextBlockExtension.RemoveEmptyRuns="True">
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip3}"/>
+                                                <Run Text=" "
+                                                     ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection_SelectionCustom}"/>
+                                                <Run Text=" "
+                                                     ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip4}"/>
+                                                <Run Text=" "
+                                                     ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection}"/>
+                                                <Run Text=" "
+                                                     ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip5}"/>
+                                                <LineBreak/>
+                                                <LineBreak/>
+                                                <Run Foreground="{ThemeResource AccentColor}"
+                                                     FontWeight="Bold"
+                                                     Text="{x:Bind _dnsSettingsSeparatorList}"/>
+                                                <LineBreak/>
+                                                <LineBreak/>
+                                                <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider_Tooltip6}"/>
+                                                <LineBreak/>
+                                                <Run FontWeight="Bold"
+                                                     Text="dns.google;$quad9;208.67.220.220"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,24">
                             <ToggleSwitch x:Name="CustomDnsSettingsToggle"
                                           IsOn="{x:Bind _dnsSettingsContext.IsUseExternalDns, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
