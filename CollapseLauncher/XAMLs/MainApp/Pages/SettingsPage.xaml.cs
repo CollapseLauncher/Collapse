@@ -1421,7 +1421,9 @@ namespace CollapseLauncher.Pages
                 DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
                 await Task.Delay(TimeSpan.FromSeconds(0.25d));
 
-                string? dnsSettings = _dnsSettingsContext.ExternalDnsAddresses;
+                string?           dnsHost     = _dnsSettingsContext.ExternalDnsAddresses;
+                DnsConnectionType connType    = (DnsConnectionType)_dnsSettingsContext.ExternalDnsConnectionType;
+                string?           dnsSettings = $"{dnsHost}|{connType}";
                 if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out _))
                 {
                     string separatorList = string.Join(' ', HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
