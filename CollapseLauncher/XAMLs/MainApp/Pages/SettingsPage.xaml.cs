@@ -1426,13 +1426,30 @@ namespace CollapseLauncher.Pages
                 string?           dnsHost     = _dnsSettingsContext.ExternalDnsAddresses;
                 DnsConnectionType connType    = (DnsConnectionType)_dnsSettingsContext.ExternalDnsConnectionType;
                 string            dnsSettings = $"{dnsHost}|{connType}";
-                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out string[]? resultHosts))
+
+                (bool isSuccess, string[]? resultHosts) resultHosts = await Task.Factory.StartNew(() =>
+                {
+                    bool isSuccess =
+                        HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true,
+                                                           out string[]? resultHosts);
+                    return (isSuccess, resultHosts);
+                }, TaskCreationOptions.DenyChildAttach);
+
+                if (!resultHosts.isSuccess)
                 {
                     throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
                                                         $"Also, make sure that you use one of these separators: {_dnsSettingsSeparatorList}");
                 }
 
-                if (!HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out DnsConnectionType resultConnType))
+
+                (bool isSuccess, DnsConnectionType resultConnType) resultConnType = await Task.Factory.StartNew(() =>
+                {
+                    bool isSuccess =
+                        HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out DnsConnectionType resultConnType);
+                    return (isSuccess, resultConnType);
+                }, TaskCreationOptions.DenyChildAttach);
+
+                if (!resultConnType.isSuccess)
                 {
                     DnsConnectionType[] types       = Enum.GetValues<DnsConnectionType>();
                     string              typesInList = string.Join(", ", types);
@@ -1444,7 +1461,7 @@ namespace CollapseLauncher.Pages
 
                 HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
                                                     .UseLauncherConfig(skipDnsInit: true)
-                                                    .UseExternalDns(resultHosts, resultConnType)
+                                                    .UseExternalDns(resultHosts.resultHosts, resultConnType.resultConnType)
                                                     .Create();
                 HttpResponseMessage responseMessage =
                     await
