@@ -37,7 +37,8 @@ namespace CollapseLauncher.Helper
         internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8844") ] },
-            { "Cloudflare", [ IPAddress.Parse("1.1.1.1"), IPAddress.Parse("2606:4700:4700::1111"), IPAddress.Parse("1.0.0.1"), IPAddress.Parse("2606:4700:4700::1001") ] }
+            { "Cloudflare", [ IPAddress.Parse("1.1.1.1"), IPAddress.Parse("2606:4700:4700::1111"), IPAddress.Parse("1.0.0.1"), IPAddress.Parse("2606:4700:4700::1001") ] },
+            { "quad9", [ IPAddress.Parse("9.9.9.10"), IPAddress.Parse("2620:fe::10"), IPAddress.Parse("149.112.112.10"), IPAddress.Parse("2620:fe::fe:10") ] }
         };
 
         internal static readonly Dictionary<string, int> DnsServerTemplateKeyIndex = GetDnsServerTemplateKeyIndex();
