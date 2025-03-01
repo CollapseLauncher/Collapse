@@ -73,7 +73,7 @@ namespace CollapseLauncher.Pages
         private readonly string ExplorerPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
-        private DnsSettingsContext DnsSettingsContext;
+        private DnsSettingsContext _dnsSettingsContext;
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace CollapseLauncher.Pages
         {
             InitializeComponent();
 
-            DnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
+            _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -940,8 +940,8 @@ namespace CollapseLauncher.Pages
             string url = GetAppConfigValue("HttpProxyUrl").ToString();
             ValidateHttpProxyUrl(url);
 
-            DnsSettingsContext.ExternalDnsConnectionTypeList = null;
-            DnsSettingsContext.ExternalDnsProviderList       = null;
+            _dnsSettingsContext.ExternalDnsConnectionTypeList = null;
+            _dnsSettingsContext.ExternalDnsProviderList       = null;
             CustomDnsConnectionTypeComboBox.UpdateLayout();
             CustomDnsProviderListComboBox.UpdateLayout();
         }
@@ -1421,7 +1421,7 @@ namespace CollapseLauncher.Pages
                 DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
                 await Task.Delay(TimeSpan.FromSeconds(0.25d));
 
-                string? dnsSettings = DnsSettingsContext.ExternalDnsAddresses;
+                string? dnsSettings = _dnsSettingsContext.ExternalDnsAddresses;
                 if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out _))
                 {
                     string separatorList = string.Join(", ", HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
@@ -1437,7 +1437,7 @@ namespace CollapseLauncher.Pages
                                                         $"The valid values are: {typesInList}");
                 }
 
-                DnsSettingsContext.SaveSettings();
+                _dnsSettingsContext.SaveSettings();
 
                 CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
                 DnsSettingsTestTextSuccess.Visibility  = Visibility.Visible;
