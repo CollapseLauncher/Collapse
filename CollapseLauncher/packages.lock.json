@@ -89,9 +89,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.72, )",
-        "resolved": "1.11.72",
-        "contentHash": "RNLgXxTFdIGFI+o5l8c2aJ2L5StIRn9Uv8HKR76p7QP4ZUL26wzpWUCWh08xWUdkL2kocl+Xhv6VUu0rA1npVg=="
+        "requested": "[1.11.74, )",
+        "resolved": "1.11.74",
+        "contentHash": "q0wRGbegtr4sZXjCNoV3OeRLTOcTNJQKiO9etNVSKPoTo33unmSK8Ahg36C4jIg/Hd3aw8YnTQjtKpBy+wlOpg=="
       },
       "Libsql.Client": {
         "type": "Direct",
@@ -372,8 +372,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.1.1",
-        "contentHash": "FvdRStUwxXtt9g4fHaGQ5/a9otA6RiLznyTdkyCzIoUbOupwS4WNGF8CGvqDJifkltCJZj+4J8K4/f2RqFVuzg=="
+        "resolved": "5.2.0",
+        "contentHash": "b3aZSOU2CjlIIFRtPRbXParKQ+9PF+JOqkSD7Gxq6PiR07t1rnK+crPtdrWMXfW6PVo/s67trCJ+fuLsgTeADw=="
       },
       "System.Buffers": {
         "type": "Transitive",
@@ -454,7 +454,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[5.1.1, )"
+          "Sentry": "[5.2.0, )"
         }
       },
       "hi3helper.enctool": {
