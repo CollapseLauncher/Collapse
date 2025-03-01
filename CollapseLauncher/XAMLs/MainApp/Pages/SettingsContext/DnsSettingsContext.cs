@@ -1,30 +1,39 @@
 ﻿using CollapseLauncher.Helper;
+using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using TurnerSoftware.DinoDNS;
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher.Pages.SettingsContext
 {
-    internal class DnsSettingsContext(TextBox customDnsHostTextbox, TextBlock customDnsSettingsChangeWarning) : INotifyPropertyChanged
+    internal class DnsSettingsContext(TextBox customDnsHostTextbox) : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public List<string> ExternalDnsConnectionTypeList = GetExternalDnsConnectionTypeList();
-        public List<string> ExternalDnsProviderList = GetExternalDnsProviderList();
+        public List<string>? ExternalDnsConnectionTypeList
+        {
+            get => field ??= GetExternalDnsConnectionTypeList();
+            set;
+        }
+
+        public List<string>? ExternalDnsProviderList
+        {
+            get => field ??= GetExternalDnsProviderList();
+            set;
+        }
 
         private static List<string> GetExternalDnsProviderList()
         {
             List<string> list = [];
             list.AddRange(HttpClientBuilder.DnsServerTemplate.Keys);
-            list.Add("Custom");
+            list.Add(Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection_SelectionCustom);
 
             return list;
         }
@@ -32,36 +41,16 @@ namespace CollapseLauncher.Pages.SettingsContext
         private static List<string> GetExternalDnsConnectionTypeList()
         {
             List<string> returnList = [];
-            foreach (ConnectionType type in Enum.GetValues<ConnectionType>())
-            {
-                string translatedText = type switch
-                {
-                    ConnectionType.Udp => "UDP (Port 53)",
-                    ConnectionType.Tcp => "TCP (Port 53)",
-                    ConnectionType.UdpWithTcpFallback => "UDP + TCP Fallback",
-                    ConnectionType.DoH => "DNS over HTTPS",
-                    ConnectionType.DoT => "DNS over TLS",
-                    _ => type.ToString()
-                };
-                returnList.Add(translatedText);
-            }
+            returnList.AddRange(Enum.GetValues<DnsConnectionType>()
+                                    .Select(type => type switch
+                                                    {
+                                                        DnsConnectionType.Udp => Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionUdp,
+                                                        DnsConnectionType.DoH => Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoH,
+                                                        DnsConnectionType.DoT => Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType_SelectionDoT,
+                                                        _ => type.ToString()
+                                                    }));
 
             return returnList;
-        }
-
-        private void SetExternalDnsAddresses(string addresses, ConnectionType connType)
-        {
-            ExternalDnsAddressesRawString = $"{addresses}|{connType}";
-        }
-
-        public string? ExternalDnsAddressesRawString
-        {
-            get => field ??= LauncherConfig.GetAppConfigValue("ExternalDnsAddresses");
-            set
-            {
-                field = value;
-                LauncherConfig.SetAndSaveConfigValue("ExternalDnsAddresses", value);
-            }
         }
 
         public int ExternalDnsProvider
@@ -70,21 +59,34 @@ namespace CollapseLauncher.Pages.SettingsContext
             {
                 ReadOnlySpan<char> keyLookup = ExternalDnsAddresses.AsSpan().TrimStart('$');
                 if (keyLookup.IsEmpty)
-                    return (int)ConnectionType.DoH;
+                    return field = (int)DnsConnectionType.DoH;
 
-                var dictLookup = HttpClientBuilder.DnsServerTemplateKeyIndex.GetAlternateLookup<ReadOnlySpan<char>>();
+                Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> dictLookup = HttpClientBuilder
+                    .DnsServerTemplateKeyIndex
+                    .GetAlternateLookup<ReadOnlySpan<char>>();
+
                 if (dictLookup.TryGetValue(keyLookup, out int index))
                 {
-                    return index;
+                    return field = index;
                 }
 
                 customDnsHostTextbox.Visibility = Visibility.Visible;
-                return ExternalDnsProviderList.Count - 1;
+                return field = (ExternalDnsProviderList?.Count ?? 1) - 1;
             }
             set
             {
-                int customIndex = ExternalDnsProviderList.Count - 1;
-                bool isCustom = value == customIndex;
+                if (value < 0)
+                {
+                    return;
+                }
+
+                if (value == field)
+                {
+                    return;
+                }
+
+                int customIndex = (ExternalDnsProviderList?.Count ?? 1) - 1;
+                bool isCustom = (field = value) == customIndex;
 
                 customDnsHostTextbox.Visibility = isCustom ? Visibility.Visible : Visibility.Collapsed;
                 if (isCustom)
@@ -92,24 +94,25 @@ namespace CollapseLauncher.Pages.SettingsContext
                     return;
                 }
 
-                string key = ExternalDnsProviderList[value];
-                string addressKey = $"${key.ToLower()}";
+                string? key = ExternalDnsProviderList?[value];
+                string addressKey = $"${key?.ToLower()}";
                 ExternalDnsAddresses = addressKey;
                 OnPropertyChanged();
             }
         }
 
-        [field: AllowNull, MaybeNull]
-        public string ExternalDnsAddresses
+        public string? ExternalDnsAddresses
         {
             get
             {
                 if (field != null)
+                {
                     return field;
+                }
 
-                ReadOnlySpan<char> value = ExternalDnsAddressesRawString;
-                Span<Range> rangeSpan = stackalloc Range[2];
-                int rangeLen = value.Split(rangeSpan, '|');
+                ReadOnlySpan<char> value     = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses").ToString();
+                Span<Range>        rangeSpan = stackalloc Range[2];
+                int                rangeLen  = value.Split(rangeSpan, '|');
                 if (rangeLen < 1)
                 {
                     return field = GetResult(value[rangeSpan[0]]);
@@ -118,12 +121,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                 return field = GetResult(value[rangeSpan[0]]);
 
                 static string GetResult(ReadOnlySpan<char> input)
-                {
-                    if (input.IsEmpty)
-                        return GetDefault();
-
-                    return input.ToString();
-                }
+                    => input.IsEmpty ? GetDefault() : input.ToString();
 
                 static string GetDefault()
                 {
@@ -133,58 +131,104 @@ namespace CollapseLauncher.Pages.SettingsContext
             }
             set
             {
+                if (field?.Equals(value) ?? false)
+                {
+                    return;
+                }
+
                 field = value;
-                SetExternalDnsAddresses(value, (ConnectionType)ExternalDnsConnectionType);
                 OnPropertyChanged();
             }
         }
 
+        private int? _externalDnsConnectionType;
         public int ExternalDnsConnectionType
         {
             get
             {
-                ReadOnlySpan<char> value = ExternalDnsAddressesRawString;
+                const int defaultValue = (int)DnsConnectionType.DoH;
+
+                if (_externalDnsConnectionType != null)
+                {
+                    return _externalDnsConnectionType ?? 0;
+                }
+
+                ReadOnlySpan<char> value = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses").ToString();
                 if (value.IsEmpty)
-                    return (int)ConnectionType.DoH;
+                {
+                    _externalDnsConnectionType = defaultValue;
+                    return defaultValue;
+                }
 
                 Span<Range> rangeSpan = stackalloc Range[2];
                 int rangeLen = value.Split(rangeSpan, '|');
                 if (rangeLen < 2)
-                    return (int)ConnectionType.DoH;
+                {
+                    _externalDnsConnectionType = defaultValue;
+                    return defaultValue;
+                }
 
                 ReadOnlySpan<char> typeSpan = value[rangeSpan[1]];
-                if (Enum.TryParse(typeSpan, true, out ConnectionType type))
-                    return (int)type;
+                if (Enum.TryParse(typeSpan, true, out DnsConnectionType type))
+                {
+                    int typeValue = (int)type;
+                    _externalDnsConnectionType = typeValue;
+                    return typeValue;
+                }
 
-                return (int)ConnectionType.DoH;
+                _externalDnsConnectionType = defaultValue;
+                return defaultValue;
             }
             set
             {
-                ConnectionType type = (ConnectionType)value;
-                if (!Enum.IsDefined(type))
+                if (value < 0)
                 {
-                    type = ConnectionType.DoH;
+                    return;
                 }
 
-                SetExternalDnsAddresses(ExternalDnsAddresses, type);
+                if (_externalDnsConnectionType == value)
+                {
+                    return;
+                }
+
+                DnsConnectionType type = (DnsConnectionType)value;
+                if (!Enum.IsDefined(type))
+                {
+                    type = DnsConnectionType.DoH;
+                }
+
+                _externalDnsConnectionType = (int)type;
                 OnPropertyChanged();
             }
         }
 
+        private bool? _isUseExternalDns;
         public bool IsUseExternalDns
         {
-            get => LauncherConfig.GetAppConfigValue("IsUseExternalDns");
+            get => _isUseExternalDns ??= LauncherConfig.GetAppConfigValue("IsUseExternalDns");
             set
             {
-                LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", value);
+                if (_isUseExternalDns == value)
+                {
+                    return;
+                }
+
+                _isUseExternalDns = value;
                 OnPropertyChanged();
             }
+        }
+
+        public void SaveSettings()
+        {
+            DnsConnectionType connType       = (DnsConnectionType)ExternalDnsConnectionType;
+            string            addresses      = ExternalDnsAddresses ?? string.Empty;
+            string            rawDnsSettings = $"{addresses}|{connType}";
+
+            LauncherConfig.SetAppConfigValue("IsUseExternalDns",     IsUseExternalDns);
+            LauncherConfig.SetAppConfigValue("ExternalDnsAddresses", rawDnsSettings);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            customDnsSettingsChangeWarning.Visibility = Visibility.Visible;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

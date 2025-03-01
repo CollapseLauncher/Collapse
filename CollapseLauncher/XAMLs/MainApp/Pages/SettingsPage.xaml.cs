@@ -82,7 +82,7 @@ namespace CollapseLauncher.Pages
         {
             InitializeComponent();
 
-            DnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox, CustomDnsSettingsChangeWarning);
+            DnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -939,6 +939,11 @@ namespace CollapseLauncher.Pages
 
             string url = GetAppConfigValue("HttpProxyUrl").ToString();
             ValidateHttpProxyUrl(url);
+
+            DnsSettingsContext.ExternalDnsConnectionTypeList = null;
+            DnsSettingsContext.ExternalDnsProviderList       = null;
+            CustomDnsConnectionTypeComboBox.UpdateLayout();
+            CustomDnsProviderListComboBox.UpdateLayout();
         }
 
         private readonly List<string> _windowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -1400,6 +1405,53 @@ namespace CollapseLauncher.Pages
                 int valBfromM = (int)(value * (1 << 20));
 
                 LauncherConfig.DownloadChunkSize = Math.Max(valBfromM, 0);
+            }
+        }
+
+        private async void ValidateAndApplyDnsSettings(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button senderAsButton)
+            {
+                return;
+            }
+
+            senderAsButton.IsEnabled = false;
+            try
+            {
+                DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
+
+                string? dnsSettings = DnsSettingsContext.ExternalDnsAddresses;
+                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, out _))
+                {
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid value or has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved!");
+                }
+
+                if (!HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out _))
+                {
+                    DnsConnectionType[] types       = Enum.GetValues<DnsConnectionType>();
+                    string              typesInList = string.Join(", ", types);
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid DNS Connection Type. " + 
+                                                        $"The valid values are: {typesInList}");
+                }
+
+                DnsSettingsContext.SaveSettings();
+
+                CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
+                DnsSettingsTestTextSuccess.Visibility  = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
+                ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
+            }
+            finally
+            {
+                DnsSettingsTestTextChecking.Visibility = Visibility.Collapsed;
+                await Task.Delay(TimeSpan.FromSeconds(2));
+
+                DnsSettingsTestTextFailed.Visibility  = Visibility.Collapsed;
+                DnsSettingsTestTextSuccess.Visibility = Visibility.Collapsed;
+                senderAsButton.IsEnabled              = true;
             }
         }
 #nullable restore

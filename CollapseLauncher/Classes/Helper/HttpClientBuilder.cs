@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.InteropServices;
 using System.Threading;
-using TurnerSoftware.DinoDNS;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
 // ReSharper disable CheckNamespace
@@ -115,7 +114,7 @@ namespace CollapseLauncher.Helper
             {
                 if (lIsUseExternalDns && ExternalDnsServers == null)
                 {
-                    ParseDnsSettings(lExternalDnsAddresses, out string[] hosts, out ConnectionType connectionType);
+                    ParseDnsSettings(lExternalDnsAddresses, out string[]? hosts, out DnsConnectionType connectionType);
                     UseExternalDns(hosts, connectionType);
                 }
             }

@@ -21,18 +21,15 @@ using Dns = Hi3Helper.Win32.ManagedTools.Dns;
 #nullable enable
 namespace CollapseLauncher.Helper
 {
+    public enum DnsConnectionType
+    {
+        DoH,
+        DoT,
+        Udp
+    }
+
     public partial class HttpClientBuilder<THandler>
     {
-        private readonly struct CachedDnsResolveTtlInfo
-        {
-            public CachedDnsResolveTtlInfo(double ttl)
-            {
-                ValidUntil = DateTimeOffset.Now.AddSeconds(ttl);
-            }
-
-            public readonly DateTimeOffset ValidUntil;
-        }
-
         internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8844") ] },
@@ -53,34 +50,54 @@ namespace CollapseLauncher.Helper
             return returnDict;
         }
 
-        private static readonly Dictionary<string, string[]> DnsEvaluateResolveCache =
-            new(StringComparer.OrdinalIgnoreCase);
-
         private static readonly ConcurrentDictionary<string, IPAddress[]> DnsClientResolveCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        private static readonly ConcurrentDictionary<string, CachedDnsResolveTtlInfo> DnsClientResolveTTLCache =
+        private static readonly ConcurrentDictionary<string, DateTimeOffset> DnsClientResolveTtlCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         private static bool IsUseExternalDns { get; set; }
 
         private static NameServer[]? ExternalDnsServers { get; set; }
 
-        private static void ParseDnsSettings(string? inputString, out string[] hosts, out ConnectionType connectionType)
+        /// <summary>
+        /// Supported input format:<br/>
+        ///     [provider_prefix or ip_addressv4/v6];[...]|[connection_type]<br/>
+        /// <br/>
+        /// DNS Provider Entries:<br/>
+        ///    - provider_prefix: The prefix of the DNS provider, e.g. $google for Google, $cloudflare for Cloudflare and $quad9 for Quad9.<br/>
+        ///    - ip_addressv4/v6: Prefer to use other DNS server by using the IP address of the DNS server (supporting IPv4 and IPv6).<br/>
+        /// The DNS provider entries are case-insensitive and can be used alongside the IP address of other DNS server.<br/>
+        /// For example, if you use "$google;$cloudflare", it will be evaluated as you use both Google and Cloudflare as the DNS server.<br/>
+        /// If you use "$cloudflare;208.67.220.220", it will be evaluated as you use Cloudflare and other DNS server with IP address (in this example, the IPv4 of OpenDNS).<br/>
+        /// The entries are mainly separated by semicolon (;). But this can be changed by using other<br/>
+        /// separator characters (e.g. colon (:), comma (,), slash (/), hash (#), at (@), and percent (%)).<br/>
+        /// <br/>
+        /// DNS Connection Type:<br/>
+        ///     - DoH : DNS over HTTPS<br/>
+        ///     - DoT : DNS over TLS<br/>
+        ///     - Udp : DNS over UDP<br/>
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <param name="hosts"></param>
+        /// <param name="connectionType"></param>
+        /// <exception cref="NullReferenceException"></exception>
+        internal static void ParseDnsSettings(string? inputString, out string[]? hosts, out DnsConnectionType connectionType)
         {
-            // TODO: Test this parser with input string like:
-            //     - $google;|doT             -> Expected Result: Uses Google as DNS server, uses ConnectionType.DoT
-            //     - $clOudFlarE|             -> Expected Result: Uses Cloudflare as DNS server, Has connection type separator with undefined value, fallback to ConnectionType.DoH
-            //     - $clOudFlarE|Dunno        -> Expected Result: Uses Cloudflare as DNS server, unknown connection type value, fallback to ConnectionType.DoH
-            //     - $clOudFlarE              -> Expected Result: Uses Cloudflare as DNS server, Has no connection type separator and no value, fallback to ConnectionType.DoH
-            //     - 8.8.8.8;$cloudflare|uDp  -> Expected Result: Uses both 8.8.8.8 and Cloudflare as DNS server, uses ConnectionType.Udp
-            //     - $cloudflare;$google|DoH  -> Expected Result: Uses both Cloudflare and Google as DNS server, uses ConnectionType.DoH
-            //     - [null] or [empty string] -> Expected Result: Fallback to use Google as DNS server, fallback to ConnectionType.DoH
-            //     - |DoH                     -> Expected Result: Fallback to use Google as DNS server, uses ConnectionType.DoH
-            //     - 2001:4860:4860::8888|DoH -> Expected Result: Uses 2001:4860:4860::8888 as DNS server, uses ConnectionType.DoH
-            //     - dns.google|DoH           -> Expected Result: Evaluate to 8.8.8.8 and 8.8.4.4 then use it as DNS server, uses ConnectionType.DoH
+            // Accepted string formats to test (just in-case you entered a weird string)
+            //     - $google;|doT             -> Expected Result: Uses Google as DNS server, uses DnsConnectionType.DoT
+            //     - $clOudFlarE|             -> Expected Result: Uses Cloudflare as DNS server, Has connection type separator with undefined value, fallback to DnsConnectionType.DoH
+            //     - $clOudFlarE|Dunno        -> Expected Result: Uses Cloudflare as DNS server, unknown connection type value, fallback to DnsConnectionType.DoH
+            //     - $clOudFlarE              -> Expected Result: Uses Cloudflare as DNS server, Has no connection type separator and no value, fallback to DnsConnectionType.DoH
+            //     - 8.8.8.8,$cloudflare|uDp  -> Expected Result: Uses both 8.8.8.8 and Cloudflare as DNS server, uses DnsConnectionType.Udp
+            //     - $cloudflare,$google|DoH  -> Expected Result: Uses both Cloudflare and Google as DNS server, uses DnsConnectionType.DoH
+            //     - $cloudflare:$google|DoH  -> Expected Result: Uses both Cloudflare and Google as DNS server, uses DnsConnectionType.DoH
+            //     - [null] or [empty string] -> Expected Result: Fallback to use Google as DNS server, fallback to DnsConnectionType.DoH
+            //     - |DoH                     -> Expected Result: Fallback to use Google as DNS server, uses DnsConnectionType.DoH
+            //     - 2001:4860:4860::8888|DoH -> Expected Result: Uses 2001:4860:4860::8888 as DNS server, uses DnsConnectionType.DoH
+            //     - dns.google|DoH           -> Expected Result: Evaluate to 8.8.8.8 and 8.8.4.4 then use it as DNS server, uses DnsConnectionType.DoH
 
-            connectionType = ConnectionType.DoH;
+            connectionType = DnsConnectionType.DoH;
 
             if (string.IsNullOrEmpty(inputString))
             {
@@ -88,63 +105,107 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            ReadOnlySpan<char> inputAsSpan   = inputString;
-            Span<Range>        delimitRanges = stackalloc Range[2];
-            int delimitRangesLen = inputAsSpan
-                                  .Split(delimitRanges,
-                                         '|');
+            if (TryParseDnsConnectionType(inputString, out connectionType) &&
+                TryParseDnsHosts(inputString, out hosts))
+            {
+                return;
+            }
+
+            GetDefault(out hosts);
+            return;
+
+            static void GetDefault(out string[] innerHosts)
+            {
+                KeyValuePair<string, IPAddress[]>? valueTemplate = DnsServerTemplate.FirstOrDefault();
+                if (valueTemplate == null)
+                {
+                    throw new NullReferenceException("[HttpClientBuilder<T>::ParseDnsSettings] No DnsServerTemplate is available!");
+                }
+
+                innerHosts = [$"${valueTemplate.Value.Key.ToLower()}"];
+            }
+        }
+
+        public static bool TryParseDnsConnectionType(ReadOnlySpan<char> inputAsSpan, out DnsConnectionType connType)
+        {
+            connType = DnsConnectionType.DoH;
+            if (inputAsSpan.IsEmpty)
+            {
+                return false;
+            }
+
+            Span<Range>        delimitRanges    = stackalloc Range[2];
+            int                delimitRangesLen = inputAsSpan.Split(delimitRanges, '|');
 
             switch (delimitRangesLen)
             {
                 case 0:
-                    GetDefault(out hosts);
-                    return;
+                    return false;
                 case >= 2:
                 {
                     ReadOnlySpan<char> inputConnType = inputAsSpan[delimitRanges[1]];
-                    if (!Enum.TryParse(inputConnType, true, out connectionType))
+                    if (!Enum.TryParse(inputConnType, true, out connType))
                     {
-                        connectionType = ConnectionType.DoH;
-                        Logger.LogWriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse the connection type token. Falling back to DoH. Current string: {inputConnType.ToString()}", LogType.Error, true);
+                        connType = DnsConnectionType.DoH;
+                        Logger.LogWriteLine($"[HttpClientBuilder<T>::TryParseDnsConnectionType] Cannot parse the connection type token. Falling back to DoH. Current string: {inputConnType.ToString()}", LogType.Error, true);
+                        return false;
                     }
 
                     break;
                 }
             }
 
+            return true;
+        }
+
+        public static bool TryParseDnsHosts(ReadOnlySpan<char> inputAsSpan, out string[]? hosts)
+        {
+            const string             hostSeparators   = ";:,#/@%";
+            const StringSplitOptions hostSplitOptions = StringSplitOptions.RemoveEmptyEntries;
+
+            if (inputAsSpan.IsEmpty)
+            {
+                hosts = [];
+                return false;
+            }
+
+            Span<Range>        delimitRanges = stackalloc Range[2];
+            _ = inputAsSpan.Split(delimitRanges, '|');
+            
             ReadOnlySpan<char> inputHost           = inputAsSpan[delimitRanges[0]];
             Span<Range>        inputHostSplitRange = stackalloc Range[32]; // Set maximum as 32 entries
-            int inputHostSplitLen = inputHost.Split(inputHostSplitRange,
-                                                    ';',
-                                                    StringSplitOptions.RemoveEmptyEntries);
+
+            int inputHostSplitLen = inputHost.Split(inputHostSplitRange, hostSeparators, hostSplitOptions);
 
             if (inputHostSplitLen == 0)
             {
                 if (inputHost.IsEmpty)
                 {
-                    GetDefault(out hosts);
-                    return;
+                    hosts = [];
+                    return false;
                 }
 
-                if (inputHost[0] == '$')
+                Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> templateLookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
+
+                if (inputHost[0] == '$' && templateLookup.ContainsKey(inputHost[1..]))
                 {
                     hosts = [inputHost[0].ToString()];
-                    return;
+                    return true;
                 }
 
                 if (!IPAddress.TryParse(inputHost, out _))
                 {
-                    EvaluateHostAndGetIp(inputHost, out string[] hostsOut);
-                    if (hostsOut.Length == 0)
+                    EvaluateHostAndGetIp(inputHost, out IPAddress[]? hostsOut);
+                    if (hostsOut?.Length == 0)
                     {
-                        GetDefault(out hosts);
-                    }
-                    else
-                    {
-                        hosts = hostsOut;
+                        hosts = [];
+                        return false;
                     }
 
-                    return;
+                    hosts = hostsOut?
+                           .Select(x => x.ToString())
+                           .ToArray();
+                    return true;
                 }
             }
 
@@ -165,13 +226,13 @@ namespace CollapseLauncher.Helper
 
                 if (!IPAddress.TryParse(currentRange, out _))
                 {
-                    EvaluateHostAndGetIp(currentRange, out string[] currentAsIps);
-                    if (currentAsIps.Length == 0)
+                    EvaluateHostAndGetIp(currentRange, out IPAddress[]? currentAsIps);
+                    if (currentAsIps?.Length == 0)
                     {
                         continue;
                     }
 
-                    hostRangeList.AddRange(currentAsIps);
+                    hostRangeList.AddRange(currentAsIps?.Select(x => x.ToString()) ?? []);
                     continue;
                 }
 
@@ -181,45 +242,43 @@ namespace CollapseLauncher.Helper
             if (hostRangeList.Count != 0)
             {
                 hosts = hostRangeList.ToArray();
-                return;
+                return true;
             }
 
-            GetDefault(out hosts);
-            return;
+            hosts = [];
+            return false;
 
-            static void EvaluateHostAndGetIp(ReadOnlySpan<char> host, out string[] addresses)
+            static void EvaluateHostAndGetIp(ReadOnlySpan<char> host, out IPAddress[]? addresses)
             {
-                Dictionary<string, string[]>.AlternateLookup<ReadOnlySpan<char>> lookupCache = DnsEvaluateResolveCache.GetAlternateLookup<ReadOnlySpan<char>>();
-
-                bool isCacheMiss;
-                if ((isCacheMiss = lookupCache.TryGetValue(host, out string[]? resultCacheAddress)) && (resultCacheAddress?.Length ?? 0) != 0)
+                if (TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
                 {
-                    addresses = resultCacheAddress!;
+                    addresses = cachedIpAddress;
                     return;
                 }
 
-                IDNS_WITH_IPADDR[] recordAddressEvaluate = Dns
-                                                          .EnumerateIPAddressFromHost(host.ToString(),
-                                                               false,
-                                                               true,
-                                                               ILoggerHelper
-                                                                  .GetILogger("HttpClientBuilder<T>::ParseDnsSettings"))
-                                                          .ToArray();
+                (IDNS_WITH_IPADDR Record, uint RecordTimeToLive)[] recordAddressEvaluate = Dns
+                   .EnumerateIPAddressFromHost(host.ToString(),
+                                               false,
+                                               true,
+                                               ILoggerHelper
+                                                  .GetILogger("HttpClientBuilder<T>::ParseDnsSettings"))
+                   .ToArray();
 
                 if (recordAddressEvaluate.Length != 0)
                 {
-                    string[] recordAddress = recordAddressEvaluate
-                                            .Select(x => x.GetIPAddress().ToString())
-                                            .ToArray();
+                    ConcurrentDictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> resolveCacheLookup = DnsClientResolveCache.GetAlternateLookup<ReadOnlySpan<char>>();
+                    ConcurrentDictionary<string, DateTimeOffset>.AlternateLookup<ReadOnlySpan<char>> ttlCacheLookup = DnsClientResolveTtlCache.GetAlternateLookup<ReadOnlySpan<char>>();
 
-                    if (isCacheMiss)
-                    {
-                        lookupCache[host] = recordAddress;
-                    }
-                    else
-                    {
-                        lookupCache.TryAdd(host, recordAddress);
-                    }
+                    IPAddress[] recordAddress = recordAddressEvaluate
+                                               .Select(x => x.Record.GetIPAddress())
+                                               .ToArray();
+                    uint recordAvgTtl = (uint)recordAddressEvaluate
+                                             .Select(x => (int)x.RecordTimeToLive)
+                                             .Average();
+
+                    DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(recordAvgTtl);
+                    resolveCacheLookup.TryAdd(host, recordAddress);
+                    ttlCacheLookup.TryAdd(host, ttlOffset);
 
                     addresses = recordAddress;
                     return;
@@ -227,20 +286,9 @@ namespace CollapseLauncher.Helper
 
                 addresses = [];
             }
-
-            static void GetDefault(out string[] innerHosts)
-            {
-                KeyValuePair<string, IPAddress[]>? valueTemplate = DnsServerTemplate.FirstOrDefault();
-                if (valueTemplate == null)
-                {
-                    throw new NullReferenceException("[HttpClientBuilder<T>::ParseDnsSettings] No DnsServerTemplate is available!");
-                }
-
-                innerHosts = [$"${valueTemplate.Value.Key.ToLower()}"];
-            }
         }
 
-        public HttpClientBuilder<THandler> UseExternalDns(string[]? hosts = null, ConnectionType connectionType = ConnectionType.DoH)
+        public HttpClientBuilder<THandler> UseExternalDns(string[]? hosts = null, DnsConnectionType connectionType = DnsConnectionType.DoH)
         {
             if (hosts == null)
             {
@@ -258,7 +306,12 @@ namespace CollapseLauncher.Helper
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (IPAddress currentHost in EnumerateHostAsIp(hosts).Distinct())
             {
-                nameServerList.Add(new NameServer(currentHost, connectionType));
+                nameServerList.Add(new NameServer(currentHost, connectionType switch
+                {
+                    DnsConnectionType.Udp => ConnectionType.Udp,
+                    DnsConnectionType.DoT => ConnectionType.DoT,
+                    _ => ConnectionType.DoH
+                }));
             }
 
             if (nameServerList.Count != 0)
@@ -323,41 +376,46 @@ namespace CollapseLauncher.Helper
         private static async ValueTask<(ResourceRecordCollection Ipv4, ResourceRecordCollection Ipv6)>
             GetFallbackQuery(string host, NameServer[] dnsNameServers, CancellationToken token)
         {
-            Exception? lastException = null;
-            var returnTuple = await Impl(host, dnsNameServers, token);
+            Exception?                                            lastException = null;
+            (ResourceRecordCollection, ResourceRecordCollection)? returnTuple = await Impl(host, dnsNameServers, token);
 
-            if (returnTuple == null)
+            if (returnTuple != null)
             {
-                Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host}. Trying to fallback...", LogType.Warning, true);
-                ConnectionType[] restToTryType = Enum.GetValues<ConnectionType>();
-                for (int i = 0; i < restToTryType.Length; i++)
+                return (returnTuple.Value.Item1, returnTuple.Value.Item2);
+            }
+
+            Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host}. Trying to fallback...", LogType.Warning, true);
+            DnsConnectionType[] restToTryType = Enum.GetValues<DnsConnectionType>();
+            foreach (DnsConnectionType connType in restToTryType)
+            {
+                NameServer[] dnsNameFallback = GetModifiedConnNameServer(dnsNameServers, connType);
+
+                returnTuple = await Impl(host, dnsNameFallback, token);
+                if (returnTuple != null)
                 {
-                    NameServer[] dnsNameFallback = GetModifiedConnNameServer(dnsNameServers, restToTryType[i]);
-
-                    returnTuple = await Impl(host, dnsNameFallback, token);
-                    if (returnTuple != null)
-                    {
-                        return (returnTuple.Value.Item1, returnTuple.Value.Item2);
-                    }
-
-                    if (lastException != null)
-                        Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host} while using {restToTryType[i]} fallback connection. Ensure your ISP doesn't block the necessary ports.", LogType.Warning, true);
+                    return (returnTuple.Value.Item1, returnTuple.Value.Item2);
                 }
 
                 if (lastException != null)
-                    throw lastException;
-
-                throw new Exception($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot get resolve for host: {host}");
+                    Logger.LogWriteLine($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot resolve host: {host} while using {connType} fallback connection. Ensure your ISP doesn't block the necessary ports.", LogType.Warning, true);
             }
 
-            return (returnTuple.Value.Item1, returnTuple.Value.Item2);
+            if (lastException != null)
+                throw lastException;
 
-            NameServer[] GetModifiedConnNameServer(NameServer[] source, ConnectionType typeToChange)
+            throw new Exception($"[HttpClientBuilder<T>::GetFallbackQuery] Cannot get resolve for host: {host}");
+
+            NameServer[] GetModifiedConnNameServer(NameServer[] source, DnsConnectionType typeToChange)
             {
                 NameServer[] dnsNameFallback = new NameServer[source.Length];
                 for (int i = 0; i < dnsNameFallback.Length; i++)
                 {
-                    dnsNameFallback[i] = new NameServer(source[i].EndPoint, typeToChange);
+                    dnsNameFallback[i] = new NameServer(source[i].EndPoint, typeToChange switch
+                    {
+                        DnsConnectionType.Udp => ConnectionType.Udp,
+                        DnsConnectionType.DoT => ConnectionType.DoT,
+                        _ => ConnectionType.DoH
+                    });
                 }
 
                 return dnsNameFallback;
@@ -368,7 +426,7 @@ namespace CollapseLauncher.Helper
             {
                 try
                 {
-                    DnsClient dnsClient = new DnsClient(dnsNameLocal, DnsMessageOptions.Default);
+                    DnsClient dnsClient = new(dnsNameLocal, DnsMessageOptions.Default);
 
                     DnsMessage dnsMessageIpv4 = await dnsClient.QueryAsync(hostLocal, DnsQueryType.A, DnsClass.IN, tokenLocal);
                     ResourceRecordCollection recordsIpv4 = dnsMessageIpv4.Answers;
@@ -388,27 +446,30 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        private static bool TryGetCachedIp(string host, out IPAddress[]? cachedIpAddress)
+        private static bool TryGetCachedIp(ReadOnlySpan<char> host, out IPAddress[]? cachedIpAddress)
         {
-            bool isCached = DnsClientResolveCache.TryGetValue(host, out cachedIpAddress);
-            bool isTtlCached = DnsClientResolveTTLCache.TryGetValue(host, out CachedDnsResolveTtlInfo ttlInfo);
+            ConcurrentDictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> resolveCacheLookup = DnsClientResolveCache.GetAlternateLookup<ReadOnlySpan<char>>();
+            ConcurrentDictionary<string, DateTimeOffset>.AlternateLookup<ReadOnlySpan<char>> ttlCacheLookup = DnsClientResolveTtlCache.GetAlternateLookup<ReadOnlySpan<char>>();
+
+            bool isCached    = resolveCacheLookup.TryGetValue(host, out cachedIpAddress);
+            bool isTtlCached = ttlCacheLookup.TryGetValue(host, out DateTimeOffset ttlInfo);
 
             if (!(isCached && isTtlCached) || (cachedIpAddress?.Length ?? 0) == 0)
             {
-                DnsClientResolveCache.TryRemove(host, out _);
-                DnsClientResolveTTLCache.TryRemove(host, out _);
+                resolveCacheLookup.TryRemove(host, out _);
+                ttlCacheLookup.TryRemove(host, out _);
                 return false;
             }
 
             DateTimeOffset currentTick = DateTimeOffset.Now;
-            if (currentTick > ttlInfo.ValidUntil)
+            if (currentTick <= ttlInfo)
             {
-                DnsClientResolveCache.TryRemove(host, out _);
-                DnsClientResolveTTLCache.TryRemove(host, out _);
-                return false;
+                return true;
             }
 
-            return true;
+            resolveCacheLookup.TryRemove(host, out _);
+            ttlCacheLookup.TryRemove(host, out _);
+            return false;
         }
 
         private static async ValueTask<Stream> ConnectWithExternalDns(NameServer[]                 dnsNameServers,
@@ -442,9 +503,9 @@ namespace CollapseLauncher.Helper
                         .Select(x => x.timeToLive)
                         .Average(x => x);
 
-                    CachedDnsResolveTtlInfo ttlInfo = new(avgTtl);
+                    DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(avgTtl);
                     DnsClientResolveCache.TryAdd(host, cachedIpAddress);
-                    DnsClientResolveTTLCache.TryAdd(host, ttlInfo);
+                    DnsClientResolveTtlCache.TryAdd(host, ttlOffset);
                 }
 
                 if (cachedIpAddress == null || cachedIpAddress.Length == 0)

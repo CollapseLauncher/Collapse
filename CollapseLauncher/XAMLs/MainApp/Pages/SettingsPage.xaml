@@ -348,49 +348,154 @@
                         <TextBlock Margin="0,16,0,8"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Title}" />
-                        <StackPanel Margin="0,0,0,16">
+                        <StackPanel Margin="0,0,0,24">
                             <TextBlock FontSize="16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                                       Text="Custom DNS Settings" />
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_Title}" />
                             <ToggleSwitch x:Name="CustomDnsSettingsToggle"
                                           IsOn="{x:Bind DnsSettingsContext.IsUseExternalDns, Mode=TwoWay}"
                                           OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                           OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                             <Grid Width="400"
-                                  HorizontalAlignment="Left"
-                                  RowSpacing="8">
+                                  HorizontalAlignment="Left">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <ComboBox ItemsSource="{x:Bind DnsSettingsContext.ExternalDnsConnectionTypeList}"
+                                <ComboBox x:Name="CustomDnsConnectionTypeComboBox"
+                                          ItemsSource="{x:Bind DnsSettingsContext.ExternalDnsConnectionTypeList}"
                                           SelectedIndex="{x:Bind DnsSettingsContext.ExternalDnsConnectionType, Mode=TwoWay}"
                                           IsEnabled="{x:Bind CustomDnsSettingsToggle.IsOn, Mode=OneWay}"
                                           HorizontalAlignment="Stretch"
-                                          Header="Connection Type"/>
-                                <ComboBox Grid.Row="1"
+                                          Margin="0,0,0,8"
+                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ConnectionType}"/>
+                                <ComboBox x:Name="CustomDnsProviderListComboBox"
+                                          Grid.Row="1"
                                           ItemsSource="{x:Bind DnsSettingsContext.ExternalDnsProviderList}"
                                           SelectedIndex="{x:Bind DnsSettingsContext.ExternalDnsProvider, Mode=TwoWay}"
                                           IsEnabled="{x:Bind CustomDnsSettingsToggle.IsOn, Mode=OneWay}"
                                           HorizontalAlignment="Stretch"
-                                          Header="DNS Provider"/>
+                                          Margin="0,0,0,8"
+                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ProviderSelection}"/>
                                 <TextBox x:Name="CustomDnsHostTextbox"
                                          Grid.Row="2"
                                          Text="{x:Bind DnsSettingsContext.ExternalDnsAddresses, Mode=TwoWay}"
                                          IsEnabled="{x:Bind CustomDnsSettingsToggle.IsOn, Mode=OneWay}"
-                                         Header="Custom DNS Provider Host(s)"
+                                         Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_CustomProvider}"
+                                         Margin="0,0,0,8"
                                          Visibility="Collapsed"/>
+                                <Button x:Name="CustomDnsSettingsApplyButton"
+                                        Grid.Row="3"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Margin="0,8,0,8"
+                                        IsEnabled="{x:Bind CustomDnsSettingsToggle.IsOn, Mode=OneWay}"
+                                        Style="{ThemeResource AcrylicButtonStyle}"
+                                        Click="ValidateAndApplyDnsSettings">
+                                    <Grid Margin="0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock HorizontalAlignment="Left"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"
+                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ValidateAndSaveSettingsButton}"/>
+                                        <FontIcon Grid.Column="1"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Center"
+                                                  FontSize="18"
+                                                  Glyph="" />
+                                    </Grid>
+                                </Button>
+                                <Grid x:Name="DnsSettingsTestTextChecking"
+                                      Grid.Row="4"
+                                      Padding="12,8"
+                                      Margin="0,0,0,8"
+                                      HorizontalAlignment="Stretch"
+                                      Background="{ThemeResource AccentAcrylicInAppFillColorBaseBrush}"
+                                      CornerRadius="4"
+                                      Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="0,-2,0,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ApplyingSettingsButton}" />
+                                    <ProgressRing Grid.Column="1"
+                                                  Width="18"
+                                                  Height="18"
+                                                  VerticalAlignment="Center"
+                                                  IsIndeterminate="true" />
+                                </Grid>
+                                <Grid x:Name="DnsSettingsTestTextSuccess"
+                                      Grid.Row="4"
+                                      Padding="12,8"
+                                      Margin="0,0,0,8"
+                                      HorizontalAlignment="Stretch"
+                                      Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                      CornerRadius="4"
+                                      Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="0,-2,0,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_SettingsSavedButton}" />
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="18"
+                                              Foreground="{ThemeResource SystemFillColorSuccess}"
+                                              Glyph="" />
+                                </Grid>
+                                <Grid x:Name="DnsSettingsTestTextFailed"
+                                          Grid.Row="4"
+                                          Padding="12,8"
+                                          Margin="0,0,0,8"
+                                          HorizontalAlignment="Stretch"
+                                          Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                          CornerRadius="4"
+                                          Visibility="Collapsed">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Margin="0,-2,0,0"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_SettingsFailedButton}" />
+                                    <FontIcon Grid.Column="1"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                                              FontSize="18"
+                                              Foreground="{ThemeResource SystemFillColorCritical}"
+                                              Glyph="" />
+                                </Grid>
                             </Grid>
                             <TextBlock x:Name="CustomDnsSettingsChangeWarning"
-                                       Margin="0,12,0,0"
+                                       Margin="0,0,0,0"
                                        FontWeight="Bold"
                                        Foreground="{ThemeResource AccentColor}"
-                                       Text="You need to restart the app for any DNS settings changes to take effect."
+                                       Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Dns_ChangesWarning}"
                                        TextWrapping="Wrap"
                                        Visibility="Collapsed" />
                         </StackPanel>
-
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontSize="16"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
