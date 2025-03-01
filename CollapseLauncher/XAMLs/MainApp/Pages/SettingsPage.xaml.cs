@@ -1419,11 +1419,14 @@ namespace CollapseLauncher.Pages
             try
             {
                 DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
+                await Task.Delay(TimeSpan.FromSeconds(0.25d));
 
                 string? dnsSettings = DnsSettingsContext.ExternalDnsAddresses;
-                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, out _))
+                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out _))
                 {
-                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid value or has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved!");
+                    string separatorList = string.Join(", ", HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
+                                                        $"Also, make sure that you use one of these separators: {separatorList}");
                 }
 
                 if (!HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out _))

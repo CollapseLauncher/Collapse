@@ -30,6 +30,10 @@ namespace CollapseLauncher.Helper
 
     public partial class HttpClientBuilder<THandler>
     {
+        public const string DnsHostSeparators = ";:,#/@%";
+        public const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
+                                                              StringSplitOptions.TrimEntries;
+
         internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Google", [ IPAddress.Parse("8.8.8.8"), IPAddress.Parse("2001:4860:4860::8888"), IPAddress.Parse("8.8.4.4"), IPAddress.Parse("2001:4860:4860::8844") ] },
@@ -106,7 +110,7 @@ namespace CollapseLauncher.Helper
             }
 
             if (TryParseDnsConnectionType(inputString, out connectionType) &&
-                TryParseDnsHosts(inputString, false, out hosts))
+                TryParseDnsHosts(inputString, false, false, out hosts))
             {
                 return;
             }
@@ -158,11 +162,8 @@ namespace CollapseLauncher.Helper
             return true;
         }
 
-        public static bool TryParseDnsHosts(ReadOnlySpan<char> inputAsSpan, bool bypassCache, out string[]? hosts)
+        public static bool TryParseDnsHosts(ReadOnlySpan<char> inputAsSpan, bool mustPassAll, bool bypassCache, out string[]? hosts)
         {
-            const string             hostSeparators   = ";:,#/@%";
-            const StringSplitOptions hostSplitOptions = StringSplitOptions.RemoveEmptyEntries;
-
             if (inputAsSpan.IsEmpty)
             {
                 hosts = [];
@@ -175,7 +176,7 @@ namespace CollapseLauncher.Helper
             ReadOnlySpan<char> inputHost           = inputAsSpan[delimitRanges[0]];
             Span<Range>        inputHostSplitRange = stackalloc Range[32]; // Set maximum as 32 entries
 
-            int inputHostSplitLen = inputHost.Split(inputHostSplitRange, hostSeparators, hostSplitOptions);
+            int inputHostSplitLen = inputHost.SplitAny(inputHostSplitRange, DnsHostSeparators, DnsHostSplitOptions);
 
             if (inputHostSplitLen == 0)
             {
@@ -229,6 +230,11 @@ namespace CollapseLauncher.Helper
                     EvaluateHostAndGetIp(currentRange, bypassCache, out IPAddress[]? currentAsIps);
                     if (currentAsIps?.Length == 0)
                     {
+                        if (mustPassAll)
+                        {
+                            hosts = [];
+                            return false;
+                        }
                         continue;
                     }
 
