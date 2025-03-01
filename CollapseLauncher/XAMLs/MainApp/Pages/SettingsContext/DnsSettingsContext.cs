@@ -224,8 +224,8 @@ namespace CollapseLauncher.Pages.SettingsContext
             string            addresses      = ExternalDnsAddresses ?? string.Empty;
             string            rawDnsSettings = $"{addresses}|{connType}";
 
-            LauncherConfig.SetAppConfigValue("IsUseExternalDns",     IsUseExternalDns);
-            LauncherConfig.SetAppConfigValue("ExternalDnsAddresses", rawDnsSettings);
+            LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns",     IsUseExternalDns);
+            LauncherConfig.SetAndSaveConfigValue("ExternalDnsAddresses", rawDnsSettings);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

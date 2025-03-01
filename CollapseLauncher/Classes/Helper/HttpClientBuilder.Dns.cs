@@ -178,16 +178,15 @@ namespace CollapseLauncher.Helper
             Span<Range>        inputHostSplitRange = stackalloc Range[32]; // Set maximum as 32 entries
 
             int inputHostSplitLen = inputHost.SplitAny(inputHostSplitRange, DnsHostSeparators, DnsHostSplitOptions);
+            Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> templateLookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
 
-            if (inputHostSplitLen == 0)
+            if (inputHostSplitLen is 0 or 1)
             {
                 if (inputHost.IsEmpty)
                 {
                     hosts = [];
                     return false;
                 }
-
-                Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> templateLookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
 
                 if (inputHost[0] == '$' && templateLookup.ContainsKey(inputHost[1..]))
                 {
@@ -220,7 +219,7 @@ namespace CollapseLauncher.Helper
                     continue;
                 }
 
-                if (currentRange[0] == '$')
+                if (currentRange[0] == '$' && templateLookup.ContainsKey(currentRange[1..]))
                 {
                     hostRangeList.Add(currentRange.ToString());
                     continue;
