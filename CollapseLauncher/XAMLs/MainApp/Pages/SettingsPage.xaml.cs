@@ -12,6 +12,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
@@ -35,7 +36,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -72,12 +75,16 @@ namespace CollapseLauncher.Pages
         private readonly string ExplorerPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
+        private DnsSettingsContext _dnsSettingsContext;
+
         #endregion
 
         #region Settings Page Handler
         public SettingsPage()
         {
             InitializeComponent();
+
+            _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -934,6 +941,11 @@ namespace CollapseLauncher.Pages
 
             string url = GetAppConfigValue("HttpProxyUrl").ToString();
             ValidateHttpProxyUrl(url);
+
+            _dnsSettingsContext.ExternalDnsConnectionTypeList = null;
+            _dnsSettingsContext.ExternalDnsProviderList       = null;
+            CustomDnsConnectionTypeComboBox.UpdateLayout();
+            CustomDnsProviderListComboBox.UpdateLayout();
         }
 
         private readonly List<string> _windowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -1299,7 +1311,7 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
             }
         }
-        
+
         private static bool IsBurstDownloadModeEnabled
         {
             get => LauncherConfig.IsBurstDownloadModeEnabled;
@@ -1395,6 +1407,98 @@ namespace CollapseLauncher.Pages
                 int valBfromM = (int)(value * (1 << 20));
 
                 LauncherConfig.DownloadChunkSize = Math.Max(valBfromM, 0);
+            }
+        }
+
+        private readonly string _dnsSettingsSeparatorList = string.Join(' ', HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
+
+        private async void ValidateAndApplyDnsSettings(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button senderAsButton)
+            {
+                return;
+            }
+
+            senderAsButton.IsEnabled = false;
+            try
+            {
+                DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
+
+                string?           dnsHost     = _dnsSettingsContext.ExternalDnsAddresses;
+                DnsConnectionType connType    = (DnsConnectionType)_dnsSettingsContext.ExternalDnsConnectionType;
+                string            dnsSettings = $"{dnsHost}|{connType}";
+
+                (bool isSuccess, string[]? resultHosts) resultHosts = await Task.Factory.StartNew(() =>
+                {
+                    bool isSuccess =
+                        HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true,
+                                                           out string[]? resultHosts);
+                    return (isSuccess, resultHosts);
+                }, TaskCreationOptions.DenyChildAttach);
+
+                if (!resultHosts.isSuccess)
+                {
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
+                                                        $"Also, make sure that you use one of these separators: {_dnsSettingsSeparatorList}");
+                }
+
+
+                (bool isSuccess, DnsConnectionType resultConnType) resultConnType = await Task.Factory.StartNew(() =>
+                {
+                    bool isSuccess =
+                        HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out DnsConnectionType resultConnType);
+                    return (isSuccess, resultConnType);
+                }, TaskCreationOptions.DenyChildAttach);
+
+                if (!resultConnType.isSuccess)
+                {
+                    DnsConnectionType[] types       = Enum.GetValues<DnsConnectionType>();
+                    string              typesInList = string.Join(", ", types);
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid DNS Connection Type. " + 
+                                                        $"The valid values are: {typesInList}");
+                }
+
+                const string testUrl = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE";
+
+                TimeSpan timeoutSpan = TimeSpan.FromSeconds(5);
+                using HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
+                                                    .UseLauncherConfig(skipDnsInit: true)
+                                                    .UseExternalDns(resultHosts.resultHosts, resultConnType.resultConnType)
+                                                    .SetTimeout(timeoutSpan)
+                                                    .Create();
+
+                using CancellationTokenSource tokenSource = new(timeoutSpan);
+                using HttpResponseMessage responseMessage =
+                    await
+                        httpClientWithCustomDns
+                           .GetAsync(testUrl, HttpCompletionOption.ResponseContentRead, tokenSource.Token);
+
+                if (!responseMessage.IsSuccessStatusCode)
+                {
+                    throw new
+                        HttpRequestException($"HttpClient returns a non-successful status code while testing the request to this URL: {testUrl} (Status: {responseMessage.StatusCode})",
+                                             null, responseMessage.StatusCode);
+                }
+
+                _dnsSettingsContext.SaveSettings();
+
+                CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
+                DnsSettingsTestTextSuccess.Visibility  = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
+                ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
+            finally
+            {
+                DnsSettingsTestTextChecking.Visibility = Visibility.Collapsed;
+                await Task.Delay(TimeSpan.FromSeconds(2));
+
+                DnsSettingsTestTextFailed.Visibility  = Visibility.Collapsed;
+                DnsSettingsTestTextSuccess.Visibility = Visibility.Collapsed;
+                senderAsButton.IsEnabled              = true;
             }
         }
 #nullable restore

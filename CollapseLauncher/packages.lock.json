@@ -270,6 +270,12 @@
         "resolved": "9.0.2",
         "contentHash": "4TY2Yokh5Xp8XHFhsY9y84yokS7B0rhkaZCXuRiKppIiKwPVH4lVSFD9EEFzRpXdBM5ZeZXD43tc2vB6njEwwQ=="
       },
+      "TurnerSoftware.DinoDNS": {
+        "type": "Direct",
+        "requested": "[0.3.0, )",
+        "resolved": "0.3.0",
+        "contentHash": "4tYkD4ENlwozKrNuNXSCjnqKVX5vQjPvxbdSgN37KeGX+x8AT/u6QK3tToO/uxv42c/cPp8n3a8BRrPZWX7BCw=="
+      },
       "Velopack": {
         "type": "Direct",
         "requested": "[0.0.1053, )",
