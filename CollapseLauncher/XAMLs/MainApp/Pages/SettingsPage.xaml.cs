@@ -38,6 +38,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -1459,14 +1460,18 @@ namespace CollapseLauncher.Pages
 
                 const string testUrl = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE";
 
-                HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
+                TimeSpan timeoutSpan = TimeSpan.FromSeconds(5);
+                using HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
                                                     .UseLauncherConfig(skipDnsInit: true)
                                                     .UseExternalDns(resultHosts.resultHosts, resultConnType.resultConnType)
+                                                    .SetTimeout(timeoutSpan)
                                                     .Create();
-                HttpResponseMessage responseMessage =
+
+                using CancellationTokenSource tokenSource = new(timeoutSpan);
+                using HttpResponseMessage responseMessage =
                     await
                         httpClientWithCustomDns
-                           .GetAsync(testUrl, HttpCompletionOption.ResponseContentRead);
+                           .GetAsync(testUrl, HttpCompletionOption.ResponseContentRead, tokenSource.Token);
 
                 if (!responseMessage.IsSuccessStatusCode)
                 {
