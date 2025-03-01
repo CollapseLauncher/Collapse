@@ -87,7 +87,7 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
-        public HttpClientBuilder<THandler> UseLauncherConfig(int maxConnections = MaxConnectionsDefault)
+        public HttpClientBuilder<THandler> UseLauncherConfig(int maxConnections = MaxConnectionsDefault, bool skipDnsInit = false)
         {
             bool lIsUseProxy              = LauncherConfig.GetAppConfigValue("IsUseProxy");
             bool lIsAllowHttpRedirections = LauncherConfig.GetAppConfigValue("IsAllowHttpRedirections");
@@ -112,7 +112,7 @@ namespace CollapseLauncher.Helper
 
             lock (HttpClientBuilderSharedLock)
             {
-                if (lIsUseExternalDns && ExternalDnsServers == null)
+                if (!skipDnsInit && lIsUseExternalDns && ExternalDnsServers == null)
                 {
                     ParseDnsSettings(lExternalDnsAddresses, out string[]? hosts, out DnsConnectionType connectionType);
                     UseExternalDns(hosts, connectionType);

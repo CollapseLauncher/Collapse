@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using WinRT;
@@ -1421,23 +1422,40 @@ namespace CollapseLauncher.Pages
             try
             {
                 DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
-                await Task.Delay(TimeSpan.FromSeconds(0.25d));
 
                 string?           dnsHost     = _dnsSettingsContext.ExternalDnsAddresses;
                 DnsConnectionType connType    = (DnsConnectionType)_dnsSettingsContext.ExternalDnsConnectionType;
                 string            dnsSettings = $"{dnsHost}|{connType}";
-                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out _))
+                if (!HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true, out string[]? resultHosts))
                 {
                     throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
                                                         $"Also, make sure that you use one of these separators: {_dnsSettingsSeparatorList}");
                 }
 
-                if (!HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out _))
+                if (!HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out DnsConnectionType resultConnType))
                 {
                     DnsConnectionType[] types       = Enum.GetValues<DnsConnectionType>();
                     string              typesInList = string.Join(", ", types);
                     throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid DNS Connection Type. " + 
                                                         $"The valid values are: {typesInList}");
+                }
+
+                const string testUrl = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE";
+
+                HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
+                                                    .UseLauncherConfig(skipDnsInit: true)
+                                                    .UseExternalDns(resultHosts, resultConnType)
+                                                    .Create();
+                HttpResponseMessage responseMessage =
+                    await
+                        httpClientWithCustomDns
+                           .GetAsync(testUrl, HttpCompletionOption.ResponseContentRead);
+
+                if (!responseMessage.IsSuccessStatusCode)
+                {
+                    throw new
+                        HttpRequestException($"HttpClient returns a non-successful status code while testing the request to this URL: {testUrl} (Status: {responseMessage.StatusCode})",
+                                             null, responseMessage.StatusCode);
                 }
 
                 _dnsSettingsContext.SaveSettings();
@@ -1449,6 +1467,7 @@ namespace CollapseLauncher.Pages
             {
                 DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
                 ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
+                await SentryHelper.ExceptionHandlerAsync(ex);
             }
             finally
             {
