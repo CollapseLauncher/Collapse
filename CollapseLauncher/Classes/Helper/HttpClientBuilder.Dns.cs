@@ -61,9 +61,9 @@ namespace CollapseLauncher.Helper
         private static readonly ConcurrentDictionary<string, DateTimeOffset> DnsClientResolveTtlCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        private static bool IsUseExternalDns { get; set; }
+        private bool IsUseExternalDns { get; set; }
 
-        private static NameServer[]? ExternalDnsServers { get; set; }
+        private NameServer[]? ExternalDnsServers { get; set; }
 
         /// <summary>
         /// Supported input format:<br/>
@@ -372,7 +372,7 @@ namespace CollapseLauncher.Helper
             return this;
         }
 
-        private static async ValueTask<Stream> ExternalDnsConnectCallback(
+        private async ValueTask<Stream> ExternalDnsConnectCallback(
             SocketsHttpConnectionContext context, CancellationToken token)
         {
             if (ExternalDnsServers == null)
