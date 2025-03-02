@@ -17,6 +17,7 @@ using Dns = Hi3Helper.Win32.ManagedTools.Dns;
 // ReSharper disable StaticMemberInGenericType
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
+// ReSharper disable InconsistentNaming
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -30,6 +31,8 @@ namespace CollapseLauncher.Helper
 
     public partial class HttpClientBuilder<THandler>
     {
+        private static readonly IPAddressEqualityComparer IPAddressComparer = new();
+
         public const string DnsHostSeparators = ";:,#/@%";
         public const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
                                                               StringSplitOptions.TrimEntries;
@@ -314,7 +317,7 @@ namespace CollapseLauncher.Helper
 
             List<NameServer> nameServerList = [];
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (IPAddress currentHost in EnumerateHostAsIp(hosts).Distinct())
+            foreach (IPAddress currentHost in EnumerateHostAsIp(hosts).Distinct(IPAddressComparer))
             {
                 nameServerList.Add(new NameServer(currentHost, connectionType switch
                 {
@@ -548,6 +551,29 @@ namespace CollapseLauncher.Helper
             {
                 socket.Dispose();
                 throw;
+            }
+        }
+
+        private class IPAddressEqualityComparer : IEqualityComparer<IPAddress>
+        {
+            public bool Equals(IPAddress? x, IPAddress? y)
+            {
+                if (ReferenceEquals(x, y))
+                {
+                    return true;
+                }
+
+                if (x is null || y is null)
+                {
+                    return false;
+                }
+
+                return x.Equals(y);
+            }
+
+            public int GetHashCode(IPAddress obj)
+            {
+                return obj.GetHashCode();
             }
         }
     }
