@@ -190,7 +190,7 @@ namespace CollapseLauncher.Helper
 
                 if (inputHost[0] == '$' && templateLookup.ContainsKey(inputHost[1..]))
                 {
-                    hosts = [inputHost[0].ToString()];
+                    hosts = [inputHost.ToString()];
                     return true;
                 }
 
