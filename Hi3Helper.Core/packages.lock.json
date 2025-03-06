@@ -8,6 +8,12 @@
         "resolved": "9.0.2",
         "contentHash": "+KFnCLVPicEq99ko0tq+ycTvNLXHw0tImmTZjPloB/DOFLPT56KLfk5aS7wbgXRPzYhXTTBYLGaABea5mke77w=="
       },
+      "Microsoft.Windows.CsWinRT": {
+        "type": "Direct",
+        "requested": "[2.2.0, )",
+        "resolved": "2.2.0",
+        "contentHash": "R8MDVawukHrKgYCFgYaoLfbAna/FrImEFRxDK9k8ITbrXv3KLE5uN6tRqrNV83H4MFdqJ/uiA/hg1cSsXkl0vw=="
+      },
       "Sentry": {
         "type": "Direct",
         "requested": "[5.2.0, )",

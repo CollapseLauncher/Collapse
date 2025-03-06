@@ -3,7 +3,7 @@ using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.ToastCOM.Notification;
+using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
