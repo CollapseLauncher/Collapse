@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
@@ -19,43 +19,43 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2024 $(Company)</Copyright>
         <IsAotCompatible>true</IsAotCompatible>
-	</PropertyGroup>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<Optimize>True</Optimize>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<Optimize>False</Optimize>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <Optimize>False</Optimize>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<Compile Remove="Classes\Data\Tools\SevenZipTool\**" />
-		<EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\**" />
-		<None Remove="Classes\Data\Tools\SevenZipTool\**" />
-	</ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Classes\Data\Tools\SevenZipTool\**" />
+        <EmbeddedResource Remove="Classes\Data\Tools\SevenZipTool\**" />
+        <None Remove="Classes\Data\Tools\SevenZipTool\**" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Content Include="Lang\*.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+    <ItemGroup>
+        <Content Include="Lang\*.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
 	  <PackageReference Include="Sentry" Version="5.2.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
-		<ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Hi3Helper.EncTool\Hi3Helper.EncTool.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
+    </ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<ItemGroup>
-			<Content Include="Lang\**" />
-		</ItemGroup>
-		<Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
-	</Target>
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <ItemGroup>
+            <Content Include="Lang\**" />
+        </ItemGroup>
+        <Copy SourceFiles="@(Content)" DestinationFolder="$(OutDir)" />
+    </Target>
 
 </Project>
