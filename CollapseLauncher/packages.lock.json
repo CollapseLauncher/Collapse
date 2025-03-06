@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net9.0-windows10.0.26100": {
+    "net9.0-windows10.0.22621": {
       "CommunityToolkit.Common": {
         "type": "Direct",
         "requested": "[8.4.0, )",
@@ -532,7 +532,7 @@
         "type": "Project"
       }
     },
-    "net9.0-windows10.0.26100/win-x64": {
+    "net9.0-windows10.0.22621/win-x64": {
       "Libsql.Client": {
         "type": "Direct",
         "requested": "[0.5.0, )",
