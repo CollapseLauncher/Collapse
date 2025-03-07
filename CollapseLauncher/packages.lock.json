@@ -199,12 +199,6 @@
         "resolved": "2.0.1",
         "contentHash": "Xvhd0IPCKhdYppa9RhDr4fkwhoMMWfahwCfyVtRgt6TRlbUw0gOmSjJR/+L+/s0QNhLTK93C+2pSlrkDgsoY2w=="
       },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.2, )",
-        "resolved": "9.0.2",
-        "contentHash": "i+GxLf1LRnhYdrUMHwDjRGUUhK+YEBaSgbvTEF5zhgN7AjMPIsiRX6r+7rtUBOZnkp47YYfL1eCkronW6MTi1g=="
-      },
       "SharpCompress": {
         "type": "Direct",
         "requested": "[0.39.0, )",
