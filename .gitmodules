@@ -1,30 +1,40 @@
 [submodule "Hi3Helper.Http"]
 	path = Hi3Helper.Http
 	url = https://github.com/neon-nyan/Hi3Helper.Http
+	update = merge
 [submodule "ColorThief"]
 	path = ColorThief
 	url = https://github.com/neon-nyan/ColorThief
+	update = merge
 [submodule "Hi3Helper.EncTool"]
 	path = Hi3Helper.EncTool
 	url = https://github.com/CollapseLauncher/Hi3Helper.EncTool
+	update = merge
 [submodule "InnoSetupHelper/InnoSetupLogParser"]
 	path = InnoSetupHelper/InnoSetupLogParser
 	url = https://github.com/CollapseLauncher/InnoSetupLogParser
+	update = merge
 [submodule "Hi3Helper.SharpDiscordRPC"]
 	path = Hi3Helper.SharpDiscordRPC
 	url = https://github.com/CollapseLauncher/Hi3Helper.SharpDiscordRPC
+	update = merge
 [submodule "Hi3Helper.Sophon"]
 	path = Hi3Helper.Sophon
 	url = https://github.com/CollapseLauncher/Hi3Helper.Sophon
+	update = merge
 [submodule "ImageEx"]
 	path = ImageEx
 	url = https://github.com/CollapseLauncher/ImageEx
+	update = merge
 [submodule "SevenZipExtractor"]
 	path = SevenZipExtractor
 	url = https://github.com/CollapseLauncher/SevenZipExtractor
+	update = merge
 [submodule "H.NotifyIcon"]
 	path = H.NotifyIcon
 	url = https://github.com/CollapseLauncher/H.NotifyIcon
+	update = merge
 [submodule "Hi3Helper.Win32"]
 	path = Hi3Helper.Win32
 	url = https://github.com/CollapseLauncher/Hi3Helper.Win32
+	update = merge
