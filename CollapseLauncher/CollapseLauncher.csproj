@@ -158,7 +158,6 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
-        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.2" />
         <PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
@@ -189,7 +188,6 @@
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="runtime.win-x64.Microsoft.DotNet.ILCompiler" Version="9.0.2" />
         <PackageReference Include="SharpCompress" Version="0.39.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.8" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
