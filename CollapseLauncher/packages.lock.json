@@ -493,7 +493,7 @@
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
           "Microsoft.Web.WebView2": "[1.0.3065.39, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
           "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
         }
       },
