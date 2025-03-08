@@ -86,6 +86,8 @@ namespace CollapseLauncher.Pages
                 ApplyButton.Translation           = Shadow32;
                 GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
                 SettingsScrollViewer.EnableImplicitAnimation(true);
+                
+                MobileModeToggleText.Text = $"[{Lang._Misc.Tag_Deprecated}] {Lang._GameSettingsPage.MobileLayout}";
 
                 InheritApplyTextColor = ApplyText.Foreground!;
             #nullable enable

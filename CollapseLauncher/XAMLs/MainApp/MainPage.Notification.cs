@@ -6,7 +6,7 @@ using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Win32.ToastCOM.Notification;
+using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using InnoSetupHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;

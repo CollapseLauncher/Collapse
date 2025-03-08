@@ -31,8 +31,4 @@
 		<namespace fullname="Internal.Runtime.InteropServices" preserve="all" />
 		<namespace fullname="System.Runtime.CompilerServices" preserve="all" />
 	</assembly>
-	
-	<assembly fullname="WinRT.Runtime">
-		<type fullname="WinRT.TypeExtensions" preserve="all" />
-	</assembly>
 </linker>

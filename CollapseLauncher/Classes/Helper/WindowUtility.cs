@@ -11,8 +11,8 @@ using Hi3Helper.Win32.Native.ManagedTools;
 using Hi3Helper.Win32.Native.Structs;
 using Hi3Helper.Win32.Screen;
 using Hi3Helper.Win32.TaskbarListCOM;
-using Hi3Helper.Win32.ToastCOM;
-using Hi3Helper.Win32.ToastCOM.Notification;
+using Hi3Helper.Win32.WinRT.ToastCOM;
+using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -342,8 +342,7 @@ namespace CollapseLauncher.Helper
                     if (!string.IsNullOrEmpty(currentAumId))
                     {
                         // Initialize Toast Notification service
-                        CurrentAumidInGuid = field.Initialize(
-                                                              currentAumId,
+                        CurrentAumidInGuid = field.Initialize(currentAumId,
                                                               executablePath ?? "",
                                                               iconLocationStartMenu,
                                                               asElevatedUser: true

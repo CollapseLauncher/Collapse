@@ -78,4 +78,8 @@
     <BuildType Solution="Publish|*" Project="Release" />
     <Platform Project="x64" />
   </Project>
+    <Project Path="Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" Id="5CA5A261-1D5B-8A4D-EA87-B031CFFD4DDD">
+        <BuildType Solution="Publish|*" Project="Release" />
+        <Platform Project="x64" />
+    </Project>
 </Solution>

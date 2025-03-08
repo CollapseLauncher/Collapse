@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
@@ -29,7 +30,8 @@ namespace CollapseLauncher
                 return;
             }
 
-            AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle);
+            WindowUtility.CurrentDispatcherQueue?
+                .TryEnqueue(() => AttachEventToNotification(hashID, activity, activityTitle, activitySubtitle));
             BackgroundActivities.Add(hashID, activity);
         #if DEBUG
             Logger.LogWriteLine($"Background activity with ID: {hashID} has been attached", LogType.Debug, true);

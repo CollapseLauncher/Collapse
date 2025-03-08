@@ -273,6 +273,8 @@ namespace CollapseLauncher.Pages
             List<string> resPairs          = [];
             int          indexOfDefaultRes = -1;
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            // ReSharper disable once ForCanBeConvertedToForeach
             for (int i = 0; i < acH.Count; i++)
             {
                 // Get height and calculate width
@@ -312,7 +314,9 @@ namespace CollapseLauncher.Pages
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
                 resPairs.Add($"{SizeProp.Width}x{SizeProp.Height}");
 
-            for (int i = acH.Count - 1; i >= 0; i--)
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (int i = 0; i < acH.Count; i++)
             {
                 // Get height and calculate width
                 int h = acH[i];

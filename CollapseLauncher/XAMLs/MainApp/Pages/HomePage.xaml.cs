@@ -421,17 +421,15 @@ namespace CollapseLauncher.Pages
             {
                 while (true)
                 {
-                    if (CarouselToken == null || CarouselToken.IsCancellationRequested || CarouselToken.IsDisposed || CarouselToken.IsCancelled)
-                    {
-                        CarouselToken = new CancellationTokenSourceWrapper();
-                    }
+                    CarouselToken ??= new CancellationTokenSourceWrapper();
+
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
-                    if (ImageCarousel.SelectedIndex != GameNewsData!.NewsCarousel!.Count - 1 
+                    if (ImageCarousel.SelectedIndex != GameNewsData?.NewsCarousel?.Count - 1 
                         && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
                         ImageCarousel.SelectedIndex++;
                     else
-                        for (int i = GameNewsData.NewsCarousel.Count; i > 0; i--)
+                        for (int i = GameNewsData?.NewsCarousel?.Count ?? 0; i > 0; i--)
                         {
                             if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
                             {
