@@ -15,7 +15,7 @@
     <AssemblyTitle>Collapse Launcher's Task Scheduler Shell</AssemblyTitle>
     <Company>Collapse Launcher Team</Company>
     <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-    <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+    <Copyright>Copyright 2022-2025 $(Company)</Copyright>
     <LangVersion>8.0</LangVersion>
     <Version>1.0.2</Version>
   </PropertyGroup>

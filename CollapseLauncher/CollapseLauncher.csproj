@@ -14,9 +14,9 @@
         <AssemblyTitle>Collapse</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.18</Version>
+        <Version>1.82.19</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -229,8 +229,9 @@
 
         <None Include="..\.editorconfig" Link=".editorconfig" />
 
-        <Content Include="..\LICENSE.rtf">
+        <Content Include="..\msi-installer-licensefile.rtf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Link>LICENSE.rtf</Link>
         </Content>
 
         <Content Include="..\PRIVACY.md">
