@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "Hãy cho chúng tôi biết chuyện gì đã xảy ra",
     "ExceptionFeedbackTemplate_User": "Tên Người Dùng (Không Bắt Buộc)",
     "ExceptionFeedbackTemplate_Email": "Email (Không Bắt Buộc)",
-    "ExceptionFeedbackTemplate_Message": "Chèn phản hồi của bạn sau dòng này"
+    "ExceptionFeedbackTemplate_Message": "Chèn phản hồi của bạn sau dòng này",
+    
+    "Tag_Deprecated": "Deprecated",
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
 
   "_BackgroundNotification": {
