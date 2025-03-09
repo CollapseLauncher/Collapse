@@ -60,7 +60,7 @@ namespace CollapseLauncher
         public TrayIcon()
         {
             InitializeComponent();
-            
+
             CollapseTaskbar.Logger = LoggerInstance;
             CollapseTaskbar.SetValue(TaskbarIcon.LoggerProp, LoggerInstance);
 
@@ -113,7 +113,7 @@ namespace CollapseLauncher
             
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
 
-            Current   = this;
+            Current = this;
         }
 
         public void Dispose()

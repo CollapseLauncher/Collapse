@@ -533,7 +533,7 @@
     "ShareYourFeedbackBtn": "Share Your Feedback",
 
     "About": "About",
-    "About_Copyright1": "© 2022-2024",
+    "About_Copyright1": "© 2022-2025",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Under",
     "About_Copyright4": ". All rights reserved.",
@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "Tell us what happened:",
     "ExceptionFeedbackTemplate_User": "Username (Optional):",
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
-    "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line"
+    "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line",
+    
+    "Tag_Deprecated": "Deprecated",
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
 
   "_BackgroundNotification": {

@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Loading;
+﻿using CollapseLauncher.Classes.Extension;
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -45,7 +46,7 @@ namespace CollapseLauncher.ShortcutUtils
                                                                         Lang._GameClientRegions);
             AppName = $"{translatedGameTitle} - {translatedGameRegion}";
 
-            var stubPath = FindCollapseStubPath();
+            var stubPath = VelopackLocatorExtension.FindCollapseStubPath();
             Exe = $"\"{stubPath}\"";
             StartDir = $"{Path.GetDirectoryName(stubPath)}";
 
