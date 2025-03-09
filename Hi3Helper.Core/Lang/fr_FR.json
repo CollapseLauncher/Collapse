@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Arrière-plan régional personnalisé",
     "GameSettings_Panel4": "Global - Divers",
     "GameSettings_Panel4ShowEventsPanel": "Afficher le panneau des évènements",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Grossir le panneau des évènements au survol",
     "GameSettings_Panel4ShowSocialMediaPanel": "Afficher le panneau des médias sociaux",
     "GameSettings_Panel4ShowPlaytimeButton": "Afficher le compteur de temps de jeu",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Synchroniser le temps de jeu avec la base de données",
@@ -361,6 +362,8 @@
     "SpecVeryHigh": "Très élevé",
     "SpecMaximum": "Maximal",
     "SpecUltra": "Ultra",
+    "SpecDynamic": "Dynamique",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Paramètres audio",
     "Audio_Master": "Volume principal",
@@ -527,6 +530,7 @@
     "ContributePRBtn": "Contribuer avec une Pull Request",
     "ContributorListBtn": "Liste de contributeurs Open Source",
     "HelpLocalizeBtn": "Aidez-nous à traduire Collapse !",
+    "ShareYourFeedbackBtn": "Faites-nous part de votre avis",
 
     "About": "À propos",
     "About_Copyright1": "© 2022-2025",
@@ -797,7 +801,17 @@
     "IsBytesNotANumber": "= NaN",
 
     "MissingVcRedist": "Redistribuable Visual C/C++ manquant",
-    "MissingVcRedistSubtitle": "Vous devez installer le redistribuable Visual C/C++ pour exécuter cette fonction. Voulez-vous le télécharger maintenant ?\r\nRemarque : Cela ouvrira une fenêtre de navigateur et téléchargera un fichier depuis le site de Microsoft. Veuillez exécuter le programme d'installation après l'avoir téléchargé, puis redémarrez Collapse et réessayez.\r\nSi l'erreur persiste malgré l'installation du redistribuable, veuillez soumettre un rapport de bug."
+    "MissingVcRedistSubtitle": "Vous devez installer le redistribuable Visual C/C++ pour exécuter cette fonction. Voulez-vous le télécharger maintenant ?\r\nRemarque : Cela ouvrira une fenêtre de navigateur et téléchargera un fichier depuis le site de Microsoft. Veuillez exécuter le programme d'installation après l'avoir téléchargé, puis redémarrez Collapse et réessayez.\r\nSi l'erreur persiste malgré l'installation du redistribuable, veuillez soumettre un rapport de bug.",
+    "ExceptionFeedbackBtn": "Dites-nous ce qu'il s'est passé",
+    "ExceptionFeedbackBtn_Unavailable": "Le rapport de plantage est désactivé ou n'est pas disponible",
+    "ExceptionFeedbackBtn_FeedbackSent": "Vos commentaires ont été envoyés !",
+    "ExceptionFeedbackTitle": "Dites-nous ce qu'il s'est passé :",
+    "ExceptionFeedbackTemplate_User": "Nom d'utilisateur (optionnel) :",
+    "ExceptionFeedbackTemplate_Email": "Adresse e-mail (optionnel) :",
+    "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne",
+    
+    "Tag_Deprecated": "Deprecated",
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
 
   "_BackgroundNotification": {
@@ -906,6 +920,10 @@
     "ReleaseChannelChangeSubtitle2": "Note :",
     "ReleaseChannelChangeSubtitle3": "Cette action peut entraîner des changements irréversibles et/ou des ruptures par rapport à votre configuration actuelle. Nous ne sommes pas responsables de la perte ou de la corruption des données associées à votre jeu.",
 
+    "ForceUpdateCurrentInstallTitle": "Forcer la mise à jour de l'installation actuelle",
+    "ForceUpdateCurrentInstallSubtitle1": "Vous êtes sur le point d'effectuer une mise à jour forcée sur votre installation",
+    "ForceUpdateCurrentInstallSubtitle2": "actuelle. Nous vous recommandons de fermer tout jeu(x) actuellement en cours d'utilisation.",
+
     "ChangePlaytimeTitle": "Modifier le temps de jeu ?",
     "ChangePlaytimeSubtitle": "Modifier votre temps de jeu signifie remplacer la valeur actuelle par celle que vous venez de saisir.\r\n\r\nVoulez-vous poursuivre ?\r\n\r\nNote : Ceci n'a aucun impact sur le fonctionnement de Collapse et vous pouvez modifier cette valeur à tout moment lorsque vous n'êtes pas en jeu.",
     "ResetPlaytimeTitle": "Réinitialisation du temps de jeu",
@@ -984,9 +1002,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • Les nouveaux raccourcis ne seront affichés qu'après le redémarrage de Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Afin d'utiliser l'overlay Steam, Steam doit être exécuté en tant qu'administrateur et Collapse doit être complètement fermé ou d'avoir l'option « Multiple instances » activée dans les paramètres.",
     "SteamShortcutCreationSuccessSubtitle7": " • Si le jeu n'est pas installé/à jour, Collapse essaiera de l'installer/mettre à jour. Notez que les boîtes de dialogue liés à ces processus seront toujours affichées.",
-
     "SteamShortcutCreationFailureTitle": "Dossier de données Steam invalide",
     "SteamShortcutCreationFailureSubtitle": "Il n'a pas été possible de trouver un dossier de données utilisateur valide.\r\n\r\nVeuillez vous assurer de vous être connecté au moins une fois à votre client Steam avant d'essayer d'utiliser cette fonctionnalité.",
+    "SteamShortcutTitle": "Raccourci Steam",
+    "SteamShortcutDownloadingImages": "Téléchargement des images de grille Steam ({0}/{1})",
 
     "DownloadSettingsTitle": "Paramètres de téléchargement",
     "DownloadSettingsOption1": "Démarrer le jeu après l'installation",
@@ -1001,7 +1020,28 @@
     "SophonIncrementUpdateUnavailSubtitle1": "La version de votre jeu: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": "est trop ancienne",
     "SophonIncrementUpdateUnavailSubtitle3": " et la mise à jour incrémentielle à partir de celle-ci n'est pas disponible. Il est cependant possible de mettre à jour le jeu en effectuant un nouveau téléchargement au complet de celui-ci.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Cliquez sur « {0} » pour procéder à la mise à jour complète ou sur « {1} » pour annuler le processus."
+    "SophonIncrementUpdateUnavailSubtitle4": "Cliquez sur « {0} » pour procéder à la mise à jour complète ou sur « {1} » pour annuler le processus.",
+
+    "UACWarningTitle": "Avertissement : UAC désactivé détecté",
+    "UACWarningContent": "Désactiver le Contrôle de compte d'utilisateur (UAC) n'est jamais une bonne idée.\r\nLa sécurité de votre système d'exploitation pourrait en pâtir ainsi qu'empêcher votre jeu de s'exécuter correctement.\r\n\r\nCliquez sur « En savoir plus » pour voir comment activer l'UAC.\r\nL'entrée relatif est : Exécuter tous les administrateurs en mode d’approbation Administration.",
+    "UACWarningLearnMore": "En savoir plus",
+    "UACWarningDontShowAgain": "Ne plus afficher",
+
+    "EnsureExitTitle": "Quitter l'application",
+    "EnsureExitSubtitle": "Il y a des tâches critiques en cours en arrière-plan. Êtes-vous sûr de vouloir quitter l'application ?",
+
+    "UserFeedback_DialogTitle": "Partagez vos pensées",
+    "UserFeedback_TextFieldTitleHeader": "Titre de l'avis",
+    "UserFeedback_TextFieldTitlePlaceholder": "Saisissez un titre pour votre avis ici…",
+    "UserFeedback_TextFieldMessageHeader": "Message",
+    "UserFeedback_TextFieldMessagePlaceholder": "Message…",
+    "UserFeedback_TextFieldRequired": "(requis)",
+    "UserFeedback_RatingText": "Une petite note ?",
+    "UserFeedback_CancelBtn": "Annuler",
+    "UserFeedback_SubmitBtn": "Envoyer",
+    "UserFeedback_SubmitBtn_Processing": "Traitement…",
+    "UserFeedback_SubmitBtn_Completed": "Commentaires envoyés !",
+    "UserFeedback_SubmitBtn_Cancelled": "Annulé !"
   },
 
   "_FileMigrationProcess": {
@@ -1238,11 +1278,11 @@
     "Graphics_BloomQuality": "Qualité du flou lumineux",
     "Graphics_AAMode": "Mode anti-aliasing",
     "Graphics_SFXQuality": "Qualité des effets spéciaux",
-    "Graphics_DLSSQualityMode": "Mode Nvidia DLSS",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Ombre du personnage en temps réel lors de l'exploration",
     "Graphics_HalfResTransparent": "Transparence semi-résolution",
     
-    "Graphics_DLSS_UHP": "Ultra haute perf.",
+    "Graphics_DLSS_UHP": "Performance ultra",
     "Graphics_DLSS_Perf": "Performance",
     "Graphics_DLSS_Balanced": "Équilibré",
     "Graphics_DLSS_Quality": "Qualité",
