@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "Apa yang terjadi?:",
     "ExceptionFeedbackTemplate_User": "Username (Opsional):",
     "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
-    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini"
+    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini",
+    
+    "Tag_Deprecated": "Tidak berlaku",
+    "Generic_GameFeatureDeprecation": "Karena perubahan di sisi game, fitur ini tidak berlaku lagi dan akan dihapus di waktu mendatang. Menggunakan fitur ini dapat mengakibatkan perilaku game yang tidak diharapkan."
   },
 
   "_BackgroundNotification": {
