@@ -810,8 +810,8 @@
     "ExceptionFeedbackTemplate_Email": "メールアドレス（任意）：",
     "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください",
     
-    "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "Tag_Deprecated": "非推奨",
+    "Generic_GameFeatureDeprecation": "ゲーム側の仕様変更が原因で、この機能の使用は推奨できなくなりました。今後削除する予定です。使用した場合、予期せぬ動作を引き起こす可能性があります。"
   },
 
   "_BackgroundNotification": {
