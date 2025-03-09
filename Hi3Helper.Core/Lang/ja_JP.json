@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "発生したエラー：",
     "ExceptionFeedbackTemplate_User": "ユーザー名（任意）：",
     "ExceptionFeedbackTemplate_Email": "メールアドレス（任意）：",
-    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください"
+    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください",
+    
+    "Tag_Deprecated": "Deprecated",
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
 
   "_BackgroundNotification": {
