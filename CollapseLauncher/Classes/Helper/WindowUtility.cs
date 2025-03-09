@@ -13,6 +13,7 @@ using Hi3Helper.Win32.Screen;
 using Hi3Helper.Win32.TaskbarListCOM;
 using Hi3Helper.Win32.WinRT.ToastCOM;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graphics.Display;
 using Microsoft.UI;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -23,6 +24,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Foundation;
@@ -312,7 +314,7 @@ namespace CollapseLauncher.Helper
         internal static Guid? CurrentAumidInGuid
         {
             get => field ??= Extensions.GetGuidFromString(CurrentAumid ?? "");
-            set;
+            private set;
         }
 
         internal static string? CurrentAumid
@@ -354,31 +356,31 @@ namespace CollapseLauncher.Helper
                 {
                     // Get Icon location paths
                     (string iconLocationStartMenu, _)
-                        = TaskSchedulerHelper.GetIconLocationPaths(
-                                                                   out string? appAumIdNameAlternative,
+                        = TaskSchedulerHelper.GetIconLocationPaths(out string? appAumidFromShortcut,
                                                                    out _,
                                                                    out string? executablePath,
                                                                    out _);
 
                     // Register notification service
-                    field = new NotificationService(ILoggerHelper.GetILogger("ToastCOM"));
+                    ILogger logger = ILoggerHelper.GetILogger("ToastCOM");
+                    field = new NotificationService(logger);
 
-                    // Get AumId to use
-                    string? currentAumId = CurrentAumid ??= appAumIdNameAlternative;
+                    // Borrow existing guid from TrayIcon shell
+                    Guid existingAumidGuidFromShell = TrayIcon.Current.CollapseTaskbar.Id;
 
-                    // Get string for AumId registration
-                    if (!string.IsNullOrEmpty(currentAumId))
-                    {
-                        // Initialize Toast Notification service
-                        CurrentAumidInGuid = field.Initialize(currentAumId,
-                                                              executablePath ?? "",
-                                                              iconLocationStartMenu,
-                                                              asElevatedUser: true
-                                                             );
+                    // Use custom defined path for the Toast icon
+                    string iconPath = Path.Combine(LauncherConfig.AppAssetsFolder, "CollapseLauncherLogo.png");
 
-                        // Subscribe ToastCallback
-                        field.ToastCallback += Service_ToastNotificationCallback;
-                    }
+                    // Initialize Toast Notification service
+                    CurrentAumidInGuid = field.Initialize(appAumidFromShortcut ?? MainEntryPoint.AppAumid,
+                                                          executablePath ?? "",
+                                                          iconLocationStartMenu,
+                                                          applicationId: existingAumidGuidFromShell,
+                                                          toastIconPngPath: iconPath
+                                                         );
+
+                    // Subscribe ToastCallback
+                    field.ToastCallback += Service_ToastNotificationCallback;
                 }
                 catch (Exception ex)
                 {
@@ -892,9 +894,16 @@ namespace CollapseLauncher.Helper
 
             // If the MainWindow is currently active, then set the window
             // to foreground.
-            window._TrayIcon?.ToggleAllVisibility();
+            window._TrayIcon?.ToggleMainVisibility(true);
+
+            IntPtr consoleWindowHandle = PInvoke.GetConsoleWindow();
+            if (LauncherConfig.GetAppConfigValue("EnableConsole") && PInvoke.IsWindowVisible(consoleWindowHandle))
+            {
+                window._TrayIcon?.ToggleConsoleVisibility(true);
+            }
 
             // TODO: Make the callback actually usable on elevated app
+            // 2025-03-09 11:08 PM+7 by neon-nyan: I FINALLY DID IT YO HOOOOOOOOOOOOOOO
         }
         #endregion
 
