@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "告诉我们发生了什么：",
     "ExceptionFeedbackTemplate_User": "用户名（可选）：",
     "ExceptionFeedbackTemplate_Email": "邮箱（可选）：",
-    "ExceptionFeedbackTemplate_Message": "在此行后插入您的反馈"
+    "ExceptionFeedbackTemplate_Message": "在此行后插入您的反馈",
+    
+    "Tag_Deprecated": "废弃",
+    "Generic_GameFeatureDeprecation": "因不可预见的游戏变化，该功能已被弃用，并将在未来移除。使用此功能可能会导致意料外的行为。"
   },
 
   "_BackgroundNotification": {
