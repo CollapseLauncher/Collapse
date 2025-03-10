@@ -419,48 +419,30 @@ namespace CollapseLauncher.Pages
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
         {
 #if ENABLEUSERFEEDBACK
-            var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
-            var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
-            string exceptionContent = $"""
-                                       {userTemplate} 
-                                       {emailTemplate} 
-                                       {Lang._Misc.ExceptionFeedbackTemplate_Message}
-                                       ------------------------------------
-                                       """;
-            
+            var content = UserFeedbackTemplate.FeedbackTemplate;
             
             UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true)
             { 
-                Message   = exceptionContent
+                Message   = content
             };
             
-            UserFeedbackResult userFeedbackResult = await userFeedbackDialog
-               .ShowAsync( result => throw new NotImplementedException());
+            UserFeedbackResult userFeedbackResult = await userFeedbackDialog.ShowAsync();
 
             if (userFeedbackResult == null)
             {
                 LogWriteLine("User feedback dialog cancelled!");
                 return;
             }
+
+            var parsedFeedback = UserFeedbackTemplate.ParseTemplate(userFeedbackResult);
             
-            // Parse username and email
-            var msg = userFeedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-            if (msg.Length <= 4) return; // Do not send feedback if format is not correct
-            var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-            var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-            var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
+            if (parsedFeedback == null)
+            {
+                LogWriteLine("Feedback result failed to be parsed! Feedback not sent.", LogType.Error, true);
+                return;
+            }
 
-            if (string.IsNullOrEmpty(user)) user = "none";
-
-            // Validate email
-            var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
-            email = addr ? address!.Address : "user@collapselauncher.com";
-
-            if (string.IsNullOrEmpty(feedback)) return;
-
-            var feedbackContent = $"{feedback}\n\nRating: {userFeedbackResult.Rating}/5";
-
-            SentryHelper.SendGenericFeedback(feedbackContent, email, user);
+            SentryHelper.SendGenericFeedback(parsedFeedback.Message, parsedFeedback.Email, parsedFeedback.User);
         #endif
         }
 
