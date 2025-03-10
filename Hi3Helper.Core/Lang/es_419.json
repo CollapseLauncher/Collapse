@@ -533,7 +533,7 @@
     "ShareYourFeedbackBtn": "Compártenos tus comentarios",
 
     "About": "Acerca de",
-    "About_Copyright1": "© 2022-2024",
+    "About_Copyright1": "© 2022-2025",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "Cuéntanos lo que pasó:",
     "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
     "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
-    "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea"
+    "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea",
+    
+    "Tag_Deprecated": "Obsoleto",
+    "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."
   },
 
   "_BackgroundNotification": {
