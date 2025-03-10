@@ -7,6 +7,7 @@ using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -27,16 +28,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Hi3Helper.SentryHelper;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
-
+using BitmapFileFormat = Hi3Helper.CommunityToolkit.WinUI.Controls.BitmapFileFormat;
+using CropShape = Hi3Helper.CommunityToolkit.WinUI.Controls.CropShape;
 using ImageBlendBrush = Hi3Helper.CommunityToolkit.WinUI.Media.ImageBlendBrush;
 using ImageCropper = Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper;
-using CropShape = Hi3Helper.CommunityToolkit.WinUI.Controls.CropShape;
+using Orientation = Microsoft.UI.Xaml.Controls.Orientation;
 using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
-using BitmapFileFormat = Hi3Helper.CommunityToolkit.WinUI.Controls.BitmapFileFormat;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable GrammarMistakeInComment

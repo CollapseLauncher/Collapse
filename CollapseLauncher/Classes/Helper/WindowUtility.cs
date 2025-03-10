@@ -39,7 +39,6 @@ using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable UnusedMember.Global
 
-#pragma warning disable CA2012
 namespace CollapseLauncher.Helper
 {
     internal enum WindowBackdropKind

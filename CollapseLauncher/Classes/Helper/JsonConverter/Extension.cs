@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Metadata;
 using System;
 using System.Buffers;
 using System.Buffers.Text;
@@ -5,7 +6,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-using CollapseLauncher.Helper.Metadata;
 // ReSharper disable ReplaceSliceWithRangeIndexer
 
 namespace CollapseLauncher.Helper.JsonConverter

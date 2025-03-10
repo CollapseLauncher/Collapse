@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.ClassStruct;
+﻿using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -8,7 +9,6 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using Windows.Foundation;
 using Windows.Networking.Connectivity;
-using Hi3Helper.SentryHelper;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;

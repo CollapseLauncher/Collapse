@@ -1,8 +1,8 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer

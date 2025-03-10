@@ -10,15 +10,15 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.ManagedTools;
-using Hi3Helper;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
-using System.IO;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable CheckNamespace

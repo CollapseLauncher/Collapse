@@ -1,9 +1,9 @@
 ﻿using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Buffers.Text;
 using System.Security.Cryptography;
 using System.Text;
-using Hi3Helper.SentryHelper;
 
 #nullable enable
 namespace CollapseLauncher.Helper

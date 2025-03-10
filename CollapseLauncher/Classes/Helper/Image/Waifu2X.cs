@@ -1,11 +1,11 @@
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Hi3Helper.SentryHelper;
 using static CollapseLauncher.Helper.Image.Waifu2X;
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming

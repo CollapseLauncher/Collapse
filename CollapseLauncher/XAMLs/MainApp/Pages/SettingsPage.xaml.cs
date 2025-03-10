@@ -62,7 +62,6 @@ using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.Medi
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable HeuristicUnreachableCode
 
-#pragma warning disable CA1822
 
 namespace CollapseLauncher.Pages
 {
@@ -148,10 +147,7 @@ namespace CollapseLauncher.Pages
 
             // Add indicator if the commit is dirty
             // CS0162: Unreachable code detected
-#pragma warning disable CS0162
             if (ThisAssembly.Git.IsDirty) commitShort = $"{commitShort}*";
-#pragma warning restore CS0162
-
             var outString =
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
@@ -420,9 +416,7 @@ namespace CollapseLauncher.Pages
 #nullable restore
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
 #if ENABLEUSERFEEDBACK
             var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;

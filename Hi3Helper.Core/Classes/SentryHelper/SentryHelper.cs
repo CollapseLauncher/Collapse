@@ -1,11 +1,9 @@
-using Sentry;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
+using Sentry;
 using Sentry.Infrastructure;
 using Sentry.Protocol;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode

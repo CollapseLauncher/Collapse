@@ -21,7 +21,7 @@ namespace CollapseLauncher.Pages
     {
         #region Methods
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.
@@ -602,10 +602,8 @@ namespace CollapseLauncher.Pages
             get => Settings.SettingsCollapseMisc.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
         }
-        
-    #pragma warning disable CA1822
+
         private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    #pragma warning restore CA1822
         {
             // clamp for negative value when clearing the number box
             if ((int)sender.Value < 0)

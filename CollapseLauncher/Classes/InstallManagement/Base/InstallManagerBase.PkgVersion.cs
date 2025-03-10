@@ -5,6 +5,7 @@ using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -19,7 +20,6 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo

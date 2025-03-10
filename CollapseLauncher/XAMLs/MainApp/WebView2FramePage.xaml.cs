@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -6,7 +7,6 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry

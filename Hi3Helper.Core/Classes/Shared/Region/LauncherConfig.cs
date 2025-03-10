@@ -12,7 +12,6 @@ using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
-#pragma warning disable CA2211
 
 #nullable enable
 namespace Hi3Helper.Shared.Region
@@ -32,8 +31,6 @@ namespace Hi3Helper.Shared.Region
     }
     #endregion
 
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods

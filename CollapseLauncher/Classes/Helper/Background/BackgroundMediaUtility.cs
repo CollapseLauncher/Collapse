@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
