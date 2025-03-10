@@ -1294,12 +1294,7 @@ namespace CollapseLauncher.Dialogs
                 var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
                 var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
 
-                string exceptionContent = $"""
-                                          {userTemplate} 
-                                          {emailTemplate} 
-                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
-                                          ------------------------------------
-                                          """;
+                string exceptionContent = UserFeedbackTemplate.FeedbackTemplate;
                 string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
 
                 UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
@@ -1314,26 +1309,18 @@ namespace CollapseLauncher.Dialogs
                 {
                     return;
                 }
+                
+                var parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
 
-                // Parse username and email
-                var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-                if (msg.Length <= 4) return; // Do not send feedback if format is not correct
-                var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
-
-                if (string.IsNullOrEmpty(user)) user = "none";
-
-                // Validate email
-                var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
-                email = addr ? address!.Address : "user@collapselauncher.com";
-
-                if (string.IsNullOrEmpty(feedback)) return;
-
-                var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
-
-                SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
-                isFeedbackSent = true;
+                if (parsedFeedback == null)
+                {
+                    Logger.LogWriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
+                }
+                else
+                {
+                    SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, parsedFeedback.Email, parsedFeedback.User, parsedFeedback.Message);
+                    isFeedbackSent = true;
+                }
             }
             catch (Exception ex)
             {
