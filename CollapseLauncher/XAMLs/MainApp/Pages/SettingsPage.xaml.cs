@@ -442,9 +442,29 @@ namespace CollapseLauncher.Pages
 
             if (userFeedbackResult == null)
             {
-                LogWriteLine("User feedback dialog cancelled!", LogType.Debug);
+                LogWriteLine("User feedback dialog cancelled!");
+                return;
             }
-#endif
+            
+            // Parse username and email
+            var msg = userFeedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            if (msg.Length <= 4) return; // Do not send feedback if format is not correct
+            var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+            var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
+            var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
+
+            if (string.IsNullOrEmpty(user)) user = "none";
+
+            // Validate email
+            var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+            email = addr ? address!.Address : "user@collapselauncher.com";
+
+            if (string.IsNullOrEmpty(feedback)) return;
+
+            var feedbackContent = $"{feedback}\n\nRating: {userFeedbackResult.Rating}/5";
+
+            SentryHelper.SendGenericFeedback(feedbackContent, email, user);
+        #endif
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
