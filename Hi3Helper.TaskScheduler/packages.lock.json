@@ -43,9 +43,9 @@
       },
       "TaskScheduler": {
         "type": "Direct",
-        "requested": "[2.12.0, )",
-        "resolved": "2.12.0",
-        "contentHash": "wHz1NLuNGb98u4UNL3S0isTv6UUVYGpryfZg26CxAO8UDD/Je0s42uM6owVhOZGVFHtaj9BiJ7EMOU+osBqAqQ=="
+        "requested": "[2.12.1, )",
+        "resolved": "2.12.1",
+        "contentHash": "DzSVmVs0i5yHmuDy9ZMcTtKg48GU0aEFBbhp2XJrzA4saTRec/KbU5aGE/4P4FE499G3PDx9KPOHysoKzS/i3g=="
       },
       "Microsoft.NETFramework.ReferenceAssemblies.net462": {
         "type": "Transitive",

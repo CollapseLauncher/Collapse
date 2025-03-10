@@ -89,9 +89,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.74, )",
-        "resolved": "1.11.74",
-        "contentHash": "q0wRGbegtr4sZXjCNoV3OeRLTOcTNJQKiO9etNVSKPoTo33unmSK8Ahg36C4jIg/Hd3aw8YnTQjtKpBy+wlOpg=="
+        "requested": "[1.12.0, )",
+        "resolved": "1.12.0",
+        "contentHash": "VHtVZmfoYhQyA/POvZRLuTpCz1zhzIDrdYRJIRV73e9wKAzjW71biYNOHOWx8MxEX3TE4TWVfx1QDRoZcj2AWw=="
       },
       "Libsql.Client": {
         "type": "Direct",
@@ -143,9 +143,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3116-prerelease, )",
-        "resolved": "1.0.3116-prerelease",
-        "contentHash": "F8vWHXXAyEB3Z60lxr39VnWbHQ2ortOvYxlvx4Ts1JRdrLtPrs9S8+XY5xJC38l4r8GNW3+hZvEHUkqQ2BAniA=="
+        "requested": "[1.0.3171-prerelease, )",
+        "resolved": "1.0.3171-prerelease",
+        "contentHash": "xxwtsNSUIIWBIs1AMYNeF7A7zNn7ooJ97LU2hFFYNDDabxcMbIAl5EXcCPpLvuvctxYl7bBzyChQY48FSBKp8g=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -360,8 +360,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.2.0",
-        "contentHash": "b3aZSOU2CjlIIFRtPRbXParKQ+9PF+JOqkSD7Gxq6PiR07t1rnK+crPtdrWMXfW6PVo/s67trCJ+fuLsgTeADw=="
+        "resolved": "5.3.0",
+        "contentHash": "zlBIP7YmYxySwcgapLMj1gdxPEz9rwdrOa4Yjub/TzcAaMQXusRH9hY4CE6pu0EIibZ7C7Hhjhr6xOTlyK8gFQ=="
       },
       "System.Buffers": {
         "type": "Transitive",
@@ -431,7 +431,7 @@
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.2, )",
-          "Microsoft.Web.WebView2": "[1.0.3116-prerelease, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
           "Microsoft.WindowsAppSDK": "[1.7.250208002-preview1, )"
         }
@@ -442,7 +442,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[5.2.0, )"
+          "Sentry": "[5.3.0, )"
         }
       },
       "hi3helper.enctool": {
@@ -484,7 +484,7 @@
           "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
           "CommunityToolkit.WinUI.Media": "[8.2.250129-preview2, )",
           "Microsoft.Graphics.Win2D": "[1.3.2, )",
-          "Microsoft.Web.WebView2": "[1.0.3116-prerelease, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
           "Microsoft.WindowsAppSDK": "[1.7.250208002-preview1, )"
@@ -495,7 +495,7 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
-          "Microsoft.Web.WebView2": "[1.0.3116-prerelease, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
           "Microsoft.WindowsAppSDK": "[1.7.250208002-preview1, )"
         }
@@ -511,7 +511,7 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Triggers": "[8.2.250129-preview2, )",
-          "Microsoft.Web.WebView2": "[1.0.3116-prerelease, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
           "Microsoft.WindowsAppSDK": "[1.7.250208002-preview1, )"
@@ -539,9 +539,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3116-prerelease, )",
-        "resolved": "1.0.3116-prerelease",
-        "contentHash": "F8vWHXXAyEB3Z60lxr39VnWbHQ2ortOvYxlvx4Ts1JRdrLtPrs9S8+XY5xJC38l4r8GNW3+hZvEHUkqQ2BAniA=="
+        "requested": "[1.0.3171-prerelease, )",
+        "resolved": "1.0.3171-prerelease",
+        "contentHash": "xxwtsNSUIIWBIs1AMYNeF7A7zNn7ooJ97LU2hFFYNDDabxcMbIAl5EXcCPpLvuvctxYl7bBzyChQY48FSBKp8g=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
