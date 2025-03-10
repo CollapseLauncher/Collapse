@@ -1309,10 +1309,6 @@ namespace CollapseLauncher.Dialogs
                     Message = exceptionContent
                 };
                 UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
-                // TODO: (Optional) Implement generic user feedback pathway (preferably when SentryErrorId is null
-                // Using https://paste.mozilla.org/ 
-                // API Documentation: https://docs.dpaste.org/api/
-                // Though im not sure since user will still need to paste the link to us 🤷
 
                 if (feedbackResult is null)
                 {
