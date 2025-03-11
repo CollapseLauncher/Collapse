@@ -15,6 +15,7 @@ using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
 using CommunityToolkit.WinUI;
@@ -136,6 +137,8 @@ namespace CollapseLauncher.Pages
 
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
+#else
+            ShareYourFeedbackButton.IsEnabled = SentryHelper.IsEnabled;
 #endif
         }
 
@@ -434,15 +437,38 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            var parsedFeedback = UserFeedbackTemplate.ParseTemplate(userFeedbackResult);
+            var parsedFeedback       = UserFeedbackTemplate.ParseTemplate(userFeedbackResult);
+            var feedbackLoadingTitle = Lang._Misc.Feedback;
+            
+            // Show pseudo-loading message so user knows the feedback is being sent
+            LoadingMessageHelper.Initialize();
+            LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
+            LoadingMessageHelper.ShowLoadingFrame();
             
             if (parsedFeedback == null)
             {
                 LogWriteLine("Feedback result failed to be parsed! Feedback not sent.", LogType.Error, true);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                await Task.Delay(1000);
+                LoadingMessageHelper.HideLoadingFrame();
                 return;
             }
 
-            SentryHelper.SendGenericFeedback(parsedFeedback.Message, parsedFeedback.Email, parsedFeedback.User);
+            if (SentryHelper.SendGenericFeedback(parsedFeedback.Message, parsedFeedback.Email, parsedFeedback.User))
+            {
+                // Hide the loading message after 200ms
+                await Task.Delay(500);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSent);
+                await Task.Delay(1000);
+                LoadingMessageHelper.HideLoadingFrame();
+            }
+            else
+            {
+                await Task.Delay(250);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                await Task.Delay(1000);
+                LoadingMessageHelper.HideLoadingFrame();
+            }
         #endif
         }
 

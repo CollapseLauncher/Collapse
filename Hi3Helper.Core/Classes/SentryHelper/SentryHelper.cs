@@ -540,21 +540,38 @@ namespace Hi3Helper.SentryHelper
         #pragma warning restore CS0162 // Unreachable code detected
         }
         
-        public static void SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
+        public static bool SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
         {
             if (sentryId == Guid.Empty)
             {
-                Logger.LogWriteLine("[SentryHelper] SentryId is empty, feedback will not be sent!", LogType.Error,
+                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!", LogType.Error,
                                     true);
+                return false;
+            }
+
+            if (!IsEnabled)
+            {
+                Logger.LogWriteLine("[SendExceptionFeedback] Sentry is disabled, feedback will not be sent!",
+                                    LogType.Error, true);
+                return false;
             }
 
             var sId       = new SentryId(sentryId);
             SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
+            return true;
         }
         
-        public static void SendGenericFeedback(string feedback, string userEmail, string user)
+        public static bool SendGenericFeedback(string feedback, string userEmail, string user)
         {
+            if (!IsEnabled)
+            {
+                Logger.LogWriteLine("[SendGenericFeedback] Sentry is disabled, feedback will not be sent!",
+                                    LogType.Error, true);
+                return false;
+            }
+            
             SentrySdk.CaptureFeedback(feedback, userEmail, user);
+            return true;
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]

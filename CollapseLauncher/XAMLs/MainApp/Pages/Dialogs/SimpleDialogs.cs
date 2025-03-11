@@ -2,6 +2,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
@@ -1310,16 +1311,40 @@ namespace CollapseLauncher.Dialogs
                     return;
                 }
                 
-                var parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
+                var feedbackLoadingTitle = Lang._Misc.Feedback;
 
+                LoadingMessageHelper.Initialize();
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
+                LoadingMessageHelper.ShowLoadingFrame();
+                
+                var parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
                 if (parsedFeedback == null)
                 {
                     Logger.LogWriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
+                    
+                    LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                    await Task.Delay(1000);
+                    LoadingMessageHelper.HideLoadingFrame();
                 }
                 else
                 {
-                    SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, parsedFeedback.Email, parsedFeedback.User, parsedFeedback.Message);
-                    isFeedbackSent = true;
+                    if (SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, parsedFeedback.Email,
+                                                           parsedFeedback.User, parsedFeedback.Message))
+                    {
+                        // Hide the loading message after 200ms
+                        await Task.Delay(500);
+                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSent);
+                        await Task.Delay(1000);
+                        LoadingMessageHelper.HideLoadingFrame();
+                        isFeedbackSent = true;
+                    }
+                    else
+                    {
+                        await Task.Delay(250);
+                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                        await Task.Delay(1000);
+                        LoadingMessageHelper.HideLoadingFrame();
+                    }
                 }
             }
             catch (Exception ex)

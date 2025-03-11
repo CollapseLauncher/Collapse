@@ -832,6 +832,11 @@
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
     "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line",
     
+    "Feedback": "User Feedback",
+    "FeedbackSending": "Sending your feedback...",
+    "FeedbackSent": "Feedback sent!",
+    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
+    
     "Tag_Deprecated": "Deprecated",
     "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
