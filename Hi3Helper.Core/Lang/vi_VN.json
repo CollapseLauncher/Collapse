@@ -533,7 +533,7 @@
     "ShareYourFeedbackBtn": "Chia sẻ phản hồi của bạn",
 
     "About": "Về chúng tôi",
-    "About_Copyright1": "© 2022-2024",
+    "About_Copyright1": "© 2022-2025",
     "About_Copyright2": "neon-nyan, Cry0, bagusnl,\r\nshatyuka & gablm",
     "About_Copyright3": "Được dùng bởi bản quyền của",
     "About_Copyright4": ". Đã đăng ký Bản quyền.",
@@ -808,7 +808,10 @@
     "ExceptionFeedbackTitle": "Hãy cho chúng tôi biết chuyện gì đã xảy ra",
     "ExceptionFeedbackTemplate_User": "Tên Người Dùng (Không Bắt Buộc)",
     "ExceptionFeedbackTemplate_Email": "Email (Không Bắt Buộc)",
-    "ExceptionFeedbackTemplate_Message": "Chèn phản hồi của bạn sau dòng này"
+    "ExceptionFeedbackTemplate_Message": "Chèn phản hồi của bạn sau dòng này",
+    
+    "Tag_Deprecated": "Deprecated",
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
 
   "_BackgroundNotification": {

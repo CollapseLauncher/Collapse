@@ -1,8 +1,11 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 // ReSharper disable PartialTypeWithSinglePart
@@ -150,6 +153,68 @@ namespace CollapseLauncher.InstallManager.StarRail
             };
         }
 
+        #endregion
+
+        #region Override Method - InnerParsePkgVersion2FileInfo
+#nullable enable
+        protected override async ValueTask InnerParsePkgVersion2FileInfo(string gamePath, string path,
+                                                                         List<LocalFileInfo> pkgFileInfo,
+                                                                         HashSet<string> pkgFileInfoHashSet,
+                                                                         CancellationToken token)
+        {
+            // Assign path to reader
+            using StreamReader reader = new StreamReader(path, true);
+            // Do loop until EOF
+            while (!reader.EndOfStream)
+            {
+                // Read line and deserialize
+                string? line = await reader.ReadLineAsync(token);
+                LocalFileInfo? localFileInfo = line?.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
+
+                // Assign the values
+                if (localFileInfo == null)
+                    continue;
+
+                localFileInfo.FullPath = Path.Combine(gamePath, localFileInfo.RelativePath);
+                localFileInfo.FileName = Path.GetFileName(localFileInfo.RelativePath);
+                localFileInfo.IsFileExist = File.Exists(localFileInfo.FullPath);
+
+                // Add it to the list and hashset
+                pkgFileInfo.Add(localFileInfo);
+                pkgFileInfoHashSet.Add(localFileInfo.RelativePath);
+
+                // If it's an audio file, then add the mark file into the entry as well.
+                // This to avoid the mark file to be tagged as "Unused" (as per issue #672)
+                if (localFileInfo.RelativePath.EndsWith(".pck"))
+                {
+                    // Get the string of the mark hex hash
+                    string? markHashString = HexTool.BytesToHexUnsafe(localFileInfo.MD5Hash);
+                    if (string.IsNullOrEmpty(markHashString))
+                    {
+                        continue;
+                    }
+
+                    // Get the mark file's relative path
+                    string relativePathDir = Path.GetDirectoryName(localFileInfo.RelativePath) ?? "";
+                    string relativePathNameNoExt = Path.GetFileNameWithoutExtension(localFileInfo.RelativePath) ?? "";
+                    string relativePathMarkMerged = Path.Combine(relativePathDir, relativePathNameNoExt + $"_{markHashString}.hash");
+
+                    // Create the LocalFileInfo instance of the mark file
+                    LocalFileInfo localFileInfoMark = new LocalFileInfo
+                    {
+                        FullPath = Path.Combine(gamePath, relativePathMarkMerged),
+                        RelativePath = relativePathMarkMerged,
+                        FileName = Path.GetFileName(relativePathMarkMerged)
+                    };
+                    localFileInfoMark.IsFileExist = File.Exists(localFileInfoMark.FullPath);
+
+                    // Add the mark file entry into the list and hashset
+                    pkgFileInfo.Add(localFileInfoMark);
+                    pkgFileInfoHashSet.Add(localFileInfoMark.RelativePath);
+                }
+            }
+        }
+#nullable restore
         #endregion
 
         #region Override Methods - Others
