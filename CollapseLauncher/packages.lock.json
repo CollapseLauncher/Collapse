@@ -425,7 +425,7 @@
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.1, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.2, )",
+          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Web.WebView2": "[1.0.3065.39, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
           "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
@@ -436,7 +436,7 @@
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.2, )",
+          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Sentry": "[5.2.0, )"
         }
@@ -480,7 +480,7 @@
           "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
           "CommunityToolkit.WinUI.Media": "[8.2.250129-preview2, )",
           "Microsoft.Graphics.Win2D": "[1.3.2, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.2, )",
+          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Web.WebView2": "[1.0.3065.39, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
@@ -500,7 +500,7 @@
       "innosetuphelper": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.NET.ILLink.Tasks": "[9.0.2, )",
+          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "System.IO.Hashing": "[9.0.1, )"
         }
       },
@@ -509,7 +509,7 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Triggers": "[8.2.250129-preview2, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.2, )",
+          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Web.WebView2": "[1.0.3065.39, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
