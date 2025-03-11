@@ -10,13 +10,13 @@
         <AssemblyName>CollapseLauncher</AssemblyName>
         <ProductName>Collapse</ProductName>
         <Product>Collapse</Product>
-        <Description>Collapse Launcher</Description>
-        <AssemblyTitle>Collapse Launcher</AssemblyTitle>
+        <Description>Collapse</Description>
+        <AssemblyTitle>Collapse</AssemblyTitle>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.18</Version>
+        <Version>1.82.19</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -153,12 +153,10 @@
         -->
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
-        <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="9.0.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
-        <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.1" />
         <PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
@@ -177,19 +175,18 @@
         <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         
         <PackageReference Include="GitInfo" Version="3.5.0" PrivateAssets="all" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.74" />
         <PackageReference Include="Markdig.Signed" Version="0.40.0" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3065.39" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="runtime.win-x64.Microsoft.DotNet.ILCompiler" Version="9.0.1" />
         <PackageReference Include="SharpCompress" Version="0.39.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.8" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
@@ -204,6 +201,7 @@
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
         <ProjectReference Include="..\Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj" />
         <ProjectReference Include="..\Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj" />
@@ -231,8 +229,9 @@
 
         <None Include="..\.editorconfig" Link=".editorconfig" />
 
-        <Content Include="..\LICENSE.rtf">
+        <Content Include="..\msi-installer-licensefile.rtf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <Link>LICENSE.rtf</Link>
         </Content>
 
         <Content Include="..\PRIVACY.md">

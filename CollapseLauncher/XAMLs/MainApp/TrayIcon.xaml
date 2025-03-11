@@ -6,6 +6,7 @@
              xmlns:tb="using:H.NotifyIcon"
              mc:Ignorable="d">
     <tb:TaskbarIcon x:Name="CollapseTaskbar"
+                    x:FieldModifier="internal"
                     ContextMenuMode="PopupMenu"
                     DoubleClickCommand="{x:Bind ToggleAllVisibilityInvokeCommand}"
                     LeftClickCommand="{x:Bind BringToForegroundInvokeCommand}"
