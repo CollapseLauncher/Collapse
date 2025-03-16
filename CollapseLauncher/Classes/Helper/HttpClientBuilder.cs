@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
 // ReSharper disable CheckNamespace
