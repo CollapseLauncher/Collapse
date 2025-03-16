@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper.Update;
+using CollapseLauncher.Helper.Update;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Security;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
 // ReSharper disable CheckNamespace
@@ -58,7 +58,7 @@ namespace CollapseLauncher.Helper
                 + $"WinAppSDK/{LauncherConfig.WindowsAppSdkVersion}";
         }
 
-        public HttpClientBuilder<THandler> UseExternalProxy(string host, string? username = null, string? password = null)
+        public HttpClientBuilder<THandler> UseExternalProxy(string host, string? username = null, SecureString? password = null)
         {
             // Try to create the Uri
             if (Uri.TryCreate(host, UriKind.Absolute, out Uri? hostUri))
@@ -70,17 +70,16 @@ namespace CollapseLauncher.Helper
             IsUseSystemProxy = false;
             ExternalProxy    = null;
             return this;
-
         }
 
-        public HttpClientBuilder<THandler> UseExternalProxy(Uri hostUri, string? username = null, string? password = null)
+        public HttpClientBuilder<THandler> UseExternalProxy(Uri hostUri, string? username = null, SecureString? password = null)
         {
             IsUseSystemProxy = false;
 
             // Initialize the proxy host
             ExternalProxy =
                 !string.IsNullOrEmpty(username)
-             && !string.IsNullOrEmpty(password) ?
+             && password != null ?
                   new WebProxy(hostUri, true, null, new NetworkCredential(username, password))
                 : new WebProxy(hostUri, true);
 
@@ -107,7 +106,8 @@ namespace CollapseLauncher.Helper
 
             if (lIsUseProxy && isHttpProxyUrlValid && lProxyUri != null)
             {
-                UseExternalProxy(lProxyUri, lHttpProxyUsername, lHttpProxyPassword);
+                using SecureString? proxyPassword = SimpleProtectData.UnprotectStringAsSecureString(lHttpProxyPassword);
+                UseExternalProxy(lProxyUri, lHttpProxyUsername, proxyPassword);
             }
 
             lock (HttpClientBuilderSharedLock)

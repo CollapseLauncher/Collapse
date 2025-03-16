@@ -34,4 +34,4 @@ jobs:
           update_release_body: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ^.*\.[7zZ]$
+            ^.*\.[7][zZ]$
