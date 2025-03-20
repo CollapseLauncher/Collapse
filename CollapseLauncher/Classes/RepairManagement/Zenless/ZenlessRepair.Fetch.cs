@@ -232,7 +232,8 @@ namespace CollapseLauncher
                         infoKindData.BaseUrl, baseResUrl);
 
                     await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                                                                .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable).WithCancellation(token))
+                                                                .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable)
+                                                                .WithCancellation(token))
                     {
                         assetIndex.Add(asset);
                     }
@@ -261,7 +262,8 @@ namespace CollapseLauncher
                         );
 
                     await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                                                                .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable).WithCancellation(token))
+                                                                .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable)
+                                                                .WithCancellation(token))
                     {
                         assetIndex.Add(asset);
                     }

@@ -137,21 +137,28 @@ namespace CollapseLauncher
             }
 
             string relTypeRelativePathStr = relTypeRelativePath.ToString();
-            if (hashSet.TryAdd(relTypeRelativePathStr, asRemoteProperty) || !asset.isPatch)
+            bool   isAdded                = hashSet.TryAdd(relTypeRelativePathStr, asRemoteProperty);
+            if (isAdded || asset.isPatch)
             {
                 return asRemoteProperty;
             }
 
             FilePropertiesRemote existingValue = hashSet[relTypeRelativePathStr];
             int                  indexOf       = assetIndex.IndexOf(existingValue);
+
             if (indexOf < -1)
                 return asRemoteProperty;
+
+            // Check whether the Hash is the same. If yes, then we don't need to update the assetIndex
+            if (existingValue.CRCArray.SequenceEqual(asRemoteProperty.CRCArray))
+            {
+                return null;
+            }
 
             assetIndex[indexOf]             = asRemoteProperty;
             hashSet[relTypeRelativePathStr] = asRemoteProperty;
 
             return null;
-
         }
 
         private static FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
