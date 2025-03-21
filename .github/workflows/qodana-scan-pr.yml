@@ -52,7 +52,7 @@ jobs:
           
       - name: 'Qodana Scan'
         if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }} 
-        uses: JetBrains/qodana-action@latest
+        uses: JetBrains/qodana-action@main
         with:
           args: --ide,QDNET
           pr-mode: true

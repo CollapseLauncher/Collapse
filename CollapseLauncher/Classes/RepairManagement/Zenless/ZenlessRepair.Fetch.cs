@@ -44,43 +44,55 @@ namespace CollapseLauncher
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
             // Create a hash set to overwrite local files
-            Dictionary<string, FilePropertiesRemote> hashSet = new(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FilePropertiesRemote> hashSet          = new(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternateHashSet =
+                hashSet.GetAlternateLookup<ReadOnlySpan<char>>();
 
-            // If not in cache mode, then fetch main package
-            if (!IsCacheUpdateMode)
+            try
             {
-                // Get the primary manifest
-                await GetPrimaryManifest(hashSet, assetIndex, token);
-            }
-
-            // Execute on non-recover main mode
-            if (!IsOnlyRecoverMain)
-            {
-                // Get the in-game res manifest
-                await GetResManifest(downloadClient, hashSet, assetIndex,
-#if DEBUG
-                    true
-#else
-                    false
-#endif
-                  , token);
-
-                // Execute plugin things if not in cache mode only
+                // If not in cache mode, then fetch main package
                 if (!IsCacheUpdateMode)
                 {
-                    // Force-Fetch the Bilibili SDK (if exist :pepehands:)
-                    await FetchBilibiliSdk(token);
-
-                    // Remove plugin from assetIndex
-                    // Skip the removal for Delta-Patch
-                    EliminatePluginAssetIndex(assetIndex);
+                    // Get the primary manifest
+                    await GetPrimaryManifest(alternateHashSet, assetIndex, token);
                 }
+
+                // Execute on non-recover main mode
+                if (!IsOnlyRecoverMain)
+                {
+                    // Get the in-game res manifest
+                    await GetResManifest(downloadClient, alternateHashSet, assetIndex,
+                                     #if DEBUG
+                                         true
+                                     #else
+                    false
+                                     #endif
+                                       , token);
+
+                    // Execute plugin things if not in cache mode only
+                    if (!IsCacheUpdateMode)
+                    {
+                        // Force-Fetch the Bilibili SDK (if exist :pepehands:)
+                        await FetchBilibiliSdk(token);
+
+                        // Remove plugin from assetIndex
+                        // Skip the removal for Delta-Patch
+                        EliminatePluginAssetIndex(assetIndex);
+                    }
+                }
+            }
+            finally
+            {
+                hashSet.Clear();
             }
         }
         #endregion
 
         #region PrimaryManifest
-        private async Task GetPrimaryManifest(Dictionary<string, FilePropertiesRemote> hashSet, List<FilePropertiesRemote> assetIndex, CancellationToken token)
+        private async Task GetPrimaryManifest(
+            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternateHashSet,
+            List<FilePropertiesRemote>                                                   assetIndex,
+            CancellationToken                                                            token)
         {
             // If it's using cache update mode, then return since we don't need to add manifest
             // from pkg_version on cache update mode.
@@ -121,7 +133,7 @@ namespace CollapseLauncher
                     await using Stream stream = await FallbackCDNUtil.GetHttpStreamFromResponse(latestZipApiUrl, token);
                     await foreach (FilePropertiesRemote asset in stream
                         .EnumerateStreamToPkgVersionPropertiesAsync(token)
-                        .RegisterMainCategorizedAssetsToHashSetAsync(assetIndex, hashSet, GamePath, GameRepoURL, token))
+                        .RegisterMainCategorizedAssetsToHashSetAsync(assetIndex, alternateHashSet, GamePath, GameRepoURL, token))
                     {
                         // If entry is null (means, an existing entry has been overwritten), then next
                         if (asset == null)
@@ -154,7 +166,7 @@ namespace CollapseLauncher
                 }
 
                 // Convert the pkg version list to asset index
-                foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, hashSet, GamePath, GameRepoURL))
+                foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, alternateHashSet, GamePath, GameRepoURL))
                 {
                     // If entry is null (means, an existing entry has been overwritten), then next
                     if (entry == null)
@@ -181,11 +193,11 @@ namespace CollapseLauncher
 
         #region ResManifest
         private async Task GetResManifest(
-            DownloadClient                           downloadClient,
-            Dictionary<string, FilePropertiesRemote> hashSet,
-            List<FilePropertiesRemote>               assetIndex,
-            bool                                     throwIfError,
-            CancellationToken                        token)
+            DownloadClient                                                               downloadClient,
+            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternateHashSet,
+            List<FilePropertiesRemote>                                                   assetIndex,
+            bool                                                                         throwIfError,
+            CancellationToken                                                            token)
         {
             try
             {
@@ -220,19 +232,20 @@ namespace CollapseLauncher
                     IAsyncEnumerable<FilePropertiesRemote> infoSilenceEnumerable = EnumerateResManifestToAssetIndexAsync(
                         infoKindSilence.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
-                        hashSet,
+                        alternateHashSet,
                         Path.Combine(GamePath, $@"{ExecutableName}_Data\"),
                         infoKindSilence.BaseUrl, baseResUrl);
 
                     IAsyncEnumerable<FilePropertiesRemote> infoDataEnumerable = EnumerateResManifestToAssetIndexAsync(
                         infoKindData.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
-                        hashSet,
+                        alternateHashSet,
                         Path.Combine(GamePath, $@"{ExecutableName}_Data\"),
                         infoKindData.BaseUrl, baseResUrl);
 
                     await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                                                                .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable).WithCancellation(token))
+                                                                .MergeAsyncEnumerable(infoSilenceEnumerable, infoDataEnumerable)
+                                                                .WithCancellation(token))
                     {
                         assetIndex.Add(asset);
                     }
@@ -247,7 +260,7 @@ namespace CollapseLauncher
                     IAsyncEnumerable<FilePropertiesRemote> infoResEnumerable = EnumerateResManifestToAssetIndexAsync(
                         infoKindRes.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                         assetIndex,
-                        hashSet,
+                        alternateHashSet,
                         Path.Combine(GamePath, $@"{ExecutableName}_Data\"),
                         infoKindRes.BaseUrl, baseResUrl);
 
@@ -255,13 +268,14 @@ namespace CollapseLauncher
                             EnumerateResManifestToAssetIndexAsync(
                                                                   infoKindAudio.RegisterSleepyFileInfoToManifest(client, assetIndex, true, persistentPath, token),
                                                                   assetIndex,
-                                                                  hashSet,
+                                                                  alternateHashSet,
                                                                   Path.Combine(GamePath, $@"{ExecutableName}_Data\"),
                                                                   infoKindAudio.BaseUrl, baseResUrl)
                         );
 
                     await foreach (FilePropertiesRemote asset in ZenlessRepairExtensions
-                                                                .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable).WithCancellation(token))
+                                                                .MergeAsyncEnumerable(infoResEnumerable, infoAudioEnumerable)
+                                                                .WithCancellation(token))
                     {
                         assetIndex.Add(asset);
                     }
@@ -388,14 +402,14 @@ namespace CollapseLauncher
         #region Utilities
 #nullable enable
         private static async IAsyncEnumerable<FilePropertiesRemote> EnumerateResManifestToAssetIndexAsync(
-            IAsyncEnumerable<PkgVersionProperties> pkgVersion,
-            List<FilePropertiesRemote> assetIndex,
-            Dictionary<string, FilePropertiesRemote> hashSet,
-            string baseLocalPath,
-            string basePatchUrl,
-            string baseResUrl)
+            IAsyncEnumerable<PkgVersionProperties>                                       pkgVersion,
+            List<FilePropertiesRemote>                                                   assetIndex,
+            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternativeHashSet,
+            string                                                                       baseLocalPath,
+            string                                                                       basePatchUrl,
+            string                                                                       baseResUrl)
         {
-            await foreach (FilePropertiesRemote? entry in pkgVersion.RegisterResCategorizedAssetsToHashSetAsync(assetIndex, hashSet, baseLocalPath, basePatchUrl, baseResUrl))
+            await foreach (FilePropertiesRemote? entry in pkgVersion.RegisterResCategorizedAssetsToHashSetAsync(assetIndex, alternativeHashSet, baseLocalPath, basePatchUrl, baseResUrl))
             {
                 // If entry is null (means, an existing entry has been overwritten), then next
                 if (entry == null)
