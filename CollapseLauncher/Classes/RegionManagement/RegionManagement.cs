@@ -219,7 +219,7 @@ namespace CollapseLauncher
                 GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
                 GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
                 GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
-                _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
+                _ => AppDefaultBG
             };
             BackgroundImgChanger.ChangeBackground(tempImage, () =>
                                                              {

@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper.Background;
-using CollapseLauncher.Helper.Image;
+﻿using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
@@ -18,7 +17,6 @@ using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
-// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -102,7 +100,7 @@ namespace CollapseLauncher.Pages.OOBE
                                     GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
                                     GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
                                     GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
-                                    _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
+                                    _ => AppDefaultBG
                                 };
 
                 // TODO: Use FallbackCDNUtil to get the sprites

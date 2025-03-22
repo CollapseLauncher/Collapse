@@ -1,8 +1,5 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
-using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Statics;
-using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -23,7 +20,6 @@ using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable UnusedMember.Global
 // ReSharper disable CommentTypo
-// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -270,7 +266,7 @@ namespace CollapseLauncher.Helper.Background
             if (element is ImageUI image)
             {
                 // Get the default.png path and check if it exists
-                string filePath = GetDefaultRegionBackgroundPath();
+                string filePath = LauncherConfig.AppDefaultBG;
                 if (!File.Exists(filePath))
                 {
                     return;
@@ -514,29 +510,6 @@ namespace CollapseLauncher.Helper.Background
             }
 
             return SupportedMediaPlayerExt.Contains(extension, StringComparer.OrdinalIgnoreCase) ? MediaType.Media : MediaType.Unknown;
-        }
-
-        public static string GetDefaultRegionBackgroundPath()
-        {
-            GameNameType currentGameType = GameNameType.Unknown;
-            try
-            {
-                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
-                currentGameType = currentGameProperty.GamePreset.GameType;
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return currentGameType switch
-                   {
-                       GameNameType.Honkai => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_honkai.webp"),
-                       GameNameType.StarRail => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_starrail.webp"),
-                       GameNameType.Zenless => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_zzz.webp"),
-                       GameNameType.Genshin => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_genshin.webp"),
-                       _ => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default.png")
-                   };
         }
     }
 }
