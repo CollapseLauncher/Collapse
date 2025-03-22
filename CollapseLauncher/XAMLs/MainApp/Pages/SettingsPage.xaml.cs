@@ -564,11 +564,11 @@ namespace CollapseLauncher.Pages
                     var bgPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(bgPath))
                     {
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
                     }
                     else
                     {
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = !File.Exists(bgPath) ? AppDefaultBG : bgPath;
+                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = !File.Exists(bgPath) ? BackgroundMediaUtility.GetDefaultRegionBackgroundPath() : bgPath;
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);

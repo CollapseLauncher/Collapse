@@ -332,7 +332,6 @@ namespace Hi3Helper.Shared.Region
         public static readonly string AppAssetsFolder    = Path.Combine(AppExecutableDir, "Assets");
 #pragma warning restore CS8604 // Possible null reference argument.
         public static readonly string AppImagesFolder    = Path.Combine(AppAssetsFolder, "Images");
-        public static readonly string AppDefaultBG       = Path.Combine(AppImagesFolder, "PageBackground", "default.png");
         public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
         public static readonly string AppDataFolder      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder, "config.ini");
