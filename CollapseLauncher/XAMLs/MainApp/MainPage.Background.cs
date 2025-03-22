@@ -59,7 +59,7 @@ public partial class MainPage : Page
             if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
             {
                 LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
-                gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                gameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
             }
 
             var mType = BackgroundMediaUtility.GetMediaType(gameLauncherApi.GameBackgroundImgLocal);
@@ -86,7 +86,7 @@ public partial class MainPage : Page
                                                      e.IsForceRecreateCache, ex =>
                                                                              {
                                                                                  gameLauncherApi.GameBackgroundImgLocal =
-                                                                                     AppDefaultBG;
+                                                                                     BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
                                                                                  LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
                                                                                      LogType.Error, true);
                                                                                  ErrorSender.SendException(ex);
@@ -129,7 +129,7 @@ public partial class MainPage : Page
                                                                  @"Assets\Images\GameBackground\starrail.webp"),
                            GameNameType.Zenless => Path.Combine(AppExecutableDir,
                                                                 @"Assets\Images\GameBackground\zzz.webp"),
-                           _ => AppDefaultBG
+                           _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                        };
 
         // Check if Regional Custom BG is enabled and available
@@ -167,7 +167,7 @@ public partial class MainPage : Page
                 {
                     ErrorSender.SendException(ex);
                     LogWriteLine($"Failed while downloading default background image!\r\n{ex}", LogType.Error, true);
-                    gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    gameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
                 }
             }
             // IF ITS STILL NOT THERE, then use fallback game poster, IF ITS STILL NOT THEREEEE!! use paimon cute deadge pic :)
