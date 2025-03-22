@@ -507,7 +507,6 @@ namespace CollapseLauncher.GameSettings.Zenless
         ///     Sets the in-game quality settings for Anisotropic Sampling
         /// </summary>
         /// <see cref="AnisotropicSamplingOption"/>
-        
         [JsonIgnore]
         public AnisotropicSamplingOption AnisotropicSampling
         {

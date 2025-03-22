@@ -31,7 +31,7 @@ namespace Hi3Helper
                     LangFallback?._ZenlessGameSettingsPage.Graphics_Distortion;
 
                 public string Graphics_AnisotropicSampling { get; set; } =
-                    LangFallback?._ZenlessGameSettingsPage.Graphics_AnisotropicSampling;
+                    LangFallback?._GenshinGameSettingsPage.Graphics_AnisotropicFiltering;
                 
                 public string Graphics_HighPrecisionCharacterAnimation { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation;
