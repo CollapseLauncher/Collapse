@@ -87,7 +87,10 @@
     "CopyClipboardBtn1": "Copy All to Clipboard",
     "CopyClipboardBtn2": "Copied to Clipboard!",
     "GoBackPageBtn1": "Go Back to Previous Page",
-    "CustomBackground_NotFound": "Custom background file is missing! Using default image"
+    
+    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
+    "CustomBackground_RegionalTag": "Region BG",
+    "CustomBackground_GlobalTag": "Global BG"
   },
 
   "_MainPage": {

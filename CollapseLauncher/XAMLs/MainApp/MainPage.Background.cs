@@ -60,23 +60,27 @@ public partial class MainPage : Page
             {
                 if (IsCustomBG)
                 {
-                    var customBGPath = e.ImgPath;
+                    var customBGPath  = e.ImgPath;
+                    var warningMsgTag = "";
+                    
                     if (string.IsNullOrWhiteSpace(customBGPath))
                     {
                         // Check if using regional custom BG
                         if (GetCurrentGameProperty().GameSettings?.SettingsCollapseMisc.UseCustomRegionBG ?? false)
                         {
                             customBGPath = GetCurrentGameProperty().GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath;
+                            warningMsgTag = Locale.Lang._UnhandledExceptionPage.CustomBackground_RegionalTag;
                         }
                         // check if using global custom BG
                         else
                         {
                             customBGPath = GetAppConfigValue("CustomBGPath").ToString();
+                            warningMsgTag = Locale.Lang._UnhandledExceptionPage.CustomBackground_GlobalTag;
                         }
                     }
                     
                     var missingImageEx =
-                        new FileNotFoundException(Locale.Lang._UnhandledExceptionPage.CustomBackground_NotFound,
+                        new FileNotFoundException($"[{warningMsgTag}] {Locale.Lang._UnhandledExceptionPage.CustomBackground_NotFound}",
                                                   customBGPath);
                     DispatcherQueue.TryEnqueue(() =>
                                                {
