@@ -28,6 +28,8 @@ namespace Hi3Helper
                 public string CopyClipboardBtn1 { get; set; } = LangFallback?._UnhandledExceptionPage.CopyClipboardBtn1;
                 public string CopyClipboardBtn2 { get; set; } = LangFallback?._UnhandledExceptionPage.CopyClipboardBtn2;
                 public string GoBackPageBtn1 { get; set; } = LangFallback?._UnhandledExceptionPage.GoBackPageBtn1;
+                public string WarningSubtitle { get; set; } = LangFallback?._UnhandledExceptionPage.WarningSubtitle;
+                public string CustomBackground_NotFound { get; set; } = LangFallback?._UnhandledExceptionPage.CustomBackground_NotFound;
             }
         }
         #endregion

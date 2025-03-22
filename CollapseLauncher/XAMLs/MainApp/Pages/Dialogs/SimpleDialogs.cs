@@ -1172,7 +1172,7 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static Task<ContentDialogResult> Dialog_GenericWarning()
+        public static Task<ContentDialogResult> Dialog_StarRailABTestingWarning()
         {
             return SpawnDialog(Lang._UnhandledExceptionPage.UnhandledTitle4,
                                Lang._UnhandledExceptionPage.UnhandledSubtitle4,
