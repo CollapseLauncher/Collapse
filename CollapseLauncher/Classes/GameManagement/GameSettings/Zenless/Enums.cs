@@ -151,6 +151,20 @@ public enum AudioPlaybackDevice
     TV = 3
 }
 
+/// <summary>
+///  Available options for graphics settings that have 5 options <br/>
+/// 1x, 2x, 4x, 8x, 16x
+/// Default : 8x [3]
+/// </summary>
+public enum AnisotropicSamplingOption
+{
+    x1,
+    x2,
+    x4,
+    x8,
+    x16
+}
+
 public static class ServerName
 {
     public const string Europe   = "prod_gf_eu";

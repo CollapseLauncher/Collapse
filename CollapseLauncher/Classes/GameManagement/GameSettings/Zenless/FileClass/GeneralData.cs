@@ -499,7 +499,24 @@ namespace CollapseLauncher.GameSettings.Zenless
             .GetDataEnum<QualityOption2>();
             set => _envQualityData?.SetDataEnum(value);
         }
-
+        
+        // Key 16184 Anisotropic Sampling
+        private SystemSettingLocalData<AnisotropicSamplingOption>? _anisotropicSamplingData;
+        
+        /// <summary>
+        ///     Sets the in-game quality settings for Anisotropic Sampling
+        /// </summary>
+        /// <see cref="AnisotropicSamplingOption"/>
+        
+        [JsonIgnore]
+        public AnisotropicSamplingOption AnisotropicSampling
+        {
+            get => (_anisotropicSamplingData ??= SystemSettingDataMap
+            .AsSystemSettingLocalData("16184", AnisotropicSamplingOption.x8))
+            .GetDataEnum<AnisotropicSamplingOption>();
+            set => _anisotropicSamplingData?.SetDataEnum(value);
+        }
+        
         // Key 12155 Global Illumination
         private SystemSettingLocalData<QualityOption3>? _envGlobalIllumination;
 
