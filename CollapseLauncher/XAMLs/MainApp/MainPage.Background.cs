@@ -58,6 +58,39 @@ public partial class MainPage : Page
 
             if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
             {
+                if (IsCustomBG)
+                {
+                    var customBGPath = e.ImgPath;
+                    if (string.IsNullOrWhiteSpace(customBGPath))
+                    {
+                        // Check if using regional custom BG
+                        if (GetCurrentGameProperty().GameSettings?.SettingsCollapseMisc.UseCustomRegionBG ?? false)
+                        {
+                            customBGPath = GetCurrentGameProperty().GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath;
+                        }
+                        // check if using global custom BG
+                        else
+                        {
+                            customBGPath = GetAppConfigValue("CustomBGPath").ToString();
+                        }
+                    }
+                    
+                    var missingImageEx =
+                        new FileNotFoundException(Locale.Lang._UnhandledExceptionPage.CustomBackground_NotFound,
+                                                  customBGPath);
+                    DispatcherQueue.TryEnqueue(() =>
+                                               {
+                                                   try
+                                                   {
+                                                       ErrorSender.SendWarning(missingImageEx);
+                                                   }
+                                                   catch
+                                                   {
+                                                       // ignored
+                                                   }
+                                               });
+                }
+                
                 LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
                 gameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
             }
