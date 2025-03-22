@@ -3544,7 +3544,7 @@ namespace CollapseLauncher.InstallManager.Base
             switch (status)
             {
                 case CompletenessStatus.Running:
-                    IsRunning           = true;
+                    IsRunning          = true;
                     Status.IsRunning   = true;
                     Status.IsCompleted = false;
                     Status.IsCanceled  = false;
@@ -3553,10 +3553,12 @@ namespace CollapseLauncher.InstallManager.Base
                     #endif
                     break;
                 case CompletenessStatus.Completed:
-                    IsRunning           = false;
+                    IsRunning          = false;
                     Status.IsRunning   = false;
                     Status.IsCompleted = true;
                     Status.IsCanceled  = false;
+                    Status.IsProgressAllIndetermined = false;
+                    Status.IsProgressPerFileIndetermined = false;
                     #if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
                     #endif
@@ -3568,19 +3570,23 @@ namespace CollapseLauncher.InstallManager.Base
                     }
                     break;
                 case CompletenessStatus.Cancelled:
-                    IsRunning           = false;
+                    IsRunning          = false;
                     Status.IsRunning   = false;
                     Status.IsCompleted = false;
                     Status.IsCanceled  = true;
+                    Status.IsProgressAllIndetermined = false;
+                    Status.IsProgressPerFileIndetermined = false;
                     #if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
                     #endif
                     break;
                 case CompletenessStatus.Idle:
-                    IsRunning           = false;
+                    IsRunning          = false;
                     Status.IsRunning   = false;
                     Status.IsCompleted = false;
                     Status.IsCanceled  = false;
+                    Status.IsProgressAllIndetermined = false;
+                    Status.IsProgressPerFileIndetermined = false;
                     #if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
                     #endif
