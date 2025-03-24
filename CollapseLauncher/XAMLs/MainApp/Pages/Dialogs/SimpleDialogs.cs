@@ -1172,7 +1172,7 @@ namespace CollapseLauncher.Dialogs
                                ContentDialogTheme.Warning);
         }
 
-        public static Task<ContentDialogResult> Dialog_GenericWarning()
+        public static Task<ContentDialogResult> Dialog_StarRailABTestingWarning()
         {
             return SpawnDialog(Lang._UnhandledExceptionPage.UnhandledTitle4,
                                Lang._UnhandledExceptionPage.UnhandledSubtitle4,
@@ -1190,9 +1190,10 @@ namespace CollapseLauncher.Dialogs
 
             try
             {
-                string exceptionContent = ErrorSender.ExceptionContent;
-                string title            = ErrorSender.ExceptionTitle;
-                string subtitle         = ErrorSender.ExceptionSubtitle;
+                string    exceptionContent = ErrorSender.ExceptionContent;
+                ErrorType exceptionType    = ErrorSender.ExceptionType;
+                string    title            = ErrorSender.ExceptionTitle;
+                string    subtitle         = ErrorSender.ExceptionSubtitle;
 
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
@@ -1256,7 +1257,10 @@ namespace CollapseLauncher.Dialogs
                                                                null,
                                                                null,
                                                                ContentDialogButton.Close,
-                                                               ContentDialogTheme.Error,
+                                                               exceptionType switch {
+                                                                   ErrorType.Warning => ContentDialogTheme.Warning,
+                                                                   _ => ContentDialogTheme.Error
+                                                               },
                                                                OnLoadedDialog
                                                                );
 

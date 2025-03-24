@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Game Crashed",
     "UnhandledSubtitle3": "The game has crashed with error details below:",
     "UnhandledTitle4": "Warning",
+    "WarningSubtitle": "A minor issue has occurred with the following details:",
     "UnhandledSubtitle4": "This isn't a major issue, but we thought we should let you know:\r\nDue to miHoYo A/B testing, Collapse does not support reading the following key: App_Settings_h2319593470.\r\nWe apologize for the inconvenience and thank you for your understanding.",
     "UnhandledTitleDiskCrc": "Disk Corruption Detected!",
     "UnhandledSubDiskCrc": "Disk corruption is detected while accessing a file. Please check your disk using chkdsk.",
     "CopyClipboardBtn1": "Copy All to Clipboard",
     "CopyClipboardBtn2": "Copied to Clipboard!",
-    "GoBackPageBtn1": "Go Back to Previous Page"
+    "GoBackPageBtn1": "Go Back to Previous Page",
+    
+    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
+    "CustomBackground_RegionalTag": "Region BG",
+    "CustomBackground_GlobalTag": "Global BG"
   },
 
   "_MainPage": {

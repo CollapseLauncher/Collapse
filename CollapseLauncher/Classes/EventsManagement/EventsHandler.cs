@@ -147,8 +147,10 @@ namespace CollapseLauncher
             SentryErrorId = sentryGuid;
             Invoker.SendException(e, eT);
         } 
+        
         public static void SendWarning(Exception e, ErrorType eT = ErrorType.Warning) =>
             Invoker.SendException(Exception = e, eT);
+        
         public static void SendExceptionWithoutPage(Exception e, ErrorType eT = ErrorType.Unhandled)
         {
             SentryHelper.ExceptionHandler(e, eT == ErrorType.Unhandled ? SentryHelper.ExceptionType.UnhandledOther : SentryHelper.ExceptionType.Handled);
@@ -177,7 +179,7 @@ namespace CollapseLauncher
                     break;
                 case ErrorType.Warning:
                     ExceptionTitle    = locUnhandledException.UnhandledTitle4;
-                    ExceptionSubtitle = locUnhandledException.UnhandledSubtitle4;
+                    ExceptionSubtitle = locUnhandledException.WarningSubtitle;
                     break;
                 case ErrorType.DiskCrc:
                     ExceptionTitle    = locUnhandledException.UnhandledTitleDiskCrc;
