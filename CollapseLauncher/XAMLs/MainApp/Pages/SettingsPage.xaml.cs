@@ -144,18 +144,22 @@ namespace CollapseLauncher.Pages
 
         private string GitVersionIndicator_Builder()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618, CS0162 // Type or member is obsolete
             var branchName  = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
 
             // Add indicator if the commit is dirty
             // CS0162: Unreachable code detected
-            if (ThisAssembly.Git.IsDirty) commitShort = $"{commitShort}*";
+            if (ThisAssembly.Git.IsDirty)
+            {
+                commitShort += '*';
+            }
+
             var outString =
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
-#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618, CS0162 // Type or member is obsolete
             return outString;
         }
         
