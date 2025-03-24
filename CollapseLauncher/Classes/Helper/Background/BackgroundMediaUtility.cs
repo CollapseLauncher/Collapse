@@ -2,7 +2,6 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Statics;
-using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
