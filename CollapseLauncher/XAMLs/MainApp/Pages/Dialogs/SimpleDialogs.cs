@@ -1190,9 +1190,10 @@ namespace CollapseLauncher.Dialogs
 
             try
             {
-                string exceptionContent = ErrorSender.ExceptionContent;
-                string title            = ErrorSender.ExceptionTitle;
-                string subtitle         = ErrorSender.ExceptionSubtitle;
+                string    exceptionContent = ErrorSender.ExceptionContent;
+                ErrorType exceptionType    = ErrorSender.ExceptionType;
+                string    title            = ErrorSender.ExceptionTitle;
+                string    subtitle         = ErrorSender.ExceptionSubtitle;
 
                 Grid rootGrid = CollapseUIExt.CreateGrid()
                                              .WithHorizontalAlignment(HorizontalAlignment.Stretch)
@@ -1256,7 +1257,10 @@ namespace CollapseLauncher.Dialogs
                                                                null,
                                                                null,
                                                                ContentDialogButton.Close,
-                                                               ContentDialogTheme.Error,
+                                                               exceptionType switch {
+                                                                   ErrorType.Warning => ContentDialogTheme.Warning,
+                                                                   _ => ContentDialogTheme.Error
+                                                               },
                                                                OnLoadedDialog
                                                                );
 
