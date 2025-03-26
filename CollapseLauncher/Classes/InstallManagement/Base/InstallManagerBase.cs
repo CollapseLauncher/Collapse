@@ -247,6 +247,7 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Set the activity
                 Status.ActivityStatus            = Lang!._GameRepairPage!.Status2!;
+                Status.ActivityStatusInternet    = false;
                 Status.IsIncludePerFileIndicator = false;
                 Status.IsProgressAllIndetermined = true;
                 UpdateStatus();
@@ -256,9 +257,10 @@ namespace CollapseLauncher.InstallManager.Base
                 bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                 if (isDownloadNeeded)
                 {
-                    Status.ActivityStatus   = Lang._GameRepairPage.Status8!.Replace(": ", "");
-                    ProgressAllSizeCurrent  = 0;
-                    ProgressAllCountCurrent = 1;
+                    Status.ActivityStatus         = Lang._GameRepairPage.Status8!.Replace(": ", "");
+                    Status.ActivityStatusInternet = false;
+                    ProgressAllSizeCurrent        = 0;
+                    ProgressAllCountCurrent       = 1;
                     UpdateStatus();
 
                     // If download needed, then start the repair (download) routine
@@ -310,12 +312,13 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get the sum of uncompressed size and
                 // Set progress count to beginning
-                ProgressAllSizeTotal              = localAssetIndex!.Sum(x => x!.S);
-                ProgressAllSizeCurrent            = 0;
-                ProgressAllCountCurrent           = 1;
+                ProgressAllSizeTotal             = localAssetIndex!.Sum(x => x!.S);
+                ProgressAllSizeCurrent           = 0;
+                ProgressAllCountCurrent          = 1;
                 Status.IsIncludePerFileIndicator = false;
                 Status.IsProgressAllIndetermined = true;
                 Status.ActivityStatus            = Lang!._Misc!.ApplyingPatch;
+                Status.ActivityStatusInternet    = false;
                 UpdateStatus();
 
                 // Start the patching process
@@ -722,6 +725,7 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.ActivityStatus =
                     $"{Lang!._Misc!.Verifying}: {string.Format(Lang._Misc.PerFromTo!, ProgressAllCountCurrent,
                                                                ProgressAllCountTotal)}";
+                Status.ActivityStatusInternet = false;
                 UpdateStatus();
 
                 // Run the check and assign to hashLocal variable
@@ -891,6 +895,7 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.ActivityStatus =
                     $"{Lang!._Misc!.Extracting}: {string.Format(Lang._Misc.PerFromTo!, ProgressAllCountCurrent,
                                                                 ProgressAllCountTotal)}";
+                Status.ActivityStatusInternet        = false;
                 Status.IsProgressPerFileIndetermined = false;
                 Status.IsProgressAllIndetermined     = false;
                 UpdateStatus();
@@ -957,6 +962,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.ActivityStatus = $"{Lang!._Misc!.FinishingUp}: {string.Format(Lang._Misc.PerFromTo!,
                         ProgressAllCountCurrent,
                         ProgressAllCountTotal)}";
+                    Status.ActivityStatusInternet        = false;
                     Status.IsProgressPerFileIndetermined = true;
                     Status.IsProgressAllIndetermined     = true;
                     UpdateStatus();
@@ -1746,6 +1752,7 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.ActivityStatus =
                         $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, ProgressAllCountTotal,
                                                                 ProgressAllCountFound)}";
+                    Status.ActivityStatusInternet = false;
 
                     bool isSuccess = false;
 
@@ -1922,6 +1929,7 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.ActivityStatus =
                     $"{Lang._Misc.Patching}: {string.Format(Lang._Misc.PerFromTo, ProgressAllCountTotal,
                                                             ProgressAllCountFound)}";
+                Status.ActivityStatusInternet = false;
 
                 string patchBasePath  = Path.Combine(GamePath, ConverterTool.NormalizePath(entry.remoteName));
                 string sourceBasePath = GetBasePersistentDirectory(GamePath, entry.remoteName);
@@ -3267,6 +3275,7 @@ namespace CollapseLauncher.InstallManager.Base
             Status.ActivityStatus =
                 $"{Lang._Misc.Downloading}: {string.Format(Lang._Misc.PerFromTo, ProgressAllCountCurrent,
                                                            ProgressAllCountTotal)}";
+            Status.ActivityStatusInternet = true;
             LogWriteLine($"Downloading package URL {ProgressAllCountCurrent}/{ProgressAllCountTotal} ({ConverterTool.SummarizeSizeSimple(package.Size)}): {package.URL}");
 
             // If the file exist or package size is unmatched,
@@ -3317,6 +3326,7 @@ namespace CollapseLauncher.InstallManager.Base
                 Status.ActivityStatus =
                     $"{Lang._Misc.Merging}: {string.Format(Lang._Misc.PerFromTo, ProgressAllCountCurrent,
                                                            ProgressAllCountTotal)}";
+                Status.ActivityStatusInternet = false;
                 UpdateStatus();
 
                 // Check if the merge chunk is enabled and the download could perform multisession,

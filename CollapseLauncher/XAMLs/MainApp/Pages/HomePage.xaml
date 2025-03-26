@@ -1355,9 +1355,17 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition MaxWidth="160" />
                     </Grid.ColumnDefinitions>
-                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                    <FontIcon x:Name="ProgressStatusIconDisk"
+                              Grid.Column="0"
+                              FontFamily="{ThemeResource FontAwesome}"
                               FontSize="12"
                               Glyph="" />
+                    <FontIcon x:Name="ProgressStatusIconInternet"
+                              Grid.Column="0"
+                              Visibility="Collapsed"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="12"
+                              Glyph="" />
                     <TextBlock x:Name="ProgressStatusFooter"
                                Grid.Column="1"
                                FontSize="10"

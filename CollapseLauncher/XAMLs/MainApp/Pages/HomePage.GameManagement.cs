@@ -465,6 +465,9 @@ public sealed partial class HomePage
 
         progressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
         progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+
+        ProgressStatusIconDisk.Visibility = e.ActivityStatusInternet ? Visibility.Collapsed : Visibility.Visible;
+        ProgressStatusIconInternet.Visibility = e.ActivityStatusInternet ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void GameInstall_ProgressChanged(object sender, TotalPerFileProgress e)
