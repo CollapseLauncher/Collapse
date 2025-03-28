@@ -77,6 +77,10 @@ namespace CollapseLauncher.Pages
 
         private DnsSettingsContext _dnsSettingsContext;
 
+        private Dictionary<string, FrameworkElement> _settingsControls;
+        private List<FrameworkElement>               _highlightedControls = new List<FrameworkElement>();
+        private Brush                                _highlightBrush;     
+        
         #endregion
 
         #region Settings Page Handler
@@ -166,6 +170,8 @@ namespace CollapseLauncher.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
+            
+            InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
@@ -950,6 +956,7 @@ namespace CollapseLauncher.Pages
             }
 
             UpdateBindings.Update();
+            InitializeSettingsSearch();
         }
 
         private void UpdateBindingsEvents(object sender, EventArgs e)
@@ -1842,5 +1849,164 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+        
+        private void InitializeSettingsSearch()
+        {
+            // Create brushes for highlighting
+            _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
+
+            // Map all settings controls with their display text
+            _settingsControls = new Dictionary<string, FrameworkElement>();
+
+            // Walk through all Toggle Switches, TextBlocks with headers, etc.
+            CollectSearchableControls(AppSettings);
+        }
+
+        private void CollectSearchableControls(DependencyObject parent)
+        {
+            var childCount = VisualTreeHelper.GetChildrenCount(parent);
+
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                switch (child)
+                {
+                    // Check if this is a control we want to make searchable
+                    case ToggleSwitch toggleSwitch: // ToggleSwitch main header
+                    {
+                        var key = toggleSwitch.Header?.ToString();
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, toggleSwitch);
+                        break;
+                    }
+                    case RadioButton radioButton when !string.IsNullOrWhiteSpace(radioButton.Content?.ToString()):
+                    {
+                        var key = radioButton.Content?.ToString();
+                        if (string.IsNullOrWhiteSpace(key)) break;
+                        _settingsControls.TryAdd(key, radioButton);
+                        break;
+                    }
+                    case ComboBox comboBox when comboBox.Header != null:
+                    {
+                        var key = comboBox.Header.ToString();
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, comboBox);
+                        break;
+                    }
+                    case NumberBox numberBox when numberBox.Header != null:
+                    {
+                        var key = numberBox.Header.ToString();
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, numberBox);
+                        break;
+                    }
+                    case TextBlock textBlock when !string.IsNullOrWhiteSpace(textBlock.Text):
+                    {
+                        var key = textBlock.Text;
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, textBlock);
+                        break;
+                    }
+                }
+
+                // Recurse into children
+                CollectSearchableControls(child);
+            }
+        }
+
+        #nullable enable
+        private readonly Brush _origToggleBrush    = CollapseUIExt.GetApplicationResource<Brush>("ToggleSwitchContainerBackground");
+        private readonly Brush _origTextBlockBrush = CollapseUIExt.GetApplicationResource<Brush>("TextControlBackground");
+        private readonly Brush _origComboBoxBrush  = CollapseUIExt.GetApplicationResource<Brush>("ComboBoxBackground");
+        private Brush? _origNumberBoxBrush;
+        
+        private void ClearHighlighting()
+        {
+            foreach (var control in _highlightedControls)
+            {
+                switch (control)
+                {
+                    case ToggleSwitch toggleSwitch:
+                        toggleSwitch.Background = _origToggleBrush;
+                        break;
+                    case TextBlock textBlock:
+                        textBlock.SetBackground(_origTextBlockBrush);
+                        break;
+                    case ComboBox comboBox:
+                        comboBox.Background = _origComboBoxBrush;
+                        break;
+                    case NumberBox numberBox:
+                        numberBox.Background = _origNumberBoxBrush;
+                        break;
+                }
+            }
+
+            _highlightedControls.Clear();
+        }
+
+        private void SettingsSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                PerformSearch(sender.Text);
+            }
+        }
+
+        private void SettingsSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            PerformSearch(args.QueryText);
+        }
+
+        private void PerformSearch(string query)
+        {
+            // Clear previous highlighting
+            ClearHighlighting();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return;
+
+            // Find and highlight matching controls
+            foreach (var settingPair in _settingsControls)
+            {
+                if (settingPair.Key.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    var control = settingPair.Value;
+
+                    switch (control)
+                    {
+                        // Highlight the control
+                        case ToggleSwitch toggleSwitch:
+                            toggleSwitch.Background = _highlightBrush;
+                            _highlightedControls.Add(toggleSwitch);
+                            break;
+                        case TextBlock textBlock:
+                            textBlock.SetBackground(_highlightBrush);
+                            _highlightedControls.Add(textBlock);
+                            break;
+                        case ComboBox comboBox:
+                            comboBox.Background = _highlightBrush;
+                            _highlightedControls.Add(comboBox);
+                            break;
+                        case NumberBox numberBox:
+                        {
+                            if (_origNumberBoxBrush == null) 
+                                _origNumberBoxBrush = numberBox.Background;
+                        
+                            numberBox.Background = _highlightBrush;
+                            _highlightedControls.Add(numberBox);
+                            break;
+                        }
+                        
+                    }
+
+                    // Scroll to the first match
+                    if (_highlightedControls.Count == 1)
+                    {
+                        control.StartBringIntoView(new BringIntoViewOptions() { AnimationDesired = true });
+                    }
+                }
+            }
+        }
     }
 }
