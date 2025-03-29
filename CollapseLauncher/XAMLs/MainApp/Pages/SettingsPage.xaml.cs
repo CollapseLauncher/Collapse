@@ -33,6 +33,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -77,9 +78,9 @@ namespace CollapseLauncher.Pages
 
         private DnsSettingsContext _dnsSettingsContext;
 
-        private Dictionary<string, FrameworkElement> _settingsControls;
-        private List<FrameworkElement>               _highlightedControls = new List<FrameworkElement>();
-        private Brush                                _highlightBrush;     
+        private ConcurrentDictionary<string, FrameworkElement> _settingsControls;
+        private List<FrameworkElement>                         _highlightedControls = new();
+        private Brush                                          _highlightBrush;     
         
         #endregion
 
@@ -1856,7 +1857,7 @@ namespace CollapseLauncher.Pages
             _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
 
             // Map all settings controls with their display text
-            _settingsControls = new Dictionary<string, FrameworkElement>();
+            _settingsControls = new ConcurrentDictionary<string, FrameworkElement>();
 
             // Walk through all Toggle Switches, TextBlocks with headers, etc.
             CollectSearchableControls(AppSettings);
@@ -1873,40 +1874,95 @@ namespace CollapseLauncher.Pages
                 switch (child)
                 {
                     // Check if this is a control we want to make searchable
-                    case ToggleSwitch toggleSwitch: // ToggleSwitch main header
+                    case ToggleSwitch t: // ToggleSwitch main header
                     {
-                        var key = toggleSwitch.Header?.ToString();
+                        var key = t.Header?.ToString();
                         if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, toggleSwitch);
-                        break;
+                            _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
                     }
-                    case RadioButton radioButton when !string.IsNullOrWhiteSpace(radioButton.Content?.ToString()):
+                    case RadioButtons t when !string.IsNullOrWhiteSpace(t.Header?.ToString()):
                     {
-                        var key = radioButton.Content?.ToString();
-                        if (string.IsNullOrWhiteSpace(key)) break;
-                        _settingsControls.TryAdd(key, radioButton);
-                        break;
+                        var key = t.Header?.ToString();
+                        if (string.IsNullOrWhiteSpace(key)) continue;
+                        _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
                     }
-                    case ComboBox comboBox when comboBox.Header != null:
+                    case RadioButton t when !string.IsNullOrWhiteSpace(t.Content?.ToString()):
                     {
-                        var key = comboBox.Header.ToString();
+                        var key = t.Content?.ToString();
+                        if (string.IsNullOrWhiteSpace(key)) continue;
+                        _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
+                    }
+                    case ComboBox { Header: not null } t:
+                    {
+                        var key = t.Header.ToString();
                         if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, comboBox);
-                        break;
+                            _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
                     }
-                    case NumberBox numberBox when numberBox.Header != null:
+                    case ComboBoxItem t when !string.IsNullOrWhiteSpace(t.Content?.ToString()):
                     {
-                        var key = numberBox.Header.ToString();
+                        var key = t.Content?.ToString();
                         if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, numberBox);
-                        break;
+                            _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
                     }
-                    case TextBlock textBlock when !string.IsNullOrWhiteSpace(textBlock.Text):
+                    case NumberBox { Header: not null } t:
                     {
-                        var key = textBlock.Text;
+                        var key = t.Header.ToString();
                         if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, textBlock);
-                        break;
+                            _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
+                    }
+                    case TextBlock t when !string.IsNullOrWhiteSpace(t.Text):
+                    {
+                        var key = t.Text;
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
+                    }
+                    case Microsoft.UI.Xaml.Documents.Run t when !string.IsNullOrWhiteSpace(t.Text):
+                    {
+                        var key = t.Text;
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, VisualTreeHelper.GetParent(t) as FrameworkElement);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
+                    }
+                    case Slider t when !string.IsNullOrWhiteSpace(t.Header?.ToString()):
+                    {
+                        var key = t.Header.ToString();
+                        if (!string.IsNullOrEmpty(key))
+                            _settingsControls.TryAdd(key, t);
+                    #if DEBUG
+                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                    #endif
+                        continue;
                     }
                 }
 
@@ -1919,7 +1975,10 @@ namespace CollapseLauncher.Pages
         private readonly Brush _origToggleBrush    = CollapseUIExt.GetApplicationResource<Brush>("ToggleSwitchContainerBackground");
         private readonly Brush _origTextBlockBrush = CollapseUIExt.GetApplicationResource<Brush>("TextControlBackground");
         private readonly Brush _origComboBoxBrush  = CollapseUIExt.GetApplicationResource<Brush>("ComboBoxBackground");
+        
         private Brush? _origNumberBoxBrush;
+        private Brush? _origRadioButtonsBrush;
+        private Brush? _origRadioButtonBrush;
         
         private void ClearHighlighting()
         {
@@ -1929,16 +1988,27 @@ namespace CollapseLauncher.Pages
                 {
                     case ToggleSwitch toggleSwitch:
                         toggleSwitch.Background = _origToggleBrush;
-                        break;
+                        continue;
                     case TextBlock textBlock:
                         textBlock.SetBackground(_origTextBlockBrush);
-                        break;
+                        continue;
                     case ComboBox comboBox:
                         comboBox.Background = _origComboBoxBrush;
-                        break;
+                        continue;
+                    case ComboBoxItem comboBoxItem:
+                        var p = VisualTreeHelper.GetParent(comboBoxItem);
+                        if (p is ComboBox cb)
+                            cb.Background = _origComboBoxBrush;
+                        continue;
+                    case RadioButtons radioButtons:
+                        radioButtons.Background = _origRadioButtonsBrush;
+                        continue;
+                    case RadioButton radioButton:
+                        radioButton.Background = _origRadioButtonBrush;
+                        continue;
                     case NumberBox numberBox:
                         numberBox.Background = _origNumberBoxBrush;
-                        break;
+                        continue;
                 }
             }
 
@@ -1967,44 +2037,54 @@ namespace CollapseLauncher.Pages
                 return;
 
             // Find and highlight matching controls
-            foreach (var settingPair in _settingsControls)
+            foreach (var (key, control) in _settingsControls)
             {
-                if (settingPair.Key.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (key.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0)
                 {
-                    var control = settingPair.Value;
+                    continue;
+                }
+                
+            #if DEBUG
+                LogWriteLine($"For {query}, found key {key} with type {control.GetType()} and value {control}", LogType.Debug);
+            #endif
 
-                    switch (control)
+                switch (control)
+                {
+                    // Highlight the control
+                    case ToggleSwitch toggleSwitch:
+                        toggleSwitch.Background = _highlightBrush;
+                        _highlightedControls.Add(toggleSwitch);
+                        break;
+                    case TextBlock textBlock:
+                        textBlock.SetBackground(_highlightBrush);
+                        _highlightedControls.Add(textBlock);
+                        break;
+                    case ComboBox comboBox:
+                        comboBox.Background = _highlightBrush;
+                        _highlightedControls.Add(comboBox);
+                        break;
+                    case ComboBoxItem comboBoxItem:
+                        var p = VisualTreeHelper.GetParent(comboBoxItem);
+                        comboBoxItem.Background     = _highlightBrush;
+                        p.As<ComboBox>().Background = _highlightBrush;
+                        _highlightedControls.Add(comboBoxItem);
+                        _highlightedControls.Add(p as ComboBox);
+                        break;
+                    case NumberBox numberBox:
                     {
-                        // Highlight the control
-                        case ToggleSwitch toggleSwitch:
-                            toggleSwitch.Background = _highlightBrush;
-                            _highlightedControls.Add(toggleSwitch);
-                            break;
-                        case TextBlock textBlock:
-                            textBlock.SetBackground(_highlightBrush);
-                            _highlightedControls.Add(textBlock);
-                            break;
-                        case ComboBox comboBox:
-                            comboBox.Background = _highlightBrush;
-                            _highlightedControls.Add(comboBox);
-                            break;
-                        case NumberBox numberBox:
-                        {
-                            if (_origNumberBoxBrush == null) 
-                                _origNumberBoxBrush = numberBox.Background;
+                        if (_origNumberBoxBrush == null) 
+                            _origNumberBoxBrush = numberBox.Background;
                         
-                            numberBox.Background = _highlightBrush;
-                            _highlightedControls.Add(numberBox);
-                            break;
-                        }
-                        
+                        numberBox.Background = _highlightBrush;
+                        _highlightedControls.Add(numberBox);
+                        break;
                     }
+                }
 
-                    // Scroll to the first match
-                    if (_highlightedControls.Count == 1)
-                    {
-                        control.StartBringIntoView(new BringIntoViewOptions() { AnimationDesired = true });
-                    }
+                // Scroll to the first match
+                if (_highlightedControls.Count == 1)
+                {
+                    control.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true });
                 }
             }
         }
