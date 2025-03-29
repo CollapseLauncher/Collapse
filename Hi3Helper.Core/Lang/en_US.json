@@ -691,7 +691,9 @@
     "Database_Warning_PropertyChanged": "Database settings has changed",
     "Database_ValidationChecking": "Validating Settings...",
     "Database_Placeholder_DbUserIdTextBox": "GUID Example: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Enter your authentication token here"
+    "Database_Placeholder_DbTokenPasswordBox": "Enter your authentication token here",
+    
+    "SearchPlaceholder": "Type to search..."
   },
 
   "_Misc": {

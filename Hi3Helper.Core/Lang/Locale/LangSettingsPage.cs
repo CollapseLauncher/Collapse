@@ -247,6 +247,8 @@ namespace Hi3Helper
                 public string Database_ValidationChecking               { get; set; } = LangFallback?._SettingsPage.Database_ValidationChecking;
                 public string Database_Placeholder_DbUserIdTextBox      { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbUserIdTextBox;
                 public string Database_Placeholder_DbTokenPasswordBox   { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbTokenPasswordBox;
+
+                public string SearchPlaceholder { get; set; } = LangFallback?._SettingsPage.SearchPlaceholder;
             }
         }
         #endregion

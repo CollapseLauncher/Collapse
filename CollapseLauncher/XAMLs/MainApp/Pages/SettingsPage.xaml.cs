@@ -29,15 +29,18 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,6 +80,10 @@ namespace CollapseLauncher.Pages
 
         private DnsSettingsContext _dnsSettingsContext;
 
+        private Dictionary<string, FrameworkElement> _settingsControls    = new();
+        private List<FrameworkElement>               _highlightedControls = new();
+        private Brush                                _highlightBrush;     
+        
         #endregion
 
         #region Settings Page Handler
@@ -166,6 +173,8 @@ namespace CollapseLauncher.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
+            
+            InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
@@ -950,6 +959,7 @@ namespace CollapseLauncher.Pages
             }
 
             UpdateBindings.Update();
+            InitializeSettingsSearch();
         }
 
         private void UpdateBindingsEvents(object sender, EventArgs e)
@@ -1842,5 +1852,301 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
+        private void InitializeSettingsSearch()
+        {
+            // Create brushes for highlighting
+            _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
+
+            // Map all settings controls with their display text
+            if (!(_settingsControls.Count < 1)) _settingsControls.Clear();
+            ClearHighlighting();
+
+            // Walk through all Toggle Switches, TextBlocks with headers, etc.
+            CollectSearchableControls(AppSettings);
+        }
+
+        private void CollectSearchableControls(DependencyObject parent)
+        {
+            var childCount = VisualTreeHelper.GetChildrenCount(parent);
+
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                switch (child)
+                {
+                    // Check if this is a control we want to make searchable
+                    case ToggleSwitch t: // ToggleSwitch main header
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case RadioButtons t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Header?.ToString()))
+                            AddControl(t.Header.ToString(), t);
+                        continue;
+                    }
+                    case RadioButton t:
+                    {
+                        AddControlRecursive(t.Content, t);
+                        continue;
+                    }
+                    case ComboBox { Header: not null } t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case ComboBoxItem t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Content?.ToString()))
+                            AddControl(t.Content.ToString(), t);
+                        continue;
+                    }
+                    case NumberBox { Header: not null } t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case TextBlock t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Text))
+                            AddControl(t.Text, t);
+                        continue;
+                    }
+                    case Run t when !string.IsNullOrEmpty(t.Text):
+                    {
+                        AddControl(t.Text, VisualTreeHelper.GetParent(t) as FrameworkElement);
+                        continue;
+                    }
+                    case Slider t when !string.IsNullOrEmpty(t.Header?.ToString()):
+                    {
+                        AddControl(t.Header?.ToString(), t);
+                        continue;
+                    }
+                }
+
+                // Recurse into children
+                CollectSearchableControls(child);
+            }
+        }
+        
+        private void AddControl(string key, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+
+            if (!string.IsNullOrEmpty(key))
+                _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        } 
+        
+        private void AddControlRecursive(object o, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+            string key = null;
+
+            switch (o)
+            {
+                // Handle different content types
+                case string textContent:
+                    key = textContent;
+                    break;
+                case TextBlock textBlock:
+                    key = textBlock.Text;
+                    break;
+                case FrameworkElement element:
+                {
+                    // Try to find TextBlock inside the content
+                    var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                    var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                    if (enumerable.Any())
+                    {
+                        key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                    }
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        }
+
+        #nullable enable
+        private readonly Brush _origToggleBrush    = CollapseUIExt.GetApplicationResource<Brush>("ToggleSwitchContainerBackground");
+        private readonly Brush _origComboBoxBrush  = CollapseUIExt.GetApplicationResource<Brush>("ComboBoxBackground");
+        
+        private Brush? _origNumberBoxBrush;
+        private Brush? _origRadioButtonsBrush;
+        private Brush? _origRadioButtonBrush;
+        
+        private void ClearHighlighting()
+        {
+            foreach (var control in _highlightedControls)
+            {
+                switch (control)
+                {
+                    case ToggleSwitch toggleSwitch:
+                        toggleSwitch.Background = _origToggleBrush;
+                        continue;
+                    case TextBlock textBlock:
+                        // textBlock.Foreground = _origTextBlockBrush;
+                        textBlock.TextHighlighters.Clear();
+                        continue;
+                    case ComboBox comboBox:
+                        comboBox.Background = _origComboBoxBrush;
+                        continue;
+                    case ComboBoxItem comboBoxItem:
+                        var p = VisualTreeHelper.GetParent(comboBoxItem);
+                        if (p is ComboBox cb)
+                            cb.Background = _origComboBoxBrush;
+                        continue;
+                    case RadioButtons radioButtons:
+                        radioButtons.Background = _origRadioButtonsBrush;
+                        continue;
+                    case RadioButton radioButton:
+                        radioButton.Background = _origRadioButtonBrush;
+                        continue;
+                    case NumberBox numberBox:
+                        numberBox.Background = _origNumberBoxBrush;
+                        continue;
+                }
+            }
+
+            _highlightedControls.Clear();
+        }
+
+        private void SettingsSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                PerformSearch(sender.Text);
+            }
+        }
+
+        private void SettingsSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            PerformSearch(args.QueryText);
+        }
+
+        private void PerformSearch(string query)
+        {
+            // Clear previous highlighting
+            ClearHighlighting();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return;
+
+            // Find and highlight matching controls
+            foreach (var (key, control) in _settingsControls)
+            {
+                int indexOfQuery;
+                if ((indexOfQuery = key.IndexOf(query, StringComparison.OrdinalIgnoreCase)) < 0)
+                {
+                    continue;
+                }
+                
+            #if DEBUG
+                LogWriteLine($"For {query}, found key {key} with type {control.GetType()}", LogType.Debug);
+            #endif
+
+                switch (control)
+                {
+                    // Highlight the control
+                    case ToggleSwitch toggleSwitch:
+                        toggleSwitch.Background = _highlightBrush;
+                        _highlightedControls.Add(toggleSwitch);
+                        break;
+                    case TextBlock textBlock:
+                        // Create a highlighter or use an existing one (if any)
+                        TextHighlighter textHighlighter = new TextHighlighter();
+                        TextRange textHighlightRange = new TextRange(indexOfQuery, query.Length);
+
+                        // Assign the range and its color (for background and foreground)
+                        textHighlighter.Ranges.Add(textHighlightRange);
+                        textHighlighter.Background = _highlightBrush;
+
+                        // Assign the highlighter (if there's none)
+                        textBlock.TextHighlighters.Add(textHighlighter);
+
+                        _highlightedControls.Add(textBlock);
+                        break;
+                    case ComboBox comboBox:
+                        comboBox.Background = _highlightBrush;
+                        _highlightedControls.Add(comboBox);
+                        break;
+                    case ComboBoxItem comboBoxItem:
+                        var p = VisualTreeHelper.GetParent(comboBoxItem);
+                        comboBoxItem.Background     = _highlightBrush;
+                        p.As<ComboBox>().Background = _highlightBrush;
+                        _highlightedControls.Add(comboBoxItem);
+                        _highlightedControls.Add(p as ComboBox);
+                        break;
+                    case NumberBox numberBox:
+                    {
+                        if (_origNumberBoxBrush == null) 
+                            _origNumberBoxBrush = numberBox.Background;
+                        
+                        numberBox.Background = _highlightBrush;
+                        _highlightedControls.Add(numberBox);
+                        break;
+                    }
+                    case RadioButtons radioButtons:
+                        _origRadioButtonsBrush  ??= radioButtons.Background;
+                        radioButtons.Background = _highlightBrush;
+                        _highlightedControls.Add(radioButtons);
+                        break;
+                    case RadioButton radioButton:
+                        _origRadioButtonBrush ??= radioButton.Background;
+                        radioButton.Background = _highlightBrush;
+                        _highlightedControls.Add(radioButton);
+                        break;
+                }
+            }
+
+            // Find the first match and if it's null, return.
+            if (_highlightedControls.Count == 0 || _highlightedControls.FirstOrDefault() is not { } firstControl)
+            {
+                return;
+            }
+
+            // Otherwise, bring first control into view
+            FrameworkElement? e = firstControl switch
+                                  {
+                                      RadioButton tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                                      ComboBoxItem tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                                      _ => firstControl
+                                  };
+
+            e?.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true, VerticalAlignmentRatio = 0.1f });
+
+            MainSettingsPanel.Opacity = 1f;
+            AboutApp.Opacity          = 1f;
+        }
+
+        private void SettingsSearchBox_OnGettingFocus(UIElement sender, GettingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 32);
+            MainSettingsPanel.Opacity               = 0.5f;
+            AboutApp.Opacity                        = 0.5f;
+        }
+
+        private void SettingsSearchBox_OnLosingFocus(UIElement sender, LosingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 8);
+            MainSettingsPanel.Opacity               = 1f;
+            AboutApp.Opacity                        = 1f;
+        }
     }
 }
