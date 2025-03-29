@@ -29,6 +29,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -1851,6 +1852,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
         
+        private readonly Brush _foregroundHighlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Red) { Opacity = 0.6 };
         private void InitializeSettingsSearch()
         {
             // Create brushes for highlighting
@@ -1894,14 +1896,40 @@ namespace CollapseLauncher.Pages
                     #endif
                         continue;
                     }
-                    case RadioButton t when !string.IsNullOrWhiteSpace(t.Content?.ToString()):
+                    case RadioButton t:
                     {
-                        var key = t.Content?.ToString();
-                        if (string.IsNullOrWhiteSpace(key)) continue;
-                        _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        string key = null;
+
+                        switch (t.Content)
+                        {
+                            // Handle different content types
+                            case string textContent:
+                                key = textContent;
+                                break;
+                            case TextBlock textBlock:
+                                key = textBlock.Text;
+                                break;
+                            case FrameworkElement element:
+                            {
+                                // Try to find TextBlock inside the content
+                                var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                                var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                                if (enumerable.Any())
+                                {
+                                    key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                                }
+
+                                break;
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            _settingsControls.TryAdd(key, t);
+                        #if DEBUG
+                            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+                        #endif
+                        }
                         continue;
                     }
                     case ComboBox { Header: not null } t:
@@ -1944,7 +1972,7 @@ namespace CollapseLauncher.Pages
                     #endif
                         continue;
                     }
-                    case Microsoft.UI.Xaml.Documents.Run t when !string.IsNullOrWhiteSpace(t.Text):
+                    case Run t when !string.IsNullOrWhiteSpace(t.Text):
                     {
                         var key = t.Text;
                         if (!string.IsNullOrEmpty(key))
@@ -1973,9 +2001,9 @@ namespace CollapseLauncher.Pages
 
         #nullable enable
         private readonly Brush _origToggleBrush    = CollapseUIExt.GetApplicationResource<Brush>("ToggleSwitchContainerBackground");
-        private readonly Brush _origTextBlockBrush = CollapseUIExt.GetApplicationResource<Brush>("TextControlBackground");
         private readonly Brush _origComboBoxBrush  = CollapseUIExt.GetApplicationResource<Brush>("ComboBoxBackground");
         
+        private Brush? _origTextBlockBrush;
         private Brush? _origNumberBoxBrush;
         private Brush? _origRadioButtonsBrush;
         private Brush? _origRadioButtonBrush;
@@ -1990,7 +2018,7 @@ namespace CollapseLauncher.Pages
                         toggleSwitch.Background = _origToggleBrush;
                         continue;
                     case TextBlock textBlock:
-                        textBlock.SetBackground(_origTextBlockBrush);
+                        textBlock.Foreground = _origTextBlockBrush;
                         continue;
                     case ComboBox comboBox:
                         comboBox.Background = _origComboBoxBrush;
@@ -2045,7 +2073,7 @@ namespace CollapseLauncher.Pages
                 }
                 
             #if DEBUG
-                LogWriteLine($"For {query}, found key {key} with type {control.GetType()} and value {control}", LogType.Debug);
+                LogWriteLine($"For {query}, found key {key} with type {control.GetType()} and control {control}", LogType.Debug);
             #endif
 
                 switch (control)
@@ -2056,7 +2084,8 @@ namespace CollapseLauncher.Pages
                         _highlightedControls.Add(toggleSwitch);
                         break;
                     case TextBlock textBlock:
-                        textBlock.SetBackground(_highlightBrush);
+                        _origTextBlockBrush  ??= textBlock.Foreground;
+                        textBlock.Foreground =   _foregroundHighlightBrush;
                         _highlightedControls.Add(textBlock);
                         break;
                     case ComboBox comboBox:
@@ -2079,12 +2108,29 @@ namespace CollapseLauncher.Pages
                         _highlightedControls.Add(numberBox);
                         break;
                     }
+                    case RadioButtons radioButtons:
+                        _origRadioButtonsBrush  ??= radioButtons.Background;
+                        radioButtons.Background = _highlightBrush;
+                        _highlightedControls.Add(radioButtons);
+                        break;
+                    case RadioButton radioButton:
+                        _origRadioButtonBrush ??= radioButton.Background;
+                        radioButton.Background = _highlightBrush;
+                        _highlightedControls.Add(radioButton);
+                        break;
                 }
 
                 // Scroll to the first match
                 if (_highlightedControls.Count == 1)
                 {
-                    control.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true });
+                    var e = control switch
+                                          {
+                                              RadioButton tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                                              ComboBoxItem tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                                              _ => control
+                                          };
+
+                    e?.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true });
                 }
             }
         }
