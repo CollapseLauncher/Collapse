@@ -303,8 +303,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.30.1",
-        "contentHash": "HeWXDQBabQn/sCGicbeLJ0HMunknfC4FdLrOQOsaMJHcpqx3HVIpyyJqTrqJlWnza870twhOb+rBcaTiC/TlNA=="
+        "resolved": "3.30.0",
+        "contentHash": "ZnEI4oZWnHvd+Yz5Gcnx5Q5RQIuzptIzd0fmxAN8f81FYHI0USZqMOrPTkrsd/QEzo9vl2b217v9FqFgHfufQw=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -459,9 +459,10 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[*, )",
+          "Google.Protobuf": "[3.30.0, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "System.IO.Hashing": "[9.0.3, )"
+          "SharpHDiffPatch.Core": "[*, )",
+          "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {

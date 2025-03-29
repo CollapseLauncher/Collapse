@@ -2215,12 +2215,6 @@ namespace CollapseLauncher.InstallManager.Base
             return returnDict;
         }
 
-        protected virtual void RearrangeLegacyPackageLocaleOrder(RegionResourceVersion? regionResource)
-        {
-            // Rearrange the region resource list order based on matching field for the locale
-            RearrangeDataListLocaleOrder(regionResource?.voice_packs, x => x.language);
-        }
-
         protected virtual void RearrangeDataListLocaleOrder<T>(List<T>? assetDataList, Func<T, string?> matchingFieldPredicate)
         {
             // If the asset list is null or empty, return
@@ -2825,7 +2819,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 ?? throw new InvalidOperationException("Cannot obtain any latest zip package from API"))
                              .Where(asset => asset != null))
                 {
-                    RearrangeLegacyPackageLocaleOrder(asset);
+                    RearrangeDataListLocaleOrder(asset.voice_packs, x => x.language);
                     await TryAddResourceVersionList(asset, packageList);
                 }
             }

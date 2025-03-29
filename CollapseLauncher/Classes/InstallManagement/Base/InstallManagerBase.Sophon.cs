@@ -223,20 +223,21 @@ namespace CollapseLauncher.InstallManager.Base
                                                                              Token.Token);
 
                         // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
-                        RearrangeSophonDataLocaleOrder(sophonMainInfoPair.OtherSophonData);
+                        RearrangeDataListLocaleOrder(sophonMainInfoPair.OtherSophonBuildData.ManifestIdentityList,
+                                                     x => x.MatchingField);
 
                         // Add the manifest to the pair list
                         sophonInfoPairList.Add(sophonMainInfoPair);
 
                         List<string> voLanguageList =
-                            GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonData);
+                            GetSophonLanguageDisplayDictFromVoicePackList(sophonMainInfoPair.OtherSophonBuildData);
 
                         // Get Audio Choices first.
                         // If the fallbackFromUpdate flag is set, then don't show the dialog and instead
                         // use the default language (ja-jp) as the fallback and read the existing audio_lang file
                         List<int>? addedVo;
                         int setAsDefaultVo = GetSophonLocaleCodeIndex(
-                                              sophonMainInfoPair.OtherSophonData,
+                                              sophonMainInfoPair.OtherSophonBuildData,
                                               "ja-jp"
                                              );
 
@@ -265,7 +266,7 @@ namespace CollapseLauncher.InstallManager.Base
                                     }
 
                                     int voLocaleIndex = GetSophonLocaleCodeIndex(
-                                         sophonMainInfoPair.OtherSophonData,
+                                         sophonMainInfoPair.OtherSophonBuildData,
                                          voLocaleId
                                         );
                                     addedVo.Add(voLocaleIndex);
@@ -888,8 +889,10 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
-            RearrangeSophonDataLocaleOrder(requestPairFrom.OtherSophonData);
-            RearrangeSophonDataLocaleOrder(requestPairTo.OtherSophonData);
+            RearrangeDataListLocaleOrder(requestPairFrom.OtherSophonBuildData.ManifestIdentityList,
+                                         x => x.MatchingField);
+            RearrangeDataListLocaleOrder(requestPairTo.OtherSophonBuildData.ManifestIdentityList,
+                                         x => x.MatchingField);
 
             // Add asset to the list
             await foreach (SophonAsset sophonAsset in SophonUpdate
@@ -977,7 +980,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Sophon Audio/Voice-Packs Locale Methods
 
-        protected virtual int GetSophonLocaleCodeIndex(SophonData sophonData, string lookupName)
+        protected virtual int GetSophonLocaleCodeIndex(SophonManifestBuildData sophonData, string lookupName)
         {
             List<string> localeList = sophonData.ManifestIdentityList
                                                 .Where(x => IsValidLocaleCode(x.MatchingField))
@@ -988,7 +991,7 @@ namespace CollapseLauncher.InstallManager.Base
             return Math.Max(0, index);
         }
 
-        protected virtual List<string> GetSophonLanguageDisplayDictFromVoicePackList(SophonData sophonData)
+        protected virtual List<string> GetSophonLanguageDisplayDictFromVoicePackList(SophonManifestBuildData sophonData)
         {
             List<string> value = [];
             for (var index = 0; index < sophonData.ManifestIdentityList.Count; index++)
@@ -1013,7 +1016,7 @@ namespace CollapseLauncher.InstallManager.Base
             return value;
         }
 
-        protected virtual void RearrangeSophonDataLocaleOrder(SophonData? sophonData)
+        protected virtual void RearrangeSophonDataLocaleOrder(SophonManifestBuildData? sophonData)
         {
             // Rearrange the sophon data list order based on matching field for the locale
             RearrangeDataListLocaleOrder(sophonData?.ManifestIdentityList, x => x.MatchingField);
