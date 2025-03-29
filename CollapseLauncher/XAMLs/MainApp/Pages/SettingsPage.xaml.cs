@@ -1851,8 +1851,7 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
-        
-        private readonly Brush _foregroundHighlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Red) { Opacity = 0.6 };
+
         private void InitializeSettingsSearch()
         {
             // Create brushes for highlighting
@@ -1878,9 +1877,35 @@ namespace CollapseLauncher.Pages
                     // Check if this is a control we want to make searchable
                     case ToggleSwitch t: // ToggleSwitch main header
                     {
-                        var key = t.Header?.ToString();
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, t);
+                        string key = string.Empty;
+                        switch (t.Header)
+                        {
+                            // Handle different content types
+                            case string textContent:
+                                key = textContent;
+                                break;
+                            case TextBlock textBlock:
+                                key = textBlock.Text;
+                                break;
+                            case FrameworkElement element:
+                            {
+                                // Try to find TextBlock inside the content
+                                var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                                var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                                if (enumerable.Any())
+                                {
+                                    key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                                }
+
+                                break;
+                            }
+                        }
+
+                        if (string.IsNullOrEmpty(key))
+                            break;
+
+                        _settingsControls.TryAdd(key, t);
+
                     #if DEBUG
                         LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
                     #endif
@@ -2003,7 +2028,6 @@ namespace CollapseLauncher.Pages
         private readonly Brush _origToggleBrush    = CollapseUIExt.GetApplicationResource<Brush>("ToggleSwitchContainerBackground");
         private readonly Brush _origComboBoxBrush  = CollapseUIExt.GetApplicationResource<Brush>("ComboBoxBackground");
         
-        private Brush? _origTextBlockBrush;
         private Brush? _origNumberBoxBrush;
         private Brush? _origRadioButtonsBrush;
         private Brush? _origRadioButtonBrush;
@@ -2018,7 +2042,8 @@ namespace CollapseLauncher.Pages
                         toggleSwitch.Background = _origToggleBrush;
                         continue;
                     case TextBlock textBlock:
-                        textBlock.Foreground = _origTextBlockBrush;
+                        // textBlock.Foreground = _origTextBlockBrush;
+                        textBlock.TextHighlighters.Clear();
                         continue;
                     case ComboBox comboBox:
                         comboBox.Background = _origComboBoxBrush;
@@ -2067,7 +2092,8 @@ namespace CollapseLauncher.Pages
             // Find and highlight matching controls
             foreach (var (key, control) in _settingsControls)
             {
-                if (key.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0)
+                int indexOfQuery;
+                if ((indexOfQuery = key.IndexOf(query, StringComparison.OrdinalIgnoreCase)) < 0)
                 {
                     continue;
                 }
@@ -2084,8 +2110,17 @@ namespace CollapseLauncher.Pages
                         _highlightedControls.Add(toggleSwitch);
                         break;
                     case TextBlock textBlock:
-                        _origTextBlockBrush  ??= textBlock.Foreground;
-                        textBlock.Foreground =   _foregroundHighlightBrush;
+                        // Create a highlighter or use an existing one (if any)
+                        TextHighlighter textHighlighter = new TextHighlighter();
+                        TextRange textHighlightRange = new TextRange(indexOfQuery, query.Length);
+
+                        // Assign the range and its color (for background and foreground)
+                        textHighlighter.Ranges.Add(textHighlightRange);
+                        textHighlighter.Background = _highlightBrush;
+
+                        // Assign the highlighter (if there's none)
+                        textBlock.TextHighlighters.Add(textHighlighter);
+
                         _highlightedControls.Add(textBlock);
                         break;
                     case ComboBox comboBox:
