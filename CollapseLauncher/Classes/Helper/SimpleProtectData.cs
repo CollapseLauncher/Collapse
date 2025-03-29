@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using System;
 using System.Buffers.Text;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using Hi3Helper.SentryHelper;
@@ -104,6 +105,29 @@ namespace CollapseLauncher.Helper
 
                 if (unprotectedData != null)
                     Array.Clear(unprotectedData);
+            }
+        }
+
+        internal static unsafe SecureString? UnprotectStringAsSecureString(string? input)
+        {
+            string? rawString = UnprotectString(input);
+
+            if (string.IsNullOrEmpty(rawString))
+                return null;
+
+            int len = rawString.Length;
+            fixed (char* charB = rawString)
+            {
+                try
+                {
+                    SecureString secureString = new SecureString(charB, rawString.Length);
+                    return secureString;
+                }
+                finally
+                {
+                    for (int i = 0; i < len; i++)
+                        *(charB + i) = '\0';
+                }
             }
         }
     }

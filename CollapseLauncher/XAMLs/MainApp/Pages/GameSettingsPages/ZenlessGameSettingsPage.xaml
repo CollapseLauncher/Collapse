@@ -465,6 +465,25 @@
                                     <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_AnisotropicSampling}"
+                                               TextWrapping="WrapWholeWords" />
+                                    <ComboBox x:Name="AnisotropicSamplingSelector"
+                                              Margin="0,0,16,8"
+                                              HorizontalAlignment="Stretch"
+                                              CornerRadius="14"
+                                              SelectedIndex="{x:Bind Graphics_AnisotropicSampling, Mode=TwoWay}"
+                                              SelectionChanged="EnforceCustomPreset_ComboBox">
+                                        <ComboBoxItem Content="1x" />
+                                        <ComboBoxItem Content="2x" />
+                                        <ComboBoxItem Content="4x" />
+                                        <ComboBoxItem Content="8x" />
+                                        <ComboBoxItem Content="16x" />
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Margin="0,0,8,8"
+                                               HorizontalAlignment="Left"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
                                                Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_GlobalIllumination}"
                                                TextWrapping="WrapWholeWords" />
                                     <ComboBox x:Name="GlobalIlluminationSelector"
@@ -479,7 +498,7 @@
                                         <ComboBoxItem Content="{x:Bind helper:Locale.Lang._GameSettingsPage.SpecHigh}" />
                                     </ComboBox>
                                 </StackPanel>
-                                <StackPanel Grid.Column="1">
+                                <StackPanel Grid.Column="2">
                                     <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"

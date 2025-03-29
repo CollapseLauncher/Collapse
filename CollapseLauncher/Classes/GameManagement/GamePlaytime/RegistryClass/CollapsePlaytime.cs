@@ -296,7 +296,7 @@ namespace CollapseLauncher.GamePlaytime
             {
                 // Fetch database last update stamp
                 var stampDbStr = await DbHandler.QueryKey(KeyLastUpdated);
-                _unixStampDb     = !string.IsNullOrEmpty(stampDbStr) ? Convert.ToInt32(stampDbStr) : null;
+                _unixStampDb     = !string.IsNullOrWhiteSpace(stampDbStr) ? Convert.ToInt32(stampDbStr) : null;
                 
                 // Compare unix stamp from config
                 var unixStampLocal = Convert.ToInt32(DbConfig.GetConfig(KeyLastUpdated).ToString());
@@ -317,7 +317,7 @@ namespace CollapseLauncher.GamePlaytime
                         return (false, null); // Return if pull failed
                     }
                     
-                    if (string.IsNullOrEmpty(_jsonDataDb))
+                    if (string.IsNullOrWhiteSpace(_jsonDataDb))
                     {
                         LogWriteLine("[CollapsePlaytime::DbSync] _jsonDataDb is empty, skipping sync~", default, true);
                         return (false, null);
@@ -342,7 +342,7 @@ namespace CollapseLauncher.GamePlaytime
                     return (true, playtimeInner);
                 }
 
-                if (!(_unixStampDb < unixStampLocal))
+                if (_unixStampDb != null && !(_unixStampDb < unixStampLocal))
                 {
                     return (false, null);
                 }
@@ -406,13 +406,18 @@ namespace CollapseLauncher.GamePlaytime
                 _jsonDataDb   = await DbHandler.QueryKey(KeyPlaytimeJson, true);
                 
                 var totalTimeDbStr = await DbHandler.QueryKey(KeyTotalTime, true);
-                _totalTimeDb  = string.IsNullOrEmpty(totalTimeDbStr) ? null : Convert.ToDouble(totalTimeDbStr, CultureInfo.InvariantCulture);
+                _totalTimeDb = string.IsNullOrWhiteSpace(totalTimeDbStr)
+                    ? null
+                    : Convert.ToDouble(totalTimeDbStr, CultureInfo.InvariantCulture);
                 
                 var lpDb = await DbHandler.QueryKey(KeyLastPlayed, true);
-                _lastPlayedDb    = !string.IsNullOrEmpty(lpDb) && !lpDb.Contains("null") ? Convert.ToDouble(lpDb, CultureInfo.InvariantCulture) : null; // if Db data is null, return null
+                _lastPlayedDb = !string.IsNullOrWhiteSpace(lpDb) && !lpDb.Contains("null")
+                    ? Convert.ToDouble(lpDb, CultureInfo.InvariantCulture)
+                    : null; // if Db data is null, return null
                 
                 _isDbPullSuccess = true;
-                LogWriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Pull()] Successfully pulled data from database!", LogType.Scheme, true);
+                LogWriteLine("[CollapsePlaytime::UpdatePlaytime_Database_Pull()] Successfully pulled data from database!",
+                             LogType.Scheme, true);
             }
             catch (Exception e)
             {
