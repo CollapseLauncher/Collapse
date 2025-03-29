@@ -40,6 +40,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -2154,20 +2155,40 @@ namespace CollapseLauncher.Pages
                         _highlightedControls.Add(radioButton);
                         break;
                 }
-
-                // Scroll to the first match
-                if (_highlightedControls.Count == 1)
-                {
-                    var e = control switch
-                                          {
-                                              RadioButton tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
-                                              ComboBoxItem tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
-                                              _ => control
-                                          };
-
-                    e?.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true });
-                }
             }
+
+            // Find the first match and if it's null, return.
+            if (_highlightedControls.Count == 0 || _highlightedControls.FirstOrDefault() is not { } firstControl)
+            {
+                return;
+            }
+
+            // Otherwise, bring first control into view
+            FrameworkElement? e = firstControl switch
+                                  {
+                                      RadioButton tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                                      ComboBoxItem tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                                      _ => firstControl
+                                  };
+
+            e?.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true, VerticalAlignmentRatio = 0.1f });
+
+            MainSettingsPanel.Opacity = 1f;
+            AboutApp.Opacity          = 1f;
+        }
+
+        private void SettingsSearchBox_OnGettingFocus(UIElement sender, GettingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 32);
+            MainSettingsPanel.Opacity               = 0.5f;
+            AboutApp.Opacity                        = 0.5f;
+        }
+
+        private void SettingsSearchBox_OnLosingFocus(UIElement sender, LosingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 8);
+            MainSettingsPanel.Opacity               = 1f;
+            AboutApp.Opacity                        = 1f;
         }
     }
 }
