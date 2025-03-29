@@ -48,6 +48,7 @@ namespace CollapseLauncher.Pages
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
+                    AnisotropicSamplingSelector.SelectedIndex = (int)AnisotropicSamplingOption.x8;
                     ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.High;
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.High;
                     HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Dynamic;
@@ -56,38 +57,40 @@ namespace CollapseLauncher.Pages
                     MotionBlurToggle.IsChecked               = true;
                     break;
                 case GraphicsPresetOption.Medium:
-                    VSyncToggle.IsChecked                    = true;
-                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
-                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
-                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
-                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Medium;
-                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
-                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
-                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
-                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Medium;
-                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Medium;
-                    HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Off;
-                    BloomToggle.IsChecked                    = true;
-                    DistortionToggle.IsChecked               = true;
-                    MotionBlurToggle.IsChecked               = true;
+                    VSyncToggle.IsChecked                     = true;
+                    RenderResolutionSelector.SelectedIndex    = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex        = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex  = (int)QualityOption3.High;
+                    ShadowQualitySelector.SelectedIndex       = (int)QualityOption3.High;
+                    FxQualitySelector.SelectedIndex           = (int)QualityOption5.Medium;
+                    ShadingQualitySelector.SelectedIndex      = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex    = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex  = (int)QualityOption2.High;
+                    AnisotropicSamplingSelector.SelectedIndex = (int)AnisotropicSamplingOption.x8;
+                    ReflectionQualitySelector.SelectedIndex   = (int)QualityOption4.Medium;
+                    VolumetricFogSelector.SelectedIndex       = (int)QualityOption4.Medium;
+                    HpcaSelector.SelectedIndex                = (int)HiPrecisionCharaAnimOption.Off;
+                    BloomToggle.IsChecked                     = true;
+                    DistortionToggle.IsChecked                = true;
+                    MotionBlurToggle.IsChecked                = true;
                     break;
                 case GraphicsPresetOption.Low:
-                    VSyncToggle.IsChecked                    = true;
-                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
-                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
-                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Low;
-                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Low;
-                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
-                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
-                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
-                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Low;
-                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Low;
-                    HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Off;
-                    BloomToggle.IsChecked                    = true;
-                    DistortionToggle.IsChecked               = true;
-                    MotionBlurToggle.IsChecked               = true;
+                    VSyncToggle.IsChecked                     = true;
+                    RenderResolutionSelector.SelectedIndex    = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex        = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex  = (int)QualityOption3.Low;
+                    ShadowQualitySelector.SelectedIndex       = (int)QualityOption3.Medium;
+                    FxQualitySelector.SelectedIndex           = (int)QualityOption5.Low;
+                    ShadingQualitySelector.SelectedIndex      = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex    = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex  = (int)QualityOption2.High;
+                    AnisotropicSamplingSelector.SelectedIndex = (int)AnisotropicSamplingOption.x8;
+                    ReflectionQualitySelector.SelectedIndex   = (int)QualityOption4.Low;
+                    VolumetricFogSelector.SelectedIndex       = (int)QualityOption4.Low;
+                    HpcaSelector.SelectedIndex                = (int)HiPrecisionCharaAnimOption.Off;
+                    BloomToggle.IsChecked                     = true;
+                    DistortionToggle.IsChecked                = true;
+                    MotionBlurToggle.IsChecked                = true;
                     break;
             }
 
@@ -561,6 +564,12 @@ namespace CollapseLauncher.Pages
         {
             get => (int)Settings.GeneralData.EnvironmentQuality;
             set => Settings.GeneralData.EnvironmentQuality = (QualityOption2)value;
+        }
+        
+        public int Graphics_AnisotropicSampling
+        {
+            get => (int)Settings.GeneralData.AnisotropicSampling;
+            set => Settings.GeneralData.AnisotropicSampling = (AnisotropicSamplingOption)value;
         }
 
         public int Graphics_GlobalIllumination
