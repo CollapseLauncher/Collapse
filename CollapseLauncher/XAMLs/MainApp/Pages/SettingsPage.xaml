@@ -2487,11 +2487,7 @@
               VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment}"
               CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius}"
               Shadow="{StaticResource SharedShadow}"
-              Translation="0,0,8">
-            <Grid.TranslationTransition>
-                <Vector3Transition Duration="0:0:.5" />
-            </Grid.TranslationTransition>
-        </Grid>
+              Translation="0,0,8"/>
         <Grid x:Name="SettingsSearchBoxGrid"
               Width="380"
               Margin="0,0,16,0"
