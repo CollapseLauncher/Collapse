@@ -32,7 +32,7 @@ for:
           
         echo Install dotnet sdk
         
-        choco install dotnet-sdk --version=9.0.201
+        choco install dotnet-sdk --version=9.0.202
         
         dotnet --version
         
@@ -139,7 +139,7 @@ for:
 
         echo Install dotnet sdk
 
-        choco install dotnet-sdk --version=9.0.201
+        choco install dotnet-sdk --version=9.0.202
 
         dotnet --version
 
@@ -247,7 +247,7 @@ for:
           
           echo Install dotnet sdk
           
-          choco install dotnet-sdk --version=9.0.102
+          choco install dotnet-sdk --version=9.0.202
           
           dotnet --version
           
