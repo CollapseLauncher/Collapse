@@ -80,7 +80,7 @@ namespace CollapseLauncher.Pages
 
         private DnsSettingsContext _dnsSettingsContext;
 
-        private ConcurrentDictionary<string, FrameworkElement> _settingsControls;
+        private ConcurrentDictionary<string, FrameworkElement> _settingsControls    = new();
         private List<FrameworkElement>                         _highlightedControls = new();
         private Brush                                          _highlightBrush;     
         
@@ -1859,7 +1859,8 @@ namespace CollapseLauncher.Pages
             _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
 
             // Map all settings controls with their display text
-            _settingsControls = new ConcurrentDictionary<string, FrameworkElement>();
+            if (!_settingsControls.IsEmpty) _settingsControls.Clear();
+            ClearHighlighting();
 
             // Walk through all Toggle Switches, TextBlocks with headers, etc.
             CollectSearchableControls(AppSettings);
@@ -1878,144 +1879,50 @@ namespace CollapseLauncher.Pages
                     // Check if this is a control we want to make searchable
                     case ToggleSwitch t: // ToggleSwitch main header
                     {
-                        string key = string.Empty;
-                        switch (t.Header)
-                        {
-                            // Handle different content types
-                            case string textContent:
-                                key = textContent;
-                                break;
-                            case TextBlock textBlock:
-                                key = textBlock.Text;
-                                break;
-                            case FrameworkElement element:
-                            {
-                                // Try to find TextBlock inside the content
-                                var textBlocks = element.FindDescendants().OfType<TextBlock>();
-                                var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
-                                if (enumerable.Any())
-                                {
-                                    key = string.Join(" ", enumerable.Select(tb => tb.Text));
-                                }
-
-                                break;
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(key))
-                            break;
-
-                        _settingsControls.TryAdd(key, t);
-
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        AddControlRecursive(t.Header, t);
                         continue;
                     }
-                    case RadioButtons t when !string.IsNullOrWhiteSpace(t.Header?.ToString()):
+                    case RadioButtons t:
                     {
-                        var key = t.Header?.ToString();
-                        if (string.IsNullOrWhiteSpace(key)) continue;
-                        _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        if (!string.IsNullOrEmpty(t.Header?.ToString()))
+                            AddControl(t.Header.ToString(), t);
                         continue;
                     }
                     case RadioButton t:
                     {
-                        string key = null;
-
-                        switch (t.Content)
-                        {
-                            // Handle different content types
-                            case string textContent:
-                                key = textContent;
-                                break;
-                            case TextBlock textBlock:
-                                key = textBlock.Text;
-                                break;
-                            case FrameworkElement element:
-                            {
-                                // Try to find TextBlock inside the content
-                                var textBlocks = element.FindDescendants().OfType<TextBlock>();
-                                var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
-                                if (enumerable.Any())
-                                {
-                                    key = string.Join(" ", enumerable.Select(tb => tb.Text));
-                                }
-
-                                break;
-                            }
-                        }
-
-                        if (!string.IsNullOrEmpty(key))
-                        {
-                            _settingsControls.TryAdd(key, t);
-                        #if DEBUG
-                            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                        #endif
-                        }
+                        AddControlRecursive(t.Content, t);
                         continue;
                     }
                     case ComboBox { Header: not null } t:
                     {
-                        var key = t.Header.ToString();
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        AddControlRecursive(t.Header, t);
                         continue;
                     }
-                    case ComboBoxItem t when !string.IsNullOrWhiteSpace(t.Content?.ToString()):
+                    case ComboBoxItem t:
                     {
-                        var key = t.Content?.ToString();
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        if (!string.IsNullOrEmpty(t.Content?.ToString()))
+                            AddControl(t.Content.ToString(), t);
                         continue;
                     }
                     case NumberBox { Header: not null } t:
                     {
-                        var key = t.Header.ToString();
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        AddControlRecursive(t.Header, t);
                         continue;
                     }
-                    case TextBlock t when !string.IsNullOrWhiteSpace(t.Text):
+                    case TextBlock t:
                     {
-                        var key = t.Text;
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        if (!string.IsNullOrEmpty(t.Text))
+                            AddControl(t.Text, t);
                         continue;
                     }
-                    case Run t when !string.IsNullOrWhiteSpace(t.Text):
+                    case Run t when !string.IsNullOrEmpty(t.Text):
                     {
-                        var key = t.Text;
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, VisualTreeHelper.GetParent(t) as FrameworkElement);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        AddControl(t.Text, VisualTreeHelper.GetParent(t) as FrameworkElement);
                         continue;
                     }
-                    case Slider t when !string.IsNullOrWhiteSpace(t.Header?.ToString()):
+                    case Slider t when !string.IsNullOrEmpty(t.Header?.ToString()):
                     {
-                        var key = t.Header.ToString();
-                        if (!string.IsNullOrEmpty(key))
-                            _settingsControls.TryAdd(key, t);
-                    #if DEBUG
-                        LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-                    #endif
+                        AddControl(t.Header?.ToString(), t);
                         continue;
                     }
                 }
@@ -2023,6 +1930,57 @@ namespace CollapseLauncher.Pages
                 // Recurse into children
                 CollectSearchableControls(child);
             }
+        }
+        
+        private void AddControl(string key, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+
+            if (!string.IsNullOrEmpty(key))
+                _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        } 
+        
+        private void AddControlRecursive(object o, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+            string key = null;
+
+            switch (o)
+            {
+                // Handle different content types
+                case string textContent:
+                    key = textContent;
+                    break;
+                case TextBlock textBlock:
+                    key = textBlock.Text;
+                    break;
+                case FrameworkElement element:
+                {
+                    // Try to find TextBlock inside the content
+                    var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                    var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                    if (enumerable.Any())
+                    {
+                        key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                    }
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
         }
 
         #nullable enable
@@ -2100,7 +2058,7 @@ namespace CollapseLauncher.Pages
                 }
                 
             #if DEBUG
-                LogWriteLine($"For {query}, found key {key} with type {control.GetType()} and control {control}", LogType.Debug);
+                LogWriteLine($"For {query}, found key {key} with type {control.GetType()}", LogType.Debug);
             #endif
 
                 switch (control)
