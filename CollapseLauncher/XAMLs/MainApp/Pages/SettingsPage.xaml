@@ -1677,9 +1677,9 @@
                 </StackPanel>
                 <StackPanel x:Name="AboutApp"
                             Grid.Column="1"
+                            Margin="0,16,0,0"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Margin="0,16,0,0">
+                            VerticalAlignment="Top">
                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._SettingsPage.About}" />
                     <Grid Margin="0,16,0,0">
@@ -2480,38 +2480,38 @@
             </Grid>
         </ScrollViewer>
         <Grid x:Name="SettingsSearchBoxGridShadow"
-              Margin="{x:Bind SettingsSearchBoxGrid.Margin}"
               Width="{x:Bind SettingsSearchBoxGrid.Width}"
               Height="{x:Bind SettingsSearchBox.Height}"
-              CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius}"
+              Margin="{x:Bind SettingsSearchBoxGrid.Margin}"
               HorizontalAlignment="{x:Bind SettingsSearchBoxGrid.HorizontalAlignment}"
               VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment}"
+              CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius}"
               Shadow="{StaticResource SharedShadow}"
               Translation="0,0,8">
             <Grid.TranslationTransition>
-                <Vector3Transition Duration="0:0:.5"/>
+                <Vector3Transition Duration="0:0:.5" />
             </Grid.TranslationTransition>
         </Grid>
         <Grid x:Name="SettingsSearchBoxGrid"
-              Margin="0,0,16,0"
               Width="380"
-              CornerRadius="{x:Bind SettingsSearchBox.CornerRadius}"
+              Margin="0,0,16,0"
               HorizontalAlignment="Right"
               VerticalAlignment="Top"
-              Background="{ThemeResource DialogAcrylicBrush}">
+              Background="{ThemeResource DialogAcrylicBrush}"
+              CornerRadius="{x:Bind SettingsSearchBox.CornerRadius}">
             <AutoSuggestBox x:Name="SettingsSearchBox"
+                            Height="40"
                             HorizontalAlignment="Stretch"
-                            VerticalContentAlignment="Center"
                             VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
                             BorderThickness="0"
                             CornerRadius="4"
-                            Height="40"
-                            PlaceholderText="Search Settings"
+                            GettingFocus="SettingsSearchBox_OnGettingFocus"
+                            LosingFocus="SettingsSearchBox_OnLosingFocus"
+                            PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.SearchPlaceholder}"
                             QueryIcon="Find"
                             QuerySubmitted="SettingsSearchBox_QuerySubmitted"
-                            TextChanged="SettingsSearchBox_TextChanged"
-                            GettingFocus="SettingsSearchBox_OnGettingFocus"
-                            LosingFocus="SettingsSearchBox_OnLosingFocus"/>
+                            TextChanged="SettingsSearchBox_TextChanged" />
         </Grid>
     </Grid>
 </Page>
