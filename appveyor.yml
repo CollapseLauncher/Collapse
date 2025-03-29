@@ -56,7 +56,7 @@ for:
         
         echo Build app...
         
-        dotnet restore
+        dotnet restore CollapseLauncher
         
         dotnet publish CollapseLauncher -c Release -p:PublishProfile=Publish-PreviewRelease -p:PublishDir=".\preview-build\"
         
@@ -163,7 +163,7 @@ for:
 
         echo Build app...
 
-        dotnet restore
+        dotnet restore CollapseLauncher
 
         dotnet publish CollapseLauncher -c Publish -p:PublishProfile=Publish-StableRelease -p:PublishDir=".\stable-build\"
 
@@ -271,7 +271,7 @@ for:
           
           echo Build app...
           
-          dotnet restore
+          dotnet restore CollapseLauncher
           
           dotnet publish CollapseLauncher -c Release -p:PublishProfile=Publish-PreviewReleaseAOT -p:PublishDir=".\%channel%-build\"
           
