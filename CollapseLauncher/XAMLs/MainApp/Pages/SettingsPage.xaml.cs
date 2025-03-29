@@ -80,9 +80,9 @@ namespace CollapseLauncher.Pages
 
         private DnsSettingsContext _dnsSettingsContext;
 
-        private ConcurrentDictionary<string, FrameworkElement> _settingsControls    = new();
-        private List<FrameworkElement>                         _highlightedControls = new();
-        private Brush                                          _highlightBrush;     
+        private Dictionary<string, FrameworkElement> _settingsControls    = new();
+        private List<FrameworkElement>               _highlightedControls = new();
+        private Brush                                _highlightBrush;     
         
         #endregion
 
@@ -1859,7 +1859,7 @@ namespace CollapseLauncher.Pages
             _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
 
             // Map all settings controls with their display text
-            if (!_settingsControls.IsEmpty) _settingsControls.Clear();
+            if (!(_settingsControls.Count < 1)) _settingsControls.Clear();
             ClearHighlighting();
 
             // Walk through all Toggle Switches, TextBlocks with headers, etc.
