@@ -25,6 +25,7 @@
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
         <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
         <conv:DoubleFormatter x:Key="DoubleFormatter" />
+        <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -2495,6 +2496,10 @@
               VerticalAlignment="Top"
               Background="{ThemeResource DialogAcrylicBrush}"
               CornerRadius="{x:Bind SettingsSearchBox.CornerRadius}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
             <AutoSuggestBox x:Name="SettingsSearchBox"
                             Height="40"
                             HorizontalAlignment="Stretch"
@@ -2508,6 +2513,43 @@
                             QueryIcon="Find"
                             QuerySubmitted="SettingsSearchBox_QuerySubmitted"
                             TextChanged="SettingsSearchBox_TextChanged" />
+            <Grid Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Margin="12,0,8,0"
+                  Visibility="{x:Bind _highlightedControls.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="SettingsSearchHighlightPosText"
+                           Text="4 / 20"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           HorizontalTextAlignment="Right"
+                           TextAlignment="Right"
+                           FontWeight="Bold"
+                           Margin="0,0,8,0"/>
+                <Grid Grid.Column="1"
+                      Grid.ColumnSpan="2"
+                      Shadow="{ThemeResource SharedShadow}"
+                      Translation="0,0,16"
+                      CornerRadius="4"/>
+                <Button Grid.Column="1"
+                        Padding="8,4,8,4"
+                        CornerRadius="4,0,0,4"
+                        Click="SettingsSearchBoxFindSelectPrevious">
+                    <FontIcon Glyph="&#xE96D;"
+                              FontSize="14"/>
+                </Button>
+                <Button Grid.Column="2"
+                        Padding="8,4,8,4"
+                        CornerRadius="0,4,4,0"
+                        Click="SettingsSearchBoxFindSelectNext">
+                    <FontIcon Glyph="&#xE96E;"
+                              FontSize="14"/>
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

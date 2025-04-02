@@ -762,29 +762,45 @@ namespace CollapseLauncher.Extension
             }
         }
 
-        internal static void SetBackground<TElement>(this TElement element, Brush brush)
+#nullable enable
+        internal static Brush? GetBackground<TElement>(this TElement element)
             where TElement : FrameworkElement
         {
-            if (element == null) return;
+            return element switch
+                   {
+                       Control control => control.Background,
+                       Border border => border.Background,
+                       Panel stackPanel => stackPanel.Background,
+                       _ => null
+                   };
+        }
+
+        internal static bool SetBackground<TElement>(this TElement element, Brush? brush)
+            where TElement : FrameworkElement
+        {
+            if (element == null)
+                return false;
 
             switch (element)
             {
                 case Control control:
                     control.Background = brush;
-                    break;
+                    return true;
                 case Border border:
                     border.Background = brush;
-                    break;
+                    return true;
                 case Grid grid:
                     grid.Background = brush;
-                    break;
+                    return true;
                 case StackPanel stackPanel:
                     stackPanel.Background = brush;
-                    break;
+                    return true;
             }
+
+            return false;
         }
 
-        internal static void SetForeground<TElement>(this TElement element, Brush brush)
+        internal static void SetForeground<TElement>(this TElement element, Brush? brush)
             where TElement : FrameworkElement
         {
             if (element == null) return;
@@ -799,6 +815,7 @@ namespace CollapseLauncher.Extension
                     break;
             }
         }
+#nullable restore
 
         internal static void SetOpacity<TElement>(this TElement element, double opacity)
             where TElement : FrameworkElement => element.Opacity = opacity;
@@ -955,5 +972,62 @@ namespace CollapseLauncher.Extension
             };
             Effects.SetShadow(from, shadow);
         }
+
+#nullable enable
+        private static IEnumerable<DependencyObject> VisualTreeHelperGetChildrenEnumerable(FrameworkElement? element)
+        {
+            if (element is null)
+            {
+                yield break;
+            }
+
+            int childCount = VisualTreeHelper.GetChildrenCount(element);
+            for (int index = 0; index < childCount; index++)
+            {
+                if (VisualTreeHelper.GetChild(element, index) is { } asReturn)
+                {
+                    yield return asReturn;
+                }
+            }
+        }
+
+        internal static IEnumerable<DependencyObject> EnumerateElementChildren(this FrameworkElement? element)
+        {
+            if (element is Panel asPanel)
+            {
+                return asPanel.Children;
+            }
+
+            return VisualTreeHelperGetChildrenEnumerable(element);
+        }
+
+        internal static T? FindFirstDescendantByType<T>(this FrameworkElement element)
+            where T : UIElement
+        {
+            foreach (DependencyObject child in element.EnumerateElementChildren())
+            {
+                if (child is T asReturn)
+                {
+                    return asReturn;
+                }
+            }
+
+            return null;
+        }
+
+        internal static IEnumerable<object> EnumerateSelectableElementChildren(this FrameworkElement element)
+        {
+            StackPanel?    stackPanel    = element.FindFirstDescendantByType<StackPanel>();
+            ItemsRepeater? itemsRepeater = stackPanel?.Children.OfType<ItemsRepeater>().FirstOrDefault();
+
+            foreach (var item in itemsRepeater.EnumerateElementChildren())
+            {
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+#nullable restore
     }
 }
