@@ -2494,6 +2494,8 @@
               Margin="0,0,16,0"
               HorizontalAlignment="Right"
               VerticalAlignment="Top"
+              GettingFocus="SettingsSearchBox_OnGettingFocus"
+              LosingFocus="SettingsSearchBox_OnLosingFocus"
               Background="{ThemeResource DialogAcrylicBrush}"
               CornerRadius="{x:Bind SettingsSearchBox.CornerRadius}">
             <Grid.ColumnDefinitions>
@@ -2507,8 +2509,6 @@
                             VerticalContentAlignment="Center"
                             BorderThickness="0"
                             CornerRadius="4"
-                            GettingFocus="SettingsSearchBox_OnGettingFocus"
-                            LosingFocus="SettingsSearchBox_OnLosingFocus"
                             PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.SearchPlaceholder}"
                             QueryIcon="Find"
                             QuerySubmitted="SettingsSearchBox_QuerySubmitted"
