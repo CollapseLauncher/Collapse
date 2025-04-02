@@ -2515,20 +2515,18 @@
                             TextChanged="SettingsSearchBox_TextChanged"/>
             <Grid Grid.Column="1"
                   VerticalAlignment="Center"
-                  Margin="12,0,8,0"
+                  Margin="8,0,8,0"
                   Visibility="{x:Bind _highlightedControls.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition MinWidth="54"/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="SettingsSearchHighlightPosText"
                            Text="4 / 20"
                            VerticalAlignment="Center"
-                           HorizontalAlignment="Right"
-                           HorizontalTextAlignment="Right"
-                           TextAlignment="Right"
-                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           HorizontalTextAlignment="Center"
                            Margin="0,0,8,0"/>
                 <Grid Grid.Column="1"
                       Grid.ColumnSpan="2"
