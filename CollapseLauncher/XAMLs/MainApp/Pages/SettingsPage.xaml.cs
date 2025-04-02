@@ -79,16 +79,16 @@ namespace CollapseLauncher.Pages
 
         private DnsSettingsContext _dnsSettingsContext;
 
-#nullable enable
-#nullable restore
-
         private readonly Dictionary<string, FrameworkElement>               _settingsControls      = new();
         private readonly Lock                                               _highlightLock         = new();
         private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls   = new([]);
         private          int                                                _highlightCurrentIndex;
         private          Brush                                              _highlightBrush;
         private          Brush                                              _highlightSelectedBrush;
-        private          string?                                            _previousSearchQuery;
+
+#nullable enable
+        private string? _previousSearchQuery;
+#nullable restore
 
         #endregion
 
