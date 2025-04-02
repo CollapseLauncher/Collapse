@@ -763,7 +763,7 @@ namespace CollapseLauncher.Extension
         }
 
 #nullable enable
-        internal static Brush? GetBackground<TElement>(this TElement element)
+        internal static Brush? GetBackground<TElement>(this TElement? element)
             where TElement : FrameworkElement
         {
             return element switch
@@ -775,10 +775,10 @@ namespace CollapseLauncher.Extension
                    };
         }
 
-        internal static bool SetBackground<TElement>(this TElement element, Brush? brush)
+        internal static bool SetBackground<TElement>(this TElement? element, Brush? brush)
             where TElement : FrameworkElement
         {
-            if (element == null)
+            if (element is null)
                 return false;
 
             switch (element)
@@ -800,10 +800,10 @@ namespace CollapseLauncher.Extension
             return false;
         }
 
-        internal static void SetForeground<TElement>(this TElement element, Brush? brush)
+        internal static void SetForeground<TElement>(this TElement? element, Brush? brush)
             where TElement : FrameworkElement
         {
-            if (element == null) return;
+            if (element is null) return;
 
             switch (element)
             {
@@ -1015,19 +1015,15 @@ namespace CollapseLauncher.Extension
             return null;
         }
 
-        internal static IEnumerable<object> EnumerateSelectableElementChildren(this FrameworkElement element)
+        internal static IEnumerable<object> EnumerateSelectableElementChildren(this FrameworkElement? element)
         {
-            StackPanel?    stackPanel    = element.FindFirstDescendantByType<StackPanel>();
+            StackPanel?    stackPanel    = element?.FindFirstDescendantByType<StackPanel>();
             ItemsRepeater? itemsRepeater = stackPanel?.Children.OfType<ItemsRepeater>().FirstOrDefault();
 
             foreach (var item in itemsRepeater.EnumerateElementChildren())
             {
-                if (item != null)
-                {
-                    yield return item;
-                }
+                yield return item;
             }
         }
-#nullable restore
     }
 }

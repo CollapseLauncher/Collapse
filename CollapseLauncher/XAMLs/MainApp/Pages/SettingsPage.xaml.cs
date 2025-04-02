@@ -85,9 +85,10 @@ namespace CollapseLauncher.Pages
         private readonly Dictionary<string, FrameworkElement>               _settingsControls      = new();
         private readonly Lock                                               _highlightLock         = new();
         private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls   = new([]);
-        private          int                                                _highlightCurrentIndex = 0;
+        private          int                                                _highlightCurrentIndex;
         private          Brush                                              _highlightBrush;
         private          Brush                                              _highlightSelectedBrush;
+        private          string?                                            _previousSearchQuery;
 
         #endregion
 
@@ -2077,8 +2078,6 @@ namespace CollapseLauncher.Pages
             SettingsSearchBoxFindSelectNext(null, null);
         }
 
-        private string _previousSearchQuery;
-
         private bool PerformSearch(string query)
         {
             if (query == _previousSearchQuery)
@@ -2131,8 +2130,11 @@ namespace CollapseLauncher.Pages
                 return false;
             }
 
-            SettingsSearchBringIntoViewAndHighlight(firstControl);
-            _highlightCurrentIndex = 0;
+            lock (_highlightLock)
+            {
+                SettingsSearchBringIntoViewAndHighlight(firstControl);
+                _highlightCurrentIndex = 0;
+            }
             return true;
         }
 
