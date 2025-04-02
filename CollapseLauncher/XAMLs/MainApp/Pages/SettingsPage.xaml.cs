@@ -1870,6 +1870,9 @@ namespace CollapseLauncher.Pages
 
             // Walk through all Toggle Switches, TextBlocks with headers, etc.
             CollectSearchableControls(AppSettings);
+
+            // Initialize shortcut
+            SettingsSearchBoxShortcutInit();
         }
 
         private void CollectSearchableControls(DependencyObject parent)
@@ -2058,16 +2061,38 @@ namespace CollapseLauncher.Pages
 
         private void SettingsSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            PerformSearch(args.QueryText);
+            bool isShiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+            if (PerformSearch(args.QueryText))
+            {
+                return;
+            }
+
+            if (isShiftPressed)
+            {
+                SettingsSearchBoxFindSelectPrevious(null, null);
+                return;
+            }
+
+            SettingsSearchBoxFindSelectNext(null, null);
         }
 
-        private void PerformSearch(string query)
+        private string _previousSearchQuery;
+
+        private bool PerformSearch(string query)
         {
+            if (query == _previousSearchQuery)
+            {
+                return false;
+            }
+
+            _previousSearchQuery = query;
+
             // Clear previous highlighting
             ClearHighlighting();
 
             if (string.IsNullOrWhiteSpace(query))
-                return;
+                return false;
 
             // Find and highlight matching controls
             foreach (var (key, control) in _settingsControls)
@@ -2103,10 +2128,12 @@ namespace CollapseLauncher.Pages
             // Find the first match and if it's null, return.
             if (_highlightedControls.Count == 0 || _highlightedControls.FirstOrDefault() is not { } firstControl)
             {
-                return;
+                return false;
             }
 
             SettingsSearchBringIntoViewAndHighlight(firstControl);
+            _highlightCurrentIndex = 0;
+            return true;
         }
 
         private void SettingsSearchBringIntoViewAndHighlight(HighlightableControlProperty element)
@@ -2177,10 +2204,15 @@ namespace CollapseLauncher.Pages
             AboutApp.Opacity                        = 1f;
         }
 
-        private void SettingsSearchBoxFindSelectNext(object sender, RoutedEventArgs e)
+        private void SettingsSearchBoxFindSelectNext(object? sender, RoutedEventArgs? e)
         {
             lock (_highlightLock)
             {
+                if (_highlightedControls.Count == 0)
+                {
+                    return;
+                }
+
                 ++_highlightCurrentIndex;
                 if (_highlightedControls.Count <= _highlightCurrentIndex)
                 {
@@ -2193,10 +2225,15 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void SettingsSearchBoxFindSelectPrevious(object sender, RoutedEventArgs e)
+        private void SettingsSearchBoxFindSelectPrevious(object? sender, RoutedEventArgs? e)
         {
             lock (_highlightLock)
             {
+                if (_highlightedControls.Count == 0)
+                {
+                    return;
+                }
+
                 --_highlightCurrentIndex;
                 if (_highlightCurrentIndex < 0)
                 {
@@ -2207,6 +2244,29 @@ namespace CollapseLauncher.Pages
 
                 SettingsSearchBringIntoViewAndHighlight(_highlightedControls[_highlightCurrentIndex]);
             }
+        }
+
+        private void SettingsSearchBoxShortcutInit()
+        {
+            KeyboardAccelerator previousAccelerator = new KeyboardAccelerator
+            {
+                Key       = Windows.System.VirtualKey.Enter,
+                Modifiers = Windows.System.VirtualKeyModifiers.Shift
+            };
+
+            KeyboardAccelerator nextAccelerator = new KeyboardAccelerator
+            {
+                Key       = Windows.System.VirtualKey.Enter,
+                Modifiers = Windows.System.VirtualKeyModifiers.None
+            };
+
+            SettingsSearchHighlightPreviousBtn.Focus(FocusState.Keyboard);
+            SettingsSearchHighlightPreviousBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            SettingsSearchHighlightPreviousBtn.KeyboardAccelerators.Add(previousAccelerator);
+
+            SettingsSearchHighlightNextBtn.Focus(FocusState.Keyboard);
+            SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
         }
     }
 }

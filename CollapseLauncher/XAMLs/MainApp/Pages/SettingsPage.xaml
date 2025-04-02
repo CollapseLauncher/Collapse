@@ -2512,7 +2512,7 @@
                             PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.SearchPlaceholder}"
                             QueryIcon="Find"
                             QuerySubmitted="SettingsSearchBox_QuerySubmitted"
-                            TextChanged="SettingsSearchBox_TextChanged" />
+                            TextChanged="SettingsSearchBox_TextChanged"/>
             <Grid Grid.Column="1"
                   VerticalAlignment="Center"
                   Margin="12,0,8,0"
@@ -2535,16 +2535,22 @@
                       Shadow="{ThemeResource SharedShadow}"
                       Translation="0,0,16"
                       CornerRadius="4"/>
-                <Button Grid.Column="1"
+                <Button x:Name="SettingsSearchHighlightPreviousBtn"
+                        Grid.Column="1"
                         Padding="8,4,8,4"
                         CornerRadius="4,0,0,4"
+                        TabFocusNavigation="Cycle"
+                        TabIndex="99999"
                         Click="SettingsSearchBoxFindSelectPrevious">
                     <FontIcon Glyph="&#xE96D;"
                               FontSize="14"/>
                 </Button>
-                <Button Grid.Column="2"
+                <Button x:Name="SettingsSearchHighlightNextBtn"
+                        Grid.Column="2"
                         Padding="8,4,8,4"
                         CornerRadius="0,4,4,0"
+                        TabFocusNavigation="Cycle"
+                        TabIndex="99999"
                         Click="SettingsSearchBoxFindSelectNext">
                     <FontIcon Glyph="&#xE96E;"
                               FontSize="14"/>
