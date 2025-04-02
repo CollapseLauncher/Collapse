@@ -29,15 +29,18 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,12 +73,22 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
 
-        private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
-
-        private readonly string ExplorerPath =
+        private const string RepoUrl = "https://github.com/CollapseLauncher/Collapse/commit/";
+        private readonly string _explorerPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
         private DnsSettingsContext _dnsSettingsContext;
+
+        private readonly Dictionary<string, FrameworkElement>               _settingsControls      = new();
+        private readonly Lock                                               _highlightLock         = new();
+        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls   = new([]);
+        private          int                                                _highlightCurrentIndex;
+        private          Brush                                              _highlightBrush;
+        private          Brush                                              _highlightSelectedBrush;
+
+#nullable enable
+        private string? _previousSearchQuery;
+#nullable restore
 
         #endregion
 
@@ -166,6 +179,8 @@ namespace CollapseLauncher.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
+            
+            InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
@@ -236,7 +251,7 @@ namespace CollapseLauncher.Pages
                 StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName        = ExplorerPath,
+                    FileName        = _explorerPath,
                     Arguments       = AppGameFolder
                 }
             }.Start();
@@ -950,6 +965,7 @@ namespace CollapseLauncher.Pages
             }
 
             UpdateBindings.Update();
+            InitializeSettingsSearch();
         }
 
         private void UpdateBindingsEvents(object sender, EventArgs e)
@@ -1713,7 +1729,7 @@ namespace CollapseLauncher.Pages
                                    {
                                        ProcessStartInfo psi = new ProcessStartInfo
                                        {
-                                           FileName        = ExplorerPath,
+                                           FileName        = _explorerPath,
                                            Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
                                            UseShellExecute = true,
                                            Verb            = "runas"
@@ -1842,5 +1858,417 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
+        private void InitializeSettingsSearch()
+        {
+            // Create brushes for highlighting
+            _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
+            _highlightSelectedBrush = new SolidColorBrush(Microsoft.UI.Colors.Blue) { Opacity = 0.5 };
+
+            // Map all settings controls with their display text
+            if (!(_settingsControls.Count < 1)) _settingsControls.Clear();
+            ClearHighlighting();
+
+            // Walk through all Toggle Switches, TextBlocks with headers, etc.
+            CollectSearchableControls(AppSettings);
+
+            // Initialize shortcut
+            SettingsSearchBoxShortcutInit();
+        }
+
+        private void CollectSearchableControls(DependencyObject parent)
+        {
+            var childCount = VisualTreeHelper.GetChildrenCount(parent);
+
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                switch (child)
+                {
+                    // Check if this is a control we want to make searchable
+                    case ToggleSwitch t: // ToggleSwitch main header
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case RadioButtons t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case RadioButton t:
+                    {
+                        AddControlRecursive(t.Content, t);
+                        continue;
+                    }
+                    case ComboBox { Header: not null } t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case ComboBoxItem t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Content?.ToString()))
+                            AddControl(t.Content.ToString(), t);
+                        continue;
+                    }
+                    case NumberBox { Header: not null } t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case TextBlock t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Text))
+                            AddControl(t.Text, t);
+                        continue;
+                    }
+                    case Run t when !string.IsNullOrEmpty(t.Text):
+                    {
+                        AddControl(t.Text, VisualTreeHelper.GetParent(t) as FrameworkElement);
+                        continue;
+                    }
+                    case Slider t when !string.IsNullOrEmpty(t.Header?.ToString()):
+                    {
+                        AddControl(t.Header?.ToString(), t);
+                        continue;
+                    }
+                }
+
+                // Recurse into children
+                CollectSearchableControls(child);
+            }
+        }
+        
+        private void AddControl(string key, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+
+            if (!string.IsNullOrEmpty(key) && IsElementVisible(t))
+                _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        }
+
+#nullable enable
+        private static bool IsElementVisible(FrameworkElement? element)
+        {
+            if (element == null)
+            {
+                return false;
+            }
+
+            if (element.Visibility == Visibility.Collapsed || element.Opacity < 1)
+            {
+                return false;
+            }
+
+            return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
+                   (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
+        }
+#nullable restore
+
+        private void AddControlRecursive(object o, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+            string key = null;
+
+            switch (o)
+            {
+                // Handle different content types
+                case string textContent:
+                    key = textContent;
+                    break;
+                case TextBlock textBlock:
+                    key = textBlock.Text;
+                    break;
+                case RadioButtons radioButtons:
+                {
+                    AddControlRecursiveSelectible(radioButtons);
+                    return;
+                }
+                case FrameworkElement element:
+                {
+                    // Try to find TextBlock inside the content
+                    var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                    var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                    if (enumerable.Any())
+                    {
+                        key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                    }
+                    break;
+                }
+                case null:
+                {
+                    AddControlRecursive(t, t);
+                    return;
+                }
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        }
+
+    #nullable enable
+        private void AddControlRecursiveSelectible(FrameworkElement element)
+        {
+            foreach (FrameworkElement childElement in element
+                .EnumerateSelectableElementChildren()
+                .OfType<FrameworkElement>())
+            {
+                if (childElement is not RadioButton asRadioButton)
+                {
+                    continue;
+                }
+
+                TextBlock? textBlock = asRadioButton.FindDescendant<TextBlock>();
+                if (string.IsNullOrEmpty(textBlock?.Text))
+                {
+                    continue;
+                }
+
+                AddControlRecursive(textBlock.Text, asRadioButton);
+            }
+        }
+
+        private void ClearHighlighting()
+        {
+            foreach (var control in _highlightedControls)
+            {
+                control.ClearHighlight();
+            }
+
+            _highlightedControls.Clear();
+        }
+
+        private void SettingsSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                PerformSearch(sender.Text);
+            }
+        }
+
+        private void SettingsSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            bool isShiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+            if (PerformSearch(args.QueryText))
+            {
+                return;
+            }
+
+            if (isShiftPressed)
+            {
+                SettingsSearchBoxFindSelectPrevious(null, null);
+                return;
+            }
+
+            SettingsSearchBoxFindSelectNext(null, null);
+        }
+
+        private bool PerformSearch(string query)
+        {
+            if (query == _previousSearchQuery)
+            {
+                return false;
+            }
+
+            _previousSearchQuery = query;
+
+            // Clear previous highlighting
+            ClearHighlighting();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return false;
+
+            // Find and highlight matching controls
+            foreach (var (key, control) in _settingsControls)
+            {
+                int indexOfQuery;
+                if ((indexOfQuery = key.IndexOf(query, StringComparison.OrdinalIgnoreCase)) < 0)
+                {
+                    continue;
+                }
+                
+            #if DEBUG
+                LogWriteLine($"For {query}, found key {key} with type {control.GetType()}", LogType.Debug);
+            #endif
+
+                if (control is TextBlock textBlock)
+                {
+                    // Create a highlighter or use an existing one (if any)
+                    TextHighlighter textHighlighter    = new TextHighlighter();
+                    TextRange       textHighlightRange = new TextRange(indexOfQuery, query.Length);
+
+                    // Assign the range and its color (for background and foreground)
+                    textHighlighter.Ranges.Add(textHighlightRange);
+
+                    // Assign the highlighter (if there's none)
+                    textBlock.TextHighlighters.Add(textHighlighter);
+                }
+
+                HighlightableControlProperty highlightableControl = control.CreateHighlight(_highlightBrush, _highlightSelectedBrush);
+                highlightableControl.SetBrushHighlightElement();
+                _highlightedControls.Add(highlightableControl);
+            }
+
+            // Find the first match and if it's null, return.
+            if (_highlightedControls.Count == 0 || _highlightedControls.FirstOrDefault() is not { } firstControl)
+            {
+                return false;
+            }
+
+            lock (_highlightLock)
+            {
+                SettingsSearchBringIntoViewAndHighlight(firstControl);
+                _highlightCurrentIndex = 0;
+            }
+            return true;
+        }
+
+        private void SettingsSearchBringIntoViewAndHighlight(HighlightableControlProperty element)
+        {
+            ref IList<HighlightableControlProperty> backedList =
+                ref ObservableCollectionExtension<HighlightableControlProperty>
+                   .GetBackedCollectionList(_highlightedControls);
+
+            int indexOf = backedList.IndexOf(element);
+            if (indexOf < 0)
+            {
+                return;
+            }
+
+            foreach (var control in backedList)
+            {
+                if (control == element)
+                {
+                    continue;
+                }
+
+                control.SetBrushHighlightElement();
+            }
+
+            SettingsSearchBringIntoView(indexOf);
+        }
+
+        private void SettingsSearchBringIntoView(int atIndex)
+        {
+            ref IList<HighlightableControlProperty> backedList =
+                ref ObservableCollectionExtension<HighlightableControlProperty>
+                   .GetBackedCollectionList(_highlightedControls);
+
+            if (backedList.Count < atIndex)
+            {
+                return;
+            }
+
+            HighlightableControlProperty selectedElement = backedList[atIndex];
+            SettingsSearchHighlightPosText.Text = $"{atIndex + 1} / {_highlightedControls.Count}";
+
+            // Otherwise, bring first control into view
+            FrameworkElement? e = selectedElement.Element switch
+            {
+                RadioButton tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                ComboBoxItem tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                _ => selectedElement.Element
+            };
+
+            e?.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true, VerticalAlignmentRatio = 0.1f });
+            selectedElement.SetBrushHighlightSelectElement();
+
+            MainSettingsPanel.Opacity = 1f;
+            AboutApp.Opacity          = 1f;
+        }
+
+        private void SettingsSearchBox_OnGettingFocus(UIElement sender, GettingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 32);
+            MainSettingsPanel.Opacity               = 0.5f;
+            AboutApp.Opacity                        = 0.5f;
+        }
+
+        private void SettingsSearchBox_OnLosingFocus(UIElement sender, LosingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 8);
+            MainSettingsPanel.Opacity               = 1f;
+            AboutApp.Opacity                        = 1f;
+        }
+
+        private void SettingsSearchBoxFindSelectNext(object? sender, RoutedEventArgs? e)
+        {
+            lock (_highlightLock)
+            {
+                if (_highlightedControls.Count == 0)
+                {
+                    return;
+                }
+
+                ++_highlightCurrentIndex;
+                if (_highlightedControls.Count <= _highlightCurrentIndex)
+                {
+                    _highlightCurrentIndex = -1;
+                    SettingsSearchBoxFindSelectNext(sender, e);
+                    return;
+                }
+
+                SettingsSearchBringIntoViewAndHighlight(_highlightedControls[_highlightCurrentIndex]);
+            }
+        }
+
+        private void SettingsSearchBoxFindSelectPrevious(object? sender, RoutedEventArgs? e)
+        {
+            lock (_highlightLock)
+            {
+                if (_highlightedControls.Count == 0)
+                {
+                    return;
+                }
+
+                --_highlightCurrentIndex;
+                if (_highlightCurrentIndex < 0)
+                {
+                    _highlightCurrentIndex = _highlightedControls.Count;
+                    SettingsSearchBoxFindSelectPrevious(sender, e);
+                    return;
+                }
+
+                SettingsSearchBringIntoViewAndHighlight(_highlightedControls[_highlightCurrentIndex]);
+            }
+        }
+
+        private void SettingsSearchBoxShortcutInit()
+        {
+            KeyboardAccelerator previousAccelerator = new KeyboardAccelerator
+            {
+                Key       = Windows.System.VirtualKey.Enter,
+                Modifiers = Windows.System.VirtualKeyModifiers.Shift
+            };
+
+            KeyboardAccelerator nextAccelerator = new KeyboardAccelerator
+            {
+                Key       = Windows.System.VirtualKey.Enter,
+                Modifiers = Windows.System.VirtualKeyModifiers.None
+            };
+
+            SettingsSearchHighlightPreviousBtn.Focus(FocusState.Keyboard);
+            SettingsSearchHighlightPreviousBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            SettingsSearchHighlightPreviousBtn.KeyboardAccelerators.Add(previousAccelerator);
+
+            SettingsSearchHighlightNextBtn.Focus(FocusState.Keyboard);
+            SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
+        }
     }
 }
