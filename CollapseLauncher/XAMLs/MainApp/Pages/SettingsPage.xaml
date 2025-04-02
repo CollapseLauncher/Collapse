@@ -2481,12 +2481,12 @@
             </Grid>
         </ScrollViewer>
         <Grid x:Name="SettingsSearchBoxGridShadow"
-              Width="{x:Bind SettingsSearchBoxGrid.Width}"
-              Height="{x:Bind SettingsSearchBox.Height}"
-              Margin="{x:Bind SettingsSearchBoxGrid.Margin}"
-              HorizontalAlignment="{x:Bind SettingsSearchBoxGrid.HorizontalAlignment}"
-              VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment}"
-              CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius}"
+              Width="{x:Bind SettingsSearchBoxGrid.Width, Mode=OneWay}"
+              Height="{x:Bind SettingsSearchBox.Height, Mode=OneWay}"
+              Margin="{x:Bind SettingsSearchBoxGrid.Margin, Mode=OneWay}"
+              HorizontalAlignment="{x:Bind SettingsSearchBoxGrid.HorizontalAlignment, Mode=OneWay}"
+              VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment, Mode=OneWay}"
+              CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius, Mode=OneWay}"
               Shadow="{StaticResource SharedShadow}"
               Translation="0,0,8"/>
         <Grid x:Name="SettingsSearchBoxGrid"
