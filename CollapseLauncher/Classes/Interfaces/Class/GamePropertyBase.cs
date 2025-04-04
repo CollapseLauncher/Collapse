@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Interfaces
@@ -62,7 +63,14 @@ namespace CollapseLauncher.Interfaces
         protected IGameVersion GameVersionManager { get; set; }
         protected IGameSettings GameSettings { get; set; }
         protected string GamePath { get => string.IsNullOrEmpty(GamePathField) ? GameVersionManager.GameDirPath : GamePathField; }
-        protected string GameRepoURL { get; set; }
+
+        [field: MaybeNull, AllowNull]
+        protected string GameRepoURL
+        {
+            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp.data?.game?.latest?.decompressed_path : field;
+            set;
+        }
+
         protected List<T1> AssetIndex { get; set; }
         protected bool UseFastMethod { get; set; }
 

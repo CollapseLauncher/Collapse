@@ -209,16 +209,6 @@
           "ZstdSharp.Port": "0.8.4"
         }
       },
-      "SharpHDiffPatch.Core": {
-        "type": "Direct",
-        "requested": "[2.3.0, )",
-        "resolved": "2.3.0",
-        "contentHash": "xmI09P+o5eEQYhWIE2+cluwjhTpz8WfNCFd6LG1foDKM+J2N71RA4A7b3E8y/8xnq0pc7zKENsRTk5eUGIVCzw==",
-        "dependencies": {
-          "Hi3Helper.ZstdNet": "1.6.4",
-          "ZstdSharp.Port": "0.8.5"
-        }
-      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta4.22272.1, )",
@@ -303,8 +293,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.30.1",
-        "contentHash": "HeWXDQBabQn/sCGicbeLJ0HMunknfC4FdLrOQOsaMJHcpqx3HVIpyyJqTrqJlWnza870twhOb+rBcaTiC/TlNA=="
+        "resolved": "3.30.0",
+        "contentHash": "ZnEI4oZWnHvd+Yz5Gcnx5Q5RQIuzptIzd0fmxAN8f81FYHI0USZqMOrPTkrsd/QEzo9vl2b217v9FqFgHfufQw=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -362,6 +352,15 @@
         "type": "Transitive",
         "resolved": "5.4.0",
         "contentHash": "fXjF+bn7uOSPjrALfY+GQGhaeXFXfAX8XrSWeUJOek/hhIss1hhi/l2AJPefjVdaNWyb1muJAdUUZnBofZjlvw=="
+      },
+      "SharpHDiffPatch.Core": {
+        "type": "Transitive",
+        "resolved": "2.3.2",
+        "contentHash": "eHhgCafM9gD5UlFj/xkF8Hnm6BBm6loV8HE22BET8wE8VXKEQAqSux3nux7sm3xRbh+M+Y4OrNi6P3mOv4y7ow==",
+        "dependencies": {
+          "Hi3Helper.ZstdNet": "1.6.4",
+          "ZstdSharp.Port": "0.8.5"
+        }
       },
       "System.Buffers": {
         "type": "Transitive",
@@ -459,9 +458,10 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[*, )",
+          "Google.Protobuf": "[3.30.0, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "System.IO.Hashing": "[9.0.3, )"
+          "SharpHDiffPatch.Core": "[*, )",
+          "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {

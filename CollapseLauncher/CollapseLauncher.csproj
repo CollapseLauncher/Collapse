@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -197,7 +197,6 @@
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="SharpCompress" Version="0.39.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-        <PackageReference Include="SharpHDiffPatch.Core" Version="2.3.0" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
