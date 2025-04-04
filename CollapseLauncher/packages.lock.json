@@ -209,16 +209,6 @@
           "ZstdSharp.Port": "0.8.4"
         }
       },
-      "SharpHDiffPatch.Core": {
-        "type": "Direct",
-        "requested": "[2.2.8, )",
-        "resolved": "2.2.8",
-        "contentHash": "wKUdKb753eUc4oP098Z7ROHNU0WAmW94m46infYyPVGRJ/0zlNWcuEqdpB0S1dKNv2hgLovJcbUOybEXRz536Q==",
-        "dependencies": {
-          "Hi3Helper.ZstdNet": "1.6.2",
-          "ZstdSharp.Port": "0.8.1"
-        }
-      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta4.22272.1, )",
@@ -357,6 +347,15 @@
         "resolved": "5.2.0",
         "contentHash": "b3aZSOU2CjlIIFRtPRbXParKQ+9PF+JOqkSD7Gxq6PiR07t1rnK+crPtdrWMXfW6PVo/s67trCJ+fuLsgTeADw=="
       },
+      "SharpHDiffPatch.Core": {
+        "type": "Transitive",
+        "resolved": "2.3.2",
+        "contentHash": "eHhgCafM9gD5UlFj/xkF8Hnm6BBm6loV8HE22BET8wE8VXKEQAqSux3nux7sm3xRbh+M+Y4OrNi6P3mOv4y7ow==",
+        "dependencies": {
+          "Hi3Helper.ZstdNet": "1.6.4",
+          "ZstdSharp.Port": "0.8.5"
+        }
+      },
       "System.Buffers": {
         "type": "Transitive",
         "resolved": "4.6.0",
@@ -455,9 +454,10 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[*, )",
+          "Google.Protobuf": "[3.30.0, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "System.IO.Hashing": "[9.0.3, )"
+          "SharpHDiffPatch.Core": "[*, )",
+          "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {
