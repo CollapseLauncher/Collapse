@@ -31,7 +31,7 @@ jobs:
       SIGNING_POLICY_SLUG: ""
       VERSION: ""
       Platform: ${{ matrix.platform }}
-
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
     steps:
     - name: Set Configuration and Environment Variables
@@ -136,7 +136,7 @@ jobs:
       run: |
         $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
         echo "Re-checking build version"
-        $versionFinal = ((Get-Item .\build\CollapseLauncher.exe).VersionInfo.FileVersion)
+        $versionFinal = ((Get-Item $buildDir\CollapseLauncher.exe\CollapseLauncher.exe).VersionInfo.FileVersion)
         if ($versionFinal.EndsWith(".0")) {
             $versionFinal = $versionFinal.Substring(0, $version.Length - 2)
         }
@@ -169,10 +169,20 @@ jobs:
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_CIRELEASENOTIFIER }}
         title: Collapse Launcher Release CI build is complete!
-        status: ${{ job.status }}
+        status: Success
         nofail: true
         url: https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
         description: |
           Commit `${{ github.sha }}` by ${{ github.actor }} in branch `${{ github.ref_name }}`
           Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
+
+    - name: Install Sentry CLI
+      uses: MinoruSekine/setup-scoop@v4.0.1
+      with:
+        buckets: extras
+        apps: sentry-cli
+
+    - name: Upload Debug artifact to Sentry
+      run: |
+        sentry-cli debug-files upload --org collapse --project collapse-launcher --include-sources '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
 
