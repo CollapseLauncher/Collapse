@@ -6,6 +6,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:oobe="using:CollapseLauncher.Pages.OOBE"
       xmlns:s="using:CommunityToolkit.WinUI"
       Background="Transparent"
       mc:Ignorable="d">
@@ -61,8 +62,8 @@
                         Click="GameDetailsHomepage_Click"
                         CornerRadius="0,0,8,8"
                         Style="{ThemeResource AccentButtonStyle}"
-                        Tag="{x:Bind GameDetailsHomepageLink}"
-                        ToolTipService.ToolTip="{x:Bind GameDetailsHomepageLink}">
+                        Tag="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink}"
+                        ToolTipService.ToolTip="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink}">
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -71,7 +72,7 @@
                         <TextBlock x:Name="GameDetailsHomepageText"
                                    HorizontalAlignment="Left"
                                    FontWeight="SemiBold"
-                                   Text="{x:Bind GameDetailsHomepageLink}"
+                                   Text="{x:Bind oobe:OOBESelectGameBG.GameDetailsHomepageLink}"
                                    TextTrimming="CharacterEllipsis" />
                         <FontIcon Grid.Column="1"
                                   Margin="10,0,0,-3"

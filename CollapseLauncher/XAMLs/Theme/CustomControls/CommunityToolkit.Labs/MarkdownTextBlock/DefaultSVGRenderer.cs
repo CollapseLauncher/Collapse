@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+// ReSharper disable InconsistentNaming
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
@@ -18,7 +19,7 @@ internal class DefaultSVGRenderer : ISVGRenderer
         var image = new Image();
         // Create a MemoryStream object and write the SVG string to it
         using (var memoryStream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(memoryStream))
+            await using (var streamWriter = new StreamWriter(memoryStream))
             {
                 await streamWriter.WriteAsync(svgString);
                 await streamWriter.FlushAsync();

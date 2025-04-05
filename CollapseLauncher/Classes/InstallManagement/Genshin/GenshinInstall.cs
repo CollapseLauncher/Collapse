@@ -1,6 +1,7 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -24,11 +24,11 @@ using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.InstallManager.Genshin
 {
-    internal partial class GenshinInstall : InstallManagerBase
+    internal sealed partial class GenshinInstall : InstallManagerBase
     {
         #region Override Properties
 
-        protected override int _gameVoiceLanguageID => _gameVersionManager.GamePreset.GetVoiceLanguageID();
+        protected override int _gameVoiceLanguageID => GameVersionManager.GamePreset.GetVoiceLanguageID();
 
         #endregion
 
@@ -64,7 +64,7 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         #endregion
 
-        public GenshinInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
+        public GenshinInstall(UIElement parentUI, IGameVersion GameVersionManager)
             : base(parentUI, GameVersionManager)
         {
         }
@@ -75,7 +75,7 @@ namespace CollapseLauncher.InstallManager.Genshin
         public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
         {
             // Get the primary file first check
-            List<RegionResourceVersion>? resource = _gameVersionManager.GetGamePreloadZip();
+            List<RegionResourceVersion>? resource = GameVersionManager.GetGamePreloadZip();
 
             // Sanity Check: throw if resource returns null
             if (resource == null)
@@ -90,7 +90,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                                                  if (string.IsNullOrEmpty(name))
                                                      return false;
 
-                                                 string path = Path.Combine(_gamePath, name);
+                                                 string path = Path.Combine(GamePath, name);
                                                  return File.Exists(path);
                                              });
 
@@ -126,10 +126,10 @@ namespace CollapseLauncher.InstallManager.Genshin
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(_token.Token);
+            await ApplyDeleteFileActionAsync(Token.Token);
         }
 
-        protected void EnsureMoveOldToNewAudioDirectory()
+        private void EnsureMoveOldToNewAudioDirectory()
         {
             // Return if the old path doesn't exist
             if (!Directory.Exists(_gameAudioOldPath))
@@ -173,13 +173,13 @@ namespace CollapseLauncher.InstallManager.Genshin
 
         protected override UninstallGameProperty AssignUninstallFolders()
         {
-            string execName = _gameVersionManager.GamePreset.ZoneName switch
+            string execName = GameVersionManager.GamePreset.ZoneName switch
             {
                 "Global" => "GenshinImpact",
                 "Mainland China" => "YuanShen",
                 "Bilibili" => "YuanShen",
                 "Google Play" => "GenshinImpact",
-                _ => throw new NotSupportedException($"Unknown GI Game Region!: {_gameVersionManager.GamePreset.ZoneName}")
+                _ => throw new NotSupportedException($"Unknown GI Game Region!: {GameVersionManager.GamePreset.ZoneName}")
             };
 
             return new UninstallGameProperty
@@ -191,10 +191,26 @@ namespace CollapseLauncher.InstallManager.Genshin
                     "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*",
                     "^Audio.*"
                 ],
-                foldersToKeepInData = Array.Empty<string>()
+                foldersToKeepInData = []
             };
         }
 
+        #endregion
+
+        #region Override Methods - GetUnusedFileInfoList
+        protected override async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
+        {
+            // Get the result from base method
+            (List<LocalFileInfo>, long) resultBase = await base.GetUnusedFileInfoList(includeZipCheck);
+
+            // Once we get the result, take the "StreamingAssets\\ctable.dat" file out of the list
+            List<LocalFileInfo> unusedFilesFiltered = resultBase
+                .Item1
+                .Where(x => !x.FullPath
+                    .EndsWith("StreamingAssets\\ctable.dat", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            return (unusedFilesFiltered, unusedFilesFiltered.Select(x => x.FileSize).ToArray().Sum());
+        }
         #endregion
     }
 }

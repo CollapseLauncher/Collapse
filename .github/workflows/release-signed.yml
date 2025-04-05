@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         platform: [x64]
-        framework: [net9.0-windows10.0.22621.0]
+        framework: [net9.0-windows10.0.26100.0]
 
     env:
       CONFIGURATION_STRATEGY: ""

@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Fondo Personalizado por Región",
     "GameSettings_Panel4": "Global - Otros",
     "GameSettings_Panel4ShowEventsPanel": "Mostrar Panel de Eventos",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Escalar panel de eventos al pasar el ratón",
     "GameSettings_Panel4ShowSocialMediaPanel": "Mostrar Redes Sociales",
     "GameSettings_Panel4ShowPlaytimeButton": "Mostrar tiempo de juego",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sincronizar Tiempo de Juego con Base de Datos",
@@ -361,6 +362,8 @@
     "SpecVeryHigh": "Muy Alto",
     "SpecMaximum": "Máximo",
     "SpecUltra": "Ultra",
+    "SpecDynamic": "Dinámico",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Ajustes de Audio",
     "Audio_Master": "Volumen Global",
@@ -403,7 +406,7 @@
     "CustomArgs_Footer2": "Unity Standalone Command-line documentation (en Ingles)",
     "CustomArgs_Footer3": "para ver más parámetros.",
 
-    "GameBoost": "Aumentar Prioridad del Juego [Experimental]",
+    "GameBoost": "Aumentar Prioridad del Juego",
     "MobileLayout": "Usar Diseño de Móviles",
 
     "Advanced_Title": "Ajustes Avanzados",
@@ -527,9 +530,10 @@
     "ContributePRBtn": "Contribuye con un Pull Request",
     "ContributorListBtn": "Colaboradores del Open Source",
     "HelpLocalizeBtn": "¡Ayúdanos a traducir Collapse!",
+    "ShareYourFeedbackBtn": "Compártenos tus comentarios",
 
     "About": "Acerca de",
-    "About_Copyright1": "© 2022-2024",
+    "About_Copyright1": "© 2022-2025",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Bajo",
     "About_Copyright4": ". Todos los derechos reservados.",
@@ -797,7 +801,17 @@
     "IsBytesNotANumber": "= NaN",
 
     "MissingVcRedist": "Falta el Visual C/C++ Redistributable",
-    "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema."
+    "MissingVcRedistSubtitle": "Necesitas instalar Visual C/C++ Redistributable para ejecutar esta función. ¿Quieres descargarlo ahora?\r\nNota: Se abrirá el navegador y se descargará un archivo desde Microsoft. Por favor, ejecuta el instalador después de descargarlo y luego reinicia Collapse e inténtalo de nuevo.\r\nSi ya fue instalado pero el error persiste, por favor envianos un ticket informando del problema.",
+    "ExceptionFeedbackBtn": "Cuéntanos lo que pasó",
+    "ExceptionFeedbackBtn_Unavailable": "El informe de crash está desactivado o no está disponible",
+    "ExceptionFeedbackBtn_FeedbackSent": "¡Se ha enviado su comentario!",
+    "ExceptionFeedbackTitle": "Cuéntanos lo que pasó:",
+    "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
+    "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
+    "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea",
+    
+    "Tag_Deprecated": "Obsoleto",
+    "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."
   },
 
   "_BackgroundNotification": {
@@ -906,6 +920,10 @@
     "ReleaseChannelChangeSubtitle2": "Aviso:",
     "ReleaseChannelChangeSubtitle3": "Esta acción puede causar cambios irreversibles y/o causar que las cosas se rompan de la configuración actual. No nos hacemos responsables de ninguna pérdida o corrupción de datos asociados al juego.",
 
+    "ForceUpdateCurrentInstallTitle": "Actualización forzada de la instalación actual ",
+    "ForceUpdateCurrentInstallSubtitle1": "Estás a punto de realizar una actualización forzada de tu instalación:",
+    "ForceUpdateCurrentInstallSubtitle2": "y recomendamos que cierres los juegos que estén abiertos en este momento.",
+
     "ChangePlaytimeTitle": "¿Estás seguro de que quieres cambiar tu tiempo de juego?",
     "ChangePlaytimeSubtitle": "Cambiar el tiempo de juego significa reemplazar los valores actuales con los que acabas de ingresar.\n\n¿Deseas continuar?\n\nNota: Esto no afectara como funciona Collapse y cuando no estés jugando, puedes volver a cambiar los valores.",
     "ResetPlaytimeTitle": "¿Estás seguro de que quieres restablecer tu tiempo de juego?",
@@ -984,9 +1002,10 @@
     "SteamShortcutCreationSuccessSubtitle5": " • El acceso directo solo se mostrara después de reiniciar Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Para usar el Steam overlay, es necesario iniciar Steam como administrador y Collapse debe estar cerrado completamente o tener la opción \"Multiples Ventanas\" habilitada en los ajustes.",
     "SteamShortcutCreationSuccessSubtitle7": " • Si el juego no está instalado/actualizado, Collapse intentará instalarlo/actualizarlo. Ten en cuenta que mensajes relacionados con estos procesos se seguirán mostrando.",
-
     "SteamShortcutCreationFailureTitle": "Carpeta de datos de Steam inválida",
     "SteamShortcutCreationFailureSubtitle": "No fue posible encontrar una carpeta \"userdata\" válida.\n\nPor favor, verifica que has iniciado sesión al menos una vez en el cliente de Steam antes de usar esta función.",
+    "SteamShortcutTitle": "Acceso directo de Steam",
+    "SteamShortcutDownloadingImages": "Descargar Imágenes para Steam ({0}/{1})",
 
     "DownloadSettingsTitle": "Descargando Configuración",
     "DownloadSettingsOption1": "Iniciar el juego después de instalar ",
@@ -1001,7 +1020,28 @@
     "SophonIncrementUpdateUnavailSubtitle1": "Tu versión del juego: {0}",
     "SophonIncrementUpdateUnavailSubtitle2": " es muy obsoleta",
     "SophonIncrementUpdateUnavailSubtitle3": " y la actualización incremental no está disponible para tu versión. Sin embargo, aún podrías actualizar tu juego volviendo a descargarlo desde cero.",
-    "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso"
+    "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso",
+
+    "UACWarningTitle": "Advertencia: Detectado UAC deshabilitado",
+    "UACWarningContent": "Desactivar el Control de cuentas de usuario (UAC) nunca es una buena idea. \nLa seguridad del SO se verá comprometida y es posible que el juego no funcione correctamente. \n\nHaz clic en \"Más información\" para ver cómo activar UAC. \nLa entrada relacionada es: Ejecución de todos los administradores en Administración modo de aprobación.",
+    "UACWarningLearnMore": "Más información",
+    "UACWarningDontShowAgain": "No mostrar de nuevo",
+
+    "EnsureExitTitle": "Saliendo de la aplicación ",
+    "EnsureExitSubtitle": "Hay operaciones críticas ejecutándose en segundo plano. ¿Estás seguro de que quieres salir?",
+
+    "UserFeedback_DialogTitle": "Comparta su opinión",
+    "UserFeedback_TextFieldTitleHeader": "Título",
+    "UserFeedback_TextFieldTitlePlaceholder": "Escriba aquí el título...",
+    "UserFeedback_TextFieldMessageHeader": "Mensaje",
+    "UserFeedback_TextFieldMessagePlaceholder": "Mensaje...",
+    "UserFeedback_TextFieldRequired": "(obligatorio)",
+    "UserFeedback_RatingText": "¿Le importaría compartir su valoración?",
+    "UserFeedback_CancelBtn": "Cancelar",
+    "UserFeedback_SubmitBtn": "Compártenos tus comentarios",
+    "UserFeedback_SubmitBtn_Processing": "Procesando...",
+    "UserFeedback_SubmitBtn_Completed": "¡Completado!",
+    "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!"
   },
 
   "_FileMigrationProcess": {
@@ -1202,7 +1242,7 @@
     "NotifFirstWelcomeBtn": "Visita la Wiki En GitHub",
 
     "NotifPreviewBuildUsedTitle": "¡Estás usando una Preview Build!",
-    "NotifPreviewBuildUsedSubtitle": "Actualmente estás utilizando una compilación [PREVIEW], que todavía está siendo probada. Si encuentras algún problema, por favor infórmanos usando el botón \"{0}\" a continuación. ¡Gracias!",
+    "NotifPreviewBuildUsedSubtitle": "Actualmente estás utilizando una compilación [PREVIEW], que todavía está siendo probada. Si encuentras algún problema, por favor infórmanos usando el botón \"{0}\". ¡Gracias!",
     "NotifPreviewBuildUsedBtn": "Enviar un Problema",
 
     "NotifKbShortcutTitle": "¡Una nueva función ha llegado!",
@@ -1238,8 +1278,15 @@
     "Graphics_BloomQuality": "Calidad de Bloom",
     "Graphics_AAMode": "Anti-Aliasing",
     "Graphics_SFXQuality": "Calidad de SFX",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
+    
+    "Graphics_DLSS_UHP": "Ultra Rendimiento",
+    "Graphics_DLSS_Perf": "Rendimiento",
+    "Graphics_DLSS_Balanced": "Balanceado",
+    "Graphics_DLSS_Quality": "Calidad",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Ajustes Gráficos Globales",
     "SpecEnabled": "Habilitado",

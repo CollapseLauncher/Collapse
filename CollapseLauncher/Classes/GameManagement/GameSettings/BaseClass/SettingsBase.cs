@@ -15,12 +15,11 @@ namespace CollapseLauncher.GameSettings.Base
         #endregion
 
 #nullable enable
-        private static RegistryKey? _registryRoot;
 
         internal static string? RegistryPath
         {
-            get => string.IsNullOrEmpty(_gameVersionManager?.GamePreset?.InternalGameNameInConfig) ? null :
-                Path.Combine($"Software\\{_gameVersionManager.VendorTypeProp.VendorType}", _gameVersionManager.GamePreset.InternalGameNameInConfig);
+            get => string.IsNullOrEmpty(GameVersionManager?.GamePreset.InternalGameNameInConfig) ? null :
+                Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
         }
 
         internal static RegistryKey? RegistryRoot
@@ -31,16 +30,16 @@ namespace CollapseLauncher.GameSettings.Base
                 if (RegistryPath == null) return null;
 
                 // Try to open the registry path
-                _registryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
+                field = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 
                 // If it's still empty, then create a new one
-                _registryRoot ??= Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
+                field ??= Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
 
-                return _registryRoot;
+                return field;
             }
         }
 
-        protected SettingsBase(IGameVersionCheck GameVersionManager) => _gameVersionManager = GameVersionManager;
+        protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;
 
         public virtual void InitializeSettings()
         {
@@ -50,7 +49,7 @@ namespace CollapseLauncher.GameSettings.Base
         }
 
 #nullable disable
-        public static IGameVersionCheck _gameVersionManager { get; set; }
+        public static IGameVersion GameVersionManager { get; set; }
 
         public virtual void ReloadSettings() => InitializeSettings();
 

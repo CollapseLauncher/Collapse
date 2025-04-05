@@ -1,52 +1,52 @@
 ﻿#if !DISABLEDISCORD
-    using CollapseLauncher.DiscordPresence;
+using CollapseLauncher.DiscordPresence;
 #endif
-    using CollapseLauncher.GameSettings.Zenless;
-    using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Interfaces;
-    using CollapseLauncher.Statics;
-    using Hi3Helper;
-    using Hi3Helper.Data;
-    using Hi3Helper.Shared.ClassStruct;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Media;
-    using Microsoft.Win32;
-    using Hi3Helper.Win32.Screen;
-    using RegistryUtils;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Linq;
-    using System.Numerics;
-    using Windows.UI;
-    using static Hi3Helper.Locale;
-    using static Hi3Helper.Logger;
-    using static Hi3Helper.Shared.Region.LauncherConfig;
-    using static CollapseLauncher.Statics.GamePropertyVault;
+using CollapseLauncher.GameSettings.Zenless;
+using CollapseLauncher.Helper.Animation;
+using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.Win32;
+using Hi3Helper.Win32.Screen;
+using RegistryUtils;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.Statics.GamePropertyVault;
+using Brush = Microsoft.UI.Xaml.Media.Brush;
+using Color = Windows.UI.Color;
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class ZenlessGameSettingsPage
     {
-        private GamePresetProperty CurrentGameProperty   { get; set; }
-        private ZenlessSettings    Settings              { get; set; }
-        private Brush              InheritApplyTextColor { get; set; }
-        private RegistryMonitor    RegistryWatcher       { get; set; }
-
-        private bool IsNoReload = false;
+        private GamePresetProperty           CurrentGameProperty   { get; }
+        private ZenlessSettings              Settings              { get; }
+        private Brush                        InheritApplyTextColor { get; set; }
+        private RegistryMonitor              RegistryWatcher       { get; set; }
         
         public ZenlessGameSettingsPage()
         {
             try
             {
                 CurrentGameProperty = GetCurrentGameProperty();
-                Settings = CurrentGameProperty._GameSettings as ZenlessSettings;
+                Settings = CurrentGameProperty.GameSettings as ZenlessSettings;
 
                 DispatcherQueue?.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -62,23 +62,26 @@ namespace CollapseLauncher.Pages
         private void ToggleRegistrySubscribe(bool doSubscribe)
         {
             if (doSubscribe)
+            {
                 RegistryWatcher.RegChanged += RegistryListener;
+                RegistryWatcher.Start();
+            }
             else
+            {
+                RegistryWatcher.Stop();
                 RegistryWatcher.RegChanged -= RegistryListener;
+            }
         }
 
         private void RegistryListener(object sender, EventArgs e)
         {
-            if (!IsNoReload)
-            {
-                LogWriteLine("[Zenless GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-                DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
-            }
+            LogWriteLine("[Zenless GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
+            DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
         }
 
         private void LoadPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
@@ -87,14 +90,14 @@ namespace CollapseLauncher.Pages
             InheritApplyTextColor = ApplyText.Foreground!;
         }
 
-        private void RegistryExportClick(object sender, RoutedEventArgs e)
+        private async void RegistryExportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
-                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $"{CurrentGameProperty?._GameExecutableNameWithoutExtension}_Data\\Persistent\\LocalStorage");
-                Exception exc = Settings.ExportSettings(true, gameBasePath, relativePaths);
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion.GameDirPath);
+                string[] relativePaths = GetFilesRelativePaths(gameBasePath, $@"{CurrentGameProperty?.GameExecutableNameWithoutExtension}_Data\Persistent\LocalStorage");
+                Exception exc = await Settings.ExportSettings(true, gameBasePath, relativePaths);
 
                 if (exc != null) throw exc;
 
@@ -115,7 +118,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private string[] GetFilesRelativePaths(string gameDir, string relativePath)
+        private static string[] GetFilesRelativePaths(string gameDir, string relativePath)
         {
             string sourceDirPath = Path.Combine(gameDir, relativePath);
             return Directory.EnumerateFiles(sourceDirPath, "*", SearchOption.AllDirectories).Select(filePath =>
@@ -127,13 +130,13 @@ namespace CollapseLauncher.Pages
             }).ToArray();
         }
         
-        private void RegistryImportClick(object sender, RoutedEventArgs e)
+        private async void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty._GameVersion?.GameDirPath);
-                Exception exc = Settings.ImportSettings(gameBasePath);
+                string gameBasePath = ConverterTool.NormalizePath(CurrentGameProperty.GameVersion.GameDirPath);
+                Exception exc = await Settings.ImportSettings(gameBasePath);
 
                 if (exc != null) throw exc;
 
@@ -154,7 +157,7 @@ namespace CollapseLauncher.Pages
             }
         }
         
-        private System.Drawing.Size SizeProp           { get; set; }
+        private Size SizeProp           { get; set; }
 
         private void InitializeSettings(object sender, RoutedEventArgs e)
         {
@@ -162,7 +165,6 @@ namespace CollapseLauncher.Pages
             {
                 BackgroundImgChanger.ToggleBackground(true);
 
-                var resList   = new List<string>();
                 SizeProp = ScreenProp.CurrentResolution;
 
                 // Get the native resolution first
@@ -179,11 +181,15 @@ namespace CollapseLauncher.Pages
                 ScreenResolutionIsFullscreenIdx.AddRange(Enumerable.Range(0, resWindowed.Count).Select(_ => false));
 
                 // Add native resolution string, other fullscreen resolutions, and windowed resolutions
-                resList.Add(nativeResString);
-                resList.AddRange(resFullscreen);
-                resList.AddRange(resWindowed);
+                List<string> resolutionList =
+                [
+                    nativeResString
+                ];
+                resolutionList.AddRange(resFullscreen);
+                resolutionList.AddRange(resWindowed);
 
-                GameResolutionSelector.ItemsSource   = resList;
+                GameResolutionSelector.ItemsSource   = resolutionList;
+                _isAllowResolutionIndexChanged       = true; // Unlock resolution change
                 GameResolutionSelector.SelectedIndex = ResolutionIndexSelected; // Refresh
 
                 if (CurrentGameProperty.IsGameRunning)
@@ -195,10 +201,11 @@ namespace CollapseLauncher.Pages
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
                 #endif
                 }
-                else if (GameInstallationState == GameInstallStateEnum.NotInstalled
-                      || GameInstallationState == GameInstallStateEnum.NeedsUpdate
-                      || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
-                      || GameInstallationState == GameInstallStateEnum.GameBroken)
+                else if (GameInstallationState
+                    is GameInstallStateEnum.NotInstalled
+                    or GameInstallStateEnum.NeedsUpdate
+                    or GameInstallStateEnum.InstalledHavePlugin
+                    or GameInstallStateEnum.GameBroken)
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
@@ -219,9 +226,9 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static readonly List<int> acceptableHeight = [4320, 2880, 2160, 1440, 1280, 1080, 900, 720];
+        private static readonly List<int> AcceptableHeight = [4320, 2880, 2160, 1440, 1280, 1080, 900, 720];
 
-        private System.Drawing.Size GetNativeDefaultResolution()
+        private Size GetNativeDefaultResolution()
         {
             const int maxAcceptedNativeW = 2560; // This is the maximum native resolution width that is accepted.
                                                  // Tested on both 3840x2160 and 1920x1080 screen. The game keeps to only accept
@@ -232,39 +239,42 @@ namespace CollapseLauncher.Pages
                                                  // HOYOOOOOOO!!!!!!!
 
             // Get the list of available resolutions. Otherwise, throw an exception.
-            var currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList();
+            List<Size> currentAcceptedRes = ScreenProp.EnumerateScreenSizes().ToList();
             if (currentAcceptedRes.Count == 0)
                 throw new NullReferenceException("Cannot get screen resolution. Prolly the app cannot communicate with Win32 API???");
             var maxAcceptedResW = currentAcceptedRes.Max(x => x.Width); // Find the maximum resolution width that can be accepted.
 
             // If the max accepted resolution width is more than or equal to maxAcceptedNativeW,
             // then clamp the resolution to the resolution that is equal to maxAcceptedNativeW.
-            if (maxAcceptedResW >= maxAcceptedNativeW)
+            if (maxAcceptedResW < maxAcceptedNativeW)
             {
-                var nativeAspRatio          = (double)SizeProp.Height / SizeProp.Width;
-                var nativeAspRationHeight   = (int)(maxAcceptedNativeW * nativeAspRatio);
-
-                System.Drawing.Size nativeRes = new System.Drawing.Size(maxAcceptedNativeW, nativeAspRationHeight);
-                return nativeRes;
+                return currentAcceptedRes.LastOrDefault(x => x.Width == maxAcceptedResW);
             }
 
+            var nativeAspRatio        = (double)SizeProp.Height / SizeProp.Width;
+            var nativeAspRationHeight = (int)(maxAcceptedNativeW * nativeAspRatio);
+
+            Size nativeRes = new Size(maxAcceptedNativeW, nativeAspRationHeight);
+            return nativeRes;
+
             // Otherwise, get the last resolution which always be the maximum for other less than width: 2560 (for example: 1920x1080).
-            return currentAcceptedRes.LastOrDefault(x => x.Width == maxAcceptedResW);
         }
         
-        private List<string> GetResPairs_Fullscreen(System.Drawing.Size defaultResolution)
+        private List<string> GetResPairs_Fullscreen(Size defaultResolution)
         {
-            var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
-            var acH               = acceptableHeight;
-            var acceptedMaxHeight = ScreenProp.GetMaxHeight();
+            var       nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            List<int> acH               = AcceptableHeight;
+            var       acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
 
             // Get the resolution pairs and initialize default resolution index
-            List<string> resPairs = new List<string>();
-            int indexOfDefaultRes = -1;
+            List<string> resPairs          = [];
+            int          indexOfDefaultRes = -1;
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            // ReSharper disable once ForCanBeConvertedToForeach
             for (int i = 0; i < acH.Count; i++)
             {
                 // Get height and calculate width
@@ -290,20 +300,22 @@ namespace CollapseLauncher.Pages
 
         private List<string> GetResPairs_Windowed()
         {
-            var nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
-            var wideRatio         = (double)16 / 9;
-            var ulWideRatio       = (double)21 / 9;
-            var acH               = acceptableHeight;
-            var acceptedMaxHeight = ScreenProp.GetMaxHeight();
+            var          nativeAspRatio    = (double)SizeProp.Width / SizeProp.Height;
+            const double wideRatio         = (double)16 / 9;
+            const double ulWideRatio       = (double)21 / 9;
+            List<int>    acH               = AcceptableHeight;
+            var          acceptedMaxHeight = ScreenProp.GetMaxHeight();
 
             acH.RemoveAll(h => h > acceptedMaxHeight);
             //acH.RemoveAll(h => h > 1600);
-            List<string> resPairs = new List<string>();
+            List<string> resPairs = [];
 
             // If res is 21:9 then add proper native to the list
             if (Math.Abs(nativeAspRatio - ulWideRatio) < 0.01)
                 resPairs.Add($"{SizeProp.Width}x{SizeProp.Height}");
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            // ReSharper disable once ForCanBeConvertedToForeach
             for (int i = 0; i < acH.Count; i++)
             {
                 // Get height and calculate width
@@ -341,11 +353,11 @@ namespace CollapseLauncher.Pages
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -354,19 +366,14 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
-
-                if (value) CustomArgsTextBox.IsEnabled = true;
-                else CustomArgsTextBox.IsEnabled       = false;
-                
+                bool value = CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments;
+                CustomArgsTextBox.IsEnabled = value;
                 return value;
             }
             set
             {
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
-                
-                if (value) CustomArgsTextBox.IsEnabled = true;
-                else CustomArgsTextBox.IsEnabled       = false;
+                CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
+                CustomArgsTextBox.IsEnabled = value;
             }
         }
 

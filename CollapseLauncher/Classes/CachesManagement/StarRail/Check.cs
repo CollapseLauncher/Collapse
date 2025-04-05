@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.EncTool.Parser.AssetMetadata.SRMetadataAsset;
 using System;
@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable CommentTypo
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace CollapseLauncher
 {
@@ -18,31 +20,31 @@ namespace CollapseLauncher
         private async Task<List<SRAsset>> Check(List<SRAsset> assetIndex, CancellationToken token)
         {
             // Initialize asset index for the return
-            List<SRAsset> returnAsset = new List<SRAsset>();
+            List<SRAsset> returnAsset = [];
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
+            Status.IsProgressAllIndetermined = false;
 
             // Show the asset entry panel
-            _status.IsAssetEntryPanelShow = true;
+            Status.IsAssetEntryPanelShow = true;
 
             // Get persistent and streaming paths
-            string execName = Path.GetFileNameWithoutExtension(_innerGameVersionManager!.GamePreset!.GameExecutableName);
-            string baseDesignDataPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\DesignData\Windows");
-            string baseDesignDataPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\DesignData\Windows");
+            string execName = Path.GetFileNameWithoutExtension(InnerGameVersionManager!.GamePreset!.GameExecutableName);
+            string baseDesignDataPathPersistent = Path.Combine(GamePath!, @$"{execName}_Data\Persistent\DesignData\Windows");
+            string baseDesignDataPathStreaming = Path.Combine(GamePath!, @$"{execName}_Data\StreamingAssets\DesignData\Windows");
 
-            string baseLuaPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\Lua\Windows");
-            string baseLuaPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\Lua\Windows");
+            string baseLuaPathPersistent = Path.Combine(GamePath!, @$"{execName}_Data\Persistent\Lua\Windows");
+            string baseLuaPathStreaming = Path.Combine(GamePath!, @$"{execName}_Data\StreamingAssets\Lua\Windows");
 
-            string baseIFixPathPersistent = Path.Combine(_gamePath!, @$"{execName}_Data\Persistent\IFix\Windows");
-            string baseIFixPathStreaming = Path.Combine(_gamePath!, @$"{execName}_Data\StreamingAssets\IFix\Windows");
+            string baseIFixPathPersistent = Path.Combine(GamePath!, @$"{execName}_Data\Persistent\IFix\Windows");
+            string baseIFixPathStreaming = Path.Combine(GamePath!, @$"{execName}_Data\StreamingAssets\IFix\Windows");
 
             try
             {
                 // Do check in parallelization.
                 await Parallel.ForEachAsync(assetIndex!, new ParallelOptions
                 {
-                    MaxDegreeOfParallelism = _threadCount,
+                    MaxDegreeOfParallelism = ThreadCount,
                     CancellationToken = token
                 }, async (asset, threadToken) =>
                 {
@@ -74,38 +76,37 @@ namespace CollapseLauncher
             // Increment the count and update the status
             lock (this)
             {
-                _progressAllCountCurrent++;
-                _status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.AssetType, asset.LocalName);
-                _status.ActivityAll = string.Format(Lang!._CachesPage!.CachesTotalStatusChecking!, _progressAllCountCurrent, _progressAllCountTotal);
+                ProgressAllCountCurrent++;
+                Status.ActivityStatus = string.Format(Lang!._CachesPage!.CachesStatusChecking!, asset!.AssetType, asset.LocalName);
+                Status.ActivityAll = string.Format(Lang!._CachesPage!.CachesTotalStatusChecking!, ProgressAllCountCurrent, ProgressAllCountTotal);
             }
 
             // Get persistent and streaming paths
-            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!)).EnsureNoReadOnly(out bool isPersistentExist);
+            FileInfo fileInfoPersistent = new FileInfo(Path.Combine(basePersistent!, asset.LocalName!)).EnsureNoReadOnly(out bool isFileInfoPersistentExist);
             FileInfo fileInfoStreaming = new FileInfo(Path.Combine(baseStreaming!, asset.LocalName!)).EnsureNoReadOnly(out bool isStreamingExist);
 
-            bool UsePersistent = !isStreamingExist;
-            bool IsPersistentExist = isPersistentExist && fileInfoPersistent.Length == asset.Size;
-            bool IsStreamingExist = isStreamingExist && fileInfoStreaming.Length == asset.Size;
-            asset.LocalName = UsePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
+            bool usePersistent = !isStreamingExist;
+            bool isPersistentExist = isFileInfoPersistentExist && fileInfoPersistent.Length == asset.Size;
+            asset.LocalName = usePersistent ? fileInfoPersistent.FullName : fileInfoStreaming.FullName;
 
             // Check if the file exist. If not, then add it to asset index.
-            if (UsePersistent && !IsPersistentExist && !IsStreamingExist)
+            if (usePersistent && !isPersistentExist)
             {
                 AddGenericCheckAsset(asset, CacheAssetStatus.New, returnAsset, null, asset.Hash);
                 return;
             }
 
             // Skip CRC check if fast method is used
-            if (_useFastMethod)
+            if (UseFastMethod)
             {
                 return;
             }
 
             // If above passes, then run the CRC check
-            await using FileStream fs = await NaivelyOpenFileStreamAsync(UsePersistent ? fileInfoPersistent : fileInfoStreaming,
+            await using FileStream fs = await NaivelyOpenFileStreamAsync(usePersistent ? fileInfoPersistent : fileInfoStreaming,
                                                                          FileMode.Open, FileAccess.Read, FileShare.Read);
             // Calculate the asset CRC (MD5)
-            byte[] hashArray = await CheckHashAsync(fs, MD5.Create(), token);
+            byte[] hashArray = await GetCryptoHashAsync<MD5>(fs, null, true, true, token);
 
             // If the asset CRC doesn't match, then add the file to asset index.
             if (!IsArrayMatch(asset.Hash, hashArray))
@@ -114,15 +115,15 @@ namespace CollapseLauncher
             }
         }
 
-        private void AddGenericCheckAsset(SRAsset asset, CacheAssetStatus assetStatus, List<SRAsset> returnAsset, byte[] localCRC, byte[] remoteCRC)
+        private void AddGenericCheckAsset(SRAsset asset, CacheAssetStatus assetStatus, List<SRAsset> returnAsset, byte[] localCrc, byte[] remoteCrc)
         {
             // Increment the count and total size
             lock (this)
             {
                 // Set Indetermined status as false
-                _status.IsProgressAllIndetermined = false;
-                _progressAllCountFound++;
-                _progressAllSizeFound += asset!.Size;
+                Status.IsProgressAllIndetermined = false;
+                ProgressAllCountFound++;
+                ProgressAllSizeFound += asset!.Size;
             }
 
             // Add file into asset index
@@ -139,8 +140,8 @@ namespace CollapseLauncher
                     ConvertCacheAssetTypeEnum(asset.AssetType),
                     $"{asset.AssetType}",
                     asset.Size,
-                    localCRC,
-                    remoteCRC
+                    localCrc,
+                    remoteCrc
                 ))
             );
         }

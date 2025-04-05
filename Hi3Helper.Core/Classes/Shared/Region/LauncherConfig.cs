@@ -11,13 +11,12 @@ using System.Text;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
-#pragma warning disable CA2211
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace Hi3Helper.Shared.Region
 {
     #region CDN Property
-
     public readonly struct CDNURLProperty : IEquatable<CDNURLProperty>
     {
         public string URLPrefix              { get; init; }
@@ -30,11 +29,8 @@ namespace Hi3Helper.Shared.Region
             return URLPrefix == other.URLPrefix && Name == other.Name && Description == other.Description;
         }
     }
-
     #endregion
 
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
@@ -244,7 +240,7 @@ namespace Hi3Helper.Shared.Region
                     return field;
                 }
 
-                string        execPath       = AppCurrentProcess.MainModule?.FileName ?? "";
+                string execPath = AppCurrentProcess.MainModule?.FileName ?? "";
                 return field = execPath;
             }
         }
@@ -256,12 +252,12 @@ namespace Hi3Helper.Shared.Region
         }
 
         [field: AllowNull, MaybeNull]
-        public static  string  AppExecutableName => field ??= Path.GetFileName(AppExecutablePath);
+        public static string AppExecutableName => field ??= Path.GetFileName(AppExecutablePath);
         [field: AllowNull, MaybeNull]
-        public static  string  AppExecutableDir => field ??= Path.GetDirectoryName(AppExecutablePath) ?? "";
-        public static  string  AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
-        public static  string  AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
-        public static  string  AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
+        public static string AppExecutableDir => field ??= Path.GetDirectoryName(AppExecutablePath) ?? string.Empty;
+        public static string AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
+        public static string AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
+        public static string AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
 
         [field: AllowNull, MaybeNull]
         public static Version AppCurrentVersion
@@ -329,10 +325,12 @@ namespace Hi3Helper.Shared.Region
         public static bool IsAppThemeNeedRestart            = false;
         public static bool IsInstantRegionNeedRestart       = false;
 
-        public static readonly string AppDefaultBG       = Path.Combine(AppExecutableDir, "Assets", "Images", "PageBackground", "default.png");
+#pragma warning disable CS8604 // Possible null reference argument.
+        public static readonly string AppAssetsFolder    = Path.Combine(AppExecutableDir, "Assets");
+#pragma warning restore CS8604 // Possible null reference argument.
+        public static readonly string AppImagesFolder    = Path.Combine(AppAssetsFolder, "Images");
         public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
         public static readonly string AppDataFolder      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
-        public static readonly string AppImagesFolder    = Path.Combine(AppExecutableDir, "Assets", "Images");
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder, "config.ini");
         public static readonly string AppNotifIgnoreFile = Path.Combine(AppDataFolder, "ignore_notif_ids.json");
 
@@ -454,14 +452,15 @@ namespace Hi3Helper.Shared.Region
         public static Guid GetGuid(int sessionNum)
         {
             Guid guidString = GetAppConfigValue($"sessionGuid{sessionNum}");
-            if (guidString == Guid.Empty)
+            if (guidString != Guid.Empty)
             {
-                var g = Guid.NewGuid();
-                SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
-                return g;
+                return guidString;
             }
 
-            return guidString;
+            Guid g = Guid.NewGuid();
+            SetAndSaveConfigValue($"sessionGuid{sessionNum}", g);
+            return g;
+
         }
 
         #endregion
@@ -537,7 +536,10 @@ namespace Hi3Helper.Shared.Region
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },
-            { "HttpClientTimeout", 90 }
+            { "HttpClientTimeout", 90 },
+
+            { "IsUseExternalDns", false },
+            { "ExternalDnsAddresses", string.Empty }
         };
 
         #endregion

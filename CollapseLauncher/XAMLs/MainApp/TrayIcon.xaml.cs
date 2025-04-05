@@ -3,15 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.LibraryImport;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
-using Microsoft.Extensions.Logging;
-using Microsoft.UI.Xaml.Markup;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
@@ -41,14 +40,14 @@ namespace CollapseLauncher
         }
 
         #region Locales
-        private string _popupHelp1 => Lang._Misc.Taskbar_PopupHelp1;
-        private string _popupHelp2 => Lang._Misc.Taskbar_PopupHelp2;
 
-        private string _showApp     => Lang._Misc.Taskbar_ShowApp;
-        private string _hideApp     => Lang._Misc.Taskbar_HideApp;
-        private string _showConsole => Lang._Misc.Taskbar_ShowConsole;
-        private string _hideConsole => Lang._Misc.Taskbar_HideConsole;
-        private string _exitApp     => Lang._Misc.Taskbar_ExitApp;
+        private static string _popupHelp1  => Lang._Misc.Taskbar_PopupHelp1;
+        private static string _popupHelp2  => Lang._Misc.Taskbar_PopupHelp2;
+        private static string _showApp     => Lang._Misc.Taskbar_ShowApp;
+        private static string _hideApp     => Lang._Misc.Taskbar_HideApp;
+        private static string _showConsole => Lang._Misc.Taskbar_ShowConsole;
+        private static string _hideConsole => Lang._Misc.Taskbar_HideConsole;
+        private static string _exitApp     => Lang._Misc.Taskbar_ExitApp;
 
         // ReSharper disable UnusedMember.Local
         private readonly string _preview = Lang._Misc.BuildChannelPreview;
@@ -60,7 +59,7 @@ namespace CollapseLauncher
         public TrayIcon()
         {
             InitializeComponent();
-            
+
             CollapseTaskbar.Logger = LoggerInstance;
             CollapseTaskbar.SetValue(TaskbarIcon.LoggerProp, LoggerInstance);
 
@@ -113,7 +112,7 @@ namespace CollapseLauncher
             
             CollapseTaskbar.TrayIcon.MessageWindow.BalloonToolTipChanged += BalloonChangedEvent;
 
-            Current   = this;
+            Current = this;
         }
 
         public void Dispose()

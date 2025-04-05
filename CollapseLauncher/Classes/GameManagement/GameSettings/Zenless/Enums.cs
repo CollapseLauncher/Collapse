@@ -1,4 +1,6 @@
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable IdentifierTypo
 namespace CollapseLauncher.GameSettings.Zenless.Enums;
 
 /// <summary>
@@ -58,6 +60,17 @@ public enum FpsOption
     Lo30,
     Hi60,
     Unlimited
+}
+
+/// <summary>
+/// Available options for in-game High-Precision Character Resolution setting <br/>
+/// Default : Off (on Low and Medium Preset), Dynamic (on High Preset)
+/// </summary>
+public enum HiPrecisionCharaAnimOption
+{
+    Off,
+    Dynamic,
+    Global
 }
 
 /// <summary>
@@ -136,6 +149,20 @@ public enum AudioPlaybackDevice
     Headphones,
     Speakers,
     TV = 3
+}
+
+/// <summary>
+///  Available options for graphics settings that have 5 options <br/>
+/// 1x, 2x, 4x, 8x, 16x
+/// Default : 8x [3]
+/// </summary>
+public enum AnisotropicSamplingOption
+{
+    x1,
+    x2,
+    x4,
+    x8,
+    x16
 }
 
 public static class ServerName

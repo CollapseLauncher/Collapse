@@ -1,8 +1,9 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -12,11 +13,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.IO.Hashing;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 using WColor = Windows.UI.Color;
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -95,7 +97,7 @@ namespace CollapseLauncher.Helper.Background
             }
 
             string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
-            string cachedFileHash    = ConverterTool.BytesToCRC32Simple(cachedPalettePath);
+            string cachedFileHash    = Hash.GetHashStringFromString<Crc32>(cachedPalettePath);
             cachedPalettePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, cachedFileHash);
 
             if (!File.Exists(cachedPalettePath) || forceCreateNewCache)
@@ -228,7 +230,7 @@ namespace CollapseLauncher.Helper.Background
             catch (Exception ex)
             {
                 LogWriteLine($"{ex}", LogType.Warning, true);
-                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
             }
 
             WColor defColor = DrawingColorToColor(new QuantizedColor(Color.FromArgb(255, defVal, defVal, defVal), 1));

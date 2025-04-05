@@ -1,43 +1,45 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable CheckNamespace
 
+#nullable enable
 namespace CollapseLauncher
 {
+    [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
+    [JsonSerializable(typeof(CommunityToolsProperty))]
+    internal sealed partial class CommunityToolsPropertyJsonContext : JsonSerializerContext;
+
     public class CommunityToolsProperty
     {
-        public Dictionary<GameNameType, List<CommunityToolsEntry>> OfficialToolsDictionary { get; set; }
-        public Dictionary<GameNameType, List<CommunityToolsEntry>> CommunityToolsDictionary { get; set; }
+        public Dictionary<GameNameType, List<CommunityToolsEntry>>? OfficialToolsDictionary  { get; set; }
+        public Dictionary<GameNameType, List<CommunityToolsEntry>>? CommunityToolsDictionary { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ObservableCollection<CommunityToolsEntry> OfficialToolsList;
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public ObservableCollection<CommunityToolsEntry> CommunityToolsList;
+        public ObservableCollection<CommunityToolsEntry>? OfficialToolsList { get; } = [];
 
-        public CommunityToolsProperty()
-        {
-            OfficialToolsList = new ObservableCollection<CommunityToolsEntry>();
-            CommunityToolsList = new ObservableCollection<CommunityToolsEntry>();
-        }
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        public ObservableCollection<CommunityToolsEntry>? CommunityToolsList { get; } = [];
 
         public void Clear()
         {
-            OfficialToolsList.Clear();
-            CommunityToolsList.Clear();
+            OfficialToolsList?.Clear();
+            CommunityToolsList?.Clear();
         }
 
-        public static async Task<CommunityToolsProperty> LoadCommunityTools(Stream fileStream)
+        public static async Task<CommunityToolsProperty?> LoadCommunityTools(Stream fileStream)
         {
             try
             {
-                CommunityToolsProperty communityToolkitProperty = await fileStream.DeserializeAsync(InternalAppJSONContext.Default.CommunityToolsProperty);
+                CommunityToolsProperty? communityToolkitProperty = await fileStream.DeserializeAsync(CommunityToolsPropertyJsonContext.Default.CommunityToolsProperty);
                 ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.OfficialToolsDictionary);
                 ResolveCommunityToolkitFontAwesomeGlyph(communityToolkitProperty?.CommunityToolsDictionary);
                 return communityToolkitProperty;
@@ -50,8 +52,14 @@ namespace CollapseLauncher
             }
         }
 
-        private static void ResolveCommunityToolkitFontAwesomeGlyph(Dictionary<GameNameType, List<CommunityToolsEntry>> dictionary)
+        private static void ResolveCommunityToolkitFontAwesomeGlyph(Dictionary<GameNameType, List<CommunityToolsEntry>>? dictionary)
         {
+            // If the dictionary is null, return
+            if (dictionary == null)
+            {
+                return;
+            }
+
             // Get font paths
             string fontAwesomeSolidPath = FontCollections.FontAwesomeSolid.Source;
             string fontAwesomeRegularPath = FontCollections.FontAwesomeRegular.Source;
@@ -61,14 +69,14 @@ namespace CollapseLauncher
             foreach (KeyValuePair<GameNameType, List<CommunityToolsEntry>> keyPair in dictionary)
             {
                 // Skip if value list is null or empty
-                if ((keyPair.Value?.Count ?? 0) == 0)
+                if ((keyPair.Value.Count) == 0)
                     continue;
 
                 // Enumerate list
                 foreach (CommunityToolsEntry entry in keyPair.Value)
                 {
                     // Get the last index of font namespace. If none was found, then skip
-                    int lastIndexOfNamespace = entry.IconFontFamily.LastIndexOf("#", StringComparison.Ordinal);
+                    int lastIndexOfNamespace = entry.IconFontFamily?.LastIndexOf('#') ?? -1;
                     if (lastIndexOfNamespace == -1)
                         continue;
 
@@ -101,10 +109,10 @@ namespace CollapseLauncher
 
     public class CommunityToolsEntry
     {
-        public string IconFontFamily { get; set; }
-        public string IconGlyph { get; set; }
-        public string Text { get; set; }
-        public string URL { get; set; }
-        public List<string> Profiles { get; set; }
+        public string?       IconFontFamily { get; set; }
+        public string?       IconGlyph      { get; set; }
+        public string?       Text           { get; set; }
+        public string?       URL            { get; set; }
+        public List<string>? Profiles       { get; set; }
     }
 }

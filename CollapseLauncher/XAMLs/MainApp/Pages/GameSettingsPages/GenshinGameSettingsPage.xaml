@@ -4,7 +4,6 @@
 <Page x:Class="CollapseLauncher.Pages.GenshinGameSettingsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:controls="using:CommunityToolkit.WinUI.Controls"
       xmlns:conv="using:CollapseLauncher.Pages"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:f="using:Windows.Globalization.NumberFormatting"
@@ -114,7 +113,7 @@
                                             <!--
                                                 Exclusive Fullscreen option is disabled for Genshin due to the amount of bugs it caused
                                                 Ref: https://www.pcgamingwiki.com/wiki/Genshin_Impact#G-Sync_.2F_Variable_Refresh_Rate_Does_Not_Work
-                                                Delete `Visibility="Collapsed"' to revert this change
+                                                Delete `Visibility="Collapsed"` to revert this change
                                             -->
                                             <TextBlock Margin="28,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_ExclusiveFullscreen_Help}"

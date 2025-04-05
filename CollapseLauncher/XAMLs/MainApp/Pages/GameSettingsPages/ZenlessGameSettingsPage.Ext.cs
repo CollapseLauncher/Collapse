@@ -1,12 +1,16 @@
 ﻿using CollapseLauncher.GameSettings.Zenless.Enums;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Screen;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable CommentTypo
 
 // ReSharper disable InconsistentNaming
 
@@ -21,7 +25,7 @@ namespace CollapseLauncher.Pages
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private GraphicsPresetOption? oldPreset;
@@ -44,46 +48,49 @@ namespace CollapseLauncher.Pages
                     ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
                     CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
                     EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
+                    AnisotropicSamplingSelector.SelectedIndex = (int)AnisotropicSamplingOption.x8;
                     ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.High;
                     VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.High;
+                    HpcaSelector.SelectedIndex               = (int)HiPrecisionCharaAnimOption.Dynamic;
                     BloomToggle.IsChecked                    = true;
                     DistortionToggle.IsChecked               = true;
                     MotionBlurToggle.IsChecked               = true;
-                    HPCAToggle.IsChecked                     = true;
                     break;
                 case GraphicsPresetOption.Medium:
-                    VSyncToggle.IsChecked                    = true;
-                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
-                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
-                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.High;
-                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.High;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Medium;
-                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
-                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
-                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
-                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Medium;
-                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Medium;
-                    BloomToggle.IsChecked                    = true;
-                    DistortionToggle.IsChecked               = true;
-                    MotionBlurToggle.IsChecked               = true;
-                    HPCAToggle.IsChecked                     = false;
+                    VSyncToggle.IsChecked                     = true;
+                    RenderResolutionSelector.SelectedIndex    = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex        = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex  = (int)QualityOption3.High;
+                    ShadowQualitySelector.SelectedIndex       = (int)QualityOption3.High;
+                    FxQualitySelector.SelectedIndex           = (int)QualityOption5.Medium;
+                    ShadingQualitySelector.SelectedIndex      = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex    = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex  = (int)QualityOption2.High;
+                    AnisotropicSamplingSelector.SelectedIndex = (int)AnisotropicSamplingOption.x8;
+                    ReflectionQualitySelector.SelectedIndex   = (int)QualityOption4.Medium;
+                    VolumetricFogSelector.SelectedIndex       = (int)QualityOption4.Medium;
+                    HpcaSelector.SelectedIndex                = (int)HiPrecisionCharaAnimOption.Off;
+                    BloomToggle.IsChecked                     = true;
+                    DistortionToggle.IsChecked                = true;
+                    MotionBlurToggle.IsChecked                = true;
                     break;
                 case GraphicsPresetOption.Low:
-                    VSyncToggle.IsChecked                    = true;
-                    RenderResolutionSelector.SelectedIndex   = (int)RenderResOption.f10;
-                    AntiAliasingSelector.SelectedIndex       = (int)AntiAliasingOption.TAA;
-                    GlobalIlluminationSelector.SelectedIndex = (int)QualityOption3.Medium;
-                    ShadowQualitySelector.SelectedIndex      = (int)QualityOption3.Medium;
-                    FxQualitySelector.SelectedIndex          = (int)QualityOption5.Low;
-                    ShadingQualitySelector.SelectedIndex     = (int)QualityOption3.High;
-                    CharacterQualitySelector.SelectedIndex   = (int)QualityOption2.High;
-                    EnvironmentQualitySelector.SelectedIndex = (int)QualityOption2.High;
-                    ReflectionQualitySelector.SelectedIndex  = (int)QualityOption4.Low;
-                    VolumetricFogSelector.SelectedIndex      = (int)QualityOption4.Low;
-                    BloomToggle.IsChecked                    = true;
-                    DistortionToggle.IsChecked               = true;
-                    MotionBlurToggle.IsChecked               = true;
-                    HPCAToggle.IsChecked                     = false;
+                    VSyncToggle.IsChecked                     = true;
+                    RenderResolutionSelector.SelectedIndex    = (int)RenderResOption.f10;
+                    AntiAliasingSelector.SelectedIndex        = (int)AntiAliasingOption.TAA;
+                    GlobalIlluminationSelector.SelectedIndex  = (int)QualityOption3.Low;
+                    ShadowQualitySelector.SelectedIndex       = (int)QualityOption3.Medium;
+                    FxQualitySelector.SelectedIndex           = (int)QualityOption5.Low;
+                    ShadingQualitySelector.SelectedIndex      = (int)QualityOption3.High;
+                    CharacterQualitySelector.SelectedIndex    = (int)QualityOption2.High;
+                    EnvironmentQualitySelector.SelectedIndex  = (int)QualityOption2.High;
+                    AnisotropicSamplingSelector.SelectedIndex = (int)AnisotropicSamplingOption.x8;
+                    ReflectionQualitySelector.SelectedIndex   = (int)QualityOption4.Low;
+                    VolumetricFogSelector.SelectedIndex       = (int)QualityOption4.Low;
+                    HpcaSelector.SelectedIndex                = (int)HiPrecisionCharaAnimOption.Off;
+                    BloomToggle.IsChecked                     = true;
+                    DistortionToggle.IsChecked                = true;
+                    MotionBlurToggle.IsChecked                = true;
                     break;
             }
 
@@ -94,12 +101,19 @@ namespace CollapseLauncher.Pages
         
         private async void EnforceCustomPreset()
         {
-            if (_changingPreset) return;
-            if (GraphicsPresetSelector.SelectedIndex == (int)GraphicsPresetOption.Custom) return;
-            _changingPreset                      = true;
-            GraphicsPresetSelector.SelectedIndex = (int)GraphicsPresetOption.Custom;
-            await System.Threading.Tasks.Task.Delay(200);
-            _changingPreset = false;
+            try
+            {
+                if (_changingPreset) return;
+                if (GraphicsPresetSelector.SelectedIndex == (int)GraphicsPresetOption.Custom) return;
+                _changingPreset                      = true;
+                GraphicsPresetSelector.SelectedIndex = (int)GraphicsPresetOption.Custom;
+                await System.Threading.Tasks.Task.Delay(200);
+                _changingPreset = false;
+            }
+            catch (Exception e)
+            {
+                await SentryHelper.ExceptionHandlerAsync(e);
+            }
         }
 
         private void EnforceCustomPreset_Checkbox(object _, RoutedEventArgs n)
@@ -115,7 +129,7 @@ namespace CollapseLauncher.Pages
 
         #region GameResolution
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
-        private List<bool> ScreenResolutionIsFullscreenIdx = new List<bool>();
+        private List<bool> ScreenResolutionIsFullscreenIdx = [];
 
         public bool IsFullscreenEnabled
         {
@@ -154,9 +168,7 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    if (GameResolutionFullscreen.IsChecked == false)
-                        GameWindowResizable.IsEnabled  = true;
-                    else GameWindowResizable.IsEnabled = false;
+                    GameWindowResizable.IsEnabled      = GameResolutionFullscreen.IsChecked == false;
                     GameResolutionFullscreen.IsEnabled = true;
                 }
             }
@@ -200,11 +212,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                if (!IsFullscreenEnabled)
-                {
-                    return false;
-                }
-                return Settings.SettingsCollapseScreen.UseExclusiveFullscreen;
+                return IsFullscreenEnabled && Settings.SettingsCollapseScreen.UseExclusiveFullscreen;
             }
             set
             {
@@ -271,16 +279,18 @@ namespace CollapseLauncher.Pages
             get
             {
                 string res = Settings.SettingsScreen.sizeResString;
-                if (string.IsNullOrEmpty(res))
+                if (!string.IsNullOrEmpty(res))
                 {
-                    Size size = ScreenProp.CurrentResolution;
-                    return $"{size.Width}x{size.Height}";
+                    return res;
                 }
-                return res;
+
+                Size size = ScreenProp.CurrentResolution;
+                return $"{size.Width}x{size.Height}";
             }
             set => Settings.SettingsScreen.sizeResString = value;
         }
 
+        private bool _isAllowResolutionIndexChanged;
         public int ResolutionIndexSelected
         {
             get
@@ -304,6 +314,12 @@ namespace CollapseLauncher.Pages
             }
             set
             {
+                // If resolution change isn't ready, then return
+                if (!_isAllowResolutionIndexChanged)
+                {
+                    return;
+                }
+
                 // Clamp first and set to 0 (default resolution) if out of bound
                 if (ScreenResolutionIsFullscreenIdx.Count < value || value < 0)
                 {
@@ -339,17 +355,15 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool value                                  = Settings?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
-                if (value){AdvancedSettingsPanel.Visibility = Visibility.Visible;}
-                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
+                bool value = Settings?.SettingsCollapseMisc?.UseAdvancedGameSettings ?? false;
+                AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 return value;
             }
             set
-            { 
+            {
                 Settings.SettingsCollapseMisc.UseAdvancedGameSettings = value;
-                if (value) AdvancedSettingsPanel.Visibility = Visibility.Visible;
-                else AdvancedSettingsPanel.Visibility       = Visibility.Collapsed;
-            } 
+                AdvancedSettingsPanel.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         public bool IsUsePreLaunchCommand
@@ -413,17 +427,12 @@ namespace CollapseLauncher.Pages
             get 
             {
                 bool value = Settings?.SettingsCollapseMisc?.UseGamePostExitCommand ?? false;
-
-                if (value) PostExitCommandTextBox.IsEnabled = true;
-                else PostExitCommandTextBox.IsEnabled       = false;
-
+                PostExitCommandTextBox.IsEnabled = value;
                 return value;
             }
             set
             {
-                if (value) PostExitCommandTextBox.IsEnabled = true;
-                else PostExitCommandTextBox.IsEnabled       = false;
-
+                PostExitCommandTextBox.IsEnabled = value;
                 Settings.SettingsCollapseMisc.UseGamePostExitCommand = value;
             }
         }
@@ -433,7 +442,7 @@ namespace CollapseLauncher.Pages
             get => Settings?.SettingsCollapseMisc?.GamePostExitCommand;
             set => Settings.SettingsCollapseMisc.GamePostExitCommand = value;
         }
-        
+
         private void GameLaunchDelay_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
             // clamp for negative value when clearing the number box
@@ -448,8 +457,7 @@ namespace CollapseLauncher.Pages
             get
             {
                 var v = (int)Settings.GeneralData.DeviceLanguageType;
-                if (v <= 0) return 1;
-                return v;
+                return v <= 0 ? 1 : v;
             }
             set => Settings.GeneralData.DeviceLanguageType = (LanguageText)value;
         }
@@ -459,8 +467,7 @@ namespace CollapseLauncher.Pages
             get
             {
                 var v = (int)Settings.GeneralData.DeviceLanguageVoiceType;
-                if (v <= 0) return 1;
-                return v;
+                return v <= 0 ? 1 : v;
             }
             set => Settings.GeneralData.DeviceLanguageVoiceType = (LanguageVoice)value;
         }
@@ -556,6 +563,12 @@ namespace CollapseLauncher.Pages
             get => (int)Settings.GeneralData.EnvironmentQuality;
             set => Settings.GeneralData.EnvironmentQuality = (QualityOption2)value;
         }
+        
+        public int Graphics_AnisotropicSampling
+        {
+            get => (int)Settings.GeneralData.AnisotropicSampling;
+            set => Settings.GeneralData.AnisotropicSampling = (AnisotropicSamplingOption)value;
+        }
 
         public int Graphics_GlobalIllumination
         {
@@ -570,10 +583,10 @@ namespace CollapseLauncher.Pages
         }
 
         /// <inheritdoc cref="GameSettings.Zenless.GeneralData.HiPrecisionCharaAnim"/>
-        public bool Graphics_HiPreCharaAnim
+        public int Graphics_HiPreCharaAnim
         {
-            get => Settings.GeneralData.HiPrecisionCharaAnim;
-            set => Settings.GeneralData.HiPrecisionCharaAnim = value;
+            get => (int)Settings.GeneralData.HiPrecisionCharaAnim;
+            set => Settings.GeneralData.HiPrecisionCharaAnim = (HiPrecisionCharaAnimOption)value;
         }
         #endregion
 

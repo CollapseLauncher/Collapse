@@ -7,14 +7,31 @@ on:
 jobs:
   virustotal:
     runs-on: ubuntu-latest
+    permissions:
+        actions: read
+        contents: write
+        pull-requests: write
+        checks: write
+        security-events: write
+        deployments: write
+        packages: write
+        statuses: write
+        
     steps:
-      -
-        name: VirusTotal Scan
+      - name: VirusTotal Scan Executables
         uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
           update_release_body: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            *.exe
-            *.7z
+            ^.*\.[eE][xX][eE]$
+
+      - name: VirusTotal Scan Archive
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          update_release_body: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ^.*\.[7][zZ]$

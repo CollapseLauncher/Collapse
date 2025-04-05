@@ -15,8 +15,9 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:s="using:CommunityToolkit.WinUI"
-      xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Sophon"
+      xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Legacy"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       CacheMode="BitmapCache"
@@ -46,10 +47,10 @@
         </Grid.ColumnDefinitions>
         <Grid x:Name="ImageEventImgGrid"
               Grid.Row="{x:Bind CurrentBannerIconRow}"
-              Grid.RowSpan="{x:Bind CurrentBannerIconRowSpan}"
+              Grid.RowSpan="{x:Bind pages:HomePage.CurrentBannerIconRowSpan}"
               Grid.Column="{x:Bind CurrentBannerIconColumn}"
-              Grid.ColumnSpan="{x:Bind CurrentBannerIconColumnSpan}"
-              Width="{x:Bind CurrentBannerIconWidth}"
+              Grid.ColumnSpan="{x:Bind pages:HomePage.CurrentBannerIconColumnSpan}"
+              Height="{x:Bind CurrentBannerIconHeight}"
               Margin="{x:Bind CurrentBannerIconMargin}"
               HorizontalAlignment="{x:Bind CurrentBannerIconHorizontalAlign}"
               VerticalAlignment="{x:Bind CurrentBannerIconVerticalAlign}"
@@ -437,9 +438,9 @@
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{x:Bind GameNewsData.SocialMedia}"
+                <ItemsControl IsTabStop="False"
+                              ItemsSource="{x:Bind pages:HomePage.GameNewsData.SocialMedia}"
                               TabFocusNavigation="Once"
-                              IsTabStop="False"
                               XYFocusKeyboardNavigation="Enabled">
                     <ItemsControl.Transitions>
                         <PopupThemeTransition />
@@ -622,7 +623,7 @@
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
                               HorizontalAlignment="Stretch"
                               CornerRadius="4"
-                              ItemsSource="{x:Bind GameNewsData.NewsCarousel}"
+                              ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsCarousel}"
                               Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource CollapseFlipViewStyle}"
                               Translation="0,0,12">
@@ -646,9 +647,9 @@
                       Width="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Width}"
                       Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelBounds.Height}"
                       Padding="8,6,8,0"
-                      Visibility="{x:Bind IsPostInfoPanelAllEmpty}">
+                      Visibility="{x:Bind pages:HomePage.IsPostInfoPanelAllEmpty}">
                     <Pivot HorizontalAlignment="Left"
-                           SelectedIndex="{x:Bind DefaultPostPanelIndex}">
+                           SelectedIndex="{x:Bind pages:HomePage.DefaultPostPanelIndex}">
                         <Pivot.Resources>
                             <Style BasedOn="{StaticResource MinScrollBarStyle}"
                                    TargetType="ScrollBar" />
@@ -664,10 +665,10 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind IsPostEventPanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostEventPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeActivity}"
-                                                      IsTabStop="False"
+                                        <ItemsControl IsTabStop="False"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeActivity}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -710,9 +711,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsPostEventPanelEmpty}">
+                                            Visibility="{x:Bind pages:HomePage.IsPostEventPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -742,10 +743,10 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind IsPostNoticePanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeAnnouncement}"
-                                                      IsTabStop="False"
+                                        <ItemsControl IsTabStop="False"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeAnnouncement}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -788,9 +789,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsPostNoticePanelEmpty}">
+                                            Visibility="{x:Bind pages:HomePage.IsPostNoticePanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -820,10 +821,10 @@
                             <Grid>
                                 <ScrollViewer Margin="0,4,0,0"
                                               VerticalScrollMode="Auto"
-                                              Visibility="{x:Bind IsPostInfoPanelVisible}">
+                                              Visibility="{x:Bind pages:HomePage.IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
-                                        <ItemsControl ItemsSource="{x:Bind GameNewsData.NewsPostTypeInfo}"
-                                                      IsTabStop="False"
+                                        <ItemsControl IsTabStop="False"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeInfo}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
@@ -866,9 +867,9 @@
                                 </ScrollViewer>
                                 <StackPanel Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonMargin}"
                                             HorizontalAlignment="Right"
-                                            Visibility="{x:Bind IsPostInfoPanelEmpty}">
+                                            Visibility="{x:Bind pages:HomePage.IsPostInfoPanelEmpty}">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Width="{x:Bind PostEmptyMascotTextWidth}"
+                                        <TextBlock Width="{x:Bind pages:HomePage.PostEmptyMascotTextWidth}"
                                                    Margin="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.PostPanelPaimonTextMargin}"
                                                    HorizontalAlignment="Right"
                                                    VerticalAlignment="Bottom"
@@ -900,7 +901,7 @@
                       Translation="0,0,16">
                     <PipsPager VerticalAlignment="Center"
                                NextButtonVisibility="Collapsed"
-                               NumberOfPages="{x:Bind GameNewsData.NewsCarousel.Count}"
+                               NumberOfPages="{x:Bind pages:HomePage.GameNewsData.NewsCarousel.Count}"
                                Orientation="Horizontal"
                                PreviousButtonVisibility="Collapsed"
                                SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
@@ -1354,9 +1355,17 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition MaxWidth="160" />
                     </Grid.ColumnDefinitions>
-                    <FontIcon FontFamily="{ThemeResource FontAwesome}"
+                    <FontIcon x:Name="ProgressStatusIconDisk"
+                              Grid.Column="0"
+                              FontFamily="{ThemeResource FontAwesome}"
                               FontSize="12"
                               Glyph="" />
+                    <FontIcon x:Name="ProgressStatusIconInternet"
+                              Grid.Column="0"
+                              Visibility="Collapsed"
+                              FontFamily="{ThemeResource FontAwesomeSolid}"
+                              FontSize="12"
+                              Glyph="" />
                     <TextBlock x:Name="ProgressStatusFooter"
                                Grid.Column="1"
                                FontSize="10"
@@ -1529,7 +1538,7 @@
                                                Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_OfficialText}" />
                                     <GridView x:Name="OfficialToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerAccentBtn}"
-                                              ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.OfficialToolsList}">
+                                              ItemsSource="{x:Bind localStatic:PageStatics.CommunityToolsProperty.OfficialToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -1556,7 +1565,7 @@
                                                Text="{x:Bind helper:Locale.Lang._HomePage.CommunityToolsBtn_CommunityText}" />
                                     <GridView x:Name="CommunityToolsStackPanel"
                                               ItemTemplate="{StaticResource CommunityToolsInnerBtn}"
-                                              ItemsSource="{x:Bind localStatic:PageStatics._CommunityToolsProperty.CommunityToolsList}">
+                                              ItemsSource="{x:Bind localStatic:PageStatics.CommunityToolsProperty.CommunityToolsList}">
                                         <GridView.ItemContainerStyle>
                                             <Style TargetType="GridViewItem">
                                                 <Setter Property="Margin" Value="0,4,8,4" />
@@ -1618,7 +1627,8 @@
                     </Grid>
                 </Button.Content>
                 <Button.Flyout>
-                    <Flyout Placement="TopEdgeAlignedRight">
+                    <Flyout x:Name="GameStartupSettingFlyout"
+                            Placement="TopEdgeAlignedRight">
                         <ScrollViewer MaxHeight="474"
                                       Margin="-16,-16"
                                       VerticalScrollBarVisibility="Auto"
@@ -1927,6 +1937,14 @@
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <TextBlock Margin="0,8,0,0"
+                                               Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ScaleUpEventsPanel}"
+                                               TextWrapping="Wrap" />
+                                    <ToggleSwitch x:Name="ScaleUpEventsPanelToggle"
+                                                  IsEnabled="False"
+                                                  IsOn="{x:Bind pages:HomePage.IsEventsPanelScaleUp, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                    <TextBlock Margin="0,8,0,0"
                                                Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel4ShowSocialMediaPanel}"
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ShowSocialMediaPanelToggle"
@@ -2056,7 +2074,7 @@
                             Click="OpenButtonLinkFromTag"
                             CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(InstallGameBtn)}"
                             Style="{ThemeResource AccentButtonStyle}"
-                            Tag="{x:Bind GamePreRegisterLink}"
+                            Tag="{x:Bind pages:HomePage.GamePreRegisterLink}"
                             Visibility="Collapsed">
                         <Button.Content>
                             <Grid Margin="8,0">
@@ -2289,10 +2307,11 @@
                 <FlyoutBase.AttachedFlyout>
                     <Flyout x:Name="PlaytimeStatsFlyout"
                             LightDismissOverlayMode="Off"
+                            Opened="PlaytimeStatsFlyout_OnOpened"
                             OverlayInputPassThroughElement="{x:Bind PlaytimeBtn}"
-                            Placement="Top"
-                            Opened="PlaytimeStatsFlyout_OnOpened">
-                        <Grid ColumnSpacing="8" Tag="PlaytimeStatsFlyoutGrid">
+                            Placement="Top">
+                        <Grid ColumnSpacing="8"
+                              Tag="PlaytimeStatsFlyoutGrid">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition />

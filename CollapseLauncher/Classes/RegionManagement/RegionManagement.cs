@@ -7,6 +7,7 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,6 +21,7 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher
 {
@@ -43,47 +45,14 @@ namespace CollapseLauncher
             CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
 
             string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
+            bool runResult = await preset.GameLauncherApi
+                                         .LoadAsync(BeforeLoadRoutine,
+                                                    AfterLoadRoutine,
+                                                    ActionOnTimeOutRetry,
+                                                    OnErrorRoutine,
+                                                    tokenSource.Token);
 
-            async void BeforeLoadRoutine(CancellationToken token)
-            {
-                try
-                {
-                    LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
-
-                    ClearMainPageState();
-                    DisableKbShortcuts(1000);
-                    await Task.Delay(TimeSpan.FromSeconds(1), token);
-                    if (preset.GameLauncherApi.IsLoadingCompleted || token.IsCancellationRequested) return;
-
-                    LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle, regionToChangeName);
-                    LoadingMessageHelper.SetProgressBarState(isProgressIndeterminate: true);
-                    LoadingMessageHelper.ShowLoadingFrame();
-
-                    IsLoadRegionComplete = false;
-                }
-                catch (Exception ex)
-                {
-                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
-                }
-            }
-
-            async void AfterLoadRoutine(CancellationToken token)
-            {
-                try
-                {
-                    LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
-                    await FinalizeLoadRegion(gameName, gameRegion);
-                    ChangeBackgroundImageAsRegionAsync();
-                    IsLoadRegionComplete = true;
-
-                    LoadingMessageHelper.HideActionButton();
-                    LoadingMessageHelper.HideLoadingFrame();
-                }
-                catch (Exception ex)
-                {
-                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
-                }
-            }
+            return runResult;
 
             void OnErrorRoutine(Exception ex) => OnErrorRoutineInner(ex, ErrorType.Unhandled);
 
@@ -97,62 +66,106 @@ namespace CollapseLauncher
                 MainFrameChanger.ChangeWindowFrame(typeof(DisconnectedPage));
             }
 
+            // ReSharper disable once AsyncVoidMethod
             async void CancelLoadEvent(object sender, RoutedEventArgs args)
             {
                 await tokenSource.CancelAsync();
-
-                // If explicit cancel was triggered, restore the navigation menu item then return false
-                foreach (object item in LastMenuNavigationItem)
+                await Task.Run(() => DispatcherQueue.TryEnqueue(() =>
                 {
-                    NavigationViewControl.MenuItems.Add(item);
-                }
-                foreach (object item in LastFooterNavigationItem)
+                    // If explicit cancel was triggered, restore the navigation menu item then return false
+                    foreach (object item in LastMenuNavigationItem)
+                    {
+                        NavigationViewControl.MenuItems.Add(item);
+                    }
+                    foreach (object item in LastFooterNavigationItem)
+                    {
+                        NavigationViewControl.FooterMenuItems.Add(item);
+                    }
+                    NavigationViewControl.IsSettingsVisible = true;
+                    LastMenuNavigationItem.Clear();
+                    LastFooterNavigationItem.Clear();
+                    if (m_arguments.StartGame != null)
+                        m_arguments.StartGame.Play = false;
+
+                    ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
+                    ChangeRegionConfirmBtn.IsEnabled = true;
+                    ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
+                    ChangeRegionBtn.IsEnabled = true;
+                }));
+
+                await DisableKbShortcuts();
+            }
+
+            async Task AfterLoadRoutine(CancellationToken token)
+            {
+                try
                 {
-                    NavigationViewControl.FooterMenuItems.Add(item);
+                    LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
+                    await FinalizeLoadRegion(gameName, gameRegion);
+                    _ = ChangeBackgroundImageAsRegionAsync();
+                    IsLoadRegionComplete = true;
+
+                    LoadingMessageHelper.HideActionButton();
+                    LoadingMessageHelper.HideLoadingFrame();
                 }
-                NavigationViewControl.IsSettingsVisible = true;
-                LastMenuNavigationItem.Clear();
-                LastFooterNavigationItem.Clear();
-                if (m_arguments.StartGame != null)
-                    m_arguments.StartGame.Play = false;
-
-                ChangeRegionConfirmProgressBar.Visibility = Visibility.Collapsed;
-                ChangeRegionConfirmBtn.IsEnabled = true;
-                ChangeRegionConfirmBtnNoWarning.IsEnabled = true;
-                ChangeRegionBtn.IsEnabled = true;
-
-                DisableKbShortcuts();
+                catch (Exception ex)
+                {
+                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                }
             }
 
             void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep)
             {
                 LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle,
-                    string.Format($"[{retryAttemptCount} / {retryAttemptTotal}] " + Lang._MainPage.RegionLoadingSubtitleTimeOut,
-                        regionToChangeName,
-                        timeOutSecond));
+                                                string.Format($"[{retryAttemptCount} / {retryAttemptTotal}] " + Lang._MainPage.RegionLoadingSubtitleTimeOut,
+                                                              regionToChangeName,
+                                                              timeOutSecond));
                 LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelLoadEvent);
             }
 
-            return await preset.GameLauncherApi.LoadAsync(BeforeLoadRoutine, AfterLoadRoutine, ActionOnTimeOutRetry, OnErrorRoutine, tokenSource.Token);
+            async Task BeforeLoadRoutine(CancellationToken token)
+            {
+                try
+                {
+                    LogWriteLine($"Initializing game: {regionToChangeName}...", LogType.Scheme, true);
+
+                    await Task.Run(ClearMainPageState, token);
+                    await DisableKbShortcuts(1000, token);
+                    if (preset.GameLauncherApi.IsLoadingCompleted || token.IsCancellationRequested) return;
+
+                    LoadingMessageHelper.SetMessage(Lang._MainPage.RegionLoadingTitle, regionToChangeName);
+                    LoadingMessageHelper.SetProgressBarState(isProgressIndeterminate: true);
+                    LoadingMessageHelper.ShowLoadingFrame();
+
+                    IsLoadRegionComplete = false;
+                }
+                catch (Exception ex)
+                {
+                    OnErrorRoutineInner(ex, ErrorType.Unhandled);
+                }
+            }
         }
 
         public void ClearMainPageState()
         {
-            // Clear NavigationViewControl Items and Reset Region props
-            LastMenuNavigationItem = [..NavigationViewControl.MenuItems];
-            LastFooterNavigationItem = [..NavigationViewControl.FooterMenuItems];
-            NavigationViewControl.MenuItems.Clear();
-            NavigationViewControl.FooterMenuItems.Clear();
-            NavigationViewControl.IsSettingsVisible = false;
-            PreviousTag = "launcher";
-            PreviousTagString.Clear();
-            PreviousTagString.Add(PreviousTag);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                // Clear NavigationViewControl Items and Reset Region props
+                LastMenuNavigationItem = [.. NavigationViewControl.MenuItems];
+                LastFooterNavigationItem = [.. NavigationViewControl.FooterMenuItems];
+                NavigationViewControl.MenuItems.Clear();
+                NavigationViewControl.FooterMenuItems.Clear();
+                NavigationViewControl.IsSettingsVisible = false;
+                PreviousTag = "launcher";
+                PreviousTagString.Clear();
+                PreviousTagString.Add(PreviousTag);
 
-            // Clear cache on navigation reset
-            LauncherFrame.BackStack.Clear();
-            int cacheSizeOld = LauncherFrame.CacheSize;
-            LauncherFrame.CacheSize = 0;
-            LauncherFrame.CacheSize = cacheSizeOld;
+                // Clear cache on navigation reset
+                LauncherFrame.BackStack.Clear();
+                int cacheSizeOld = LauncherFrame.CacheSize;
+                LauncherFrame.CacheSize = 0;
+                LauncherFrame.CacheSize = cacheSizeOld;
+            });
         }
 
         private async Task DownloadBackgroundImage(CancellationToken Token)
@@ -199,14 +212,14 @@ namespace CollapseLauncher
             }
             
             // If the file is not downloaded, use template image first, then download the image
-            var currentGameType = GamePropertyVault.GetCurrentGameProperty()._GameVersion.GameType;
+            GameNameType? currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion.GameType;
             tempImage ??= currentGameType switch
             {
                 GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
                 GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
                 GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
                 GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
-                _ => AppDefaultBG
+                _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
             };
             BackgroundImgChanger.ChangeBackground(tempImage, () =>
                                                              {
@@ -228,7 +241,7 @@ namespace CollapseLauncher
         #nullable disable
         }
 
-        private async ValueTask FinalizeLoadRegion(string gameName, string gameRegion)
+        private async Task FinalizeLoadRegion(string gameName, string gameRegion)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
@@ -237,117 +250,155 @@ namespace CollapseLauncher
 
             // Initializing Game Statics
             await LoadGameStaticsByGameType(preset, gameName, gameRegion);
+            CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
             // Init NavigationPanel Items
-            InitializeNavigationItems();
+            await Task.Run(() => InitializeNavigationItems());
         }
 
-        private async ValueTask LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
+        private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
         {
-            await GamePropertyVault.AttachNotifForCurrentGame();
-            DisposeAllPageStatics();
+            // Attach notification for the current game and dispose statics
+            await GamePropertyVault.AttachNotificationForCurrentGame();
+            await Task.Run(DisposeAllPageStatics);
 
-            GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
+            // Load region property (and potentially, cached one)
+            await GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
 
             // Spawn Region Notification
-            SpawnRegionNotification(preset.ProfileName);
-            GamePropertyVault.DetachNotifForCurrentGame();
+            _ = SpawnRegionNotification(preset.ProfileName);
+
+            // Detach notification from last region
+            GamePropertyVault.DetachNotificationForCurrentRegion();
         }
 
         private void DisposeAllPageStatics()
         {
-            // CurrentGameProperty._GameInstall?.CancelRoutine();
-            CurrentGameProperty?._GameRepair?.CancelRoutine();
-            CurrentGameProperty?._GameRepair?.Dispose();
-            CurrentGameProperty?._GameCache?.CancelRoutine();
-            CurrentGameProperty?._GameCache?.Dispose();
+            CurrentGameProperty?.GameRepair?.CancelRoutine();
+            CurrentGameProperty?.GameRepair?.Dispose();
+            CurrentGameProperty?.GameCache?.CancelRoutine();
+            CurrentGameProperty?.GameCache?.Dispose();
 #if DEBUG
             LogWriteLine("Page statics have been disposed!", LogType.Debug, true);
 #endif
         }
 
-        private async void SpawnRegionNotification(string RegionProfileName)
+        private async Task SpawnRegionNotification(string RegionProfileName)
         {
-            // Wait until the notification is ready
-            while (!IsLoadNotifComplete)
+            try
             {
-                await Task.Delay(250);
+                // Wait until the notification is ready
+                while (!IsLoadNotifComplete)
+                {
+                    await Task.Delay(250);
+                }
+
+                if (NotificationData.RegionPush == null) return;
+
+                foreach (NotificationProp Entry in NotificationData.RegionPush)
+                {
+                    NotificationInvokerProp toEntry = new NotificationInvokerProp
+                    {
+                        CloseAction = null,
+                        IsAppNotif = false,
+                        Notification = Entry,
+                        OtherContent = null
+                    };
+
+                    if (Entry.ActionProperty != null)
+                    {
+                        toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
+                    }
+
+                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
+                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+
+                    if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
+                            || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
+                                && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
+                            || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)))
+                    {
+                        NotificationSender.SendNotification(toEntry);
+                    }
+                    await Task.Delay(250);
+                }
             }
-
-            if (NotificationData.RegionPush == null) return;
-
-            foreach (NotificationProp Entry in NotificationData.RegionPush)
+            catch (Exception ex)
             {
-                NotificationInvokerProp toEntry = new NotificationInvokerProp
-                {
-                    CloseAction = null,
-                    IsAppNotif = false,
-                    Notification = Entry,
-                    OtherContent = null
-                };
-
-                if (Entry.ActionProperty != null)
-                {
-                    toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
-                }
-
-                GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
-                GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
-
-                if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
-                        || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
-                        && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
-                        || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)))
-                {
-                    NotificationSender.SendNotification(toEntry);
-                }
-                await Task.Delay(250);
+                LogWriteLine($"Failed while sending notification to the UI\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
 
-        private bool IsNotificationTimestampValid(NotificationProp Entry)
+        private static bool IsNotificationTimestampValid(NotificationProp Entry)
         {
             long nowDateTime = DateTime.Now.ToLocalTime().ToFileTime();
             long? beginDateTime = Entry.TimeBegin?.ToLocalTime().ToFileTime() ?? 0;
             long? endDateTime = Entry.TimeEnd?.ToLocalTime().ToFileTime() ?? 0;
 
-            bool isBeginValid = Entry.TimeBegin.HasValue ? beginDateTime < nowDateTime : true;
-            bool isEndValid = Entry.TimeEnd.HasValue ? endDateTime > nowDateTime : true;
+            bool isBeginValid = !Entry.TimeBegin.HasValue || beginDateTime < nowDateTime;
+            bool isEndValid   = !Entry.TimeEnd.HasValue || endDateTime > nowDateTime;
 
             return isBeginValid && isEndValid;
         }
 
         private async void ChangeRegionNoWarning(object sender, RoutedEventArgs e)
         {
-            (sender as Button).IsEnabled = false;
-            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
-            await LoadRegionRootButton();
-            InvokeLoadingRegionPopup(false);
-            MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
-            LauncherFrame.BackStack.Clear();
+            try
+            {
+                (sender as Button).IsEnabled = false;
+                CurrentGameCategory          = ComboBoxGameCategory.SelectedIndex;
+                CurrentGameRegion            = ComboBoxGameRegion.SelectedIndex;
+                await LoadRegionRootButton();
+                InvokeLoadingRegionPopup(false);
+                MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+                LauncherFrame.BackStack.Clear();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while changing region with no warning\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
         private async void ChangeRegionInstant()
         {
-            CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-            CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
-            await LoadRegionRootButton();
-            InvokeLoadingRegionPopup(false);
-            MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
-            LauncherFrame.BackStack.Clear();
+            try
+            {
+                CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
+                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+                await LoadRegionRootButton();
+                InvokeLoadingRegionPopup(false);
+                MainFrameChanger.ChangeMainFrame(m_appMode == AppMode.Hi3CacheUpdater ? typeof(CachesPage) : typeof(HomePage));
+                LauncherFrame.BackStack.Clear();
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while changing region with instant method\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
         private async void ChangeRegion(object sender, RoutedEventArgs e)
         {
-            // Disable ChangeRegionBtn and hide flyout
-            ToggleChangeRegionBtn(sender, true);
-            if (await LoadRegionRootButton())
+            try
             {
+                // Disable ChangeRegionBtn and hide flyout
+                ToggleChangeRegionBtn(sender, true);
+                if (!await LoadRegionRootButton())
+                {
+                    return;
+                }
+
                 // Finalize loading
                 ToggleChangeRegionBtn(sender, false);
                 CurrentGameCategory = ComboBoxGameCategory.SelectedIndex;
-                CurrentGameRegion = ComboBoxGameRegion.SelectedIndex;
+                CurrentGameRegion   = ComboBoxGameRegion.SelectedIndex;
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while changing region with normal method\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
 
@@ -365,18 +416,19 @@ namespace CollapseLauncher
             PresetConfig Preset = await LauncherMetadataHelper.GetMetadataConfig(GameCategory, GameRegion);
 
             // Start region loading
-            ShowAsyncLoadingTimedOutPill();
-            if (await LoadRegionFromCurrentConfigV2(Preset, GameCategory, GameRegion))
+            _ = ShowAsyncLoadingTimedOutPill();
+            if (!await LoadRegionFromCurrentConfigV2(Preset, GameCategory, GameRegion))
             {
-                LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
-#if !DISABLEDISCORD
-                if (GetAppConfigValue("EnableDiscordRPC").ToBool())
-                    AppDiscordPresence.SetupPresence();
-#endif
-                return true;
+                return false;
             }
 
-            return false;
+            LogWriteLine($"Region changed to {Preset.ZoneFullname}", LogType.Scheme, true);
+        #if !DISABLEDISCORD
+            if (GetAppConfigValue("EnableDiscordRPC").ToBool())
+                AppDiscordPresence.SetupPresence();
+        #endif
+            return true;
+
         }
 
         private void ToggleChangeRegionBtn(in object sender, bool IsHide)
@@ -400,19 +452,27 @@ namespace CollapseLauncher
             (sender as Button).IsEnabled = !IsHide;
         }
 
-        private async void ShowAsyncLoadingTimedOutPill()
+        private async Task ShowAsyncLoadingTimedOutPill()
         {
-            await Task.Delay(1000);
-            if (!IsLoadRegionComplete)
+            try
             {
-                InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
-                // MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
-                while (!IsLoadRegionComplete) { await Task.Delay(1000); }
+                await Task.Delay(1000);
+                if (!IsLoadRegionComplete)
+                {
+                    InvokeLoadingRegionPopup(true, Lang._MainPage.RegionLoadingTitle, RegionToChangeName);
+                    // MainFrameChanger.ChangeMainFrame(typeof(BlankPage));
+                    while (!IsLoadRegionComplete) { await Task.Delay(1000); }
+                }
+                InvokeLoadingRegionPopup(false);
             }
-            InvokeLoadingRegionPopup(false);
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while trying to show Timed-out Loading Pill\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
-        private void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string Title = null, string Message = null)
+        private static void InvokeLoadingRegionPopup(bool ShowLoadingMessage = true, string Title = null, string Message = null)
         {
             if (ShowLoadingMessage)
             {

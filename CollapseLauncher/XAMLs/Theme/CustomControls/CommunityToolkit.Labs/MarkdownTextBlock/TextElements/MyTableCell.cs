@@ -12,22 +12,16 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyTableCell : IAddChild
 {
-    private TableCell _tableCell;
-    private Paragraph _paragraph = new Paragraph();
-    private MyFlowDocument _flowDocument;
-    private int _columnIndex;
-    private int _rowIndex;
-    private Grid _container;
+    private readonly TableCell      _tableCell;
+    private readonly Paragraph      _paragraph = new();
+    private readonly MyFlowDocument _flowDocument;
 
     public TextElement TextElement
     {
         get => _paragraph;
     }
 
-    public Grid Container
-    {
-        get => _container;
-    }
+    public Grid Container { get; }
 
     public int ColumnSpan
     {
@@ -39,36 +33,35 @@ internal class MyTableCell : IAddChild
         get => _tableCell.RowSpan;
     }
 
-    public int ColumnIndex
-    {
-        get => _columnIndex;
-    }
+    public int ColumnIndex { get; }
 
-    public int RowIndex
-    {
-        get => _rowIndex;
-    }
+    public int RowIndex { get; }
 
     public MyTableCell(TableCell tableCell, TextAlignment textAlignment, bool isHeader, int columnIndex, int rowIndex)
     {
         _tableCell = tableCell;
-        _columnIndex = columnIndex;
-        _rowIndex = rowIndex;
-        _container = new Grid();
+        ColumnIndex = columnIndex;
+        RowIndex = rowIndex;
+        Container = new Grid();
 
-        _flowDocument = new MyFlowDocument();
-        _flowDocument.RichTextBlock.TextWrapping = TextWrapping.Wrap;
-        _flowDocument.RichTextBlock.TextAlignment = textAlignment;
-        _flowDocument.RichTextBlock.HorizontalTextAlignment = textAlignment;
-        _flowDocument.RichTextBlock.HorizontalAlignment = textAlignment switch
+        _flowDocument                                       = new MyFlowDocument
         {
-            TextAlignment.Left => HorizontalAlignment.Left,
-            TextAlignment.Center => HorizontalAlignment.Center,
-            TextAlignment.Right => HorizontalAlignment.Right,
-            _ => HorizontalAlignment.Left,
+            RichTextBlock =
+            {
+                TextWrapping            = TextWrapping.Wrap,
+                TextAlignment           = textAlignment,
+                HorizontalTextAlignment = textAlignment,
+                HorizontalAlignment     = textAlignment switch
+                                          {
+                                              TextAlignment.Left => HorizontalAlignment.Left,
+                                              TextAlignment.Center => HorizontalAlignment.Center,
+                                              TextAlignment.Right => HorizontalAlignment.Right,
+                                              _ => HorizontalAlignment.Left
+                                          }
+            }
         };
 
-        _container.Padding = new Thickness(4);
+        Container.Padding = new Thickness(4);
         if (isHeader)
         {
             _flowDocument.RichTextBlock.FontWeight = FontWeights.Bold;
@@ -78,9 +71,9 @@ internal class MyTableCell : IAddChild
             TextAlignment.Left => HorizontalAlignment.Left,
             TextAlignment.Center => HorizontalAlignment.Center,
             TextAlignment.Right => HorizontalAlignment.Right,
-            _ => HorizontalAlignment.Left,
+            _ => HorizontalAlignment.Left
         };
-        _container.Children.Add(_flowDocument.RichTextBlock);
+        Container.Children.Add(_flowDocument.RichTextBlock);
     }
 
     public void AddChild(IAddChild child)

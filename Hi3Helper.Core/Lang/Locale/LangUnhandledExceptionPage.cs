@@ -1,4 +1,7 @@
 ﻿using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper
 {
@@ -25,6 +28,10 @@ namespace Hi3Helper
                 public string CopyClipboardBtn1 { get; set; } = LangFallback?._UnhandledExceptionPage.CopyClipboardBtn1;
                 public string CopyClipboardBtn2 { get; set; } = LangFallback?._UnhandledExceptionPage.CopyClipboardBtn2;
                 public string GoBackPageBtn1 { get; set; } = LangFallback?._UnhandledExceptionPage.GoBackPageBtn1;
+                public string WarningSubtitle { get; set; } = LangFallback?._UnhandledExceptionPage.WarningSubtitle;
+                public string CustomBackground_NotFound { get; set; } = LangFallback?._UnhandledExceptionPage.CustomBackground_NotFound;
+                public string CustomBackground_RegionalTag { get; set; } = LangFallback?._UnhandledExceptionPage.CustomBackground_RegionalTag;
+                public string CustomBackground_GlobalTag { get; set; } = LangFallback?._UnhandledExceptionPage.CustomBackground_GlobalTag;
             }
         }
         #endregion

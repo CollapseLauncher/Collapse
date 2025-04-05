@@ -1,11 +1,9 @@
-using Sentry;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
+using Sentry;
 using Sentry.Infrastructure;
 using Sentry.Protocol;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode
@@ -225,18 +225,20 @@ namespace Hi3Helper.SentryHelper
         /// </summary>
         /// <param name="ex">Exception data</param>
         /// <param name="exT">Exception type, default to ExceptionType.Handled</param>
-        public static void ExceptionHandler(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        public static Guid ExceptionHandler(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
-            if (!IsEnabled) return;
+            if (!IsEnabled) return Guid.Empty;
             if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
             if (ex is TaskCanceledException or OperationCanceledException)
             {
                 Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
                                     LogType.Sentry);
-                return;
+                return Guid.Empty;
             }
 
-            ExceptionHandlerInner(ex, exT);
+            var id = ExceptionHandlerInner(ex, exT);
+            Guid.TryParse(id.ToString(), out var guid);
+            return guid;
         }
 
         /// <summary>
@@ -301,24 +303,32 @@ namespace Hi3Helper.SentryHelper
         /// </summary>
         /// <param name="ex">Exception data</param>
         /// <param name="exT">Exception type, default to ExceptionType.Handled</param>
-        public static async Task ExceptionHandler_ForLoopAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        public static async Task<Guid> ExceptionHandler_ForLoopAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
-            if (!IsEnabled) return;
+            if (!IsEnabled) return Guid.Empty;
             if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
             if (ex is TaskCanceledException or OperationCanceledException)
             {
                 Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
                                     LogType.Sentry);
-                return;
+                return Guid.Empty;
             }
 
-            if (ex == _exHLoopLastEx) return; // If exception pointer is the same as the last one, ignore it.
+            if (ex == _exHLoopLastEx) return Guid.Empty; // If exception pointer is the same as the last one, ignore it.
             await _loopToken.CancelAsync(); // Cancel the previous loop
             _loopToken.Dispose();
             _loopToken     = new CancellationTokenSource(); // Create new token
             _exHLoopLastEx = ex;
             ExHLoopLastEx_AutoClean(); // Start auto clean loop
-            await Task.Run(() => ExceptionHandlerInner(ex, exT));
+            
+            Guid sentryId = Guid.Empty;
+            await Task.Run(() =>
+                           {
+                               var id = ExceptionHandlerInner(ex, exT);
+                               Guid.TryParse(id.ToString(), out sentryId);
+                           });
+
+            return sentryId;
         }
 
         #region Breadcrumbs Data
@@ -369,10 +379,10 @@ namespace Hi3Helper.SentryHelper
         {
             get
             {
-                List<(string GpuName, string DriverVersion)> gpuInfoList = new();
+                List<(string GpuName, string DriverVersion)> gpuInfoList = [];
                 try
                 {
-                    using var baseKey =
+                    using RegistryKey? baseKey =
                         Registry.LocalMachine
                                 .OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\");
                     if (baseKey != null)
@@ -460,7 +470,7 @@ namespace Hi3Helper.SentryHelper
 
         #endregion
         
-        private static Task ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        private static SentryId ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             SentrySdk.AddBreadcrumb(BuildInfo);
             SentrySdk.AddBreadcrumb(GameInfo);
@@ -513,9 +523,9 @@ namespace Hi3Helper.SentryHelper
                 // ReSharper disable once HeuristicUnreachableCode
             {
                 if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
-                    SentrySdk.CaptureException(ex);
+                    return SentrySdk.CaptureException(ex);
                 else
-                    SentrySdk.CaptureException(ex, s =>
+                    return SentrySdk.CaptureException(ex, s =>
                                                    {
                                                        s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
                                                        s.AddAttachment(new MemoryStream(Encoding.UTF8.GetBytes(sbModulesInfo.ToString())),
@@ -525,10 +535,43 @@ namespace Hi3Helper.SentryHelper
             }
             else
             {
-                SentrySdk.CaptureException(ex);
+                return SentrySdk.CaptureException(ex);
             }
         #pragma warning restore CS0162 // Unreachable code detected
-            return Task.CompletedTask;
+        }
+        
+        public static bool SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
+        {
+            if (sentryId == Guid.Empty)
+            {
+                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!", LogType.Error,
+                                    true);
+                return false;
+            }
+
+            if (!IsEnabled)
+            {
+                Logger.LogWriteLine("[SendExceptionFeedback] Sentry is disabled, feedback will not be sent!",
+                                    LogType.Error, true);
+                return false;
+            }
+
+            var sId       = new SentryId(sentryId);
+            SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
+            return true;
+        }
+        
+        public static bool SendGenericFeedback(string feedback, string userEmail, string user)
+        {
+            if (!IsEnabled)
+            {
+                Logger.LogWriteLine("[SendGenericFeedback] Sentry is disabled, feedback will not be sent!",
+                                    LogType.Error, true);
+                return false;
+            }
+            
+            SentrySdk.CaptureFeedback(feedback, userEmail, user);
+            return true;
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]

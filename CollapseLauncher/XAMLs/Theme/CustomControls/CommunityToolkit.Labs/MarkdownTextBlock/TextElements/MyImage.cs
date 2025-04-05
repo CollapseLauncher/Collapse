@@ -16,20 +16,21 @@ using System.Globalization;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage.Streams;
+// ReSharper disable AsyncVoidMethod
 
 namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 
 internal class MyImage : IAddChild
 {
-    private InlineUIContainer _container = new InlineUIContainer();
-    private Image _image = new Image();
-    private Grid? _imageGrid;
-    private Uri? _uri;
-    private IImageProvider? _imageProvider;
-    private ISVGRenderer _svgRenderer;
-    private double _precedentWidth;
-    private double _precedentHeight;
-    private bool _loaded;
+    private readonly InlineUIContainer _container = new();
+    private          Image             _image     = new();
+    private          Grid?             _imageGrid;
+    private readonly Uri?              _uri;
+    private readonly IImageProvider?   _imageProvider;
+    private readonly ISVGRenderer      _svgRenderer;
+    private readonly double            _precedentWidth;
+    private readonly double            _precedentHeight;
+    private          bool              _loaded;
 
     public TextElement TextElement
     {
@@ -40,7 +41,7 @@ internal class MyImage : IAddChild
     {
         _uri = uri;
         _imageProvider = config.ImageProvider;
-        _svgRenderer = config.SVGRenderer == null ? new DefaultSVGRenderer() : config.SVGRenderer;
+        _svgRenderer = config.SVGRenderer ?? new DefaultSVGRenderer();
         Init();
         var size = Extensions.GetMarkdownImageSize(linkInline);
         if (size.Width != 0)
@@ -57,7 +58,7 @@ internal class MyImage : IAddChild
     {
         Uri.TryCreate(htmlNode.GetAttributeValue("src", "#"), UriKind.RelativeOrAbsolute, out _uri);
         _imageProvider = config?.ImageProvider;
-        _svgRenderer = config?.SVGRenderer == null ? new DefaultSVGRenderer() : config.SVGRenderer;
+        _svgRenderer = config?.SVGRenderer ?? new DefaultSVGRenderer();
         Init();
         int.TryParse(
             htmlNode.GetAttributeValue("width", "0"),

@@ -1,27 +1,28 @@
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
-using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable CommentTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Universal
 {
     internal class CollapseMiscSetting : IGameSettingsValue<CollapseMiscSetting>
     {
         #region Fields
-        private const string _ValueName = "CollapseLauncher_Misc";
+        private const string ValueName = "CollapseLauncher_Misc";
 
-        private bool _UseCustomArguments = true;
-        
-        private bool _UseCustomRegionBG  = false;
-
-        private static bool _IsDeserializing;
+        private static bool _isDeserializing;
         #endregion
 
         #region Properties
@@ -37,14 +38,14 @@ namespace CollapseLauncher.GameSettings.Universal
         /// </summary>
         public bool UseCustomArguments
         {
-            get => _UseCustomArguments;
+            get;
             set
             {
-                _UseCustomArguments = value;
+                field = value;
                 // Stop saving if Load() is not yet done.
-                if (!_IsDeserializing) Save();
+                if (!_isDeserializing) Save();
             }
-        }
+        } = true;
 
         /// <summary>
         /// This defines if Advanced Game Settings should be shown in respective GSP and used.<br/><br/>
@@ -97,20 +98,19 @@ namespace CollapseLauncher.GameSettings.Universal
         /// </summary>
         public bool UseCustomRegionBG
         {
-            get => _UseCustomRegionBG;
+            get;
             set
             {
-                _UseCustomRegionBG = value;
-                if (!_IsDeserializing) Save();
+                field = value;
+                if (!_isDeserializing) Save();
             }
-        }
+        } = false;
 
-#nullable enable
+    #nullable enable
         /// <summary>
         /// The path of the custom BG for each region
         /// </summary>
         public string? CustomRegionBGPath { get; set; }
-#nullable restore
 
         /// <summary>
         /// Determines if the game playtime should be synced to the database
@@ -125,15 +125,15 @@ namespace CollapseLauncher.GameSettings.Universal
         #endregion
 
         #region Methods
-#nullable enable
+
         public static CollapseMiscSetting Load()
         {
             try
             {
-                _IsDeserializing = true;
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                _isDeserializing = true;
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(ValueName, null);
 
                 if (value != null)
                 {
@@ -141,17 +141,17 @@ namespace CollapseLauncher.GameSettings.Universal
                     #if DEBUG
                     LogWriteLine($"Loaded Collapse Misc Settings:\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
                     #endif
-                    return byteStr.Deserialize(UniversalSettingsJSONContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
+                    return byteStr.Deserialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting) ?? new CollapseMiscSetting();
                 }
             }
             catch ( Exception ex )
             {
-                LogWriteLine($"Failed while reading {_ValueName}\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to read {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed while reading {ValueName}\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to read {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
             finally
             {
-                _IsDeserializing = false;
+                _isDeserializing = false;
             }
 
             return new CollapseMiscSetting();
@@ -161,23 +161,23 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(UniversalSettingsJSONContext.Default.CollapseMiscSetting, true);
+                string data = this.Serialize(UniversalSettingsJsonContext.Default.CollapseMiscSetting, true);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 #if DEBUG
                 LogWriteLine($"Saved Collapse Misc Settings:\r\n{data}", LogType.Debug, true);
 #endif
-                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 
-        public bool Equals(CollapseMiscSetting? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is CollapseMiscSetting toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

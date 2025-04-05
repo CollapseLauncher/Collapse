@@ -1,17 +1,21 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using Hi3Helper.SentryHelper;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Honkai
 {
     internal class GraphicsGrade : IGameSettingsValue<GraphicsGrade>
     {
         #region Fields
-        private const string _ValueName = "GENERAL_DATA_V2_GraphicsGrade_h1073342808";
+        private const string ValueName = "GENERAL_DATA_V2_GraphicsGrade_h1073342808";
         #endregion
         
         #region Enum
@@ -34,14 +38,14 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(ValueName, null);
                 if (value != null)
                 {
                     SelectGraphicsGrade graphicsGrade = (SelectGraphicsGrade)value;
                     #if DEBUG
-                    LogWriteLine($"Loaded HI3 Settings: {_ValueName} : {value}", LogType.Debug, true);
+                    LogWriteLine($"Loaded HI3 Settings: {ValueName} : {value}", LogType.Debug, true);
                     #endif
 
                     return new GraphicsGrade { GraphicsGradeInt = graphicsGrade };
@@ -49,12 +53,12 @@ namespace CollapseLauncher.GameSettings.Honkai
             }
             catch ( Exception ex )
             {
-                LogWriteLine($"Failed while reading {_ValueName}" +
+                LogWriteLine($"Failed while reading {ValueName}" +
                                 $"\r\n  Please open the game and change any Graphics Settings, then close normally. After that you can use this feature." +
                                 $"\r\n  If the issue persist, please report it on GitHub" +
                                 $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                            $"Failed when reading game settings {_ValueName}\r\n" +
+                            $"Failed when reading game settings {ValueName}\r\n" +
                             $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                             $"{ex}", ex));
             }
@@ -66,22 +70,22 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
                 LogWriteLine("(HI3 GSP) Forcing GraphicsGrade to Custom!", LogType.Warning, true);
                 GraphicsGradeInt = SelectGraphicsGrade.Custom;
-                RegistryRoot.SetValue(_ValueName, GraphicsGradeInt, RegistryValueKind.DWord);
+                RegistryRoot.SetValue(ValueName, GraphicsGradeInt, RegistryValueKind.DWord);
                 #if DEBUG
-                LogWriteLine($"Saved HI3 Settings: {_ValueName} : {GraphicsGradeInt}", LogType.Debug, true);
+                LogWriteLine($"Saved HI3 Settings: {ValueName} : {GraphicsGradeInt}", LogType.Debug, true);
                 #endif
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
-                SentryHelper.ExceptionHandler(new Exception($"Failed to save {_ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(new Exception($"Failed to save {ValueName}!", ex), SentryHelper.ExceptionType.UnhandledOther);
             }
         }
 
-        public bool Equals(GraphicsGrade? comparedTo) => GraphicsGradeInt == comparedTo?.GraphicsGradeInt;
+        public override bool Equals(object? comparedTo) => comparedTo is GraphicsGrade toThis && GraphicsGradeInt == toThis.GraphicsGradeInt;
         #endregion
     }
 }

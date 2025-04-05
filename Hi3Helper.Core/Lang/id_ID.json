@@ -30,9 +30,9 @@
     "OverlayPrepareFolderSubtitle": "Menerapkan izin-izin...",
     "OverlayPrepareFolderTitle": "Menyiapkan Folder Launcher",
     "PageTitle": "Halaman Startup Awal",
-    "Pg1LoadingSubitle1": "Menyiapkan list game yang didukung untukmu",
-    "Pg1LoadingSubitle2": "Selesai! Pindah ke bagian selanjutnya!",
-    "Pg1LoadingTitle1": "Membaca List Game",
+    "Pg1LoadingSubitle1": "Menyiapkan daftar dukungan game untuk kamu...",
+    "Pg1LoadingSubitle2": "Selesai! Yuk kita pindah ke bagian selanjutnya!",
+    "Pg1LoadingTitle1": "Membaca Daftar Game...",
     "Pg1NextBtn": "Selanjutnya - Memilih Game",
     "Pg2ComboBox": "Pilih Game",
     "Pg2ComboBoxRegion": "Pilih Region",
@@ -80,7 +80,7 @@
     "UnhandledTitle3": "Game Crash",
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
-    "UnhandledSubtitle4": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:\r\nAkibat miHoYo A/B testing, Collapse tidak dapat memproses pengaturan ini: App_Settings_h2319593470.\r\nKami mohon maaf atas ketidaknyamanannya.",
+    "UnhandledSubtitle4": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting) bahwa dikarenakan PC kamu mendapatkan beberapa fitur A/B testing miHoYo/HoYoverse untuk game ini, Collapse tidak bisa memproses key registri berikut: App_Settings_h2319593470.\r\nTerima kasih atas perhatiannya dan mohon maaf atas hal ini.",
     "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
     "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
@@ -157,6 +157,7 @@
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Latar Belakang Lainnya untuk Region",
     "GameSettings_Panel4": "Global - Lainnya",
     "GameSettings_Panel4ShowEventsPanel": "Munculkan Panel Event",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Perbesar Panel Event saat Hover",
     "GameSettings_Panel4ShowSocialMediaPanel": "Munculkan Panel Sosmed",
     "GameSettings_Panel4ShowPlaytimeButton": "Munculkan Tombol \"Waktu Main\"",
     "GameSettings_Panel4SyncPlaytimeDatabase": "Sinkronisasi Waktu Mulai dengan Database",
@@ -361,6 +362,8 @@
     "SpecVeryHigh": "S. Tinggi",
     "SpecMaximum": "Maksimum",
     "SpecUltra": "Terbaik",
+    "SpecDynamic": "Dinamis",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Pengaturan Suara",
     "Audio_Master": "Volume Utama",
@@ -403,7 +406,7 @@
     "CustomArgs_Footer2": "\"Unity Standalone Command-line\"",
     "CustomArgs_Footer3": "berikut.",
 
-    "GameBoost": "Naikkan Prioritas Game [Eksperimental]",
+    "GameBoost": "Naikan Prioritas Game",
     "MobileLayout": "Gunakan Layout Mobile",
 
     "Advanced_Title": "Pengaturan Tingkat Lanjut",
@@ -527,9 +530,10 @@
     "ContributePRBtn": "Kontribusi ke Pull Request",
     "ContributorListBtn": "Kontributor Open Source",
     "HelpLocalizeBtn": "Bantu Kami Menerjemahkan Collapse!",
+    "ShareYourFeedbackBtn": "Bagikan Umpan-Balikmu",
 
     "About": "Tentang",
-    "About_Copyright1": "© 2022-2024",
+    "About_Copyright1": "© 2022-2025",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\r\n shatyuka & gablm",
     "About_Copyright3": "Di bawah lisensi",
     "About_Copyright4": ". Hak cipta dilindungi.",
@@ -610,6 +614,28 @@
     "NetworkSettings_Http_SimulateCookies": "Perbolehkan Simuliasi Cookie pada HTTP",
     "NetworkSettings_Http_UntrustedHttps": "Perbolehkan Sertifikat HTTPS Untrusted",
     "NetworkSettings_Http_Timeout": "Masa Tenggang HTTP Client (dalam detik)",
+
+    "NetworkSettings_Dns_Title": "Pengaturan DNS Kustom",
+    "NetworkSettings_Dns_ConnectionType": "Tipe Koneksi",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS lewat HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS lewat TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Menentukan tipe protokol apa yang akan digunakan oleh DNS untuk query record. Ada beberapa tipe protokol yang didukung oleh Collapse Launcher, yaitu:",
+    "NetworkSettings_Dns_ProviderSelection": "Penyedia DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Kustom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Ada beberapa Penyedia DNS luar yang terdapat pada Collapse Launcher secara bawaan. Kamu juga dapat menggunakan Penyedia/Server DNS kustom dengan memilih \"Custom\" pada pilihan \"Penyedia DNS\".",
+    "NetworkSettings_Dns_CustomProvider": "Host Penyedia DNS Kustom",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Tergantung pada pengaturan",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "yang dipilih",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Ketika kamu memilih",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "pada bagian",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "sebagai pilihan, kamu dapat menambahkan Penyedia/Server DNS kustom dengan memasukkan IPv4/IPv6 atau hostnamenya. Kamu juga bisa menambahkan Penyedia DNS yang sudah di-predefined (dimulai dengan simbol '$') bersamaan dengan Penyedia/Server DNS kustom yang kamu masukkan dengan memisahkan setiap entri dengan simbol di bawah ini:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Contoh:",
+    "NetworkSettings_Dns_ChangesWarning": "Kamu butuh restart aplikasi ini untuk menerapkan perubahan apapun pada pengaturan DNS.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Tes & Simpan Perubahan",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Memvalidasi dan Menerapkan Perubahan...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Perubahan Tersimpan!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Pengaturan Gagal Disimpan!",
 
     "FileDownloadSettings_Title": "Pengaturan Unduhan File",
     "FileDownloadSettings_SpeedLimit_Title": "Batasi Kecepatan Unduhan",
@@ -797,7 +823,17 @@
     "IsBytesNotANumber": "= Bukan Nomor",
 
     "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
-    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami."
+    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami.",
+    "ExceptionFeedbackBtn": "Kasih tahu kami dong",
+    "ExceptionFeedbackBtn_Unavailable": "Laporan crash tidak tersedia atau dimatikan",
+    "ExceptionFeedbackBtn_FeedbackSent": "Umpan-Balikmu sudah dikirim!",
+    "ExceptionFeedbackTitle": "Apa yang terjadi?:",
+    "ExceptionFeedbackTemplate_User": "Username (Opsional):",
+    "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
+    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini",
+    
+    "Tag_Deprecated": "Tidak berlaku",
+    "Generic_GameFeatureDeprecation": "Karena perubahan di sisi game, fitur ini tidak berlaku lagi dan akan dihapus di waktu mendatang. Menggunakan fitur ini dapat mengakibatkan perilaku game yang tidak diharapkan."
   },
 
   "_BackgroundNotification": {
@@ -906,6 +942,10 @@
     "ReleaseChannelChangeSubtitle2": "Catatan:",
     "ReleaseChannelChangeSubtitle3": "Melakukan hal ini memungkinkan adanya perubahan yang tidak bisa dikembalikan atau inkompatibilitas.",
 
+    "ForceUpdateCurrentInstallTitle": "Paksa Pembaruan Instalasi Saat Ini",
+    "ForceUpdateCurrentInstallSubtitle1": "Kamu akan menjalankan pembaruan secara paksa untuk instalasi launcher dengan release: ",
+    "ForceUpdateCurrentInstallSubtitle2": "saat ini dan kami menyarankanmu untuk menutup game yang masih terbuka.",
+
     "ChangePlaytimeTitle": "Apakah anda yakin untuk mengubah waktu main?",
     "ChangePlaytimeSubtitle": "Mengubah waktu main anda berarti menimpa nilai saat ini dengan yang sudah anda masukkan.\n\nLanjut untuk mengubah?\n\nCatatan: Hal ini tidak akan mempengaruhi cara Collapse berjalan dan anda dapat mengubah nilai kembali kapan saja saat anda tidak sedang memainkan gamenya.",
     "ResetPlaytimeTitle": "Apakah anda yakin untuk setel ulang waktu main?",
@@ -959,7 +999,7 @@
     "OperationWarningNotCancellableMsg5": "\" untuk membatalkan.",
 
     "GenericWarningExceptionTitle": "Peringatan",
-    "GenericWarningExceptionSubtitle": "Hal ini bukan masalah penting, namun kami pikir kamu perlu tahu ini:",
+    "GenericWarningExceptionSubtitle": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting)",
 
     "ShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
     "ShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat pada tempat ini:",
@@ -984,9 +1024,10 @@
     "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
     "SteamShortcutCreationSuccessSubtitle6": " • Dalam menggunakan overlay pada Steam, Steam harus berjalan sebagai administrator dan Collapse harus ditutup atau memiliki opsi \"Multiple Instances\" yang sudah dinyalakan pada menu \"Pengaturan Aplikasi\".",
     "SteamShortcutCreationSuccessSubtitle7": "• Apabila game tidak terpasang/belum diperbarui, maka Collapse akan mencoba untuk memasang atau memperbarui game. Mohon diingat bahwa dialog instalasi akan tetap muncul.",
-
     "SteamShortcutCreationFailureTitle": "Folder data Steam tidak valid",
     "SteamShortcutCreationFailureSubtitle": "Tidak dapat menemukan folder userdata yang valid.\n\nPastikan kamu telah masuk ke klien Steam setidaknya sekali sebelum menggunakan fitur ini.",
+    "SteamShortcutTitle": "Shortcut Steam",
+    "SteamShortcutDownloadingImages": "Mengunduh Gambar Grid Steam ({0}/{1})",
 
     "DownloadSettingsTitle": "Pengaturan Unduhan",
     "DownloadSettingsOption1": "Mulai game setelah proses pemasangan",
@@ -995,7 +1036,34 @@
     "CloseOverlay": "Tutup Overlay",
 
     "DbGenerateUid_Title": "Apakah kamu yakin ingin mengubah ID User-mu?",
-    "DbGenerateUid_Content": "Mengubah User ID-mu dapat menyebabkan kehilangan data yang sudah tersimpan."
+    "DbGenerateUid_Content": "Mengubah User ID-mu dapat menyebabkan kehilangan data yang sudah tersimpan.",
+
+    "SophonIncrementUpdateUnavailTitle": "Pembaruan Incremental Tidak Tersedia: Versi Terlalu Usang!",
+    "SophonIncrementUpdateUnavailSubtitle1": "Versi game kamu: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": " sudah terlalu usang.",
+    "SophonIncrementUpdateUnavailSubtitle3": " dan pembaruan incremental untuk versi tersebut tidak tersedia. Tapi, kamu tetap bisa memperbarui game kamu dengan mengunduh ulang semuanya dari awal.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses",
+
+    "UACWarningTitle": "Peringatan: UAC Terdeteksi Dimatikan!",
+    "UACWarningContent": "Mematikan User Account Control (UAC) sangat tidak disarankan.\nUAC dibutuhkan untuk beberapa game agar bisa berjalan dengan baik dan mematikan UAC bisa membahayakan keamanan Operasi Sistem kamu, lho!\n\nKlik tombol \"Pelajari Lebih Lanjut\" untuk mencari tahu cara menyalakan UAC kembali.\nEntry yang perlu dinyalakan: \"Run all administrators in Admin Approval Mode.\"",
+    "UACWarningLearnMore": "Pelajari Lebih Lanjut",
+    "UACWarningDontShowAgain": "Jangan Munculkan Lagi",
+
+    "EnsureExitTitle": "Keluar dari Aplikasii",
+    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?",
+
+    "UserFeedback_DialogTitle": "Bagikan Pendapatmu",
+    "UserFeedback_TextFieldTitleHeader": "Judul Umpan-Balik",
+    "UserFeedback_TextFieldTitlePlaceholder": "Tulis judul umpan-balikmu di sini...",
+    "UserFeedback_TextFieldMessageHeader": "Pesan",
+    "UserFeedback_TextFieldMessagePlaceholder": "Masukkan pesan...",
+    "UserFeedback_TextFieldRequired": "(harus diisi)",
+    "UserFeedback_RatingText": "Mau sekalian ratingnya?",
+    "UserFeedback_CancelBtn": "Batalkan",
+    "UserFeedback_SubmitBtn": "Kirim Umpan-Balikmu",
+    "UserFeedback_SubmitBtn_Processing": "Memproses...",
+    "UserFeedback_SubmitBtn_Completed": "Selesai!",
+    "UserFeedback_SubmitBtn_Cancelled": "Dibatalkan!"
   },
 
   "_FileMigrationProcess": {
@@ -1232,8 +1300,15 @@
     "Graphics_BloomQuality": "Kualitas Efek Bloom",
     "Graphics_AAMode": "Mode Anti-Aliasing",
     "Graphics_SFXQuality": "Kualitas SFX",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Bayangan Karakter di Map Eksplorasi",
     "Graphics_HalfResTransparent": "Transparan Setengah Resolusi",
+    
+    "Graphics_DLSS_UHP": "Performa Ultra",
+    "Graphics_DLSS_Perf": "Performa",
+    "Graphics_DLSS_Balanced": "Seimbang",
+    "Graphics_DLSS_Quality": "Kualitas",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Pengaturan Grafis Keseluruhan",
     "SpecEnabled": "Hidup",

@@ -1,11 +1,14 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
@@ -17,20 +20,20 @@ using static Hi3Helper.Locale;
 
 namespace CollapseLauncher.InstallManager.StarRail
 {
-    internal partial class StarRailInstall : InstallManagerBase
+    internal sealed partial class StarRailInstall : InstallManagerBase
     {
         #region Override Properties
 
-        protected override int _gameVoiceLanguageID => _gameVersionManager.GamePreset.GetVoiceLanguageID();
-        protected override bool _canDeltaPatch => _gameVersionManager.IsGameHasDeltaPatch();
-        protected override DeltaPatchProperty _gameDeltaPatchProperty => _gameVersionManager.GetDeltaPatchInfo();
+        protected override int _gameVoiceLanguageID => GameVersionManager.GamePreset.GetVoiceLanguageID();
+        protected override bool _canDeltaPatch => GameVersionManager.IsGameHasDeltaPatch();
+        protected override DeltaPatchProperty _gameDeltaPatchProperty => GameVersionManager.GetDeltaPatchInfo();
 
         #endregion
 
         #region Properties
 
-        private string _execName => Path.GetFileNameWithoutExtension(_gameVersionManager.GamePreset.GameExecutableName);
-        protected override string _gameDataPersistentPath => Path.Combine(_gamePath, $"{_execName}_Data", "Persistent");
+        private string _execName => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
+        protected override string _gameDataPersistentPath => Path.Combine(GamePath, $"{_execName}_Data", "Persistent");
 
         protected override string _gameAudioLangListPath
         {
@@ -59,7 +62,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #endregion
 
-        public StarRailInstall(UIElement parentUI, IGameVersionCheck GameVersionManager)
+        public StarRailInstall(UIElement parentUI, IGameVersion GameVersionManager)
             : base(parentUI, GameVersionManager)
         {
         }
@@ -88,8 +91,8 @@ namespace CollapseLauncher.InstallManager.StarRail
 
 #nullable enable
         protected override IRepair GetGameRepairInstance(string? versionString) =>
-            new StarRailRepair(_parentUI,
-                    _gameVersionManager, true,
+            new StarRailRepair(ParentUI,
+                    GameVersionManager, true,
                     versionString);
 #nullable restore
 
@@ -110,12 +113,12 @@ namespace CollapseLauncher.InstallManager.StarRail
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(_token.Token);
+            await ApplyDeleteFileActionAsync(Token.Token);
 
             // Update the audio lang list if not in isOnlyInstallPackage mode
             if (!isOnlyInstallPackage)
             {
-                WriteAudioLangList(_assetIndex);
+                WriteAudioLangList(AssetIndex);
             }
         }
 
@@ -150,6 +153,68 @@ namespace CollapseLauncher.InstallManager.StarRail
             };
         }
 
+        #endregion
+
+        #region Override Method - InnerParsePkgVersion2FileInfo
+#nullable enable
+        protected override async ValueTask InnerParsePkgVersion2FileInfo(string gamePath, string path,
+                                                                         List<LocalFileInfo> pkgFileInfo,
+                                                                         HashSet<string> pkgFileInfoHashSet,
+                                                                         CancellationToken token)
+        {
+            // Assign path to reader
+            using StreamReader reader = new StreamReader(path, true);
+            // Do loop until EOF
+            while (!reader.EndOfStream)
+            {
+                // Read line and deserialize
+                string? line = await reader.ReadLineAsync(token);
+                LocalFileInfo? localFileInfo = line?.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
+
+                // Assign the values
+                if (localFileInfo == null)
+                    continue;
+
+                localFileInfo.FullPath = Path.Combine(gamePath, localFileInfo.RelativePath);
+                localFileInfo.FileName = Path.GetFileName(localFileInfo.RelativePath);
+                localFileInfo.IsFileExist = File.Exists(localFileInfo.FullPath);
+
+                // Add it to the list and hashset
+                pkgFileInfo.Add(localFileInfo);
+                pkgFileInfoHashSet.Add(localFileInfo.RelativePath);
+
+                // If it's an audio file, then add the mark file into the entry as well.
+                // This to avoid the mark file to be tagged as "Unused" (as per issue #672)
+                if (localFileInfo.RelativePath.EndsWith(".pck"))
+                {
+                    // Get the string of the mark hex hash
+                    string? markHashString = HexTool.BytesToHexUnsafe(localFileInfo.MD5Hash);
+                    if (string.IsNullOrEmpty(markHashString))
+                    {
+                        continue;
+                    }
+
+                    // Get the mark file's relative path
+                    string relativePathDir = Path.GetDirectoryName(localFileInfo.RelativePath) ?? "";
+                    string relativePathNameNoExt = Path.GetFileNameWithoutExtension(localFileInfo.RelativePath) ?? "";
+                    string relativePathMarkMerged = Path.Combine(relativePathDir, relativePathNameNoExt + $"_{markHashString}.hash");
+
+                    // Create the LocalFileInfo instance of the mark file
+                    LocalFileInfo localFileInfoMark = new LocalFileInfo
+                    {
+                        FullPath = Path.Combine(gamePath, relativePathMarkMerged),
+                        RelativePath = relativePathMarkMerged,
+                        FileName = Path.GetFileName(relativePathMarkMerged)
+                    };
+                    localFileInfoMark.IsFileExist = File.Exists(localFileInfoMark.FullPath);
+
+                    // Add the mark file entry into the list and hashset
+                    pkgFileInfo.Add(localFileInfoMark);
+                    pkgFileInfoHashSet.Add(localFileInfoMark.RelativePath);
+                }
+            }
+        }
+#nullable restore
         #endregion
 
         #region Override Methods - Others

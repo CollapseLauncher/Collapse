@@ -1,9 +1,10 @@
 ﻿using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Buffers.Text;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
-using Hi3Helper.SentryHelper;
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -88,7 +89,7 @@ namespace CollapseLauncher.Helper
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                Logger.LogWriteLine($"Failed while unprotecting string! {ex}", LogType.Error);
+                Logger.LogWriteLine($"Failed while trying to unprotect string! {ex}", LogType.Error);
                 return null;
             }
             finally
@@ -104,6 +105,29 @@ namespace CollapseLauncher.Helper
 
                 if (unprotectedData != null)
                     Array.Clear(unprotectedData);
+            }
+        }
+
+        internal static unsafe SecureString? UnprotectStringAsSecureString(string? input)
+        {
+            string? rawString = UnprotectString(input);
+
+            if (string.IsNullOrEmpty(rawString))
+                return null;
+
+            int len = rawString.Length;
+            fixed (char* charB = rawString)
+            {
+                try
+                {
+                    SecureString secureString = new SecureString(charB, rawString.Length);
+                    return secureString;
+                }
+                finally
+                {
+                    for (int i = 0; i < len; i++)
+                        *(charB + i) = '\0';
+                }
             }
         }
     }

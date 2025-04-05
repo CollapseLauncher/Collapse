@@ -12,10 +12,8 @@ internal partial class CornerRadiusConverter : IValueConverter
         {
             return new CornerRadius(0, 0, cornerRadius.BottomRight, cornerRadius.BottomLeft);
         }
-        else
-        {
-            return value;
-        }
+
+        return value;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

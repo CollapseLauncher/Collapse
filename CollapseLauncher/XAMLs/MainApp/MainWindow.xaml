@@ -9,7 +9,7 @@
         xmlns:uiextension="using:CollapseLauncher.Extension"
         SizeChanged="MainWindow_OnSizeChanged"
         mc:Ignorable="d">
-    <Grid x:Name="MainWindowGridContainer">
+    <Grid>
         <Grid.Resources>
             <ThemeShadow x:Name="SharedThemeShadow" />
         </Grid.Resources>
@@ -26,7 +26,7 @@
               Grid.Row="0"
               Grid.RowSpan="3"
               Opacity="1">
-            <Frame x:Name="rootFrame"
+            <Frame x:Name="RootFrame"
                    x:FieldModifier="public"
                    Opacity="1">
                 <Frame.ContentTransitions>
@@ -35,7 +35,7 @@
                     </TransitionCollection>
                 </Frame.ContentTransitions>
             </Frame>
-            <Frame x:Name="overlayFrame"
+            <Frame x:Name="OverlayFrame"
                    x:FieldModifier="public"
                    Opacity="1">
                 <Frame.ContentTransitions>
@@ -59,7 +59,7 @@
                       VerticalAlignment="Bottom"
                       HorizontalContentAlignment="Right"
                       Content="{x:Bind helper:Locale.Lang._SettingsPage.IntroSequenceToggle}"
-                      IsChecked="{x:Bind IsIntroEnabled, Mode=TwoWay}"
+                      IsChecked="{x:Bind local:MainWindow.IsIntroEnabled, Mode=TwoWay}"
                       Opacity="0.25"
                       PointerEntered="IntroSequenceToggle_PointerEntered"
                       PointerExited="IntroSequenceToggle_PointerExited"
@@ -67,12 +67,12 @@
                       Visibility="Collapsed" />
         </Grid>
         <Grid x:Name="LoadingStatusBackgroundGrid"
+              Grid.Row="0"
               Grid.RowSpan="3"
               x:FieldModifier="internal"
               Background="{ThemeResource LoadingGradientBG}"
               Visibility="Collapsed" />
-        <Grid x:Name="MiddleFrameGrid"
-              Grid.Row="1" />
+        <Grid Grid.Row="1" />
         <Grid x:Name="LoadingStatusGrid"
               Grid.Row="2"
               Margin="32"
@@ -111,6 +111,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
+                    <!-- ReSharper disable GrammarMistakeInMarkupAttribute -->
                     <TextBlock x:Name="LoadingStatusTextTitle"
                                Grid.Column="0"
                                VerticalAlignment="Center"
@@ -159,7 +160,13 @@
             </Button>
         </Grid>
         <customcontrol:ContentDialogCollapse x:Name="ContentDialog"
+                                             Grid.Row="0"
                                              x:FieldModifier="internal" />
+        <Grid x:Name="OverlayRootGrid"
+              Grid.Row="0"
+              Grid.RowSpan="3"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch" />
         <Grid x:Name="TitleBarFrameGrid"
               Grid.Row="0">
             <Grid x:Name="AppTitleBar"
@@ -174,8 +181,7 @@
                       CornerRadius="8"
                       Shadow="{StaticResource CaptionButtonShadow}"
                       Translation="0,0,16" />
-                <Grid x:Name="CaptionButtonAcrylicGrid"
-                      Margin="8,8"
+                <Grid Margin="8,8"
                       HorizontalAlignment="Right"
                       Background="{ThemeResource WindowCaptionBackgroundAcrylicLight}"
                       CornerRadius="8">
@@ -186,7 +192,6 @@
                     <Button x:Name="MinimizeButton"
                             Grid.Column="0"
                             Width="40"
-                            Height="32"
                             x:FieldModifier="internal"
                             Click="MinimizeButton_Click"
                             Content="M 0 0 H 10"
@@ -196,7 +201,6 @@
                     <Button x:Name="CloseButton"
                             Grid.Column="1"
                             Width="40"
-                            Height="32"
                             HorizontalAlignment="Right"
                             x:FieldModifier="internal"
                             Background="{ThemeResource WindowCaptionBackgroundClose}"
@@ -208,6 +212,7 @@
                         <Button.Resources>
                             <ResourceDictionary>
                                 <ResourceDictionary.ThemeDictionaries>
+                                    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
                                     <ResourceDictionary x:Key="Light">
                                         <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
                                                         ResourceKey="WindowCaptionBackgroundClosePointerOver" />
@@ -228,6 +233,7 @@
                                         <StaticResource x:Key="WindowCaptionButtonStrokePressed"
                                                         ResourceKey="CloseButtonStrokePressed" />
                                     </ResourceDictionary>
+                                    <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
                                 </ResourceDictionary.ThemeDictionaries>
                             </ResourceDictionary>
                         </Button.Resources>

@@ -6,47 +6,37 @@ using System.Collections.Generic;
 using System.Linq;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable StringLiteralTypo
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class PerfDataItem
+    internal class PerfDataItem(int entryType, int index, string itemVersion)
     {
         #region Properties
-        public int entryType { get; set; }
-        public int index { get; set; }
-        public string itemVersion { get; set; }
-        #endregion
+        public int    entryType   { get; set; } = entryType;
+        public int    index       { get; set; } = index;
+        public string itemVersion { get; set; } = itemVersion;
 
-        #region Methods
-        public PerfDataItem(int entryType, int index, string itemVersion)
-        {
-            this.entryType = entryType;
-            this.index = index;
-            this.itemVersion = itemVersion;
-        }
         #endregion
     }
 
-    internal class GenshinKeyValuePair
+    internal class GenshinKeyValuePair(int key, int value)
     {
         #region Properties
-        public int key { get; set; }
-        public int value { get; set; }
-        #endregion
+        public int key   { get; set; } = key;
+        public int value { get; set; } = value;
 
-        #region Methods
-        public GenshinKeyValuePair(int Key, int Value)
-        {
-            key = Key;
-            value = Value;
-        }
         #endregion
     }
 
     internal class GlobalPerfData
     {
         #region Fields
-        private static GlobalPerfData _LowestPreset = new()
+        private static readonly GlobalPerfData _LowestPreset = new()
         {
             FPS = FPSOption.f30,
             RenderResolution = 1,
@@ -66,10 +56,10 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x1,
             GraphicsQuality = GraphicsQualityOption.Lowest,
             GlobalIllumination = GlobalIlluminationOption.Off,
-            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On
         };
 
-        private static GlobalPerfData _LowPreset = new()
+        private static readonly GlobalPerfData _LowPreset = new()
         {
             FPS = FPSOption.f30,
             RenderResolution = 8,
@@ -89,10 +79,10 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x2,
             GraphicsQuality = GraphicsQualityOption.Low,
             GlobalIllumination = GlobalIlluminationOption.Off,
-            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On
         };
 
-        private static GlobalPerfData _MediumPreset = new()
+        private static readonly GlobalPerfData _MediumPreset = new()
         {
             FPS = FPSOption.f60,
             RenderResolution = 8,
@@ -112,7 +102,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             AnisotropicFiltering = AnisotropicFilteringOption.x4,
             GraphicsQuality = GraphicsQualityOption.Medium,
             GlobalIllumination = GlobalIlluminationOption.Medium,
-            DynamicCharacterResolution = DynamicCharacterResolutionOption.On,
+            DynamicCharacterResolution = DynamicCharacterResolutionOption.On
         };
         #endregion
 
@@ -140,7 +130,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public static readonly List<double> RenderScaleValues = DictionaryCategory.RenderResolutionOption.Keys.ToList();
         public static readonly List<int> RenderScaleIndex = DictionaryCategory.RenderResolutionOption.Values.ToList();
 
-        public List<PerfDataItem> saveItems                 { get; set; } = new();
+        public List<PerfDataItem> saveItems                 { get; set; } = [];
         public bool               truePortedFromGraphicData { get; set; } = true;
         public string             portedVersion             { get; set; } = "OSRELWin4.2.0";
         public int                volatileUpgradeVersion    { get; set; } = 0;
@@ -300,18 +290,18 @@ namespace CollapseLauncher.GameSettings.Genshin
                 tempData = new GlobalPerfData();
                 var version = graphics.volatileVersion;
                 tempData.portedVersion = version;
-                tempData.saveItems.Add(new(18, graphics.currentVolatielGrade - 1, version));
+                tempData.saveItems.Add(new PerfDataItem(18, graphics.currentVolatielGrade - 1, version));
                 if (graphics.currentVolatielGrade == -1)
                 {
                     foreach (var setting in graphics.customVolatileGrades)
                     { 
-                        tempData.saveItems.Add(new(setting.key, setting.value - 1, version));
+                        tempData.saveItems.Add(new PerfDataItem(setting.key, setting.value - 1, version));
                     }
                 }
             }
             else
             {
-                tempData = globalPerfJson?.Deserialize(GenshinSettingsJSONContext.Default.GlobalPerfData) ?? new GlobalPerfData();
+                tempData = globalPerfJson?.Deserialize(GenshinSettingsJsonContext.Default.GlobalPerfData) ?? new GlobalPerfData();
             }
 
             // Initialize globalPerf with a preset
@@ -474,29 +464,29 @@ namespace CollapseLauncher.GameSettings.Genshin
 
         public string Save()
         {
-            saveItems = new()
-            {
-                new PerfDataItem(1, (int)FPS, portedVersion),
-                new PerfDataItem(2, RenderResolution, portedVersion),
-                new PerfDataItem(3, (int)ShadowQuality, portedVersion),
-                new PerfDataItem(4, (int)VisualEffects, portedVersion),
-                new PerfDataItem(5, (int)SFXQuality, portedVersion),
-                new PerfDataItem(6, (int)EnvironmentDetail, portedVersion),
-                new PerfDataItem(7, (int)VerticalSync, portedVersion),
-                new PerfDataItem(8, (int)Antialiasing, portedVersion),
-                new PerfDataItem(9, (int)VolumetricFog, portedVersion),
-                new PerfDataItem(10, (int)Reflections, portedVersion),
-                new PerfDataItem(11, (int)MotionBlur, portedVersion),
-                new PerfDataItem(12, (int)Bloom, portedVersion),
-                new PerfDataItem(13, (int)CrowdDensity, portedVersion),
-                new PerfDataItem(16, (int)CoOpTeammateEffects, portedVersion),
-                new PerfDataItem(15, (int)SubsurfaceScattering, portedVersion),
-                new PerfDataItem(17, (int)AnisotropicFiltering, portedVersion),
-                new PerfDataItem(18, (int)GraphicsQuality, portedVersion),
-                new PerfDataItem(19, (int)GlobalIllumination, portedVersion),
-                new PerfDataItem(21, (int)DynamicCharacterResolution, portedVersion),
-            };
-            string data = this.Serialize(GenshinSettingsJSONContext.Default.GlobalPerfData, false);
+            saveItems =
+            [
+                new PerfDataItem(1,  (int)FPS,                        portedVersion),
+                new PerfDataItem(2,  RenderResolution,                portedVersion),
+                new PerfDataItem(3,  (int)ShadowQuality,              portedVersion),
+                new PerfDataItem(4,  (int)VisualEffects,              portedVersion),
+                new PerfDataItem(5,  (int)SFXQuality,                 portedVersion),
+                new PerfDataItem(6,  (int)EnvironmentDetail,          portedVersion),
+                new PerfDataItem(7,  (int)VerticalSync,               portedVersion),
+                new PerfDataItem(8,  (int)Antialiasing,               portedVersion),
+                new PerfDataItem(9,  (int)VolumetricFog,              portedVersion),
+                new PerfDataItem(10, (int)Reflections,                portedVersion),
+                new PerfDataItem(11, (int)MotionBlur,                 portedVersion),
+                new PerfDataItem(12, (int)Bloom,                      portedVersion),
+                new PerfDataItem(13, (int)CrowdDensity,               portedVersion),
+                new PerfDataItem(16, (int)CoOpTeammateEffects,        portedVersion),
+                new PerfDataItem(15, (int)SubsurfaceScattering,       portedVersion),
+                new PerfDataItem(17, (int)AnisotropicFiltering,       portedVersion),
+                new PerfDataItem(18, (int)GraphicsQuality,            portedVersion),
+                new PerfDataItem(19, (int)GlobalIllumination,         portedVersion),
+                new PerfDataItem(21, (int)DynamicCharacterResolution, portedVersion)
+            ];
+            string data = this.Serialize(GenshinSettingsJsonContext.Default.GlobalPerfData, false);
 #if DEBUG
             LogWriteLine($"Saved Genshin GlobalPerfData\r\n{data}", LogType.Debug, true);
 #endif

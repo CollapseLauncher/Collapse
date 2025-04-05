@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net9.0</TargetFramework>
@@ -14,12 +14,12 @@
         <Description>Module for parsing and modifying the Inno Setup Log file (unins000.dat) for Collapse Launcher</Description>
         <Company>Collapse Launcher Team</Company>
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
-        <Copyright>Copyright 2022-2024 $(Company)</Copyright>
+        <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <IsAotCompatible>true</IsAotCompatible>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="System.IO.Hashing" Version="9.0.0" />
+	  <PackageReference Include="System.IO.Hashing" Version="9.0.3" />
 	</ItemGroup>
 
 </Project>

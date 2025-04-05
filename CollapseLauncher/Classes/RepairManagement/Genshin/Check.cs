@@ -1,5 +1,5 @@
 using CollapseLauncher.GameVersioning;
-using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
@@ -7,7 +7,6 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.ManagedTools;
 using System;
 using System.Buffers;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
@@ -17,6 +16,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
+// ReSharper disable IdentifierTypo
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher
 {
@@ -24,20 +26,20 @@ namespace CollapseLauncher
     {
         private async Task Check(List<PkgVersionProperties> assetIndex, CancellationToken token)
         {
-            List<PkgVersionProperties> brokenAssetIndex = new List<PkgVersionProperties>();
+            List<PkgVersionProperties> brokenAssetIndex = [];
 
             // Set Indetermined status as false
-            _status.IsProgressAllIndetermined = false;
-            _status.IsProgressPerFileIndetermined = false;
+            Status.IsProgressAllIndetermined = false;
+            Status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
-            _status.IsAssetEntryPanelShow = true;
+            Status.IsAssetEntryPanelShow = true;
 
             // Ensure to delete the DXSetup files
-            EnsureDeleteDXSetupFiles();
+            EnsureDeleteDxSetupFiles();
 
             // Try to move persistent files to StreamingAssets
-            if (_isParsePersistentManifestSuccess) TryMovePersistentToStreamingAssets(assetIndex);
+            if (IsParsePersistentManifestSuccess) TryMovePersistentToStreamingAssets(assetIndex);
 
             // Check for any redundant files
             await CheckRedundantFiles(brokenAssetIndex, token);
@@ -45,8 +47,8 @@ namespace CollapseLauncher
             // Await the task for parallel processing
             try
             {
-                var threadCount = _threadCount;
-                var isSsd = DriveTypeChecker.IsDriveSsd(_gameStreamingAssetsPath, ILoggerHelper.GetILogger());
+                var threadCount = ThreadCount;
+                var isSsd = DriveTypeChecker.IsDriveSsd(GameStreamingAssetsPath, ILoggerHelper.GetILogger());
                 if (!isSsd)
                 {
                     threadCount = 1;
@@ -54,24 +56,17 @@ namespace CollapseLauncher
                                  $"Thread count set to {threadCount}.", LogType.Warning, true);
                 }
                 
-                var runningTask = new ConcurrentDictionary<PkgVersionProperties, byte>();
                 // Await the task for parallel processing
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
                 await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = threadCount, CancellationToken = token }, async (asset, threadToken) =>
                 {
-                    if (!runningTask.TryAdd(asset, 0))
-                    {
-                        LogWriteLine($"Found duplicated task for {asset.remoteURL}! Skipping...", LogType.Warning, true);
-                        return;
-                    }
                     await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
-                    runningTask.Remove(asset, out _);
                 });
             }
             catch (AggregateException ex)
             {
                 var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
-                SentryHelper.ExceptionHandler(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
                 throw innerExceptionsFirst;
             }
 
@@ -80,18 +75,18 @@ namespace CollapseLauncher
             assetIndex.AddRange(brokenAssetIndex);
         }
 
-        private void EnsureDeleteDXSetupFiles()
+        private void EnsureDeleteDxSetupFiles()
         {
             // Check if the DXSETUP file is exist, then delete it.
             // The DXSETUP files causes some false positive detection of data modification
             // for some games (like Genshin, which causes 4302-x error for some reason)
-            string dxSetupDir = Path.Combine(_gamePath, "DXSETUP");
+            string dxSetupDir = Path.Combine(GamePath, "DXSETUP");
             TryDeleteReadOnlyDir(dxSetupDir);
         }
 
         private void TryMovePersistentToStreamingAssets(IEnumerable<PkgVersionProperties> assetIndex)
         {
-            if (!Directory.Exists(_gamePersistentPath)) return;
+            if (!Directory.Exists(GamePersistentPath)) return;
             TryMoveAudioPersistent(assetIndex);
             TryMoveVideoPersistent();
         }
@@ -100,7 +95,7 @@ namespace CollapseLauncher
         {
             // Try to get the exclusion list of the audio (language specific) files
             string[] exclusionList = assetIndex
-                .Where(x => x.isForceStoreInPersistent && x.remoteName
+                .Where(x => x.isPatch && x.remoteNamePersistent != null && x.remoteName
                     .AsSpan()
                     .EndsWith(".pck"))
                 .Select(x => x.remoteNamePersistent
@@ -108,13 +103,15 @@ namespace CollapseLauncher
                 .ToArray();
 
             // Get the audio directory paths and create if it doesn't exist
-            string audioAsbPath = Path.Combine(_gameStreamingAssetsPath, "AudioAssets");
-            string audioPersistentPath = Path.Combine(_gamePersistentPath, "AudioAssets");
+            string audioAsbPath = Path.Combine(GameStreamingAssetsPath, "AudioAssets");
+            string audioPersistentPath = Path.Combine(GamePersistentPath, "AudioAssets");
             if (!Directory.Exists(audioPersistentPath)) return;
-            if (!Directory.Exists(audioAsbPath)) Directory.CreateDirectory(audioAsbPath);
+
+            // Create audio streaming asset directory anyway
+            Directory.CreateDirectory(audioAsbPath);
 
             // Get the list of audio language names from _gameVersionManager
-            List<string> audioLangList = ((GameTypeGenshinVersion)_gameVersionManager)._audioVoiceLanguageList;
+            List<string> audioLangList = ((GameTypeGenshinVersion)GameVersionManager).AudioVoiceLanguageList;
 
             // Enumerate the content of audio persistent directory
             foreach (string path in Directory.EnumerateDirectories(audioPersistentPath, "*", SearchOption.TopDirectoryOnly))
@@ -123,29 +120,31 @@ namespace CollapseLauncher
                 string langName = Path.GetFileName(path);
 
                 // If the path section matches the name in language list, then continue
-                if (audioLangList.Contains(langName))
+                if (!audioLangList.Contains(langName))
                 {
-                    // Enumerate the files that's exist in the persistent path of each language
-                    // except the one that's included in the exclusion list
-                    foreach (string filePath in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-                        .Where(x => !exclusionList.Any(y => x.AsSpan().EndsWith(y.AsSpan()))))
-                    {
-                        // Trim the path name to get the generic languageName/filename form
-                        string pathName = filePath.AsSpan().Slice(audioPersistentPath.Length + 1).ToString();
-                        // Combine the generic name with audioAsbPath
-                        string newPath = EnsureCreationOfDirectory(Path.Combine(audioAsbPath, pathName));
+                    continue;
+                }
 
-                        // Try to move the file to the asb path
-                        File.Move(filePath, newPath, true);
-                    }
+                // Enumerate the files that's exist in the persistent path of each language
+                // except the one that's included in the exclusion list
+                foreach (string filePath in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+                                                     .Where(x => !exclusionList.Any(y => x.AsSpan().EndsWith(y.AsSpan()))))
+                {
+                    // Trim the path name to get the generic languageName/filename form
+                    string pathName = filePath.AsSpan()[(audioPersistentPath.Length + 1)..].ToString();
+                    // Combine the generic name with audioAsbPath
+                    string newPath = EnsureCreationOfDirectory(Path.Combine(audioAsbPath, pathName));
+
+                    // Try to move the file to the asb path
+                    File.Move(filePath, newPath, true);
                 }
             }
         }
 
         private void TryMoveVideoPersistent()
         {
-            string videoAsbPath = Path.Combine(_gameStreamingAssetsPath, "VideoAssets");
-            string videoPersistentPath = Path.Combine(_gamePersistentPath, "VideoAssets");
+            string videoAsbPath = Path.Combine(GameStreamingAssetsPath, "VideoAssets");
+            string videoPersistentPath = Path.Combine(GamePersistentPath, "VideoAssets");
             if (!Directory.Exists(videoPersistentPath)) return;
             if (!Directory.Exists(videoAsbPath)) Directory.CreateDirectory(videoAsbPath);
             MoveFolderContent(videoPersistentPath, videoAsbPath);
@@ -155,42 +154,26 @@ namespace CollapseLauncher
         private async ValueTask CheckAssetAllType(PkgVersionProperties asset, List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
             // Update activity status
-            _status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
+            Status.ActivityStatus = string.Format(Lang._GameRepairPage.Status6, asset.remoteName);
 
             // Increment current total count
-            _progressAllCountCurrent++;
+            ProgressAllCountCurrent++;
 
             // Reset per file size counter
-            _progressPerFileSizeTotal = asset.fileSize;
-            _progressPerFileSizeCurrent = 0;
+            ProgressPerFileSizeTotal = asset.fileSize;
+            ProgressPerFileSizeCurrent = 0;
 
             // Get file path
-            string filePathStreaming = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteName));
-            string filePathPersistent = Path.Combine(_gamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent));
+            string filePathStreaming = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.remoteName));
+            string filePathPersistent = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.remoteNamePersistent));
 
             // Get persistent and streaming paths
             FileInfo fileInfoStreaming  = new FileInfo(filePathStreaming).EnsureNoReadOnly();
             FileInfo fileInfoPersistent = new FileInfo(filePathPersistent).EnsureNoReadOnly();
 
             // Decide file state
-            bool isUsePersistent   = asset.isForceStoreInPersistent;
-            bool isPatch           = asset.isPatch;
             bool isPersistentExist = fileInfoPersistent.Exists;
             bool isStreamingExist  = fileInfoStreaming.Exists;
-
-            // Try to get hash buffer
-            bool   isUseXxh64Hash = !string.IsNullOrEmpty(asset.xxh64hash);
-            int    hashBufferLen  = (isUseXxh64Hash ? asset.xxh64hash.Length : asset.md5.Length) / 2;
-            byte[] hashBuffer     = ArrayPool<byte>.Shared.Rent(hashBufferLen);
-
-            try
-            {
-                if (!HexTool.TryHexToBytesUnsafe(asset.md5, hashBuffer))
-                {
-#if DEBUG
-                    throw new InvalidOperationException();
-#endif
-                }
 
                 // Get the file info to use
                 bool isUnmatchedFileFound = !await IsFileMatched(
@@ -213,12 +196,11 @@ namespace CollapseLauncher
                                              (c, d) =>
                                              {
                                                  // Add the count and asset. Mark the type as "RepairAssetType.Unused"
-                                                 _progressAllCountFound++;
+                                                 ProgressAllCountFound++;
 
                                                  PkgVersionProperties clonedAsset = asset.Clone();
 
-                                                 Dispatch(() => AssetEntry.Add(
-                                                                               new AssetProperty<RepairAssetType>(
+                                                 Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
                                                                                     Path.GetFileName(c),
                                                                                     RepairAssetType.Unused,
                                                                                     Path.GetDirectoryName(c),
@@ -236,105 +218,157 @@ namespace CollapseLauncher
                                              }
                                              );
 
-                FileInfo fileInfoToUse = asset.isForceStoreInPersistent ? fileInfoPersistent : fileInfoStreaming;
-
                 if (isUnmatchedFileFound)
                 {
-                    AddNotFoundOrMismatchAsset(asset, fileInfoToUse);
+                    AddNotFoundOrMismatchAsset(asset);
                 }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(hashBuffer);
-            }
 
             return;
 
             async ValueTask<bool> IsFileMatched(Action<bool> storeAsStreaming, Action<bool> storeAsPersistent, Action<string, string> storeAsUnused)
             {
-                if (!isUsePersistent)
+                bool isUsePersistent = asset.isPatch ||
+                    (!asset.xxh64hashPersistent?.Equals(asset.xxh64hash, StringComparison.OrdinalIgnoreCase) ?? false);
+
+                // Try to get hash buffer
+                byte[] hashBuffer = ArrayPool<byte>.Shared.Rent(16);
+                try
                 {
-                    if (!isStreamingExist || !await IsFileHashMatch(fileInfoStreaming, hashBuffer, token))
+                    // Create memory and compare the hash
+                    string       streamingHash       = asset.xxh64hash ?? asset.md5;
+                    Memory<byte> streamingHashMemory = new(hashBuffer, 0, streamingHash.Length / 2);
+                    _ = HexTool.TryHexToBytesUnsafe(streamingHash, streamingHashMemory.Span);
+
+                    if (!isUsePersistent)
                     {
                         if (isPersistentExist)
                         {
                             storeAsUnused(asset.remoteNamePersistent, fileInfoPersistent.FullName);
                         }
 
-                        storeAsStreaming(true);
-                        storeAsPersistent(false);
-                        return false;
+                        // ReSharper disable once InvertIf
+                        if (!isStreamingExist ||
+                            !await IsFileHashMatch(fileInfoStreaming, asset.fileSize, streamingHashMemory, true, token))
+                        {
+                            storeAsStreaming(true);
+                            storeAsPersistent(false);
+                            asset.isStreamingNeedDownload = true;
+                            return false;
+                        }
+
+                        return true;
                     }
 
-                    return true;
+                    bool isBrokenFoundOnPersistent = false;
+                    bool isHasStreamingInvalid = false;
+
+                    if (!asset.isPatch &&
+                        isStreamingExist &&
+                        !await IsFileHashMatch(fileInfoStreaming, asset.fileSize, streamingHashMemory, true, token))
+                    {
+                        storeAsStreaming(true);
+                        storeAsPersistent(false);
+                        isBrokenFoundOnPersistent = true;
+                        isHasStreamingInvalid = true;
+                        asset.isStreamingNeedDownload = true;
+                    }
+
+                    // Create memory and compare the hash
+                    string       persistentHash = asset.xxh64hashPersistent ?? asset.md5Persistent;
+                    Memory<byte> persistentHashMemory = new(hashBuffer, 0, persistentHash.Length / 2);
+                    _ = HexTool.TryHexToBytesUnsafe(persistentHash, persistentHashMemory.Span);
+
+                    if (isHasStreamingInvalid)
+                    {
+                        Interlocked.Add(ref ProgressAllSizeCurrent, -fileInfoStreaming.Length);
+                    }
+
+                    // ReSharper disable once InvertIf
+                    if (!isPersistentExist || !await IsFileHashMatch(fileInfoPersistent, asset.fileSizePersistent, persistentHashMemory, true, token))
+                    {
+                        storeAsStreaming(false);
+                        storeAsPersistent(true);
+                        isBrokenFoundOnPersistent = true;
+                        asset.isPersistentNeedDownload = true;
+                    }
+
+                    return !isBrokenFoundOnPersistent;
                 }
-
-                bool isStreamingMatch = isStreamingExist && await IsFileHashMatch(fileInfoStreaming, hashBuffer, token);
-                bool isPersistentMatch = isPersistentExist && await IsFileHashMatch(fileInfoPersistent, hashBuffer, token);
-
-                if (isStreamingMatch && isPersistentMatch && isPatch)
+                finally
                 {
-                    storeAsUnused(asset.remoteName, fileInfoStreaming.FullName);
+                    ArrayPool<byte>.Shared.Return(hashBuffer);
                 }
-
-                if (!isStreamingMatch && !isPersistentMatch)
-                {
-                    storeAsStreaming(false);
-                    storeAsPersistent(true);
-                    return false;
-                }
-
-                return true;
             }
 
-            async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, ReadOnlyMemory<byte> hashToCompare, CancellationToken cancelToken)
+            async ValueTask<bool> IsFileHashMatch(FileInfo fileInfo, long fileSizeToCheck, ReadOnlyMemory<byte> hashToCompare, bool isUpdateProgress, CancellationToken cancelToken)
             {
                 // Refresh the fileInfo
                 fileInfo.Refresh();
 
-                if (fileInfo.Length != asset.fileSize) return false; // Skip the hash calculation if the file size is different
-                
-                if (_useFastMethod) return true; // Skip the hash calculation if the fast method is enabled
-                
+                if (fileInfo.Length != fileSizeToCheck)
+                    return false; // Skip the hash calculation if the file size is different
+
+                if (UseFastMethod) return true; // Skip the hash calculation if the fast method is enabled
+
                 // Try to get filestream
                 await using FileStream fileStream = await fileInfo.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
                 // If pass the check above, then do hash calculation
                 // Additional: the total file size progress is disabled and will be incremented after this
                 byte[] localHash = hashToCompare.Length == 8 ?
-                    await CheckNonCryptoHashAsync(fileStream, new XxHash64(), cancelToken) :
-                    await CheckHashAsync(fileStream, MD5.Create(), token);
+                    await GetHashAsync<XxHash64>(fileStream, isUpdateProgress, isUpdateProgress, cancelToken) :
+                    await GetCryptoHashAsync<MD5>(fileStream, null, isUpdateProgress, isUpdateProgress, cancelToken);
 
                 // Check if the hash is equal
                 bool isMatch = IsArrayMatch(hashToCompare.Span, localHash);
                 return isMatch;
             }
 
-            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner, FileInfo repairFile)
+            void AddNotFoundOrMismatchAsset(PkgVersionProperties assetInner)
             {
                 // Update the total progress and found counter
-                _progressAllSizeFound += assetInner.fileSize;
-                _progressAllCountFound++;
+                if (assetInner.isStreamingNeedDownload)
+                {
+                    Interlocked.Increment(ref ProgressAllCountFound);
+                    Interlocked.Add(ref ProgressAllSizeFound, assetInner.fileSize);
 
-                // Set the per size progress
-                _progressPerFileSizeCurrent = assetInner.fileSize;
+                    Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
+                                                       Path.GetFileName(assetInner.remoteName),
+                                                       RepairAssetType.Generic,
+                                                       Path.GetDirectoryName(assetInner.remoteName),
+                                                       assetInner.fileSize,
+                                                       null,
+                                                       HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hash) ? assetInner.md5 : assetInner.xxh64hash)
+                                                      )
+                                                 ));
 
-                // Increment the total current progress
-                _progressAllSizeCurrent += assetInner.fileSize;
+                    targetAssetIndex.Add(assetInner);
 
-                Dispatch(() => AssetEntry.Add(
-                                              new AssetProperty<RepairAssetType>(
-                                                   repairFile.Name,
+                    LogWriteLine($"File [T: {RepairAssetType.Generic}-Streaming]: {assetInner.localName} is not found or has unmatched size",
+                                 LogType.Warning, true);
+                }
+
+                if (!assetInner.isPersistentNeedDownload)
+                {
+                    return;
+                }
+
+                Interlocked.Increment(ref ProgressAllCountFound);
+                Interlocked.Add(ref ProgressAllSizeFound, assetInner.fileSizePersistent);
+
+                Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(assetInner.remoteNamePersistent),
                                                    RepairAssetType.Generic,
-                                                   Path.GetDirectoryName(assetInner.isForceStoreInPersistent ? assetInner.remoteNamePersistent : assetInner.remoteName),
-                                                   assetInner.fileSize,
-                                                   repairFile.Exists ? hashBuffer : null,
-                                                   HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hash) ? assetInner.md5 : assetInner.xxh64hash)
+                                                   Path.GetDirectoryName(assetInner.remoteNamePersistent),
+                                                   assetInner.fileSizePersistent,
+                                                   null,
+                                                   HexTool.HexToBytesUnsafe(string.IsNullOrEmpty(assetInner.xxh64hashPersistent) ? assetInner.md5Persistent : assetInner.xxh64hashPersistent)
                                                   )
                                              ));
-                targetAssetIndex.Add(assetInner);
 
-                LogWriteLine($"File [T: {RepairAssetType.Generic}]: {assetInner.localName} is not found or has unmatched size",
+                targetAssetIndex.Add(assetInner.CloneAsPersistent());
+
+                LogWriteLine($"File [T: {RepairAssetType.Generic}-Persistent]: {assetInner.localName} is not found or has unmatched size",
                              LogType.Warning, true);
             }
         }
@@ -343,12 +377,8 @@ namespace CollapseLauncher
         #region UnusedFiles
         private async Task CheckRedundantFiles(List<PkgVersionProperties> targetAssetIndex, CancellationToken token)
         {
-            // Initialize FilePath and FileInfo
-            string FilePath;
-            FileInfo fInfo;
-
             // Iterate the available deletefiles files
-            DirectoryInfo directoryInfo = new DirectoryInfo(_gamePath);
+            DirectoryInfo directoryInfo = new DirectoryInfo(GamePath);
             foreach (FileInfo listFile in directoryInfo
                 .EnumerateFiles("*deletefiles*", SearchOption.TopDirectoryOnly)
                 .EnumerateNoReadOnly())
@@ -361,18 +391,18 @@ namespace CollapseLauncher
                 while (!listReader.EndOfStream)
                 {
                     // Get the File name and FileInfo
-                    FilePath = Path.Combine(_gamePath, ConverterTool.NormalizePath(await listReader.ReadLineAsync(token)));
-                    fInfo    = new FileInfo(FilePath).EnsureNoReadOnly();
+                    var filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(await listReader.ReadLineAsync(token)));
+                    var fInfo = new FileInfo(filePath).EnsureNoReadOnly();
 
                     // If the file doesn't exist, then continue
                     if (!fInfo.Exists)
                         continue;
 
                     // Update total found progress
-                    _progressAllCountFound++;
+                    ProgressAllCountFound++;
 
                     // Get the stripped relative name
-                    string strippedName = fInfo.FullName.AsSpan()[(_gamePath.Length + 1)..].ToString();
+                    string strippedName = fInfo.FullName.AsSpan()[(GamePath.Length + 1)..].ToString();
 
                     // Assign the asset before adding to targetAssetIndex
                     PkgVersionProperties asset = new PkgVersionProperties
@@ -406,10 +436,10 @@ namespace CollapseLauncher
                                  || x.Name.EndsWith(".hdiff", StringComparison.OrdinalIgnoreCase)))
             {
                 // Update total found progress
-                _progressAllCountFound++;
+                ProgressAllCountFound++;
 
                 // Get the stripped relative name
-                string strippedName = fileInfo.FullName.AsSpan()[(_gamePath.Length + 1)..].ToString();
+                string strippedName = fileInfo.FullName.AsSpan()[(GamePath.Length + 1)..].ToString();
 
                 // Assign the asset before adding to targetAssetIndex
                 PkgVersionProperties asset = new PkgVersionProperties

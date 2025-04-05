@@ -1,4 +1,7 @@
 using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper
 {
@@ -140,6 +143,23 @@ namespace Hi3Helper
                 public string IsBytesNotANumber    { get; set; } = LangFallback?._Misc.IsBytesNotANumber;
                 public string MissingVcRedist      { get; set; } = LangFallback?._Misc.MissingVcRedist;
                 public string MissingVcRedistSubtitle { get; set; } = LangFallback?._Misc.MissingVcRedistSubtitle;
+                
+                public string ExceptionFeedbackBtn { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn;
+                public string ExceptionFeedbackBtn_Unavailable { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn_Unavailable;
+                public string ExceptionFeedbackBtn_FeedbackSent { get; set; } = LangFallback?._Misc.ExceptionFeedbackBtn_FeedbackSent;
+                public string ExceptionFeedbackTitle { get; set; } = LangFallback?._Misc.ExceptionFeedbackTitle;
+                public string ExceptionFeedbackTemplate_User { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_User;
+                public string ExceptionFeedbackTemplate_Email { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Email;
+                public string ExceptionFeedbackTemplate_Message { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Message;
+                
+                public string Feedback { get; set; } = LangFallback?._Misc.Feedback;
+                public string FeedbackSending { get; set; } = LangFallback?._Misc.FeedbackSending;
+                public string FeedbackSent { get; set; } = LangFallback?._Misc.FeedbackSent;
+                public string FeedbackSendFailure { get; set; } = LangFallback?._Misc.FeedbackSendFailure;
+                
+                public string Tag_Deprecated { get; set; } = LangFallback?._Misc.Tag_Deprecated;
+                
+                public string Generic_GameFeatureDeprecation { get; set; } = LangFallback?._Misc.Generic_GameFeatureDeprecation;
             }
         }
         #endregion

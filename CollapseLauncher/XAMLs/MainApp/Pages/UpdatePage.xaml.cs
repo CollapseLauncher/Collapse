@@ -1,38 +1,42 @@
-﻿using CollapseLauncher.Helper.Update;
+﻿using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#if !USEVELOPACK
-using Squirrel;
-#else
-using Velopack;
-#endif
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+
+#if !USEVELOPACK
+using Squirrel;
+#else
+using Velopack;
+#endif
+
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Pages
 {
     public sealed partial class UpdatePage : Page
     {
-        private readonly CancellationTokenSource _tokenSource    = new CancellationTokenSource();
-        private readonly MarkdownConfig          _markdownConfig = new MarkdownConfig();
+        private readonly CancellationTokenSource _tokenSource    = new();
+        private readonly MarkdownConfig          _markdownConfig = new();
 
         public UpdatePage()
         {
-            this.InitializeComponent();
-            this.Loaded += LoadedAsyncRoutine;
-            this.Unloaded += UpdatePage_Unloaded;
+            InitializeComponent();
+            Loaded += LoadedAsyncRoutine;
+            Unloaded += UpdatePage_Unloaded;
         }
 
-        private void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
+        private static void UpdatePage_Unloaded(object sender, RoutedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
         private async void LoadedAsyncRoutine(object sender, RoutedEventArgs e)
         {
@@ -41,10 +45,10 @@ namespace CollapseLauncher.Pages
             string channelName = IsPreview ? Lang._Misc.BuildChannelPreview : Lang._Misc.BuildChannelStable;
             CurrentVersionLabel.Text = $"{LauncherUpdateHelper.LauncherCurrentVersionString}";
 
-            if (!LauncherUpdateHelper.AppUpdateVersionProp?.Version.HasValue ?? false)
-                throw new NullReferenceException($"New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
+            if (LauncherUpdateHelper.AppUpdateVersionProp == null)
+                throw new NullReferenceException("New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
 
-            if (LauncherUpdateHelper.AppUpdateVersionProp != null && LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+            if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
             {
                     GameVersion newUpdateVersion = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value;
 
@@ -79,9 +83,9 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (LauncherUpdateWatcher.isMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
+                if (LauncherUpdateWatcher.IsMetered && !(LauncherUpdateHelper.AppUpdateVersionProp?.IsForceUpdate ?? false))
                 {
-                    switch (await Dialog_MeteredConnectionWarning(Content))
+                    switch (await Dialog_MeteredConnectionWarning())
                     {
                         case ContentDialogResult.Primary:
                             await _StartUpdateRoutine();
@@ -107,7 +111,7 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 Logger.LogWriteLine($"Error occurred while updating the launcher!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex, ErrorType.Unhandled);
+                ErrorSender.SendException(ex);
                 ForceInvokeUpdate = true;
                 LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty { QuitFromUpdateMenu = true });
             }
@@ -163,11 +167,8 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token, true);
-                byte[] buffer = new byte[networkStream.Length];
-                await networkStream.ReadExactlyAsync(buffer, _tokenSource.Token);
-
-                ReleaseNotesBox.Text = Encoding.UTF8.GetString(buffer);
+                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token);
+                ReleaseNotesBox.Text = await networkStream.ReadAsStringAsync(_tokenSource.Token);
             }
             catch (Exception ex)
             {
@@ -206,13 +207,13 @@ namespace CollapseLauncher.Pages
         {
             DispatcherQueue?.TryEnqueue(() =>
             {
-                Status.Text = e.status;
-                if (string.IsNullOrEmpty(e.newver))
+                Status.Text = e.Status;
+                if (string.IsNullOrEmpty(e.Newver))
                 {
                     return;
                 }
 
-                GameVersion version = new GameVersion(e.newver);
+                GameVersion version = new GameVersion(e.Newver);
                 NewVersionLabel.Text = version.VersionString;
             });
         }

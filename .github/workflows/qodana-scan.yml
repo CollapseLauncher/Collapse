@@ -3,9 +3,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0,3,5' # At 00:00 on Sunday, Wednesday, and Friday.
-#  pull_request:
-#    branches:
-#      - main
+  pull_request:
+    branches:
+      - preview
+      - stable
 
 jobs:
   qodana:
@@ -14,32 +15,27 @@ jobs:
       matrix:
         configuration: [Release] # No need to distribute Debug builds
         platform: [x64]
-        framework: [net9.0-windows10.0.22621.0]
-
+        framework: [net9.0-windows10.0.26100.0]
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
       DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.x'
+      DOTNET_VERSION: '9.0.2xx'
       DOTNET_QUALITY: 'ga'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-
     permissions:
       actions: read
       contents: write
       pull-requests: write
       checks: write
       security-events: write
-
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           submodules: recursive # many many submodules
-
       # - name: Install winget
       #   uses: Cyberboss/install-winget@v1
-
       # - name: Install Qodana CLI
       #   uses: crazy-max/ghaction-chocolatey@v3
       #   with:
@@ -50,7 +46,6 @@ jobs:
       #     Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
       #     refreshenv
       #     qodana --version
-
       - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -58,13 +53,11 @@ jobs:
           dotnet-quality: ${{ env.DOTNET_QUALITY }}
           cache: true
           cache-dependency-path: CollapseLauncher/packages.lock.json
-
       # - name: Qodana Scan
       #   run: |
       #     Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
       #     refreshenv
       #     qodana scan --ide QDNET-EAP -o ${{ runner.temp }}\qodana\results --cache-dir ${{ runner.temp }}\qodana\cache
-
       - name: Qodana Scan
         uses: JetBrains/qodana-action@v2024.3.3
         continue-on-error: true
@@ -73,7 +66,6 @@ jobs:
           pr-mode: false
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
-
       - uses: github/codeql-action/upload-sarif@v3
         if: always()
         continue-on-error: true

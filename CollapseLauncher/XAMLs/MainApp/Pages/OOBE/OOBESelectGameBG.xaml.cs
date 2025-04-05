@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Image;
+﻿using CollapseLauncher.Helper.Background;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
@@ -15,6 +16,9 @@ using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.OOBE.OOBESelectGameBGProp;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -22,15 +26,17 @@ namespace CollapseLauncher.Pages.OOBE
     {
         public OOBESelectGameBG()
         {
-            this.Loaded += LoadedRoutine;
+            Loaded += LoadedRoutine;
         }
 
         private void LoadedRoutine(object sender, RoutedEventArgs e)
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            if (IsAppThemeLight)
-                (this.Resources["DetailsLogoShadowController"] as AttachedDropShadow).Opacity = 0.75;
+            if (IsAppThemeLight && Resources["DetailsLogoShadowController"] is AttachedDropShadow attachedShadow)
+            {
+                attachedShadow.Opacity = 0.75;
+            }
 
             if (!IsLoadDescription || !IsSuccess)
             {
@@ -40,44 +46,42 @@ namespace CollapseLauncher.Pages.OOBE
                 return;
             }
 
-            this.GameDetailsDescription.Text = _gameDescription;
-            this.GameDetailsPoster.Source = _gamePosterBitmapImage;
-            this.GameDetailsLogo.Source = _gameLogoBitmapImage;
+            GameDetailsDescription.Text = _gameDescription;
+            GameDetailsPoster.Source = _gamePosterBitmapImage;
+            GameDetailsLogo.Source = _gameLogoBitmapImage;
         }
 
         private void GameDetailsHomepage_Click(object sender, RoutedEventArgs e)
         {
-            string link = (string)((Button)sender).Tag;
-            Process proc = new Process() { StartInfo = new ProcessStartInfo(link) { UseShellExecute = true } };
+            string  link = (string)((Button)sender).Tag;
+            Process proc = new Process { StartInfo = new ProcessStartInfo(link) { UseShellExecute = true } };
 
             proc.Start();
         }
 
-        private string GameDetailsHomepageLink { get => _gameHomepageLink; }
+        internal static string GameDetailsHomepageLink { get => _gameHomepageLink; }
     }
 
     public static class OOBESelectGameBGProp
     {
-        public static string _gameDescription;
-        public static string _gamePosterPath;
-        public static string _gameLogoPath;
-        public static string _gameHomepageLink;
-        public static Bitmap _gamePosterBitmap;
-        public static BitmapImage _gamePosterBitmapImage;
-        public static BitmapImage _gameLogoBitmapImage;
-        public static bool IsLoadDescription = false;
-        public static bool IsNeedLoad = false;
-        public static bool IsSuccess = false;
+        internal static string      _gameDescription;
+        internal static string      _gamePosterPath;
+        internal static string      _gameLogoPath;
+        internal static string      _gameHomepageLink;
+        internal static Bitmap      _gamePosterBitmap;
+        internal static BitmapImage _gamePosterBitmapImage;
+        internal static BitmapImage _gameLogoBitmapImage;
+        internal static bool        IsLoadDescription;
+        internal static bool        IsSuccess;
 
         internal static async Task<bool> TryLoadGameDetails(PresetConfig config = null)
         {
             try
             {
-                if (!(IsLoadDescription = !(config is null
-                                         || config.ZoneDescription is null
-                                         || config.ZonePosterURL is null
-                                         || config.ZoneLogoURL is null
-                                         || config.ZoneURL is null)))
+                if (!(IsLoadDescription = !(config?.ZoneDescription is null
+                                            || config.ZonePosterURL is null
+                                            || config.ZoneLogoURL is null
+                                            || config.ZoneURL is null)))
                 {
                     _gamePosterBitmap = null;
                     _gamePosterBitmapImage = null;
@@ -98,7 +102,7 @@ namespace CollapseLauncher.Pages.OOBE
                                     GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
                                     GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
                                     GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
-                                    _ => AppDefaultBG
+                                    _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                                 };
 
                 // TODO: Use FallbackCDNUtil to get the sprites
@@ -107,7 +111,7 @@ namespace CollapseLauncher.Pages.OOBE
 
                 if (_gameLogoPath == null)
                 {
-                    LogWriteLine($"Failed while loading poster image as _gameLogoPath returns null!", LogType.Error, true);
+                    LogWriteLine("Failed while loading poster image as _gameLogoPath returns null!", LogType.Error, true);
                     return IsSuccess = false;
                 }
 

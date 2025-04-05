@@ -9,13 +9,21 @@ using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable CommentTypo
+// ReSharper disable UnusedMember.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable GrammarMistakeInComment
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Genshin
 {
-    internal class GeneralData
+    internal sealed partial class GeneralData
     {
         #region Fields
-        private const string _ValueName = "GENERAL_DATA_h2389025596";
+        private const string ValueName = "GENERAL_DATA_h2389025596";
         
         // Default GENERAL_DATA_h2389025596 value taken from version 5.0.0
         // For the next person, if there is any addition/deletion to the GeneralData props, please update this :)
@@ -24,12 +32,12 @@ namespace CollapseLauncher.GameSettings.Genshin
         // Thank you.
         // Sincerely, bagel 🥯
         // (hoyo why you did this to us)
-        private static readonly string _generalDataDefault = 
-            "{\"deviceUUID\":\"\",\"userLocalDataVersionId\":\"\",\"deviceLanguageType\":1,\"deviceVoiceLanguageType\":1,\"selectedServerName\":\"\",\"localLevelIndex\":0,\"deviceID\":\"\",\"targetUID\":\"\",\"curAccountName\":\"\",\"uiSaveData\":\"\",\"inputData\":\"{\\\"scriptVersion\\\":\\\"OSRELWin5.0.0\\\",\\\"mouseSensitivity\\\":10.0,\\\"joypadSenseIndex\\\":2,\\\"joypadFocusSenseIndex\\\":2,\\\"joypadInvertCameraX\\\":false,\\\"joypadInvertCameraY\\\":false,\\\"joypadInvertFocusCameraX\\\":false,\\\"joypadInvertFocusCameraY\\\":false,\\\"mouseSenseIndex\\\":2,\\\"mouseFocusSenseIndex\\\":2,\\\"touchpadSenseIndex\\\":2,\\\"touchpadFocusSenseIndex\\\":5,\\\"enableTouchpadFocusAcceleration\\\":false,\\\"lastJoypadDefaultScale\\\":1.0,\\\"lastJoypadFocusScale\\\":1.0,\\\"lastPCDefaultScale\\\":0.75,\\\"lastPCFocusScale\\\":1.0,\\\"lastTouchDefaultScale\\\":1.0,\\\"lastTouchFcousScale\\\":1.0,\\\"switchWalkRunByBtn\\\":false,\\\"skiffCameraAutoFix\\\":true,\\\"skiffCameraAutoFixInCombat\\\":false,\\\"cameraDistanceRatio\\\":0.0,\\\"wwiseVibration\\\":true,\\\"isYInited\\\":true,\\\"joypadSenseIndexY\\\":2,\\\"joypadFocusSenseIndexY\\\":2,\\\"mouseSenseIndexY\\\":2,\\\"mouseFocusSenseIndexY\\\":2,\\\"touchpadSenseIndexY\\\":2,\\\"touchpadFocusSenseIndexY\\\":5,\\\"lastJoypadDefaultScaleY\\\":1.0,\\\"lastJoypadFocusScaleY\\\":1.0,\\\"lastPCDefaultScaleY\\\":0.75,\\\"lastPCFocusScaleY\\\":1.0,\\\"lastTouchDefaultScaleY\\\":1.0,\\\"lastTouchFcousScaleY\\\":1.0}\",\"graphicsData\":\"{\\\"currentVolatielGrade\\\":4,\\\"customVolatileGrades\\\":[],\\\"volatileVersion\\\":\\\"OSRELWin5.0.0\\\"}\",\"globalPerfData\":\"{\\\"saveItems\\\":[],\\\"truePortedFromGraphicData\\\":true,\\\"portedVersion\\\":\\\"OSRELWin5.0.0\\\",\\\"volatileUpgradeVersion\\\":0,\\\"portedFromGraphicData\\\":false}\",\"miniMapConfig\":1,\"enableCameraSlope\":true,\"enableCameraCombatLock\":true,\"completionPkg\":false,\"completionPlayGoPkg\":false,\"onlyPlayWithPSPlayer\":false,\"needPlayGoFullPkgPatch\":false,\"resinNotification\":true,\"exploreNotification\":true,\"volumeGlobal\":10,\"volumeSFX\":10,\"volumeMusic\":10,\"volumeVoice\":10,\"audioAPI\":-1,\"audioDynamicRange\":0,\"audioOutput\":0,\"_audioSuccessInit\":true,\"enableAudioChangeAndroidMinimumBufferCapacity\":true,\"audioAndroidMiniumBufferCapacity\":2048,\"vibrationLevel\":0,\"vibrationIntensity\":3,\"usingNewVibrationSetting\":true,\"motionBlur\":true,\"gyroAiming\":false,\"gyroHorMoveSpeedIndex\":2,\"gyroVerMoveSpeedIndex\":2,\"gyroHorReverse\":false,\"gyroVerReverse\":false,\"gyroRotateType\":0,\"gyroExcludeRightStickVerInput\":false,\"firstHDRSetting\":true,\"maxLuminosity\":0.0,\"uiPaperWhite\":0.0,\"scenePaperWhite\":0.0,\"gammaValue\":2.200000047683716,\"enableHDR\":false,\"_overrideControllerMapKeyList\":[],\"_overrideControllerMapValueList\":[],\"rewiredMapMigrateRecord\":[],\"rewiredDisableKeyboard\":false,\"rewiredEnableKeyboard\":false,\"rewiredEnableEDS\":false,\"disableRewiredDelayInit\":false,\"disableRewiredInitProtection\":false,\"conflictKeyBindingElementId\":[],\"conflictKeyBindingActionId\":[],\"lastSeenPreDownloadTime\":0,\"lastSeenSettingResourceTabScriptVersion\":\"\",\"enableEffectAssembleInEditor\":true,\"forceDisableQuestResourceManagement\":false,\"needReportQuestResourceDeleteStatusFiles\":false,\"disableTeamPageBackgroundSwitch\":false,\"disableHttpDns\":false,\"mtrCached\":false,\"mtrIsOpen\":false,\"mtrMaxTTL\":32,\"mtrTimeOut\":5000,\"mtrTraceCount\":5,\"mtrAbortTimeOutCount\":3,\"mtrAutoTraceInterval\":0,\"mtrTraceCDEachReason\":600,\"mtrTimeInterval\":1000,\"mtrBanReasons\":[],\"_customDataKeyList\":[],\"_customDataValueList\":[],\"_serializedCodeSwitches\":[],\"urlCheckCached\":false,\"urlCheckIsOpen\":false,\"urlCheckAllIP\":false,\"urlCheckTimeOut\":5000,\"urlCheckSueecssTraceCount\":5,\"urlCheckErrorTraceCount\":30,\"urlCheckAbortTimeOutCount\":3,\"urlCheckTimeInterval\":1000,\"urlCheckCDEachReason\":600,\"urlCheckBanReasons\":[],\"mtrUseOldWinVersion\":false,\"greyTestDeviceUniqueId\":\"\",\"muteAudioOnAppMinimized\":false,\"disableFallbackControllerType\":false,\"lastShowDoorProgress\":-1.0,\"globalPerfSettingVersion\":2}";
+        private const string GeneralDataDefault = "{\"deviceUUID\":\"\",\"userLocalDataVersionId\":\"\",\"deviceLanguageType\":1,\"deviceVoiceLanguageType\":1,\"selectedServerName\":\"\",\"localLevelIndex\":0,\"deviceID\":\"\",\"targetUID\":\"\",\"curAccountName\":\"\",\"uiSaveData\":\"\",\"inputData\":\"{\\\"scriptVersion\\\":\\\"OSRELWin5.0.0\\\",\\\"mouseSensitivity\\\":10.0,\\\"joypadSenseIndex\\\":2,\\\"joypadFocusSenseIndex\\\":2,\\\"joypadInvertCameraX\\\":false,\\\"joypadInvertCameraY\\\":false,\\\"joypadInvertFocusCameraX\\\":false,\\\"joypadInvertFocusCameraY\\\":false,\\\"mouseSenseIndex\\\":2,\\\"mouseFocusSenseIndex\\\":2,\\\"touchpadSenseIndex\\\":2,\\\"touchpadFocusSenseIndex\\\":5,\\\"enableTouchpadFocusAcceleration\\\":false,\\\"lastJoypadDefaultScale\\\":1.0,\\\"lastJoypadFocusScale\\\":1.0,\\\"lastPCDefaultScale\\\":0.75,\\\"lastPCFocusScale\\\":1.0,\\\"lastTouchDefaultScale\\\":1.0,\\\"lastTouchFcousScale\\\":1.0,\\\"switchWalkRunByBtn\\\":false,\\\"skiffCameraAutoFix\\\":true,\\\"skiffCameraAutoFixInCombat\\\":false,\\\"cameraDistanceRatio\\\":0.0,\\\"wwiseVibration\\\":true,\\\"isYInited\\\":true,\\\"joypadSenseIndexY\\\":2,\\\"joypadFocusSenseIndexY\\\":2,\\\"mouseSenseIndexY\\\":2,\\\"mouseFocusSenseIndexY\\\":2,\\\"touchpadSenseIndexY\\\":2,\\\"touchpadFocusSenseIndexY\\\":5,\\\"lastJoypadDefaultScaleY\\\":1.0,\\\"lastJoypadFocusScaleY\\\":1.0,\\\"lastPCDefaultScaleY\\\":0.75,\\\"lastPCFocusScaleY\\\":1.0,\\\"lastTouchDefaultScaleY\\\":1.0,\\\"lastTouchFcousScaleY\\\":1.0}\",\"graphicsData\":\"{\\\"currentVolatielGrade\\\":4,\\\"customVolatileGrades\\\":[],\\\"volatileVersion\\\":\\\"OSRELWin5.0.0\\\"}\",\"globalPerfData\":\"{\\\"saveItems\\\":[],\\\"truePortedFromGraphicData\\\":true,\\\"portedVersion\\\":\\\"OSRELWin5.0.0\\\",\\\"volatileUpgradeVersion\\\":0,\\\"portedFromGraphicData\\\":false}\",\"miniMapConfig\":1,\"enableCameraSlope\":true,\"enableCameraCombatLock\":true,\"completionPkg\":false,\"completionPlayGoPkg\":false,\"onlyPlayWithPSPlayer\":false,\"needPlayGoFullPkgPatch\":false,\"resinNotification\":true,\"exploreNotification\":true,\"volumeGlobal\":10,\"volumeSFX\":10,\"volumeMusic\":10,\"volumeVoice\":10,\"audioAPI\":-1,\"audioDynamicRange\":0,\"audioOutput\":0,\"_audioSuccessInit\":true,\"enableAudioChangeAndroidMinimumBufferCapacity\":true,\"audioAndroidMiniumBufferCapacity\":2048,\"vibrationLevel\":0,\"vibrationIntensity\":3,\"usingNewVibrationSetting\":true,\"motionBlur\":true,\"gyroAiming\":false,\"gyroHorMoveSpeedIndex\":2,\"gyroVerMoveSpeedIndex\":2,\"gyroHorReverse\":false,\"gyroVerReverse\":false,\"gyroRotateType\":0,\"gyroExcludeRightStickVerInput\":false,\"firstHDRSetting\":true,\"maxLuminosity\":0.0,\"uiPaperWhite\":0.0,\"scenePaperWhite\":0.0,\"gammaValue\":2.200000047683716,\"enableHDR\":false,\"_overrideControllerMapKeyList\":[],\"_overrideControllerMapValueList\":[],\"rewiredMapMigrateRecord\":[],\"rewiredDisableKeyboard\":false,\"rewiredEnableKeyboard\":false,\"rewiredEnableEDS\":false,\"disableRewiredDelayInit\":false,\"disableRewiredInitProtection\":false,\"conflictKeyBindingElementId\":[],\"conflictKeyBindingActionId\":[],\"lastSeenPreDownloadTime\":0,\"lastSeenSettingResourceTabScriptVersion\":\"\",\"enableEffectAssembleInEditor\":true,\"forceDisableQuestResourceManagement\":false,\"needReportQuestResourceDeleteStatusFiles\":false,\"disableTeamPageBackgroundSwitch\":false,\"disableHttpDns\":false,\"mtrCached\":false,\"mtrIsOpen\":false,\"mtrMaxTTL\":32,\"mtrTimeOut\":5000,\"mtrTraceCount\":5,\"mtrAbortTimeOutCount\":3,\"mtrAutoTraceInterval\":0,\"mtrTraceCDEachReason\":600,\"mtrTimeInterval\":1000,\"mtrBanReasons\":[],\"_customDataKeyList\":[],\"_customDataValueList\":[],\"_serializedCodeSwitches\":[],\"urlCheckCached\":false,\"urlCheckIsOpen\":false,\"urlCheckAllIP\":false,\"urlCheckTimeOut\":5000,\"urlCheckSueecssTraceCount\":5,\"urlCheckErrorTraceCount\":30,\"urlCheckAbortTimeOutCount\":3,\"urlCheckTimeInterval\":1000,\"urlCheckCDEachReason\":600,\"urlCheckBanReasons\":[],\"mtrUseOldWinVersion\":false,\"greyTestDeviceUniqueId\":\"\",\"muteAudioOnAppMinimized\":false,\"disableFallbackControllerType\":false,\"lastShowDoorProgress\":-1.0,\"globalPerfSettingVersion\":2}";
+
         #endregion
 
         #region Properties
-        //in need of help,,
+        //in need of help,
         //Using guide from https://github.com/Myp3a/GenshinConfigurator/wiki/Config-format
         //Thanks Myp3a!
 
@@ -340,26 +348,26 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new ArgumentNullException($"Cannot load {_ValueName} since RegistryKey is unexpectedly not initialized!");
-                object value = RegistryRoot.GetValue(_ValueName) ?? throw new ArgumentNullException($"Cannot find registry key {_ValueName}");
+                if (RegistryRoot == null) throw new ArgumentNullException($"Cannot load {ValueName} since RegistryKey is unexpectedly not initialized!");
+                object value = RegistryRoot.GetValue(ValueName) ?? throw new ArgumentNullException($"Cannot find registry key {ValueName}");
 
                 ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DUMPGIJSON
                 // Dump GeneralData as raw string
-                LogWriteLine($"RAW Genshin Settings: {_ValueName}\r\n" +
+                LogWriteLine($"RAW Genshin Settings: {ValueName}\r\n" +
                              $"{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 
                 // Dump GeneralData as indented JSON output using GeneralData properties
-                LogWriteLine($"Deserialized Genshin Settings: {_ValueName}\r\n{byteStr
-                    .Deserialize(GenshinSettingsJSONContext.Default.GeneralData)
-                    .Serialize(GenshinSettingsJSONContext.Default.GeneralData, false, true)}", LogType.Debug, true);
+                LogWriteLine($"Deserialized Genshin Settings: {ValueName}\r\n{byteStr
+                    .Deserialize(GenshinSettingsJsonContext.Default.GeneralData)
+                    .Serialize(GenshinSettingsJsonContext.Default.GeneralData, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                LogWriteLine($"Loaded Genshin Settings: {_ValueName}", LogType.Debug, true);
+                LogWriteLine($"Loaded Genshin Settings: {ValueName}", LogType.Debug, true);
 #else
                 LogWriteLine($"Loaded Genshin Settings", LogType.Default, true);
 #endif
-                GeneralData data = byteStr.Deserialize(GenshinSettingsJSONContext.Default.GeneralData) ?? new GeneralData();
+                GeneralData data = byteStr.Deserialize(GenshinSettingsJsonContext.Default.GeneralData) ?? new GeneralData();
 
                 if (data._graphicsData != null) data.graphicsData = GraphicsData.Load(data._graphicsData);
                 if (data._globalPerfData != null) data.globalPerfData   = GlobalPerfData.Load(data._globalPerfData, data.graphicsData)!;
@@ -367,16 +375,16 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}, Default fallback data is used!" +
+                LogWriteLine($"Failed while reading {ValueName}, Default fallback data is used!" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                    $"Failed when reading game settings {_ValueName}!\r\nFallback default value is used.\r\n\r\n" +
+                    $"Failed when reading game settings {ValueName}!\r\nFallback default value is used.\r\n\r\n" +
                     $"Unless you have never opened the game (fresh installation), please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n\r\n" +
                     $"{ex}", ex));
 
-                GeneralData data = _generalDataDefault!.Deserialize(GenshinSettingsJSONContext.Default.GeneralData) ?? new GeneralData();
+                GeneralData data = GeneralDataDefault.Deserialize(GenshinSettingsJsonContext.Default.GeneralData) ?? new GeneralData();
                 data.graphicsData   = GraphicsData.Load(data._graphicsData!);
                 data.globalPerfData = GlobalPerfData.Load(data._globalPerfData!, data.graphicsData)!;
                 return data;
@@ -387,21 +395,21 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                _graphicsData = graphicsData!.Create(globalPerfData!);
-                _globalPerfData = globalPerfData!.Save()!;
+                _graphicsData = graphicsData.Create(globalPerfData);
+                _globalPerfData = globalPerfData.Save();
 
-                string data = this.Serialize(GenshinSettingsJSONContext.Default.GeneralData);
+                string data = this.Serialize(GenshinSettingsJsonContext.Default.GeneralData);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DUMPGIJSON
                 //Dump saved GeneralData JSON from Collapse as indented output
-                LogWriteLine($"Saved Genshin Settings: {_ValueName}\r\n{this.Serialize(GenshinSettingsJSONContext.Default.GeneralData, false, true)}", LogType.Debug, true);
+                LogWriteLine($"Saved Genshin Settings: {ValueName}\r\n{this.Serialize(GenshinSettingsJsonContext.Default.GeneralData, false, true)}", LogType.Debug, true);
 #endif
 #if DEBUG
-                LogWriteLine($"Saved Genshin Settings: {_ValueName}" +
+                LogWriteLine($"Saved Genshin Settings: {ValueName}" +
                     $"\r\n      Text Language        : {deviceLanguageType}" +
                     $"\r\n      VO Language          : {deviceVoiceLanguageType}" +
                     $"\r\n      Audio - Master Volume: {volumeGlobal}" +
@@ -420,12 +428,12 @@ namespace CollapseLauncher.GameSettings.Genshin
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception("Failed to save Genshin settings, please report them to GitHub issues!", ex));
             }
         }
 
-        public bool Equals(GeneralData? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is GeneralData generalData && TypeExtensions.IsInstancePropertyEqual(this, generalData);
         #endregion
     }
 }

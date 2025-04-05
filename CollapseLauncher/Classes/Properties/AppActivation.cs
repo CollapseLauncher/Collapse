@@ -2,27 +2,32 @@
 using Microsoft.Win32;
 using Microsoft.Windows.AppLifecycle;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Activation;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+// ReSharper disable GrammarMistakeInComment
 
 namespace CollapseLauncher
 {
-    public static class AppActivation
+    public static partial class AppActivation
     {
+        [GeneratedRegex("""[\"].+?[\"]|[^ ]+""", RegexOptions.NonBacktracking, 10000)]
+        internal static partial Regex MatchDoubleOrEscapedQuote();
+
         public static void Enable()
         {
             AppInstance.GetCurrent().Activated += App_Activated;
 
-            string protocolName = "collapse";
-            RegistryKey reg = Registry.ClassesRoot.OpenSubKey(protocolName + "\\shell\\open\\command", true);
+            const string protocolName = "collapse";
+            RegistryKey  reg          = Registry.ClassesRoot.OpenSubKey(protocolName + @"\shell\open\command", true);
 
             if (reg != null)
             {
-                if ((string)reg.GetValue("") == string.Format("\"{0}\" %1", AppExecutablePath))
+                if ((string)reg.GetValue("") == $"\"{AppExecutablePath}\" %1")
                 {
                     LogWriteLine("The protocol is already activated.");
                     return;
@@ -39,9 +44,9 @@ namespace CollapseLauncher
             protocol.SetValue("URL Protocol", "");
             protocol.SetValue("Version", LauncherUpdateHelper.LauncherCurrentVersionString);
 
-            RegistryKey command = protocol.CreateSubKey("shell\\open\\command", true);
+            RegistryKey command = protocol.CreateSubKey(@"shell\open\command", true);
 
-            command.SetValue("", string.Format("\"{0}\" %1", AppExecutablePath));
+            command.SetValue("", $"\"{AppExecutablePath}\" %1");
         }
 
         private static void App_Activated(object sender, AppActivationArguments e)
@@ -58,8 +63,9 @@ namespace CollapseLauncher
             m_arguments = new Arguments();
 
             // Matches anything that is between two \" or " and anything that is not a space.
-            var splitArgs = Regex.Matches(args!.Arguments, @"[\""].+?[\""]|[^ ]+", RegexOptions.Compiled)
-                                 .Select(x => x.Value.Trim('"'));
+            IEnumerable<string> splitArgs = MatchDoubleOrEscapedQuote()
+                .Matches(args!.Arguments)
+                .Select(x => x.Value.Trim('"'));
 
             ArgumentParser.ParseArguments(splitArgs.Skip(1).ToArray());
 
@@ -71,16 +77,16 @@ namespace CollapseLauncher
 
         public static bool DecideRedirection()
         {
-            bool isRedirect = false;
             AppActivationArguments args = AppInstance.GetCurrent().GetActivatedEventArgs();
             AppInstance keyInstance = AppInstance.FindOrRegisterForKey(m_appMode.ToString());
 
-            if (!keyInstance.IsCurrent && !IsMultipleInstanceEnabled)
+            if (keyInstance.IsCurrent || IsMultipleInstanceEnabled)
             {
-                isRedirect = true;
-                keyInstance.RedirectActivationToAsync(args).GetAwaiter().GetResult();
+                return false;
             }
-            return isRedirect;
+
+            keyInstance.RedirectActivationToAsync(args).GetAwaiter().GetResult();
+            return true;
         }
 
         public static void Disable()

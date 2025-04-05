@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
-
+// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -24,15 +24,17 @@ using static Hi3Helper.Logger;
 // ReSharper disable InconsistentNaming
 // ReSharper disable ConvertToPrimaryConstructor
 // ReSharper disable IdentifierTypo
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
 namespace CollapseLauncher.InstallManager.Honkai
 {
-    internal partial class HonkaiInstall : InstallManagerBase
+    internal sealed partial class HonkaiInstall : InstallManagerBase
     {
         #region Override Properties
 
-        protected override bool               _canDeltaPatch          => _gameVersionManager.IsGameHasDeltaPatch();
-        protected override DeltaPatchProperty _gameDeltaPatchProperty => _gameVersionManager.GetDeltaPatchInfo();
+        protected override bool               _canDeltaPatch          => GameVersionManager.IsGameHasDeltaPatch();
+        protected override DeltaPatchProperty _gameDeltaPatchProperty => GameVersionManager.GetDeltaPatchInfo();
 
         #endregion
 
@@ -43,11 +45,9 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #endregion
 
-        public HonkaiInstall(UIElement     parentUI, IGameVersionCheck GameVersionManager, ICache GameCacheManager,
-                             IGameSettings GameSettings)
+        public HonkaiInstall(UIElement     parentUI, IGameVersion GameVersionManager, ICache GameCacheManager)
             : base(parentUI, GameVersionManager)
         {
-            _gameSettings     = GameSettings;
             _gameCacheManager = GameCacheManager as HonkaiCache;
         }
 
@@ -58,15 +58,17 @@ namespace CollapseLauncher.InstallManager.Honkai
             IsRunning = true;
 
             // Get the delta patch confirmation if the property is not null
-            if (_gameDeltaPatchProperty != null)
+            if (_gameDeltaPatchProperty == null)
             {
-                // If the confirm is 1 (verified) or -1 (cancelled), then return the code
-                int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                      _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as HonkaiRepair);
-                if (deltaPatchConfirm == -1 || deltaPatchConfirm == 1)
-                {
-                    return deltaPatchConfirm;
-                }
+                return await base.StartPackageVerification(gamePackage);
+            }
+
+            // If the confirm is 1 (verified) or -1 (cancelled), then return the code
+            int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
+                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as HonkaiRepair);
+            if (deltaPatchConfirm is -1 or 1)
+            {
+                return deltaPatchConfirm;
             }
 
             // If no delta patch is happening as deltaPatchConfirm returns 0 (normal update), then do the base verification
@@ -75,9 +77,9 @@ namespace CollapseLauncher.InstallManager.Honkai
 
 #nullable enable
         protected override IRepair GetGameRepairInstance(string? versionString) =>
-            new HonkaiRepair(_parentUI,
-                        _gameVersionManager,
-                        _gameCacheManager, _gameSettings,
+            new HonkaiRepair(ParentUI,
+                        GameVersionManager,
+                        _gameCacheManager, GameSettings,
                         true,
                         versionString);
 #nullable restore
@@ -99,35 +101,35 @@ namespace CollapseLauncher.InstallManager.Honkai
         public override async ValueTask<bool> TryShowFailedGameConversionState()
         {
             // Get the target and source path
-            string GamePath            = _gameVersionManager.GameDirPath;
-            string GamePathIngredients = GetFailedGameConversionFolder(GamePath);
+            string gamePath            = GameVersionManager.GameDirPath;
+            string gamePathIngredients = GetFailedGameConversionFolder(gamePath);
             // If path doesn't exist or null, then return false
-            if (GamePathIngredients is null || !Directory.Exists(GamePathIngredients))
+            if (gamePathIngredients is null || !Directory.Exists(gamePathIngredients))
             {
                 return false;
             }
 
             // Get the size of entire folder and check if it's below 1 MB, then return false
-            long FileSize = Directory.EnumerateFiles(GamePathIngredients).Sum(x => new FileInfo(x).Length);
+            long FileSize = Directory.EnumerateFiles(gamePathIngredients).Sum(x => new FileInfo(x).Length);
             if (FileSize < 1 << 20)
             {
                 return false;
             }
 
-            LogWriteLine($"Previous failed game conversion has been detected on Game: {_gameVersionManager.GamePreset.ZoneFullname} ({GamePathIngredients})",
+            LogWriteLine($"Previous failed game conversion has been detected on Game: {GameVersionManager.GamePreset.ZoneFullname} ({gamePathIngredients})",
                          LogType.Warning, true);
             // Show action dialog
-            switch (await Dialog_PreviousGameConversionFailed(_parentUI))
+            switch (await Dialog_PreviousGameConversionFailed())
             {
                 // If primary button clicked, then move the folder and get back to HomePage
                 case ContentDialogResult.Primary:
-                    MoveFolderContent(GamePathIngredients, GamePath);
+                    MoveFolderContent(gamePathIngredients, gamePath);
                     MainFrameChanger.ChangeMainFrame(typeof(HomePage));
                     break;
             }
 
             // Then reinitialize the version manager
-            _gameVersionManager.Reinitialize();
+            GameVersionManager.Reinitialize();
             return true;
         }
 
@@ -146,7 +148,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 {
                     string IngredientPath = Directory
                                            .EnumerateDirectories(ParentPath,
-                                                                 $"{_gameVersionManager.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients",
+                                                                 $"{GameVersionManager.GamePreset.GameDirectoryName}*_ConvertedTo-*_Ingredients",
                                                                  SearchOption.TopDirectoryOnly)
                                            .FirstOrDefault();
                     // If the path is not null, then return
@@ -184,7 +186,7 @@ namespace CollapseLauncher.InstallManager.Honkai
                 gameDataFolderName  = "BH3_Data",
                 foldersToDelete     = ["BH3_Data", "AntiCheatExpert"],
                 filesToDelete       = ["ACE-BASE.sys", "bugtrace.dll", "pkg_version", "UnityPlayer.dll", "config.ini"],
-                foldersToKeepInData = Array.Empty<string>()
+                foldersToKeepInData = []
             };
         }
 
@@ -261,24 +263,21 @@ namespace CollapseLauncher.InstallManager.Honkai
                 return true;
             }
 
-            // 8th check: Ensure that the file is Sophon Chunk file
-            // if game state is installed.
-            if (gameState == GameInstallStateEnum.Installed
-                && localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase))
+            switch (gameState)
             {
-                return true;
+                // 8th check: Ensure that the file is Sophon Chunk file
+                // if game state is installed.
+                case GameInstallStateEnum.Installed
+                    when localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase):
+                // 9th check: If ACE-BASE.sys is detected
+                // AND game state is installed.
+                case GameInstallStateEnum.Installed when
+                    localFileInfo.RelativePath.EndsWith("ACE-BASE.sys", StringComparison.OrdinalIgnoreCase):
+                    return true;
+                default:
+                    // If all those matches failed, then return them as a non-game file
+                    return false;
             }
-            
-            // 9th check: If ACE-BASE.sys is detected
-            // AND game state is installed.
-            if (gameState == GameInstallStateEnum.Installed &&
-                localFileInfo.RelativePath.EndsWith("ACE-BASE.sys", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            // If all those matches failed, then return them as a non-game file
-            return false;
         }
 
         #endregion

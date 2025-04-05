@@ -2,15 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+// ReSharper disable PartialTypeWithSinglePart
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 // Adapted from https://github.com/rudyhuyn/XamlPlus
 public static partial class StyleExtensions
 {
     // Used to distinct normal ResourceDictionary and the one we add.
-    private sealed class StyleExtensionResourceDictionary : ResourceDictionary
-    {
-    }
+    private sealed partial class StyleExtensionResourceDictionary : ResourceDictionary;
 
     public static ResourceDictionary GetResources(Style obj)
     {

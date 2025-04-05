@@ -10,15 +10,18 @@ using System.Text;
 using System.Text.Json.Serialization;
 using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
+// ReSharper disable RedundantDefaultMemberInitializer
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
+#pragma warning disable CS0659
 namespace CollapseLauncher.GameSettings.Honkai
 {
     internal class PersonalGraphicsSettingV2 : IGameSettingsValue<PersonalGraphicsSettingV2>
     {
         #region Fields
-        private const string _ValueName = "GENERAL_DATA_V2_PersonalGraphicsSettingV2_h3480068519";
-        private short _TargetFrameRateForInLevel = 60;
-        private short _TargetFrameRateForOthers = 60;
+        private const string ValueName                = "GENERAL_DATA_V2_PersonalGraphicsSettingV2_h3480068519";
+
         #endregion
 
         #region Properties
@@ -43,9 +46,9 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// </summary>
         public short TargetFrameRateForInLevel
         {
-            get => _TargetFrameRateForInLevel;
-            set => _TargetFrameRateForInLevel = value < 1 ? _TargetFrameRateForInLevel : value;
-        }
+            get;
+            set => field = value < 1 ? field : value;
+        } = 60;
 
         /// <summary>
         /// This defines "<c>FPS out of combat</c>" combobox In-game settings -> Video.<br/>
@@ -54,9 +57,9 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// </summary>
         public short TargetFrameRateForOthers
         {
-            get => _TargetFrameRateForOthers;
-            set => _TargetFrameRateForOthers = value < 1 ? _TargetFrameRateForOthers : value;
-        }
+            get;
+            set => field = value < 1 ? field : value;
+        } = 60;
 
         /// <summary>
         /// This defines "<c>Reflection</c>" combobox In-game settings -> Video.<br/>
@@ -181,27 +184,27 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {_ValueName} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(_ValueName, null);
+                object? value = RegistryRoot.GetValue(ValueName, null);
 
                 if (value != null)
                 {
                     ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DEBUG
-                    LogWriteLine($"Loaded HI3 Settings: {_ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
+                    LogWriteLine($"Loaded HI3 Settings: {ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(HonkaiSettingsJSONContext.Default.PersonalGraphicsSettingV2) ?? new PersonalGraphicsSettingV2();
+                    return byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalGraphicsSettingV2) ?? new PersonalGraphicsSettingV2();
                 }
             }
             catch (Exception ex)
             {
-                LogWriteLine($"Failed while reading {_ValueName}" +
+                LogWriteLine($"Failed while reading {ValueName}" +
                              $"\r\n  Please open the game and change any settings, then close normally. After that you can use this feature." +
                              $"\r\n  If the issue persist, please report it on GitHub" +
                              $"\r\n{ex}", LogType.Error, true);
                 ErrorSender.SendException(new Exception(
-                    $"Failed when reading game settings {_ValueName}\r\n" +
+                    $"Failed when reading game settings {ValueName}\r\n" +
                     $"Please open the game and change any settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
@@ -213,24 +216,24 @@ namespace CollapseLauncher.GameSettings.Honkai
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {_ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
-                string data = this.Serialize(HonkaiSettingsJSONContext.Default.PersonalGraphicsSettingV2);
+                string data = this.Serialize(HonkaiSettingsJsonContext.Default.PersonalGraphicsSettingV2);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-                RegistryRoot.SetValue(_ValueName, dataByte, RegistryValueKind.Binary);
+                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
-                LogWriteLine($"Saved HI3 Settings: {_ValueName}\r\n{data}", LogType.Debug, true);
+                LogWriteLine($"Saved HI3 Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)
             {
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                LogWriteLine($"Failed to save {_ValueName}!\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"Failed to save {ValueName}!\r\n{ex}", LogType.Error, true);
             }
         }
 
-        public bool Equals(PersonalGraphicsSettingV2? comparedTo) => TypeExtensions.IsInstancePropertyEqual(this, comparedTo);
+        public override bool Equals(object? comparedTo) => comparedTo is PersonalGraphicsSettingV2 toThis && TypeExtensions.IsInstancePropertyEqual(this, toThis);
         #endregion
     }
 }

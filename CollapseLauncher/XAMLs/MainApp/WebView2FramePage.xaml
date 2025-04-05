@@ -12,8 +12,8 @@
         <ThemeShadow x:Name="SharedShadow" />
     </Page.Resources>
     <Grid x:Name="WebView2Panel"
-          Canvas.ZIndex="8"
           Background="{ThemeResource WebView2GridBackground}"
+          Canvas.ZIndex="8"
           Shadow="{ThemeResource SharedShadow}"
           Visibility="Collapsed">
         <Grid.RowDefinitions>

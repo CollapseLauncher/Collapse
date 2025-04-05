@@ -3,6 +3,7 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Base;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
@@ -22,6 +23,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable CommentTypo
 
 // ReSharper disable CheckNamespace
 // ReSharper disable IdentifierTypo
@@ -34,10 +38,9 @@ namespace CollapseLauncher.Pages
         internal static FileCleanupPage?                    Current { get; set; }
         internal        ObservableCollection<LocalFileInfo> FileInfoSource;
 
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public FileCleanupPage()
         {
-            FileInfoSource = new ObservableCollection<LocalFileInfo>();
+            FileInfoSource = [];
 
             InitializeComponent();
             Current = this;
@@ -46,7 +49,6 @@ namespace CollapseLauncher.Pages
                           FileInfoSource.CollectionChanged += UpdateUIOnCollectionChange;
                       };
         }
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         private int  _selectedAssetsCount;
         private long _assetSelectedSize;
@@ -136,27 +138,34 @@ namespace CollapseLauncher.Pages
 
         private async void ToggleCheckAll(object sender, RoutedEventArgs e)
         {
-            var s = new Stopwatch();
-            if (ListViewTable.Items.Count > 1000)
+            try
             {
-                LoadingMessageHelper.Initialize();
-                LoadingMessageHelper.ShowLoadingFrame();
-                LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
-                                                Locale.Lang._FileCleanupPage.LoadingSubtitle3);
-            }
+                var s = new Stopwatch();
+                if (ListViewTable.Items.Count > 1000)
+                {
+                    LoadingMessageHelper.Initialize();
+                    LoadingMessageHelper.ShowLoadingFrame();
+                    LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
+                                                    Locale.Lang._FileCleanupPage.LoadingSubtitle3);
+                }
             
-            await Task.Delay(100);
-            s.Start();
-            bool toCheckCopy = false;
-            if (sender is CheckBox checkBox)
+                await Task.Delay(100);
+                s.Start();
+                bool toCheckCopy = false;
+                if (sender is CheckBox checkBox)
+                {
+                    bool toCheck = checkBox.IsChecked ?? false;
+                    await ToggleCheckAllInnerAsync(toCheck);
+                    toCheckCopy = toCheck;
+                } 
+                s.Stop();
+                LoadingMessageHelper.HideLoadingFrame();
+                Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+            }
+            catch (Exception ex)
             {
-                bool toCheck = checkBox.IsChecked ?? false;
-                await ToggleCheckAllInnerAsync(toCheck);
-                toCheckCopy = toCheck;
-            } 
-            s.Stop();
-            LoadingMessageHelper.HideLoadingFrame();
-            Logger.LogWriteLine($"[FileCleanupPage::ToggleCheckAll({toCheckCopy})] Elapsed time: {s.ElapsedMilliseconds} ms", LogType.Scheme);
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
         private async Task CheckAll()
@@ -178,47 +187,54 @@ namespace CollapseLauncher.Pages
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
-            var addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
-            
-            var removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
-                                               ? removedItems.Sum(x => x.FileSize)
-                                               : removedItems.Select(x => x.FileSize).ToArray().Sum());
-
-            var addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
-                                             ? addedItems.Sum(x => x.FileSize)
-                                             : addedItems.Select(x => x.FileSize).ToArray().Sum());
-
-            var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
-            var removedSize = results[0];
-            var addedSize   = results[1];
-
-            _selectedAssetsCount += addedItems.Count - removedItems.Count;
-            _assetSelectedSize   += addedSize - removedSize;
-
-            await EnqueueOnDispatcherQueueAsync(() =>
+            try
             {
-                if (_selectedAssetsCount > 0)
-                {
-                    ToggleCheckAllCheckBox.Content = string.Format(
-                                                                   Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
-                                                                    _selectedAssetsCount,
-                                                                    ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
-                                                                    ConverterTool.SummarizeSizeSimple(_assetTotalSize));
-                }
-                else
-                {
-                    ToggleCheckAllCheckBox.Content = Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
-                }
+                List<LocalFileInfo> removedItems = e.RemovedItems.OfType<LocalFileInfo>().ToList();
+                List<LocalFileInfo> addedItems   = e.AddedItems.OfType<LocalFileInfo>().ToList();
+            
+                Task<long> removedSizeTask = Task.Run(() => removedItems.Count == 0 ? 0 : removedItems.Count < 512
+                                                          ? removedItems.Sum(x => x.FileSize)
+                                                          : removedItems.Select(x => x.FileSize).ToArray().Sum());
 
-                DeleteSelectedFilesText.Text =
-                    string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, _selectedAssetsCount);
-                DeleteSelectedFiles.IsEnabled = _selectedAssetsCount > 0;
+                Task<long> addedSizeTask = Task.Run(() => addedItems.Count == 0 ? 0 : addedItems.Count < 512
+                                                        ? addedItems.Sum(x => x.FileSize)
+                                                        : addedItems.Select(x => x.FileSize).ToArray().Sum());
 
-                ToggleCheckAllCheckBox.IsChecked = _selectedAssetsCount == 0
-                    ? false
-                    : _selectedAssetsCount == FileInfoSource.Count ? true : null;
-            });
+                var results     = await Task.WhenAll(removedSizeTask, addedSizeTask);
+                var removedSize = results[0];
+                var addedSize   = results[1];
+
+                _selectedAssetsCount += addedItems.Count - removedItems.Count;
+                _assetSelectedSize   += addedSize - removedSize;
+
+                await EnqueueOnDispatcherQueueAsync(() =>
+                                                    {
+                                                        if (_selectedAssetsCount > 0)
+                                                        {
+                                                            ToggleCheckAllCheckBox.Content = string.Format(
+                                                                 Locale.Lang._FileCleanupPage.BottomCheckboxFilesSelected,
+                                                                 _selectedAssetsCount,
+                                                                 ConverterTool.SummarizeSizeSimple(_assetSelectedSize),
+                                                                 ConverterTool.SummarizeSizeSimple(_assetTotalSize));
+                                                        }
+                                                        else
+                                                        {
+                                                            ToggleCheckAllCheckBox.Content = Locale.Lang._FileCleanupPage.BottomCheckboxNoFileSelected;
+                                                        }
+
+                                                        DeleteSelectedFilesText.Text =
+                                                            string.Format(Locale.Lang._FileCleanupPage.BottomButtonDeleteSelectedFiles, _selectedAssetsCount);
+                                                        DeleteSelectedFiles.IsEnabled = _selectedAssetsCount > 0;
+
+                                                        ToggleCheckAllCheckBox.IsChecked = _selectedAssetsCount == 0
+                                                            ? false
+                                                            : _selectedAssetsCount == FileInfoSource.Count ? true : null;
+                                                    });
+            }
+            catch (Exception ex)
+            {
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
         }
 
         private Task EnqueueOnDispatcherQueueAsync(Action action)
@@ -342,63 +358,61 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    using (ThreadPoolThrottle threadThrottle = ThreadPoolThrottle.Start())
+                    using ThreadPoolThrottle threadThrottle = ThreadPoolThrottle.Start();
+                    var                      options        = new ParallelOptions { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
+                    Task deleteListTask = Task.Factory.StartNew(
+                                                                () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
+                                                                CancellationToken.None,
+                                                                TaskCreationOptions.DenyChildAttach,
+                                                                TaskScheduler.Default);
+
+                    List<LocalFileInfo> failedList     = [];
+                    Lock                failedListLock = new Lock();
+
+                    Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
+                                                                        await Task.Factory.StartNew(state =>
+                                                                                     {
+                                                                                         LocalFileInfo fileInfo = (LocalFileInfo)state!;
+                                                                                         try
+                                                                                         {
+                                                                                             FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
+                                                                                             if (isFileExist)
+                                                                                             {
+                                                                                                 fileInfoN.Delete();
+                                                                                             }
+
+                                                                                             Interlocked.Increment(ref deleteSuccess);
+                                                                                         }
+                                                                                         catch (Exception ex)
+                                                                                         {
+                                                                                             Interlocked.Increment(ref deleteFailed);
+                                                                                             lock (failedListLock)
+                                                                                             {
+                                                                                                 failedList.Add(fileInfo);
+                                                                                             }
+                                                                                             Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
+                                                                                                      LogType.Error, true);
+                                                                                         }
+                                                                                     },
+                                                                                 fileInfoState,
+                                                                                 CancellationToken.None,
+                                                                                 TaskCreationOptions.DenyChildAttach,
+                                                                                 TaskScheduler.Default));
+
+                    await Task.WhenAll(deleteListTask, deleteFileTask);
+
+                    if (failedList.Count > 0)
                     {
-                        var options = new ParallelOptions { MaxDegreeOfParallelism = threadThrottle.MultipliedThreadCount };
-                        Task deleteListTask = Task.Factory.StartNew(
-                            () => deletedItems.AddRange(CollectionsMarshal.AsSpan(deletionSource)),
-                            CancellationToken.None,
-                            TaskCreationOptions.DenyChildAttach,
-                            TaskScheduler.Default);
-
-                        List<LocalFileInfo> failedList = [];
-                        Lock failedListLock = new Lock();
-
-                        Task deleteFileTask = Parallel.ForEachAsync(deletionSource, options, async (fileInfoState, _) =>
-                        await Task.Factory.StartNew(state =>
+                        foreach (LocalFileInfo failedFileInfo in failedList)
                         {
-                            LocalFileInfo fileInfo = (LocalFileInfo)state!;
-                            try
-                            {
-                                FileInfo fileInfoN = fileInfo.ToFileInfo().EnsureNoReadOnly(out bool isFileExist);
-                                if (isFileExist)
-                                {
-                                    fileInfoN.Delete();
-                                }
-
-                                Interlocked.Increment(ref deleteSuccess);
-                            }
-                            catch (Exception ex)
-                            {
-                                Interlocked.Increment(ref deleteFailed);
-                                lock (failedListLock)
-                                {
-                                    failedList.Add(fileInfo);
-                                }
-                                Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Failed while deleting this file: {fileInfo.FullPath}\r\n{ex}",
-                                    LogType.Error, true);
-                            }
-                        },
-                        fileInfoState,
-                        CancellationToken.None,
-                        TaskCreationOptions.DenyChildAttach,
-                        TaskScheduler.Default));
-
-                        await Task.WhenAll(deleteListTask, deleteFileTask);
-
-                        if (failedList.Count > 0)
-                        {
-                            foreach (LocalFileInfo failedFileInfo in failedList)
-                            {
-                                deletedItems.Remove(failedFileInfo);
-                            }
+                            deletedItems.Remove(failedFileInfo);
                         }
-
-                        long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
-                        _assetTotalSize -= totalDeleted;
-
-                        Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
                     }
+
+                    long totalDeleted = deletedItems.Select(x => x.FileSize).ToArray().Sum();
+                    _assetTotalSize -= totalDeleted;
+
+                    Logger.LogWriteLine($"[FileCleanupPage::PerformRemoval()] Inner deletion task was completed in: {s.ElapsedMilliseconds} ms", LogType.Scheme);
                 }
 
                 // Execute the deleted items removal from the source collection with our own method (which is ridiculously faster).

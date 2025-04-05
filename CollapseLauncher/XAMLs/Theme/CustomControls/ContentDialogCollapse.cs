@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
 using NColor = Windows.UI.Color;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.CustomControls
 {
@@ -27,8 +28,8 @@ namespace CollapseLauncher.CustomControls
                 ContentDialogTheme.Error => UIElementExtensions.GetApplicationResource<SolidColorBrush>("SystemFillColorCriticalBrush"),
                 _ => UIElementExtensions.GetApplicationResource<SolidColorBrush>("SystemFillColorAttentionBrush")
             }).Color;
-            titleColor.A = 255;
-            (UIElementExtensions.GetApplicationResource<SolidColorBrush>("DialogTitleBrush")).Color = titleColor;
+            titleColor.A                                                                          = 255;
+            UIElementExtensions.GetApplicationResource<SolidColorBrush>("DialogTitleBrush").Color = titleColor;
 
             ThemeTitleGlyph = Theme switch
             {
@@ -41,7 +42,7 @@ namespace CollapseLauncher.CustomControls
 
         public new IAsyncOperation<ContentDialogResult> ShowAsync()
         {
-            if (Title != null && Title is string titleString && Theme != ContentDialogTheme.Informational)
+            if (Title is string titleString && Theme != ContentDialogTheme.Informational)
             {
                 Grid titleStack = UIElementExtensions.CreateIconTextGrid(
                         text: titleString,

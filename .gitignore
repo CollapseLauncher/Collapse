@@ -6,6 +6,8 @@
 packages/*
 
 CollapseLauncher/Deps/*
+CollapseLauncher/StaticLib/*.lib
+CollapseLauncher/StaticLib/**/*.lib
 CollapseLauncher/Invoker/*
 **/Generated Files/**
 *.psd

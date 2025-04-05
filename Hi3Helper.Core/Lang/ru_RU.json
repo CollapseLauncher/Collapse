@@ -81,6 +81,8 @@
     "UnhandledSubtitle3": "Игра завершилась. Детали ошибки приведены ниже:",
     "UnhandledTitle4": "Предупреждение",
     "UnhandledSubtitle4": "Это не является серьезной проблемой, но мы решили, что должны сообщить вам об этом: \nВ связи с A/B тестированием miHoYo, Collapse не поддерживает чтение следующих файлов:\nkey: App_Settings_h2319593470.\nМы приносим извинения за причиненные неудобства и благодарим вас за понимание.",
+    "UnhandledTitleDiskCrc": "Обнаружено повреждение диска!",
+    "UnhandledSubDiskCrc": "Обнаружено повреждение диска при доступе к файлу. Пожалуйста, проверьте диск с помощью команды chkdsk.",
     "CopyClipboardBtn1": "Скопировать всё в буфер обмена",
     "CopyClipboardBtn2": "Скопировано в буфер обмена!",
     "GoBackPageBtn1": "Вернуться к предыдущей странице"
@@ -146,12 +148,19 @@
     "GameSettings_Panel2UninstallGame": "Удалить игру",
     "GameSettings_Panel2ConvertVersion": "Изменить версию игры",
     "GameSettings_Panel2MoveGameLocationGame": "Переместить игру",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Cannot move game to the root of your drive!\r\nPlease make a folder and try again.",
     "GameSettings_Panel2StopGame": "Принудительно закрыть игру ",
+    "GameSettings_Panel3RegionalSettings": "Regional Settings",
     "GameSettings_Panel3": "Пользовательские команды запуска",
-    "GameSettings_Panel4": "Разное",
+    "GameSettings_Panel3RegionRpc": "Show Playing Status in Discord",
+    "GameSettings_Panel3CustomBGRegion": "Изменить фон региона",
+    "GameSettings_Panel3CustomBGRegionSectionTitle": "Пользовательский фон для региона",
+    "GameSettings_Panel4": "Global - Miscellaneous",
     "GameSettings_Panel4ShowEventsPanel": "Показать панель событий",
+    "GameSettings_Panel4ScaleUpEventsPanel": "Scale Up Events Panel on Hover",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
     "GameSettings_Panel4ShowPlaytimeButton": "Показать время в игре",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Sync Playtime with Database",
     "GameSettings_Panel4CreateShortcutBtn": "Создать ярлык",
     "GameSettings_Panel4AddToSteamBtn": "Добавить в Steam",
 
@@ -160,10 +169,20 @@
     "GamePlaytime_Idle_Panel1Minutes": "Минут",
     "GamePlaytime_Idle_ResetBtn": "Сбросить",
     "GamePlaytime_Idle_ChangeBtn": "Изменить",
+    "GamePlaytime_Idle_SyncDb": "Sync",
+    "GamePlaytime_Idle_SyncDbSyncing": "Syncing...",
     "GamePlaytime_Running_Info1": "Эта игра сейчас запущена, поэтому нельзя изменить время игры.",
-    "GamePlaytime_Running_Info2": "Учтите что полное закрытие Collapse перестанет отслеживать время в игре (сохранится то, что было до запуска), будут отслеживаться только те сеансы, которые запущены с помощью Collapse.",
+    "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point).",
     "GamePlaytime_Display": "{0}ч {1}м",
     "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
+    "GamePlaytime_Stats_Title": "Playtime Statistics",
+    "GamePlaytime_Stats_NeverPlayed": "Никогда",
+    "GamePlaytime_Stats_LastSession": "Самая последняя сессия",
+    "GamePlaytime_Stats_LastSession_StartTime": "Время запуска",
+    "GamePlaytime_Stats_LastSession_Duration": "Длительность",
+    "GamePlaytime_Stats_Daily": "Сегодня",
+    "GamePlaytime_Stats_Weekly": "Неделя",
+    "GamePlaytime_Stats_Monthly": "Месяц",
 
     "PostPanel_Events": "События",
     "PostPanel_Notices": "Примечания",
@@ -181,18 +200,21 @@
     "Exception_DownloadTimeout2": "Проверьте стабильность вашего интернета! Если у вас низкая скорость интернета, уменьшите количество загружаемых потоков.",
     "Exception_DownloadTimeout3": "**ПРЕДУПРЕЖДЕНИЕ** Изменение количества потоков загрузки СБРОСИТ вашу загрузку с 0, и вам придется удалить существующие части загрузки вручную!",
 
-    "GameStateInvalid_Title": "Game Data Directory/Executable Name/Config.ini/App.Info file is Invalid!",
-    "GameStateInvalid_Subtitle1": "Collapse Launcher has detected that the game file properties are invalid for region:\r\n",
-    "GameStateInvalid_Subtitle2": "It's recommended to perform a fix in order the launcher to detect the game properly",
-    "GameStateInvalid_Subtitle3": "Click \"",
-    "GameStateInvalid_Subtitle4": "\" to fix the game properties or click \"",
-    "GameStateInvalid_Subtitle5": "\" to cancel the operation.",
+    "GameStateInvalid_Title": "Каталог игровых данных/Имя исполняемого файла/Конфиг.ini/App.Info недействителен!",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher обнаружил, что свойства файла игры не соответствуют региону:\r\n",
+    "GameStateInvalid_Subtitle2": "Рекомендуется выполнить исправление, чтобы программа запуска обнаружила игру правильно",
+    "GameStateInvalid_Subtitle3": "Нажмите \"",
+    "GameStateInvalid_Subtitle4": "\", чтобы исправить свойства игры, или нажмите кнопку \"",
+    "GameStateInvalid_Subtitle5": "\" для отмены операции.",
 
-    "GameStateInvalidFixed_Title": "Game File Properties have been Succesfully Fixed!",
-    "GameStateInvalidFixed_Subtitle1": "Game file properties have been fixed for region:",
-    "GameStateInvalidFixed_Subtitle2": "Please perform a \"",
-    "GameStateInvalidFixed_Subtitle3": "\" in the \"",
-    "GameStateInvalidFixed_Subtitle4": "\" menu in order to make sure all the files are verified."
+    "GameStateInvalidFixed_Title": "Свойства игрового файла были успешно исправлены!",
+    "GameStateInvalidFixed_Subtitle1": "Свойства игрового файла были исправлены для региона:",
+    "GameStateInvalidFixed_Subtitle2": "Пожалуйста, выполните \"",
+    "GameStateInvalidFixed_Subtitle3": "\" в \"",
+    "GameStateInvalidFixed_Subtitle4": "\"меню, чтобы убедиться, что все файлы проверены.\"",
+
+    "InstallFolderRootTitle": "Drive Root Provided!",
+    "InstallFolderRootSubtitle": "Cannot install game to the root of your drive! Please make a new folder and try again."
   },
 
   "_GameRepairPage": {
@@ -340,6 +362,8 @@
     "SpecVeryHigh": "Очень высокий",
     "SpecMaximum": "Максимальный",
     "SpecUltra": "Ультра",
+    "SpecDynamic": "Dynamic",
+    "SpecGlobal": "Global",
 
     "Audio_Title": "Настройки аудио",
     "Audio_Master": "Общая громкость",
@@ -382,7 +406,7 @@
     "CustomArgs_Footer2": "документацию по командной строке Unity Standalone Player",
     "CustomArgs_Footer3": ", чтобы увидеть больше параметров.",
 
-    "GameBoost": "Повысить приоритет игры [Экспериментально]",
+    "GameBoost": "Boost Game Priority",
     "MobileLayout": "Использовать мобильную раскладку",
 
     "Advanced_Title": "Дополнительные настройки",
@@ -404,6 +428,8 @@
     "Debug": "Дополнительные настройки",
     "Debug_Console": "Показать консоль",
     "Debug_IncludeGameLogs": "Сохранять журналы игры в Collapse (могут быть конфиденциальные данные)",
+    "Debug_SendRemoteCrashData": "Send anonymous crash reports to developers",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "This setting is disabled due to 'DISABLE_SENTRY' environment variable being set to true.",
     "Debug_MultipleInstance": "Разрешить запуск нескольких лаунчеров Collapse",
 
     "ChangeRegionWarning_Toggle": "Показывать предупреждение об изменении региона",
@@ -420,7 +446,7 @@
     "AppThemes_Dark": "Темная",
     "AppThemes_ApplyNeedRestart": "*Чтобы изменение темы вступило в силу, необходимо перезапустить приложение.",
 
-    "IntroSequenceToggle": "Use Intro Animation Sequence",
+    "IntroSequenceToggle": "Используйте последовательность вступительной анимации",
 
     "AppWindowSize": "Размер окна",
     "AppWindowSize_Normal": "Обычный",
@@ -431,6 +457,7 @@
     "AppBG": "Фоновое изображение приложения",
     "AppBG_Checkbox": "Использовать пользовательский фон",
     "AppBG_Note": "Допустимые форматы:\r\nИзображение: {0}\r\nВидео: {1}",
+    "AppBG_Note_Regional": "Региональные настройки пользовательского фона находятся в кнопке \"Быстрые настройки\" на главной странице.",
 
     "AppThreads": "Потоки приложения",
     "AppThreads_Download": "Потоки загрузок",
@@ -455,6 +482,8 @@
     "SophonHttpNumberBox": "Максимальное количество HTTP-соединений",
     "SophonHelp_Http": "Это контролирует максимальное количество сетевых подключений, устанавливаемых Collapse для загрузки частей.",
     "SophonToggle": "Включить Sophon в поддерживаемых регионах",
+    "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Use all CPU cores when applying pre-download",
+    "SophonPredownPerfMode_Tooltip": "Enabling this will set CPU threads to maximum available for your system. Disable if you get any problems.",
 
     "AppThreads_Attention": "Внимание",
     "AppThreads_Attention1": "Перед тем как изменить",
@@ -463,14 +492,18 @@
     "AppThreads_Attention4": "значение, если у вас есть существующая загрузка, поскольку это могло бы",
     "AppThreads_Attention5": "ПОВТОРНОЙ ЗАГРУЗКЕ ВСЕГО ФАЙЛА",
     "AppThreads_Attention6": "из-за несоответствия количества сеансов, необходимых для загрузки.",
+    "AppThreads_AttentionTop1": "The issues below will no longer occur if you have",
+    "AppThreads_AttentionTop2": "setting enabled.",
 
     "DiscordRPC": "Расширенная активность в Discord",
     "DiscordRPC_Toggle": "Показывать статус в Discord",
     "DiscordRPC_GameStatusToggle": "Показывать текущую игру в статусе в Discord",
     "DiscordRPC_IdleStatusToggle": "Показывать RPC во время простоя",
 
+    "ImageBackground": "Image Background Settings",
     "VideoBackground": "Настройки видеофона",
     "VideoBackground_IsEnableAudio": "Включить аудио",
+    "VideoBackground_IsEnableAcrylicBackground": "Use Acrylic Effect while using Video Background",
     "VideoBackground_AudioVolume": "Громкость аудио",
 
     "Update": "Проверить наличие обновлений",
@@ -480,8 +513,8 @@
     "Update_NewVer1": "Обновить до",
     "Update_NewVer2": "доступно!",
     "Update_LatestVer": "Вы используете самую последнюю версию.",
-    "Update_SeeChangelog": "See Latest Changes (EN)",
-    "Update_ChangelogTitle": "Latest Changes",
+    "Update_SeeChangelog": "Посмотреть последние изменения (EN)",
+    "Update_ChangelogTitle": "Последние изменения",
 
     "AppFiles": "Управление файлами приложения",
     "AppFiles_OpenDataFolderBtn": "Открыть папку с данными приложения",
@@ -497,9 +530,10 @@
     "ContributePRBtn": "Внести свой вклад, сделав Pull Request",
     "ContributorListBtn": "Участники проекта с открытым исходным кодом",
     "HelpLocalizeBtn": "Помогите нам перевести Collapse!",
+    "ShareYourFeedbackBtn": "Share Your Feedback",
 
     "About": "О программе",
-    "About_Copyright1": "© 2022-2024",
+    "About_Copyright1": "© 2022-2025",
     "About_Copyright2": " neon-nyan, Cry0, bagusnl,\nshatyuka & gablm",
     "About_Copyright3": "защищённый",
     "About_Copyright4": "Все права защищены.",
@@ -510,7 +544,7 @@
     "Disclaimer1": "Это приложение не ассоциировано с",
     "Disclaimer2": "любым способом",
     "Disclaimer3": "и полностью open-source, любой вклад приветствуется.",
-
+    "WebsiteBtn": "Visit our Website",
     "DiscordBtn1": "Присоединяйтесь к нам в Discord!",
     "DiscordBtn2": "Дискорд Honkai Impact 3rd",
     "DiscordBtn3": "Официальный Discord сервер Collapse!",
@@ -519,6 +553,7 @@
 
     "EnableAcrylicEffect": "Использовать эффект акрилового размытия",
     "EnableDownloadChunksMerging": "Объединение загруженных фрагментов пакетов",
+    "Enforce7ZipExtract": "Always Use 7-zip for Game Installation/Update",
     "UseExternalBrowser": "Использовать внешний браузер",
 
     "LowerCollapsePrioOnGameLaunch": "Уменьшение использования ресурсов процесса Collapse при запуске игры",
@@ -537,7 +572,7 @@
     "AppBehavior_LaunchOnStartup": "Запустить Collapse при включении компьютера",
     "AppBehavior_StartupToTray": "Скрыть Collapse после включения компьютера",
 
-    "Waifu2X_Toggle": "Использовать Waifu2X [Экспериментально]",
+    "Waifu2X_Toggle": "Use Waifu2X",
     "Waifu2X_Help": "Использование Waifu2X для увеличения фоновых изображений.\nКогда активно, качество изображения значительно улучшается, но это потребует больше времени для первой загрузки изображения.",
     "Waifu2X_Help2": "Доступно только для неподвижных изображений!",
     "Waifu2X_Warning_CpuMode": "ВНИМАНИЕ: Доступное графическое устройство Vulkan не найдено, и будет использоваться режим CPU. Это значительно увеличит время обработки изображения.",
@@ -545,40 +580,91 @@
     "Waifu2X_Error_Loader": "ОШИБКА: Не удалось определить Загрузчик Vulkan. Удостоверьтесь, что ваша видеокарта поддерживает технологию Vulkan, и необходимый драйвер установлен.",
     "Waifu2X_Error_Output": "ОШИБКА: Не удалось пройти самопроверку Waifu2X, получено пустое выходное изображение.",
 
-    "NetworkSettings_Title": "Network Settings",
-    "NetworkSettings_Proxy_Title": "Proxy Settings",
+    "NetworkSettings_Title": "Настройки сети",
+    "NetworkSettings_Proxy_Title": "Настройки прокси-сервера",
 
-    "NetworkSettings_Proxy_Hostname": "Proxy Hostname",
-    "NetworkSettings_Proxy_HostnameHelp1": "Represents the URL of the Proxy to use.",
-    "NetworkSettings_Proxy_HostnameHelp2": "Collapse can only support",
-    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS and SOCKS4/4a/5",
-    "NetworkSettings_Proxy_HostnameHelp4": "type of proxy at the moment.",
+    "NetworkSettings_Proxy_Hostname": "Имя хоста прокси-сервера",
+    "NetworkSettings_Proxy_HostnameHelp1": "Представляет собой URL-адрес используемого прокси.",
+    "NetworkSettings_Proxy_HostnameHelp2": "Collapse может поддерживает только",
+    "NetworkSettings_Proxy_HostnameHelp3": "HTTP/HTTPS и SOCKS4/4a/5",
+    "NetworkSettings_Proxy_HostnameHelp4": "тип прокси на данный момент.",
 
-    "NetworkSettings_ProxyWarn_UrlInvalid": "The URL entered is not valid!",
-    "NetworkSettings_ProxyWarn_NotSupported": "The proxy scheme is not supported! Collapse only supports http://, https://, socks4://, socks4a:// and socks5://",
+    "NetworkSettings_ProxyWarn_UrlInvalid": "Введенный URL-адрес недействителен!",
+    "NetworkSettings_ProxyWarn_NotSupported": "Схема прокси не поддерживается! Collapse поддерживает только http://, https://, socks4://, socks4a:// и socks5://.",
 
-    "NetworkSettings_Proxy_Username": "Proxy Username",
-    "NetworkSettings_Proxy_UsernamePlaceholder": "Enter Proxy Username",
-    "NetworkSettings_Proxy_UsernameHelp1": "Default:",
-    "NetworkSettings_Proxy_UsernameHelp2": "[Empty]",
-    "NetworkSettings_Proxy_UsernameHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+    "NetworkSettings_Proxy_Username": "Имя пользователя прокси-сервера",
+    "NetworkSettings_Proxy_UsernamePlaceholder": "Введите имя пользователя прокси-сервера",
+    "NetworkSettings_Proxy_UsernameHelp1": "По умолчанию:",
+    "NetworkSettings_Proxy_UsernameHelp2": "[Пусто]",
+    "NetworkSettings_Proxy_UsernameHelp3": "Оставьте это поле пустым, если ваш прокси не требует аутентификации.",
 
-    "NetworkSettings_Proxy_Password": "Proxy Password",
-    "NetworkSettings_Proxy_PasswordPlaceholder": "Enter Proxy Password",
-    "NetworkSettings_Proxy_PasswordHelp1": "Default:",
-    "NetworkSettings_Proxy_PasswordHelp2": "[Empty]",
-    "NetworkSettings_Proxy_PasswordHelp3": "Leave this field empty if your proxy doesn't require authentication.",
+    "NetworkSettings_Proxy_Password": "Пароль от прокси-сервера",
+    "NetworkSettings_Proxy_PasswordPlaceholder": "Введите пароль прокси-сервера",
+    "NetworkSettings_Proxy_PasswordHelp1": "По умолчанию:",
+    "NetworkSettings_Proxy_PasswordHelp2": "[Пусто]",
+    "NetworkSettings_Proxy_PasswordHelp3": "Оставьте это поле пустым, если ваш прокси не требует аутентификации.",
 
-    "NetworkSettings_ProxyTest_Button": "Test Proxy Connectivity",
-    "NetworkSettings_ProxyTest_ButtonChecking": "Checking Connectivity...",
-    "NetworkSettings_ProxyTest_ButtonSuccess": "Proxy Connectivity Test is Successful!",
-    "NetworkSettings_ProxyTest_ButtonFailed": "Test Failed! Proxy is not Reachable",
+    "NetworkSettings_ProxyTest_Button": "Проверка соединения с прокси-сервером...",
+    "NetworkSettings_ProxyTest_ButtonChecking": "Проверка подключения...",
+    "NetworkSettings_ProxyTest_ButtonSuccess": "Тест подключения к прокси-серверу успешно завершен!",
+    "NetworkSettings_ProxyTest_ButtonFailed": "Тест провален! Прокси-сервер недоступен",
 
-    "NetworkSettings_Http_Title": ".NET HTTP Client Settings",
-    "NetworkSettings_Http_Redirect": "Allow HTTP Redirection",
-    "NetworkSettings_Http_SimulateCookies": "Allow Simulate HTTP Cookies",
-    "NetworkSettings_Http_UntrustedHttps": "Allow Untrusted HTTPS Certificate",
-    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in Seconds)"
+    "NetworkSettings_Http_Title": "Настройки HTTP-клиента .NET",
+    "NetworkSettings_Http_Redirect": "Разрешить перенаправление HTTP",
+    "NetworkSettings_Http_SimulateCookies": "Разрешить симуляцию файлов HTTP Cookies",
+    "NetworkSettings_Http_UntrustedHttps": "Разрешить недоверенный сертификат HTTPS",
+    "NetworkSettings_Http_Timeout": "HTTP Client Timeout (in seconds)",
+
+    "FileDownloadSettings_Title": "File Download Settings",
+    "FileDownloadSettings_SpeedLimit_Title": "Limit Download Speed",
+    "FileDownloadSettings_SpeedLimit_NumBox": "Speed Limit (in MiB)",
+    "FileDownloadSettings_SpeedLimitHelp1": "Default:",
+    "FileDownloadSettings_SpeedLimitHelp2": "Speed Limit value range:",
+    "FileDownloadSettings_SpeedLimitHelp3": "1 - 1000 MiB/s",
+    "FileDownloadSettings_SpeedLimitHelp4": "Limits the maximum allowed bandwidth for downloading. This setting cannot be used alongside the",
+    "FileDownloadSettings_SpeedLimitHelp5": "setting.",
+
+    "FileDownloadSettings_NewPreallocChunk_Title": "New Pre-allocated Downloader",
+    "FileDownloadSettings_NewPreallocChunk_Subtitle": "For Game Installation, Game Repair and Cache Updates only.",
+    "FileDownloadSettings_NewPreallocChunk_NumBox": "Chunk Size (in MiB)",
+    "FileDownloadSettings_NewPreallocChunkHelp1": "Default:",
+    "FileDownloadSettings_NewPreallocChunkHelp2": "Chunk Size value range:",
+    "FileDownloadSettings_NewPreallocChunkHelp3": "1 - 32 MiB",
+    "FileDownloadSettings_NewPreallocChunkHelp4": "When enabled, the downloader will dynamically pre-allocate the file size during its download.",
+    "FileDownloadSettings_NewPreallocChunkHelp5": "This enables the downloader to directly writes data chunks into the file without splitting it into separate files.",
+    "FileDownloadSettings_NewPreallocChunkHelp6": "When disabled, the launcher will use the old allocation method, where data chunks will be written into separate files. It will also disable the",
+    "FileDownloadSettings_NewPreallocChunkHelp7": "and",
+    "FileDownloadSettings_NewPreallocChunkHelp8": "settings.",
+    "FileDownloadSettings_NewPreallocChunkHelp9": "Note:",
+    "FileDownloadSettings_NewPreallocChunkHelp10": "This feature is only available for game installation (such as Initial Install, Update, and Pre-load), Game Repair, and Cache Update steps.",
+
+    "FileDownloadSettings_BurstDownload_Title": "Burst File Download Mode",
+    "FileDownloadSettings_BurstDownload_Subtitle": "For Game Repair and Cache Updates only.",
+    "FileDownloadSettings_BurstDownloadHelp1": "Default:",
+    "FileDownloadSettings_BurstDownloadHelp2": "When enabled, this feature will allow the download process on",
+    "FileDownloadSettings_BurstDownloadHelp3": "and",
+    "FileDownloadSettings_BurstDownloadHelp4": "features to run in parallel to make the download process more efficient.",
+    "FileDownloadSettings_BurstDownloadHelp5": "When disabled, the download process for",
+    "FileDownloadSettings_BurstDownloadHelp6": "and",
+    "FileDownloadSettings_BurstDownloadHelp7": "features will use a sequential download process.",
+
+    "Database_Title": "Пользовательская синхронизируемая база данных",
+    "Database_ConnectionOk": "Успешное подключение к базе данных!",
+    "Database_ConnectFail": "Failed to connect to the database, see error(s) below:",
+    "Database_Toggle": "Включить онлайн базу данных",
+    "Database_Url": "Ссылка на базу данных",
+    "Database_Url_Example": "Пример: https://db-collapse.turso.io",
+    "Database_Token": "Токен",
+    "Database_UserId": "Пользовательский ID",
+    "Database_GenerateGuid": "Сгенерировать UID",
+    "Database_Validate": "Проверить и сохранить настройки",
+    "Database_Error_EmptyUri": "Ссылка на базу данных не может быть пустой!",
+    "Database_Error_EmptyToken": "Токен базы данных не может быть пустым!",
+    "Database_Error_InvalidGuid": "User ID is not a valid GUID!",
+    "Database_Warning_PropertyChanged": "Database settings has changed",
+    "Database_ValidationChecking": "Validating Settings...",
+    "Database_Placeholder_DbUserIdTextBox": "GUID Example: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "Database_Placeholder_DbTokenPasswordBox": "Enter your authentication token here"
   },
 
   "_Misc": {
@@ -598,6 +684,7 @@
     "PerFromTo": "{0} / {1}",
     "PerFromToPlaceholder": "- / -",
 
+    "EverythingIsOkay": "Все хорошо!",
     "Cancel": "Отменить",
     "Close": "Закрыть",
     "UseCurrentDir": "Использовать текущую директорию",
@@ -666,6 +753,7 @@
     "Disabled": "Отключено",
     "Enabled": "Включено",
     "UseAsDefault": "Использовать по умолчанию",
+    "Default": "Default",
 
     "BuildChannelPreview": "Предпросмотр",
     "BuildChannelStable": "Стабильная",
@@ -706,7 +794,24 @@
     "LauncherNameSteam": "Steam",
     "LauncherNameUnknown": "(Название лаунчера неизвестно)",
 
-    "ImageCropperTitle": "Обрезать изображение"
+    "ImageCropperTitle": "Обрезать изображение",
+
+    "IsBytesMoreThanBytes": "= {0} bytes (-/+ {1})",
+    "IsBytesUnlimited": "= Unlimited",
+    "IsBytesNotANumber": "= NaN",
+
+    "MissingVcRedist": "Missing Visual C/C++ Redistributable",
+    "MissingVcRedistSubtitle": "You need to install the Visual C/C++ Redistributable to run this function. Do you want to download it now?\r\nNote: This will open a browser window and download a file from Microsoft. Please run the installer after downloading it then restart Collapse and try again.\r\nIf you have already installed it but the error remains, please send a issue ticket to us.",
+    "ExceptionFeedbackBtn": "Tell us what happened",
+    "ExceptionFeedbackBtn_Unavailable": "Crash report is disabled or not available",
+    "ExceptionFeedbackBtn_FeedbackSent": "Feedback has been sent!",
+    "ExceptionFeedbackTitle": "Tell us what happened:",
+    "ExceptionFeedbackTemplate_User": "Username (Optional):",
+    "ExceptionFeedbackTemplate_Email": "Email (Optional):",
+    "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line",
+    
+    "Tag_Deprecated": "Deprecated",
+    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
 
   "_BackgroundNotification": {
@@ -753,7 +858,7 @@
     "RepairCompletedSubtitle": "{0} файл(ов) были восстановлены.",
     "RepairCompletedSubtitleNoBroken": "Поврежденных файлов не найдено.",
     "ExtremeGraphicsSettingsWarnTitle": "Пресет \"Очень высокие\" выбран!",
-    "ExtremeGraphicsSettingsWarnSubtitle": "Вы собираетесь установить пресет \"Очень высокие\"!\nОчень высокими настройками, по сути, является 2x масштаб визуализации с включенным MSAA, что ОЧЕНЬ ПЛОХО ОПТИМИЗИРОВАНО!\n\nВы уверены, что хотите использовать эту настройку?",
+    "ExtremeGraphicsSettingsWarnSubtitle": "You are about to set the setting preset to Very High!\r\nVery High setting preset is essentially a 1.6x Render Scale with MSAA Enabled and is VERY UNOPTIMIZED!\r\n\r\nAre you sure you want to use this setting?",
     "MigrateExistingMoveDirectoryTitle": "Перемещение установки для: {0}",
     "MigrateExistingInstallChoiceTitle": "Обнаружена существующая установка {0}!",
     "MigrateExistingInstallChoiceSubtitle1": "В этой папке уже установлена игра, использующая {0}:",
@@ -815,10 +920,14 @@
     "ReleaseChannelChangeSubtitle2": "Примечание:",
     "ReleaseChannelChangeSubtitle3": "Это действие может привести к необратимым изменениям и/или нарушить работу вашей текущей установки. Мы не несем ответственность за потерю или повреждение данных, связанных с игрой.",
 
+    "ForceUpdateCurrentInstallTitle": "Force-update Current Installation",
+    "ForceUpdateCurrentInstallSubtitle1": "You are about to perform a forced-update to your current:",
+    "ForceUpdateCurrentInstallSubtitle2": "installation and we recommend you to close your currently opened game(s).",
+
     "ChangePlaytimeTitle": "Вы точно хотите изменить ваше время в игре?",
     "ChangePlaytimeSubtitle": "Изменение времени в игре означает замену текущего значения только что введенным.\n\nВы хотите продолжить?\n\nПримечание: Это не влияет на работу Collapse, и вы можете изменить это значение в любое время, когда не играете в игру.",
     "ResetPlaytimeTitle": "Вы уверены, что хотите сбросить время в игре?",
-    "ResetPlaytimeSubtitle": "Сброс вашего времени в игре означает установку счетчика игрового времени в 0. Это ",
+    "ResetPlaytimeSubtitle": "Resetting your playtime means setting the playtime counter and all related statistics back to 0. This is a ",
     "ResetPlaytimeSubtitle2": "удаляющее",
     "ResetPlaytimeSubtitle3": " действие, вы не сможете вернуться обратно после подтверждения.\n\nВы хотите продолжить?\n\nЗаметка: Это не влияет на работу Collapse и вы в любой момент можете поменять это значение, пока вы не в игре.",
     "InvalidPlaytimeTitle": "Возникла проблема с сохранением времени игры в этой сессии",
@@ -831,6 +940,22 @@
 
     "CannotUseAppLocationForGameDirTitle": "Папка недопустима!",
     "CannotUseAppLocationForGameDirSubtitle": "Вы не можете использовать эту папку, так как она используется в качестве системной папки или для основного исполняемого файла приложения. Пожалуйста, выберите другую папку!",
+    "InvalidGameDirNewTitleFormat": "Path is Invalid: {0}",
+    "InvalidGameDirNewSubtitleSelectedPath": "Selected Path:",
+    "InvalidGameDirNewSubtitleSelectOther": "Please select another folder/location!",
+    "InvalidGameDirNew1Title": "Folder is invalid!",
+    "InvalidGameDirNew1Subtitle": "You can't use this folder as it is being used as a system folder or being used for main executable of the app. Please choose another folder!",
+    "InvalidGameDirNew2Title": "Cannot access the selected folder",
+    "InvalidGameDirNew2Subtitle": "The launcher does not have permission to access this folder!",
+    "InvalidGameDirNew3Title": "Cannot select root drive",
+    "InvalidGameDirNew3Subtitle": "You have selected a path on top of the root drive, which is forbidden!",
+    "InvalidGameDirNew4Title": "Cannot select Windows folder",
+    "InvalidGameDirNew4Subtitle": "You cannot use Windows folder as Game Installation Location to avoid any unnecessary that might happen.",
+    "InvalidGameDirNew5Title": "Cannot select Program Data folder",
+    "InvalidGameDirNew5Subtitle": "You cannot use Program Data folder as Game Installation Location to avoid any unnecessary that might happen.",
+    "InvalidGameDirNew6Title": "Cannot select Program Files or Program Files (x86) folder",
+    "InvalidGameDirNew6Subtitle": "You cannot use Program Files or Program Files (x86) folder as Game Installation Location to avoid any unnecessary that might happen.",
+    "FolderDialogTitle1": "Select Game Installation Location",
 
     "StopGameTitle": "Принудительно закрыть игру",
     "StopGameSubtitle": "Вы действительно хотите принудительно закрыть игру?\nВы можете потерять внутриигровой прогресс.",
@@ -877,15 +1002,46 @@
     "SteamShortcutCreationSuccessSubtitle5": " • Новые ярлыки будут отображаться только после перезапуска Steam.",
     "SteamShortcutCreationSuccessSubtitle6": " • Чтобы использовать оверлей Steam, необходимо запустить Steam от имени администратора, а Collapse должен быть полностью закрыт или в настройках должна быть включена опция \"Разрешить запуск несколько лаунчеров Collapse\".",
     "SteamShortcutCreationSuccessSubtitle7": " • Если игра не установлена/обновлена, Collapse попытается установить/обновить ее. Пожалуйста, обратите внимание, что диалоги, связанные с этими процессами, по-прежнему будут отображаться.",
-
     "SteamShortcutCreationFailureTitle": "Неверная папка данных Steam",
     "SteamShortcutCreationFailureSubtitle": "Не удалось найти корректную папку userdata.\n\nПожалуйста, убедитесь, что вы хотя бы раз вошли в клиент Steam, прежде чем пытаться использовать эту функцию.",
+    "SteamShortcutTitle": "Steam Shortcut",
+    "SteamShortcutDownloadingImages": "Downloading Steam Grid Images ({0}/{1})",
 
     "DownloadSettingsTitle": "Настройки загрузки",
     "DownloadSettingsOption1": "Запустить игру после установки",
-    
-    "OpenInExternalBrowser": "Open in External Browser",
-    "CloseOverlay": "Close Overlay"
+
+    "OpenInExternalBrowser": "Открыть во внешнем браузере",
+    "CloseOverlay": "Закрыть оверлей",
+
+    "DbGenerateUid_Title": "Вы действительно хотите изменить свой пользовательский ID?",
+    "DbGenerateUid_Content": "Changing the current user ID will cause the associated data to be lost if you lose it.",
+
+    "SophonIncrementUpdateUnavailTitle": "Incremental Update is Unavailable: Version is Too Obsolete!",
+    "SophonIncrementUpdateUnavailSubtitle1": "Your game version: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": " is too obsolete",
+    "SophonIncrementUpdateUnavailSubtitle3": " and incremental update for your version is not available. However, you could still update your game by re-downloading the entire thing from scratch.",
+    "SophonIncrementUpdateUnavailSubtitle4": "Click \"{0}\" to continue updating the entire thing or click \"{1}\" to cancel the process",
+
+    "UACWarningTitle": "Warning: UAC Disabled Detected",
+    "UACWarningContent": "Disabling User Account Control (UAC) is never a good idea.\nThe security of the OS will be compromised and the game may not run properly.\n\nClick the \"Learn More\" button to see how to enable UAC.\nThe related entry is: Run all administrators in Admin Approval Mode.",
+    "UACWarningLearnMore": "Learn More",
+    "UACWarningDontShowAgain": "Don't Show Again",
+
+    "EnsureExitTitle": "Exiting Application",
+    "EnsureExitSubtitle": "There are critical operations running in the background. Are you sure you want to exit?",
+
+    "UserFeedback_DialogTitle": "Share Your Thoughts",
+    "UserFeedback_TextFieldTitleHeader": "Feedback Title",
+    "UserFeedback_TextFieldTitlePlaceholder": "Write your feedback's title here...",
+    "UserFeedback_TextFieldMessageHeader": "Message",
+    "UserFeedback_TextFieldMessagePlaceholder": "Message...",
+    "UserFeedback_TextFieldRequired": "(required)",
+    "UserFeedback_RatingText": "Mind to share your ratings?",
+    "UserFeedback_CancelBtn": "Cancel",
+    "UserFeedback_SubmitBtn": "Submit your feedback",
+    "UserFeedback_SubmitBtn_Processing": "Processing...",
+    "UserFeedback_SubmitBtn_Completed": "Completed!",
+    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!"
   },
 
   "_FileMigrationProcess": {
@@ -1041,6 +1197,10 @@
 
     "ApplyUpdateErrCollapseRunTitle": "Пожалуйста, закройте Collapse перед применением обновления!",
     "ApplyUpdateErrCollapseRunSubtitle": "Ждем закрытия Collapse...",
+    "ApplyUpdateErrCollapseRunTitleWarnBox": "An Instance of Collapse Launcher is Still Running!",
+    "ApplyUpdateErrCollapseRunSubtitleWarnBox": "We detected an instance of Collapse Launcher is running in the background. To forcely close the launcher, click \"Yes\". To wait until you manually close it, click \"No\".",
+    "ApplyUpdateErrVelopackStateBrokenTitleWarnBox": "Broken Existing Installation Detected!",
+    "ApplyUpdateErrVelopackStateBrokenSubtitleWarnBox": "We detected that you have a broken existing installation.\r\n\r\nClick on \"Yes\" to repair the installation before installing updates or Click \"No\" to just run the update installation.",
     "ApplyUpdateErrReleaseFileNotFoundTitle": "ОШИБКА:\nВ файле \"release\" нет строки \"stable\" или \"preview\"",
     "ApplyUpdateErrReleaseFileNotFoundSubtitle": "Пожалуйста, проверьте файл \"release\" и повторите попытку.",
 
@@ -1118,8 +1278,15 @@
     "Graphics_BloomQuality": "Качество растительности",
     "Graphics_AAMode": "Режим сглаживания",
     "Graphics_SFXQuality": "SFX Quality",
+    "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Тень персонажа в режиме «Исследование карты»",
-    "Graphics_HalfResTransparent": "Half Resolution Transparency",
+    "Graphics_HalfResTransparent": "Прозрачность с половинным разрешением",
+    
+    "Graphics_DLSS_UHP": "Ultra Performance",
+    "Graphics_DLSS_Perf": "Performance",
+    "Graphics_DLSS_Balanced": "Balanced",
+    "Graphics_DLSS_Quality": "Quality",
+    "Graphics_DLSS_DLAA": "DLAA",
 
     "Graphics_SpecPanel": "Общие настройки графики",
     "SpecEnabled": "Включено",
@@ -1344,6 +1511,8 @@
     "LoadingTitle": "Обработка",
     "LoadingSubtitle1": "Расчет существующих файлов (найдено {0} файлов - всего {1})...",
     "LoadingSubtitle2": "Проверка доступности pkg_version...",
+    "LoadingSubtitle3": "UI might be unresponsive during this process...",
+    "DeleteSubtitle": "Deleting files...",
     "BottomButtonDeleteAllFiles": "Удалить все файлы",
     "BottomButtonDeleteSelectedFiles": "Удалить {0} выбранных файлов",
     "BottomCheckboxFilesSelected": "{0} Выбран файл(ы) ({1} / {2} всего)",
@@ -1405,9 +1574,45 @@
     "Graphics_EffectsQ": "Качество эффектов",
     "Graphics_ShadingQ": "Тени",
     "Graphics_Distortion": "Деформация",
+    "Graphics_HighPrecisionCharacterAnimation": "High-Precision Character Animation",
     "Audio_PlaybackDev": "Устройство воспроизведения звука",
     "Audio_PlaybackDev_Headphones": "Наушники",
-    "Audio_PlaybackDev_Speakers": "Speakers",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_Speakers": "Колонки",
+    "Audio_PlaybackDev_TV": "ТВ"
+  },
+
+  "_NotificationToast": {
+    "WindowHiddenToTray_Title": "Collapse Launcher свернут в трей",
+    "WindowHiddenToTray_Subtitle": "The launcher is now running in the background.\r\nClick this notification or the icon on the tray to restore the window.",
+
+    "GameInstallCompleted_Title": "{0} готова к запуску",
+    "GameInstallCompleted_Subtitle": "{0} успешно установлена!",
+
+    "GameUpdateCompleted_Title": "{0} обновлена",
+    "GameUpdateCompleted_Subtitle": "{0} была успешно обновлена до версии v{1}!",
+
+    "GamePreloadCompleted_Title": "Пакет предварительной загрузки для {0} скачался",
+
+    "GameRepairCheckCompleted_Title": "Game Repair Check is Completed",
+    "GameRepairCheckCompletedFound_Subtitle": "{0} file(s) need to be updated/repaired. Click this notification to go back to the launcher.",
+    "GameRepairCheckCompletedNotFound_Subtitle": "No files need to be updated/repaired.",
+
+    "GameRepairDownloadCompleted_Title": "Game Repair Download is Completed",
+    "GameRepairDownloadCompleted_Subtitle": "{0} file(s) have been successfully updated/repaired.",
+
+    "CacheUpdateCheckCompleted_Title": "Cache Update Check is Completed",
+    "CacheUpdateCheckCompletedFound_Subtitle": "{0} cache file(s) need to be updated. Click this notification to go back to the launcher.",
+    "CacheUpdateCheckCompletedNotFound_Subtitle": "No cache files need to be updated.",
+
+    "CacheUpdateDownloadCompleted_Title": "Cache Update Download is Completed",
+    "CacheUpdateDownloadCompleted_Subtitle": "{0} cache file(s) have been successfully updated.",
+
+    "GenericClickNotifToGoBack_Subtitle": "Click this notification to go back to the launcher.",
+
+    "OOBE_WelcomeTitle": "Welcome to Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "You are currently selecting {0} - {1} as your game. There are more games awaits you, find out more!",
+
+    "LauncherUpdated_NotifTitle": "Your launcher is up-to-date!",
+    "LauncherUpdated_NotifSubtitle": "Your launcher has been updated to: {0}. Go to \"{1}\" and click \"{2}\" to see what changed."
   }
 }

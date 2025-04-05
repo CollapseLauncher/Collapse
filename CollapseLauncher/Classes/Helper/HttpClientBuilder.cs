@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Helper.Update;
+using CollapseLauncher.Helper.Update;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
@@ -6,16 +6,25 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Threading;
+
+// ReSharper disable StringLiteralTypo
+// ReSharper disable UnusedMember.Global
+// ReSharper disable CheckNamespace
+// ReSharper disable StaticMemberInGenericType
 
 #nullable enable
 namespace CollapseLauncher.Helper
 {
     public class HttpClientBuilder : HttpClientBuilder<SocketsHttpHandler>;
 
-    public class HttpClientBuilder<THandler> where THandler : HttpMessageHandler, new()
+    public partial class HttpClientBuilder<THandler> where THandler : HttpMessageHandler, new()
     {
         private const int MaxConnectionsDefault = 32;
         private const double HttpTimeoutDefault = 90; // in Seconds
+
+        private static readonly Lock HttpClientBuilderSharedLock = new();
 
         private bool IsUseProxy              { get; set; } = true;
         private bool IsUseSystemProxy        { get; set; } = true;
@@ -32,7 +41,7 @@ namespace CollapseLauncher.Helper
         private HttpVersionPolicy           HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
         private TimeSpan                    HttpTimeout               { get; set; } = TimeSpan.FromSeconds(HttpTimeoutDefault);
         private Uri?                        HttpBaseUri               { get; set; }
-        private Dictionary<string, string?> HttpHeaders               { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, string?> HttpHeaders               { get; } = new();
 
         public HttpClientBuilder<THandler> UseProxy(bool isUseSystemProxy = true)
         {
@@ -51,61 +60,73 @@ namespace CollapseLauncher.Helper
                 + $"WinAppSDK/{LauncherConfig.WindowsAppSdkVersion}";
         }
 
-        public HttpClientBuilder<THandler> UseExternalProxy(string host, string? username = null, string? password = null)
+        public HttpClientBuilder<THandler> UseExternalProxy(string host, string? username = null, SecureString? password = null)
         {
             // Try to create the Uri
-            if (!Uri.TryCreate(host, UriKind.Absolute, out Uri? hostUri))
+            if (Uri.TryCreate(host, UriKind.Absolute, out Uri? hostUri))
             {
-                IsUseProxy = false;
-                IsUseSystemProxy = false;
-                ExternalProxy = null;
-                return this;
+                return UseExternalProxy(hostUri, username, password);
             }
 
-            return UseExternalProxy(hostUri, username, password);
+            IsUseProxy       = false;
+            IsUseSystemProxy = false;
+            ExternalProxy    = null;
+            return this;
         }
 
-        public HttpClientBuilder<THandler> UseExternalProxy(Uri hostUri, string? username = null, string? password = null)
+        public HttpClientBuilder<THandler> UseExternalProxy(Uri hostUri, string? username = null, SecureString? password = null)
         {
             IsUseSystemProxy = false;
 
             // Initialize the proxy host
             ExternalProxy =
                 !string.IsNullOrEmpty(username)
-             && !string.IsNullOrEmpty(password) ?
+             && password != null ?
                   new WebProxy(hostUri, true, null, new NetworkCredential(username, password))
                 : new WebProxy(hostUri, true);
 
             return this;
         }
 
-        public HttpClientBuilder<THandler> UseLauncherConfig(int maxConnections = MaxConnectionsDefault)
+        public HttpClientBuilder<THandler> UseLauncherConfig(int maxConnections = MaxConnectionsDefault, bool skipDnsInit = false)
         {
-            bool lIsUseProxy = LauncherConfig.GetAppConfigValue("IsUseProxy").ToBool();
-            bool lIsAllowHttpRedirections = LauncherConfig.GetAppConfigValue("IsAllowHttpRedirections").ToBool();
-            bool lIsAllowHttpCookies = LauncherConfig.GetAppConfigValue("IsAllowHttpCookies").ToBool();
-            bool lIsAllowUntrustedCert = LauncherConfig.GetAppConfigValue("IsAllowUntrustedCert").ToBool();
+            bool lIsUseProxy              = LauncherConfig.GetAppConfigValue("IsUseProxy");
+            bool lIsAllowHttpRedirections = LauncherConfig.GetAppConfigValue("IsAllowHttpRedirections");
+            bool lIsAllowHttpCookies      = LauncherConfig.GetAppConfigValue("IsAllowHttpCookies");
+            bool lIsAllowUntrustedCert    = LauncherConfig.GetAppConfigValue("IsAllowUntrustedCert");
+            bool lIsUseExternalDns        = LauncherConfig.GetAppConfigValue("IsUseExternalDns");
 
-            string? lHttpProxyUrl = LauncherConfig.GetAppConfigValue("HttpProxyUrl").ToString();
-            string? lHttpProxyUsername = LauncherConfig.GetAppConfigValue("HttpProxyUsername").ToString();
-            string? lHttpProxyPassword = LauncherConfig.GetAppConfigValue("HttpProxyPassword").ToString();
-            int lHttpClientConnections = maxConnections;
-
-            double lHttpClientTimeout = LauncherConfig.GetAppConfigValue("HttpClientTimeout").ToDouble();
+            string? lExternalDnsAddresses = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses");
+            string? lHttpProxyUrl         = LauncherConfig.GetAppConfigValue("HttpProxyUrl");
+            string? lHttpProxyUsername    = LauncherConfig.GetAppConfigValue("HttpProxyUsername");
+            string? lHttpProxyPassword    = LauncherConfig.GetAppConfigValue("HttpProxyPassword");
+            double  lHttpClientTimeout    = LauncherConfig.GetAppConfigValue("HttpClientTimeout");
 
             bool isHttpProxyUrlValid = Uri.TryCreate(lHttpProxyUrl, UriKind.Absolute, out Uri? lProxyUri);
 
-            this.UseProxy();
+            UseProxy();
 
             if (lIsUseProxy && isHttpProxyUrlValid && lProxyUri != null)
-                this.UseExternalProxy(lProxyUri, lHttpProxyUsername, lHttpProxyPassword);
+            {
+                using SecureString? proxyPassword = SimpleProtectData.UnprotectStringAsSecureString(lHttpProxyPassword);
+                UseExternalProxy(lProxyUri, lHttpProxyUsername, proxyPassword);
+            }
 
-            this.AllowUntrustedCert(lIsAllowUntrustedCert);
-            this.AllowCookies(lIsAllowHttpCookies);
-            this.AllowRedirections(lIsAllowHttpRedirections);
+            lock (HttpClientBuilderSharedLock)
+            {
+                if (!skipDnsInit && lIsUseExternalDns && ExternalDnsServers == null)
+                {
+                    ParseDnsSettings(lExternalDnsAddresses, out string[]? hosts, out DnsConnectionType connectionType);
+                    UseExternalDns(hosts, connectionType);
+                }
+            }
 
-            this.SetTimeout(lHttpClientTimeout);
-            this.SetMaxConnection(lHttpClientConnections);
+            AllowUntrustedCert(lIsAllowUntrustedCert);
+            AllowCookies(lIsAllowHttpCookies);
+            AllowRedirections(lIsAllowHttpRedirections);
+
+            SetTimeout(lHttpClientTimeout);
+            SetMaxConnection(maxConnections);
 
             return this;
         }
@@ -206,13 +227,9 @@ namespace CollapseLauncher.Helper
             // If the key already exist, then override the previous one.
             // Otherwise, add the new key-value pair
             // ReSharper disable once RedundantDictionaryContainsKeyBeforeAdding
-            if (HttpHeaders.ContainsKey(key))
+            if (!HttpHeaders.TryAdd(key, value))
             {
                 HttpHeaders[key] = value;
-            }
-            else
-            {
-                HttpHeaders.Add(key, value);
             }
 
             // Return the instance of the builder
@@ -228,16 +245,15 @@ namespace CollapseLauncher.Helper
             if (typeof(THandler) == typeof(HttpClientHandler))
             {
                 // Cast as HttpClientHandler
-                HttpClientHandler? httpClientHandler = handler as HttpClientHandler;
-                if (httpClientHandler == null)
+                if (handler is not HttpClientHandler httpClientHandler)
                     throw new InvalidCastException("Cannot cast handler as HttpClientHandler");
 
                 // Set the properties
-                httpClientHandler.UseProxy = IsUseProxy || IsUseSystemProxy;
-                httpClientHandler.MaxConnectionsPerServer = MaxConnections;
-                httpClientHandler.AllowAutoRedirect = IsAllowHttpRedirections;
-                httpClientHandler.UseCookies = IsAllowHttpCookies;
-                httpClientHandler.AutomaticDecompression = DecompressionMethod;
+                httpClientHandler.UseProxy                 = IsUseProxy || IsUseSystemProxy;
+                httpClientHandler.MaxConnectionsPerServer  = MaxConnections;
+                httpClientHandler.AllowAutoRedirect        = IsAllowHttpRedirections;
+                httpClientHandler.UseCookies               = IsAllowHttpCookies;
+                httpClientHandler.AutomaticDecompression   = DecompressionMethod;
                 httpClientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
 
                 // Toggle for allowing untrusted cert
@@ -251,23 +267,22 @@ namespace CollapseLauncher.Helper
             else if (typeof(THandler) == typeof(SocketsHttpHandler))
             {
                 // Cast as SocketsHttpHandler
-                SocketsHttpHandler? socketsHttpHandler = handler as SocketsHttpHandler;
-                if (socketsHttpHandler == null)
+                if (handler is not SocketsHttpHandler socketsHttpHandler)
                     throw new InvalidCastException("Cannot cast handler as SocketsHttpHandler");
 
                 // Set the properties
-                socketsHttpHandler.UseProxy = IsUseProxy || IsUseSystemProxy;
-                socketsHttpHandler.MaxConnectionsPerServer = MaxConnections;
-                socketsHttpHandler.AllowAutoRedirect = IsAllowHttpRedirections;
-                socketsHttpHandler.UseCookies = IsAllowHttpCookies;
-                socketsHttpHandler.AutomaticDecompression = DecompressionMethod;
+                socketsHttpHandler.UseProxy                       = IsUseProxy || IsUseSystemProxy;
+                socketsHttpHandler.MaxConnectionsPerServer        = MaxConnections;
+                socketsHttpHandler.AllowAutoRedirect              = IsAllowHttpRedirections;
+                socketsHttpHandler.UseCookies                     = IsAllowHttpCookies;
+                socketsHttpHandler.AutomaticDecompression         = DecompressionMethod;
                 socketsHttpHandler.EnableMultipleHttp2Connections = true;
                 socketsHttpHandler.EnableMultipleHttp3Connections = true;
 
                 // Toggle for allowing untrusted cert
                 if (IsAllowUntrustedCert)
                 {
-                    SslClientAuthenticationOptions sslOptions = new SslClientAuthenticationOptions
+                    SslClientAuthenticationOptions sslOptions = new()
                     {
                         RemoteCertificateValidationCallback = delegate { return true; }
                     };
@@ -277,6 +292,10 @@ namespace CollapseLauncher.Helper
                 // Set if the external proxy is set
                 if (!IsUseSystemProxy && ExternalProxy != null)
                     socketsHttpHandler.Proxy = ExternalProxy;
+
+                // Set Connect callback if the External DNS setting is available
+                if (IsUseExternalDns && ExternalDnsServers != null)
+                    socketsHttpHandler.ConnectCallback = ExternalDnsConnectCallback;
             }
             else
             {
@@ -284,12 +303,12 @@ namespace CollapseLauncher.Helper
             }
 
             // Create the HttpClient instance
-            HttpClient client = new HttpClient(handler, false)
+            HttpClient client = new(handler, false)
             {
-                Timeout = HttpTimeout,
-                DefaultRequestVersion = HttpProtocolVersion,
-                DefaultVersionPolicy = HttpProtocolVersionPolicy,
-                BaseAddress = HttpBaseUri,
+                Timeout                      = HttpTimeout,
+                DefaultRequestVersion        = HttpProtocolVersion,
+                DefaultVersionPolicy         = HttpProtocolVersionPolicy,
+                BaseAddress                  = HttpBaseUri,
                 MaxResponseContentBufferSize = int.MaxValue
             };
 

@@ -1,20 +1,25 @@
 ﻿using System;
 using System.IO;
+// ReSharper disable MemberInitializerValueIgnored
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
+// ReSharper disable IdentifierTypo
 
 namespace CollapseLauncher
 {
     internal class DeltaPatchProperty
     {
-        internal DeltaPatchProperty(string PatchFile)
+        internal DeltaPatchProperty(string patchFile)
         {
-            ReadOnlySpan<string> strings = Path.GetFileNameWithoutExtension(PatchFile).Split('_');
+            ReadOnlySpan<string> strings = Path.GetFileNameWithoutExtension(patchFile).Split('_');
             MD5hash = strings[5];
             ZipHash = strings[4];
             ProfileName = strings[0];
             SourceVer = strings[1];
             TargetVer = strings[2];
             PatchCompr = strings[3];
-            PatchPath = PatchFile;
+            PatchPath = patchFile;
         }
 
         public string ZipHash { get; set; }

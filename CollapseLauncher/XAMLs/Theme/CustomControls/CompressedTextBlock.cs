@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
+// ReSharper disable PartialTypeWithSinglePart
 
 namespace CollapseLauncher.CustomControls
 {
@@ -23,15 +24,15 @@ namespace CollapseLauncher.CustomControls
             public int Spacing;
         }
 
-        class CompressedContext
+        private class CompressedContext
         {
-            public bool BeginOffset;
-            public List<CompressedText> Texts = [];
+            public          bool                 BeginOffset;
+            public readonly List<CompressedText> Texts = [];
         }
 
-        private CompressedContext Context = new();
-        private TextBlock MeasureTextBlock = new();
-        private TextBlock ContentTextBlock = new();
+        private readonly CompressedContext _context          = new();
+        private readonly TextBlock         _measureTextBlock = new();
+        private readonly TextBlock         _contentTextBlock = new();
         #endregion
 
         #region Properties
@@ -90,13 +91,13 @@ namespace CollapseLauncher.CustomControls
         private static void OnForegroundChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var compressedTextBlock = (CompressedTextBlock)sender;
-            compressedTextBlock.ContentTextBlock.Foreground = (Brush)e.NewValue;
+            compressedTextBlock._contentTextBlock.Foreground = (Brush)e.NewValue;
         }
 
         private static void OnTextTrimmingChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var compressedTextBlock = (CompressedTextBlock)sender;
-            compressedTextBlock.ContentTextBlock.TextTrimming = (TextTrimming)e.NewValue;
+            compressedTextBlock._contentTextBlock.TextTrimming = (TextTrimming)e.NewValue;
         }
 
         private static void OnTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -114,26 +115,26 @@ namespace CollapseLauncher.CustomControls
 
         public CompressedTextBlock()
         {
-            Children.Add(ContentTextBlock);
+            Children.Add(_contentTextBlock);
         }
 
         private bool CheckCompressMark(string marks, char ch)
         {
             var contains = marks.Contains(ch);
             if (!contains) return false;
-            MeasureTextBlock.Text = "" + ch;
-            MeasureTextBlock.Measure(new Size(float.MaxValue, float.MaxValue));
-            return MeasureTextBlock.DesiredSize.Height <= MeasureTextBlock.DesiredSize.Width * 1.5;
+            _measureTextBlock.Text = "" + ch;
+            _measureTextBlock.Measure(new Size(float.MaxValue, float.MaxValue));
+            return _measureTextBlock.DesiredSize.Height <= _measureTextBlock.DesiredSize.Width * 1.5;
         }
 
         private void UpdateFontSize(double value)
         {
-            ContentTextBlock.FontSize = value;
+            _contentTextBlock.FontSize = value;
         }
 
         private void InvalidateText()
         {
-            ContentTextBlock.Inlines.Clear();
+            _contentTextBlock.Inlines.Clear();
             if (Text.Length <= 0) return;
 
             var lastChar = Text[0];
@@ -141,8 +142,8 @@ namespace CollapseLauncher.CustomControls
             var isLastCloseMark = CheckCompressMark(CloseMarks, lastChar);
             var compressedText = new CompressedText();
 
-            Context.BeginOffset = isLastOpenMark;
-            Context.Texts.Clear();
+            _context.BeginOffset = isLastOpenMark;
+            _context.Texts.Clear();
 
             for (var i = 1; i < Text.Length; i++)
             {
@@ -158,7 +159,7 @@ namespace CollapseLauncher.CustomControls
 
                 if (compressedText.Text.Length > 0 && compressedText.Spacing != spacing)
                 {
-                    Context.Texts.Add(compressedText);
+                    _context.Texts.Add(compressedText);
                     compressedText = new CompressedText();
                 }
 
@@ -172,23 +173,23 @@ namespace CollapseLauncher.CustomControls
 
             if (compressedText.Spacing != 0)
             {
-                Context.Texts.Add(compressedText);
+                _context.Texts.Add(compressedText);
                 compressedText = new CompressedText();
             }
 
             compressedText.Text += lastChar;
-            Context.Texts.Add(compressedText);
+            _context.Texts.Add(compressedText);
 
-            foreach (var text in Context.Texts)
+            foreach (var text in _context.Texts)
             {
-                ContentTextBlock.Inlines.Add(new Run
+                _contentTextBlock.Inlines.Add(new Run
                 {
                     Text = text.Text,
                     CharacterSpacing = text.Spacing
                 });
             }
 
-            ContentTextBlock.Translation = Context.BeginOffset ? new Vector3(1 - (float)ContentTextBlock.FontSize / 2, 0, 0) : new Vector3();
+            _contentTextBlock.Translation = _context.BeginOffset ? new Vector3(1 - (float)_contentTextBlock.FontSize / 2, 0, 0) : new Vector3();
         }
     }
 }

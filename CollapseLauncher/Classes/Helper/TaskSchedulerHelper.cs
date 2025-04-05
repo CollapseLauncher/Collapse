@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Classes.Extension;
+using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ShellLinkCOM;
@@ -7,6 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable GrammarMistakeInComment
 
 #nullable enable
 namespace CollapseLauncher.Helper
@@ -129,7 +133,7 @@ namespace CollapseLauncher.Helper
         private static void AppendTaskNameAndPathArgument(StringBuilder argumentBuilder)
         {
             // Get current stub or main executable path
-            string currentExecPath = MainEntryPoint.FindCollapseStubPath();
+            string currentExecPath = VelopackLocatorExtension.FindCollapseStubPath();
 
             // Build argument to the task name
             argumentBuilder.Append(" \"");

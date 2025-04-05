@@ -1,5 +1,7 @@
-// ReSharper disable InconsistentNaming
 using WinRT;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 
 namespace Hi3Helper
 {
@@ -28,6 +30,9 @@ namespace Hi3Helper
                 public string Graphics_Distortion { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Graphics_Distortion;
 
+                public string Graphics_AnisotropicSampling { get; set; } =
+                    LangFallback?._GenshinGameSettingsPage.Graphics_AnisotropicFiltering;
+                
                 public string Graphics_HighPrecisionCharacterAnimation { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Graphics_HighPrecisionCharacterAnimation;
 

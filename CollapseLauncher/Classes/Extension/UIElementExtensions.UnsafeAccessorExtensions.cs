@@ -20,10 +20,10 @@ namespace CollapseLauncher.Extension
         /// </summary>
         /// <param name="element">The <seealso cref="UIElement"/> member of an element</param>
         /// <param name="inputCursor">The cursor you want to set. Use <see cref="InputSystemCursor.Create"/> to choose the cursor you want to set.</param>
-        internal static ref T WithCursor<T>(this T element, InputCursor inputCursor) where T : UIElement
+        internal static T WithCursor<T>(this T element, InputCursor inputCursor) where T : UIElement
         {
             element.SetCursor(inputCursor);
-            return ref Unsafe.AsRef(ref element);
+            return element;
         }
     }
 }

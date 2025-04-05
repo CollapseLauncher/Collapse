@@ -1,5 +1,7 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background.Loaders;
+using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Statics;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -13,6 +15,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable GrammarMistakeInComment
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable UnusedMember.Global
+// ReSharper disable CommentTypo
+// ReSharper disable StringLiteralTypo
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background
@@ -20,7 +30,7 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
-    internal partial class BackgroundMediaUtility : IDisposable
+    internal sealed partial class BackgroundMediaUtility : IDisposable
     {
         internal enum MediaType
         {
@@ -53,8 +63,8 @@ namespace CollapseLauncher.Helper.Background
         internal static MediaType CurrentAppliedMediaType = MediaType.Unknown;
 
         private CancellationTokenSourceWrapper? _cancellationToken;
-        private IBackgroundMediaLoader?         _loaderStillImage;
-        private IBackgroundMediaLoader?         _loaderMediaPlayer;
+        private StillImageLoader?               _loaderStillImage;
+        private MediaPlayerLoader?              _loaderMediaPlayer;
 
         private bool _isCurrentRegistered;
 
@@ -62,45 +72,26 @@ namespace CollapseLauncher.Helper.Background
 
         private   delegate ValueTask          AssignDefaultAction<in T>(T element) where T : class;
         internal  delegate void               ThrowExceptionAction(Exception element);
-        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new ActionBlock<Task>(async (action) =>
-        {
-            try
-            {
-                await action;
-            }
-            catch (Exception ex)
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                    ErrorSender.SendException(ex));
-            }
-        },
-        new ExecutionDataflowBlockOptions
-        {
-            EnsureOrdered = true,
-            MaxMessagesPerTask = 1,
-            MaxDegreeOfParallelism = 1,
-            BoundedCapacity = 1,
-            TaskScheduler = TaskScheduler.Current
-        });
-        internal ActionBlock<Action> SharedActionBlockQueueChange = new ActionBlock<Action>(static (action) =>
-        {
-            try
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() => action());
-            }
-            catch (Exception ex)
-            {
-                _parentUI?.DispatcherQueue.TryEnqueue(() =>
-                    ErrorSender.SendException(ex));
-            }
-        },
-            new ExecutionDataflowBlockOptions
-            {
-                EnsureOrdered = true,
-                MaxMessagesPerTask = 1,
-                MaxDegreeOfParallelism = 1,
-                BoundedCapacity = 1
-            });
+        internal  static   ActionBlock<Task>? SharedActionBlockQueue = new(async action =>
+                                                                           {
+                                                                               try
+                                                                               {
+                                                                                   await action;
+                                                                               }
+                                                                               catch (Exception ex)
+                                                                               {
+                                                                                   _parentUI?.DispatcherQueue.TryEnqueue(() =>
+                                                                                                                             ErrorSender.SendException(ex));
+                                                                               }
+                                                                           },
+                                                                           new ExecutionDataflowBlockOptions
+                                                                           {
+                                                                               EnsureOrdered = true,
+                                                                               MaxMessagesPerTask = 1,
+                                                                               MaxDegreeOfParallelism = 1,
+                                                                               BoundedCapacity = 1,
+                                                                               TaskScheduler = TaskScheduler.Current
+                                                                           });
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -278,7 +269,7 @@ namespace CollapseLauncher.Helper.Background
             if (element is ImageUI image)
             {
                 // Get the default.png path and check if it exists
-                string filePath = LauncherConfig.AppDefaultBG;
+                string filePath = GetDefaultRegionBackgroundPath();
                 if (!File.Exists(filePath))
                 {
                     return;
@@ -359,14 +350,12 @@ namespace CollapseLauncher.Helper.Background
                 EnsureCurrentImageRegistered();
                 EnsureCurrentMediaPlayerRegistered();
 
-                _loaderMediaPlayer ??= new MediaPlayerLoader(
-                                                             _parentUI!,
+                _loaderMediaPlayer ??= new MediaPlayerLoader(_parentUI!,
                                                              _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                              _parentBgMediaPlayerBackgroundGrid!,
                                                              _bgMediaPlayerBackground);
 
-                _loaderStillImage ??= new StillImageLoader(
-                                                           _parentUI!,
+                _loaderStillImage ??= new StillImageLoader(_parentUI!,
                                                            _bgAcrylicMask!, _bgOverlayTitleBar!,
                                                            _parentBgImageBackgroundGrid!,
                                                            _bgImageBackground, _bgImageBackgroundLast);
@@ -387,7 +376,7 @@ namespace CollapseLauncher.Helper.Background
                 await (mediaType switch
                 {
                     MediaType.Media => _loaderMediaPlayer,
-                    MediaType.StillImage => _loaderStillImage,
+                    MediaType.StillImage => _loaderStillImage as IBackgroundMediaLoader,
                     _ => throw new InvalidCastException()
                 }).LoadAsync(mediaPath, isForceRecreateCache, isRequestInit, _cancellationToken.Token);
 
@@ -418,8 +407,7 @@ namespace CollapseLauncher.Helper.Background
             catch (Exception ex)
             {
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
-                if (throwAction != null)
-                    throwAction(ex);
+                throwAction?.Invoke(ex);
             }
         }
 
@@ -525,6 +513,29 @@ namespace CollapseLauncher.Helper.Background
             }
 
             return SupportedMediaPlayerExt.Contains(extension, StringComparer.OrdinalIgnoreCase) ? MediaType.Media : MediaType.Unknown;
+        }
+
+        public static string GetDefaultRegionBackgroundPath()
+        {
+            GameNameType currentGameType = GameNameType.Unknown;
+            try
+            {
+                GamePresetProperty currentGameProperty = GamePropertyVault.GetCurrentGameProperty();
+                currentGameType = currentGameProperty.GamePreset.GameType;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return currentGameType switch
+                   {
+                       GameNameType.Honkai => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_honkai.webp"),
+                       GameNameType.StarRail => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_starrail.webp"),
+                       GameNameType.Zenless => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_zzz.webp"),
+                       GameNameType.Genshin => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default_genshin.webp"),
+                       _ => Path.Combine(LauncherConfig.AppExecutableDir, @"Assets\Images\PageBackground\default.png")
+                   };
         }
     }
 }

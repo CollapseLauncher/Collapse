@@ -1,37 +1,35 @@
-#if !DISABLEDISCORD
-    using CollapseLauncher.DiscordPresence;
-#endif
-    using CollapseLauncher.GameSettings.Honkai;
-    using CollapseLauncher.Helper.Animation;
-    using CollapseLauncher.Interfaces;
-    using CollapseLauncher.Statics;
-    using Hi3Helper;
-    using Hi3Helper.Shared.ClassStruct;
-    using Microsoft.UI.Xaml;
-    using Microsoft.UI.Xaml.Media;
-    using Microsoft.Win32;
-    using RegistryUtils;
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Numerics;
-    using Windows.UI;
-    using static Hi3Helper.Locale;
-    using static Hi3Helper.Logger;
-    using static Hi3Helper.Shared.Region.LauncherConfig;
-    using static CollapseLauncher.Statics.GamePropertyVault;
+using CollapseLauncher.GameSettings.Honkai;
+using CollapseLauncher.Helper.Animation;
+using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.Win32;
+using RegistryUtils;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Numerics;
+using Windows.UI;
+using static Hi3Helper.Locale;
+using static Hi3Helper.Logger;
+using static Hi3Helper.Shared.Region.LauncherConfig;
+using static CollapseLauncher.Statics.GamePropertyVault;
 
-    namespace CollapseLauncher.Pages
+#if !DISABLEDISCORD
+using CollapseLauncher.DiscordPresence;
+#endif
+
+namespace CollapseLauncher.Pages
 {
     [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     public partial class HonkaiGameSettingsPage
     {
-        private GamePresetProperty CurrentGameProperty   { get; set; }
-        private HonkaiSettings     Settings              { get => (HonkaiSettings)CurrentGameProperty._GameSettings; }
+        private GamePresetProperty CurrentGameProperty   { get; }
+        private HonkaiSettings     Settings              { get => (HonkaiSettings)CurrentGameProperty.GameSettings; }
         private Brush              InheritApplyTextColor { get; set; }
         private RegistryMonitor    RegistryWatcher       { get; set; }
-        private bool               IsNoReload = false;
-        
+
         public HonkaiGameSettingsPage()
         {
             try
@@ -39,7 +37,7 @@
                 CurrentGameProperty = GetCurrentGameProperty();
                 DispatcherQueue?.TryEnqueue(() =>
                 {
-                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty._GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty._GameVersion.GamePreset.InternalGameNameInConfig!));
+                    RegistryWatcher = new RegistryMonitor(RegistryHive.CurrentUser, Path.Combine($"Software\\{CurrentGameProperty.GameVersion.VendorTypeProp.VendorType}", CurrentGameProperty.GameVersion.GamePreset.InternalGameNameInConfig!));
                     ToggleRegistrySubscribe(true);
                 });
 
@@ -55,25 +53,28 @@
         private void ToggleRegistrySubscribe(bool doSubscribe)
         {
             if (doSubscribe)
+            {
                 RegistryWatcher.RegChanged += RegistryListener;
+                RegistryWatcher.Start();
+            }
             else
+            {
+                RegistryWatcher.Stop();
                 RegistryWatcher.RegChanged -= RegistryListener;
+            }
         }
 
         private void RegistryListener(object sender, EventArgs e)
         {
-            if (!IsNoReload)
-            {
-                LogWriteLine("[HI3 GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
-                DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
-            }
+            LogWriteLine("[HI3 GSP Module] RegistryMonitor has detected registry change outside of the launcher! Reloading the page...", LogType.Warning, true);
+            DispatcherQueue?.TryEnqueue(MainFrameChanger.ReloadCurrentMainFrame);
         }
 
         private void LoadPage()
         {
             Settings.ReloadSettings();
 
-            this.InitializeComponent();
+            InitializeComponent();
             ApplyButton.Translation = Shadow32;
             GameSettingsApplyGrid.Translation = new Vector3(0, 0, 64);
             SettingsScrollViewer.EnableImplicitAnimation(true);
@@ -81,12 +82,12 @@
             InheritApplyTextColor = ApplyText.Foreground;
         }
 
-        private void RegistryExportClick(object sender, RoutedEventArgs e)
+        private async void RegistryExportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                Exception exc = Settings.ExportSettings();
+                Exception exc = await Settings.ExportSettings();
 
                 if (exc != null) throw exc;
 
@@ -107,12 +108,12 @@
             }
         }
 
-        private void RegistryImportClick(object sender, RoutedEventArgs e)
+        private async void RegistryImportClick(object sender, RoutedEventArgs e)
         {
             try
             {
                 ToggleRegistrySubscribe(false);
-                Exception exc = Settings.ImportSettings();
+                Exception exc = await Settings.ImportSettings();
 
                 if (exc != null) throw exc;
 
@@ -141,17 +142,18 @@
                 GameResolutionSelector.ItemsSource = ScreenResolutionsList;
                 if (CurrentGameProperty.IsGameRunning)
                 {
-                    #if !GSPBYPASSGAMERUNNING
+                #if !GSPBYPASSGAMERUNNING
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
                     OverlayTitle.Text = Lang._GameSettingsPage.OverlayGameRunningTitle;
                     OverlaySubtitle.Text = Lang._GameSettingsPage.OverlayGameRunningSubtitle;
-                    #endif
+                #endif
                 }
-                else if (GameInstallationState == GameInstallStateEnum.NotInstalled
-                      || GameInstallationState == GameInstallStateEnum.NeedsUpdate
-                      || GameInstallationState == GameInstallStateEnum.InstalledHavePlugin
-                      || GameInstallationState == GameInstallStateEnum.GameBroken)
+                else if (GameInstallationState
+                    is GameInstallStateEnum.NotInstalled
+                    or GameInstallStateEnum.NeedsUpdate
+                    or GameInstallStateEnum.InstalledHavePlugin
+                    or GameInstallStateEnum.GameBroken)
                 {
                     Overlay.Visibility = Visibility.Visible;
                     PageContent.Visibility = Visibility.Collapsed;
@@ -160,9 +162,9 @@
                 }
                 else
                 {
-#if !DISABLEDISCORD
+                #if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence.SetActivity(ActivityType.GameSettings);
-#endif
+                #endif
                 }
             }
             catch (Exception ex)
@@ -196,11 +198,11 @@
 
         public string CustomArgsValue
         {
-            get => ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue;
+            get => CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue;
             set
             {
                 ToggleRegistrySubscribe(false);
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCustomArgument.CustomArgumentValue = value;
+                CurrentGameProperty.GameSettings.SettingsCustomArgument.CustomArgumentValue = value;
                 ToggleRegistrySubscribe(true);
             }
         }
@@ -209,19 +211,14 @@
         {
             get
             {
-                bool value = ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments;
-
-                if (value) CustomArgsTextBox.IsEnabled = true;
-                else CustomArgsTextBox.IsEnabled       = false;
-                
+                bool value = CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments;
+                CustomArgsTextBox.IsEnabled = value;
                 return value;
             }
             set
             {
-                ((IGameSettingsUniversal)CurrentGameProperty._GameSettings).SettingsCollapseMisc.UseCustomArguments = value;
-                
-                if (value) CustomArgsTextBox.IsEnabled = true;
-                else CustomArgsTextBox.IsEnabled       = false;
+                CurrentGameProperty.GameSettings.SettingsCollapseMisc.UseCustomArguments = value;
+                CustomArgsTextBox.IsEnabled = value;
             }
         }
 

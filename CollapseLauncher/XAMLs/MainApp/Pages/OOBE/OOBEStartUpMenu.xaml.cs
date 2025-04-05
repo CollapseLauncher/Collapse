@@ -40,6 +40,10 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable CollectionNeverQueried.Local
 // ReSharper disable InconsistentNaming
+// ReSharper disable AsyncVoidMethod
+// ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace CollapseLauncher.Pages.OOBE
 {
@@ -52,7 +56,7 @@ namespace CollapseLauncher.Pages.OOBE
         public OOBEStartUpMenu()
         {
             ThisCurrent = this;
-            this.InitializeComponent();
+            InitializeComponent();
             WindowUtility.EnableWindowNonClientArea();
             SaveInitialLogoAndTitleTextPos();
 
@@ -113,68 +117,82 @@ namespace CollapseLauncher.Pages.OOBE
 
         private async void RunIntroSequence()
         {
-            await Task.Delay(250);
-            TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
-            CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
-
-            IAnimatedVisualSource2? newIntro = new NewLogoTitleIntro();
+            try
             {
-                WelcomeLogoIntro.Source = newIntro;
-                WelcomeLogoIntro.AnimationOptimization = PlayerAnimationOptimization.Resources;
+                await Task.Delay(250);
+                TimeSpan logoAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
+                CreateIntroWelcomeTextStack(WelcomeVCarouselGrid);
 
-                await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
-                await Task.Delay(TimeSpan.FromSeconds(1));
-                await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
-
-                // Adding delay and make sure the CDN recommendation has already been loaded
-                // before hiding the intro sequence
-                while (_isLoadingCDNRecommendation)
+                IAnimatedVisualSource2 newIntro = new NewLogoTitleIntro();
                 {
-                    await Task.Delay(250);
+                    WelcomeLogoIntro.Source                = newIntro;
+                    WelcomeLogoIntro.AnimationOptimization = PlayerAnimationOptimization.Resources;
+
+                    await WelcomeLogoIntro.PlayAsync(0, 0.0001d, false);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await WelcomeLogoIntro.PlayAsync(0, 488d / 600d, false);
+
+                    // Adding delay and make sure the CDN recommendation has already been loaded
+                    // before hiding the intro sequence
+                    while (_isLoadingCDNRecommendation)
+                    {
+                        await Task.Delay(250);
+                    }
+                    await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
+                    WelcomeLogoIntro.Stop();
+                    await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                          currentCompositor.CreateVector3KeyFrameAnimation(
+                                                               "Translation",
+                                                               new Vector3(0, -138, 0),
+                                                               WelcomeLogoIntro.Translation
+                                                              ));
+                    await SpawnWelcomeText();
+
+                    await Task.Delay(1000);
+
+                    await SpawnWelcomeText(true);
+                    await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
+                                                          currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
+                                                          currentCompositor.CreateVector3KeyFrameAnimation(
+                                                               "Translation",
+                                                               new Vector3(0, -32, 0),
+                                                               WelcomeLogoIntro.Translation
+                                                              ));
+
+                    OOBEAgreementMenuExtensions.OobeStartParentUI = this;
+                    OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
+                    WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
+                    WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
                 }
-                await WelcomeLogoIntro.PlayAsync(488d / 600d, 570d / 600d, false);
-                WelcomeLogoIntro.Stop();
-                await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
-                                                      currentCompositor.CreateVector3KeyFrameAnimation(
-                                                        "Translation",
-                                                        new Vector3(0, -138, 0),
-                                                        WelcomeLogoIntro.Translation
-                                                      ));
-                await SpawnWelcomeText();
-
-                await Task.Delay(1000);
-
-                await SpawnWelcomeText(true);
-                await WelcomeLogoIntro.StartAnimation(logoAnimAppearanceDuration,
-                                                      currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 0, 1),
-                                                      currentCompositor.CreateVector3KeyFrameAnimation(
-                                                        "Translation",
-                                                        new Vector3(0, -32, 0),
-                                                        WelcomeLogoIntro.Translation
-                                                      ));
-
-                OOBEAgreementMenuExtensions.oobeStartParentUI = this;
-                OverlayFrame.Navigate(typeof(OOBEAgreementMenu), null, new DrillInNavigationTransitionInfo());
-                WelcomeLogoIntro.Visibility     = Visibility.Collapsed;
-                WelcomeVCarouselGrid.Visibility = Visibility.Collapsed;
+                WelcomeLogoIntro.Source = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
-            WelcomeLogoIntro.Source = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            catch
+            {
+                // ignored
+            }
         }
 
         public async void StartLauncherConfiguration()
         {
-            OverlayFrame.Navigate(typeof(BlankPage), null, new DrillInNavigationTransitionInfo());
-            MainUI.Visibility = Visibility.Visible;
+            try
+            {
+                OverlayFrame.Navigate(typeof(BlankPage), null, new DrillInNavigationTransitionInfo());
+                MainUI.Visibility = Visibility.Visible;
 
-            TimeSpan mainUIAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
-            await MainUI.StartAnimation(mainUIAnimAppearanceDuration,
-                                        currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
-                                        currentCompositor.CreateVector3KeyFrameAnimation(
-                                         "Translation",
-                                         new Vector3(0, 0,  0),
-                                         new Vector3(0, 32, 0)));
+                TimeSpan mainUIAnimAppearanceDuration = TimeSpan.FromSeconds(0.5);
+                await MainUI.StartAnimation(mainUIAnimAppearanceDuration,
+                                            currentCompositor.CreateScalarKeyFrameAnimation("Opacity", 1, 0),
+                                            currentCompositor.CreateVector3KeyFrameAnimation(
+                                                 "Translation",
+                                                 new Vector3(0, 0,  0),
+                                                 new Vector3(0, 32, 0)));
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private async ValueTask SpawnWelcomeText(bool isHide = false)
@@ -236,7 +254,7 @@ namespace CollapseLauncher.Pages.OOBE
         private async void GetRecommendedCDN()
         {
             // Initialize the token source
-            _checkRecommendedCDNToken = new();
+            _checkRecommendedCDNToken = new CancellationTokenSourceWrapper();
 
             // Set the selected CDN to -1
             SelectCDN.SelectedIndex   = -1;
@@ -320,7 +338,7 @@ namespace CollapseLauncher.Pages.OOBE
         private          Vector3?   LastTitleTextInitialScale;
         private readonly double     InitialTitleTextSize;
         private readonly double     InitialFirstMainGridRowSize;
-        private readonly double     SmallWindowFactor = 0.67d;
+        private const    double     SmallWindowFactor = 0.67d;
         private          int        LastTitleTextInitialColumnSpan;
 
         private bool IsSmallSize;
@@ -365,7 +383,7 @@ namespace CollapseLauncher.Pages.OOBE
             }
         }
 
-        private void ChangeSettingsCardIconFont(object containerObject, FontFamily iconFont)
+        private static void ChangeSettingsCardIconFont(object containerObject, FontFamily iconFont)
         {
             if (containerObject.GetType() == typeof(SettingsCard))
             {
@@ -448,20 +466,18 @@ namespace CollapseLauncher.Pages.OOBE
             return (int)CurrentAppTheme;
         }
 
-        private int _SelectedTheme = GetInitialTheme();
-
         private int SelectedTheme
         {
-            get => _SelectedTheme;
+            get;
             set
             {
                 if (value < 0) return;
 
-                _SelectedTheme = value;
+                field = value;
                 ThemeChanger.ChangeTheme((ElementTheme)value);
                 SetAppConfigValue("ThemeMode", ((AppThemeMode)value).ToString());
             }
-        }
+        } = GetInitialTheme();
 
         private async void CustomBackgroundCheckedOpen(object sender, RoutedEventArgs e)
         {
@@ -472,7 +488,7 @@ namespace CollapseLauncher.Pages.OOBE
             string fileExt      = Path.GetExtension(selectedPath);
             if (BackgroundMediaUtility.SupportedMediaPlayerExt.Contains(fileExt, StringComparer.OrdinalIgnoreCase))
             {
-                await SimpleDialogs.Dialog_OOBEVideoBackgroundPreviewUnavailable(this);
+                await SimpleDialogs.Dialog_OOBEVideoBackgroundPreviewUnavailable();
 
                 SetAppConfigValue("UseCustomBG",  true);
                 SetAppConfigValue("CustomBGPath", selectedPath);
@@ -546,9 +562,9 @@ namespace CollapseLauncher.Pages.OOBE
         private async Task ReplaceBackgroundImage(FileStream sourceStream, float fromOpacity = 0.25f,
                                                   float      toOpacity = 0.25f)
         {
-            float toScale      = 1.2f;
-            float toTranslateX = -((float)ContainerBackgroundImage.ActualWidth * (toScale - 1f) / 2);
-            float toTranslateY = -((float)ContainerBackgroundImage.ActualHeight * (toScale - 1f) / 2);
+            const float toScale      = 1.2f;
+            float       toTranslateX = -((float)ContainerBackgroundImage.ActualWidth * (toScale - 1f) / 2);
+            float       toTranslateY = -((float)ContainerBackgroundImage.ActualHeight * (toScale - 1f) / 2);
 
             TimeSpan transitionDuration = TimeSpan.FromSeconds(0.5);
             await ContainerBackgroundImage.StartAnimation(transitionDuration,
@@ -764,7 +780,7 @@ namespace CollapseLauncher.Pages.OOBE
         };
 
         private readonly ObservableCollection<string> LangList =
-            new(LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})"));
+            [.. LanguageNames.Select(x => $"{x.Value.LangName} ({x.Key} by {x.Value.LangAuthor})")];
 
         private int SelectedLangIndex
         {
@@ -828,8 +844,7 @@ namespace CollapseLauncher.Pages.OOBE
         private async void ChooseFolder(object sender, RoutedEventArgs e)
         {
             bool   selected = false;
-            switch (await SimpleDialogs.Dialog_LocateFirstSetupFolder(Content,
-                                                                      Path.Combine(AppDataFolder, "GameFolder")))
+            switch (await SimpleDialogs.Dialog_LocateFirstSetupFolder(Path.Combine(AppDataFolder, "GameFolder")))
             {
                 case ContentDialogResult.Primary:
                     AppGameFolder = Path.Combine(AppDataFolder, "GameFolder");
@@ -888,7 +903,7 @@ namespace CollapseLauncher.Pages.OOBE
                                                 Lang._StartupPage.Pg1LoadingSubitle2);
                 LoadingMessageHelper.SetProgressBarState(100, false);
                 LoadingMessageHelper.SetProgressBarValue(100);
-                await Task.Delay(5000);
+                await Task.Delay(2000);
 
                 LoadingMessageHelper.HideLoadingFrame();
             }

@@ -7,6 +7,7 @@ on:
   push:
     branches:
         - 'main'
+        - '1.83.x-staging'
     paths-ignore:
         - '**.md'
         - 'Hi3Helper.Core/Lang/**.json'
@@ -22,26 +23,25 @@ on:
         - 'Hi3Helper.Core/Lang/**.json'
         - 'Docs/**'
         - '**/packages.lock.json'
-#  schedule:
-#    - cron: '0 0 * * 0' # At 00:00 on Sunday
+
+env:
+  DOTNET_INSTALL_DIR: '.\.dotnet' 
+  DOTNET_VERSION: '9.0.2xx'
+  DOTNET_QUALITY: 'ga'
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
 jobs:
   build:
-    # runs-on: [self-hosted, linux]
     runs-on: windows-latest
     strategy:
       matrix:
         configuration: [Debug] # No need to distribute Debug builds
         platform: [x64]
-        framework: [net9.0-windows10.0.22621.0]
+        framework: [net9.0-windows10.0.26100.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
-      DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.x'
-      DOTNET_QUALITY: 'ga'
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout
@@ -56,6 +56,9 @@ jobs:
         dotnet-quality: ${{ env.DOTNET_QUALITY }}
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
+
+    - name: Update .NET workload
+      run: dotnet workload update
 
     - name: Build
       run: |
@@ -74,15 +77,11 @@ jobs:
       matrix:
         configuration: [Debug]
         platform: [x64]
-        framework: [net9.0-windows10.0.22621.0]
+        framework: [net9.0-windows10.0.26100.0]
 
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
-      DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.x'
-      DOTNET_QUALITY: 'ga'
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
     - name: Checkout
@@ -98,27 +97,30 @@ jobs:
         cache: true
         cache-dependency-path: CollapseLauncher/packages.lock.json
 
-    # - name: Restore
-      # run: dotnet restore CollapseLauncher --locked-mode
-      # Don't need to do restore explicitly, should be done on Build time
-
+    - name: Update .NET workload
+      run: dotnet workload update
+        
     - name: Build
       run: |
         dotnet publish CollapseLauncher -c ${{matrix.Configuration}} -p:PublishProfile=Publish-DebugCIReleaseAOT -p:PublishDir=".\debug-aot-build\"
-          
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-          name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
-          path: ./CollapseLauncher/debug-aot-build/
-          exclude: '**/*.pdb'
-          compression-level: 9
+    
     - name: Upload debug symbols
       uses: actions/upload-artifact@v4
       with:
         name: aot-experimental-symbols_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
         path: ./CollapseLauncher/debug-aot-build/**/*.pdb
         compression-level: 9
+      
+    - name: Remove debug symbols
+      run: |
+        Remove-Item -Path "./CollapseLauncher/debug-aot-build/*.pdb" -Recurse -Force
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+            name: aot-experimental_collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
+            path: ./CollapseLauncher/debug-aot-build/
+            compression-level: 9
         
   notify-discord:
     runs-on: ubuntu-latest

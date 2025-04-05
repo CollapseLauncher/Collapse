@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -20,18 +21,23 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Threading.Tasks;
 using Windows.UI;
+using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable RedundantExtendsListEntry
+// ReSharper disable IdentifierTypo
+// ReSharper disable AsyncVoidMethod
 
 namespace CollapseLauncher
 {
     public sealed partial class MainWindow : Window
     {
         private static bool _isForceDisableIntro;
+        
+        public static bool IsCriticalOpInProgress { get; set; }
 
-        public void InitializeWindowProperties(bool startOOBE = false)
+        public void InitializeWindowProperties(bool startOobe = false)
         {
             try
             {
@@ -40,7 +46,7 @@ namespace CollapseLauncher
 
                 if (WindowUtility.CurrentWindowTitlebarExtendContent) WindowUtility.CurrentWindowTitlebarHeightOption = TitleBarHeightOption.Tall;
 
-                if (IsFirstInstall || startOOBE)
+                if (IsFirstInstall || startOobe)
                 {
                     _isForceDisableIntro = true;
                     WindowUtility.CurrentWindowTitlebarExtendContent = true;
@@ -48,7 +54,7 @@ namespace CollapseLauncher
                     WindowUtility.ApplyWindowTitlebarLegacyColor();
                     WindowUtility.CurrentWindowIsResizable = false;
                     WindowUtility.CurrentWindowIsMaximizable = false;
-                    rootFrame.Navigate(typeof(OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
+                    RootFrame.Navigate(typeof(OOBEStartUpMenu), null, new DrillInNavigationTransitionInfo());
                 }
                 else
                     StartMainPage();
@@ -70,7 +76,7 @@ namespace CollapseLauncher
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
             
             RunIntroSequence();
-            rootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
+            RootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
 
         private async void RunIntroSequence()
@@ -121,14 +127,18 @@ namespace CollapseLauncher
 
         private void InitializeAppWindowAndIntPtr()
         {
-            this.InitializeComponent();
-            this.Activate();
-            this.Closed += (_, _) => { App.IsAppKilled = true; };
+            InitializeComponent();
+            Activate();
+
+            // TODO: #671 This App.IsAppKilled will be replaced with cancellable-awaitable event
+            //       to ensure no hot-exit being called before all background tasks
+            //       hasn't being cancelled.
+            // Closed += (_, _) => { App.IsAppKilled = true; };
 
             // Initialize Window Handlers and register to Window Utility
-            WindowUtility.RegisterWindow(this);
+            this.RegisterWindow();
 
-            string title = $"Collapse";
+            string title = "Collapse";
             if (IsPreview)
                 title += " Preview";
 #if DEBUG
@@ -141,7 +151,7 @@ namespace CollapseLauncher
             WindowUtility.CurrentWindowTitle = title;
         }
 
-        private void LoadWindowIcon()
+        private static void LoadWindowIcon()
         {
             WindowUtility.SetWindowTitlebarIcon(AppIconLarge, AppIconSmall);
             WindowUtility.CurrentWindowTitlebarIconShowOption = IconShowOptions.HideIconAndSystemMenu;
@@ -206,7 +216,7 @@ namespace CollapseLauncher
             }
         }
 
-        private bool ConsoleCtrlHandler(uint dwCtrlType)
+        private static bool ConsoleCtrlHandler(uint dwCtrlType)
         {
             ImageLoaderHelper.DestroyWaifu2X();
             return true;
@@ -216,25 +226,25 @@ namespace CollapseLauncher
         {
             if (e.QuitFromUpdateMenu)
             {
-                overlayFrame.Navigate(typeof(NullPage), null, new EntranceNavigationTransitionInfo());
+                OverlayFrame.Navigate(typeof(NullPage), null, new EntranceNavigationTransitionInfo());
                 return;
             }
 
             if (e.IsUpdateAvailable)
             {
-                overlayFrame.Navigate(typeof(UpdatePage));
+                OverlayFrame.Navigate(typeof(UpdatePage));
             }
         }
 
         private void MainFrameChangerInvoker_WindowFrameEvent(object sender, MainFrameProperties e)
         {
-            rootFrame.Navigate(e.FrameTo, null, e.Transition);
+            RootFrame.Navigate(e.FrameTo, null, e.Transition);
         }
 
         private void MainFrameChangerInvoker_WindowFrameGoBackEvent(object sender, EventArgs e)
         {
-            if (rootFrame.CanGoBack)
-                rootFrame.GoBack();
+            if (RootFrame.CanGoBack)
+                RootFrame.GoBack();
         }
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
@@ -242,13 +252,21 @@ namespace CollapseLauncher
             WindowUtility.WindowMinimize();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e) => CloseApp();
+        private void CloseButton_Click(object sender, RoutedEventArgs e) => _ = CloseApp();
         
         /// <summary>
         /// Close app and do necessary events before closing
         /// </summary>
-        public void CloseApp()
+        public async Task CloseApp()
         {
+            if (IsCriticalOpInProgress)
+            {
+                WindowUtility.WindowRestore();
+                if (await Dialog_EnsureExit() != ContentDialogResult.Primary)
+                    return;
+            }
+
+            GamePropertyVault.SafeDisposeVaults();
             SentryHelper.StopSentrySdk();
             _TrayIcon?.Dispose();
             Close();
@@ -261,7 +279,7 @@ namespace CollapseLauncher
             WindowUtility.EnableWindowNonClientArea();
         }
 
-        private bool IsIntroEnabled
+        private static bool IsIntroEnabled
         {
             get => LauncherConfig.IsIntroEnabled;
             set => LauncherConfig.IsIntroEnabled = value;
@@ -269,7 +287,7 @@ namespace CollapseLauncher
 
         private void IntroSequenceToggle_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            Compositor curCompositor = this.Compositor;
+            Compositor curCompositor = Compositor;
             UIElement element = sender as UIElement;
             element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 1f)
@@ -278,7 +296,7 @@ namespace CollapseLauncher
 
         private void IntroSequenceToggle_PointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
-            Compositor curCompositor = this.Compositor;
+            Compositor curCompositor = Compositor;
             UIElement element = sender as UIElement;
             element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 0.25f)

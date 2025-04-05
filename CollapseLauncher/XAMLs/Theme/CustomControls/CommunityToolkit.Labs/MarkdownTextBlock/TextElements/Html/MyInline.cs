@@ -10,8 +10,8 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements.Html;
 
 internal class MyInline : IAddChild
 {
-    private Paragraph _paragraph;
-    private InlineUIContainer _inlineUIContainer;
+    private readonly Paragraph         _paragraph;
+    private readonly InlineUIContainer _inlineUIContainer;
 
     public TextElement TextElement
     {
@@ -22,11 +22,11 @@ internal class MyInline : IAddChild
     {
         _paragraph = new Paragraph();
         _inlineUIContainer = new InlineUIContainer();
-        RichTextBlock _richTextBlock = new RichTextBlock();
-        _richTextBlock.Blocks.Add(_paragraph);
+        RichTextBlock richTextBlock = new RichTextBlock();
+        richTextBlock.Blocks.Add(_paragraph);
 
-        _richTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
-        _inlineUIContainer.Child = _richTextBlock;
+        richTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
+        _inlineUIContainer.Child = richTextBlock;
     }
 
     public void AddChild(IAddChild child)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
+// ReSharper disable RedundantExtendsListEntry
 
 namespace CollapseLauncher.Pages
 {
@@ -7,7 +8,7 @@ namespace CollapseLauncher.Pages
         public UnavailablePage()
         {
             BackgroundImgChanger.ToggleBackground(true);
-            this.InitializeComponent();
+            InitializeComponent();
         }
     }
 }

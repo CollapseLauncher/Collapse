@@ -23,9 +23,7 @@ public partial class SettingsExpanderItemStyleSelector : StyleSelector
     /// <summary>
     /// Initializes a new instance of the <see cref="SettingsExpanderItemStyleSelector"/> class.
     /// </summary>
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public SettingsExpanderItemStyleSelector()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 
@@ -36,9 +34,7 @@ public partial class SettingsExpanderItemStyleSelector : StyleSelector
         {
             return ClickableStyle;
         }
-        else
-        {
-            return DefaultStyle;
-        }
+
+        return DefaultStyle;
     }
 }

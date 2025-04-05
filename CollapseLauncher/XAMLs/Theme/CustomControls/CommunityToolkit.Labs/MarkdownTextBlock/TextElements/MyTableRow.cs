@@ -6,6 +6,7 @@ using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock.TextElements;
 using Markdig.Extensions.Tables;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+// ReSharper disable All
 
 namespace CommunityToolkit.Labs.WinUI.MarkdownTextBlock.TextElements;
 
