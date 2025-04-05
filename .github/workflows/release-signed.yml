@@ -111,8 +111,8 @@ jobs:
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_CIRELEASENOTIFIER }}
         title: Collapse Launcher Release CI build is PENDING!
-        status: Success
         nofail: true
+        color: #FF0000
         url: https://github.com/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
         description: |
           Commit `${{ github.sha }}` by ${{ github.actor }} in branch `${{ github.ref_name }}`
@@ -169,9 +169,9 @@ jobs:
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK_CIRELEASENOTIFIER }}
         title: Collapse Launcher Release CI build is complete!
-        status: Success
+        status: ${{ job.status }}
         nofail: true
-        url: https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
+        url: https://github.com/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
         description: |
           Commit `${{ github.sha }}` by ${{ github.actor }} in branch `${{ github.ref_name }}`
           Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
