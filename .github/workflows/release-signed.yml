@@ -58,9 +58,9 @@ jobs:
 
     - name: Print env
       run: |
-          echo Configuration Strategy: $env:CONFIGURATION_STRATEGY
-          echo Publish Profile: $env:PUBLISH_PROFILE
-          echo Signing Policy: $env:SIGNING_POLICY_SLUG
+          echo "::notice::Configuration Strategy: $env:CONFIGURATION_STRATEGY"
+          echo "::notice::Publish Profile: $env:PUBLISH_PROFILE"
+          echo "::notice::Signing Policy: $env:SIGNING_POLICY_SLUG"
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -90,7 +90,7 @@ jobs:
             $version = $version.Substring(0, $version.Length - 2)
         }
 
-        echo Build version: $version
+        echo "::notice::Build version: $version"
         echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         mkdir SignArtifact
         mkdir SignArtifact\BuildArtifact-$version
@@ -100,9 +100,25 @@ jobs:
       id: upload-unsigned-artifact
       uses: actions/upload-artifact@v4
       with:
-          name: collapse_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
+          name: collapse-v{${{ env.VERSION }}_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
           path: ./CollapseLauncher/SignArtifact
           compression-level: 9
+
+    - name: Notify Discord for pending build
+      uses: sarisia/actions-status-discord@v1.15.3
+      if: always()
+      continue-on-error: true
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK_CIRELEASENOTIFIER }}
+        title: Collapse Launcher Release CI build is PENDING!
+        status: Success
+        nofail: true
+        url: https://github.com/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
+        description: |
+          Commit `${{ github.sha }}` by ${{ github.actor }} in branch `${{ github.ref_name }}`
+          Version: ${{ env.VERSION }}
+          [Click here to view the run](https://github.com/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }})
+          For core maintainers, go to SignPath to sign the build!
 
     - name: Sign Build Artifact with SignPath
       uses: signpath/github-action-submit-signing-request@v1.1
@@ -119,8 +135,13 @@ jobs:
     - name: Process Signed Build
       run: |
         $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
-        echo Re-checking build version
-        echo ((Get-Item $buildDir\CollapseLauncher.exe).VersionInfo.FileVersion).TrimEnd(".0")
+        echo "Re-checking build version"
+        $versionFinal = ((Get-Item .\build\CollapseLauncher.exe).VersionInfo.FileVersion)
+        if ($versionFinal.EndsWith(".0")) {
+            $versionFinal = $versionFinal.Substring(0, $version.Length - 2)
+        }
+        echo "::notice::Final build version: $versionFinal"
+        echo "VERSION=$versionFinal" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Verify Signed Artifacts
       run: |
@@ -137,23 +158,21 @@ jobs:
     - name: Re-upload Signed Artifact to GitHub
       uses: actions/upload-artifact@v4
       with:
-          name: SIGNED_collapse_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
+          name: SIGNED_collapse-v{${{ env.VERSION }}_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
           path: ./SignedArtifact
           compression-level: 9
 
-  # notify-discord:
-  #   runs-on: ubuntu-latest
-  #   if: always()
-  #   needs: [build]
-  #   steps:
-  #   - name: Notify Discord
-  #     uses: sarisia/actions-status-discord@v1.15.1
-  #     if: always()
-  #     continue-on-error: true
-  #     with:
-  #       webhook: ${{ secrets.DISCORD_WEBHOOK_NIGHTLY }}
-  #       title: Collapse Launcher CI build is complete!
-  #       status: ${{ job.status }}
-  #       description: |
-  #         Commit `${{ github.sha }}` by ${{ github.actor }}
-  #         Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
+    - name: Final Notify Discord
+      uses: sarisia/actions-status-discord@v1.15.3
+      if: always()
+      continue-on-error: true
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK_CIRELEASENOTIFIER }}
+        title: Collapse Launcher Release CI build is complete!
+        status: ${{ job.status }}
+        nofail: true
+        url: https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
+        description: |
+          Commit `${{ github.sha }}` by ${{ github.actor }} in branch `${{ github.ref_name }}`
+          Click [here](https://nightly.link/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}) to download!
+
