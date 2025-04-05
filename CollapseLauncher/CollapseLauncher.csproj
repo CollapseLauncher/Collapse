@@ -170,12 +170,12 @@
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250402" />
         
         <!--
         Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.

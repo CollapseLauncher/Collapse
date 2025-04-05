@@ -10,11 +10,11 @@
       },
       "CommunityToolkit.WinUI.Triggers": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "IzGOB0qbb2uNzBc/RytfLqGG5qQUCs2j95RcCpGg6R8CFilPNwHyJdd8etGOmw4oWVaUvXHbDeAH2Swy9595VQ==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "laHIrBQkwQCurTNSQdGdEXUyoCpqY8QFXSybDM/Q1Ti/23xL+sRX/gHe3pP8uMM59bcwYbYlMRCbIaLnxnrdjw==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Helpers": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Helpers": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
@@ -54,8 +54,8 @@
       },
       "CommunityToolkit.WinUI.Extensions": {
         "type": "Transitive",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "7l+22QHfDcyU4SqpfIci4Sl+XcT7oFxsxI2KYitUHg4lo922cMCK70L9v6EgM8z+H4IAFF9HqPcKSDehvbZtWw==",
+        "resolved": "8.2.250402",
+        "contentHash": "rAOYzNX6kdUeeE1ejGd6Q8B+xmyZvOrWFUbqCgOtP8OQsOL66en9ZQTtzxAlaaFC4qleLvnKcn8FJFBezujOlw==",
         "dependencies": {
           "CommunityToolkit.Common": "8.2.1",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
@@ -63,10 +63,10 @@
       },
       "CommunityToolkit.WinUI.Helpers": {
         "type": "Transitive",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "EcqFmIFwpNgZgmOJUil58Z40YwO2DcZRUeF5tXaLxaHOFXiL/Zo2ISvw6wNlhMAsVBmMizSzYSKKL+A3yxJ5xg==",
+        "resolved": "8.2.250402",
+        "contentHash": "DThBXB4hT3/aJ7xFKQJw/C0ZEs1QhZL7QG6AFOYcpnGWNlv3tkF761PFtTyhpNQrR1AFfzml5zG+zWfFbKs6Mw==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       }
