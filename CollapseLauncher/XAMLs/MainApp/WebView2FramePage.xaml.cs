@@ -34,15 +34,18 @@ namespace CollapseLauncher
 
                 _webView2Runtime = new WebView2
                 {
-                                      HorizontalAlignment = HorizontalAlignment.Stretch,
-                                      VerticalAlignment   = VerticalAlignment.Stretch
-                                  };
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment   = VerticalAlignment.Stretch
+                };
+                
                 WebViewWindowTitle.Text = string.Empty;
 
                 _webView2Runtime.CoreWebView2Initialized += WebView2Window_CoreWebView2Initialized;
                 _webView2Runtime.NavigationStarting      += WebView2Window_PageLoading;
                 _webView2Runtime.NavigationCompleted     += WebView2Window_PageLoaded;
 
+                await _webView2Runtime.EnsureCoreWebView2Async(); // Ensure the WebView2 runtime is initialized before getting used
+                
                 WebView2WindowContainer.Children.Clear();
                 WebView2WindowContainer.Children.Add(_webView2Runtime);
 
