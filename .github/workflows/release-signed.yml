@@ -112,7 +112,7 @@ jobs:
         webhook: ${{ secrets.DISCORD_WEBHOOK_CIRELEASENOTIFIER }}
         title: Collapse Launcher Release CI build is PENDING!
         nofail: true
-        color: #FF0000
+        color: 0xFF0000
         url: https://github.com/CollapseLauncher/Collapse/actions/runs/${{ github.run_id }}
         description: |
           Commit `${{ github.sha }}` by ${{ github.actor }} in branch `${{ github.ref_name }}`
@@ -136,7 +136,7 @@ jobs:
       run: |
         $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
         echo "Re-checking build version"
-        $versionFinal = ((Get-Item $buildDir\CollapseLauncher.exe\CollapseLauncher.exe).VersionInfo.FileVersion)
+        $versionFinal = ((Get-Item $buildDir\CollapseLauncher.exe).VersionInfo.FileVersion)
         if ($versionFinal.EndsWith(".0")) {
             $versionFinal = $versionFinal.Substring(0, $version.Length - 2)
         }
