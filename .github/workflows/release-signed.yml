@@ -84,7 +84,7 @@ jobs:
       run: |
         cd CollapseLauncher
         .\build\CollapseLauncher.exe generatevelopackmetadata
-        
+
         $version = ((Get-Item .\build\CollapseLauncher.exe).VersionInfo.FileVersion)
         if ($version.EndsWith(".0")) {
             $version = $version.Substring(0, $version.Length - 2)
@@ -114,6 +114,7 @@ jobs:
         github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
         wait-for-completion: true
         output-artifact-directory: '/SignedArtifact/'
+        artifact-configuration-slug: ${{ env.SIGNPATH_ARTIFACT_SLUG}}
 
     - name: Process Signed Build
       run: |
