@@ -810,8 +810,8 @@
     "ExceptionFeedbackTemplate_Email": "Adresse e-mail (optionnel) :",
     "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne",
     
-    "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "Tag_Deprecated": "Abandonné",
+    "Generic_GameFeatureDeprecation": "En raison de changements imprévus au sein du jeu, cette fonctionnalité a été abandonnée et sera supprimée à l'avenir. L'utilisation de cette fonctionnalité peut provoquer un comportement inattendu."
   },
 
   "_BackgroundNotification": {
