@@ -9,7 +9,7 @@ env:
  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
  DOTNET_INSTALL_DIR: '.\.dotnet' 
- DOTNET_VERSION: '9.x'
+ DOTNET_VERSION: '9.0.2xx'
  DOTNET_QUALITY: 'ga'
  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
  SIGNPATH_ARTIFACT_SLUG: 'initial' # change this to 'aot-release' when releasing with AOT
@@ -115,6 +115,18 @@ jobs:
         $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
         echo Re-checking build version
         echo ((Get-Item $buildDir\CollapseLauncher.exe).VersionInfo.FileVersion).TrimEnd(".0")
+
+    - name: Verify Signed Artifacts
+      run: |
+        $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
+        $files = Get-ChildItem -Path "$buildDir" -Recurse -Include "*.exe","*.dll"
+        foreach ($file in $files) {
+          $signature = Get-AuthenticodeSignature $file.FullName
+          if ($signature.Status -ne "Valid") {
+            echo "::error::Invalid signature on $($file.Name): $($signature.Status)"
+          }
+          echo "✓ $($file.Name): $($signature.SignerCertificate.Subject)"
+        }
 
     - name: Re-upload Signed Artifact to GitHub
       uses: actions/upload-artifact@v4
