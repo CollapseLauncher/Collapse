@@ -26,7 +26,6 @@ using System.Text;
 using Velopack.Sources;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
-#pragma warning disable CA1068
 #endif
 
 namespace CollapseLauncher

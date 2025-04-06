@@ -1,6 +1,7 @@
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable BaseMethodCallWithDefaultParameter

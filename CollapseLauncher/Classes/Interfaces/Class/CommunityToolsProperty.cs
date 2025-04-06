@@ -1,13 +1,13 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable CheckNamespace
 

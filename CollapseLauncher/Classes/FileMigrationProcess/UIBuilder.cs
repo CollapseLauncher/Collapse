@@ -215,9 +215,7 @@ namespace CollapseLauncher
 
             // Set the main dialog content and queue the dialog spawn
             mainDialogWindow.Content = mainGrid;
-        #pragma warning disable CA2012
             _ = mainDialogWindow.QueueAndSpawnDialog();
-        #pragma warning restore CA2012
 
             // Return the migration process UI ref struct 
             return new FileMigrationProcessUIRef

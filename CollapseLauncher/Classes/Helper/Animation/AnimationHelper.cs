@@ -1,5 +1,6 @@
-﻿using Hi3Helper;
+using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
+using Hi3Helper.SentryHelper;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,7 +9,6 @@ using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 // ReSharper disable AsyncVoidMethod
 
 // ReSharper disable CheckNamespace

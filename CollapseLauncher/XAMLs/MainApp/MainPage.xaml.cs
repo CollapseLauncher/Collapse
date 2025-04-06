@@ -607,16 +607,12 @@ namespace CollapseLauncher
                 ChangeRegionInstant();
         }
 
-    #pragma warning disable CA1822
         private void GameComboBox_OnDropDownOpened(object sender, object e)
-    #pragma warning restore CA1822
         {
             ChangeTitleDragArea.Change(DragAreaTemplate.None);
         }
 
-    #pragma warning disable CA1822
         private void GameComboBox_OnDropDownClosed(object sender, object e)
-    #pragma warning restore CA1822
         {
             ChangeTitleDragArea.Change(DragAreaTemplate.Default);
         }
@@ -760,6 +756,7 @@ namespace CollapseLauncher
             }
         }
         #endregion
+
         #region AppActivation
         #nullable enable
         private static bool SetActivatedRegion()

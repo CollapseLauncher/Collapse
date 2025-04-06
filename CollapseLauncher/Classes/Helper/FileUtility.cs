@@ -1,10 +1,10 @@
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.Helper

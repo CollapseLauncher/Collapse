@@ -36,7 +36,6 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable IdentifierTypo
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable StringLiteralTypo
-#pragma warning disable CA1068
 
 namespace CollapseLauncher
 {

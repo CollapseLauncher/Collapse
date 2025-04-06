@@ -132,8 +132,18 @@ namespace CollapseLauncher.Pages
                 padding = asDouble;
             }
             return (d - padding) / 2.0;
-
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class CountToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

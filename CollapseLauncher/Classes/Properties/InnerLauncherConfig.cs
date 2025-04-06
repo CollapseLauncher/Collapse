@@ -22,7 +22,6 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable IdentifierTypo
 
 #nullable enable
-#pragma warning disable CA2211
 namespace CollapseLauncher
 {
     public static class InnerLauncherConfig
@@ -60,11 +59,9 @@ namespace CollapseLauncher
         public static bool                      IsCustomBG            = false;
         public static bool                      IsSkippingUpdateCheck = false;
         public static AppThemeMode              CurrentAppTheme;
-    #if !DISABLEDISCORD
-    #pragma warning disable CA2211
+#if !DISABLEDISCORD
         public static DiscordPresenceManager? AppDiscordPresence;
-    #pragma warning restore CA2211
-    #endif
+#endif
         public static bool IsAppThemeLight =>
             CurrentAppTheme switch
             {

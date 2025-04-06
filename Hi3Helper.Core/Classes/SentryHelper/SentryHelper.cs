@@ -1,11 +1,9 @@
-using Sentry;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
+using Sentry;
 using Sentry.Infrastructure;
 using Sentry.Protocol;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode
@@ -540,18 +540,38 @@ namespace Hi3Helper.SentryHelper
         #pragma warning restore CS0162 // Unreachable code detected
         }
         
-        public static void SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
+        public static bool SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
         {
             if (sentryId == Guid.Empty)
             {
-                Logger.LogWriteLine("[SentryHelper] SentryId is empty, feedback will not be sent!", LogType.Error,
+                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!", LogType.Error,
                                     true);
+                return false;
             }
 
-            var sId          = new SentryId(sentryId);
-            var userFeedback = new UserFeedback(sId, user, userEmail, feedback);
+            if (!IsEnabled)
+            {
+                Logger.LogWriteLine("[SendExceptionFeedback] Sentry is disabled, feedback will not be sent!",
+                                    LogType.Error, true);
+                return false;
+            }
+
+            var sId       = new SentryId(sentryId);
+            SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
+            return true;
+        }
+        
+        public static bool SendGenericFeedback(string feedback, string userEmail, string user)
+        {
+            if (!IsEnabled)
+            {
+                Logger.LogWriteLine("[SendGenericFeedback] Sentry is disabled, feedback will not be sent!",
+                                    LogType.Error, true);
+                return false;
+            }
             
-            SentrySdk.CaptureUserFeedback(userFeedback);
+            SentrySdk.CaptureFeedback(feedback, userEmail, user);
+            return true;
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]

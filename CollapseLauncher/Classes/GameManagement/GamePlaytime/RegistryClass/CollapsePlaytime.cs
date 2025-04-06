@@ -1,6 +1,7 @@
-﻿using CollapseLauncher.Interfaces;
-using CollapseLauncher.Helper.Database;
+﻿using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,6 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 
 namespace CollapseLauncher.GamePlaytime

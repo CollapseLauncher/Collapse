@@ -1,6 +1,7 @@
 using Sentry.Extensibility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -40,6 +41,12 @@ namespace Hi3Helper.SentryHelper
             HttpRequestError.NameResolutionError, // DNS resolution failed.
             HttpRequestError.SecureConnectionError, // TLS/SSL handshake failure.
         };
+        
+        private static readonly HashSet<int> DiskFullHResults = new()
+        {
+            unchecked((int)0x80070070), // ERROR_DISK_FULL
+            unchecked((int)0x80070027)  // ERROR_WRITE_FAULT can sometimes indicate disk full
+        };
 
         public bool Filter(Exception ex)
         {
@@ -49,6 +56,8 @@ namespace Hi3Helper.SentryHelper
                                   HttpRequestException httpEx => HttpRequestErrorFilters.Contains(httpEx.HttpRequestError) 
                                                                  || (httpEx.InnerException is SocketException socketEx && SocketExceptionFilters.Contains(socketEx.ErrorCode))
                                                                  || HttpExceptionFilters.Any(f => httpEx.Message.Contains(f)),
+                                  IOException ioEx => DiskFullHResults.Contains(ioEx.HResult) 
+                                                                 || (ioEx.InnerException is SocketException socketEx && SocketExceptionFilters.Contains(socketEx.ErrorCode)),
                                   _ => false
                               };
 

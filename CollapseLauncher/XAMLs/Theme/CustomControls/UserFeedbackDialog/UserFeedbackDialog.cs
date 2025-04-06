@@ -17,10 +17,12 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.UI;
+using static Hi3Helper.Locale;
 
 using InnerExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable PartialTypeWithSinglePart
@@ -400,5 +402,42 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             return lastGrid;
         }
         #endregion
+    }
+
+    public static partial class UserFeedbackTemplate
+    {
+        private static readonly string UserTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
+        private static readonly string EmailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
+        
+        public static readonly string FeedbackTemplate = $"""
+                                                          {UserTemplate} 
+                                                          {EmailTemplate} 
+                                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
+                                                          ------------------------------------
+                                                          """;
+        public record UserFeedbackTemplateResult(string User, string Email, string Message);
+
+        public static UserFeedbackTemplateResult? ParseTemplate(UserFeedbackResult feedbackResult)
+        {
+            // Parse username and email
+            var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            if (msg.Length <= 4) return null; // Do not send feedback if format is not correct
+            
+            var user     = msg[0].Replace(UserTemplate, "", StringComparison.InvariantCulture).Trim();
+            var email    = msg[1].Replace(UserTemplate, "", StringComparison.InvariantCulture).Trim();
+            var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
+
+            if (string.IsNullOrEmpty(user)) user = "none";
+
+            // Validate email
+            var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
+            email = addr ? address!.Address : "user@collapselauncher.com";
+
+            if (string.IsNullOrEmpty(feedback)) return null;
+
+            var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
+            
+            return new UserFeedbackTemplateResult(user, email, feedbackContent);
+        } 
     }
 }

@@ -16,15 +16,15 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -465,6 +465,9 @@ public sealed partial class HomePage
 
         progressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
         progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+
+        ProgressStatusIconDisk.Visibility = e.ActivityStatusInternet ? Visibility.Collapsed : Visibility.Visible;
+        ProgressStatusIconInternet.Visibility = e.ActivityStatusInternet ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void GameInstall_ProgressChanged(object sender, TotalPerFileProgress e)

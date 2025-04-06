@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,7 +9,6 @@ using System.Text.RegularExpressions;
 
 namespace Hi3Helper.Data
 {
-    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class AppInfo
     {
         public int Id { get; internal set; }
