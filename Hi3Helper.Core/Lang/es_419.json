@@ -619,22 +619,22 @@
     "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Puerto 53)",
     "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS a través de HTTPS",
     "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS a través de TLS",
-    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
-    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
-    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
-    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
-    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
-    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
-    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
-    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
-    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
-    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
-    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
-    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
-    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
-    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
-    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
-    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Representa el tipo de Protocolo DNS que se utilizará para consultar el registro. Hay algunos tipos de Protocolo soportados por Collapse, incluyendo:",
+    "NetworkSettings_Dns_ProviderSelection": "Proveedor DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Personalizada",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Hay algunos proveedores DNS externos disponibles en Collapse Launcher. También puedes utilizar tu propio proveedor/servidor DNS seleccionando \"Personalizada\" en \"Proveedor DNS\".",
+    "NetworkSettings_Dns_CustomProvider": "Host(s) de proveedor DNS personalizado",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depende de los ajustes del",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": ".",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Cuando seleccionas",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "para tu",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "seleccionado, puede añadir tu propio Proveedor/Servidor DNS personalizado introduciendo su IPv4/IPv6 o nombre de host. También puede añadir un proveedor DNS predefinido (que comienza con el símbolo \"$\") junto con su proveedor/servidor DNS separando cada entrada con estos símbolos:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Ejemplo:",
+    "NetworkSettings_Dns_ChangesWarning": "Es necesario reiniciar la aplicación para que los cambios de la configuración DNS tengan efecto.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Probar y guardar cambios",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validando y aplicando cambios...",
+    "NetworkSettings_Dns_SettingsSavedButton": "¡Cambios Guardados!",
+    "NetworkSettings_Dns_SettingsFailedButton": "¡Error al guardar los cambios!",
 
     "NetworkSettings_Http_Title": "Ajustes Cliente .NET HTTP",
     "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
@@ -693,7 +693,7 @@
     "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí",
     
-    "SearchPlaceholder": "Type to search..."
+    "SearchPlaceholder": "Escribe para buscar..."
   },
 
   "_Misc": {
@@ -839,10 +839,10 @@
     "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
     "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea",
     
-    "Feedback": "User Feedback",
-    "FeedbackSending": "Sending your feedback...",
-    "FeedbackSent": "Feedback sent!",
-    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
+    "Feedback": "Compártenos tus comentarios",
+    "FeedbackSending": "Enviando tus comentarios...",
+    "FeedbackSent": "¡Enviado con Éxito!",
+    "FeedbackSendFailure": "¡Error al enviar tus comentarios! Compruebe los registros/consola para más información.",
     
     "Tag_Deprecated": "Obsoleto",
     "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."
