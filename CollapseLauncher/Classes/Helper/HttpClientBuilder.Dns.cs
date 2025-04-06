@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TurnerSoftware.DinoDNS;
@@ -36,6 +37,12 @@ namespace CollapseLauncher.Helper
         public const string DnsHostSeparators = ";:,#/@%";
         public const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
                                                               StringSplitOptions.TrimEntries;
+
+        private const  string             DnsLoopbackHost          = "localhost";
+        private static readonly IPAddress DnsLoopbackIPAddrv4      = IPAddress.Loopback;
+        private static readonly byte[]    DnsLoopbackIPAddrv4Bytes = LoopbackIPAddrv4.GetAddressBytes();
+        private static readonly IPAddress DnsLoopbackIPAddrv6      = IPAddress.IPv6Loopback;
+        private static readonly byte[]    DnsLoopbackIPAddrv6Bytes = LoopbackIPAddrv6.GetAddressBytes();
 
         internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -439,6 +446,11 @@ namespace CollapseLauncher.Helper
             {
                 try
                 {
+                    if (IsLoopbackOrIPAddr(hostLocal, out(ResourceRecordCollection, ResourceRecordCollection)? fallbackLocalReturn))
+                    {
+                        return fallbackLocalReturn;
+                    }
+
                     DnsClient dnsClient = new(dnsNameLocal, DnsMessageOptions.Default);
 
                     DnsMessage dnsMessageIpv4 = await dnsClient.QueryAsync(hostLocal, DnsQueryType.A, DnsClass.IN, tokenLocal);
@@ -457,6 +469,55 @@ namespace CollapseLauncher.Helper
 
                 return null;
             }
+
+            bool IsLoopbackOrIPAddr(string hostLocal, out (ResourceRecordCollection, ResourceRecordCollection)? returnValue)
+            {
+                Unsafe.SkipInit(out returnValue);
+                if (hostLocal.Equals(DnsLoopbackHost, StringComparison.OrdinalIgnoreCase))
+                {
+                    ResourceRecordCollection localhostIpv4 = CreateFromSingle(DnsLoopbackHost, DnsLoopbackIPAddrv4Bytes);
+                    ResourceRecordCollection localhostIpv6 = CreateFromSingle(DnsLoopbackHost, DnsLoopbackIPAddrv6Bytes);
+
+                    returnValue = (localhostIpv4, localhostIpv6);
+                    return true;
+                }
+
+                if (IPAddress.TryParse(hostLocal, out IPAddress? ipAddress))
+                {
+                    ResourceRecordCollection ipv4Return;
+                    ResourceRecordCollection ipv6Return;
+                    byte[] address = ipAddress.GetAddressBytes();
+
+                    if (ipAddress.AddressFamily.HasFlag(AddressFamily.InterNetworkV6))
+                    {
+                        ipv4Return = CreateEmpty();
+                        ipv6Return = CreateFromSingle(hostLocal, address);
+                    }
+                    else
+                    {
+                        ipv4Return = CreateFromSingle(hostLocal, address);
+                        ipv6Return = CreateEmpty();
+                    }
+
+                    returnValue = (ipv4Return, ipv6Return);
+                    return true;
+                }
+
+                return false;
+            }
+
+            ResourceRecordCollection CreateFromSingle(string host, byte[] addressByte)
+                => new ResourceRecordCollection(
+                            [new ResourceRecord(host,
+                                                addressByte.Length > 4 ? DnsType.AAAA : DnsType.A,
+                                                DnsClass.ANY,
+                                                uint.MaxValue,
+                                                (ushort)addressByte.Length,
+                                                addressByte)]
+                            );
+
+            ResourceRecordCollection CreateEmpty()
+                => new ResourceRecordCollection();
         }
 
         private static bool TryGetCachedIp(ReadOnlySpan<char> host, out IPAddress[]? cachedIpAddress)
