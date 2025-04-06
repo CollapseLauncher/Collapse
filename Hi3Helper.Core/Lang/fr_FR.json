@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Le jeu s'est arrêté",
     "UnhandledSubtitle3": "Le jeu s'est arrêté de façon inattendue avec les détails d'erreur ci-dessous :",
     "UnhandledTitle4": "Avertissement",
+    "WarningSubtitle": "A minor issue has occurred with the following details:",
     "UnhandledSubtitle4": "Ce n'est pas un problème majeur, mais nous pensons que nous devrions vous le faire savoir :\r\nEn raison de tests A/B de miHoYo, Collapse ne supporte pas la lecture de la clé suivante : App_Settings_h2319593470.\r\nNous nous excusons pour la gêne occasionnée et vous remercions de votre compréhension.",
     "UnhandledTitleDiskCrc": "Corruption du disque détectée !",
     "UnhandledSubDiskCrc": "Une corruption du disque a été détectée en tentant d'accéder à un fichier. Veuillez effectuer une vérification de votre disque en utilisant CHKDSK.",
     "CopyClipboardBtn1": "Tout copier dans le presse-papier",
     "CopyClipboardBtn2": "Copié dans le presse-papier !",
-    "GoBackPageBtn1": "Retourner à la page précédente"
+    "GoBackPageBtn1": "Retourner à la page précédente",
+    
+    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
+    "CustomBackground_RegionalTag": "Region BG",
+    "CustomBackground_GlobalTag": "Global BG"
   },
 
   "_MainPage": {
@@ -609,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonSuccess": "Le test de connectivité du serveur mandataire a réussi !",
     "NetworkSettings_ProxyTest_ButtonFailed": "Le test a échoué ! Le serveur mandataire est injoignable.",
 
+    "NetworkSettings_Dns_Title": "Custom DNS Settings",
+    "NetworkSettings_Dns_ConnectionType": "Connection Type",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
+    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
+    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
+    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
+
     "NetworkSettings_Http_Title": "Paramètres du client HTTP .NET",
     "NetworkSettings_Http_Redirect": "Autoriser la redirection HTTP",
     "NetworkSettings_Http_SimulateCookies": "Autoriser la simulation de cookies HTTP",
@@ -664,7 +691,9 @@
     "Database_Warning_PropertyChanged": "Les paramètres de la base de données ont changé",
     "Database_ValidationChecking": "Validation des paramètres…",
     "Database_Placeholder_DbUserIdTextBox": "Exemple de GUID : ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici"
+    "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici",
+    
+    "SearchPlaceholder": "Type to search..."
   },
 
   "_Misc": {
@@ -810,8 +839,13 @@
     "ExceptionFeedbackTemplate_Email": "Adresse e-mail (optionnel) :",
     "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne",
     
-    "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "Feedback": "User Feedback",
+    "FeedbackSending": "Sending your feedback...",
+    "FeedbackSent": "Feedback sent!",
+    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
+    
+    "Tag_Deprecated": "Abandonné",
+    "Generic_GameFeatureDeprecation": "En raison de changements imprévus au sein du jeu, cette fonctionnalité a été abandonnée et sera supprimée à l'avenir. L'utilisation de cette fonctionnalité peut provoquer un comportement inattendu."
   },
 
   "_BackgroundNotification": {
