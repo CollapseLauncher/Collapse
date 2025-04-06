@@ -510,7 +510,7 @@ namespace CollapseLauncher.Helper
                 => new ResourceRecordCollection(
                             [new ResourceRecord(host,
                                                 addressByte.Length > 4 ? DnsType.AAAA : DnsType.A,
-                                                DnsClass.ANY,
+                                                DnsClass.IN,
                                                 uint.MaxValue,
                                                 (ushort)addressByte.Length,
                                                 addressByte)]
