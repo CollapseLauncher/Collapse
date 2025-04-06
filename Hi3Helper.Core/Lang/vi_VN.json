@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Văng trò chơi",
     "UnhandledSubtitle3": "Trò chơi bị văng với các lỗi chi tiết dưới đây:",
     "UnhandledTitle4": "Cảnh báo",
+    "WarningSubtitle": "Một vấn đề nhỏ đã xảy ra với các chi tiết sau:",
     "UnhandledSubtitle4": "Đây không phải là vấn đề lớn, nhưng chúng tôi nghĩ rằng chúng tôi nên cho bạn biết:\r\nDo thử nghiệm A/B của miHoYo, tính năng Thu gọn không hỗ trợ đọc khóa sau: App_Settings_h2319593470.\r\nChúng tôi xin lỗi vì sự bất tiện này và cảm ơn sự thông cảm của bạn.",
     "UnhandledTitleDiskCrc": "Phát hiện lỗi ổ đĩa!",
     "UnhandledSubDiskCrc": "Lỗi ổ đĩa đã được phát hiện khi đang truy cập tệp. Hãy kiểm tra ổ đĩa bằng chkdsk.",
     "CopyClipboardBtn1": "Sao chép tất cả vào khe nhớ tạm",
     "CopyClipboardBtn2": "Đã sao chép thành công!",
-    "GoBackPageBtn1": "Trở lại trang trước"
+    "GoBackPageBtn1": "Trở lại trang trước",
+    
+    "CustomBackground_NotFound": "Tệp nền tùy chỉnh bị thiếu! Sử dụng hình ảnh mặc định",
+    "CustomBackground_RegionalTag": "Ảnh Nền Vùng",
+    "CustomBackground_GlobalTag": "Ảnh Nền Toàn Cầu"
   },
 
   "_MainPage": {
@@ -609,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonSuccess": "Kiểm tra kết nối Proxy hoàn thành!",
     "NetworkSettings_ProxyTest_ButtonFailed": "Thất bại! Proxy không thể kết nối.",
 
+    "NetworkSettings_Dns_Title": "Cài đặt DNS tùy chỉnh",
+    "NetworkSettings_Dns_ConnectionType": "Loại Kết Nối",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Cổng 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS qua HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS qua TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Biểu thị loại Giao thức DNS nào được sử dụng để truy vấn bản ghi. Có một số loại Giao thức được Collapse Launcher hỗ trợ, bao gồm:",
+    "NetworkSettings_Dns_ProviderSelection": "Nhà cung cấp DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Tuỳ chỉnh",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Có một số Nhà cung cấp DNS bên ngoài có sẵn được tích hợp trong Collapse Launcher. Bạn cũng có thể sử dụng Nhà cung cấp/Máy chủ DNS tùy chỉnh của riêng mình bằng cách chọn \"Tùy chỉnh\" làm mục lựa chọn trong \"Nhà cung cấp DNS\".",
+    "NetworkSettings_Dns_CustomProvider": "(Các) Nhà cung cấp DNS tùy chỉnh",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Tùy vào",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "cài đặt",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Khi bạn chọn",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "là lựa chọn",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": ", bạn có thể thêm Nhà cung cấp/Máy chủ DNS tùy chỉnh của riêng bạn bằng cách nhập IPv4/IPv6 hoặc tên máy chủ. Bạn cũng có thể thêm Nhà cung cấp DNS được xác định trước (bắt đầu bằng ký hiệu '$') cùng với Nhà cung cấp/Máy chủ DNS tùy chỉnh của bạn bằng cách phân tách từng mục bằng các ký hiệu sau:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Ví dụ",
+    "NetworkSettings_Dns_ChangesWarning": "Bạn cần khởi động lại ứng dụng để mọi thay đổi cài đặt DNS có hiệu lực.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Thử và lưu thay đổi",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Đang xác thực và áp dụng thay đổi...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Thay đổi đã lưu!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Thay đổi không thể lưu được!",
+
     "NetworkSettings_Http_Title": "Cài đặt .NET HTTP",
     "NetworkSettings_Http_Redirect": "Cho phép Chuyển hướng HTTP",
     "NetworkSettings_Http_SimulateCookies": "Cho phép mô phổng HTTP Cookie",
@@ -664,7 +691,9 @@
     "Database_Warning_PropertyChanged": "Cơ sở dữ liệu đã thay đổi",
     "Database_ValidationChecking": "Xác thực cài đặt",
     "Database_Placeholder_DbUserIdTextBox": "Ví dụ về GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Nhập token của trình xác thực tại đây"
+    "Database_Placeholder_DbTokenPasswordBox": "Nhập token của trình xác thực tại đây",
+    
+    "SearchPlaceholder": "Nhập để tìm kiếm"
   },
 
   "_Misc": {
@@ -810,8 +839,13 @@
     "ExceptionFeedbackTemplate_Email": "Email (Không Bắt Buộc)",
     "ExceptionFeedbackTemplate_Message": "Chèn phản hồi của bạn sau dòng này",
     
-    "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "Feedback": "Phản hồi của bạn",
+    "FeedbackSending": "Đang gửi phản hồi...",
+    "FeedbackSent": "Phản hồi đã gửi!",
+    "FeedbackSendFailure": "Không gửi được phản hồi! Kiểm tra nhật ký/console (cmd) để biết thêm thông tin.",
+    
+    "Tag_Deprecated": "Đã lỗi thời",
+    "Generic_GameFeatureDeprecation": "Do những thay đổi không lường trước của trò chơi, tính năng này đã bị loại bỏ và sẽ bị xóa trong tương lai. Sử dụng tính năng này có thể gây ra một số lỗi không mong muốn."
   },
 
   "_BackgroundNotification": {
