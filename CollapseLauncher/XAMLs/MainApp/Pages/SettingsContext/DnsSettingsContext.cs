@@ -99,7 +99,6 @@ namespace CollapseLauncher.Pages.SettingsContext
                 string? key = ExternalDnsProviderList?[value];
                 string addressKey = $"${key?.ToLower()}";
                 ExternalDnsAddresses = addressKey;
-                OnPropertyChanged();
             }
         }
 
@@ -139,7 +138,6 @@ namespace CollapseLauncher.Pages.SettingsContext
                 }
 
                 field = value;
-                OnPropertyChanged();
             }
         }
 
@@ -200,7 +198,6 @@ namespace CollapseLauncher.Pages.SettingsContext
                 }
 
                 _externalDnsConnectionType = (int)type;
-                OnPropertyChanged();
             }
         }
 
@@ -215,7 +212,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                     return;
                 }
 
-                _isUseExternalDns = value;
+                LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", (_isUseExternalDns = value) ?? false);
                 OnPropertyChanged();
             }
         }
@@ -226,8 +223,9 @@ namespace CollapseLauncher.Pages.SettingsContext
             string            addresses      = ExternalDnsAddresses ?? string.Empty;
             string            rawDnsSettings = $"{addresses}|{connType}";
 
-            LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns",     IsUseExternalDns);
+            LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", IsUseExternalDns);
             LauncherConfig.SetAndSaveConfigValue("ExternalDnsAddresses", rawDnsSettings);
+            OnPropertyChanged();
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

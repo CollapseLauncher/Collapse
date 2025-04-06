@@ -36,6 +36,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -77,7 +78,7 @@ namespace CollapseLauncher.Pages
         private readonly string _explorerPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
 
-        private DnsSettingsContext _dnsSettingsContext;
+        private readonly DnsSettingsContext _dnsSettingsContext;
 
         private readonly Dictionary<string, FrameworkElement>               _settingsControls      = new();
         private readonly Lock                                               _highlightLock         = new();
@@ -98,6 +99,7 @@ namespace CollapseLauncher.Pages
             InitializeComponent();
 
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
+            _dnsSettingsContext.PropertyChanged += DnsSettingsChangedNotify;
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -1524,7 +1526,6 @@ namespace CollapseLauncher.Pages
 
                 _dnsSettingsContext.SaveSettings();
 
-                CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
                 DnsSettingsTestTextSuccess.Visibility  = Visibility.Visible;
             }
             catch (Exception ex)
@@ -1543,6 +1544,9 @@ namespace CollapseLauncher.Pages
                 senderAsButton.IsEnabled              = true;
             }
         }
+
+        private void DnsSettingsChangedNotify(object? sender, PropertyChangedEventArgs? args)
+            => CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
 #nullable restore
 
         #region Database
