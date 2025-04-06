@@ -90,11 +90,11 @@
 
   "_MainPage": {
     "PageTitle": "Halaman Awal",
-    "RegionChangeConfirm": "Wilayah game akan diubah. Lanjutkan?",
+    "RegionChangeConfirm": "Region game akan diubah. Lanjutkan?",
     "RegionChangeConfirmBtn": "Ya, Ubah",
     "RegionChangeWarnTitle": "Peringatan:",
     "RegionChangeWarnExper1": "Game ini masih dalam tahap {0}.\r\nResiko ditanggung kamu sendiri!",
-    "RegionLoadingTitle": "Memuat Wilayah",
+    "RegionLoadingTitle": "Memuat Region",
     "RegionLoadingAPITitle1": "Memuat",
     "RegionLoadingAPITitle2": "API Launcher",
     "RegionLoadingSubtitleTimeOut": "Terjadi masa tenggang saat membaca wilayah {0} (> {1} detik). Mencoba lagi...",
@@ -201,7 +201,7 @@
     "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!",
 
     "GameStateInvalid_Title": "Direktori Data Game/Nama Executable/Config.ini/File App.Info Tidak Valid!",
-    "GameStateInvalid_Subtitle1": "Collapse Launcher telah mendeteksi bahwa properti pada file game tidak valid untuk wilayah:\r\n",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher telah mendeteksi bahwa properti pada file game tidak valid untuk region:\r\n",
     "GameStateInvalid_Subtitle2": "Langkah perbaikan dibutuhkan agar launcher dapat mendeteksi game dengan benar.",
     "GameStateInvalid_Subtitle3": "Klik \"",
     "GameStateInvalid_Subtitle4": "\" untuk memperbaiki properti game atau klik \"",
@@ -433,7 +433,7 @@
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
 
     "ChangeRegionWarning_Toggle": "Tampilkan Peringatan Penggantian Region",
-    "ChangeRegionInstant_Toggle": "Mengubah Pilihan Region secara Instant",
+    "ChangeRegionInstant_Toggle": "Mengubah Pilihan Region secara Instan",
     "ChangeRegionWarning_Warning": "*Anda perlu memulai ulang launcher untuk menerapkan setelan ini.",
 
     "Language": "Bahasa",
@@ -481,7 +481,7 @@
     "SophonHelp_Thread": "Bagian ini mengatur banyaknya chunks yang akan diunduh secara simultan secara bersamaan. Turunkan nilai ini apabila unduhan kamu macet.",
     "SophonHttpNumberBox": "Jumlah Max. Koneksi HTTP",
     "SophonHelp_Http": "Bagian ini mengatur banyaknya jumlah koneksi yang akan dipakai oleh Collapse saat mengunduh chunks secara bersamaan.",
-    "SophonToggle": "Gunakan Sophon pada Wilayah yang Didukung",
+    "SophonToggle": "Gunakan Sophon pada Region yang Didukung",
     "SophonPredownPerfMode_Toggle": "[EKSPERIMENTAL] Gunakan semua CPU core saat menerapkan pra-unduh",
     "SophonPredownPerfMode_Tooltip": "Saat dinyalakan, semua CPU thread pada sistem-mu akan digunakan seluruhnya. Matikan apabila masalah terjadi.",
 
@@ -777,7 +777,7 @@
     "DiscordRP_Idle": "Idle",
     "DiscordRP_Default": "Tidak ada Aktivitas",
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
-    "DiscordRP_Region": "Wilayah:",
+    "DiscordRP_Region": "Region:",
 
     "DownloadModeLabelSophon": "Mode Sophon",
 
@@ -987,7 +987,7 @@
     "ShortcutCreationSuccessSubtitle1": "Sebuah pintasan baru sudah dibuat!",
     "ShortcutCreationSuccessSubtitle2": "Lokasi:",
     "ShortcutCreationSuccessSubtitle3": "Catatan:",
-    "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+    "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah region dimuat.",
     "ShortcutCreationSuccessSubtitle5": " • Apabila game tidak terpasang/belum diperbarui, maka Collapse akan mencoba untuk memasang atau memperbarui game. Mohon diingat bahwa dialog instalasi akan tetap muncul.",
 
     "SteamShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
@@ -997,7 +997,7 @@
     "SteamShortcutCreationSuccessTitle": "Sukses!",
     "SteamShortcutCreationSuccessSubtitle1": "Pintasan telah dibuat untuk setiap pengguna Steam di komputer ini!",
     "SteamShortcutCreationSuccessSubtitle2": "Catatan:",
-    "SteamShortcutCreationSuccessSubtitle3": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+    "SteamShortcutCreationSuccessSubtitle3": "• Menggunakan pintasan ini akan memulai game setelah region dimuat.",
     "SteamShortcutCreationSuccessSubtitle4": "• Mengulangi proses ini dapat memperbaiki gambar yang hilang/rusak pada pintasan.",
     "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
     "SteamShortcutCreationSuccessSubtitle6": " • Dalam menggunakan overlay pada Steam, Steam harus berjalan sebagai administrator dan Collapse harus ditutup atau memiliki opsi \"Multiple Instances\" yang sudah dinyalakan pada menu \"Pengaturan Aplikasi\".",
@@ -1445,7 +1445,7 @@
     "General_GoSettings": "Ke halaman Pengaturan",
     "General_OpenNotifTray": "Buka Notifikasi",
     "General_ReloadRegion": "Muat ulang halaman saat ini",
-    "General_ReloadRegion_Desc": "Tombol F5 dapat digunakan sebagai alternatif.\nCatatan, memuat ulang halaman utama akan memuat ulang Wilayah.",
+    "General_ReloadRegion_Desc": "Tombol F5 dapat digunakan sebagai alternatif.\nCatatan, memuat ulang halaman utama akan memuat ulang region.",
 
     "Switch_Title": "Peralihan Game/Region Cepat",
     "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",
