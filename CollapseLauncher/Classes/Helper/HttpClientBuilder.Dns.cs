@@ -40,9 +40,9 @@ namespace CollapseLauncher.Helper
 
         private const  string             DnsLoopbackHost          = "localhost";
         private static readonly IPAddress DnsLoopbackIPAddrv4      = IPAddress.Loopback;
-        private static readonly byte[]    DnsLoopbackIPAddrv4Bytes = LoopbackIPAddrv4.GetAddressBytes();
+        private static readonly byte[]    DnsLoopbackIPAddrv4Bytes = DnsLoopbackIPAddrv4.GetAddressBytes();
         private static readonly IPAddress DnsLoopbackIPAddrv6      = IPAddress.IPv6Loopback;
-        private static readonly byte[]    DnsLoopbackIPAddrv6Bytes = LoopbackIPAddrv6.GetAddressBytes();
+        private static readonly byte[]    DnsLoopbackIPAddrv6Bytes = DnsLoopbackIPAddrv6.GetAddressBytes();
 
         internal static readonly Dictionary<string, IPAddress[]> DnsServerTemplate = new(StringComparer.OrdinalIgnoreCase)
         {
