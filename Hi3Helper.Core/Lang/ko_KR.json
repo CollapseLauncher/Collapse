@@ -80,12 +80,17 @@
     "UnhandledTitle3": "게임 충돌",
     "UnhandledSubtitle3": "게임이 아래 오류로 인해 충돌했어요:",
     "UnhandledTitle4": "경고",
+    "WarningSubtitle": "A minor issue has occurred with the following details:",
     "UnhandledSubtitle4": "이 문제는 크진 않지만, 알려드려야 할 거 같아서 알려드려요:\r\nmiHoYo A/B 테스트로 인해 이 키를 읽을 수 없어요: App_Settings_h2319593470.\r\n불편을 끼쳐드린 점 사과드리며 양해해 주셔서 감사해요.",
     "UnhandledTitleDiskCrc": "디스크 손상이 감지되었어요!",
     "UnhandledSubDiskCrc": "파일 접근 중 디스크 손상이 감지되었어요. chkdsk 명령어를 사용해 디스크를 확인해 주세요.",
     "CopyClipboardBtn1": "클립보드에 모두 복사",
     "CopyClipboardBtn2": "클립보드에 복사되었어요!",
-    "GoBackPageBtn1": "이전 페이지로 돌아가기"
+    "GoBackPageBtn1": "이전 페이지로 돌아가기",
+    
+    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
+    "CustomBackground_RegionalTag": "Region BG",
+    "CustomBackground_GlobalTag": "Global BG"
   },
 
   "_MainPage": {
@@ -609,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonSuccess": "프록시 연결 테스트가 성공했어요!",
     "NetworkSettings_ProxyTest_ButtonFailed": "테스트 실패! 프록시에 연결할 수 없어요",
 
+    "NetworkSettings_Dns_Title": "Custom DNS Settings",
+    "NetworkSettings_Dns_ConnectionType": "Connection Type",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
+    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
+    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
+    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
+
     "NetworkSettings_Http_Title": ".NET HTTP 클라이언트 설정",
     "NetworkSettings_Http_Redirect": "HTTP 리디렉션 허용",
     "NetworkSettings_Http_SimulateCookies": "HTTP 쿠키 시뮬레이션 허용",
@@ -664,7 +691,9 @@
     "Database_Warning_PropertyChanged": "데이터베이스 설정을 변경했어요",
     "Database_ValidationChecking": "설정을 검증하고 있어요...",
     "Database_Placeholder_DbUserIdTextBox": "GUID 입력 예시: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "여기에 인증 토큰을 입력해 주세요"
+    "Database_Placeholder_DbTokenPasswordBox": "여기에 인증 토큰을 입력해 주세요",
+    
+    "SearchPlaceholder": "Type to search..."
   },
 
   "_Misc": {
@@ -809,6 +838,11 @@
     "ExceptionFeedbackTemplate_User": "사용자 이름 (선택 사항):",
     "ExceptionFeedbackTemplate_Email": "이메일 (선택 사항):",
     "ExceptionFeedbackTemplate_Message": "이 줄 뒤에 피드백을 작성해 주세요",
+    
+    "Feedback": "User Feedback",
+    "FeedbackSending": "Sending your feedback...",
+    "FeedbackSent": "Feedback sent!",
+    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
     
     "Tag_Deprecated": "Deprecated",
     "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
