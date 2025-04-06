@@ -688,6 +688,7 @@
                             </StackPanel>
                             <StackPanel Width="400"
                                         MaxWidth="640"
+                                        Margin="0,0,0,8"
                                         HorizontalAlignment="Left">
                                 <ToggleSwitch x:Name="NetworkSettingsProxyToggle"
                                               IsOn="{x:Bind conv:SettingsPage.IsUseProxy, Mode=TwoWay}"
@@ -707,9 +708,8 @@
                                            Text="Error"
                                            TextWrapping="Wrap"
                                            Visibility="Collapsed" />
-                                <Grid Margin="0,8,0,16"
-                                      ColumnSpacing="8"
-                                      RowSpacing="16">
+                                <Grid Margin="0,8,0,0"
+                                      ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition />
@@ -735,6 +735,7 @@
                                             Grid.Row="1"
                                             Grid.Column="0"
                                             Grid.ColumnSpan="2"
+                                            Margin="0,16,0,8"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Stretch"
                                             Click="ProxyConnectivityTestButton_Click"
