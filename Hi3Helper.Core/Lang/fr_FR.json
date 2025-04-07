@@ -80,7 +80,7 @@
     "UnhandledTitle3": "Le jeu s'est arrêté",
     "UnhandledSubtitle3": "Le jeu s'est arrêté de façon inattendue avec les détails d'erreur ci-dessous :",
     "UnhandledTitle4": "Avertissement",
-    "WarningSubtitle": "A minor issue has occurred with the following details:",
+    "WarningSubtitle": "Une erreur mineure est survenue avec les détails suivants :",
     "UnhandledSubtitle4": "Ce n'est pas un problème majeur, mais nous pensons que nous devrions vous le faire savoir :\r\nEn raison de tests A/B de miHoYo, Collapse ne supporte pas la lecture de la clé suivante : App_Settings_h2319593470.\r\nNous nous excusons pour la gêne occasionnée et vous remercions de votre compréhension.",
     "UnhandledTitleDiskCrc": "Corruption du disque détectée !",
     "UnhandledSubDiskCrc": "Une corruption du disque a été détectée en tentant d'accéder à un fichier. Veuillez effectuer une vérification de votre disque en utilisant CHKDSK.",
@@ -88,9 +88,9 @@
     "CopyClipboardBtn2": "Copié dans le presse-papier !",
     "GoBackPageBtn1": "Retourner à la page précédente",
     
-    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
-    "CustomBackground_RegionalTag": "Region BG",
-    "CustomBackground_GlobalTag": "Global BG"
+    "CustomBackground_NotFound": "L'arrière-plan personnalisé est manquant ! L'image par défaut a été utilisée.",
+    "CustomBackground_RegionalTag": "Arrière-plan régional",
+    "CustomBackground_GlobalTag": "Arrière-plan global"
   },
 
   "_MainPage": {
@@ -614,27 +614,27 @@
     "NetworkSettings_ProxyTest_ButtonSuccess": "Le test de connectivité du serveur mandataire a réussi !",
     "NetworkSettings_ProxyTest_ButtonFailed": "Le test a échoué ! Le serveur mandataire est injoignable.",
 
-    "NetworkSettings_Dns_Title": "Custom DNS Settings",
-    "NetworkSettings_Dns_ConnectionType": "Connection Type",
+    "NetworkSettings_Dns_Title": "Paramètres de DNS personnalisé",
+    "NetworkSettings_Dns_ConnectionType": "Type de connexion",
     "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
     "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
     "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
-    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
-    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
-    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
-    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
-    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
-    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
-    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
-    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
-    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
-    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
-    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
-    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
-    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
-    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
-    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
-    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Représente le type de protocole DNS qui sera utilisé pour effectuer la requête DNS. Quelques protocoles sont supportés par Collapse, incluant :",
+    "NetworkSettings_Dns_ProviderSelection": "Fournisseur DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Personnalisé",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Il y a quelques fournisseurs de services DNS disponibles inclus dans Collapse. Vous pouvez utiliser votre propre fournisseur/serveur DNS en définissant l'option « Fournisseur DNS » sur « Personnalisé ».",
+    "NetworkSettings_Dns_CustomProvider": "Fournisseur(s) DNS personnalisé(s)",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Dépend du paramètre «",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "»",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Lors que vous définissez «",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "» en tant que",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "choisi, vous pouvez ajouter votre propre fournisseur/serveur DNS en entrant son adresse IPv4/IPv6 ou son nom d'hôte. Vous pouvez aussi ajouter des fournisseurs DNS prédéfinis (qui commencent par le symbole « $ ») à côté de vos fournisseurs/serveurs DNS personnalisés en séparant chaque entrée avec l'un de ces symboles :",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Exemple :",
+    "NetworkSettings_Dns_ChangesWarning": "Vous devez redémarrer Collapse afin que les modifications prennent effet.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Tester et enregistrer les modifications",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validation et application des modifications…",
+    "NetworkSettings_Dns_SettingsSavedButton": "Modifications enregistrées !",
+    "NetworkSettings_Dns_SettingsFailedButton": "Échec de l'enregistrement des modifications !",
 
     "NetworkSettings_Http_Title": "Paramètres du client HTTP .NET",
     "NetworkSettings_Http_Redirect": "Autoriser la redirection HTTP",
@@ -693,7 +693,7 @@
     "Database_Placeholder_DbUserIdTextBox": "Exemple de GUID : ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici",
     
-    "SearchPlaceholder": "Type to search..."
+    "SearchPlaceholder": "Rechercher un paramètre…"
   },
 
   "_Misc": {
@@ -839,10 +839,10 @@
     "ExceptionFeedbackTemplate_Email": "Adresse e-mail (optionnel) :",
     "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne",
     
-    "Feedback": "User Feedback",
-    "FeedbackSending": "Sending your feedback...",
-    "FeedbackSent": "Feedback sent!",
-    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
+    "Feedback": "Retour utilisateur",
+    "FeedbackSending": "Envoi de vos commentaires…",
+    "FeedbackSent": "Commentaires envoyés !",
+    "FeedbackSendFailure": "Échec de l'envoi des commentaires ! Vérifiez les logs ou la console pour plus d'informations.",
     
     "Tag_Deprecated": "Abandonné",
     "Generic_GameFeatureDeprecation": "En raison de changements imprévus au sein du jeu, cette fonctionnalité a été abandonnée et sera supprimée à l'avenir. L'utilisation de cette fonctionnalité peut provoquer un comportement inattendu."
