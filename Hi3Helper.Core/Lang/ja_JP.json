@@ -622,7 +622,7 @@
     "NetworkSettings_Dns_ConnectionType_Tooltip1": "記録の照会に使うDNSプロトコルのタイプです。Collapse Launcherは以下のプロトコルをサポートしています。",
     "NetworkSettings_Dns_ProviderSelection": "DNSプロバイダー",
     "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "カスタム",
-    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Collapse Launcherには数種類の利用可能な外部DNSプロバイダーが内蔵されています。また、\\\"DNSプロバイダー\\\"の欄で\\\"カスタム\\\"を選ぶことでカスタムDNSプロバイダー/サーバーを使用できます。",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Collapse Launcherには数種類の利用可能な外部DNSプロバイダーが内蔵されています。また、\"DNSプロバイダー\"の欄で\"カスタム\"を選ぶことでカスタムDNSプロバイダー/サーバーを使用できます。",
     "NetworkSettings_Dns_CustomProvider": "カスタムDNSプロバイダーのホスト",
     "NetworkSettings_Dns_CustomProvider_Tooltip1": "​",
     "NetworkSettings_Dns_CustomProvider_Tooltip2": "の設定に基づきます",
