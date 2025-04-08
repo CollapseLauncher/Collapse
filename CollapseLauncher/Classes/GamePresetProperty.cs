@@ -95,13 +95,13 @@ namespace CollapseLauncher
 
         internal RegionResourceProp?  ApiResourceProp { get; set; }
         internal IGameSettings?       GameSettings    { get; set; }
-        internal IGamePlaytime        GamePlaytime    { get; set; }
+        internal IGamePlaytime?       GamePlaytime    { get; set; }
         internal IRepair?             GameRepair      { get; set; }
         internal ICache?              GameCache       { get; set; }
         internal ILogger              GamePropLogger  { get; set; }
-        internal IGameVersion         GameVersion     { get; set; }
-        internal IGameInstallManager  GameInstall     { get; set; }
-        internal PresetConfig         GamePreset      { get => GameVersion.GamePreset; }
+        internal IGameVersion?        GameVersion     { get; set; }
+        internal IGameInstallManager? GameInstall     { get; set; }
+        internal PresetConfig         GamePreset      { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
 
         [field: AllowNull, MaybeNull]
         internal string GameExecutableName
@@ -128,7 +128,7 @@ namespace CollapseLauncher
         [field: AllowNull, MaybeNull]
         internal string GameExecutableDir
         {
-            get => field ??= GameVersion.GameDirPath;
+            get => field ??= GameVersion?.GameDirPath ?? throw new NullReferenceException();
         }
 
         [field: AllowNull, MaybeNull]
@@ -170,17 +170,19 @@ namespace CollapseLauncher
         {
             GameRepair?.CancelRoutine();
             GameCache?.CancelRoutine();
-            GameInstall.CancelRoutine();
+            GameInstall?.CancelRoutine();
 
             GameRepair?.Dispose();
             GameCache?.Dispose();
-            GameInstall.Dispose();
-            GamePlaytime.Dispose();
+            GameInstall?.Dispose();
+            GamePlaytime?.Dispose();
 
             ApiResourceProp = null;
             GameSettings    = null;
             GameRepair      = null;
             GameCache       = null;
+            GameInstall     = null;
+            GamePlaytime    = null;
 
             GC.SuppressFinalize(this);
         #if DEBUG

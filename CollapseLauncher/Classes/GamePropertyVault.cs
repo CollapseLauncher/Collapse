@@ -86,7 +86,7 @@ namespace CollapseLauncher.Statics
             #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
             #endif
-                value.GameVersion.Reinitialize();
+                value.GameVersion?.Reinitialize();
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace CollapseLauncher.Statics
             if (Vault.IsEmpty) return;
 
             int[] unusedGamePropertyHashID = Vault.Values
-                .Where(x => !x.GameInstall.IsRunning && !x.IsGameRunning && x.GamePreset.HashID != CurrentGameHashID)
+                .Where(x => (!x.GameInstall?.IsRunning ?? false) && !x.IsGameRunning && x.GamePreset.HashID != CurrentGameHashID)
                 .Select(x => x.GamePreset.HashID)
                 .ToArray();
 
@@ -125,7 +125,7 @@ namespace CollapseLauncher.Statics
                 if (gameProperty is { GameInstall.IsRunning: true })
                 {
                     Locale.LocalizationParams.LangBackgroundNotification? bgNotification = Locale.Lang._BackgroundNotification;
-                    string actTitle = string.Format(await gameProperty.GameVersion.GetGameState() switch
+                    string actTitle = string.Format(await gameProperty.GameVersion!.GetGameState() switch
                                                     {
                                                         GameInstallStateEnum.InstalledHavePreload => bgNotification.CategoryTitle_DownloadingPreload,
                                                         GameInstallStateEnum.NeedsUpdate => bgNotification.CategoryTitle_Updating,

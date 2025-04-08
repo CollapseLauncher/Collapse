@@ -212,7 +212,7 @@ namespace CollapseLauncher
             }
             
             // If the file is not downloaded, use template image first, then download the image
-            GameNameType? currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion.GameType;
+            GameNameType? currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion?.GameType;
             tempImage ??= currentGameType switch
             {
                 GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
