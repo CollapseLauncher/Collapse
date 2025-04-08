@@ -30,7 +30,7 @@ namespace CollapseLauncher
     internal sealed partial class GamePresetProperty : IDisposable
     {
     #pragma warning disable CS8618, CS9264
-        internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+        internal GamePresetProperty(UIElement uiElementParent,RegionResourceProp apiResourceProp, string gameName, string gameRegion)
     #pragma warning restore CS8618, CS9264
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig == null)
@@ -38,7 +38,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            PresetConfig? gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName]?[gameRegion];
+            var gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName]?[gameRegion];
 
             if (gamePreset == null)
             {

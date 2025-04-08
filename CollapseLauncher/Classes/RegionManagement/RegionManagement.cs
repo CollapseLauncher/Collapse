@@ -40,8 +40,16 @@ namespace CollapseLauncher
         private         List<object>  LastFooterNavigationItem;
         internal static string        PreviousTag = string.Empty;
 
+        private readonly Dictionary<(string, string), bool> RegionLoadingStatus = new();
         internal async Task<bool> LoadRegionFromCurrentConfigV2(PresetConfig preset, string gameName, string gameRegion)
         {
+            if (RegionLoadingStatus.ContainsKey((gameName,gameRegion)))
+            {
+                LogWriteLine($"Region {gameName} - {gameRegion} is already loading, aborting...", LogType.Warning, true);
+                return false;
+            }
+            RegionLoadingStatus.Add((gameName, gameRegion), false);
+            
             CancellationTokenSourceWrapper tokenSource = new CancellationTokenSourceWrapper();
 
             string regionToChangeName = $"{preset.GameLauncherApi.GameNameTranslation} - {preset.GameLauncherApi.GameRegionTranslation}";
@@ -51,7 +59,8 @@ namespace CollapseLauncher
                                                     ActionOnTimeOutRetry,
                                                     OnErrorRoutine,
                                                     tokenSource.Token);
-
+            
+            RegionLoadingStatus.Remove((gameName, gameRegion));
             return runResult;
 
             void OnErrorRoutine(Exception ex) => OnErrorRoutineInner(ex, ErrorType.Unhandled);
@@ -100,6 +109,13 @@ namespace CollapseLauncher
             {
                 try
                 {
+                    if (IsLoadRegionComplete) // Prevent double loading
+                    {
+                        LogWriteLine("[RegionManagement] Double region loading detected, aborting...", LogType.Warning, true);
+                        _ = SentryHelper.ExceptionHandlerAsync(new Exception("Duble region loading detected!"));
+                        return;
+                    }
+                    
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
                     await FinalizeLoadRegion(gameName, gameRegion);
                     _ = ChangeBackgroundImageAsRegionAsync();
