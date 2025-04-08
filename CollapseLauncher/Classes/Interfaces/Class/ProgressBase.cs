@@ -574,28 +574,24 @@ namespace CollapseLauncher.Interfaces
 
         protected static void TryDeleteReadOnlyDir(string dirPath)
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
-            if (!dirInfo.Exists)
-            {
+            DirectoryInfo dirInfo = new DirectoryInfo(dirPath).EnsureNoReadOnly(out bool isDirExist);
+            if (!isDirExist)
                 return;
-            }
-
-            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories)
-                .EnumerateNoReadOnly())
-            {
-                try
-                {
-                    files.Delete();
-                }
-                catch (Exception ex)
-                {
-                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
-                } // Suppress errors
-            }
 
             try
             {
+                // Remove read-only attribute from all files and subdirectories
+                foreach (var file in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+                {
+                    file.EnsureNoReadOnly();
+                }
+        
+                foreach (var subDir in dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories))
+                {
+                    subDir.EnsureNoReadOnly();
+                }
+        
+                // Delete the directory and all its contents
                 dirInfo.Refresh();
                 dirInfo.Delete(true);
             }

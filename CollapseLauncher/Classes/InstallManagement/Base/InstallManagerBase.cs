@@ -1426,14 +1426,14 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (string folderNames in Directory.EnumerateDirectories(GameFolder))
                 {
                     if (_uninstallGameProperty?.foldersToDelete.Length == 0 ||
-                        (!(_uninstallGameProperty?.foldersToDelete.Contains(Path.GetFileName(folderNames)) ?? false)))
+                        !(_uninstallGameProperty?.foldersToDelete.Contains(Path.GetFileName(folderNames)) ?? false))
                     {
                         continue;
                     }
 
                     try
                     {
-                        Directory.Delete(folderNames, true);
+                        TryDeleteReadOnlyDir(folderNames);
                         LogWriteLine($"Deleted {folderNames}", LogType.Default, true);
                     }
                     catch (Exception ex)
@@ -1448,14 +1448,14 @@ namespace CollapseLauncher.InstallManager.Base
                 foreach (string fileNames in Directory.EnumerateFiles(GameFolder))
                 {
                     if ((_uninstallGameProperty?.filesToDelete.Length == 0 ||
-                         (!(_uninstallGameProperty?.filesToDelete.Contains(Path.GetFileName(fileNames)) ?? false))) &&
+                         !(_uninstallGameProperty?.filesToDelete.Contains(Path.GetFileName(fileNames)) ?? false)) &&
                         (_uninstallGameProperty?.filesToDelete.Length == 0 ||
-                         (!(_uninstallGameProperty?.filesToDelete.Any(pattern =>
+                         !(_uninstallGameProperty?.filesToDelete.Any(pattern =>
                                                                           Regex.IsMatch(Path.GetFileName(fileNames),
                                                                                    pattern,
                                                                                    RegexOptions.Compiled |
                                                                                    RegexOptions.NonBacktracking
-                                                                              )) ?? false))))
+                                                                              )) ?? false)))
                     {
                         continue;
                     }
@@ -1468,9 +1468,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string appDataPath = GameVersionManager.GameDirAppDataPath;
                 try
                 {
-                    if (Directory.Exists(appDataPath))
-                        Directory.Delete(appDataPath, true);
-
+                    TryDeleteReadOnlyDir(appDataPath);
                     LogWriteLine($"Deleted {appDataPath}", LogType.Default, true);
                 }
                 catch (Exception ex)
@@ -1485,7 +1483,7 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     try
                     {
-                        Directory.Delete(GameFolder);
+                        TryDeleteReadOnlyDir(GameFolder);
                         LogWriteLine($"Deleted empty game folder: {GameFolder}", LogType.Default, true);
                     }
                     catch (Exception ex)
