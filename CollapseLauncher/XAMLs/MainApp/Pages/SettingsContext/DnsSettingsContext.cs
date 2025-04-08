@@ -15,6 +15,7 @@ namespace CollapseLauncher.Pages.SettingsContext
 {
     internal class DnsSettingsContext(TextBox customDnsHostTextbox) : INotifyPropertyChanged
     {
+        public event EventHandler? PropertySavedChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public string? DefaultExternalDnsProvider => field ??= ExternalDnsProviderList?.FirstOrDefault();
@@ -99,6 +100,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                 string? key = ExternalDnsProviderList?[value];
                 string addressKey = $"${key?.ToLower()}";
                 ExternalDnsAddresses = addressKey;
+                OnPropertyChanged();
             }
         }
 
@@ -138,6 +140,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                 }
 
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -198,6 +201,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                 }
 
                 _externalDnsConnectionType = (int)type;
+                OnPropertyChanged();
             }
         }
 
@@ -214,6 +218,7 @@ namespace CollapseLauncher.Pages.SettingsContext
 
                 LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", (_isUseExternalDns = value) ?? false);
                 OnPropertyChanged();
+                PropertySavedChanged?.Invoke(null, null!);
             }
         }
 
@@ -225,7 +230,7 @@ namespace CollapseLauncher.Pages.SettingsContext
 
             LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", IsUseExternalDns);
             LauncherConfig.SetAndSaveConfigValue("ExternalDnsAddresses", rawDnsSettings);
-            OnPropertyChanged();
+            PropertySavedChanged?.Invoke(null, null!);
         }
 
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

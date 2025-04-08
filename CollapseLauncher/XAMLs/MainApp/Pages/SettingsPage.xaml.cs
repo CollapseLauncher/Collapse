@@ -99,7 +99,7 @@ namespace CollapseLauncher.Pages
             InitializeComponent();
 
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
-            _dnsSettingsContext.PropertyChanged += DnsSettingsChangedNotify;
+            _dnsSettingsContext.PropertySavedChanged += DnsSettingsChangedNotify;
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -1545,7 +1545,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private void DnsSettingsChangedNotify(object? sender, PropertyChangedEventArgs? args)
+        private void DnsSettingsChangedNotify(object? sender, EventArgs? args)
             => CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
 #nullable restore
 
