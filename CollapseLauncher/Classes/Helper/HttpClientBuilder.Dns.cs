@@ -506,9 +506,9 @@ namespace CollapseLauncher.Helper
                 return false;
             }
 
-            ResourceRecordCollection CreateFromSingle(string host, byte[] addressByte)
+            ResourceRecordCollection CreateFromSingle(string hostInner, byte[] addressByte)
                 => new ResourceRecordCollection(
-                            [new ResourceRecord(host,
+                            [new ResourceRecord(hostInner,
                                                 addressByte.Length > 4 ? DnsType.AAAA : DnsType.A,
                                                 DnsClass.IN,
                                                 uint.MaxValue,

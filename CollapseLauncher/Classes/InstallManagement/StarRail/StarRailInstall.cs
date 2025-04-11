@@ -2,7 +2,6 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Microsoft.UI.Xaml;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -196,7 +195,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
                     // Get the mark file's relative path
                     string relativePathDir = Path.GetDirectoryName(localFileInfo.RelativePath) ?? "";
-                    string relativePathNameNoExt = Path.GetFileNameWithoutExtension(localFileInfo.RelativePath) ?? "";
+                    string relativePathNameNoExt = Path.GetFileNameWithoutExtension(localFileInfo.RelativePath);
                     string relativePathMarkMerged = Path.Combine(relativePathDir, relativePathNameNoExt + $"_{markHashString}.hash");
 
                     // Create the LocalFileInfo instance of the mark file

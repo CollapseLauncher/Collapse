@@ -156,7 +156,7 @@ public partial class MainPage : Page
         bool isAPIBackgroundAvailable =
             !string.IsNullOrEmpty(gameLauncherApi.GameBackgroundImg);
 
-        var posterBg = currentGameProperty.GameVersion.GameType switch
+        var posterBg = currentGameProperty.GameVersion?.GameType switch
                        {
                            GameNameType.Honkai => Path.Combine(AppExecutableDir,
                                                                @"Assets\Images\GameBackground\honkai.webp"),

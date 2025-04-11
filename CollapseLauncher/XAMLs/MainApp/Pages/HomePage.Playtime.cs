@@ -31,7 +31,7 @@ public partial class HomePage
     {
         if (_cachedIsGameRunning) return;
 
-        UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
+        UpdatePlaytime(null, CurrentGameProperty.GamePlaytime?.CollapsePlaytime);
         PlaytimeFlyout.ShowAt(PlaytimeBtn);
     }
 
@@ -45,7 +45,7 @@ public partial class HomePage
         TimeSpan time                = TimeSpan.FromMinutes(hours * 60 + mins);
         if (time.Hours > 99999) time = new TimeSpan(99999, 59, 0);
 
-        CurrentGameProperty.GamePlaytime.Update(time, true);
+        CurrentGameProperty.GamePlaytime?.Update(time, true);
         PlaytimeFlyout.Hide();
     }
 
@@ -53,7 +53,7 @@ public partial class HomePage
     {
         if (await Dialog_ResetPlaytime() != ContentDialogResult.Primary) return;
 
-        CurrentGameProperty.GamePlaytime.Reset();
+        CurrentGameProperty.GamePlaytime?.Reset();
         PlaytimeFlyout.Hide();
     }
 
@@ -68,7 +68,14 @@ public partial class HomePage
         {
             SyncDbPlaytimeBtnGlyph.Glyph = "\uf110"; // Loading
             SyncDbPlaytimeBtnText.Text   = Lang._HomePage.GamePlaytime_Idle_SyncDbSyncing;
-            await CurrentGameProperty.GamePlaytime.CheckDb(true);
+            if (CurrentGameProperty.GamePlaytime != null)
+            {
+                await CurrentGameProperty.GamePlaytime.CheckDb(true);
+            }
+            else
+            {
+                await Task.CompletedTask;
+            }
                 
             await Task.Delay(500);
             

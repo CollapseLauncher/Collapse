@@ -417,6 +417,8 @@ namespace CollapseLauncher
                 // Deserialize manifest entry
                 PkgVersionProperties manifestEntry = currentLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
+                if (manifestEntry == null) throw new NullReferenceException();
+
                 // If the ignoreContainsParams is not null and the remoteName contains
                 // ignore list, then move to another entry
                 if (ignoreContainsParams != null &&
@@ -652,6 +654,8 @@ namespace CollapseLauncher
 
                 // Deserialize JSON line into local entry.
                 PkgVersionProperties entry = data.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+                
+                if (entry == null) throw new NullReferenceException();
 
                 // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
                 string relativeParentPath = string.IsNullOrEmpty(parentPath) ? "" : GetParentFromAssetRelativePath(entry.remoteName, out _);

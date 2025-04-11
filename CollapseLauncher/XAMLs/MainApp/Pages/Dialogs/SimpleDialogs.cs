@@ -1296,9 +1296,6 @@ namespace CollapseLauncher.Dialogs
             {
                 contentDialog.Hide();
 
-                var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
-                var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
-
                 string exceptionContent = UserFeedbackTemplate.FeedbackTemplate;
                 string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
 

@@ -216,7 +216,7 @@ namespace CollapseLauncher.Pages.SettingsContext
                     return;
                 }
 
-                LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", (_isUseExternalDns = value) ?? false);
+                LauncherConfig.SetAndSaveConfigValue("IsUseExternalDns", (bool)(_isUseExternalDns = value));
                 OnPropertyChanged();
                 PropertySavedChanged?.Invoke(null, null!);
             }
