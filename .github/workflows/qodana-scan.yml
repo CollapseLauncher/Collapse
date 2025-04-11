@@ -59,7 +59,7 @@ jobs:
       #     refreshenv
       #     qodana scan --ide QDNET-EAP -o ${{ runner.temp }}\qodana\results --cache-dir ${{ runner.temp }}\qodana\cache
       - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2024.3.3
+        uses: JetBrains/qodana-action@next
         continue-on-error: true
         with:
           args: --ide,QDNET
