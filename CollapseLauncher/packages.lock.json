@@ -161,9 +161,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.7.250310001, )",
-        "resolved": "1.7.250310001",
-        "contentHash": "qSdSuQAOYIyFWEojsGA6EOE2TpdP4n3CBqXXgA+GFTI/kwMVunc85EiXjn1227+HizhIi7J/6Aj0gYUt41DcSw==",
+        "requested": "[1.7.250401001, )",
+        "resolved": "1.7.250401001",
+        "contentHash": "kPsJ2LZoo3Xs/6FtIWMZRGnQ2ZMx9zDa0ZpqRGz1qwZr0gwwlXZJTmngaA1Ym2AHmIa05NtX2jEE2He8CzfhTg==",
         "dependencies": {
           "Microsoft.Web.WebView2": "1.0.2903.40",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
@@ -377,8 +377,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "BrMGzDRLz410PE4qC8UeKeAc0hFRjBkiCUOLTwuod65NAjqg5tDNqYU7gP0A09taEXtecB+HJc1NNnnTjsKFAQ=="
+        "resolved": "9.0.4",
+        "contentHash": "WogPvgAFqQORFD8Iyha6RZ+/1QB3dsWRWxbwi8/HHVgiGQ8z0oMWpwe8Kk3Ti+Roe+P6a3sBg+WwBfEsyziZKg=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
@@ -432,7 +432,7 @@
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.3, )",
           "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
-          "Microsoft.WindowsAppSDK": "[1.7.250310001, )"
+          "Microsoft.WindowsAppSDK": "[1.7.250401001, )"
         }
       },
       "hi3helper.core": {
@@ -487,7 +487,7 @@
           "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
-          "Microsoft.WindowsAppSDK": "[1.7.250310001, )"
+          "Microsoft.WindowsAppSDK": "[1.7.250401001, )"
         }
       },
       "imageex": {
@@ -497,7 +497,7 @@
           "CommunityToolkit.WinUI.Extensions": "[8.2.250402, )",
           "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
-          "Microsoft.WindowsAppSDK": "[1.7.250310001, )"
+          "Microsoft.WindowsAppSDK": "[1.7.250401001, )"
         }
       },
       "innosetuphelper": {
@@ -514,7 +514,7 @@
           "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
-          "Microsoft.WindowsAppSDK": "[1.7.250310001, )"
+          "Microsoft.WindowsAppSDK": "[1.7.250401001, )"
         }
       },
       "sevenzipextractor": {
@@ -545,9 +545,9 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.7.250310001, )",
-        "resolved": "1.7.250310001",
-        "contentHash": "qSdSuQAOYIyFWEojsGA6EOE2TpdP4n3CBqXXgA+GFTI/kwMVunc85EiXjn1227+HizhIi7J/6Aj0gYUt41DcSw==",
+        "requested": "[1.7.250401001, )",
+        "resolved": "1.7.250401001",
+        "contentHash": "kPsJ2LZoo3Xs/6FtIWMZRGnQ2ZMx9zDa0ZpqRGz1qwZr0gwwlXZJTmngaA1Ym2AHmIa05NtX2jEE2He8CzfhTg==",
         "dependencies": {
           "Microsoft.Web.WebView2": "1.0.2903.40",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
