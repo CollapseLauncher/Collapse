@@ -210,10 +210,17 @@ namespace CollapseLauncher.Pages
                 LeftBottomButtons.SetAllControlsCursorRecursive(cursor);
                 GameStartupSettingFlyoutContainer.SetAllControlsCursorRecursive(cursor);
 
-                if (await CurrentGameProperty.GameInstall.TryShowFailedDeltaPatchState()) return;
-                if (await CurrentGameProperty.GameInstall.TryShowFailedGameConversionState()) return;
-                CurrentGameProperty.GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
-                UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
+                if (CurrentGameProperty.GameInstall != null)
+                {
+                    if (await CurrentGameProperty.GameInstall.TryShowFailedDeltaPatchState()) return;
+                    if (await CurrentGameProperty.GameInstall.TryShowFailedGameConversionState()) return;
+                }
+
+                if (CurrentGameProperty.GamePlaytime != null)
+                {
+                    CurrentGameProperty.GamePlaytime.PlaytimeUpdated += UpdatePlaytime;
+                    UpdatePlaytime(null, CurrentGameProperty.GamePlaytime.CollapsePlaytime);
+                }
 
                 _ = StartCarouselAutoScroll();
 
@@ -239,61 +246,71 @@ namespace CollapseLauncher.Pages
                 }
 
                 // Get game state
-                GameInstallStateEnum gameState = await CurrentGameProperty.GameVersion.GetGameState();
-
-                // Start automatic scan if the game is in NotInstalled state
-                // and if the return is 0 (yes), then save the config
-                if (gameState == GameInstallStateEnum.NotInstalled &&
-                    await CurrentGameProperty.GameInstall.GetInstallationPath(true) == 0)
+                if (CurrentGameProperty.GameVersion != null)
                 {
-                    // Save the config
-                    CurrentGameProperty.GameInstall.ApplyGameConfig();
+                    var gameState = await CurrentGameProperty.GameVersion.GetGameState();
 
-                    // Refresh the Home page.
-                    ReturnToHomePage();
-                    return;
-                }
+                    // Start automatic scan if the game is in NotInstalled state
+                    // and if the return is 0 (yes), then save the config
+                    if (gameState == GameInstallStateEnum.NotInstalled &&
+                        CurrentGameProperty.GameInstall != null &&
+                        await CurrentGameProperty.GameInstall.GetInstallationPath(true) == 0)
+                    {
+                        // Save the config
+                        CurrentGameProperty.GameInstall.ApplyGameConfig();
 
-                // Check if the game state returns NotInstalled, double-check by doing config.ini validation
-                if (!await CurrentGameProperty.GameVersion
-                          .EnsureGameConfigIniCorrectiveness(this))
-                {
-                    // If the EnsureGameConfigIniCorrectiveness() returns false,
-                    // means config.ini has been changed. Then reload and return to the HomePage
-                    ReturnToHomePage();
-                    return;
-                }
+                        // Refresh the Home page.
+                        ReturnToHomePage();
+                        return;
+                    }
 
-                if (!(m_arguments.StartGame?.Play ?? false))
-                {
-                    await CheckUserAccountControlStatus();
-                    return;
-                }
+                    // Check if the game state returns NotInstalled, double-check by doing config.ini validation
+                    if (!await CurrentGameProperty.GameVersion
+                                                  .EnsureGameConfigIniCorrectiveness(this))
+                    {
+                        // If the EnsureGameConfigIniCorrectiveness() returns false,
+                        // means config.ini has been changed. Then reload and return to the HomePage
+                        ReturnToHomePage();
+                        return;
+                    }
 
-                m_arguments.StartGame.Play = false;
+                    if (!(m_arguments.StartGame?.Play ?? false))
+                    {
+                        await CheckUserAccountControlStatus();
+                        return;
+                    }
 
-                if (CurrentGameProperty.GameInstall.IsRunning)
-                {
-                    CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
-                    return;
-                }
+                    m_arguments.StartGame.Play = false;
 
-                switch (gameState)
-                {
-                    case GameInstallStateEnum.InstalledHavePreload:
-                    case GameInstallStateEnum.Installed:
-                        StartGame(null, null);
-                        break;
-                    case GameInstallStateEnum.InstalledHavePlugin:
-                    case GameInstallStateEnum.NeedsUpdate:
-                        CurrentGameProperty.GameInstall.StartAfterInstall = true;
-                        UpdateGameDialog(null, null);
-                        break;
-                    case GameInstallStateEnum.NotInstalled:
-                    case GameInstallStateEnum.GameBroken:
-                        CurrentGameProperty.GameInstall.StartAfterInstall = true;
-                        InstallGameDialog(null, null);
-                        break;
+                    if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
+                    {
+                        CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
+                        return;
+                    }
+
+                    switch (gameState)
+                    {
+                        case GameInstallStateEnum.InstalledHavePreload:
+                        case GameInstallStateEnum.Installed:
+                            StartGame(null, null);
+                            break;
+                        case GameInstallStateEnum.InstalledHavePlugin:
+                        case GameInstallStateEnum.NeedsUpdate:
+                            if (CurrentGameProperty.GameInstall != null)
+                            {
+                                CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                            }
+                            UpdateGameDialog(null, null);
+                            break;
+                        case GameInstallStateEnum.NotInstalled:
+                        case GameInstallStateEnum.GameBroken:
+                            if (CurrentGameProperty.GameInstall != null)
+                            {
+                                CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                            }
+                            InstallGameDialog(null, null);
+                            break;
+                    }
                 }
             }
             catch (ArgumentNullException ex)
@@ -311,7 +328,10 @@ namespace CollapseLauncher.Pages
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             IsPageUnload                                     =  true;
-            CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
+            if (CurrentGameProperty.GamePlaytime != null)
+            {
+                CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
+            }
 
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
             if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
@@ -957,8 +977,10 @@ namespace CollapseLauncher.Pages
 
         private async void OpenCacheFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string cacheFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
+            string cacheFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath;
             LogWriteLine($"Opening Game Folder:\r\n\t{cacheFolder}");
+            if (string.IsNullOrEmpty(cacheFolder)) return;
+            
             try
             {
                 await Task.Run(() =>
@@ -981,7 +1003,7 @@ namespace CollapseLauncher.Pages
 
         private async void OpenScreenshotFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty.GameVersion.GamePreset.GameType switch
+            string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty.GameVersion?.GamePreset.GameType switch
             {
                 GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty.GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                 _ => "ScreenShot"
@@ -1017,7 +1039,7 @@ namespace CollapseLauncher.Pages
             try
             {
                 GameStartupSetting.Flyout.Hide();
-                if (CurrentGameProperty is not null)
+                if (CurrentGameProperty?.GameInstall != null)
                     await CurrentGameProperty.GameInstall.CleanUpGameFiles();
             }
             catch (Exception ex)
