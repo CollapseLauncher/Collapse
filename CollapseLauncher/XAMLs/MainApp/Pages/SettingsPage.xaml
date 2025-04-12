@@ -206,8 +206,7 @@
                                                   IsOn="{x:Bind IsWaifu2XEnabled, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  ToolTipService.ToolTip="{x:Bind conv:SettingsPage.Waifu2XToolTip}"
-                                                  Visibility="{x:Bind conv:SettingsPage.IsWaifu2XUsable, Converter={StaticResource BooleanVisibilityConverter}}">
+                                                  ToolTipService.ToolTip="{x:Bind conv:SettingsPage.Waifu2XToolTip}">
                                         <ToggleSwitch.Header>
                                             <StackPanel Loaded="EnableHeaderMouseEvent"
                                                         Orientation="Horizontal">

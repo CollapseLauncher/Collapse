@@ -131,6 +131,7 @@ namespace Hi3Helper
                 public string Waifu2X_Warning_D3DMappingLayers          { get; set; } = LangFallback?._SettingsPage.Waifu2X_Warning_D3DMappingLayers;
                 public string Waifu2X_Error_Loader                      { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Loader;
                 public string Waifu2X_Error_Output                      { get; set; } = LangFallback?._SettingsPage.Waifu2X_Error_Output;
+                public string Waifu2X_Initializing                      { get; set; } = LangFallback?._SettingsPage.Waifu2X_Initializing;
                 public string SophonSettingsTitle                       { get; set; } = LangFallback?._SettingsPage.SophonSettingsTitle;
                 public string SophonHelp_Title                          { get; set; } = LangFallback?._SettingsPage.SophonHelp_Title;
                 public string SophonHelp_1                              { get; set; } = LangFallback?._SettingsPage.SophonHelp_1;

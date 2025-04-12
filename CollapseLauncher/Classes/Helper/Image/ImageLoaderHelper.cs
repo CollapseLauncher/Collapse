@@ -56,18 +56,7 @@ namespace CollapseLauncher.Helper.Image
         private static Waifu2X _waifu2X;
         private static Waifu2XStatus _cachedStatus = Waifu2XStatus.NotInitialized;
 
-        public static Waifu2XStatus Waifu2XStatus
-        {
-            get
-            {
-                // Cache the status of waifu2x
-                if (_cachedStatus == Waifu2XStatus.NotInitialized)
-                {
-                    _cachedStatus = VulkanTest();
-                }
-                return _cachedStatus;
-            }
-        }
+        public static Waifu2XStatus Waifu2XStatus => _cachedStatus;
 
         public static bool IsWaifu2XEnabled
         {
@@ -81,6 +70,14 @@ namespace CollapseLauncher.Helper.Image
         }
 
         public static bool IsWaifu2XUsable => Waifu2XStatus < Waifu2XStatus.Error;
+
+        public static bool EnsureWaifu2X()
+        {
+            if (_cachedStatus != Waifu2XStatus.NotInitialized)
+                return false;
+            _cachedStatus = VulkanTest();
+            return true;
+        }
 
         private static Waifu2X CreateWaifu2X()
         {

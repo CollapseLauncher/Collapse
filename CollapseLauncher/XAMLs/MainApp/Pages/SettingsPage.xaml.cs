@@ -154,6 +154,14 @@ namespace CollapseLauncher.Pages
 #else
             ShareYourFeedbackButton.IsEnabled = SentryHelper.IsEnabled;
 #endif
+
+            Task.Run(() =>
+                     {
+                         if (ImageLoaderHelper.EnsureWaifu2X())
+                         {
+                             DispatcherQueue.TryEnqueue(Bindings.Update);
+                         }
+                     });
         }
 
         private string GitVersionIndicator_Builder()
@@ -864,8 +872,11 @@ namespace CollapseLauncher.Pages
                     case Waifu2XStatus.TestNotPassed:
                         tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
                         break;
+                    case Waifu2XStatus.NotInitialized:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Initializing;
+                        break;
                 }
-                
+
                 return tooltip;
             }
         }
