@@ -584,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
     "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida.",
+    "Waifu2X_Initializing": "Iniciando Waifu2X. Por favor espera un momento.",
 
     "NetworkSettings_Title": "Ajustes de Red",
     "NetworkSettings_Proxy_Title": "Ajustes de Proxy",
