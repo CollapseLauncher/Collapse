@@ -186,7 +186,9 @@ namespace CollapseLauncher
 
             GC.SuppressFinalize(this);
         #if DEBUG
-            Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {GamePreset.HashID}", LogType.Warning, true);
+            var hashID = GameVersion != null ? GamePreset.HashID.ToString() : "null";
+            Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {hashID}",
+                                LogType.Warning, true);
         #endif
         }
     }

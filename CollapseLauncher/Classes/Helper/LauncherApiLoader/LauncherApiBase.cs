@@ -198,11 +198,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             return Task.WhenAll(tasks)
                        .ContinueWith(AfterExecute, token);
 
-            async Task AfterExecute(Task action)
+            void AfterExecute(Task action)
             {
-                // Run the action
-                await action.ConfigureAwait(false);
-
                 if (LauncherGameResource == null)
                 {
                     throw new NullReferenceException("Launcher game resource returns a null!");
