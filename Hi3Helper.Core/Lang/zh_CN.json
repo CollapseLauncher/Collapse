@@ -584,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系统安装了“OpenCL™、OpenGL® 和 Vulkan® 兼容包”。该软件包被报告与 Vulkan Loader 不兼容，并且会在某些 GPU 上崩溃。请移除此软件包以启用 GPU 模式。",
     "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
     "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。",
+    "Waifu2X_Initializing": "Waifu2X 正在初始化，请稍候。",
 
     "NetworkSettings_Title": "网络设置",
     "NetworkSettings_Proxy_Title": "代理设置",
