@@ -239,8 +239,9 @@ namespace CollapseLauncher.Helper.Database
                 }
                 // No need to handle all these error catcher with sentry
                 // The error should be handled in the method caller instead
-                catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED") ||
-                                                  ex.Message.Contains("Received an invalid baton")) &&
+                catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
+                                                  ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
+                                                  ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)) &&
                                                  i < retryCount - 1)
                 {
                     if (i > 0)
@@ -302,8 +303,9 @@ namespace CollapseLauncher.Helper.Database
                     await _database!.Execute(command, parameters);
                     break;
                 }
-                catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED") ||
-                                                  ex.Message.Contains("Received an invalid baton")) &&
+                catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
+                                                  ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
+                                                  ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)) &&
                                                  i < retryCount - 1)
                 {
                     if (i > 0)
