@@ -166,12 +166,7 @@ namespace CollapseLauncher.Helper.Metadata
                     // Re-associate url if patch URL property exists
                     if (!string.IsNullOrEmpty(PatchUrl))
                     {
-                        HoYoPlayGameInfoBranchField? branchField = isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField;
-                        if (branchField == null)
-                        {
-                            throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
-                        }
-
+                        HoYoPlayGameInfoBranchField? branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
                         ArgumentException.ThrowIfNullOrEmpty(branchField.PackageId);
                         ArgumentException.ThrowIfNullOrEmpty(branchField.Password);
 
@@ -179,14 +174,14 @@ namespace CollapseLauncher.Helper.Metadata
                         string passwordValue  = branchField.Password;
                         string branchValue    = isPreloadForPatch ? "predownload" : "main";
 
-                        PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(QueryPasswordHead,
-                                                                           QueryPackageIdHead,
-                                                                           passwordValue,
-                                                                           packageIdValue);
-                        PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(QueryBranchHead,
-                                                                           QueryPackageIdHead,
-                                                                           branchValue,
-                                                                           packageIdValue);
+                        PatchUrl = PatchUrl.AssociateGameAndLauncherId(QueryPasswordHead,
+                                                                       QueryPackageIdHead,
+                                                                       passwordValue,
+                                                                       packageIdValue);
+                        PatchUrl = PatchUrl.AssociateGameAndLauncherId(QueryBranchHead,
+                                                                       QueryPackageIdHead,
+                                                                       branchValue,
+                                                                       packageIdValue);
                     }
 
                     // Mark as re-associated
