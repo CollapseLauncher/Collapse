@@ -838,7 +838,7 @@
     "ExceptionFeedbackTitle": "告诉我们发生了什么：",
     "ExceptionFeedbackTemplate_User": "用户名（可选）：",
     "ExceptionFeedbackTemplate_Email": "邮箱（可选）：",
-    "ExceptionFeedbackTemplate_Message": "在此行后插入您的反馈",
+    "ExceptionFeedbackTemplate_Message": "请在这一行后面告诉我们发生了什么：（无需包含错误信息，我们会为您附上！）",
     
     "Feedback": "用户反馈",
     "FeedbackSending": "正在发送您的反馈……",
