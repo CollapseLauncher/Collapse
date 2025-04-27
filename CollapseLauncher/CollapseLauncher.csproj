@@ -374,7 +374,8 @@
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
         <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
-        <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
+		<RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
+		<RemoveDir Directories="$(PublishDir)NpuDetect" Condition="Exists('$(PublishDir)NpuDetect')" />
     </Target>
 
     <Target Name="PostPublish" AfterTargets="_CopyAotSymbols" Condition="'$(PublishAot)' == 'true'">
@@ -393,17 +394,25 @@
         <!-- Trim unused files and debug symbols -->
         <ItemGroup>
             <FilesToDelete Include="$(PublishDir)*.winmd;" />
-            <FilesToDelete Include="$(PublishDir)*.xml;" />
+			<FilesToDelete Include="$(PublishDir)*.xml;" />
+			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
+			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
+			<FilesToDelete Include="$(PublishDir)workloads*.json;" />
         </ItemGroup>
         <Delete Files="@(FilesToDelete)" />
+		<Delete Files="$(PublishDir)aspnetcorev2_inprocess.dll" />
         <Delete Files="$(PublishDir)DwmSceneI.dll" />
         <Delete Files="$(PublishDir)DWriteCore.dll" />
-        <Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
+		<Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
+		<Delete Files="$(PublishDir)Microsoft.Graphics.Imaging.dll" />
         <Delete Files="$(PublishDir)Microsoft.Windows.Widgets.dll" />
         <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.dll" />
-        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
+		<Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
+		<Delete Files="$(PublishDir)Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll" />
         <Delete Files="$(PublishDir)PushNotificationsLongRunningTask.ProxyStub.dll" />
-        <Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
+		<Delete Files="$(PublishDir)SessionHandleIPCProxyStub.dll" />
+		<Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
         <Delete Files="$(PublishDir)webp.dll" />
