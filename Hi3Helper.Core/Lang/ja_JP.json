@@ -584,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
     "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。",
+    "Waifu2X_Initializing": "Waifu2Xを初期化しています。少々お待ち下さい。",
 
     "NetworkSettings_Title": "ネットワークの設定",
     "NetworkSettings_Proxy_Title": "プロキシの設定",
@@ -837,7 +838,7 @@
     "ExceptionFeedbackTitle": "発生したエラー：",
     "ExceptionFeedbackTemplate_User": "ユーザー名（任意）：",
     "ExceptionFeedbackTemplate_Email": "メールアドレス（任意）：",
-    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください",
+    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください：（エラーメッセージは自動で添付されるので、書かなくて大丈夫ですよ！）",
     
     "Feedback": "ユーザーフィードバック",
     "FeedbackSending": "フィードバックを送信しています…",
