@@ -236,9 +236,9 @@ namespace CollapseLauncher
             // Declare variables for patch file and URL and new file path
             if (asset.AssetIndex.BlockPatchInfo != null)
             {
-                string patchURL       = ConverterTool.CombineURLFromString(string.Format(BlockPatchDiffBaseURL, asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].OldVersionDir), asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
-                string patchPath      = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockPatchDiffPath), asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchHashStr + ".wmv");
-                string inputFilePath  = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath),      asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].OldHashStr + ".wmv");
+                string patchURL       = ConverterTool.CombineURLFromString(string.Format(BlockPatchDiffBaseURL, asset.AssetIndex.BlockPatchInfo.PatchPairs[0].OldVersionDir), asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchName);
+                string patchPath      = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockPatchDiffPath), asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchName);
+                string inputFilePath  = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath),      asset.AssetIndex.BlockPatchInfo.PatchPairs[0].OldName);
                 string outputFilePath = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
 
                 // Set downloading patch status
@@ -249,13 +249,13 @@ namespace CollapseLauncher
                                    true);
 
                 // Run patching task
-                await RunPatchTask(downloadClient, downloadProgress,         asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchSize, asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].PatchHash,
+                await RunPatchTask(downloadClient, downloadProgress,         asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchSize, asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchHash,
                                    patchURL,       patchPath,        inputFilePath, outputFilePath, token: token);
             }
 
             if (asset.AssetIndex.BlockPatchInfo != null)
             {
-                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {asset.AssetIndex.BlockPatchInfo.Value.PatchPairs[0].OldHashStr} has been updated with new block {asset.AssetIndex.BlockPatchInfo.Value.NewBlockName}!",
+                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {asset.AssetIndex.BlockPatchInfo.PatchPairs[0].OldName} has been updated with new block {asset.AssetIndex.BlockPatchInfo.NewName}!",
                              LogType.Default, true);
             }
 
