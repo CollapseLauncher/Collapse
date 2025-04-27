@@ -838,7 +838,7 @@
     "ExceptionFeedbackTitle": "Cuéntanos lo que pasó:",
     "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
     "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
-    "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea",
+    "ExceptionFeedbackTemplate_Message": "Después de esta línea, dinos qué ha pasado: (No hace falta incluir el mensaje de error, nosotros lo adjuntaremos por ti).",
     
     "Feedback": "Compártenos tus comentarios",
     "FeedbackSending": "Enviando tus comentarios...",
