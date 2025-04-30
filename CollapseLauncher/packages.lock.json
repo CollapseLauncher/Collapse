@@ -32,7 +32,7 @@
         "resolved": "8.2.250129-preview2",
         "contentHash": "rS9Q5Ej/4DgF99dLKYDXtiQW+Wtrkm4ktwlzYVmfuPd07RSLwoDxMbHTLe4Ba4uRwUjdvtfbO/IO7h6iWo5pfg==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
@@ -478,8 +478,8 @@
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
-          "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
-          "CommunityToolkit.WinUI.Media": "[8.2.250129-preview2, )",
+          "CommunityToolkit.WinUI.Extensions": "[8.2.250402, )",
+          "CommunityToolkit.WinUI.Media": "[8.2.250402, )",
           "Microsoft.Graphics.Win2D": "[1.3.2, )",
           "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Web.WebView2": "[1.0.3065.39, )",

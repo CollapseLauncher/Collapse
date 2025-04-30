@@ -76,8 +76,6 @@ namespace CollapseLauncher
         private readonly byte[]          _collapseHeader        = "Collapse"u8.ToArray();
         private readonly HashSet<string> _ignoredUnusedFileList = [];
 
-        private static readonly Version _game820PostVersion = new(8, 2, 0);
-
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
             // Set total activity string as "Loading Indexes..."
@@ -200,9 +198,11 @@ namespace CollapseLauncher
                     EliminatePluginAssetIndex(assetIndex);
 
                     // Alter the asset bundle hash with the reference span
+                    /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
                     AlterAssetBundleHashWithReferenceSpan(assetIndex,
                                                           GameVersionManager.GetGameExistingVersion()?.ToVersion(),
                                                           asbReferenceSenadinaFileIdentifier);
+                    */
                 }
             }
             finally

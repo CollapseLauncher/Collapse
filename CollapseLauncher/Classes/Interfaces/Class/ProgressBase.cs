@@ -1156,7 +1156,7 @@ namespace CollapseLauncher.Interfaces
                             read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
                             token);
 
-        private void UpdateHashReadProgress(int read, bool updateProgress, bool updateTotalProgress)
+        protected void UpdateHashReadProgress(int read, bool updateProgress, bool updateTotalProgress)
         {
             // If progress update is not allowed, then return
             if (!updateProgress)
@@ -1204,10 +1204,14 @@ namespace CollapseLauncher.Interfaces
                 await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
                 // Verify the patch file and if it doesn't match, then re-download it
                 byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
+                Array.Reverse(patchCrc);
                 if (!IsArrayMatch(patchCrc, patchHash.Span))
                 {
                     // Revert back the total size
                     Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
+
+                    // Dispose patch stream before redownloading
+                    await patchFileStream.DisposeAsync();
 
                     // Re-download the patch file
                     await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
@@ -1240,6 +1244,10 @@ namespace CollapseLauncher.Interfaces
                     outputFile.Refresh();
                     outputFile.MoveTo(inputFile.FullName, true);
                 }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while patching file: {inputFile.FullName} -> {outputFile.FullName}\r\n{ex}", LogType.Error, true);
             }
             finally
             {
