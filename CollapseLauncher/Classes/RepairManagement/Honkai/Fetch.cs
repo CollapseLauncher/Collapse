@@ -689,6 +689,19 @@ namespace CollapseLauncher
 
         private void BuildAudioVersioningFile(KianaAudioManifest audioManifest, HonkaiRepairAssetIgnore ignoredAssetIDs)
         {
+            // Edit: 2025-05-01
+            // Starting from 8.2, the hash for the audio asset will be a sequence of MhyMurmurHash2 in UInt64-BE format.
+            // Also, this version added another file as its "state manifest" for the default audio, "AUDIO_Default_manifest.m"
+            string gameVersion = $"{GameVersion.Major}.{GameVersion.Minor}";
+            ManifestAssetInfo audioDefaultAsset = audioManifest!
+                                                    .AudioAssets
+                                                    .FirstOrDefault(x => x.Name.StartsWith("AUDIO_Default"));
+            ulong audioDefaultAssetHash = GetLongFromHashStr(audioDefaultAsset.HashString);
+            Span<byte> audioDefaultManifestBuffer = stackalloc byte[16];
+            audioDefaultAsset.Hash.CopyTo(audioDefaultManifestBuffer);
+            File.WriteAllText(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "AUDIO_Default_Version.txt"), $"{gameVersion}\t{audioDefaultAssetHash}");
+            File.WriteAllBytes(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "AUDIO_Default_manifest.m"), audioDefaultManifestBuffer);
+
             // Build audio versioning file
             using StreamWriter sw = new StreamWriter(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "Version.txt"), false);
             // Edit: 2023-12-09
@@ -697,10 +710,21 @@ namespace CollapseLauncher
                                                     .AudioAssets!
                                                     .Where(audioInfo => (audioInfo!.Language == AudioLanguageType.Common
                                                                          || audioInfo!.Language == AudioLanguage)
-                                                                        && !ignoredAssetIDs.IgnoredAudioPCKType.Contains(audioInfo.PckType)))
+                                                                        && !ignoredAssetIDs.IgnoredAudioPCKType.Contains(audioInfo.PckType))
+                                                    .Where(x => x != audioDefaultAsset))
             {
                 // Only add common and language specific audio file
-                sw.WriteLine($"{audioAsset!.Name}.pck\t{audioAsset.HashString}");
+                ulong audioAssetHash = GetLongFromHashStr(audioAsset.HashString);
+                sw.WriteLine($"{audioAsset!.Name}.pck\t{audioAssetHash}");
+            }
+
+            return;
+
+            static ulong GetLongFromHashStr(ReadOnlySpan<char> span)
+            {
+                Span<byte> spanChar = stackalloc byte[span.Length];
+                _ = HexTool.TryHexToBytesUnsafe(span, spanChar);
+                return BinaryPrimitives.ReadUInt64BigEndian(spanChar);
             }
         }
 
