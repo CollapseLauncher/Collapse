@@ -843,7 +843,6 @@
     "FeedbackSending": "Envoi de vos commentaires…",
     "FeedbackSent": "Commentaires envoyés !",
     "FeedbackSendFailure": "Échec de l'envoi des commentaires ! Vérifiez les logs ou la console pour plus d'informations.",
-    
     "Tag_Deprecated": "Abandonné",
     "Generic_GameFeatureDeprecation": "En raison de changements imprévus au sein du jeu, cette fonctionnalité a été abandonnée et sera supprimée à l'avenir. L'utilisation de cette fonctionnalité peut provoquer un comportement inattendu."
   },
