@@ -581,15 +581,13 @@ public partial class HomePage
                 LogWriteLine("Game executable directory is not set! Cannot start Resizable Window payload!", LogType.Error);
                 return;
             }
-            
-            var resizableWindowHook     = new ResizableWindowHook();
 
             // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
             // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
             // it impossible to use custom resolution (but since you are using Collapse, it's now
             // possible :teriStare:)
             bool isNeedToResetPos = gameType == GameNameType.StarRail;
-            await Task.Run(() => resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+            await Task.Run(() => ResizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
                                                                isNeedToResetPos, ILoggerHelper.GetILogger(), gameExecutableDirectory));
         }
         catch (Exception ex)

@@ -791,7 +791,7 @@ namespace CollapseLauncher
             if (_isGame820PostVersion && typeof(T) == typeof(MD5))
             {
                 // Create the Hasher provider by explicitly specify the length of the stream.
-                MhyMurmurHash2_64B murmurHashProvider = MhyMurmurHash2_64B.CreateForStream(stream, 0, stream.Length);
+                MhyMurmurHash264B murmurHashProvider = MhyMurmurHash264B.CreateForStream(stream, 0, stream.Length);
 
                 // Pass the provider and return the task
                 return Hash.GetHashAsync(stream,

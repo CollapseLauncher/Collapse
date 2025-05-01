@@ -386,8 +386,8 @@ namespace CollapseLauncher
             keyIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var alternativeLookup = keyIndexes.GetAlternateLookup<ReadOnlySpan<char>>();
 
-            ref AssetBundleReferenceKVPData startKvpIndex = ref MemoryMarshal.GetReference(span.KeyValuePair);
-            ref AssetBundleReferenceKVPData endKvpIndex = ref Unsafe.Add(ref startKvpIndex, span.KeyValuePair.Length);
+            ref AssetBundleReferenceKvpData startKvpIndex = ref MemoryMarshal.GetReference(span.KeyValuePair);
+            ref AssetBundleReferenceKvpData endKvpIndex = ref Unsafe.Add(ref startKvpIndex, span.KeyValuePair.Length);
 
             int currentDataOffset = 0;
             ref AssetBundleReferenceData startDataOffset = ref MemoryMarshal.GetReference(span.Data);
@@ -535,7 +535,7 @@ namespace CollapseLauncher
             }
 
             // Find the cache asset. If null, then return
-            CacheAsset cacheAsset = cacheProperty.Item1.FirstOrDefault(x => x!.N!.EndsWith($"{HashID.CGMetadata}"));
+            CacheAsset cacheAsset = cacheProperty.Item1.FirstOrDefault(x => x!.N!.EndsWith($"{HashID.CgMetadata}"));
 
             // Deserialize and build video index into asset index
             await BuildVideoIndex(downloadClient, cacheAsset, cacheProperty.Item2, assetIndex, ignoredAssetIDs, cacheProperty.Item4, token);
