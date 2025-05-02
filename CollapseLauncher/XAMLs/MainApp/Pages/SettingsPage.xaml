@@ -696,7 +696,7 @@
                                          Margin="0,8,0,8"
                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Hostname}"
                                          InputScope="Url"
-                                         IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                         IsEnabled="{x:Bind NetworkSettingsProxyToggle.IsOn, Mode=OneWay}"
                                          IsSpellCheckEnabled="False"
                                          PlaceholderText="Example: https://127.0.0.1:8080"
                                          Text="{x:Bind HttpProxyUrl, Mode=TwoWay}" />
@@ -718,14 +718,14 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <TextBox Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Username}"
-                                             IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                             IsEnabled="{x:Bind NetworkSettingsProxyToggle.IsOn, Mode=OneWay}"
                                              IsSpellCheckEnabled="False"
                                              PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_UsernamePlaceholder}"
                                              Text="{x:Bind conv:SettingsPage.HttpProxyUsername, Mode=TwoWay}" />
                                     <PasswordBox Grid.Row="0"
                                                  Grid.Column="1"
                                                  Header="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_Password}"
-                                                 IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                                 IsEnabled="{x:Bind NetworkSettingsProxyToggle.IsOn, Mode=OneWay}"
                                                  Password="{x:Bind conv:SettingsPage.HttpProxyPassword, Mode=TwoWay}"
                                                  PasswordRevealMode="Peek"
                                                  PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Proxy_PasswordPlaceholder}" />
@@ -737,9 +737,9 @@
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Stretch"
                                             Click="ProxyConnectivityTestButton_Click"
-                                            IsEnabled="{Binding IsOn, ElementName=NetworkSettingsProxyToggle}"
+                                            IsEnabled="{x:Bind NetworkSettingsProxyToggle.IsOn, Mode=OneWay}"
                                             Style="{ThemeResource AcrylicButtonStyle}"
-                                            Visibility="{Binding Text, ElementName=ProxyHostnameTextbox, Converter={StaticResource StringToVisibilityConverter}}">
+                                            Visibility="{x:Bind ProxyHostnameTextbox.Text, Mode=OneWay, Converter={StaticResource StringToVisibilityConverter}}">
                                         <Grid HorizontalAlignment="Stretch">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
@@ -1398,7 +1398,7 @@
                                          HorizontalAlignment="Stretch"
                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url}"
                                          InputScope="Url"
-                                         IsEnabled="{Binding IsOn, ElementName=DbToggle}"
+                                         IsEnabled="{x:Bind DbToggle.IsOn, Mode=OneWay}"
                                          IsSpellCheckEnabled="False"
                                          PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Url_Example}"
                                          Text="{x:Bind DbUrl, Mode=TwoWay}"
@@ -1411,7 +1411,7 @@
                                              HorizontalAlignment="Stretch"
                                              Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_Token}"
                                              InputScope="Password"
-                                             IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                             IsEnabled="{x:Bind DbToggle.IsOn, Mode=OneWay}"
                                              Password="{x:Bind DbToken, Mode=TwoWay}"
                                              PasswordChanged="DbTokenPasswordBox_OnPasswordChanged"
                                              PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbTokenPasswordBox}" />
@@ -1423,7 +1423,7 @@
                                          HorizontalAlignment="Stretch"
                                          GotFocus="DbUserIdTextBox_GotFocus"
                                          Header="{x:Bind helper:Locale.Lang._SettingsPage.Database_UserId}"
-                                         IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                         IsEnabled="{x:Bind DbToggle.IsOn, Mode=OneWay}"
                                          IsSpellCheckEnabled="False"
                                          LostFocus="DbUserIdTextBox_LostFocus"
                                          PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.Database_Placeholder_DbUserIdTextBox}"
@@ -1437,7 +1437,7 @@
                                         HorizontalContentAlignment="Stretch"
                                         Click="GenerateGuidButton_Click"
                                         CornerRadius="14"
-                                        IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                        IsEnabled="{x:Bind DbToggle.IsOn, Mode=OneWay}"
                                         Style="{ThemeResource AccentButtonStyle}">
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>
@@ -1463,7 +1463,7 @@
                                         HorizontalContentAlignment="Stretch"
                                         Click="ValidateAndSaveDbButton_Click"
                                         CornerRadius="14"
-                                        IsEnabled="{Binding Path=IsOn, ElementName=DbToggle}"
+                                        IsEnabled="{x:Bind DbToggle.IsOn, Mode=OneWay}"
                                         Style="{ThemeResource AccentButtonStyle}">
                                     <Grid ColumnSpacing="12">
                                         <Grid.ColumnDefinitions>

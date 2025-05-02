@@ -82,7 +82,7 @@
                                     VerticalAlignment="Bottom"
                                     Orientation="Horizontal">
                             <TextBlock FontWeight="Bold"
-                                       Text="{Binding Value, ElementName=progressBar}" />
+                                       Text="{x:Bind progressBar.Value, Mode=OneWay}" />
                             <TextBlock Text="%" />
                         </StackPanel>
                         <StackPanel Grid.Column="2"

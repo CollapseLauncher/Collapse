@@ -154,7 +154,7 @@
                                        Text="%" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{Binding Value, ElementName=RepairPerFileProgressBar}" />
+                                       Text="{x:Bind RepairPerFileProgressBar.Value, Mode=OneWay}" />
                         </control:DockPanel>
                         <ProgressBar x:Name="RepairPerFileProgressBar"
                                      Height="25"
@@ -178,7 +178,7 @@
                                        Text="%" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{Binding Value, ElementName=RepairTotalProgressBar}" />
+                                       Text="{x:Bind RepairTotalProgressBar.Value, Mode=OneWay}" />
                         </control:DockPanel>
                         <ProgressBar x:Name="RepairTotalProgressBar"
                                      Height="25"

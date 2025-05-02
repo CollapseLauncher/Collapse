@@ -124,7 +124,7 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{Binding Value, ElementName=progressPrePerFileBar}" />
+                                                   Text="{x:Bind progressPrePerFileBar.Value, Mode=OneWay}" />
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
                                                    Text="%" />
@@ -171,7 +171,7 @@
                                                 Orientation="Horizontal">
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{Binding Value, ElementName=progressPreBar}" />
+                                                   Text="{x:Bind progressPreBar.Value, Mode=OneWay}" />
                                         <TextBlock FontSize="12"
                                                    FontWeight="Bold"
                                                    Text="%" />
@@ -229,12 +229,12 @@
                                                     Orientation="Horizontal">
                                             <TextBlock FontSize="12"
                                                        FontWeight="Bold"
-                                                       Text="{Binding Text, ElementName=ProgressPrePerFileStatusFooter}" />
+                                                       Text="{x:Bind ProgressPrePerFileStatusFooter.Text, Mode=OneWay}" />
                                         </StackPanel>
                                         <TextBlock Margin="0,4,0,0"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{Binding Text, ElementName=ProgressPreStatusFooter}" />
+                                                   Text="{x:Bind ProgressPreStatusFooter.Text, Mode=OneWay}" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -254,7 +254,7 @@
                                         VerticalAlignment="Bottom">
                                 <TextBlock HorizontalAlignment="Right"
                                            FontSize="12"
-                                           Text="{Binding Text, ElementName=ProgressPreStatusSubtitle}" />
+                                           Text="{x:Bind ProgressPreStatusSubtitle.Text, Mode=OneWay}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1"
                                         HorizontalAlignment="Left"
@@ -262,7 +262,7 @@
                                         Orientation="Horizontal">
                                 <TextBlock FontSize="12"
                                            FontWeight="Bold"
-                                           Text="{Binding Value, ElementName=progressPreBar}" />
+                                           Text="{x:Bind progressPreBar.Value, Mode=OneWay}" />
                                 <TextBlock FontSize="12"
                                            FontWeight="Bold"
                                            Text="%" />
@@ -285,7 +285,7 @@
                                                    HorizontalAlignment="Right"
                                                    FontSize="12"
                                                    FontWeight="Bold"
-                                                   Text="{Binding Text, ElementName=ProgressPreTimeLeft}" />
+                                                   Text="{x:Bind ProgressPreTimeLeft.Text, Mode=OneWay}" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -296,9 +296,9 @@
                                      Margin="0,8,0,24"
                                      HorizontalAlignment="Stretch"
                                      VerticalAlignment="Bottom"
-                                     IsIndeterminate="{Binding IsIndeterminate, ElementName=progressPreBar}"
-                                     Maximum="{Binding Maximum, ElementName=progressPreBar}"
-                                     Value="{Binding Value, ElementName=progressPreBar}" />
+                                     IsIndeterminate="{x:Bind progressPreBar.IsIndeterminate, Mode=OneWay}"
+                                     Maximum="{x:Bind progressPreBar.Maximum, Mode=OneWay}"
+                                     Value="{x:Bind progressPreBar.Value, Mode=OneWay}" />
                     </Grid>
                     <Grid x:Name="ProgressPreButtonGrid"
                           Margin="0,-8,0,16"
@@ -930,9 +930,9 @@
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
-                              IsIndeterminate="{Binding IsIndeterminate, ElementName=SophonProgressRing}"
-                              Maximum="{Binding Maximum, ElementName=SophonProgressRing}"
-                              Value="{Binding Value, ElementName=SophonProgressRing}" />
+                              IsIndeterminate="{x:Bind SophonProgressRing.IsIndeterminate, Mode=OneWay}"
+                              Maximum="{x:Bind SophonProgressRing.Maximum, Mode=OneWay}"
+                              Value="{x:Bind SophonProgressRing.Value, Mode=OneWay}" />
                 <Ellipse x:Name="SophonProgressRingBG"
                          HorizontalAlignment="Stretch"
                          Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
@@ -950,9 +950,9 @@
                     <ProgressRing Width="Auto"
                                   Height="Auto"
                                   HorizontalAlignment="Stretch"
-                                  IsIndeterminate="{Binding IsIndeterminate, ElementName=SophonProgressRingPerFile}"
-                                  Maximum="{Binding Maximum, ElementName=SophonProgressRingPerFile}"
-                                  Value="{Binding Value, ElementName=SophonProgressRingPerFile}" />
+                                  IsIndeterminate="{x:Bind SophonProgressRingPerFile.IsIndeterminate, Mode=OneWay}"
+                                  Maximum="{x:Bind SophonProgressRingPerFile.Maximum, Mode=OneWay}"
+                                  Value="{x:Bind SophonProgressRingPerFile.Value, Mode=OneWay}" />
                     <Ellipse x:Name="SophonProgressRingBG2"
                              Margin="4"
                              HorizontalAlignment="Stretch"
@@ -1036,7 +1036,7 @@
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock FontWeight="Bold"
-                               Text="{Binding Value, ElementName=SophonProgressRing}" />
+                               Text="{x:Bind SophonProgressRing.Value, Mode=OneWay}" />
                     <TextBlock Margin="-1,0,0,0"
                                FontWeight="Bold"
                                Text="%" />
@@ -1245,9 +1245,9 @@
                 <ProgressRing Width="Auto"
                               Height="Auto"
                               HorizontalAlignment="Stretch"
-                              IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRing}"
-                              Maximum="{Binding Maximum, ElementName=progressRing}"
-                              Value="{Binding Value, ElementName=progressRing}" />
+                              IsIndeterminate="{x:Bind progressRing.IsIndeterminate, Mode=OneWay}"
+                              Maximum="{x:Bind progressRing.Maximum, Mode=OneWay}"
+                              Value="{x:Bind progressRing.Value, Mode=OneWay}" />
                 <Ellipse x:Name="progressRingBG"
                          HorizontalAlignment="Stretch"
                          Fill="{ThemeResource ProgressBackgroundAcrylicBrush}" />
@@ -1265,9 +1265,9 @@
                     <ProgressRing Width="Auto"
                                   Height="Auto"
                                   HorizontalAlignment="Stretch"
-                                  IsIndeterminate="{Binding IsIndeterminate, ElementName=progressRingPerFile}"
-                                  Maximum="{Binding Maximum, ElementName=progressRingPerFile}"
-                                  Value="{Binding Value, ElementName=progressRingPerFile}" />
+                                  IsIndeterminate="{x:Bind progressRingPerFile.IsIndeterminate, Mode=OneWay}"
+                                  Maximum="{x:Bind progressRingPerFile.Maximum, Mode=OneWay}"
+                                  Value="{x:Bind progressRingPerFile.Value, Mode=OneWay}" />
                     <Grid x:Name="ProgressPerFileCircleShadowCaster"
                           Margin="4"
                           CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(ProgressPerFileCircleShadowCaster)}"
@@ -1323,7 +1323,7 @@
                 <StackPanel HorizontalAlignment="Center"
                             Orientation="Horizontal">
                     <TextBlock FontWeight="Bold"
-                               Text="{Binding Value, ElementName=progressRing}" />
+                               Text="{x:Bind progressRing.Value, Mode=OneWay}" />
                     <TextBlock Margin="-1,0,0,0"
                                FontWeight="Bold"
                                Text="%" />
