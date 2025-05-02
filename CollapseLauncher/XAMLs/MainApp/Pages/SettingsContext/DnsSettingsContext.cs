@@ -115,11 +115,7 @@ namespace CollapseLauncher.Pages.SettingsContext
 
                 ReadOnlySpan<char> value     = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses").ToString();
                 Span<Range>        rangeSpan = stackalloc Range[2];
-                int                rangeLen  = value.Split(rangeSpan, '|');
-                if (rangeLen < 1)
-                {
-                    return field = GetResult(value[rangeSpan[0]]);
-                }
+                _ = value.Split(rangeSpan, '|');
 
                 return field = GetResult(value[rangeSpan[0]]);
 

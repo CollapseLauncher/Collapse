@@ -52,8 +52,8 @@ namespace CollapseLauncher.Helper.Update
             string updateChannel = LauncherConfig.IsPreview ? "preview" : "stable";
 
             CDNURLProperty launcherUpdatePreferredCdn = FallbackCDNUtil.GetPreferredCDN();
-            string launcherUpdateManagerBaseUrl = ConverterTool.CombineURLFromString(launcherUpdatePreferredCdn.URLPrefix,
-#if USEVELOPACK
+            string launcherUpdateManagerBaseUrl = launcherUpdatePreferredCdn.URLPrefix.CombineURLFromString(
+                                                                                                        #if USEVELOPACK
                 "velopack",
                 updateChannel
 #else
@@ -130,8 +130,8 @@ namespace CollapseLauncher.Helper.Update
 
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)
         {
-            string relativePath = ConverterTool.CombineURLFromString(updateChannel, "fileindex.json");
-            await using BridgedNetworkStream ms = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
+            string                           relativePath = updateChannel.CombineURLFromString("fileindex.json");
+            await using BridgedNetworkStream ms           = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
             return await ms.DeserializeAsync(AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp);
         }
     }

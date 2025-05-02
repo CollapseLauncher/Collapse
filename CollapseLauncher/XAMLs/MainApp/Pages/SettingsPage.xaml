@@ -19,7 +19,6 @@
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
-        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />

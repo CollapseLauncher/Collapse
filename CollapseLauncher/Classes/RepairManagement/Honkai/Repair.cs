@@ -123,7 +123,7 @@ namespace CollapseLauncher
             }
             else
             {
-                string audioURL = ConverterTool.CombineURLFromString(string.Format(AudioBaseRemotePath, $"{GameVersion.Major}_{GameVersion.Minor}", GameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AssetIndex.RN);
+                string audioURL = string.Format(AudioBaseRemotePath, $"{GameVersion.Major}_{GameVersion.Minor}", GameServer.Manifest.ManifestAudio.ManifestAudioRevision).CombineURLFromString(asset.AssetIndex.RN);
                 await RepairAssetTypeGeneric(asset, downloadClient, downloadProgress, token, audioURL);
             }
         }
@@ -136,7 +136,7 @@ namespace CollapseLauncher
             // Declare variables for patch file and URL and new file path
             if (asset.AssetIndex.AudioPatchInfo != null)
             {
-                string patchURL       = ConverterTool.CombineURLFromString(string.Format(AudioPatchBaseRemotePath, $"{GameVersion.Major}_{GameVersion.Minor}", GameServer.Manifest.ManifestAudio.ManifestAudioRevision), asset.AssetIndex.AudioPatchInfo.PatchFilename);
+                string patchURL       = string.Format(AudioPatchBaseRemotePath, $"{GameVersion.Major}_{GameVersion.Minor}", GameServer.Manifest.ManifestAudio.ManifestAudioRevision).CombineURLFromString(asset.AssetIndex.AudioPatchInfo.PatchFilename);
                 string patchPath      = Path.Combine(GamePath, ConverterTool.NormalizePath(AudioPatchBaseLocalPath), asset.AssetIndex.AudioPatchInfo.PatchFilename);
                 string inputFilePath  = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
                 string outputFilePath = inputFilePath + "_tmp";
@@ -243,7 +243,7 @@ namespace CollapseLauncher
             // Declare variables for patch file and URL and new file path
             if (asset.AssetIndex.BlockPatchInfo != null)
             {
-                string patchURL       = ConverterTool.CombineURLFromString(string.Format(BlockPatchDiffBaseURL, asset.AssetIndex.BlockPatchInfo.PatchPairs[0].OldVersionDir), asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchName);
+                string patchURL       = string.Format(BlockPatchDiffBaseURL, asset.AssetIndex.BlockPatchInfo.PatchPairs[0].OldVersionDir).CombineURLFromString(asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchName);
                 string patchPath      = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockPatchDiffPath), asset.AssetIndex.BlockPatchInfo.PatchPairs[0].PatchName);
                 string inputFilePath  = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath),      asset.AssetIndex.BlockPatchInfo.PatchPairs[0].OldName);
                 string outputFilePath = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));

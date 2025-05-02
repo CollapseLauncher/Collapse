@@ -23,29 +23,29 @@ namespace CollapseLauncher
             "Blocks.xmf$Generic"
         ];
 
-        private static readonly Version _game820PostVersion   = new(8, 2, 0);
-        private        readonly bool    _isGame820PostVersion = false;
+        private static readonly Version Game820PostVersion   = new(8, 2, 0);
+        private        readonly bool    _isGame820PostVersion;
 
         private        HonkaiCache   CacheUtil             { get; }
         private        string        AssetBaseURL          { get; set; }
-        private        string        BlockBaseURL          { get => ConverterTool.CombineURLFromString(AssetBaseURL,      $"StreamingAsb/{string.Join('_', GameVersion.VersionArray)}/pc/HD"); }
-        private        string        BlockAsbBaseURL       { get => ConverterTool.CombineURLFromString(BlockBaseURL,      "/asb"); }
-        private        string        BlockPatchBaseURL     { get => ConverterTool.CombineURLFromString(BlockBaseURL,      "/patch"); }
-        private        string        BlockPatchDiffBaseURL { get => ConverterTool.CombineURLFromString(BlockPatchBaseURL, "/{0}"); }
-        private static string        BlockPatchDiffPath    { get => ConverterTool.CombineURLFromString(AssetBasePath,     "Asb/pc/Patch"); }
-        private static string        BlockBasePath         { get => ConverterTool.CombineURLFromString(AssetBasePath,     "Asb/pc/"); }
+        private        string        BlockBaseURL          { get => AssetBaseURL.CombineURLFromString($"StreamingAsb/{string.Join('_', GameVersion.VersionArray)}/pc/HD"); }
+        private        string        BlockAsbBaseURL       { get => BlockBaseURL.CombineURLFromString("/asb"); }
+        private        string        BlockPatchBaseURL     { get => BlockBaseURL.CombineURLFromString("/patch"); }
+        private        string        BlockPatchDiffBaseURL { get => BlockPatchBaseURL.CombineURLFromString("/{0}"); }
+        private static string        BlockPatchDiffPath    { get => AssetBasePath.CombineURLFromString("Asb/pc/Patch"); }
+        private static string        BlockBasePath         { get => AssetBasePath.CombineURLFromString("Asb/pc/"); }
         private        bool          IsOnlyRecoverMain     { get; }
         private        KianaDispatch GameServer            { get; set; }
         #endregion
 
         #region ExtensionProperties
-        private protected AudioLanguageType AudioLanguage { get; set; }
-        private protected static string AudioBaseLocalPath { get => ConverterTool.CombineURLFromString(AssetBasePath, "Audio/GeneratedSoundBanks/Windows/"); }
-        private protected string AudioBaseRemotePath { get => ConverterTool.CombineURLFromString(AssetBaseURL, "Audio/Windows/{0}/{1}/"); }
-        private protected static string AudioPatchBaseLocalPath { get => ConverterTool.CombineURLFromString(AudioBaseLocalPath, "Patch/"); }
-        private protected string AudioPatchBaseRemotePath { get => ConverterTool.CombineURLFromString(AudioBaseRemotePath, "Patch/"); }
-        private protected static string VideoBaseLocalPath { get => ConverterTool.CombineURLFromString(AssetBasePath, "Video/"); }
-        private protected List<FilePropertiesRemote> OriginAssetIndex { get; set; }
+        private protected        AudioLanguageType          AudioLanguage            { get; set; }
+        private protected static string                     AudioBaseLocalPath       { get => AssetBasePath.CombineURLFromString("Audio/GeneratedSoundBanks/Windows/"); }
+        private protected        string                     AudioBaseRemotePath      { get => AssetBaseURL.CombineURLFromString("Audio/Windows/{0}/{1}/"); }
+        private protected static string                     AudioPatchBaseLocalPath  { get => AudioBaseLocalPath.CombineURLFromString("Patch/"); }
+        private protected        string                     AudioPatchBaseRemotePath { get => AudioBaseRemotePath.CombineURLFromString("Patch/"); }
+        private protected static string                     VideoBaseLocalPath       { get => AssetBasePath.CombineURLFromString("Video/"); }
+        private protected        List<FilePropertiesRemote> OriginAssetIndex         { get; set; }
         #endregion
 
         public HonkaiRepair(UIElement parentUI, IGameVersion gameVersionManager, ICache gameCacheManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
@@ -64,7 +64,7 @@ namespace CollapseLauncher
                                  _ => GameVersionManager.GamePreset.GameDefaultCVLanguage
                              };
 
-            _isGame820PostVersion = GameVersionManager.GetGameVersionApi()?.ToVersion() >= _game820PostVersion;
+            _isGame820PostVersion = GameVersionManager.GetGameVersionApi()?.ToVersion() >= Game820PostVersion;
         }
 
         ~HonkaiRepair() => Dispose();

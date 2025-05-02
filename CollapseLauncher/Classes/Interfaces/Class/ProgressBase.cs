@@ -1197,25 +1197,32 @@ namespace CollapseLauncher.Interfaces
             // Always do loop if patch doesn't get downloaded properly
             while (true)
             {
-                await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
-                // Verify the patch file and if it doesn't match, then re-download it
-                byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
-                Array.Reverse(patchCrc);
-                if (!IsArrayMatch(patchCrc, patchHash.Span))
+                FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
+                try
                 {
-                    // Revert back the total size
-                    Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
+                    // Verify the patch file and if it doesn't match, then re-download it
+                    byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
+                    Array.Reverse(patchCrc);
+                    if (!IsArrayMatch(patchCrc, patchHash.Span))
+                    {
+                        // Revert back the total size
+                        Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
 
-                    // Dispose patch stream before redownloading
-                    await patchFileStream.DisposeAsync();
+                        // Dispose patch stream before re-downloading
+                        await patchFileStream.DisposeAsync();
 
-                    // Re-download the patch file
-                    await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
-                    continue;
+                        // Re-download the patch file
+                        await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
+                        continue;
+                    }
+
+                    // else, break and quit from loop
+                    break;
                 }
-
-                // else, break and quit from loop
-                break;
+                finally
+                {
+                    await patchFileStream.DisposeAsync();
+                }
             }
 
             // Start patching process

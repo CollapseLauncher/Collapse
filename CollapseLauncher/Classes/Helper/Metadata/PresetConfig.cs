@@ -164,7 +164,7 @@ namespace CollapseLauncher.Helper.Metadata
                     // Re-associate url if patch URL property exists
                     if (!string.IsNullOrEmpty(PatchUrl))
                     {
-                        HoYoPlayGameInfoBranchField? branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
+                        HoYoPlayGameInfoBranchField branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
                         ArgumentException.ThrowIfNullOrEmpty(branchField.PackageId);
                         ArgumentException.ThrowIfNullOrEmpty(branchField.Password);
 
@@ -668,7 +668,7 @@ namespace CollapseLauncher.Helper.Metadata
                 RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
                 byte[] result    = (byte[])keys.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>());
-                GeneralDataProp initValue = JsonSerializerHelper.Deserialize(result, GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
+                GeneralDataProp initValue = result.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
 
                 string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp);
@@ -764,7 +764,7 @@ namespace CollapseLauncher.Helper.Metadata
 
             try
             {
-                return (int)(JsonSerializerHelper.Deserialize(value, GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
+                return (int)(value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
             }
             catch (Exception ex)
             {

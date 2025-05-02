@@ -507,17 +507,16 @@ namespace CollapseLauncher.Helper
             }
 
             ResourceRecordCollection CreateFromSingle(string hostInner, byte[] addressByte)
-                => new ResourceRecordCollection(
-                            [new ResourceRecord(hostInner,
-                                                addressByte.Length > 4 ? DnsType.AAAA : DnsType.A,
-                                                DnsClass.IN,
-                                                uint.MaxValue,
-                                                (ushort)addressByte.Length,
-                                                addressByte)]
-                            );
+                => new(
+                       [new ResourceRecord(hostInner,
+                                           addressByte.Length > 4 ? DnsType.AAAA : DnsType.A,
+                                           DnsClass.IN,
+                                           uint.MaxValue,
+                                           (ushort)addressByte.Length,
+                                           addressByte)]
+                      );
 
-            ResourceRecordCollection CreateEmpty()
-                => new ResourceRecordCollection();
+            ResourceRecordCollection CreateEmpty() => new();
         }
 
         private static bool TryGetCachedIp(ReadOnlySpan<char> host, out IPAddress[]? cachedIpAddress)

@@ -17,12 +17,12 @@ namespace CollapseLauncher.Interfaces
     internal sealed class CacheAsset : IAssetIndexSummary
     {
         // Concatenate N and CRC to get the filepath.
-        public string ConcatN => IsUseLocalPath ? $"{N}" : $"{N}_{CRC}.unity3d";
+        public string ConcatN       => IsUseLocalPath ? $"{N}" : $"{N}_{CRC}.unity3d";
         public string ConcatNRemote => $"{N}_{CRC}";
-        public string BaseURL { get; set; }
-        public string BasePath { get; set; }
-        public string ConcatURL => ConverterTool.CombineURLFromString(BaseURL, ConcatNRemote);
-        public string ConcatPath => Path.Combine(BasePath, ConverterTool.NormalizePath(ConcatN));
+        public string BaseURL       { get; set; }
+        public string BasePath      { get; set; }
+        public string ConcatURL     => BaseURL.CombineURLFromString(ConcatNRemote);
+        public string ConcatPath    => Path.Combine(BasePath, ConverterTool.NormalizePath(ConcatN));
 
         // Filepath for input.
         // You have to concatenate the N with CRC to get the filepath using ConcatN()
