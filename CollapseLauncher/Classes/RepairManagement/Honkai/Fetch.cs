@@ -68,8 +68,8 @@ namespace CollapseLauncher
             public CancellationToken       CancelToken           { get; } = token;
         }
 
-        private          string?         _mainMetaRepoUrl;
-        private readonly byte[]          _collapseHeader        = "Collapse"u8.ToArray();
+        private          string? _mainMetaRepoUrl;
+        private readonly byte[]  _collapseHeader = "Collapse"u8.ToArray();
 
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
@@ -114,20 +114,20 @@ namespace CollapseLauncher
                 GameRepoURL = gameRepoUrl;
 
                 // Initialize local audio manifest, blocks and patchConfig stream.
-                SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier = null;
-                SenadinaFileIdentifier? blocksBaseManifestSenadinaFileIdentifier = null;
+                SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier          = null;
+                SenadinaFileIdentifier? blocksBaseManifestSenadinaFileIdentifier     = null;
                 SenadinaFileIdentifier? blocksPlatformManifestSenadinaFileIdentifier = null;
-                SenadinaFileIdentifier? blocksCurrentManifestSenadinaFileIdentifier = null;
-                SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier = null;
+                SenadinaFileIdentifier? blocksCurrentManifestSenadinaFileIdentifier  = null;
+                SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier    = null;
                 /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
                 SenadinaFileIdentifier? asbReferenceSenadinaFileIdentifier = null;
                 */
                 _mainMetaRepoUrl = null;
 
                 // Get the status if the current game is Senadina version.
-                GameTypeHonkaiVersion gameVersionKind = GameVersionManager.CastAs<GameTypeHonkaiVersion>();
-                int[] versionArray = gameVersionKind.GetGameVersionApi()?.VersionArray!;
-                bool IsSenadinaVersion = gameVersionKind.IsCurrentSenadinaVersion;
+                GameTypeHonkaiVersion gameVersionKind   = GameVersionManager.CastAs<GameTypeHonkaiVersion>();
+                int[]                 versionArray      = gameVersionKind.GetGameVersionApi()?.VersionArray!;
+                bool                  IsSenadinaVersion = gameVersionKind.IsCurrentSenadinaVersion;
 
                 // TODO: Use FallbackCDNUtil to fetch the stream.
                 if (IsSenadinaVersion && !IsOnlyRecoverMain)
@@ -563,27 +563,19 @@ namespace CollapseLauncher
         {
             // Get the remote stream and use CacheStream
             await using MemoryStream memoryStream = new MemoryStream();
-            if (downloadClient != null)
-            {
-                ArgumentNullException.ThrowIfNull(cacheAsset);
-                // Download the cache and store it to MemoryStream
-                await downloadClient.DownloadAsync(cacheAsset.ConcatURL, memoryStream, false, cancelToken: token);
-                memoryStream.Position = 0;
+            ArgumentNullException.ThrowIfNull(cacheAsset);
+            // Download the cache and store it to MemoryStream
+            await downloadClient.DownloadAsync(cacheAsset.ConcatURL, memoryStream, false, cancelToken: token);
+            memoryStream.Position = 0;
 
-                // Use CacheStream to decrypt and read it as Stream
-                await using CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber);
-                // Enumerate and iterate the metadata to asset index
-                await BuildAndEnumerateVideoVersioningFile(CGMetadata.Enumerate(cacheStream, Encoding.UTF8),
-                                                           assetIndex,
-                                                           ignoredAssetIDs,
-                                                           assetBundleURL,
-                                                           token);
-            }
-            else
-            {
-                throw new ObjectDisposedException("RepairManagement::Honkai::Fetch:BuildVideoIndex() error!" +
-                                                  "\r\n downloadClient is unexpectedly disposed.");
-            }
+            // Use CacheStream to decrypt and read it as Stream
+            await using CacheStream cacheStream = new CacheStream(memoryStream, true, luckyNumber);
+            // Enumerate and iterate the metadata to asset index
+            await BuildAndEnumerateVideoVersioningFile(CGMetadata.Enumerate(cacheStream, Encoding.UTF8),
+                                                       assetIndex,
+                                                       ignoredAssetIDs,
+                                                       assetBundleURL,
+                                                       token);
         }
 
         private async Task BuildAndEnumerateVideoVersioningFile(IEnumerable<CGMetadata> enumEntry, List<FilePropertiesRemote> assetIndex, HonkaiRepairAssetIgnore ignoredAssetIDs, string assetBundleURL, CancellationToken token)
