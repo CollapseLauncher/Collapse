@@ -12,10 +12,10 @@ env:
  DOTNET_VERSION: '9.0.2xx'
  DOTNET_QUALITY: 'ga'
  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
- SIGNPATH_ARTIFACT_SLUG: 'aot-release' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
- BUILD_PROFILE_PREVIEW: 'Publish-PreviewReleaseAOT'
- BUILD_PROFILE_STABLE: 'Publish-StableReleaseAOT'
- BUILD_PROFILE_DEBUG: 'Publish-DebugCIReleaseAOT'
+ SIGNPATH_ARTIFACT_SLUG: 'initial' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
+ BUILD_PROFILE_PREVIEW: 'Publish-PreviewRelease'
+ BUILD_PROFILE_STABLE: 'Publish-StableRelease'
+ BUILD_PROFILE_DEBUG: 'Publish-DebugCIRelease'
 
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday
