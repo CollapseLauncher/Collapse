@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
+using System;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -12,7 +13,7 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage
     {
-        internal string GameDirPath { get => CurrentGameProperty.GameVersion.GameDirPath; }
+        internal string GameDirPath { get => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException(); }
         internal static LauncherGameNewsData? GameNewsData { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameNews?.Content; }
         internal static HoYoPlayGameInfoField? GameInfoDisplayField { get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?.LauncherGameInfoField; }
         internal static bool IsPostPanelAvailable => (GameNewsData?.NewsPost?.Count ?? 0) > 0;
@@ -120,7 +121,7 @@ namespace CollapseLauncher.Pages
                 SyncDbPlaytimeBtn.IsEnabled = value;
                 
                 // Run DbSync if toggle is changed to enable
-                if (value) CurrentGameProperty?.GamePlaytime.CheckDb();
+                if (value) CurrentGameProperty?.GamePlaytime?.CheckDb();
             }
         }
 

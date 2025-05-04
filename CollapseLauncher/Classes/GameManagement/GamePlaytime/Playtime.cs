@@ -9,8 +9,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
-using static Hi3Helper.Logger;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
+using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable AsyncVoidMethod
 

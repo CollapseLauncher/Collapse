@@ -149,11 +149,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             return Task.WhenAll(tasks)
                 .ContinueWith(AfterExecute, token);
 
-            async Task AfterExecute(Task action)
+            void AfterExecute(Task action)
             {
-                // Run action
-                await action.ConfigureAwait(false);
-
                 ConvertPluginResources(ref sophonResourceData, hypPluginResource);
                 ConvertSdkResources(ref sophonResourceData, hypSdkResource);
                 ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);

@@ -55,7 +55,7 @@ namespace CollapseLauncher
             string persistentPath,
             [EnumeratorCancellation] CancellationToken token = default)
         {
-            string manifestFileUrl = ConverterTool.CombineURLFromString(fileInfo.BaseUrl, fileInfo.ReferenceFileInfo.FileName);
+            string                    manifestFileUrl = fileInfo.BaseUrl.CombineURLFromString(fileInfo.ReferenceFileInfo.FileName);
             using HttpResponseMessage responseMessage = await httpClient.GetAsync(manifestFileUrl, HttpCompletionOption.ResponseHeadersRead, token);
 
             string filePath = Path.Combine(persistentPath, fileInfo.ReferenceFileInfo.FileName + "_persist");
@@ -193,7 +193,7 @@ namespace CollapseLauncher
         {
             string remoteAbsolutePath = type switch
             {
-                FileType.Generic => ConverterTool.CombineURLFromString(remoteParentURL, remoteRelativePath),
+                FileType.Generic => remoteParentURL.CombineURLFromString(remoteRelativePath),
                 _ => remoteParentURL
             };
             string localAbsolutePath = Path.Combine(baseLocalPath, ConverterTool.NormalizePath(remoteRelativePath));

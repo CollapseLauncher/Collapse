@@ -202,7 +202,7 @@ public partial class HomePage
     #region Media Pack
     private async Task<bool> CheckMediaPackInstalled()
     {
-        if (CurrentGameProperty.GameVersion.GameType != GameNameType.Honkai) return true;
+        if (CurrentGameProperty.GameVersion?.GameType != GameNameType.Honkai) return true;
 
         RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\WindowsFeatures\WindowsMediaVersion");
         if (reg != null)

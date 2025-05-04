@@ -5,6 +5,7 @@ using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -19,7 +20,6 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
@@ -202,8 +202,7 @@ namespace CollapseLauncher.InstallManager.Base
                     if (!string.IsNullOrEmpty(packageExtractBasePath))
                     {
                         // Check Fail-safe: Download main pkg_version file
-                        string mainPkgVersionUrl = ConverterTool.CombineURLFromString(packageExtractBasePath,
-                            "pkg_version");
+                        string mainPkgVersionUrl = packageExtractBasePath.CombineURLFromString("pkg_version");
                         await downloadClient.DownloadAsync(mainPkgVersionUrl, pkgVersionPath, true);
 
                         // Check Fail-safe: Download audio pkg_version files
@@ -339,7 +338,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Get the pkg_version filename, url and then download it
                 string pkgFileName = $"Audio_{line.Trim()}_pkg_version";
                 string pkgPath     = Path.Combine(GamePath, pkgFileName);
-                string pkgUrl      = ConverterTool.CombineURLFromString(baseExtractUrl, pkgFileName);
+                string pkgUrl      = baseExtractUrl.CombineURLFromString(pkgFileName);
 
                 // Skip if URL is not found
                 if ((await FallbackCDNUtil.GetURLStatusCode(pkgUrl, default)).StatusCode == HttpStatusCode.NotFound)

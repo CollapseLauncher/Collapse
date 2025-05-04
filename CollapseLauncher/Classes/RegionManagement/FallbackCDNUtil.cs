@@ -26,7 +26,6 @@ using System.Text;
 using Velopack.Sources;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
-#pragma warning disable CA1068
 #endif
 
 namespace CollapseLauncher
@@ -431,7 +430,7 @@ namespace CollapseLauncher
         private static async ValueTask<(bool, string)> TryGetURLStatus(CDNURLProperty cdnProp, DownloadClient downloadClient, string relativeURL, CancellationToken token)
         {
             // Concat the URL Prefix and Relative URL
-            string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
+            string absoluteURL = cdnProp.URLPrefix.CombineURLFromString(relativeURL);
 
             LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
@@ -455,7 +454,7 @@ namespace CollapseLauncher
             try
             {
                 // Concat the URL Prefix and Relative URL
-                string absoluteURL = ConverterTool.CombineURLFromString(cdnProp.URLPrefix, relativeURL);
+                string absoluteURL = cdnProp.URLPrefix.CombineURLFromString(relativeURL);
 
                 LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
@@ -644,7 +643,7 @@ namespace CollapseLauncher
 
             CDNURLProperty preferredCDN = GetPreferredCDN();
             string cdnParentURL = preferredCDN.URLPrefix;
-            URL = ConverterTool.CombineURLFromString(cdnParentURL, relativeURL);
+            URL = cdnParentURL.CombineURLFromString(relativeURL);
             return URL;
         }
     }

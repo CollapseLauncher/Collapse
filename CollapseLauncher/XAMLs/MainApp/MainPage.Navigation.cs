@@ -51,7 +51,7 @@ public partial class MainPage : Page
 
                                        if (m_appMode == AppMode.Hi3CacheUpdater)
                                        {
-                                           if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
+                                           if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
                                            {
                                                NavigationViewControl.MenuItems.Add(new NavigationViewItem
                                                        { Icon = IconCaches, Tag = "caches" }
@@ -67,21 +67,21 @@ public partial class MainPage : Page
                                        NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
                                                                               .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
 
-                                       if (CurrentGameVersionCheck.GamePreset.IsRepairEnabled ?? false)
+                                       if (CurrentGameVersionCheck?.GamePreset.IsRepairEnabled ?? false)
                                        {
                                            NavigationViewControl.MenuItems.Add(new NavigationViewItem
                                                                                        { Icon = IconRepair, Tag = "repair" }
                                                                                   .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
                                        }
 
-                                       if (CurrentGameVersionCheck.GamePreset.IsCacheUpdateEnabled ?? false)
+                                       if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
                                        {
                                            NavigationViewControl.MenuItems.Add(new NavigationViewItem
                                                                                        { Icon = IconCaches, Tag = "caches" }
                                                                                   .BindNavigationViewItemText("_CachesPage", "PageTitle"));
                                        }
 
-                                       switch (CurrentGameVersionCheck.GameType)
+                                       switch (CurrentGameVersionCheck?.GameType)
                                        {
                                            case GameNameType.Honkai:
                                                NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
@@ -250,15 +250,18 @@ public partial class MainPage : Page
                 break;
 
             case "repair":
-                if (!(GetCurrentGameProperty().GameVersion.GamePreset.IsRepairEnabled ?? false))
+                if (!(GetCurrentGameProperty().GameVersion?.GamePreset.IsRepairEnabled ?? false))
                     Navigate(typeof(UnavailablePage), itemTag);
                 else
                     Navigate(IsGameInstalled() ? typeof(RepairPage) : typeof(NotInstalledPage), itemTag);
                 break;
 
             case "caches":
-                if (GetCurrentGameProperty().GameVersion.GamePreset.IsCacheUpdateEnabled ?? false)
-                    Navigate(IsGameInstalled() || (m_appMode == AppMode.Hi3CacheUpdater && GetCurrentGameProperty().GameVersion.GamePreset.GameType == GameNameType.Honkai) ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
+                if (GetCurrentGameProperty().GameVersion?.GamePreset.IsCacheUpdateEnabled ?? false)
+                    Navigate(IsGameInstalled() || 
+                             (m_appMode == AppMode.Hi3CacheUpdater 
+                              && GetCurrentGameProperty().GameVersion?.GamePreset.GameType == GameNameType.Honkai) 
+                                 ? typeof(CachesPage) : typeof(NotInstalledPage), itemTag);
                 else
                     Navigate(typeof(UnavailablePage), itemTag);
                 break;
@@ -291,7 +294,8 @@ public partial class MainPage : Page
 
     internal void InvokeMainPageNavigateByTag(string tagStr)
     {
-        NavigationViewItem item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => x.Tag is string tag && tag == tagStr);
+        var item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
+                                        .FirstOrDefault(x => x.Tag is string tag && tag == tagStr);
         if (item == null)
         {
             return;

@@ -16,15 +16,15 @@ using Microsoft.UI.Composition;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml.Media;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
-using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Helper.Background.BackgroundMediaUtility;
+using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
@@ -46,13 +46,13 @@ public sealed partial class HomePage
     #region Preload
     private async void SpawnPreloadBox()
     {
-        if (CurrentGameProperty.GameInstall.IsUseSophon)
+        if (CurrentGameProperty.GameInstall?.IsUseSophon ?? false)
         {
             DownloadModeLabelPreload.Visibility = Visibility.Visible;
             DownloadModeLabelPreloadText.Text   = Lang._Misc.DownloadModeLabelSophon;
         }
 
-        if (CurrentGameProperty.GameInstall.IsRunning)
+        if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
         {
             // TODO
             PauseDownloadPreBtn.Visibility  = Visibility.Visible;
@@ -80,11 +80,11 @@ public sealed partial class HomePage
             return;
         }
 
-        string ver = CurrentGameProperty.GameVersion.GetGameVersionApiPreload()?.VersionString;
+        string ver = CurrentGameProperty.GameVersion?.GetGameVersionApiPreload()?.VersionString;
 
         try
         {
-            if (CurrentGameProperty.GameVersion.IsGameHasDeltaPatch())
+            if (CurrentGameProperty.GameVersion?.IsGameHasDeltaPatch() ?? false)
             {
                 PreloadDialogBox.Title    = string.Format(Lang._HomePage.PreloadNotifDeltaDetectTitle, ver);
                 PreloadDialogBox.Message  = Lang._HomePage.PreloadNotifDeltaDetectSubtitle;
@@ -93,7 +93,7 @@ public sealed partial class HomePage
                 return;
             }
 
-            if (!await CurrentGameProperty.GameInstall.IsPreloadCompleted(PageToken.Token))
+            if (!await CurrentGameProperty.GameInstall!.IsPreloadCompleted(PageToken.Token))
             {
                 PreloadDialogBox.Title = string.Format(Lang._HomePage.PreloadNotifTitle, ver);
             }
@@ -153,11 +153,11 @@ public sealed partial class HomePage
             // Prevent device from sleep
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             // Set the notification trigger to "Running" state
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Running);
 
             IsSkippingUpdateCheck     = true;
             DownloadPreBtn.Visibility = Visibility.Collapsed;
-            if (CurrentGameProperty.GameInstall.IsUseSophon)
+            if (CurrentGameProperty.GameInstall?.IsUseSophon ?? false)
             {
                 ProgressPreSophonStatusGrid.Visibility = Visibility.Visible;
                 ProgressPreStatusGrid.Visibility       = Visibility.Collapsed;
@@ -170,38 +170,41 @@ public sealed partial class HomePage
             PreloadDialogBox.Title           = Lang._HomePage.PreloadDownloadNotifbarTitle;
             PreloadDialogBox.Message         = Lang._HomePage.PreloadDownloadNotifbarSubtitle;
 
-            CurrentGameProperty.GameInstall.ProgressChanged += PreloadDownloadProgress;
-            CurrentGameProperty.GameInstall.StatusChanged   += PreloadDownloadStatus;
-
-            int verifResult = 0;
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            while (verifResult != 1)
+            if (CurrentGameProperty.GameInstall != null)
             {
-                await CurrentGameProperty.GameInstall.StartPackageDownload(true);
+                CurrentGameProperty.GameInstall.ProgressChanged += PreloadDownloadProgress;
+                CurrentGameProperty.GameInstall.StatusChanged   += PreloadDownloadStatus;
 
-                PauseDownloadPreBtn.IsEnabled = false;
-                PreloadDialogBox.Title        = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
-
-                verifResult = await CurrentGameProperty.GameInstall.StartPackageVerification();
-
-                // Restore sleep before the dialog
-                // so system won't be stuck when download is finished because of the download verified dialog
-                Sleep.RestoreSleep();
-
-                switch (verifResult)
+                int verifResult = 0;
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                while (verifResult != 1)
                 {
-                    case -1:
-                        ReturnToHomePage();
-                        return;
-                    case 1:
-                        await Dialog_PreDownloadPackageVerified();
-                        ReturnToHomePage();
-                        return;
-                }
-            }
+                    await CurrentGameProperty.GameInstall.StartPackageDownload(true);
 
-            // Set the notification trigger to "Completed" state
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+                    PauseDownloadPreBtn.IsEnabled = false;
+                    PreloadDialogBox.Title        = Lang._HomePage.PreloadDownloadNotifbarVerifyTitle;
+
+                    verifResult = await CurrentGameProperty.GameInstall.StartPackageVerification();
+
+                    // Restore sleep before the dialog
+                    // so system won't be stuck when download is finished because of the download verified dialog
+                    Sleep.RestoreSleep();
+
+                    switch (verifResult)
+                    {
+                        case -1:
+                            ReturnToHomePage();
+                            return;
+                        case 1:
+                            await Dialog_PreDownloadPackageVerified();
+                            ReturnToHomePage();
+                            return;
+                    }
+                }
+
+                // Set the notification trigger to "Completed" state
+                CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
+            }
 
             // If the current window is not in focus, then spawn the notification toast
             if (WindowUtility.IsCurrentWindowInFocus())
@@ -220,21 +223,24 @@ public sealed partial class HomePage
         {
             LogWriteLine("Pre-Download paused!", LogType.Warning);
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
         catch (Exception ex)
         {
             LogWriteLine($"An error occurred while starting preload process: {ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
         finally
         {
             IsSkippingUpdateCheck                           =  false;
-            CurrentGameProperty.GameInstall.ProgressChanged -= PreloadDownloadProgress;
-            CurrentGameProperty.GameInstall.StatusChanged   -= PreloadDownloadStatus;
-            CurrentGameProperty.GameInstall.Flush();
+            if (CurrentGameProperty.GameInstall != null)
+            {
+                CurrentGameProperty.GameInstall.ProgressChanged -= PreloadDownloadProgress;
+                CurrentGameProperty.GameInstall.StatusChanged   -= PreloadDownloadStatus;
+                CurrentGameProperty.GameInstall.Flush();
+            }
 
             // Turn the sleep back on
             Sleep.RestoreSleep();
@@ -272,14 +278,14 @@ public sealed partial class HomePage
     #region Game Install
     private async void InstallGameDialog(object sender, RoutedEventArgs e)
     {
-        bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
+        bool isUseSophon = CurrentGameProperty.GameInstall?.IsUseSophon ?? false;
         try
         {
             MainWindow.IsCriticalOpInProgress = true;
             // Prevent device from sleep
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             // Set the notification trigger to "Running" state
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Running);
 
             IsSkippingUpdateCheck = true;
 
@@ -301,11 +307,14 @@ public sealed partial class HomePage
             else
             {
                 ProgressStatusGrid.Visibility                   =  Visibility.Visible;
-                CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
+                if (CurrentGameProperty.GameInstall != null)
+                {
+                    CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                    CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
+                }
             }
 
-            int dialogResult = await CurrentGameProperty.GameInstall.GetInstallationPath();
+            int dialogResult = await CurrentGameProperty.GameInstall!.GetInstallationPath();
             switch (dialogResult)
             {
                 case < 0:
@@ -338,7 +347,7 @@ public sealed partial class HomePage
             await CurrentGameProperty.GameInstall.StartPackageInstallation();
             CurrentGameProperty.GameInstall.ApplyGameConfig(true);
             if (CurrentGameProperty.GameInstall.StartAfterInstall &&
-                CurrentGameProperty.GameVersion.IsGameInstalled())
+                CurrentGameProperty.GameVersion!.IsGameInstalled())
                 StartGame(null, null);
 
             // Set the notification trigger to "Completed" state
@@ -361,24 +370,24 @@ public sealed partial class HomePage
         }
         catch (TaskCanceledException)
         {
-            LogWriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}");
+            LogWriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
         catch (OperationCanceledException)
         {
-            LogWriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}");
+            LogWriteLine($"Installation cancelled for game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
         }
         catch (NotSupportedException ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex);
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
             IsPageUnload = true;
-            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}\r\n{ex}",
+            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
         
             await SpawnDialog(Lang._HomePage.InstallFolderRootTitle,
@@ -390,10 +399,10 @@ public sealed partial class HomePage
         catch (NullReferenceException ex)
         {
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
             IsPageUnload = true;
-            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}\r\n{ex}",
+            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}\r\n{ex}",
                          LogType.Error, true);
             ErrorSender.SendException(new
                                           NullReferenceException("Collapse was not able to complete post-installation tasks, but your game has been successfully updated.\r\t" +
@@ -403,14 +412,14 @@ public sealed partial class HomePage
         catch (TimeoutException ex)
         {
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             IsPageUnload = true;
-            string exMessage = $"Timeout occurred when trying to install {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}.\r\n\t" +
+            string exMessage = $"Timeout occurred when trying to install {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n\t" +
                                $"Check stability of your internet! If your internet speed is slow, please lower the download thread count.\r\n\t" +
                                $"**WARNING** Changing download thread count WILL reset your download from 0, and you have to delete the existing download chunks manually!" +
                                $"\r\n{ex}";
         
-            string exTitleLocalized = string.Format(Lang._HomePage.Exception_DownloadTimeout1, CurrentGameProperty.GameVersion.GamePreset.ZoneFullname);
+            string exTitleLocalized = string.Format(Lang._HomePage.Exception_DownloadTimeout1, CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname);
             string exMessageLocalized = string.Format($"{exTitleLocalized}\r\n\t" +
                                                       $"{Lang._HomePage.Exception_DownloadTimeout2}\r\n\t" +
                                                       $"{Lang._HomePage.Exception_DownloadTimeout3}");
@@ -422,26 +431,28 @@ public sealed partial class HomePage
         catch (Exception ex)
         {
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
             IsPageUnload = true;
-            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
+            LogWriteLine($"Error while installing game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}.\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
         finally
         {
             IsSkippingUpdateCheck                             = false;
-            CurrentGameProperty.GameInstall.StartAfterInstall = false;
+            if (CurrentGameProperty.GameInstall != null)
+            {
+                CurrentGameProperty.GameInstall.StartAfterInstall = false;
 
-            CurrentGameProperty.GameInstall.ProgressChanged -= isUseSophon ?
-                GameInstallSophon_ProgressChanged : 
-                GameInstall_ProgressChanged;
-            CurrentGameProperty.GameInstall.StatusChanged   -= isUseSophon ? 
-                GameInstallSophon_StatusChanged : 
-                GameInstall_StatusChanged;
+                CurrentGameProperty.GameInstall.ProgressChanged -=
+                    isUseSophon ? GameInstallSophon_ProgressChanged : GameInstall_ProgressChanged;
+                CurrentGameProperty.GameInstall.StatusChanged -=
+                    isUseSophon ? GameInstallSophon_StatusChanged : GameInstall_StatusChanged;
 
-            await Task.Delay(200);
-            CurrentGameProperty.GameInstall.Flush();
+                await Task.Delay(200);
+                CurrentGameProperty.GameInstall.Flush();
+            }
+
             ReturnToHomePage();
 
             // Turn the sleep back on
@@ -465,6 +476,9 @@ public sealed partial class HomePage
 
         progressRing.IsIndeterminate        = e.IsProgressAllIndetermined;
         progressRingPerFile.IsIndeterminate = e.IsProgressPerFileIndetermined;
+
+        ProgressStatusIconDisk.Visibility = e.ActivityStatusInternet ? Visibility.Collapsed : Visibility.Visible;
+        ProgressStatusIconInternet.Visibility = e.ActivityStatusInternet ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void GameInstall_ProgressChanged(object sender, TotalPerFileProgress e)
@@ -551,7 +565,7 @@ public sealed partial class HomePage
 
     private async void UninstallGameButton_Click(object sender, RoutedEventArgs e)
     {
-        if (await CurrentGameProperty.GameInstall.UninstallGame())
+        if (await CurrentGameProperty.GameInstall!.UninstallGame())
         {
             MainFrameChanger.ChangeMainFrame(typeof(HomePage));
         }
@@ -565,7 +579,7 @@ public sealed partial class HomePage
     private async void StopGameButton_Click(object sender, RoutedEventArgs e)
     {
         if (await Dialog_StopGame() != ContentDialogResult.Primary) return;
-        StopGame(CurrentGameProperty.GameVersion.GamePreset);
+        StopGame(CurrentGameProperty.GameVersion?.GamePreset);
     }
 
     private async void ChangeGameBGButton_Click(object sender, RoutedEventArgs e)
@@ -597,7 +611,7 @@ public sealed partial class HomePage
     {
         try
         {
-            if (!await CurrentGameProperty.GameInstall.MoveGameLocation())
+            if (!await CurrentGameProperty.GameInstall!.MoveGameLocation())
             {
                 return;
             }
@@ -622,10 +636,10 @@ public sealed partial class HomePage
     #region Game State
     private async ValueTask GetCurrentGameState()
     {
-        Visibility repairGameButtonVisible = CurrentGameProperty.GameVersion.GamePreset.IsRepairEnabled ?? false ?
+        Visibility repairGameButtonVisible = CurrentGameProperty.GameVersion?.GamePreset.IsRepairEnabled ?? false ?
             Visibility.Visible : Visibility.Collapsed;
 
-        if (!(CurrentGameProperty.GameVersion.GamePreset.IsConvertible ?? false)
+        if (!(CurrentGameProperty.GameVersion?.GamePreset.IsConvertible ?? false)
             || CurrentGameProperty.GameVersion.GameType != GameNameType.Honkai)
             ConvertVersionButton.Visibility = Visibility.Collapsed;
 
@@ -635,7 +649,7 @@ public sealed partial class HomePage
         // Check if the _CommunityToolsProperty has the official tool list for current game type
         if (PageStatics.CommunityToolsProperty?
                .OfficialToolsDictionary?
-               .TryGetValue(CurrentGameProperty.GameVersion.GameType,
+               .TryGetValue(CurrentGameProperty.GameVersion!.GameType,
                             out List<CommunityToolsEntry> officialEntryList) ?? false)
         {
             // If yes, then iterate it and add it to the list, to then getting read by the
@@ -653,7 +667,7 @@ public sealed partial class HomePage
         // Check if the _CommunityToolsProperty has the community tool list for current game type
         if (PageStatics.CommunityToolsProperty?
                .CommunityToolsDictionary?
-               .TryGetValue(CurrentGameProperty.GameVersion.GameType,
+               .TryGetValue(CurrentGameProperty.GameVersion!.GameType,
                             out List<CommunityToolsEntry> communityEntryList) ?? false)
         {
             // If yes, then iterate it and add it to the list, to then getting read by the
@@ -668,8 +682,8 @@ public sealed partial class HomePage
             }
         }
 
-        if (CurrentGameProperty.GameVersion.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
-        GameInstallationState = await CurrentGameProperty.GameVersion.GetGameState();
+        if (CurrentGameProperty.GameVersion?.GameType == GameNameType.Genshin) OpenCacheFolderButton.Visibility = Visibility.Collapsed;
+        GameInstallationState = await CurrentGameProperty.GameVersion!.GetGameState();
 
         switch (GameInstallationState)
         {
@@ -720,7 +734,7 @@ public sealed partial class HomePage
                 break;
         }
 
-        if (CurrentGameProperty.GameInstall.IsRunning)
+        if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
             RaiseBackgroundInstallationStatus(GameInstallationState);
     }
 
@@ -744,7 +758,7 @@ public sealed partial class HomePage
         CancelDownloadBtn.Visibility = Visibility.Visible;
         ProgressTimeLeft.Visibility  = Visibility.Visible;
 
-        bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
+        bool isUseSophon = CurrentGameProperty.GameInstall?.IsUseSophon ?? false;
         if (isUseSophon)
         {
             SophonProgressStatusGrid.Visibility             =  Visibility.Visible;
@@ -754,8 +768,11 @@ public sealed partial class HomePage
         else
         {
             ProgressStatusGrid.Visibility                   =  Visibility.Visible;
-            CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-            CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
+            if (CurrentGameProperty.GameInstall != null)
+            {
+                CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
+            }
         }
     }
     #endregion
@@ -763,7 +780,7 @@ public sealed partial class HomePage
     #region Game Update Dialog
     private async void UpdateGameDialog(object sender, RoutedEventArgs e)
     {
-        bool isUseSophon = CurrentGameProperty.GameInstall.IsUseSophon;
+        bool isUseSophon = CurrentGameProperty.GameInstall?.IsUseSophon ?? false;
 
         HideImageCarousel(true);
 
@@ -773,7 +790,7 @@ public sealed partial class HomePage
             // Prevent device from sleep
             Sleep.PreventSleep(ILoggerHelper.GetILogger());
             // Set the notification trigger to "Running" state
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Running);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Running);
 
             IsSkippingUpdateCheck = true;
 
@@ -789,13 +806,16 @@ public sealed partial class HomePage
             else
             {
                 ProgressStatusGrid.Visibility                   =  Visibility.Visible;
-                CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
-                CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
+                if (CurrentGameProperty.GameInstall != null)
+                {
+                    CurrentGameProperty.GameInstall.ProgressChanged += GameInstall_ProgressChanged;
+                    CurrentGameProperty.GameInstall.StatusChanged   += GameInstall_StatusChanged;
+                }
             }
 
             int  verifResult;
             bool skipDialog = false;
-            while ((verifResult = await CurrentGameProperty.GameInstall.StartPackageVerification()) == 0)
+            while ((verifResult = await CurrentGameProperty.GameInstall!.StartPackageVerification()) == 0)
             {
                 await CurrentGameProperty.GameInstall.StartPackageDownload(skipDialog);
                 skipDialog = true;
@@ -807,7 +827,7 @@ public sealed partial class HomePage
 
             await CurrentGameProperty.GameInstall.StartPackageInstallation();
             CurrentGameProperty.GameInstall.ApplyGameConfig(true);
-            if (CurrentGameProperty.GameInstall.StartAfterInstall && CurrentGameProperty.GameVersion.IsGameInstalled())
+            if (CurrentGameProperty.GameInstall.StartAfterInstall && CurrentGameProperty.GameVersion!.IsGameInstalled())
                 StartGame(null, null);
 
             // Set the notification trigger to "Completed" state
@@ -820,7 +840,7 @@ public sealed partial class HomePage
             }
 
             string gameNameLocale    = LauncherMetadataHelper.GetTranslatedCurrentGameTitleRegionString();
-            string gameVersionString = CurrentGameProperty.GameVersion.GetGameVersionApi()?.VersionString;
+            string gameVersionString = CurrentGameProperty.GameVersion?.GetGameVersionApi()?.VersionString;
 
             WindowUtility.Tray_ShowNotification(
                                                 string.Format(Lang._NotificationToast.GameUpdateCompleted_Title,    gameNameLocale),
@@ -830,49 +850,51 @@ public sealed partial class HomePage
         catch (TaskCanceledException)
         {
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             LogWriteLine("Update cancelled!", LogType.Warning);
         }
         catch (OperationCanceledException)
         {
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
             LogWriteLine("Update cancelled!", LogType.Warning);
         }
         catch (NullReferenceException ex)
         {
             await SentryHelper.ExceptionHandlerAsync(ex);
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
             IsPageUnload = true;
-            LogWriteLine($"Update error on {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
+            LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(new NullReferenceException("Oops, the launcher cannot finalize the installation but don't worry, your game has been totally updated.\r\t" +
                                                                  $"Please report this issue to our GitHub here: https://github.com/CollapseLauncher/Collapse/issues/new or come back to the launcher and make sure to use Repair Game in Game Settings button later.\r\nThrow: {ex}", ex));
         }
         catch (Exception ex)
         {
             // Set the notification trigger
-            CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
+            CurrentGameProperty.GameInstall?.UpdateCompletenessStatus(CompletenessStatus.Cancelled);
 
             IsPageUnload = true;
-            LogWriteLine($"Update error on {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
+            LogWriteLine($"Update error on {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname} game!\r\n{ex}", LogType.Error, true);
             ErrorSender.SendException(ex);
         }
         finally
         {
             IsSkippingUpdateCheck                             = false;
-            CurrentGameProperty.GameInstall.StartAfterInstall = false;
+            if (CurrentGameProperty.GameInstall != null)
+            {
+                CurrentGameProperty.GameInstall.StartAfterInstall = false;
 
-            CurrentGameProperty.GameInstall.ProgressChanged    -= isUseSophon ?
-                GameInstallSophon_ProgressChanged :
-                GameInstall_ProgressChanged;
-            CurrentGameProperty.GameInstall.StatusChanged      -= isUseSophon ?
-                GameInstallSophon_StatusChanged :
-                GameInstall_StatusChanged;
+                CurrentGameProperty.GameInstall.ProgressChanged -=
+                    isUseSophon ? GameInstallSophon_ProgressChanged : GameInstall_ProgressChanged;
+                CurrentGameProperty.GameInstall.StatusChanged -=
+                    isUseSophon ? GameInstallSophon_StatusChanged : GameInstall_StatusChanged;
 
-            await Task.Delay(200);
-            CurrentGameProperty.GameInstall.Flush();
+                await Task.Delay(200);
+                CurrentGameProperty.GameInstall.Flush();
+            }
+
             ReturnToHomePage();
 
             // Turn the sleep back on
@@ -888,7 +910,7 @@ public sealed partial class HomePage
     #region Download Cancellation
     private void CancelPreDownload()
     {
-        CurrentGameProperty.GameInstall.CancelRoutine();
+        CurrentGameProperty.GameInstall?.CancelRoutine();
 
         PauseDownloadPreBtn.Visibility  = Visibility.Collapsed;
         ResumeDownloadPreBtn.Visibility = Visibility.Visible;
@@ -897,12 +919,12 @@ public sealed partial class HomePage
 
     private void CancelUpdateDownload()
     {
-        CurrentGameProperty.GameInstall.CancelRoutine();
+        CurrentGameProperty.GameInstall?.CancelRoutine();
     }
 
     private void CancelInstallationDownload()
     {
-        CurrentGameProperty.GameInstall.CancelRoutine();
+        CurrentGameProperty.GameInstall?.CancelRoutine();
     }
     #endregion
 }

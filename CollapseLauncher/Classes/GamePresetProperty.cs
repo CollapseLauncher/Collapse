@@ -10,15 +10,15 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.ManagedTools;
-using Hi3Helper;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
-using System.IO;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable CheckNamespace
@@ -30,7 +30,7 @@ namespace CollapseLauncher
     internal sealed partial class GamePresetProperty : IDisposable
     {
     #pragma warning disable CS8618, CS9264
-        internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+        internal GamePresetProperty(UIElement uiElementParent,RegionResourceProp apiResourceProp, string gameName, string gameRegion)
     #pragma warning restore CS8618, CS9264
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig == null)
@@ -38,7 +38,7 @@ namespace CollapseLauncher
                 return;
             }
 
-            PresetConfig? gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName]?[gameRegion];
+            var gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName]?[gameRegion];
 
             if (gamePreset == null)
             {
@@ -66,7 +66,7 @@ namespace CollapseLauncher
                     GameVersion = new GameTypeGenshinVersion(ApiResourceProp, gameName, gameRegion);
                     GameSettings = new GenshinSettings(GameVersion);
                     GameCache = null;
-                    GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameApiProp.data!.game!.latest!.decompressed_path);
+                    GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameApiProp.data?.game?.latest?.decompressed_path ?? "");
                     GameInstall = new GenshinInstall(uiElementParent, GameVersion);
                     break;
                 case GameNameType.Zenless:
@@ -95,13 +95,13 @@ namespace CollapseLauncher
 
         internal RegionResourceProp?  ApiResourceProp { get; set; }
         internal IGameSettings?       GameSettings    { get; set; }
-        internal IGamePlaytime        GamePlaytime    { get; set; }
+        internal IGamePlaytime?       GamePlaytime    { get; set; }
         internal IRepair?             GameRepair      { get; set; }
         internal ICache?              GameCache       { get; set; }
         internal ILogger              GamePropLogger  { get; set; }
-        internal IGameVersion         GameVersion     { get; set; }
-        internal IGameInstallManager  GameInstall     { get; set; }
-        internal PresetConfig         GamePreset      { get => GameVersion.GamePreset; }
+        internal IGameVersion?        GameVersion     { get; set; }
+        internal IGameInstallManager? GameInstall     { get; set; }
+        internal PresetConfig         GamePreset      { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
 
         [field: AllowNull, MaybeNull]
         internal string GameExecutableName
@@ -128,7 +128,7 @@ namespace CollapseLauncher
         [field: AllowNull, MaybeNull]
         internal string GameExecutableDir
         {
-            get => field ??= GameVersion.GameDirPath;
+            get => field ??= GameVersion?.GameDirPath ?? throw new NullReferenceException();
         }
 
         [field: AllowNull, MaybeNull]
@@ -170,21 +170,25 @@ namespace CollapseLauncher
         {
             GameRepair?.CancelRoutine();
             GameCache?.CancelRoutine();
-            GameInstall.CancelRoutine();
+            GameInstall?.CancelRoutine();
 
             GameRepair?.Dispose();
             GameCache?.Dispose();
-            GameInstall.Dispose();
-            GamePlaytime.Dispose();
+            GameInstall?.Dispose();
+            GamePlaytime?.Dispose();
 
             ApiResourceProp = null;
             GameSettings    = null;
             GameRepair      = null;
             GameCache       = null;
+            GameInstall     = null;
+            GamePlaytime    = null;
 
             GC.SuppressFinalize(this);
         #if DEBUG
-            Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {GamePreset.HashID}", LogType.Warning, true);
+            var hashID = GameVersion != null ? GamePreset.HashID.ToString() : "null";
+            Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {hashID}",
+                                LogType.Warning, true);
         #endif
         }
     }

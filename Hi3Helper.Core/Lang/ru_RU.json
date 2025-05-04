@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Игра вылетела",
     "UnhandledSubtitle3": "Игра завершилась. Детали ошибки приведены ниже:",
     "UnhandledTitle4": "Предупреждение",
+    "WarningSubtitle": "A minor issue has occurred with the following details:",
     "UnhandledSubtitle4": "Это не является серьезной проблемой, но мы решили, что должны сообщить вам об этом: \nВ связи с A/B тестированием miHoYo, Collapse не поддерживает чтение следующих файлов:\nkey: App_Settings_h2319593470.\nМы приносим извинения за причиненные неудобства и благодарим вас за понимание.",
     "UnhandledTitleDiskCrc": "Обнаружено повреждение диска!",
     "UnhandledSubDiskCrc": "Обнаружено повреждение диска при доступе к файлу. Пожалуйста, проверьте диск с помощью команды chkdsk.",
     "CopyClipboardBtn1": "Скопировать всё в буфер обмена",
     "CopyClipboardBtn2": "Скопировано в буфер обмена!",
-    "GoBackPageBtn1": "Вернуться к предыдущей странице"
+    "GoBackPageBtn1": "Вернуться к предыдущей странице",
+    
+    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
+    "CustomBackground_RegionalTag": "Region BG",
+    "CustomBackground_GlobalTag": "Global BG"
   },
 
   "_MainPage": {
@@ -609,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonSuccess": "Тест подключения к прокси-серверу успешно завершен!",
     "NetworkSettings_ProxyTest_ButtonFailed": "Тест провален! Прокси-сервер недоступен",
 
+    "NetworkSettings_Dns_Title": "Custom DNS Settings",
+    "NetworkSettings_Dns_ConnectionType": "Connection Type",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
+    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
+    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
+    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
+
     "NetworkSettings_Http_Title": "Настройки HTTP-клиента .NET",
     "NetworkSettings_Http_Redirect": "Разрешить перенаправление HTTP",
     "NetworkSettings_Http_SimulateCookies": "Разрешить симуляцию файлов HTTP Cookies",
@@ -664,6 +691,7 @@
     "Database_Warning_PropertyChanged": "Параметры базы данных были изменены",
     "Database_ValidationChecking": "Валидация параметров...",
     "Database_Placeholder_DbUserIdTextBox": "Пример GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "SearchPlaceholder": "Type to search...",
     "Database_Placeholder_DbTokenPasswordBox": "Введите свой токен аутентификации здесь"
   },
 
@@ -809,6 +837,11 @@
     "ExceptionFeedbackTemplate_User": "Username (Optional):",
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
     "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line",
+    
+    "Feedback": "User Feedback",
+    "FeedbackSending": "Sending your feedback...",
+    "FeedbackSent": "Feedback sent!",
+    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
     
     "Tag_Deprecated": "Deprecated",
     "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."

@@ -3,19 +3,18 @@ using CommunityToolkit.Mvvm.Input;
 using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.LibraryImport;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
-using Microsoft.Extensions.Logging;
 using static CollapseLauncher.InnerLauncherConfig;
 using static CollapseLauncher.Pages.HomePage;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-#pragma warning disable CA1822
 
 // Resharper disable all
 

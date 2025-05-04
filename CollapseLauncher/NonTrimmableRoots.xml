@@ -1,34 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <linker>
 	<assembly fullname="Microsoft.WinUI">
 		<!-- Fix a crash due to property: PropertyPath went missing on ILTrimming -->
 		<type fullname="Microsoft.UI.Xaml.Controls.Primitives.Popup" preserve="all"/>
-		
-		<!--
-		Fix WinRT exception triggering InvalidCastException (thanks Microsoft, very cool! :terismash:)
-		TODO: Exclude only the specific method/class which triggers it
-		-->
-		<namespace fullname="ABI.Microsoft.UI.Xaml.Media" preserve="All"/>
-	</assembly>
-
-	<assembly fullname="CollapseLauncher">
-		<!-- Protect generated code from trimming -->
-		<namespace fullname="CollapseLauncher.CollapseLauncher_XamlTypeInfo" preserve="all" />
-	</assembly>
-    
-    <assembly fullname="Hi3Helper.Win32">
-        <!-- Preserve COM Interop used in project code when trimming -->
-        <namespace fullname="Hi3Helper.Win32.Native.LibraryImport" preserve="all" />
-        <namespace fullname="Hi3Helper.Win32.FileDialogCOM" preserve="all" />
-        <namespace fullname="Hi3Helper.Win32.ShellLinkCOM" preserve="all" />
-        <type fullname="Hi3Helper.Win32.Native.LibraryImport.PInvoke" preserve="all" />
-        <type fullname="Hi3Helper.Win32.Native.Structs.HResult" preserve="all" />
-        <type fullname="Hi3Helper.Win32.FileDialogCOM.FileDialogNative" preserve="all" />
-    </assembly>
-	
-	<!-- Protect built-in libs COM from trimming -->
-	<assembly fullname="System.Private.CoreLib">
-		<namespace fullname="Internal.Runtime.InteropServices" preserve="all" />
-		<namespace fullname="System.Runtime.CompilerServices" preserve="all" />
 	</assembly>
 </linker>

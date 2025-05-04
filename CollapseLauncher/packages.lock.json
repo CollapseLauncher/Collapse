@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net9.0-windows10.0.22621": {
+    "net9.0-windows10.0.26100": {
       "CommunityToolkit.Common": {
         "type": "Direct",
         "requested": "[8.4.0, )",
@@ -16,41 +16,41 @@
       },
       "CommunityToolkit.WinUI.Behaviors": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "nOPZoHMxX2PKvoaOMDBUIHihm35Sy3mNRMSji++P7RxNM+Tt7OuLPkqW/MAK+LE5MizxjCazwI8Zn4uLSCbjBA==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "Bb0uLjMJrLyNDaARHnlFGjTw7T/y0NkL2VTJWY5iWVw8NWCoBxFJCs0KQ258I/PRth5DG582Zy2CDn6HTkUliw==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Animations": "8.2.250129-preview2",
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Animations": "8.2.250402",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002",
           "Microsoft.Xaml.Behaviors.WinUI.Managed": "3.0.0"
         }
       },
       "CommunityToolkit.WinUI.Controls.Primitives": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "rS9Q5Ej/4DgF99dLKYDXtiQW+Wtrkm4ktwlzYVmfuPd07RSLwoDxMbHTLe4Ba4uRwUjdvtfbO/IO7h6iWo5pfg==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "Wx3t1zADrzBWDar45uRl+lmSxDO5Vx7tTMFm/mNgl3fs5xSQ1ySPdGqD10EFov3rkKc5fbpHGW5xj8t62Yisvg==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
       "CommunityToolkit.WinUI.Controls.Sizers": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "K7NNhggJ/Woex7OuqC2Mj2Hsd508ZxyhaZDV/hi4eUynCwl1BaNX+RnwamLGJDgee5Uyz7wod9qnZvIkaWwpqw==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "8kWJX+TxUyYbLFPpzoivtYPnSI9kgBGL1dfdsteQSw6Yq69v7mv/Z3emTLHqBJXOi9WKCiq2HNhKXuCH18/ctA==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
       "CommunityToolkit.WinUI.Converters": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "YRWhr/lSmHRHWZ7HhwvUILwhh1SkUv2xliUEdoV9jZ5CvnA6IzSH94qaLDjLthgczFFOliN1oAjCbzUu8qvEWQ==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "fLWJmy2jBO0ECYmu4eWJzjPp1Drww3XcARdig8HQXSMZkg9k857g1lQQzJr3MVPaLeMPDqeKONtsc0kxBLLMCw==",
         "dependencies": {
           "CommunityToolkit.Common": "8.2.1",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
@@ -58,9 +58,9 @@
       },
       "CommunityToolkit.WinUI.Extensions": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "7l+22QHfDcyU4SqpfIci4Sl+XcT7oFxsxI2KYitUHg4lo922cMCK70L9v6EgM8z+H4IAFF9HqPcKSDehvbZtWw==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "rAOYzNX6kdUeeE1ejGd6Q8B+xmyZvOrWFUbqCgOtP8OQsOL66en9ZQTtzxAlaaFC4qleLvnKcn8FJFBezujOlw==",
         "dependencies": {
           "CommunityToolkit.Common": "8.2.1",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
@@ -68,12 +68,12 @@
       },
       "CommunityToolkit.WinUI.Media": {
         "type": "Direct",
-        "requested": "[8.2.250129-preview2, )",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "TZ6HBnBbH+zqhpxDSJH8b1Mg5jwAWBh3eYrkThMOahYejwI5O4zHj8KTnsf0hsSUxs6JGKhW1Y6hdY4vip3u7Q==",
+        "requested": "[8.2.250402, )",
+        "resolved": "8.2.250402",
+        "contentHash": "/FB24b8g65fp4p9/IdBROgByqxavIbdJt7u8klfbSv8ABV/SqTjR2yduvCXdyVdYxWyyT+ecMf3Gmt8HOGkU2A==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Animations": "8.2.250129-preview2",
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Animations": "8.2.250402",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.Graphics.Win2D": "1.3.1",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
@@ -89,9 +89,9 @@
       },
       "HtmlAgilityPack": {
         "type": "Direct",
-        "requested": "[1.11.74, )",
-        "resolved": "1.11.74",
-        "contentHash": "q0wRGbegtr4sZXjCNoV3OeRLTOcTNJQKiO9etNVSKPoTo33unmSK8Ahg36C4jIg/Hd3aw8YnTQjtKpBy+wlOpg=="
+        "requested": "[1.12.1, )",
+        "resolved": "1.12.1",
+        "contentHash": "SP6/2Y26CXtxjXn0Wwsom9Ek35SNWKHEu/IWhNEFejBSSVWWXPRSlpqpBSYWv1SQhYFnwMO01xVbEdK3iRR4hg=="
       },
       "Libsql.Client": {
         "type": "Direct",
@@ -101,9 +101,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.40.0, )",
-        "resolved": "0.40.0",
-        "contentHash": "tuoVAXkGYdXyqIq+wkqFFn1LpJzsAuxghqi+MxDc+CrHdQWCMtCsycXMkNcsgsjJeUpFYHqcSBUUzZXEsN9ejQ=="
+        "requested": "[0.41.0, )",
+        "resolved": "0.41.0",
+        "contentHash": "h5WSTC2TmyMODtLnCe8bctN/OMJHOcPfAcshllqB7GPptKQ+eLpLT2Tvfmjo18UcBg1GL8KCstt7S5GIylhY5Q=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -143,9 +143,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3065.39, )",
-        "resolved": "1.0.3065.39",
-        "contentHash": "ww6ToZ2jpHyP4k3DCQJETjKcdVS1cha9pS8dV2NetyfafItxz08wcAyQV0Yl86W7euhI02UJWEaC5sM8WLr0tQ=="
+        "requested": "[1.0.3171-prerelease, )",
+        "resolved": "1.0.3171-prerelease",
+        "contentHash": "xxwtsNSUIIWBIs1AMYNeF7A7zNn7ooJ97LU2hFFYNDDabxcMbIAl5EXcCPpLvuvctxYl7bBzyChQY48FSBKp8g=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -161,11 +161,11 @@
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.6.250205002, )",
-        "resolved": "1.6.250205002",
-        "contentHash": "zcOHaqII9erAmn3w3MP5rSmBzWf/IC8yU4nPCtwDquhy3vadW6Pm/0lOvnOCcZNN6TztPPODl9CQqDKSAGCeHQ==",
+        "requested": "[1.8.250410001-experimental1, )",
+        "resolved": "1.8.250410001-experimental1",
+        "contentHash": "AynQ25hhGWL3wt9ay614TkijMg0ea7EX2SsRVkRMX8YVF6QjuGHNlLc74wtK13n4v6VZBVBylmNTIZKdDwSDHA==",
         "dependencies": {
-          "Microsoft.Web.WebView2": "1.0.2651.64",
+          "Microsoft.Web.WebView2": "1.0.2903.40",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
       },
@@ -209,16 +209,6 @@
           "ZstdSharp.Port": "0.8.4"
         }
       },
-      "SharpHDiffPatch.Core": {
-        "type": "Direct",
-        "requested": "[2.2.8, )",
-        "resolved": "2.2.8",
-        "contentHash": "wKUdKb753eUc4oP098Z7ROHNU0WAmW94m46infYyPVGRJ/0zlNWcuEqdpB0S1dKNv2hgLovJcbUOybEXRz536Q==",
-        "dependencies": {
-          "Hi3Helper.ZstdNet": "1.6.2",
-          "ZstdSharp.Port": "0.8.1"
-        }
-      },
       "System.CommandLine": {
         "type": "Direct",
         "requested": "[2.0.0-beta4.22272.1, )",
@@ -258,6 +248,12 @@
         "resolved": "9.0.3",
         "contentHash": "r2JRkLjsYrq5Dpo7+y3Wa73OfirZPdVhxiTJWwZ+oJM7FOAe0LkM3GlH+pgkNRdd1G1kwUbmRCdmh4uoaWwu1g=="
       },
+      "TurnerSoftware.DinoDNS": {
+        "type": "Direct",
+        "requested": "[0.3.0, )",
+        "resolved": "0.3.0",
+        "contentHash": "4tYkD4ENlwozKrNuNXSCjnqKVX5vQjPvxbdSgN37KeGX+x8AT/u6QK3tToO/uxv42c/cPp8n3a8BRrPZWX7BCw=="
+      },
       "Velopack": {
         "type": "Direct",
         "requested": "[0.0.1053, )",
@@ -270,28 +266,28 @@
       },
       "CommunityToolkit.WinUI.Animations": {
         "type": "Transitive",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "vtE26jwwxVLl3/032fLDly1PE1c7kOKK6dGZ4nKeyfqsch9NsW0BWvzfsVy2YgqQe0EJpYU0aN544tc5/raNQw==",
+        "resolved": "8.2.250402",
+        "contentHash": "KMKFGu2BD9qUBJO4FAAmUy0fdLB8/DXPcW1ZhO8k6agZtNnsKqc0yAz5OX9Dt1dvK38uHYGd5z9yQkwq+DAqUg==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
       "CommunityToolkit.WinUI.Helpers": {
         "type": "Transitive",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "EcqFmIFwpNgZgmOJUil58Z40YwO2DcZRUeF5tXaLxaHOFXiL/Zo2ISvw6wNlhMAsVBmMizSzYSKKL+A3yxJ5xg==",
+        "resolved": "8.2.250402",
+        "contentHash": "DThBXB4hT3/aJ7xFKQJw/C0ZEs1QhZL7QG6AFOYcpnGWNlv3tkF761PFtTyhpNQrR1AFfzml5zG+zWfFbKs6Mw==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Extensions": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
       "CommunityToolkit.WinUI.Triggers": {
         "type": "Transitive",
-        "resolved": "8.2.250129-preview2",
-        "contentHash": "IzGOB0qbb2uNzBc/RytfLqGG5qQUCs2j95RcCpGg6R8CFilPNwHyJdd8etGOmw4oWVaUvXHbDeAH2Swy9595VQ==",
+        "resolved": "8.2.250402",
+        "contentHash": "laHIrBQkwQCurTNSQdGdEXUyoCpqY8QFXSybDM/Q1Ti/23xL+sRX/gHe3pP8uMM59bcwYbYlMRCbIaLnxnrdjw==",
         "dependencies": {
-          "CommunityToolkit.WinUI.Helpers": "8.2.250129-preview2",
+          "CommunityToolkit.WinUI.Helpers": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
@@ -354,8 +350,17 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.2.0",
-        "contentHash": "b3aZSOU2CjlIIFRtPRbXParKQ+9PF+JOqkSD7Gxq6PiR07t1rnK+crPtdrWMXfW6PVo/s67trCJ+fuLsgTeADw=="
+        "resolved": "5.6.0",
+        "contentHash": "KZbxp1ehMvb/gnh2aGLER7GQKKVM3M8pZz6SxFkZZ4QxS7mXJb+01Iw08nAb6Cz9rLfv3s1BIGorOtMJNujzrA=="
+      },
+      "SharpHDiffPatch.Core": {
+        "type": "Transitive",
+        "resolved": "2.3.2",
+        "contentHash": "eHhgCafM9gD5UlFj/xkF8Hnm6BBm6loV8HE22BET8wE8VXKEQAqSux3nux7sm3xRbh+M+Y4OrNi6P3mOv4y7ow==",
+        "dependencies": {
+          "Hi3Helper.ZstdNet": "1.6.4",
+          "ZstdSharp.Port": "0.8.5"
+        }
       },
       "System.Buffers": {
         "type": "Transitive",
@@ -372,8 +377,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "BrMGzDRLz410PE4qC8UeKeAc0hFRjBkiCUOLTwuod65NAjqg5tDNqYU7gP0A09taEXtecB+HJc1NNnnTjsKFAQ=="
+        "resolved": "9.0.4",
+        "contentHash": "WogPvgAFqQORFD8Iyha6RZ+/1QB3dsWRWxbwi8/HHVgiGQ8z0oMWpwe8Kk3Ti+Roe+P6a3sBg+WwBfEsyziZKg=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
@@ -391,8 +396,8 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.8.4",
-        "contentHash": "eieSXq3kakCUXbgdxkKaRqWS6hF0KBJcqok9LlDCs60GOyrynLvPOcQ0pRw7shdPF7lh/VepJ9cP9n9HHc759g=="
+        "resolved": "0.8.5",
+        "contentHash": "TR4j17WeVSEb3ncgL2NqlXEqcy04I+Kk9CaebNDplUeL8XOgjkZ7fP4Wg4grBdPLIqsV86p2QaXTkZoRMVOsew=="
       },
       "colorthief": {
         "type": "Project",
@@ -425,10 +430,9 @@
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.3, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
-          "Microsoft.Web.WebView2": "[1.0.3065.39, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
-          "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
+          "Microsoft.WindowsAppSDK": "[1.8.250410001-experimental1, )"
         }
       },
       "hi3helper.core": {
@@ -436,9 +440,8 @@
         "dependencies": {
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[5.2.0, )"
+          "Sentry": "[5.6.0, )"
         }
       },
       "hi3helper.enctool": {
@@ -446,7 +449,8 @@
         "dependencies": {
           "Google.Protobuf": "[3.30.0, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "Hi3Helper.Win32": "[1.0.0, )"
+          "Hi3Helper.Win32": "[1.0.0, )",
+          "System.IO.Hashing": "[9.0.4, )"
         }
       },
       "hi3helper.http": {
@@ -455,9 +459,10 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[*, )",
+          "Google.Protobuf": "[3.30.0, )",
           "Hi3Helper.ZstdNet": "[*, )",
-          "System.IO.Hashing": "[9.0.3, )"
+          "SharpHDiffPatch.Core": "[*, )",
+          "System.IO.Hashing": "[*, )"
         }
       },
       "hi3helper.win32": {
@@ -477,30 +482,28 @@
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
-          "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
-          "CommunityToolkit.WinUI.Media": "[8.2.250129-preview2, )",
+          "CommunityToolkit.WinUI.Extensions": "[8.2.250402, )",
+          "CommunityToolkit.WinUI.Media": "[8.2.250402, )",
           "Microsoft.Graphics.Win2D": "[1.3.2, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
-          "Microsoft.Web.WebView2": "[1.0.3065.39, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
-          "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
+          "Microsoft.WindowsAppSDK": "[1.8.250410001-experimental1, )"
         }
       },
       "imageex": {
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
-          "CommunityToolkit.WinUI.Extensions": "[8.2.250129-preview2, )",
-          "Microsoft.Web.WebView2": "[1.0.3065.39, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
-          "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
+          "CommunityToolkit.WinUI.Extensions": "[8.2.250402, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
+          "Microsoft.WindowsAppSDK": "[1.8.250410001-experimental1, )"
         }
       },
       "innosetuphelper": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
           "System.IO.Hashing": "[9.0.3, )"
         }
       },
@@ -508,19 +511,18 @@
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
-          "CommunityToolkit.WinUI.Triggers": "[8.2.250129-preview2, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
-          "Microsoft.Web.WebView2": "[1.0.3065.39, )",
+          "CommunityToolkit.WinUI.Triggers": "[8.2.250402, )",
+          "Microsoft.Web.WebView2": "[1.0.3171-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
-          "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
+          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.1742, )",
+          "Microsoft.WindowsAppSDK": "[1.8.250410001-experimental1, )"
         }
       },
       "sevenzipextractor": {
         "type": "Project"
       }
     },
-    "net9.0-windows10.0.22621/win-x64": {
+    "net9.0-windows10.0.26100/win-x64": {
       "Libsql.Client": {
         "type": "Direct",
         "requested": "[0.5.0, )",
@@ -538,17 +540,17 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3065.39, )",
-        "resolved": "1.0.3065.39",
-        "contentHash": "ww6ToZ2jpHyP4k3DCQJETjKcdVS1cha9pS8dV2NetyfafItxz08wcAyQV0Yl86W7euhI02UJWEaC5sM8WLr0tQ=="
+        "requested": "[1.0.3171-prerelease, )",
+        "resolved": "1.0.3171-prerelease",
+        "contentHash": "xxwtsNSUIIWBIs1AMYNeF7A7zNn7ooJ97LU2hFFYNDDabxcMbIAl5EXcCPpLvuvctxYl7bBzyChQY48FSBKp8g=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",
-        "requested": "[1.6.250205002, )",
-        "resolved": "1.6.250205002",
-        "contentHash": "zcOHaqII9erAmn3w3MP5rSmBzWf/IC8yU4nPCtwDquhy3vadW6Pm/0lOvnOCcZNN6TztPPODl9CQqDKSAGCeHQ==",
+        "requested": "[1.8.250410001-experimental1, )",
+        "resolved": "1.8.250410001-experimental1",
+        "contentHash": "AynQ25hhGWL3wt9ay614TkijMg0ea7EX2SsRVkRMX8YVF6QjuGHNlLc74wtK13n4v6VZBVBylmNTIZKdDwSDHA==",
         "dependencies": {
-          "Microsoft.Web.WebView2": "1.0.2651.64",
+          "Microsoft.Web.WebView2": "1.0.2903.40",
           "Microsoft.Windows.SDK.BuildTools": "10.0.22621.756"
         }
       },

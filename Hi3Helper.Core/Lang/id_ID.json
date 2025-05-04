@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Game Crash",
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
+    "WarningSubtitle": "Ada sedikit issue terjadi dengan detail sebagai berikut:",
     "UnhandledSubtitle4": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting) bahwa dikarenakan PC kamu mendapatkan beberapa fitur A/B testing miHoYo/HoYoverse untuk game ini, Collapse tidak bisa memproses key registri berikut: App_Settings_h2319593470.\r\nTerima kasih atas perhatiannya dan mohon maaf atas hal ini.",
     "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
     "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
-    "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
+    "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya",
+    
+    "CustomBackground_NotFound": "File latar belakang kustom hilang! Kembali menggunakan gambar bawaan",
+    "CustomBackground_RegionalTag": "Latar Belakang Region",
+    "CustomBackground_GlobalTag": "Latar Belakang Keseluruhan"
   },
 
   "_MainPage": {
@@ -609,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonSuccess": "Test Konektivitas Proxy telah Berhasil!",
     "NetworkSettings_ProxyTest_ButtonFailed": "Test Gagal! Proxy tidak dapat Dihubungi",
 
+    "NetworkSettings_Dns_Title": "Pengaturan DNS Kustom",
+    "NetworkSettings_Dns_ConnectionType": "Tipe Koneksi",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS lewat HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS lewat TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Menentukan tipe protokol apa yang akan digunakan oleh DNS untuk query record. Ada beberapa tipe protokol yang didukung oleh Collapse Launcher, yaitu:",
+    "NetworkSettings_Dns_ProviderSelection": "Penyedia DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Kustom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Terdapat beberapa Penyedia DNS luar yang tersedia pada Collapse Launcher secara bawaan. Kamu juga dapat menggunakan Penyedia/Server DNS kustom dengan memilih \"Kustom\" pada pilihan \"Penyedia DNS\".",
+    "NetworkSettings_Dns_CustomProvider": "Host Penyedia DNS Kustom",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Tergantung pada",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "pengaturan",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Ketika kamu memilih",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "pada bagian",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "sebagai pilihan, kamu dapat menambahkan Penyedia/Server DNS kustom dengan memasukan IPv4/IPv6 atau hostnamenya. Kamu juga bisa menambahkan Penyedia DNS yang sudah di-predefined (dimulai dengan simbol '$') bersamaan dengan Penyedia/Server DNS Kustom yang kamu masukan dengan memisahkan setiap entri dengan simbol di bawah ini:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Contoh:",
+    "NetworkSettings_Dns_ChangesWarning": "Kamu butuh restart aplikasi ini agar perubahan pada pengaturan DNS dapat diterapkan.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Tes & Simpan Perubahan",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Memvalidasi dan Menerapkan Perubahan...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Perubahan Disimpan!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Perubahan Gagal Disimpan!",
+
     "NetworkSettings_Http_Title": "Pengaturan .NET HTTP Client",
     "NetworkSettings_Http_Redirect": "Perbolehkan Pengalihan HTTP",
     "NetworkSettings_Http_SimulateCookies": "Perbolehkan Simuliasi Cookie pada HTTP",
@@ -664,7 +691,9 @@
     "Database_Warning_PropertyChanged": "Pengaturan Database telah berubah",
     "Database_ValidationChecking": "Validasi Pengaturan...",
     "Database_Placeholder_DbUserIdTextBox": "Contoh GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini"
+    "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini",
+    
+    "SearchPlaceholder": "Ketik untuk mencari..."
   },
 
   "_Misc": {
@@ -809,6 +838,11 @@
     "ExceptionFeedbackTemplate_User": "Username (Opsional):",
     "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
     "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini",
+    
+    "Feedback": "Umpan Balik Pengguna",
+    "FeedbackSending": "Mengirimkan umpan balikmu...",
+    "FeedbackSent": "Umpan balik terkirim!",
+    "FeedbackSendFailure": "Gagal mengirimkan umpan balik! Cek log/console untuk info lebih lanjut.",
     
     "Tag_Deprecated": "Tidak berlaku",
     "Generic_GameFeatureDeprecation": "Karena perubahan di sisi game, fitur ini tidak berlaku lagi dan akan dihapus di waktu mendatang. Menggunakan fitur ini dapat mengakibatkan perilaku game yang tidak diharapkan."

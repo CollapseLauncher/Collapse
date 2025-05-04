@@ -80,12 +80,17 @@
     "UnhandledTitle3": "ゲームのクラッシュ",
     "UnhandledSubtitle3": "ゲームは以下のエラーのためにクラッシュしました:",
     "UnhandledTitle4": "警告",
+    "WarningSubtitle": "以下の理由によりちょっとした問題が発生しました：",
     "UnhandledSubtitle4": "バグが起きてるってわけじゃありませんが、一応お知らせしておきます：\r\nmiHoYoのA/Bテスト検知を避けるため、CollapseはレジストリキーApp_Settings_h2319593470の読み取りをサポートしていません。\r\nご不便をお掛けしますが、ご了承ください。",
     "UnhandledTitleDiskCrc": "ディスクの破損を検出しました！",
     "UnhandledSubDiskCrc": "ファイルへのアクセス中にディスクの破損を検出しました。chkdskを使用してディスクをチェックしてください。",
     "CopyClipboardBtn1": "すべてをクリップボードにコピー",
     "CopyClipboardBtn2": "クリップボードにコピーしました！",
-    "GoBackPageBtn1": "前のページに戻る"
+    "GoBackPageBtn1": "前のページに戻る",
+    
+    "CustomBackground_NotFound": "カスタム背景のファイルが見つかりません！デフォルトの画像を使用します",
+    "CustomBackground_RegionalTag": "サーバー別背景",
+    "CustomBackground_GlobalTag": "共通背景"
   },
 
   "_MainPage": {
@@ -579,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "警告: お使いのシステムに「OpenCL™、OpenGL®、および Vulkan® 互換機能パック」がインストールされています。 これはVulkan-Loaderと互換性がなく、一部のGPUでクラッシュが報告されています。GPUモードを有効にするには、このパッケージを削除してください。",
     "Waifu2X_Error_Loader": "エラー：Vulkan-Loaderの初期化に失敗しました。適切なGPUドライバーがインストールされたVulkan対応GPUを使用しているか確認してください。",
     "Waifu2X_Error_Output": "エラー: Waifu2Xのセルフテストに失敗したため、出力が空になりました。",
+    "Waifu2X_Initializing": "Waifu2Xを初期化しています。少々お待ち下さい。",
 
     "NetworkSettings_Title": "ネットワークの設定",
     "NetworkSettings_Proxy_Title": "プロキシの設定",
@@ -608,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonChecking": "接続をテストしています…",
     "NetworkSettings_ProxyTest_ButtonSuccess": "プロキシの接続テストに成功しました！",
     "NetworkSettings_ProxyTest_ButtonFailed": "テストに失敗しました！プロキシにアクセスできません",
+
+    "NetworkSettings_Dns_Title": "カスタムDNS設定",
+    "NetworkSettings_Dns_ConnectionType": "接続タイプ",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP（53番ポート）",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "記録の照会に使うDNSプロトコルのタイプです。Collapse Launcherは以下のプロトコルをサポートしています。",
+    "NetworkSettings_Dns_ProviderSelection": "DNSプロバイダー",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "カスタム",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Collapse Launcherには数種類の利用可能な外部DNSプロバイダーが内蔵されています。また、\"DNSプロバイダー\"の欄で\"カスタム\"を選ぶことでカスタムDNSプロバイダー/サーバーを使用できます。",
+    "NetworkSettings_Dns_CustomProvider": "カスタムDNSプロバイダーのホスト",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "​",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "の設定に基づきます",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "もし",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "を",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "の欄で選択した場合、IPv4/IPv6またはホスト名を入力して、独自のカスタムDNSプロバイダー/サーバーを追加できます。また、以下の記号で区切ることで、定義済みDNSプロバイダー（頭文字が'$'のもの）や独自のカスタムDNSプロバイダー/サーバーを追加できます。",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "例：",
+    "NetworkSettings_Dns_ChangesWarning": "DNS設定の変更を適用するには、ランチャーを再起動してください。",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "テスト＆変更を保存",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "変更の適用と検証を行っています…",
+    "NetworkSettings_Dns_SettingsSavedButton": "変更が保存されました！",
+    "NetworkSettings_Dns_SettingsFailedButton": "変更の保存に失敗しました！",
 
     "NetworkSettings_Http_Title": ".NET HTTPクライアントの設定",
     "NetworkSettings_Http_Redirect": "HTTPリダイレクトを許可",
@@ -664,7 +692,9 @@
     "Database_Warning_PropertyChanged": "データベースの設定が変更されました",
     "Database_ValidationChecking": "設定を検証しています…",
     "Database_Placeholder_DbUserIdTextBox": "GUIDサンプル: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください"
+    "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください",
+    
+    "SearchPlaceholder": "検索ワードを入力してください…"
   },
 
   "_Misc": {
@@ -808,7 +838,12 @@
     "ExceptionFeedbackTitle": "発生したエラー：",
     "ExceptionFeedbackTemplate_User": "ユーザー名（任意）：",
     "ExceptionFeedbackTemplate_Email": "メールアドレス（任意）：",
-    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください",
+    "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください：（エラーメッセージは自動で添付されるので、書かなくて大丈夫ですよ！）",
+    
+    "Feedback": "ユーザーフィードバック",
+    "FeedbackSending": "フィードバックを送信しています…",
+    "FeedbackSent": "送信しました！",
+    "FeedbackSendFailure": "送信に失敗しました！ログ/コンソールで詳細を確認してください。",
     
     "Tag_Deprecated": "非推奨",
     "Generic_GameFeatureDeprecation": "ゲーム側の仕様変更が原因で、この機能の使用は推奨できなくなりました。今後削除する予定です。使用した場合、予期せぬ動作を引き起こす可能性があります。"

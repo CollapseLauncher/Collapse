@@ -61,13 +61,7 @@ namespace CollapseLauncher
                             return;
                         }
                         // Assign a task depends on the asset type
-                        Task assetTask = asset.AssetIndex.FT switch
-                        {
-                            FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
-                            FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
-                            FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken),
-                            _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken)
-                        };
+                        Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, innerToken);
 
                         // Await the task
                         await assetTask;
@@ -91,13 +85,7 @@ namespace CollapseLauncher
                         break;
                     }
                     // Assign a task depends on the asset type
-                    Task assetTask = asset.AssetIndex.FT switch
-                    {
-                        FileType.Block => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        FileType.Audio => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        FileType.Video => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
-                    };
+                    Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token);
 
                     // Await the task
                     await assetTask;

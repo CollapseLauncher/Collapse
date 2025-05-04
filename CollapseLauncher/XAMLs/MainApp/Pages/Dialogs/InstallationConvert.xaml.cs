@@ -116,12 +116,12 @@ namespace CollapseLauncher.Dialogs
             }
             catch (TaskCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (OperationCanceledException)
             {
-                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty.GameVersion.GamePreset.ZoneFullname}");
+                LogWriteLine($"Conversion process is cancelled for Game {CurrentGameProperty.GameVersion?.GamePreset.ZoneFullname}");
                 OperationCancelled();
             }
             catch (Exception ex)
@@ -219,7 +219,7 @@ namespace CollapseLauncher.Dialogs
                 string localVersionString = sourceIniVersionFile["General"]["game_version"].ToString();
                 if (string.IsNullOrEmpty(localVersionString)) return false;
                 GameVersion localVersion = new GameVersion(localVersionString);
-                GameVersion? remoteVersion = CurrentGameProperty.GameVersion.GetGameVersionApi();
+                GameVersion? remoteVersion = CurrentGameProperty.GameVersion?.GetGameVersionApi();
                 if (!localVersion.IsMatch(remoteVersion)) return false;
 
                 var execPath = Path.Combine(gamePath, profile.GameExecutableName ?? "");
@@ -463,8 +463,8 @@ namespace CollapseLauncher.Dialogs
         public void ApplyConfiguration()
         {
             // CurrentGameProperty._GameVersion.GamePreset = TargetProfile;
-            CurrentGameProperty.GameVersion.Reinitialize();
-            CurrentGameProperty.GameVersion.UpdateGamePath(_targetProfile.ActualGameDataLocation);
+            CurrentGameProperty.GameVersion?.Reinitialize();
+            CurrentGameProperty.GameVersion?.UpdateGamePath(_targetProfile.ActualGameDataLocation);
 
             string gameCategory = GetAppConfigValue("GameCategory").ToString();
             LauncherMetadataHelper.SetPreviousGameRegion(gameCategory, _targetProfile.ZoneName);

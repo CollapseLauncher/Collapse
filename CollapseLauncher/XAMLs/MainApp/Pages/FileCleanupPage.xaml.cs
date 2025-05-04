@@ -38,7 +38,6 @@ namespace CollapseLauncher.Pages
         internal static FileCleanupPage?                    Current { get; set; }
         internal        ObservableCollection<LocalFileInfo> FileInfoSource;
 
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public FileCleanupPage()
         {
             FileInfoSource = [];
@@ -50,7 +49,6 @@ namespace CollapseLauncher.Pages
                           FileInfoSource.CollectionChanged += UpdateUIOnCollectionChange;
                       };
         }
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
         private int  _selectedAssetsCount;
         private long _assetSelectedSize;

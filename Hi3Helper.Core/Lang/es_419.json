@@ -80,12 +80,17 @@
     "UnhandledTitle3": "El Juego se detuvo",
     "UnhandledSubtitle3": "El juego se detuvo por un error. Detalles a continuación:",
     "UnhandledTitle4": "Advertencia:",
+    "WarningSubtitle": "Un problema ha ocurrido con los siguientes detalles:",
     "UnhandledSubtitle4": "Esto no es un problema grave, pero creemos que deberíamos infórmate:\r\nDebido al A/B testing realizado por miHoYo , Collapse no soporta la lectura de la siguiente clave: App_Settings_h2319593470.\r\nLamentamos las molestias y agradecemos su comprensión.",
     "UnhandledTitleDiskCrc": "¡Corrupción de Disco Detectado!",
     "UnhandledSubDiskCrc": "Se ha detectado corrupción en el disco al intentar acceder a un archivo. Por favor comprueba el disco usando chkdsk.",
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
-    "GoBackPageBtn1": "Volver a la Página Anterior"
+    "GoBackPageBtn1": "Volver a la Página Anterior",
+    
+    "CustomBackground_NotFound": "¡No se encontró el archivo de fondo personalizado! Se usara la imagen por defecto",
+    "CustomBackground_RegionalTag": "Fondo Región",
+    "CustomBackground_GlobalTag": "Fondo Global"
   },
 
   "_MainPage": {
@@ -579,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "ADVERTENCIA: Tu sistema tiene instalado el \"Paquete de compatibilidad de OpenCL™, OpenGL® y Vulkan®\", el cual fue reportado de ser incompatible con el Vulkan Loader. Por favor remueva este paquete para habilitar el modo GPU",
     "Waifu2X_Error_Loader": "ERROR: Fallo al inicializar el Vulkan Loader. Asegúrate de que tienes una GPU compatible con Vulkan y su respetivo Driver instalado.",
     "Waifu2X_Error_Output": "ERROR: Fallo en la comprobación de Waifu2X, se obtuvo una imagen vacía de salida.",
+    "Waifu2X_Initializing": "Iniciando Waifu2X. Por favor espera un momento.",
 
     "NetworkSettings_Title": "Ajustes de Red",
     "NetworkSettings_Proxy_Title": "Ajustes de Proxy",
@@ -608,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonChecking": "Comprobando Conectividad...",
     "NetworkSettings_ProxyTest_ButtonSuccess": "¡Prueba de Conectividad fue exitosa!",
     "NetworkSettings_ProxyTest_ButtonFailed": "¡Prueba fallida! No se puede alcanzar el proxy",
+
+    "NetworkSettings_Dns_Title": "Ajustes DNS personalizados",
+    "NetworkSettings_Dns_ConnectionType": "Tipo conexión ",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Puerto 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS a través de HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS a través de TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Representa el tipo de Protocolo DNS que se utilizará para consultar el registro. Hay algunos tipos de Protocolo soportados por Collapse, incluyendo:",
+    "NetworkSettings_Dns_ProviderSelection": "Proveedor DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Personalizada",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Hay algunos proveedores DNS externos disponibles en Collapse Launcher. También puedes utilizar tu propio proveedor/servidor DNS seleccionando \"Personalizada\" en \"Proveedor DNS\".",
+    "NetworkSettings_Dns_CustomProvider": "Host(s) de proveedor DNS personalizado",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depende de los ajustes del",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": ".",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Cuando seleccionas",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "para tu",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "seleccionado, puede añadir tu propio Proveedor/Servidor DNS personalizado introduciendo su IPv4/IPv6 o nombre de host. También puede añadir un proveedor DNS predefinido (que comienza con el símbolo \"$\") junto con su proveedor/servidor DNS separando cada entrada con estos símbolos:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Ejemplo:",
+    "NetworkSettings_Dns_ChangesWarning": "Es necesario reiniciar la aplicación para que los cambios de la configuración DNS tengan efecto.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Probar y guardar cambios",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validando y aplicando cambios...",
+    "NetworkSettings_Dns_SettingsSavedButton": "¡Cambios Guardados!",
+    "NetworkSettings_Dns_SettingsFailedButton": "¡Error al guardar los cambios!",
 
     "NetworkSettings_Http_Title": "Ajustes Cliente .NET HTTP",
     "NetworkSettings_Http_Redirect": "Permitir Redirección HTTP",
@@ -664,7 +692,9 @@
     "Database_Warning_PropertyChanged": "Ajustes de Base de datos han cambiado",
     "Database_ValidationChecking": "Validando Configuración...",
     "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí"
+    "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí",
+    
+    "SearchPlaceholder": "Escribe para buscar..."
   },
 
   "_Misc": {
@@ -808,7 +838,12 @@
     "ExceptionFeedbackTitle": "Cuéntanos lo que pasó:",
     "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
     "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
-    "ExceptionFeedbackTemplate_Message": "Introduzca sus comentarios después de esta línea",
+    "ExceptionFeedbackTemplate_Message": "Después de esta línea, dinos qué ha pasado: (No hace falta incluir el mensaje de error, nosotros lo adjuntaremos por ti).",
+    
+    "Feedback": "Compártenos tus comentarios",
+    "FeedbackSending": "Enviando tus comentarios...",
+    "FeedbackSent": "¡Enviado con Éxito!",
+    "FeedbackSendFailure": "¡Error al enviar tus comentarios! Compruebe los registros/consola para más información.",
     
     "Tag_Deprecated": "Obsoleto",
     "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."

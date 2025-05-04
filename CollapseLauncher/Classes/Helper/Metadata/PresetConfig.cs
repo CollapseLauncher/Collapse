@@ -76,8 +76,12 @@ namespace CollapseLauncher.Helper.Metadata
     public class SophonChunkUrls
     {
         private       bool   IsReassociated;
+        private const string QueryBranchHead    = "branch";
         private const string QueryPackageIdHead = "package_id";
         private const string QueryPasswordHead  = "password";
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string MainBranchMatchingField { get; set; } = "game";
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BranchUrl { get; set; }
@@ -89,9 +93,12 @@ namespace CollapseLauncher.Helper.Metadata
         public string? PreloadUrl { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? PatchUrl { get; set; }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SdkUrl { get; set; }
 
-        public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, CancellationToken token)
+        public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
         {
             if (IsReassociated)
                 return Task.CompletedTask;
@@ -131,13 +138,12 @@ namespace CollapseLauncher.Helper.Metadata
                         ArgumentException.ThrowIfNullOrEmpty(branch.GameMainField.Password);
 
                         string packageIdValue = branch.GameMainField.PackageId;
-                        string passwordValue = branch.GameMainField.Password;
+                        string passwordValue  = branch.GameMainField.Password;
 
-                        MainUrl = MainUrl.AssociateGameAndLauncherId(
-                         QueryPasswordHead,
-                         QueryPackageIdHead,
-                         passwordValue,
-                         packageIdValue);
+                        MainUrl = MainUrl.AssociateGameAndLauncherId(QueryPasswordHead,
+                                                                     QueryPackageIdHead,
+                                                                     passwordValue,
+                                                                     packageIdValue);
                     }
 
                     // Re-associate url if preload field is exist
@@ -147,13 +153,33 @@ namespace CollapseLauncher.Helper.Metadata
                         ArgumentException.ThrowIfNullOrEmpty(branch.GamePreloadField.Password);
 
                         string packageIdValue = branch.GamePreloadField.PackageId;
-                        string passwordValue = branch.GamePreloadField.Password;
+                        string passwordValue  = branch.GamePreloadField.Password;
 
-                        PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(
-                         QueryPasswordHead,
-                         QueryPackageIdHead,
-                         passwordValue,
-                         packageIdValue);
+                        PreloadUrl = PreloadUrl.AssociateGameAndLauncherId(QueryPasswordHead,
+                                                                           QueryPackageIdHead,
+                                                                           passwordValue,
+                                                                           packageIdValue);
+                    }
+
+                    // Re-associate url if patch URL property exists
+                    if (!string.IsNullOrEmpty(PatchUrl))
+                    {
+                        HoYoPlayGameInfoBranchField branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
+                        ArgumentException.ThrowIfNullOrEmpty(branchField.PackageId);
+                        ArgumentException.ThrowIfNullOrEmpty(branchField.Password);
+
+                        string packageIdValue = branchField.PackageId;
+                        string passwordValue  = branchField.Password;
+                        string branchValue    = isPreloadForPatch ? "predownload" : "main";
+
+                        PatchUrl = PatchUrl.AssociateGameAndLauncherId(QueryPasswordHead,
+                                                                       QueryPackageIdHead,
+                                                                       passwordValue,
+                                                                       packageIdValue);
+                        PatchUrl = PatchUrl.AssociateGameAndLauncherId(QueryBranchHead,
+                                                                       QueryPackageIdHead,
+                                                                       branchValue,
+                                                                       packageIdValue);
                     }
 
                     // Mark as re-associated
@@ -642,7 +668,7 @@ namespace CollapseLauncher.Helper.Metadata
                 RegistryKey keys = Registry.CurrentUser.CreateSubKey(ConfigRegistryLocation, true);
 
                 byte[] result    = (byte[])keys.GetValue("GENERAL_DATA_h2389025596", Array.Empty<byte>());
-                GeneralDataProp initValue = JsonSerializerHelper.Deserialize(result, GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
+                GeneralDataProp initValue = result.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp) ?? new GeneralDataProp();
                 initValue.deviceVoiceLanguageType = langID;
 
                 string jsonString = initValue.Serialize(GeneralDataPropJsonContext.Default.GeneralDataProp);
@@ -738,7 +764,7 @@ namespace CollapseLauncher.Helper.Metadata
 
             try
             {
-                return (int)(JsonSerializerHelper.Deserialize(value, GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
+                return (int)(value.Deserialize(GeneralDataPropJsonContext.Default.GeneralDataProp)?.selectedServerName ?? ServerRegionID.os_usa);
             }
             catch (Exception ex)
             {

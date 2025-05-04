@@ -417,6 +417,8 @@ namespace CollapseLauncher
                 // Deserialize manifest entry
                 PkgVersionProperties manifestEntry = currentLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
+                if (manifestEntry == null) throw new NullReferenceException();
+
                 // If the ignoreContainsParams is not null and the remoteName contains
                 // ignore list, then move to another entry
                 if (ignoreContainsParams != null &&
@@ -582,7 +584,7 @@ namespace CollapseLauncher
                 DispatchInfo dispatchInfo = await dispatchHelper.LoadDispatchInfo();
 
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
-                string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.content}";
+                string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.Content}";
 #if DEBUG
                 LogWriteLine(dFormat);
 #endif
@@ -596,10 +598,8 @@ namespace CollapseLauncher
 
         private async Task<QueryProperty> TryDecryptAndParseDispatcher(DispatchInfo dispatchInfo, DispatchHelper dispatchHelper)
         {
-            YSDispatchDec dispatchDecryptor = new YSDispatchDec();
-
             // Decrypt the dispatcher data from the dispatcher info content
-            byte[] decryptedData = dispatchDecryptor.DecryptYSDispatch(dispatchInfo.content, GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0, GameVersionManager.GamePreset.DispatcherKey);
+            byte[] decryptedData = YSDispatchDec.DecryptYSDispatch(dispatchInfo.Content, GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0, GameVersionManager.GamePreset.DispatcherKey);
 
             // DEBUG ONLY: Show the decrypted Proto as Base64 format
             string dFormat = $"Proto Response (RAW Decrypted form):\r\n{Convert.ToBase64String(decryptedData)}";
@@ -652,6 +652,8 @@ namespace CollapseLauncher
 
                 // Deserialize JSON line into local entry.
                 PkgVersionProperties entry = data.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
+                
+                if (entry == null) throw new NullReferenceException();
 
                 // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
                 string relativeParentPath = string.IsNullOrEmpty(parentPath) ? "" : GetParentFromAssetRelativePath(entry.remoteName, out _);

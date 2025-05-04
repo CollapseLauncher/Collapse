@@ -12,7 +12,6 @@ using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
-#pragma warning disable CA2211
 
 #nullable enable
 namespace Hi3Helper.Shared.Region
@@ -32,8 +31,6 @@ namespace Hi3Helper.Shared.Region
     }
     #endregion
 
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    [SuppressMessage("ReSharper", "RedundantDefaultMemberInitializer")]
     public static class LauncherConfig
     {
         #region Main Launcher Config Methods
@@ -332,7 +329,6 @@ namespace Hi3Helper.Shared.Region
         public static readonly string AppAssetsFolder    = Path.Combine(AppExecutableDir, "Assets");
 #pragma warning restore CS8604 // Possible null reference argument.
         public static readonly string AppImagesFolder    = Path.Combine(AppAssetsFolder, "Images");
-        public static readonly string AppDefaultBG       = Path.Combine(AppImagesFolder, "PageBackground", "default.png");
         public static readonly string AppLangFolder      = Path.Combine(AppExecutableDir, "Lang");
         public static readonly string AppDataFolder      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "LocalLow", "CollapseLauncher");
         public static readonly string AppConfigFile      = Path.Combine(AppDataFolder, "config.ini");
@@ -540,7 +536,10 @@ namespace Hi3Helper.Shared.Region
             { "HttpProxyUrl", string.Empty },
             { "HttpProxyUsername", string.Empty },
             { "HttpProxyPassword", string.Empty },
-            { "HttpClientTimeout", 90 }
+            { "HttpClientTimeout", 90 },
+
+            { "IsUseExternalDns", false },
+            { "ExternalDnsAddresses", string.Empty }
         };
 
         #endregion
