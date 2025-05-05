@@ -98,6 +98,8 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SdkUrl { get; set; }
 
+        public bool ResetAssociation() => IsReassociated = false;
+
         public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
         {
             if (IsReassociated)
