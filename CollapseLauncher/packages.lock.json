@@ -371,8 +371,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.3",
-        "contentHash": "BrMGzDRLz410PE4qC8UeKeAc0hFRjBkiCUOLTwuod65NAjqg5tDNqYU7gP0A09taEXtecB+HJc1NNnnTjsKFAQ=="
+        "resolved": "9.0.4",
+        "contentHash": "WogPvgAFqQORFD8Iyha6RZ+/1QB3dsWRWxbwi8/HHVgiGQ8z0oMWpwe8Kk3Ti+Roe+P6a3sBg+WwBfEsyziZKg=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
@@ -502,7 +502,7 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
-          "System.IO.Hashing": "[9.0.3, )"
+          "System.IO.Hashing": "[9.0.4, )"
         }
       },
       "SettingsControls": {
