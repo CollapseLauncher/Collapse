@@ -40,6 +40,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         [JsonPropertyName("branch")] public string? Branch { get; init; }
         [JsonPropertyName("password")] public string? Password { get; init; }
         [JsonPropertyName("tag")] public string? Tag { get; init; }
+        [JsonPropertyName("diff_tags")] public List<string>? DiffTags { get; init; }
     }
 
     public sealed class HoYoPlayGameInfoField
