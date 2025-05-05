@@ -218,20 +218,24 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         {
             EnsurePresetConfigNotNull();
 
-            SophonChunkUrls? sophonUrls      = PresetConfig?.LauncherResourceChunksURL;
-            string?          sophonBranchUrl = sophonUrls?.BranchUrl;
+            SophonChunkUrls? sophonUrls = PresetConfig?.LauncherResourceChunksURL;
+            if (sophonUrls == null)
+            {
+                return;
+            }
 
+            string? sophonBranchUrl = sophonUrls.BranchUrl;
             if (string.IsNullOrEmpty(PresetConfig!.LauncherBizName) || string.IsNullOrEmpty(sophonBranchUrl))
             {
                 Logger.LogWriteLine("This game/region doesn't have Sophon->BranchUrl or PresetConfig->LauncherBizName property defined! This might cause the launcher inaccurately check the version if Zip download is unavailable", LogType.Warning, true);
             }
 
-            await (sophonUrls?.EnsureReassociated(ApiGeneralHttpClient,
-                                                  sophonBranchUrl,
-                                                  PresetConfig.LauncherBizName!,
-                                                  false,
-                                                  token) ?? Task.CompletedTask);
-            sophonUrls?.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
+            await sophonUrls.EnsureReassociated(ApiGeneralHttpClient,
+                                                sophonBranchUrl,
+                                                PresetConfig.LauncherBizName!,
+                                                false,
+                                                token);
+            sophonUrls.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
 
             ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> launcherSophonBranchCallback = 
                 innerToken =>
