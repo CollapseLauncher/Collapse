@@ -166,7 +166,7 @@ namespace CollapseLauncher.Helper.Metadata
                     // Re-associate url if patch URL property exists
                     if (!string.IsNullOrEmpty(PatchUrl))
                     {
-                        HoYoPlayGameInfoBranchField? branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
+                        HoYoPlayGameInfoBranchField branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
                         ArgumentException.ThrowIfNullOrEmpty(branchField.PackageId);
                         ArgumentException.ThrowIfNullOrEmpty(branchField.Password);
 

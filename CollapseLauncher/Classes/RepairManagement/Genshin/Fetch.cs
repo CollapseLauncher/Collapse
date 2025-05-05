@@ -420,21 +420,22 @@ namespace CollapseLauncher
                 // If the ignoreContainsParams is not null and the remoteName contains
                 // ignore list, then move to another entry
                 if (ignoreContainsParams != null &&
+                    manifestEntry != null &&
                     manifestEntry.remoteName
-                        .AsSpan()
-                        .ContainsAny(ignoreContainsParams))
+                                 .AsSpan()
+                                 .ContainsAny(ignoreContainsParams))
                 {
                     continue;
                 }
 
                 // Resolve the svc_catalog name where the localName contains "../"
-                if (manifestEntry.remoteName.EndsWith("svc_catalog"))
+                if (manifestEntry != null && manifestEntry.remoteName.EndsWith("svc_catalog"))
                 {
                     manifestEntry.localName = Path.GetFileName(manifestEntry.remoteName);
                 }
 
                 // Get relative path based on extension
-                bool   isUseRemoteName        = string.IsNullOrEmpty(manifestEntry.localName);
+                bool   isUseRemoteName        = string.IsNullOrEmpty(manifestEntry!.localName);
                 string actualRelativeFilePath = isUseRemoteName ? manifestEntry.remoteName : manifestEntry.localName;
 
                 // Get relative path based on extension

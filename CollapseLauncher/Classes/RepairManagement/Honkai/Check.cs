@@ -276,7 +276,7 @@ namespace CollapseLauncher
                 ProgressAllSizeCurrent += sizeDifference;
                 // ReSharper disable PossibleInvalidOperationException
                 // Increment progress count and size
-                ProgressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo.PatchFileSize : asset.S;
+                ProgressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo!.PatchFileSize : asset.S;
                 ProgressAllCountFound++;
 
                 // Add asset to Display
@@ -288,11 +288,11 @@ namespace CollapseLauncher
                               : RepairAssetType.Audio,
                           Path.GetDirectoryName(asset.N),
                           asset.IsPatchApplicable
-                              ? asset.AudioPatchInfo.PatchFileSize
+                              ? asset.AudioPatchInfo!.PatchFileSize
                               : asset.S,
                           localCrc,
                           asset.IsPatchApplicable
-                              ? asset.AudioPatchInfo.NewAudioMD5Array
+                              ? asset.AudioPatchInfo!.NewAudioMD5Array
                               : asset.CRCArray
                          )
                     ));
@@ -470,7 +470,7 @@ namespace CollapseLauncher
             FileInfo file = new FileInfo(filePath);
 
             BlockPatchInfo patchInfo = TryGetPossibleOldBlockLinkedPatch(blockPath, asset);
-            string filePathOld = patchInfo != null ? Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldName) : null;
+            string filePathOld = patchInfo != null ? Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldName!) : null;
             FileInfo fileOld = patchInfo != null ? new FileInfo(filePathOld) : null;
 
             // If old block exist but current block doesn't, check if the hash of the old block matches and patchable
@@ -633,7 +633,7 @@ namespace CollapseLauncher
                         catalog.Add(path);
                         if (asset.BlockPatchInfo != null)
                         {
-                            string oldBlockPath = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldName);
+                            string oldBlockPath = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldName!);
                             catalog.Add(oldBlockPath);
                         }
                         break;
