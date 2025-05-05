@@ -156,8 +156,6 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 ConvertPackageResources(sophonResourceData, hypResourceResponse?.Data?.LauncherPackages);
 
                 LauncherGameResource = sophonResourcePropRoot;
-
-                PerformDebugRoutines();
             }
         }
 
