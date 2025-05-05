@@ -390,8 +390,8 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.8.4",
-        "contentHash": "eieSXq3kakCUXbgdxkKaRqWS6hF0KBJcqok9LlDCs60GOyrynLvPOcQ0pRw7shdPF7lh/VepJ9cP9n9HHc759g=="
+        "resolved": "0.8.5",
+        "contentHash": "TR4j17WeVSEb3ncgL2NqlXEqcy04I+Kk9CaebNDplUeL8XOgjkZ7fP4Wg4grBdPLIqsV86p2QaXTkZoRMVOsew=="
       },
       "colorthief": {
         "type": "Project",
@@ -445,7 +445,8 @@
         "dependencies": {
           "Google.Protobuf": "[3.30.0, )",
           "Hi3Helper.Http": "[2.0.0, )",
-          "Hi3Helper.Win32": "[1.0.0, )"
+          "Hi3Helper.Win32": "[1.0.0, )",
+          "System.IO.Hashing": "[9.0.4, )"
         }
       },
       "hi3helper.http": {
