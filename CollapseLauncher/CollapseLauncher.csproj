@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.21</Version>
+        <Version>1.82.22</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -181,14 +181,13 @@
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3065.39" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="SharpCompress" Version="0.39.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-        <PackageReference Include="SharpHDiffPatch.Core" Version="2.2.8" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />

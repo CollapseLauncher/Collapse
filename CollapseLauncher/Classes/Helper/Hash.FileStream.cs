@@ -298,7 +298,7 @@ namespace CollapseLauncher.Helper
             {
                 // Do read activity
                 int read;
-                while ((read = stream.Read(buffer, 0, bufferLen)) > 0)
+                while ((read = stream.ReadAtLeast(buffer, bufferLen, false)) > 0)
                 {
                     // Throw Cancellation exception if detected
                     token.ThrowIfCancellationRequested();
@@ -429,11 +429,38 @@ namespace CollapseLauncher.Helper
             CancellationToken token)
             where T : NonCryptographicHashAlgorithm, new()
         {
+            // Create hasher instance
+            NonCryptographicHashAlgorithm hashProvider = CreateHash<T>();
+
+            // Calculate hash from the stream
+            return GetHashAsync(stream, hashProvider, readProgress, isLongRunning, token);
+        }
+
+        /// <summary>
+        /// Asynchronously computes the non-cryptographic hash of a stream using a specifically provided <see cref="NonCryptographicHashAlgorithm"/> instance.
+        /// </summary>
+        /// <param name="stream">The stream to compute the hash for.</param>
+        /// <param name="hashProvider">A specifically <see cref="NonCryptographicHashAlgorithm"/> instance to use.</param>
+        /// <param name="readProgress">An action to report the read progress.</param>
+        /// <param name="isLongRunning">
+        /// Define where the async method should run for hashing big files.<br/>
+        /// This to hint the default TaskScheduler to allow more hashing threads to be running at the same time.<br/>
+        /// Set to <c>true</c> if the data stream is big, otherwise <c>false</c> for small data stream.
+        /// </param>
+        /// <param name="token">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the computed hash as a byte array.</returns>
+        public static ConfiguredTaskAwaitable<byte[]> GetHashAsync(
+            Stream                        stream,
+            NonCryptographicHashAlgorithm hashProvider,
+            Action<int>?                  readProgress,
+            bool                          isLongRunning,
+            CancellationToken             token)
+        {
             // Create a new task from factory, assign a synchronous method to it with detached thread.
             Task<byte[]> task = Task<byte[]>
                                .Factory
                                .StartNew(Impl,
-                                         (stream, readProgress, token),
+                                         (stream, hashProvider, readProgress, token),
                                          token,
                                          isLongRunning ? TaskCreationOptions.LongRunning : TaskCreationOptions.DenyChildAttach,
                                          TaskScheduler.Default);
@@ -443,8 +470,9 @@ namespace CollapseLauncher.Helper
 
             static byte[] Impl(object? state)
             {
-                (Stream stream, Action<int>? readProgress, CancellationToken token) = ((Stream, Action<int>?, CancellationToken))state!;
-                return GetHash<T>(stream, readProgress, token);
+                (Stream stream, NonCryptographicHashAlgorithm hashProvider, Action<int>? readProgress, CancellationToken token) =
+                    ((Stream, NonCryptographicHashAlgorithm, Action<int>?, CancellationToken))state!;
+                return GetHash(stream, hashProvider, readProgress, token);
             }
         }
 
@@ -483,11 +511,39 @@ namespace CollapseLauncher.Helper
             CancellationToken token)
             where T : NonCryptographicHashAlgorithm, new()
         {
+            // Create hasher instance
+            NonCryptographicHashAlgorithm hashProvider = CreateHash<T>();
+
+            // Calculate hash from the stream
+            return GetHashAsync(streamDelegate, hashProvider, readProgress, isLongRunning, token);
+        }
+
+
+        /// <summary>
+        /// Asynchronously computes the non-cryptographic hash of a stream using a specifically provided <see cref="NonCryptographicHashAlgorithm"/> instance.
+        /// </summary>
+        /// <param name="streamDelegate">A delegate function which returns the stream to compute the hash for.</param>
+        /// <param name="hashProvider">A specifically <see cref="NonCryptographicHashAlgorithm"/> instance to use.</param>
+        /// <param name="readProgress">An action to report the read progress.</param>
+        /// <param name="isLongRunning">
+        /// Define where the async method should run for hashing big files.<br/>
+        /// This to hint the default TaskScheduler to allow more hashing threads to be running at the same time.<br/>
+        /// Set to <c>true</c> if the data stream is big, otherwise <c>false</c> for small data stream.
+        /// </param>
+        /// <param name="token">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the computed hash as a byte array.</returns>
+        public static ConfiguredTaskAwaitable<byte[]> GetHashAsync(
+            Func<Stream>                  streamDelegate,
+            NonCryptographicHashAlgorithm hashProvider,
+            Action<int>?                  readProgress,
+            bool                          isLongRunning,
+            CancellationToken             token)
+        {
             // Create a new task from factory, assign a synchronous method to it with detached thread.
             Task<byte[]> task = Task<byte[]>
                                .Factory
                                .StartNew(Impl,
-                                         (streamDelegate, readProgress, token),
+                                         (streamDelegate, hashProvider, readProgress, token),
                                          token,
                                          isLongRunning ? TaskCreationOptions.LongRunning : TaskCreationOptions.DenyChildAttach,
                                          TaskScheduler.Default);
@@ -497,9 +553,10 @@ namespace CollapseLauncher.Helper
 
             static byte[] Impl(object? state)
             {
-                (Func<Stream> streamDelegate, Action<int>? readProgress, CancellationToken token) = ((Func<Stream>, Action<int>?, CancellationToken))state!;
+                (Func<Stream> streamDelegate, NonCryptographicHashAlgorithm hashProvider, Action<int>? readProgress, CancellationToken token) =
+                    ((Func<Stream>, NonCryptographicHashAlgorithm, Action<int>?, CancellationToken))state!;
                 using Stream stream = streamDelegate();
-                return GetHash<T>(stream, readProgress, token);
+                return GetHash(stream, hashProvider, readProgress, token);
             }
         }
 
@@ -556,9 +613,27 @@ namespace CollapseLauncher.Helper
             // Create hasher instance
             NonCryptographicHashAlgorithm hashProvider = CreateHash<T>();
 
+            // Calculate hash from the stream
+            return GetHash(stream, hashProvider, readProgress, token);
+        }
+
+        /// <summary>
+        /// Synchronously computes the non-cryptographic hash of a stream using a specifically provided <see cref="NonCryptographicHashAlgorithm"/> instance.
+        /// </summary>
+        /// <param name="stream">The stream to compute the hash for.</param>
+        /// <param name="hashProvider">A specifically <see cref="NonCryptographicHashAlgorithm"/> instance to use.</param>
+        /// <param name="readProgress">An action to report the read progress.</param>
+        /// <param name="token">A cancellation token to observe while waiting for the operation to complete.</param>
+        /// <returns>The computed hash as a byte array.</returns>
+        public static byte[] GetHash(
+            Stream                        stream,
+            NonCryptographicHashAlgorithm hashProvider,
+            Action<int>?                  readProgress = null,
+            CancellationToken             token        = default)
+        {
             // Get length based on stream length or at least if bigger, use the default one
             long streamLen = GetStreamLength(stream);
-            int  bufferLen = streamLen != -1 && BufferLength > streamLen ? (int)streamLen : BufferLength;
+            int bufferLen = streamLen != -1 && BufferLength > streamLen ? (int)streamLen : BufferLength;
 
             // Initialize buffer
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferLen);
@@ -568,7 +643,7 @@ namespace CollapseLauncher.Helper
             {
                 // Do read activity
                 int read;
-                while ((read = stream.Read(buffer, 0, bufferLen)) > 0)
+                while ((read = stream.ReadAtLeast(buffer, bufferLen, false)) > 0)
                 {
                     // Throw Cancellation exception if detected
                     token.ThrowIfCancellationRequested();

@@ -27,13 +27,10 @@ namespace CollapseLauncher.InstallManager.Genshin
     internal sealed partial class GenshinInstall : InstallManagerBase
     {
         #region Override Properties
-
         protected override int _gameVoiceLanguageID => GameVersionManager.GamePreset.GetVoiceLanguageID();
-
         #endregion
 
         #region Properties
-
         protected override string _gameAudioLangListPath
         {
             get
@@ -74,6 +71,12 @@ namespace CollapseLauncher.InstallManager.Genshin
 #nullable enable
         public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
         {
+            // If it's forcely redirected to sophon, check the preload using sophon
+            if (GameVersionManager.IsForceRedirectToSophon())
+            {
+                return await base.IsPreloadCompleted(token);
+            }
+
             // Get the primary file first check
             List<RegionResourceVersion>? resource = GameVersionManager.GetGamePreloadZip();
 

@@ -420,21 +420,22 @@ namespace CollapseLauncher
                 // If the ignoreContainsParams is not null and the remoteName contains
                 // ignore list, then move to another entry
                 if (ignoreContainsParams != null &&
+                    manifestEntry != null &&
                     manifestEntry.remoteName
-                        .AsSpan()
-                        .ContainsAny(ignoreContainsParams))
+                                 .AsSpan()
+                                 .ContainsAny(ignoreContainsParams))
                 {
                     continue;
                 }
 
                 // Resolve the svc_catalog name where the localName contains "../"
-                if (manifestEntry.remoteName.EndsWith("svc_catalog"))
+                if (manifestEntry != null && manifestEntry.remoteName.EndsWith("svc_catalog"))
                 {
                     manifestEntry.localName = Path.GetFileName(manifestEntry.remoteName);
                 }
 
                 // Get relative path based on extension
-                bool   isUseRemoteName        = string.IsNullOrEmpty(manifestEntry.localName);
+                bool   isUseRemoteName        = string.IsNullOrEmpty(manifestEntry!.localName);
                 string actualRelativeFilePath = isUseRemoteName ? manifestEntry.remoteName : manifestEntry.localName;
 
                 // Get relative path based on extension
@@ -582,7 +583,7 @@ namespace CollapseLauncher
                 DispatchInfo dispatchInfo = await dispatchHelper.LoadDispatchInfo();
 
                 // DEBUG ONLY: Show encrypted Proto as JSON+Base64 format
-                string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.content}";
+                string dFormat = $"Query Response (RAW Encrypted form):\r\n{dispatchInfo?.Content}";
 #if DEBUG
                 LogWriteLine(dFormat);
 #endif
@@ -596,10 +597,8 @@ namespace CollapseLauncher
 
         private async Task<QueryProperty> TryDecryptAndParseDispatcher(DispatchInfo dispatchInfo, DispatchHelper dispatchHelper)
         {
-            YSDispatchDec dispatchDecryptor = new YSDispatchDec();
-
             // Decrypt the dispatcher data from the dispatcher info content
-            byte[] decryptedData = dispatchDecryptor.DecryptYSDispatch(dispatchInfo.content, GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0, GameVersionManager.GamePreset.DispatcherKey);
+            byte[] decryptedData = YSDispatchDec.DecryptYSDispatch(dispatchInfo.Content, GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0, GameVersionManager.GamePreset.DispatcherKey);
 
             // DEBUG ONLY: Show the decrypted Proto as Base64 format
             string dFormat = $"Proto Response (RAW Decrypted form):\r\n{Convert.ToBase64String(decryptedData)}";

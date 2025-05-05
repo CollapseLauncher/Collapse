@@ -17,8 +17,15 @@ namespace CollapseLauncher
     {
         #region Properties
         private const    string        AssetBasePath   = "BH3_Data/StreamingAssets/";
-        private readonly string[]      _skippableAssets = ["CG_Temp.usm$Generic", "BlockMeta.xmf$Generic", "Blocks.xmf$Generic"
+        private readonly string[]      _skippableAssets = [
+            "CG_Temp.usm$Generic",
+            "BlockMeta.xmf$Generic",
+            "Blocks.xmf$Generic"
         ];
+
+        private static readonly Version _game820PostVersion   = new(8, 2, 0);
+        private        readonly bool    _isGame820PostVersion = false;
+
         private        HonkaiCache   CacheUtil             { get; }
         private        string        AssetBaseURL          { get; set; }
         private        string        BlockBaseURL          { get => ConverterTool.CombineURLFromString(AssetBaseURL,      $"StreamingAsb/{string.Join('_', GameVersion.VersionArray)}/pc/HD"); }
@@ -56,6 +63,8 @@ namespace CollapseLauncher
                                  "Chinese(PRC)" => AudioLanguageType.Chinese,
                                  _ => GameVersionManager.GamePreset.GameDefaultCVLanguage
                              };
+
+            _isGame820PostVersion = GameVersionManager.GetGameVersionApi()?.ToVersion() >= _game820PostVersion;
         }
 
         ~HonkaiRepair() => Dispose();
