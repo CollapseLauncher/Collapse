@@ -11,12 +11,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Sophon.Structs;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using System.Collections.Generic;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -36,11 +36,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public const int           ExecutionTimeoutAttempt = 5;
         protected       PresetConfig? PresetConfig { get; }
 
-        public bool    IsLoadingCompleted     { get; private set; }
-        public string? GameBackgroundImg      { get => LauncherGameNews?.Content?.Background?.BackgroundImg; } 
-        public string? GameBackgroundImgLocal { get; set; }
-        public string? GameName               { get; init; }
-        public string? GameRegion             { get; init; }
+        public bool    IsLoadingCompleted      { get; private set; }
+        public bool    IsForceRedirectToSophon { get; private set; }
+        public string? GameBackgroundImg       { get => LauncherGameNews?.Content?.Background?.BackgroundImg; } 
+        public string? GameBackgroundImgLocal  { get; set; }
+        public string? GameName                { get; init; }
+        public string? GameRegion              { get; init; }
 
         public string? GameNameTranslation =>
             InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles);
@@ -118,9 +119,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             ApiResourceHttpClient = apiResourceHttpBuilder.Create();
         }
 
-        public async Task<bool> LoadAsync(OnLoadTaskAction?     beforeLoadRoutine, OnLoadTaskAction?         afterLoadRoutine,
-                                          ActionOnTimeOutRetry? onTimeoutRoutine,  ErrorLoadRoutineDelegate? errorLoadRoutine,
-                                          CancellationToken     token)
+        public async Task<bool> LoadAsync(OnLoadTaskAction?         beforeLoadRoutine,
+                                          OnLoadTaskAction?         afterLoadRoutine,
+                                          ActionOnTimeOutRetry?     onTimeoutRoutine,
+                                          ErrorLoadRoutineDelegate? errorLoadRoutine,
+                                          CancellationToken         token)
         {
             _ = beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask;
 
@@ -145,7 +148,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         }
 
         protected virtual async Task LoadAsyncInner(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                              CancellationToken     token)
+                                                    CancellationToken     token)
         {
             // 2025-05-05: As per now, the Sophon resource information requires to be fetched first.
             //             This is mandatory due to latest Genshin Impact changes which removes zip
@@ -161,17 +164,57 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 
         protected virtual void InitializeFakeVersionInfo()
         {
-            if (LauncherGameResourceSophon == null)
+            if (LauncherGameResource?.data == null)
             {
                 return;
             }
 
-            HoYoPlayGameInfoBranch? gameBranch = LauncherGameResourceSophon.GameInfoData?.GameBranchesInfo?
-                .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(PresetConfig?.LauncherBizName) ?? false);
+            HoYoPlayGameInfoBranch? gameBranch = LauncherGameResourceSophon?.GameInfoData?.GameBranchesInfo?
+               .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(PresetConfig?.LauncherBizName) ?? false);
+
+            if (gameBranch == null)
+            {
+                return;
+            }
+
+            var branchPreloadField = gameBranch.GamePreloadField;
+            var branchBaseField = gameBranch.GameMainField;
+
+            if (branchPreloadField != null)
+            {
+                LauncherGameResource.data.pre_download_game ??= new RegionResourceLatest();
+                AddFakeVersionInfo(branchPreloadField, LauncherGameResource.data.pre_download_game);
+            }
+
+            if (branchBaseField == null)
+            {
+                return;
+            }
+
+            LauncherGameResource.data.game ??= new RegionResourceLatest();
+            AddFakeVersionInfo(branchBaseField, LauncherGameResource.data.game);
+            IsForceRedirectToSophon = true;
+        }
+
+        protected virtual void AddFakeVersionInfo(HoYoPlayGameInfoBranchField branchField, RegionResourceLatest region)
+        {
+            region.latest ??= new RegionResourceVersion();
+            region.latest.version = branchField.Tag;
+
+            region.diffs ??= [];
+
+            HashSet<string> existingDiffsVer = new(region.diffs.Select(x => x.version)!);
+            foreach (var versionTags in (branchField.DiffTags ?? []).Where(x => !existingDiffsVer.Contains(x)))
+            {
+                region.diffs.Add(new RegionResourceVersion
+                {
+                    version = versionTags
+                });
+            }
         }
 
         protected virtual async Task LoadLauncherGameResourceSophon(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                                              CancellationToken token)
+                                                                    CancellationToken     token)
         {
             EnsurePresetConfigNotNull();
 
@@ -188,6 +231,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                                                   PresetConfig.LauncherBizName!,
                                                   false,
                                                   token) ?? Task.CompletedTask);
+            sophonUrls?.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
 
             ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> launcherSophonBranchCallback = 
                 innerToken =>

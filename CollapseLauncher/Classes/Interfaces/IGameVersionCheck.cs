@@ -131,6 +131,11 @@ namespace CollapseLauncher.Interfaces
         bool IsGameHasDeltaPatch();
 
         /// <summary>
+        /// Check if the game installation is forcely redirected to Sophon.
+        /// </summary>
+        bool IsForceRedirectToSophon();
+
+        /// <summary>
         /// Returns the state of the game.
         /// </summary>
         ValueTask<GameInstallStateEnum> GetGameState();

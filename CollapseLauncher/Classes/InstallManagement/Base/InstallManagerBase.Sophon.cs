@@ -83,10 +83,11 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Public Virtual Properties
         public virtual bool IsUseSophon =>
-            GameVersionManager.GamePreset.LauncherResourceChunksURL != null
+            GameVersionManager.IsForceRedirectToSophon() ||
+            (GameVersionManager.GamePreset.LauncherResourceChunksURL != null
             && !File.Exists(Path.Combine(GamePath, "@DisableSophon"))
             && !_canDeltaPatch && !_forceIgnoreDeltaPatch
-            && LauncherConfig.GetAppConfigValue("IsEnableSophon").ToBool();
+            && LauncherConfig.GetAppConfigValue("IsEnableSophon").ToBool());
         #endregion
 
         #region Sophon Verification Methods
