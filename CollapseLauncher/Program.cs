@@ -54,6 +54,13 @@ namespace CollapseLauncher
         [STAThread]
         public static void Main(params string[] args)
         {
+            // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
+            // But due to AOT build uses Static Library in favor of Shared ones (that comes
+            // with .dll files), the check will be ignored.
+        #if AOT
+            ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
+        #endif
+
             AppCurrentArgument = args.ToList();
         #if PREVIEW
             IsPreview = true;
@@ -177,13 +184,10 @@ namespace CollapseLauncher
                         return;
                 }
 
-            #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 // Reason: These are methods that either has its own error handling and/or not that important,
                 // so the execution could continue without anything to worry about **technically**
                 _ = InitDatabaseHandler();
                 _ = CheckRuntimeFeatures();
-            #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
                 InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());

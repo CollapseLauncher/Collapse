@@ -154,7 +154,8 @@ namespace Hi3Helper.TaskScheduler
             }
 
             // Check if the last action path runs on tray
-            bool isLastHasTray = actionPath.EndsWith("tray", StringComparison.OrdinalIgnoreCase);
+            // ReSharper disable once ConstantConditionalAccessQualifier
+            bool isLastHasTray = actionPath?.EndsWith("tray", StringComparison.OrdinalIgnoreCase) ?? false;
 
             // Register changes
             task.Definition.Actions.Clear();

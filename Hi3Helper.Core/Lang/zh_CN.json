@@ -80,12 +80,17 @@
     "UnhandledTitle3": "游戏已崩溃",
     "UnhandledSubtitle3": "游戏已经崩溃，错误详情如下：",
     "UnhandledTitle4": "警告",
+    "WarningSubtitle": "遇到了一个小问题，详情如下：",
     "UnhandledSubtitle4": "这不是什么大问题，但我们认为应该让您知道：\n由于 miHoYo A/B 测试的原因，Collapse 不支持读取以下键值： App_Settings_h2319593470。\n给您带来的不便我们深表歉意，感谢您的理解。",
     "UnhandledTitleDiskCrc": "检测到硬盘损坏！",
     "UnhandledSubDiskCrc": "访问文件时检测到硬盘损坏。请使用 chkdsk 检查您的硬盘。",
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
-    "GoBackPageBtn1": "返回上一页"
+    "GoBackPageBtn1": "返回上一页",
+    
+    "CustomBackground_NotFound": "自定义背景文件丢失！将使用默认图像",
+    "CustomBackground_RegionalTag": "区服背景",
+    "CustomBackground_GlobalTag": "全局背景"
   },
 
   "_MainPage": {
@@ -579,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "警告：您的系统安装了“OpenCL™、OpenGL® 和 Vulkan® 兼容包”。该软件包被报告与 Vulkan Loader 不兼容，并且会在某些 GPU 上崩溃。请移除此软件包以启用 GPU 模式。",
     "Waifu2X_Error_Loader": "错误：初始化 Vulkan Loader 失败。请确保您拥有兼容 Vulkan 的 GPU 并安装了正确的 GPU 驱动程序。",
     "Waifu2X_Error_Output": "错误：未能通过 Waifu2X 自检，输出图像为空。",
+    "Waifu2X_Initializing": "Waifu2X 正在初始化，请稍候。",
 
     "NetworkSettings_Title": "网络设置",
     "NetworkSettings_Proxy_Title": "代理设置",
@@ -608,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonChecking": "检查可联通性中……",
     "NetworkSettings_ProxyTest_ButtonSuccess": "代理可联通性测试成功！",
     "NetworkSettings_ProxyTest_ButtonFailed": "测试失败！代理无法访问",
+
+    "NetworkSettings_Dns_Title": "自定义 DNS 设置",
+    "NetworkSettings_Dns_ConnectionType": "连接类型",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP（53 端口）",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "表示用于查询记录的 DNS 协议类型。Collapse 启动器支持几种协议类型，包括：",
+    "NetworkSettings_Dns_ProviderSelection": "DNS 提供商",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "自定义",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Collapse 启动器内置了几个可用的外部 DNS 提供商。您也可以在“DNS 提供商”下选择“自定义”，使用自己的自定义 DNS 提供商/服务器。",
+    "NetworkSettings_Dns_CustomProvider": "自定义 DNS 提供商主机",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "依赖",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "设置",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "当你选择",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "作为",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "时，您可以通过输入 IPv4/IPv6 或主机名来添加自己的自定义 DNS 提供商/服务器。您也可以在添加自定义 DNS 提供商/服务器的同时添加预定义的 DNS 提供商（以“$”符号开头）通过使用这些符号分隔每个条目：",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "例：",
+    "NetworkSettings_Dns_ChangesWarning": "您需要重新启动应用程序以使 DNS 设置更改生效。",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "测试并保存更改",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "正在验证并应用更改……",
+    "NetworkSettings_Dns_SettingsSavedButton": "更改已保存！",
+    "NetworkSettings_Dns_SettingsFailedButton": "更改保存失败！",
 
     "NetworkSettings_Http_Title": ".NET HTTP 客户端设置",
     "NetworkSettings_Http_Redirect": "允许 HTTP 重定向",
@@ -664,7 +692,9 @@
     "Database_Warning_PropertyChanged": "数据库设置已更改",
     "Database_ValidationChecking": "验证设置中……",
     "Database_Placeholder_DbUserIdTextBox": "GUID 示例：ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "在这里输入您的身份验证令牌"
+    "Database_Placeholder_DbTokenPasswordBox": "在这里输入您的身份验证令牌",
+    
+    "SearchPlaceholder": "输入以搜索……"
   },
 
   "_Misc": {
@@ -808,7 +838,12 @@
     "ExceptionFeedbackTitle": "告诉我们发生了什么：",
     "ExceptionFeedbackTemplate_User": "用户名（可选）：",
     "ExceptionFeedbackTemplate_Email": "邮箱（可选）：",
-    "ExceptionFeedbackTemplate_Message": "在此行后插入您的反馈",
+    "ExceptionFeedbackTemplate_Message": "请在这一行后面告诉我们发生了什么：（无需包含错误信息，我们会为您附上！）",
+    
+    "Feedback": "用户反馈",
+    "FeedbackSending": "正在发送您的反馈……",
+    "FeedbackSent": "反馈已发送！",
+    "FeedbackSendFailure": "发送反馈失败！请检查日志或控制台以获取更多信息。",
     
     "Tag_Deprecated": "废弃",
     "Generic_GameFeatureDeprecation": "因不可预见的游戏变化，该功能已被弃用，并将在未来移除。使用此功能可能会导致意料外的行为。"

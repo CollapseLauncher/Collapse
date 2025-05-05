@@ -58,8 +58,45 @@ public partial class MainPage : Page
 
             if (!File.Exists(gameLauncherApi.GameBackgroundImgLocal))
             {
+                if (IsCustomBG)
+                {
+                    var customBGPath  = e.ImgPath;
+                    var warningMsgTag = "";
+                    
+                    if (string.IsNullOrWhiteSpace(customBGPath))
+                    {
+                        // Check if using regional custom BG
+                        if (GetCurrentGameProperty().GameSettings?.SettingsCollapseMisc.UseCustomRegionBG ?? false)
+                        {
+                            customBGPath = GetCurrentGameProperty().GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath;
+                            warningMsgTag = Locale.Lang._UnhandledExceptionPage.CustomBackground_RegionalTag;
+                        }
+                        // check if using global custom BG
+                        else
+                        {
+                            customBGPath = GetAppConfigValue("CustomBGPath").ToString();
+                            warningMsgTag = Locale.Lang._UnhandledExceptionPage.CustomBackground_GlobalTag;
+                        }
+                    }
+                    
+                    var missingImageEx =
+                        new FileNotFoundException($"[{warningMsgTag}] {Locale.Lang._UnhandledExceptionPage.CustomBackground_NotFound}",
+                                                  customBGPath);
+                    DispatcherQueue.TryEnqueue(() =>
+                                               {
+                                                   try
+                                                   {
+                                                       ErrorSender.SendWarning(missingImageEx);
+                                                   }
+                                                   catch
+                                                   {
+                                                       // ignored
+                                                   }
+                                               });
+                }
+                
                 LogWriteLine($"Custom background file {e.ImgPath} is missing!", LogType.Warning, true);
-                gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                gameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
             }
 
             var mType = BackgroundMediaUtility.GetMediaType(gameLauncherApi.GameBackgroundImgLocal);
@@ -86,7 +123,7 @@ public partial class MainPage : Page
                                                      e.IsForceRecreateCache, ex =>
                                                                              {
                                                                                  gameLauncherApi.GameBackgroundImgLocal =
-                                                                                     AppDefaultBG;
+                                                                                     BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
                                                                                  LogWriteLine($"An error occured while loading background {e.ImgPath}\r\n{ex}",
                                                                                      LogType.Error, true);
                                                                                  ErrorSender.SendException(ex);
@@ -119,7 +156,7 @@ public partial class MainPage : Page
         bool isAPIBackgroundAvailable =
             !string.IsNullOrEmpty(gameLauncherApi.GameBackgroundImg);
 
-        var posterBg = currentGameProperty.GameVersion.GameType switch
+        var posterBg = currentGameProperty.GameVersion?.GameType switch
                        {
                            GameNameType.Honkai => Path.Combine(AppExecutableDir,
                                                                @"Assets\Images\GameBackground\honkai.webp"),
@@ -129,7 +166,7 @@ public partial class MainPage : Page
                                                                  @"Assets\Images\GameBackground\starrail.webp"),
                            GameNameType.Zenless => Path.Combine(AppExecutableDir,
                                                                 @"Assets\Images\GameBackground\zzz.webp"),
-                           _ => AppDefaultBG
+                           _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                        };
 
         // Check if Regional Custom BG is enabled and available
@@ -167,7 +204,7 @@ public partial class MainPage : Page
                 {
                     ErrorSender.SendException(ex);
                     LogWriteLine($"Failed while downloading default background image!\r\n{ex}", LogType.Error, true);
-                    gameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                    gameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
                 }
             }
             // IF ITS STILL NOT THERE, then use fallback game poster, IF ITS STILL NOT THEREEEE!! use paimon cute deadge pic :)

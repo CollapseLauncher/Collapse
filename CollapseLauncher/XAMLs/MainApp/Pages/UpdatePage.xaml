@@ -96,7 +96,7 @@
                 <TextBlock FontWeight="Bold"
                            Text="{x:Bind helper:Locale.Lang._UpdatePage.UpdateHeader1}" />
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Value, ElementName=progressBar}"
+                    <TextBlock Text="{x:Bind progressBar.Value, Mode=OneWay}"
                                TextAlignment="Left" />
                     <TextBlock Text="%"
                                TextAlignment="Left" />

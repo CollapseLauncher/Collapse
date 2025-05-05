@@ -132,7 +132,7 @@ public partial class HomePage
                     break;
             }
 
-            CurrentGameProperty.GamePlaytime.StartSession(proc);
+            CurrentGameProperty.GamePlaytime?.StartSession(proc);
 
             if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
 
@@ -234,7 +234,7 @@ public partial class HomePage
     {
         StringBuilder parameter = new StringBuilder();
 
-        switch (CurrentGameProperty.GameVersion.GameType)
+        switch (CurrentGameProperty.GameVersion?.GameType)
         {
             case GameNameType.Honkai:
             {
@@ -480,8 +480,14 @@ public partial class HomePage
             
         try
         {
-            string logPath = Path.Combine(CurrentGameProperty.GameVersion.GameDirAppDataPath,
-                                          CurrentGameProperty.GameVersion.GameOutputLogName);
+            var gameDirAppDataPath = CurrentGameProperty.GameVersion?.GameDirAppDataPath;
+            var gameOutputLogName = CurrentGameProperty.GameVersion?.GameOutputLogName;
+            if (string.IsNullOrEmpty(gameDirAppDataPath) || string.IsNullOrEmpty(gameOutputLogName))
+            {
+                LogWriteLine("Game log path is not set! Cannot read game logs!", LogType.Error, saveGameLog);
+                return;
+            }
+            var logPath = Path.Combine(gameDirAppDataPath, gameOutputLogName);
             if (!Directory.Exists(Path.GetDirectoryName(logPath)))
                 Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
                 
@@ -550,7 +556,7 @@ public partial class HomePage
     #region Exclusive Window Payload
     private async void StartExclusiveWindowPayload()
     {
-        IntPtr _windowPtr = ProcessChecker.GetProcessWindowHandle(CurrentGameProperty.GameVersion.GamePreset.GameExecutableName ?? "");
+        IntPtr _windowPtr = ProcessChecker.GetProcessWindowHandle(CurrentGameProperty.GameVersion?.GamePreset.GameExecutableName ?? "");
         await Task.Delay(1000);
         Windowing.HideWindow(_windowPtr);
         await Task.Delay(1000);
@@ -569,15 +575,19 @@ public partial class HomePage
             ResizableWindowHookToken = new CancellationTokenSource();
 
             executableName = Path.GetFileNameWithoutExtension(executableName);
-            string              gameExecutableDirectory = CurrentGameProperty.GameVersion.GameDirPath;
-            ResizableWindowHook resizableWindowHook     = new ResizableWindowHook();
+            var gameExecutableDirectory = CurrentGameProperty.GameVersion?.GameDirPath;
+            if (string.IsNullOrEmpty(gameExecutableDirectory))
+            {
+                LogWriteLine("Game executable directory is not set! Cannot start Resizable Window payload!", LogType.Error);
+                return;
+            }
 
             // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
             // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
             // it impossible to use custom resolution (but since you are using Collapse, it's now
             // possible :teriStare:)
             bool isNeedToResetPos = gameType == GameNameType.StarRail;
-            await Task.Run(() => resizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
+            await Task.Run(() => ResizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
                                                                isNeedToResetPos, ILoggerHelper.GetILogger(), gameExecutableDirectory));
         }
         catch (Exception ex)
@@ -673,7 +683,7 @@ public partial class HomePage
         catch (Win32Exception ex)
         {
             LogWriteLine($"There is a problem while trying to launch Pre-Game Command with Region: " +
-                         $"{CurrentGameProperty.GameVersion.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
+                         $"{CurrentGameProperty.GameVersion?.GamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch Pre-Launch command!\r\tThrow: {ex}", ex));
         }
         finally

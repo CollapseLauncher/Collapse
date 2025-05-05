@@ -152,6 +152,11 @@ namespace Hi3Helper
                 public string ExceptionFeedbackTemplate_Email { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Email;
                 public string ExceptionFeedbackTemplate_Message { get; set; } = LangFallback?._Misc.ExceptionFeedbackTemplate_Message;
                 
+                public string Feedback { get; set; } = LangFallback?._Misc.Feedback;
+                public string FeedbackSending { get; set; } = LangFallback?._Misc.FeedbackSending;
+                public string FeedbackSent { get; set; } = LangFallback?._Misc.FeedbackSent;
+                public string FeedbackSendFailure { get; set; } = LangFallback?._Misc.FeedbackSendFailure;
+                
                 public string Tag_Deprecated { get; set; } = LangFallback?._Misc.Tag_Deprecated;
                 
                 public string Generic_GameFeatureDeprecation { get; set; } = LangFallback?._Misc.Generic_GameFeatureDeprecation;

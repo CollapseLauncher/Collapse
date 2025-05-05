@@ -32,8 +32,7 @@ namespace CollapseLauncher.Helper.Metadata
         internal static string LauncherMetadataFolder => Path.Combine(LauncherConfig.AppGameFolder, "_metadatav3");
 
         internal static string LauncherStampRemoteURLPath =>
-            ConverterTool.CombineURLFromString($"/metadata/{MetadataVersion}/{CurrentLauncherChannel}/",
-                                               LauncherMetadataStampPrefix);
+            $"/metadata/{MetadataVersion}/{CurrentLauncherChannel}/".CombineURLFromString(LauncherMetadataStampPrefix);
 
         #endregion
 
@@ -501,8 +500,7 @@ namespace CollapseLauncher.Helper.Metadata
 
             string configLocalFilePath = Path.Combine(LauncherMetadataFolder, stamp.MetadataPath);
             string configRemoteFilePath =
-                ConverterTool.CombineURLFromString($"/metadata/{MetadataVersion}/{currentChannel}/",
-                                                   stamp.MetadataPath);
+                $"/metadata/{MetadataVersion}/{currentChannel}/".CombineURLFromString(stamp.MetadataPath);
 
             FileStream? configLocalStream = null;
             try

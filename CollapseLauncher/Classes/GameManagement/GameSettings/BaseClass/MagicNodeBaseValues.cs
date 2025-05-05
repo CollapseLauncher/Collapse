@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +11,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using Hi3Helper.SentryHelper;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 

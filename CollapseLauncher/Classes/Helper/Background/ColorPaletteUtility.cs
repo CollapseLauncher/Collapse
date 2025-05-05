@@ -1,8 +1,9 @@
-﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -15,7 +16,6 @@ using System.IO;
 using System.IO.Hashing;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
-using Hi3Helper.SentryHelper;
 using static Hi3Helper.Logger;
 using WColor = Windows.UI.Color;
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault

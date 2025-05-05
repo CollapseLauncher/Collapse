@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Игра вылетела",
     "UnhandledSubtitle3": "Игра завершилась. Детали ошибки приведены ниже:",
     "UnhandledTitle4": "Предупреждение",
+    "WarningSubtitle": "A minor issue has occurred with the following details:",
     "UnhandledSubtitle4": "Это не является серьезной проблемой, но мы решили, что должны сообщить вам об этом: \nВ связи с A/B тестированием miHoYo, Collapse не поддерживает чтение следующих файлов:\nkey: App_Settings_h2319593470.\nМы приносим извинения за причиненные неудобства и благодарим вас за понимание.",
     "UnhandledTitleDiskCrc": "Обнаружено повреждение диска!",
     "UnhandledSubDiskCrc": "Обнаружено повреждение диска при доступе к файлу. Пожалуйста, проверьте диск с помощью команды chkdsk.",
     "CopyClipboardBtn1": "Скопировать всё в буфер обмена",
     "CopyClipboardBtn2": "Скопировано в буфер обмена!",
-    "GoBackPageBtn1": "Вернуться к предыдущей странице"
+    "GoBackPageBtn1": "Вернуться к предыдущей странице",
+    
+    "CustomBackground_NotFound": "Custom background file is missing! Using default image",
+    "CustomBackground_RegionalTag": "Region BG",
+    "CustomBackground_GlobalTag": "Global BG"
   },
 
   "_MainPage": {
@@ -148,11 +153,11 @@
     "GameSettings_Panel2UninstallGame": "Удалить игру",
     "GameSettings_Panel2ConvertVersion": "Изменить версию игры",
     "GameSettings_Panel2MoveGameLocationGame": "Переместить игру",
-    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Cannot move game to the root of your drive!\r\nPlease make a folder and try again.",
+    "GameSettings_Panel2MoveGameLocationGame_SamePath": "Невозможно переместить игру в корень вашего диска!\nПожалуйста, создайте папку и повторите попытку.",
     "GameSettings_Panel2StopGame": "Принудительно закрыть игру ",
-    "GameSettings_Panel3RegionalSettings": "Regional Settings",
+    "GameSettings_Panel3RegionalSettings": "Региональные параметры",
     "GameSettings_Panel3": "Пользовательские команды запуска",
-    "GameSettings_Panel3RegionRpc": "Show Playing Status in Discord",
+    "GameSettings_Panel3RegionRpc": "Отображать статус игры в Discord",
     "GameSettings_Panel3CustomBGRegion": "Изменить фон региона",
     "GameSettings_Panel3CustomBGRegionSectionTitle": "Пользовательский фон для региона",
     "GameSettings_Panel4": "Global - Miscellaneous",
@@ -160,7 +165,7 @@
     "GameSettings_Panel4ScaleUpEventsPanel": "Scale Up Events Panel on Hover",
     "GameSettings_Panel4ShowSocialMediaPanel": "Показать панель соцсетей",
     "GameSettings_Panel4ShowPlaytimeButton": "Показать время в игре",
-    "GameSettings_Panel4SyncPlaytimeDatabase": "Sync Playtime with Database",
+    "GameSettings_Panel4SyncPlaytimeDatabase": "Синхронизировать время игры с базой данных",
     "GameSettings_Panel4CreateShortcutBtn": "Создать ярлык",
     "GameSettings_Panel4AddToSteamBtn": "Добавить в Steam",
 
@@ -169,13 +174,13 @@
     "GamePlaytime_Idle_Panel1Minutes": "Минут",
     "GamePlaytime_Idle_ResetBtn": "Сбросить",
     "GamePlaytime_Idle_ChangeBtn": "Изменить",
-    "GamePlaytime_Idle_SyncDb": "Sync",
-    "GamePlaytime_Idle_SyncDbSyncing": "Syncing...",
+    "GamePlaytime_Idle_SyncDb": "Синхронизировать",
+    "GamePlaytime_Idle_SyncDbSyncing": "Синхронизация...",
     "GamePlaytime_Running_Info1": "Эта игра сейчас запущена, поэтому нельзя изменить время игры.",
-    "GamePlaytime_Running_Info2": "Please be aware that fully closing Collapse will stop playtime tracking (saving what was played until that point).",
+    "GamePlaytime_Running_Info2": "Имейте в виду, что полное закрытие Collapse приведет к остановке отслеживания времени игры (сохранения того, что было проиграно до этого момента).",
     "GamePlaytime_Display": "{0}ч {1}м",
     "GamePlaytime_DateDisplay": "{0:00}/{1:00}/{2:0000} {3:00}:{4:00}",
-    "GamePlaytime_Stats_Title": "Playtime Statistics",
+    "GamePlaytime_Stats_Title": "Статистика игрового времени",
     "GamePlaytime_Stats_NeverPlayed": "Никогда",
     "GamePlaytime_Stats_LastSession": "Самая последняя сессия",
     "GamePlaytime_Stats_LastSession_StartTime": "Время запуска",
@@ -213,8 +218,8 @@
     "GameStateInvalidFixed_Subtitle3": "\" в \"",
     "GameStateInvalidFixed_Subtitle4": "\"меню, чтобы убедиться, что все файлы проверены.\"",
 
-    "InstallFolderRootTitle": "Drive Root Provided!",
-    "InstallFolderRootSubtitle": "Cannot install game to the root of your drive! Please make a new folder and try again."
+    "InstallFolderRootTitle": "Указан корень диска!",
+    "InstallFolderRootSubtitle": "Невозможно установить игру в корень вашего диска! Пожалуйста, создайте папку и повторите попытку."
   },
 
   "_GameRepairPage": {
@@ -362,8 +367,8 @@
     "SpecVeryHigh": "Очень высокий",
     "SpecMaximum": "Максимальный",
     "SpecUltra": "Ультра",
-    "SpecDynamic": "Dynamic",
-    "SpecGlobal": "Global",
+    "SpecDynamic": "Динамический",
+    "SpecGlobal": "Глобальный",
 
     "Audio_Title": "Настройки аудио",
     "Audio_Master": "Общая громкость",
@@ -406,7 +411,7 @@
     "CustomArgs_Footer2": "документацию по командной строке Unity Standalone Player",
     "CustomArgs_Footer3": ", чтобы увидеть больше параметров.",
 
-    "GameBoost": "Boost Game Priority",
+    "GameBoost": "Повысить приоритет игры",
     "MobileLayout": "Использовать мобильную раскладку",
 
     "Advanced_Title": "Дополнительные настройки",
@@ -428,8 +433,8 @@
     "Debug": "Дополнительные настройки",
     "Debug_Console": "Показать консоль",
     "Debug_IncludeGameLogs": "Сохранять журналы игры в Collapse (могут быть конфиденциальные данные)",
-    "Debug_SendRemoteCrashData": "Send anonymous crash reports to developers",
-    "Debug_SendRemoteCrashData_EnvVarDisablement": "This setting is disabled due to 'DISABLE_SENTRY' environment variable being set to true.",
+    "Debug_SendRemoteCrashData": "Отправить анонимный отчет об ошибке разработчикам",
+    "Debug_SendRemoteCrashData_EnvVarDisablement": "Эта настройка отключена из-за того, что переменная окружения 'DISABLE_SENTRY' установлена в true.",
     "Debug_MultipleInstance": "Разрешить запуск нескольких лаунчеров Collapse",
 
     "ChangeRegionWarning_Toggle": "Показывать предупреждение об изменении региона",
@@ -482,8 +487,8 @@
     "SophonHttpNumberBox": "Максимальное количество HTTP-соединений",
     "SophonHelp_Http": "Это контролирует максимальное количество сетевых подключений, устанавливаемых Collapse для загрузки частей.",
     "SophonToggle": "Включить Sophon в поддерживаемых регионах",
-    "SophonPredownPerfMode_Toggle": "[EXPERIMENTAL] Use all CPU cores when applying pre-download",
-    "SophonPredownPerfMode_Tooltip": "Enabling this will set CPU threads to maximum available for your system. Disable if you get any problems.",
+    "SophonPredownPerfMode_Toggle": "[ЭКСПЕРИМЕНТАЛЬНОЕ] Использовать все ядра процессора когда выполняется предзагрузка",
+    "SophonPredownPerfMode_Tooltip": "Включение этого параметра установит потоки процессора на максимум, доступный для вашей системы. Отключите, если возникнут проблемы.",
 
     "AppThreads_Attention": "Внимание",
     "AppThreads_Attention1": "Перед тем как изменить",
@@ -500,10 +505,10 @@
     "DiscordRPC_GameStatusToggle": "Показывать текущую игру в статусе в Discord",
     "DiscordRPC_IdleStatusToggle": "Показывать RPC во время простоя",
 
-    "ImageBackground": "Image Background Settings",
+    "ImageBackground": "Настройки фона",
     "VideoBackground": "Настройки видеофона",
     "VideoBackground_IsEnableAudio": "Включить аудио",
-    "VideoBackground_IsEnableAcrylicBackground": "Use Acrylic Effect while using Video Background",
+    "VideoBackground_IsEnableAcrylicBackground": "Использовать акриловый эффект при использовании видео фона",
     "VideoBackground_AudioVolume": "Громкость аудио",
 
     "Update": "Проверить наличие обновлений",
@@ -530,7 +535,7 @@
     "ContributePRBtn": "Внести свой вклад, сделав Pull Request",
     "ContributorListBtn": "Участники проекта с открытым исходным кодом",
     "HelpLocalizeBtn": "Помогите нам перевести Collapse!",
-    "ShareYourFeedbackBtn": "Share Your Feedback",
+    "ShareYourFeedbackBtn": "Поделитесь своим отзывом",
 
     "About": "О программе",
     "About_Copyright1": "© 2022-2025",
@@ -544,7 +549,7 @@
     "Disclaimer1": "Это приложение не ассоциировано с",
     "Disclaimer2": "любым способом",
     "Disclaimer3": "и полностью open-source, любой вклад приветствуется.",
-    "WebsiteBtn": "Visit our Website",
+    "WebsiteBtn": "Посетите наш вебсайт",
     "DiscordBtn1": "Присоединяйтесь к нам в Discord!",
     "DiscordBtn2": "Дискорд Honkai Impact 3rd",
     "DiscordBtn3": "Официальный Discord сервер Collapse!",
@@ -553,7 +558,7 @@
 
     "EnableAcrylicEffect": "Использовать эффект акрилового размытия",
     "EnableDownloadChunksMerging": "Объединение загруженных фрагментов пакетов",
-    "Enforce7ZipExtract": "Always Use 7-zip for Game Installation/Update",
+    "Enforce7ZipExtract": "Всегда использовать 7-Zip для установки/обновления игры",
     "UseExternalBrowser": "Использовать внешний браузер",
 
     "LowerCollapsePrioOnGameLaunch": "Уменьшение использования ресурсов процесса Collapse при запуске игры",
@@ -572,7 +577,7 @@
     "AppBehavior_LaunchOnStartup": "Запустить Collapse при включении компьютера",
     "AppBehavior_StartupToTray": "Скрыть Collapse после включения компьютера",
 
-    "Waifu2X_Toggle": "Use Waifu2X",
+    "Waifu2X_Toggle": "Использовать Waifu2X",
     "Waifu2X_Help": "Использование Waifu2X для увеличения фоновых изображений.\nКогда активно, качество изображения значительно улучшается, но это потребует больше времени для первой загрузки изображения.",
     "Waifu2X_Help2": "Доступно только для неподвижных изображений!",
     "Waifu2X_Warning_CpuMode": "ВНИМАНИЕ: Доступное графическое устройство Vulkan не найдено, и будет использоваться режим CPU. Это значительно увеличит время обработки изображения.",
@@ -608,6 +613,28 @@
     "NetworkSettings_ProxyTest_ButtonChecking": "Проверка подключения...",
     "NetworkSettings_ProxyTest_ButtonSuccess": "Тест подключения к прокси-серверу успешно завершен!",
     "NetworkSettings_ProxyTest_ButtonFailed": "Тест провален! Прокси-сервер недоступен",
+
+    "NetworkSettings_Dns_Title": "Custom DNS Settings",
+    "NetworkSettings_Dns_ConnectionType": "Connection Type",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Represents the type of which DNS Protocol to be used to query the record. There are few types of Protocol supported by Collapse Launcher, including:",
+    "NetworkSettings_Dns_ProviderSelection": "DNS Provider",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Custom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "There are few available External DNS Provider built into Collapse Launcher. You can also use your own custom DNS Provider/Server by selecting \"Custom\" as the selection under \"DNS Provider\".",
+    "NetworkSettings_Dns_CustomProvider": "Custom DNS Provider Host(s)",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Depends on",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "settings",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "When you choose",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "as your",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "selection, you can add your own custom DNS Provider/Server by entering its IPv4/IPv6 or hostname. You can also add pre-defined DNS Provider (which starts with '$' symbol) alongside your custom DNS Provider/Server by separating each entry with these symbols:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Example:",
+    "NetworkSettings_Dns_ChangesWarning": "You need to restart the app for any DNS settings changes to take effect.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Test & Save Changes",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validating and Applying Changes...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Changes Saved!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Changes Failed to Save!",
 
     "NetworkSettings_Http_Title": "Настройки HTTP-клиента .NET",
     "NetworkSettings_Http_Redirect": "Разрешить перенаправление HTTP",
@@ -650,7 +677,7 @@
 
     "Database_Title": "Пользовательская синхронизируемая база данных",
     "Database_ConnectionOk": "Успешное подключение к базе данных!",
-    "Database_ConnectFail": "Failed to connect to the database, see error(s) below:",
+    "Database_ConnectFail": "Не удалось подключиться к базе данных, см. ниже подробности:",
     "Database_Toggle": "Включить онлайн базу данных",
     "Database_Url": "Ссылка на базу данных",
     "Database_Url_Example": "Пример: https://db-collapse.turso.io",
@@ -660,11 +687,12 @@
     "Database_Validate": "Проверить и сохранить настройки",
     "Database_Error_EmptyUri": "Ссылка на базу данных не может быть пустой!",
     "Database_Error_EmptyToken": "Токен базы данных не может быть пустым!",
-    "Database_Error_InvalidGuid": "User ID is not a valid GUID!",
-    "Database_Warning_PropertyChanged": "Database settings has changed",
-    "Database_ValidationChecking": "Validating Settings...",
-    "Database_Placeholder_DbUserIdTextBox": "GUID Example: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Enter your authentication token here"
+    "Database_Error_InvalidGuid": "Пользовательский ID не является верным GUID!",
+    "Database_Warning_PropertyChanged": "Параметры базы данных были изменены",
+    "Database_ValidationChecking": "Валидация параметров...",
+    "Database_Placeholder_DbUserIdTextBox": "Пример GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
+    "SearchPlaceholder": "Type to search...",
+    "Database_Placeholder_DbTokenPasswordBox": "Введите свой токен аутентификации здесь"
   },
 
   "_Misc": {
@@ -802,13 +830,18 @@
 
     "MissingVcRedist": "Missing Visual C/C++ Redistributable",
     "MissingVcRedistSubtitle": "You need to install the Visual C/C++ Redistributable to run this function. Do you want to download it now?\r\nNote: This will open a browser window and download a file from Microsoft. Please run the installer after downloading it then restart Collapse and try again.\r\nIf you have already installed it but the error remains, please send a issue ticket to us.",
-    "ExceptionFeedbackBtn": "Tell us what happened",
+    "ExceptionFeedbackBtn": "Расскажите нам что случилось",
     "ExceptionFeedbackBtn_Unavailable": "Crash report is disabled or not available",
     "ExceptionFeedbackBtn_FeedbackSent": "Feedback has been sent!",
     "ExceptionFeedbackTitle": "Tell us what happened:",
     "ExceptionFeedbackTemplate_User": "Username (Optional):",
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
     "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line",
+    
+    "Feedback": "User Feedback",
+    "FeedbackSending": "Sending your feedback...",
+    "FeedbackSent": "Feedback sent!",
+    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
     
     "Tag_Deprecated": "Deprecated",
     "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
@@ -1004,7 +1037,7 @@
     "SteamShortcutCreationSuccessSubtitle7": " • Если игра не установлена/обновлена, Collapse попытается установить/обновить ее. Пожалуйста, обратите внимание, что диалоги, связанные с этими процессами, по-прежнему будут отображаться.",
     "SteamShortcutCreationFailureTitle": "Неверная папка данных Steam",
     "SteamShortcutCreationFailureSubtitle": "Не удалось найти корректную папку userdata.\n\nПожалуйста, убедитесь, что вы хотя бы раз вошли в клиент Steam, прежде чем пытаться использовать эту функцию.",
-    "SteamShortcutTitle": "Steam Shortcut",
+    "SteamShortcutTitle": "Ярлык Steam",
     "SteamShortcutDownloadingImages": "Downloading Steam Grid Images ({0}/{1})",
 
     "DownloadSettingsTitle": "Настройки загрузки",
@@ -1017,8 +1050,8 @@
     "DbGenerateUid_Content": "Changing the current user ID will cause the associated data to be lost if you lose it.",
 
     "SophonIncrementUpdateUnavailTitle": "Incremental Update is Unavailable: Version is Too Obsolete!",
-    "SophonIncrementUpdateUnavailSubtitle1": "Your game version: {0}",
-    "SophonIncrementUpdateUnavailSubtitle2": " is too obsolete",
+    "SophonIncrementUpdateUnavailSubtitle1": "Версия вашей игры: {0}",
+    "SophonIncrementUpdateUnavailSubtitle2": "слишком устаревшая",
     "SophonIncrementUpdateUnavailSubtitle3": " and incremental update for your version is not available. However, you could still update your game by re-downloading the entire thing from scratch.",
     "SophonIncrementUpdateUnavailSubtitle4": "Click \"{0}\" to continue updating the entire thing or click \"{1}\" to cancel the process",
 
@@ -1607,12 +1640,12 @@
     "CacheUpdateDownloadCompleted_Title": "Cache Update Download is Completed",
     "CacheUpdateDownloadCompleted_Subtitle": "{0} cache file(s) have been successfully updated.",
 
-    "GenericClickNotifToGoBack_Subtitle": "Click this notification to go back to the launcher.",
+    "GenericClickNotifToGoBack_Subtitle": "Нажмите на это уведомление, чтобы вернуться к лаунчеру.",
 
-    "OOBE_WelcomeTitle": "Welcome to Collapse Launcher!",
-    "OOBE_WelcomeSubtitle": "You are currently selecting {0} - {1} as your game. There are more games awaits you, find out more!",
+    "OOBE_WelcomeTitle": "Добро пожаловать в Collapse Launcher!",
+    "OOBE_WelcomeSubtitle": "Вы выбрали {0} с сервером {1} как вашу игру. Вас ждет еще больше игр, узнайте больше!",
 
-    "LauncherUpdated_NotifTitle": "Your launcher is up-to-date!",
-    "LauncherUpdated_NotifSubtitle": "Your launcher has been updated to: {0}. Go to \"{1}\" and click \"{2}\" to see what changed."
+    "LauncherUpdated_NotifTitle": "Ваш лаунчер обновлен!",
+    "LauncherUpdated_NotifSubtitle": "Ваш лаунчер был обновлен до {0}. Перейдите в «{1}» и нажмите «{2}» чтобы посмотреть, что изменилось."
   }
 }

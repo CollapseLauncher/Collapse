@@ -152,7 +152,7 @@
                                        Text="%" />
                             <TextBlock control:DockPanel.Dock="Right"
                                        Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                       Text="{Binding Value, ElementName=CachesTotalProgressBar}" />
+                                       Text="{x:Bind CachesTotalProgressBar.Value, Mode=OneWay}" />
                         </control:DockPanel>
                         <ProgressBar x:Name="CachesTotalProgressBar"
                                      Height="25"

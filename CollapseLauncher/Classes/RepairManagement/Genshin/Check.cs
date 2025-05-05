@@ -409,7 +409,7 @@ namespace CollapseLauncher
                     {
                         localName = strippedName,
                         fileSize  = fInfo.Length,
-                        type      = RepairAssetType.Unused.ToString()
+                        type      = nameof(RepairAssetType.Unused)
                     };
                     Dispatch(() => AssetEntry.Add(
                                                   new AssetProperty<RepairAssetType>(
@@ -446,7 +446,7 @@ namespace CollapseLauncher
                 {
                     localName = strippedName,
                     fileSize  = fileInfo.Length,
-                    type      = RepairAssetType.Unused.ToString()
+                    type      = nameof(RepairAssetType.Unused)
                 };
                 Dispatch(() => AssetEntry.Add(
                     new AssetProperty<RepairAssetType>(

@@ -256,7 +256,7 @@ namespace CollapseLauncher
 
             // Parse asset index file from UABT
             BundleFile bundleFile = new BundleFile(stream);
-            SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.stream);
+            SerializedFile serializeFile = new SerializedFile(bundleFile.fileList!.FirstOrDefault()!.Stream);
 
             // Try to get the asset index file as byte[] and load it as TextAsset
             byte[] dataRaw = serializeFile.GetDataFirstOrDefaultByName("packageversion.txt");

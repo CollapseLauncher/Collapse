@@ -65,6 +65,26 @@ namespace CollapseLauncher.Helper.StreamUtility
                 fileInfo.Refresh();
             }
         }
+        
+        internal static DirectoryInfo EnsureNoReadOnly(this DirectoryInfo dirInfo)
+            => dirInfo.EnsureNoReadOnly(out _);
+
+        internal static DirectoryInfo EnsureNoReadOnly(this DirectoryInfo directoryInfo, out bool isDirExist)
+        {
+            try
+            {
+                if (!(isDirExist = directoryInfo.Exists))
+                    return directoryInfo;
+
+                directoryInfo.Attributes &= ~FileAttributes.ReadOnly;
+
+                return directoryInfo;
+            }
+            finally
+            {
+                directoryInfo.Refresh();
+            }
+        }
 
         internal static IEnumerable<FileInfo> EnumerateNoReadOnly(this IEnumerable<FileInfo> enumeratedFileInfo)
             => enumeratedFileInfo.Select(x => x.EnsureNoReadOnly());

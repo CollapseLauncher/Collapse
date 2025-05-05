@@ -304,12 +304,12 @@ public partial class MainPage : Page
         ToggleNotificationPanelBtnClick(null, null);
     }
 
-    private string GameDirPath => CurrentGameProperty.GameVersion.GameDirPath;
+    private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath!;
     private void OpenScreenshot_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         if (!IsGameInstalled()) return;
 
-        string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty.GameVersion.GamePreset.GameType switch
+        string ScreenshotFolder = Path.Combine(NormalizePath(GameDirPath), CurrentGameProperty.GameVersion?.GamePreset.GameType switch
                                                                            {
                                                                                GameNameType.StarRail => $"{Path.GetFileNameWithoutExtension(CurrentGameProperty.GameVersion.GamePreset.GameExecutableName)}_Data\\ScreenShots",
                                                                                _ => "ScreenShot"
@@ -363,7 +363,11 @@ public partial class MainPage : Page
         {
             if (!IsGameInstalled()) return;
 
-            string gameFolder = CurrentGameProperty.GameVersion.GameDirAppDataPath;
+            var gameFolder = CurrentGameProperty.GameVersion?.GameDirAppDataPath ??
+                             CurrentGameProperty.GameVersion?.GameDirPath ?? 
+                             null;
+            
+            if (string.IsNullOrEmpty(gameFolder)) return;
             LogWriteLine($"Opening Game Folder:\r\n\t{gameFolder}");
             await Task.Run(() =>
                                new Process
@@ -387,7 +391,7 @@ public partial class MainPage : Page
     {
         if (!CurrentGameProperty.IsGameRunning) return;
 
-        PresetConfig gamePreset         = CurrentGameProperty.GameVersion.GamePreset;
+        PresetConfig gamePreset         = CurrentGameProperty.GameVersion?.GamePreset!;
         string?      gamePresetExecName = gamePreset.GameExecutableName;
         if (string.IsNullOrEmpty(gamePresetExecName))
         {

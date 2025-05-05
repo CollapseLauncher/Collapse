@@ -127,7 +127,7 @@ namespace CollapseLauncher
                     GameRepoURL = latestZipApiUrl;
 
                     // Combine pkg_version url
-                    latestZipApiUrl = ConverterTool.CombineURLFromString(latestZipApiUrl, "pkg_version");
+                    latestZipApiUrl = latestZipApiUrl.CombineURLFromString("pkg_version");
 
                     // Read pkg_version stream response
                     await using Stream stream = await FallbackCDNUtil.GetHttpStreamFromResponse(latestZipApiUrl, token);

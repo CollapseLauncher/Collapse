@@ -48,7 +48,7 @@
                         BackRequested="NavigationViewControl_BackRequested"
                         Background="Transparent"
                         IsBackButtonVisible="Visible"
-                        IsBackEnabled="{Binding CanGoBack, ElementName=LauncherFrame, Mode=OneWay}"
+                        IsBackEnabled="{x:Bind LauncherFrame.CanGoBack, Mode=OneWay}"
                         IsPaneOpen="False"
                         IsSettingsVisible="true"
                         ItemInvoked="NavView_ItemInvoked"

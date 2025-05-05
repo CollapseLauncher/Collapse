@@ -8,9 +8,11 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Helper;
+using Hi3Helper.Win32.TaskbarListCOM;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -27,8 +29,6 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.TaskbarListCOM;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
@@ -574,28 +574,24 @@ namespace CollapseLauncher.Interfaces
 
         protected static void TryDeleteReadOnlyDir(string dirPath)
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
-            if (!dirInfo.Exists)
-            {
+            DirectoryInfo dirInfo = new DirectoryInfo(dirPath).EnsureNoReadOnly(out bool isDirExist);
+            if (!isDirExist)
                 return;
-            }
-
-            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories)
-                .EnumerateNoReadOnly())
-            {
-                try
-                {
-                    files.Delete();
-                }
-                catch (Exception ex)
-                {
-                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
-                } // Suppress errors
-            }
 
             try
             {
+                // Remove read-only attribute from all files and subdirectories
+                foreach (var file in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+                {
+                    file.EnsureNoReadOnly();
+                }
+        
+                foreach (var subDir in dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories))
+                {
+                    subDir.EnsureNoReadOnly();
+                }
+        
+                // Delete the directory and all its contents
                 dirInfo.Refresh();
                 dirInfo.Delete(true);
             }
@@ -1156,7 +1152,7 @@ namespace CollapseLauncher.Interfaces
                             read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
                             token);
 
-        private void UpdateHashReadProgress(int read, bool updateProgress, bool updateTotalProgress)
+        protected void UpdateHashReadProgress(int read, bool updateProgress, bool updateTotalProgress)
         {
             // If progress update is not allowed, then return
             if (!updateProgress)
@@ -1201,21 +1197,32 @@ namespace CollapseLauncher.Interfaces
             // Always do loop if patch doesn't get downloaded properly
             while (true)
             {
-                await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
-                // Verify the patch file and if it doesn't match, then re-download it
-                byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
-                if (!IsArrayMatch(patchCrc, patchHash.Span))
+                FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
+                try
                 {
-                    // Revert back the total size
-                    Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
+                    // Verify the patch file and if it doesn't match, then re-download it
+                    byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
+                    Array.Reverse(patchCrc);
+                    if (!IsArrayMatch(patchCrc, patchHash.Span))
+                    {
+                        // Revert back the total size
+                        Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
 
-                    // Re-download the patch file
-                    await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
-                    continue;
+                        // Dispose patch stream before re-downloading
+                        await patchFileStream.DisposeAsync();
+
+                        // Re-download the patch file
+                        await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
+                        continue;
+                    }
+
+                    // else, break and quit from loop
+                    break;
                 }
-
-                // else, break and quit from loop
-                break;
+                finally
+                {
+                    await patchFileStream.DisposeAsync();
+                }
             }
 
             // Start patching process
@@ -1240,6 +1247,10 @@ namespace CollapseLauncher.Interfaces
                     outputFile.Refresh();
                     outputFile.MoveTo(inputFile.FullName, true);
                 }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed while patching file: {inputFile.FullName} -> {outputFile.FullName}\r\n{ex}", LogType.Error, true);
             }
             finally
             {

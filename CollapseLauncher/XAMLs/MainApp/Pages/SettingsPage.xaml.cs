@@ -12,8 +12,10 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
+using CollapseLauncher.Pages.SettingsContext;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
 using CommunityToolkit.WinUI;
@@ -27,15 +29,20 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -59,7 +66,6 @@ using MediaType = CollapseLauncher.Helper.Background.BackgroundMediaUtility.Medi
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable HeuristicUnreachableCode
 
-#pragma warning disable CA1822
 
 namespace CollapseLauncher.Pages
 {
@@ -67,10 +73,22 @@ namespace CollapseLauncher.Pages
     {
         #region Properties
 
-        private const string RepoUrl                  = "https://github.com/CollapseLauncher/Collapse/commit/";
-
-        private readonly string ExplorerPath =
+        private const string RepoUrl = "https://github.com/CollapseLauncher/Collapse/commit/";
+        private readonly string _explorerPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
+
+        private readonly DnsSettingsContext _dnsSettingsContext;
+
+        private readonly Dictionary<string, FrameworkElement>               _settingsControls      = new();
+        private readonly Lock                                               _highlightLock         = new();
+        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls   = new([]);
+        private          int                                                _highlightCurrentIndex;
+        private          Brush                                              _highlightBrush;
+        private          Brush                                              _highlightSelectedBrush;
+
+#nullable enable
+        private string? _previousSearchQuery;
+#nullable restore
 
         #endregion
 
@@ -78,6 +96,9 @@ namespace CollapseLauncher.Pages
         public SettingsPage()
         {
             InitializeComponent();
+
+            _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
+            _dnsSettingsContext.PropertySavedChanged += DnsSettingsChangedNotify;
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -130,32 +151,45 @@ namespace CollapseLauncher.Pages
 
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
+#else
+            ShareYourFeedbackButton.IsEnabled = SentryHelper.IsEnabled;
 #endif
+
+            Task.Run(() =>
+                     {
+                         if (ImageLoaderHelper.EnsureWaifu2X())
+                         {
+                             DispatcherQueue.TryEnqueue(Bindings.Update);
+                         }
+                     });
         }
 
         private string GitVersionIndicator_Builder()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0618, CS0162 // Type or member is obsolete
             var branchName  = ThisAssembly.Git.Branch;
             var commitShort = ThisAssembly.Git.Commit;
 
             // Add indicator if the commit is dirty
             // CS0162: Unreachable code detected
-#pragma warning disable CS0162
-            if (ThisAssembly.Git.IsDirty) commitShort = $"{commitShort}*";
-#pragma warning restore CS0162
+            if (ThisAssembly.Git.IsDirty)
+            {
+                commitShort += '*';
+            }
 
             var outString =
                 // If branch is not HEAD, show branch name and short commit
                 // Else, show full SHA 
                 branchName == "HEAD" ? ThisAssembly.Git.Sha : $"{branchName} - {commitShort}";
-#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore CS0618, CS0162 // Type or member is obsolete
             return outString;
         }
         
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             BackgroundImgChanger.ToggleBackground(true);
+            
+            InitializeSettingsSearch();
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
@@ -226,7 +260,7 @@ namespace CollapseLauncher.Pages
                 StartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName        = ExplorerPath,
+                    FileName        = _explorerPath,
                     Arguments       = AppGameFolder
                 }
             }.Start();
@@ -413,34 +447,57 @@ namespace CollapseLauncher.Pages
 #nullable restore
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
 #if ENABLEUSERFEEDBACK
-            var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
-            var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
-            string exceptionContent = $"""
-                                       {userTemplate} 
-                                       {emailTemplate} 
-                                       {Lang._Misc.ExceptionFeedbackTemplate_Message}
-                                       ------------------------------------
-                                       """;
-            
+            var content = UserFeedbackTemplate.FeedbackTemplate;
             
             UserFeedbackDialog userFeedbackDialog = new UserFeedbackDialog(XamlRoot, true)
             { 
-                Message   = exceptionContent
+                Message   = content
             };
             
-            UserFeedbackResult userFeedbackResult = await userFeedbackDialog
-               .ShowAsync( result => throw new NotImplementedException());
+            UserFeedbackResult userFeedbackResult = await userFeedbackDialog.ShowAsync();
 
             if (userFeedbackResult == null)
             {
-                LogWriteLine("User feedback dialog cancelled!", LogType.Debug);
+                LogWriteLine("User feedback dialog cancelled!");
+                return;
             }
-#endif
+
+            var parsedFeedback       = UserFeedbackTemplate.ParseTemplate(userFeedbackResult);
+            var feedbackLoadingTitle = Lang._Misc.Feedback;
+            
+            // Show pseudo-loading message so user knows the feedback is being sent
+            LoadingMessageHelper.Initialize();
+            LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
+            LoadingMessageHelper.ShowLoadingFrame();
+            
+            if (parsedFeedback == null)
+            {
+                LogWriteLine("Feedback result failed to be parsed! Feedback not sent.", LogType.Error, true);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                await Task.Delay(1000);
+                LoadingMessageHelper.HideLoadingFrame();
+                return;
+            }
+
+            if (SentryHelper.SendGenericFeedback(parsedFeedback.Message, parsedFeedback.Email, parsedFeedback.User))
+            {
+                // Hide the loading message after 200ms
+                await Task.Delay(500);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSent);
+                await Task.Delay(1000);
+                LoadingMessageHelper.HideLoadingFrame();
+            }
+            else
+            {
+                await Task.Delay(250);
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                await Task.Delay(1000);
+                LoadingMessageHelper.HideLoadingFrame();
+            }
+        #endif
         }
 
         private void ClickTextLinkFromTag(object sender, PointerRoutedEventArgs e)
@@ -564,11 +621,11 @@ namespace CollapseLauncher.Pages
                     var bgPath = GetAppConfigValue("CustomBGPath").ToString();
                     if (string.IsNullOrEmpty(bgPath))
                     {
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = AppDefaultBG;
+                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
                     }
                     else
                     {
-                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = !File.Exists(bgPath) ? AppDefaultBG : bgPath;
+                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = !File.Exists(bgPath) ? BackgroundMediaUtility.GetDefaultRegionBackgroundPath() : bgPath;
                     }
                     BGPathDisplay.Text = LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal;
                     BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true);
@@ -815,8 +872,11 @@ namespace CollapseLauncher.Pages
                     case Waifu2XStatus.TestNotPassed:
                         tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Error_Output;
                         break;
+                    case Waifu2XStatus.NotInitialized:
+                        tooltip += "\n\n" + Lang._SettingsPage.Waifu2X_Initializing;
+                        break;
                 }
-                
+
                 return tooltip;
             }
         }
@@ -917,6 +977,7 @@ namespace CollapseLauncher.Pages
             }
 
             UpdateBindings.Update();
+            InitializeSettingsSearch();
         }
 
         private void UpdateBindingsEvents(object sender, EventArgs e)
@@ -934,6 +995,11 @@ namespace CollapseLauncher.Pages
 
             string url = GetAppConfigValue("HttpProxyUrl").ToString();
             ValidateHttpProxyUrl(url);
+
+            _dnsSettingsContext.ExternalDnsConnectionTypeList = null;
+            _dnsSettingsContext.ExternalDnsProviderList       = null;
+            CustomDnsConnectionTypeComboBox.UpdateLayout();
+            CustomDnsProviderListComboBox.UpdateLayout();
         }
 
         private readonly List<string> _windowSizeProfilesKey = WindowSizeProfiles.Keys.ToList();
@@ -1299,7 +1365,7 @@ namespace CollapseLauncher.Pages
                 SetAndSaveConfigValue("HttpProxyPassword", protectedString, true);
             }
         }
-        
+
         private static bool IsBurstDownloadModeEnabled
         {
             get => LauncherConfig.IsBurstDownloadModeEnabled;
@@ -1397,6 +1463,100 @@ namespace CollapseLauncher.Pages
                 LauncherConfig.DownloadChunkSize = Math.Max(valBfromM, 0);
             }
         }
+
+        private readonly string _dnsSettingsSeparatorList = string.Join(' ', HttpClientBuilder.DnsHostSeparators.Select(x => $"{x}"));
+
+        private async void ValidateAndApplyDnsSettings(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button senderAsButton)
+            {
+                return;
+            }
+
+            senderAsButton.IsEnabled = false;
+            try
+            {
+                DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
+
+                string?           dnsHost     = _dnsSettingsContext.ExternalDnsAddresses;
+                DnsConnectionType connType    = (DnsConnectionType)_dnsSettingsContext.ExternalDnsConnectionType;
+                string            dnsSettings = $"{dnsHost}|{connType}";
+
+                (bool isSuccess, string[]? resultHosts) resultHosts = await Task.Factory.StartNew(() =>
+                {
+                    bool isSuccess =
+                        HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true,
+                                                           out string[]? resultHosts);
+                    return (isSuccess, resultHosts);
+                }, TaskCreationOptions.DenyChildAttach);
+
+                if (!resultHosts.isSuccess)
+                {
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
+                                                        $"Also, make sure that you use one of these separators: {_dnsSettingsSeparatorList}");
+                }
+
+
+                (bool isSuccess, DnsConnectionType resultConnType) resultConnType = await Task.Factory.StartNew(() =>
+                {
+                    bool isSuccess =
+                        HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out DnsConnectionType resultConnType);
+                    return (isSuccess, resultConnType);
+                }, TaskCreationOptions.DenyChildAttach);
+
+                if (!resultConnType.isSuccess)
+                {
+                    DnsConnectionType[] types       = Enum.GetValues<DnsConnectionType>();
+                    string              typesInList = string.Join(", ", types);
+                    throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has no valid DNS Connection Type. " + 
+                                                        $"The valid values are: {typesInList}");
+                }
+
+                const string testUrl = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE";
+
+                TimeSpan timeoutSpan = TimeSpan.FromSeconds(5);
+                using HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
+                                                    .UseLauncherConfig(skipDnsInit: true)
+                                                    .UseExternalDns(resultHosts.resultHosts, resultConnType.resultConnType)
+                                                    .SetTimeout(timeoutSpan)
+                                                    .Create();
+
+                using CancellationTokenSource tokenSource = new(timeoutSpan);
+                using HttpResponseMessage responseMessage =
+                    await
+                        httpClientWithCustomDns
+                           .GetAsync(testUrl, HttpCompletionOption.ResponseContentRead, tokenSource.Token);
+
+                if (!responseMessage.IsSuccessStatusCode)
+                {
+                    throw new
+                        HttpRequestException($"HttpClient returns a non-successful status code while testing the request to this URL: {testUrl} (Status: {responseMessage.StatusCode})",
+                                             null, responseMessage.StatusCode);
+                }
+
+                _dnsSettingsContext.SaveSettings();
+
+                DnsSettingsTestTextSuccess.Visibility  = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
+                ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
+            finally
+            {
+                DnsSettingsTestTextChecking.Visibility = Visibility.Collapsed;
+                await Task.Delay(TimeSpan.FromSeconds(2));
+
+                DnsSettingsTestTextFailed.Visibility  = Visibility.Collapsed;
+                DnsSettingsTestTextSuccess.Visibility = Visibility.Collapsed;
+                senderAsButton.IsEnabled              = true;
+            }
+        }
+
+        private void DnsSettingsChangedNotify(object? sender, EventArgs? args)
+            => CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
 #nullable restore
 
         #region Database
@@ -1583,7 +1743,7 @@ namespace CollapseLauncher.Pages
                                    {
                                        ProcessStartInfo psi = new ProcessStartInfo
                                        {
-                                           FileName        = ExplorerPath,
+                                           FileName        = _explorerPath,
                                            Arguments       = "https://aka.ms/vs/17/release/vc_redist.x64.exe",
                                            UseShellExecute = true,
                                            Verb            = "runas"
@@ -1712,5 +1872,417 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
+        private void InitializeSettingsSearch()
+        {
+            // Create brushes for highlighting
+            _highlightBrush = new SolidColorBrush(Microsoft.UI.Colors.Yellow) { Opacity = 0.3 };
+            _highlightSelectedBrush = new SolidColorBrush(Microsoft.UI.Colors.Blue) { Opacity = 0.5 };
+
+            // Map all settings controls with their display text
+            if (!(_settingsControls.Count < 1)) _settingsControls.Clear();
+            ClearHighlighting();
+
+            // Walk through all Toggle Switches, TextBlocks with headers, etc.
+            CollectSearchableControls(AppSettings);
+
+            // Initialize shortcut
+            SettingsSearchBoxShortcutInit();
+        }
+
+        private void CollectSearchableControls(DependencyObject parent)
+        {
+            var childCount = VisualTreeHelper.GetChildrenCount(parent);
+
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                switch (child)
+                {
+                    // Check if this is a control we want to make searchable
+                    case ToggleSwitch t: // ToggleSwitch main header
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case RadioButtons t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case RadioButton t:
+                    {
+                        AddControlRecursive(t.Content, t);
+                        continue;
+                    }
+                    case ComboBox { Header: not null } t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case ComboBoxItem t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Content?.ToString()))
+                            AddControl(t.Content.ToString(), t);
+                        continue;
+                    }
+                    case NumberBox { Header: not null } t:
+                    {
+                        AddControlRecursive(t.Header, t);
+                        continue;
+                    }
+                    case TextBlock t:
+                    {
+                        if (!string.IsNullOrEmpty(t.Text))
+                            AddControl(t.Text, t);
+                        continue;
+                    }
+                    case Run t when !string.IsNullOrEmpty(t.Text):
+                    {
+                        AddControl(t.Text, VisualTreeHelper.GetParent(t) as FrameworkElement);
+                        continue;
+                    }
+                    case Slider t when !string.IsNullOrEmpty(t.Header?.ToString()):
+                    {
+                        AddControl(t.Header?.ToString(), t);
+                        continue;
+                    }
+                }
+
+                // Recurse into children
+                CollectSearchableControls(child);
+            }
+        }
+        
+        private void AddControl(string key, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+
+            if (!string.IsNullOrEmpty(key) && IsElementVisible(t))
+                _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        }
+
+#nullable enable
+        private static bool IsElementVisible(FrameworkElement? element)
+        {
+            if (element == null)
+            {
+                return false;
+            }
+
+            if (element.Visibility == Visibility.Collapsed || element.Opacity < 1)
+            {
+                return false;
+            }
+
+            return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
+                   (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
+        }
+#nullable restore
+
+        private void AddControlRecursive(object o, FrameworkElement t)
+        {
+            if (t is StackPanel or Grid) 
+                return;
+            string key = null;
+
+            switch (o)
+            {
+                // Handle different content types
+                case string textContent:
+                    key = textContent;
+                    break;
+                case TextBlock textBlock:
+                    key = textBlock.Text;
+                    break;
+                case RadioButtons radioButtons:
+                {
+                    AddControlRecursiveSelectible(radioButtons);
+                    return;
+                }
+                case FrameworkElement element:
+                {
+                    // Try to find TextBlock inside the content
+                    var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                    var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                    if (enumerable.Any())
+                    {
+                        key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                    }
+                    break;
+                }
+                case null:
+                {
+                    AddControlRecursive(t, t);
+                    return;
+                }
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            _settingsControls.TryAdd(key, t);
+        #if DEBUG
+            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+        #endif
+        }
+
+    #nullable enable
+        private void AddControlRecursiveSelectible(FrameworkElement element)
+        {
+            foreach (FrameworkElement childElement in element
+                .EnumerateSelectableElementChildren()
+                .OfType<FrameworkElement>())
+            {
+                if (childElement is not RadioButton asRadioButton)
+                {
+                    continue;
+                }
+
+                TextBlock? textBlock = asRadioButton.FindDescendant<TextBlock>();
+                if (string.IsNullOrEmpty(textBlock?.Text))
+                {
+                    continue;
+                }
+
+                AddControlRecursive(textBlock.Text, asRadioButton);
+            }
+        }
+
+        private void ClearHighlighting()
+        {
+            foreach (var control in _highlightedControls)
+            {
+                control.ClearHighlight();
+            }
+
+            _highlightedControls.Clear();
+        }
+
+        private void SettingsSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                PerformSearch(sender.Text);
+            }
+        }
+
+        private void SettingsSearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            bool isShiftPressed = InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+            if (PerformSearch(args.QueryText))
+            {
+                return;
+            }
+
+            if (isShiftPressed)
+            {
+                SettingsSearchBoxFindSelectPrevious(null, null);
+                return;
+            }
+
+            SettingsSearchBoxFindSelectNext(null, null);
+        }
+
+        private bool PerformSearch(string query)
+        {
+            if (query == _previousSearchQuery)
+            {
+                return false;
+            }
+
+            _previousSearchQuery = query;
+
+            // Clear previous highlighting
+            ClearHighlighting();
+
+            if (string.IsNullOrWhiteSpace(query))
+                return false;
+
+            // Find and highlight matching controls
+            foreach (var (key, control) in _settingsControls)
+            {
+                int indexOfQuery;
+                if ((indexOfQuery = key.IndexOf(query, StringComparison.OrdinalIgnoreCase)) < 0)
+                {
+                    continue;
+                }
+                
+            #if DEBUG
+                LogWriteLine($"For {query}, found key {key} with type {control.GetType()}", LogType.Debug);
+            #endif
+
+                if (control is TextBlock textBlock)
+                {
+                    // Create a highlighter or use an existing one (if any)
+                    TextHighlighter textHighlighter    = new TextHighlighter();
+                    TextRange       textHighlightRange = new TextRange(indexOfQuery, query.Length);
+
+                    // Assign the range and its color (for background and foreground)
+                    textHighlighter.Ranges.Add(textHighlightRange);
+
+                    // Assign the highlighter (if there's none)
+                    textBlock.TextHighlighters.Add(textHighlighter);
+                }
+
+                HighlightableControlProperty highlightableControl = control.CreateHighlight(_highlightBrush, _highlightSelectedBrush);
+                highlightableControl.SetBrushHighlightElement();
+                _highlightedControls.Add(highlightableControl);
+            }
+
+            // Find the first match and if it's null, return.
+            if (_highlightedControls.Count == 0 || _highlightedControls.FirstOrDefault() is not { } firstControl)
+            {
+                return false;
+            }
+
+            lock (_highlightLock)
+            {
+                SettingsSearchBringIntoViewAndHighlight(firstControl);
+                _highlightCurrentIndex = 0;
+            }
+            return true;
+        }
+
+        private void SettingsSearchBringIntoViewAndHighlight(HighlightableControlProperty element)
+        {
+            ref IList<HighlightableControlProperty> backedList =
+                ref ObservableCollectionExtension<HighlightableControlProperty>
+                   .GetBackedCollectionList(_highlightedControls);
+
+            int indexOf = backedList.IndexOf(element);
+            if (indexOf < 0)
+            {
+                return;
+            }
+
+            foreach (var control in backedList)
+            {
+                if (control == element)
+                {
+                    continue;
+                }
+
+                control.SetBrushHighlightElement();
+            }
+
+            SettingsSearchBringIntoView(indexOf);
+        }
+
+        private void SettingsSearchBringIntoView(int atIndex)
+        {
+            ref IList<HighlightableControlProperty> backedList =
+                ref ObservableCollectionExtension<HighlightableControlProperty>
+                   .GetBackedCollectionList(_highlightedControls);
+
+            if (backedList.Count < atIndex)
+            {
+                return;
+            }
+
+            HighlightableControlProperty selectedElement = backedList[atIndex];
+            SettingsSearchHighlightPosText.Text = $"{atIndex + 1} / {_highlightedControls.Count}";
+
+            // Otherwise, bring first control into view
+            FrameworkElement? e = selectedElement.Element switch
+            {
+                RadioButton tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                ComboBoxItem tc => VisualTreeHelper.GetParent(tc) as FrameworkElement,
+                _ => selectedElement.Element
+            };
+
+            e?.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = true, VerticalAlignmentRatio = 0.1f });
+            selectedElement.SetBrushHighlightSelectElement();
+
+            MainSettingsPanel.Opacity = 1f;
+            AboutApp.Opacity          = 1f;
+        }
+
+        private void SettingsSearchBox_OnGettingFocus(UIElement sender, GettingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 32);
+            MainSettingsPanel.Opacity               = 0.5f;
+            AboutApp.Opacity                        = 0.5f;
+        }
+
+        private void SettingsSearchBox_OnLosingFocus(UIElement sender, LosingFocusEventArgs args)
+        {
+            SettingsSearchBoxGridShadow.Translation = new Vector3(0, 0, 8);
+            MainSettingsPanel.Opacity               = 1f;
+            AboutApp.Opacity                        = 1f;
+        }
+
+        private void SettingsSearchBoxFindSelectNext(object? sender, RoutedEventArgs? e)
+        {
+            lock (_highlightLock)
+            {
+                if (_highlightedControls.Count == 0)
+                {
+                    return;
+                }
+
+                ++_highlightCurrentIndex;
+                if (_highlightedControls.Count <= _highlightCurrentIndex)
+                {
+                    _highlightCurrentIndex = -1;
+                    SettingsSearchBoxFindSelectNext(sender, e);
+                    return;
+                }
+
+                SettingsSearchBringIntoViewAndHighlight(_highlightedControls[_highlightCurrentIndex]);
+            }
+        }
+
+        private void SettingsSearchBoxFindSelectPrevious(object? sender, RoutedEventArgs? e)
+        {
+            lock (_highlightLock)
+            {
+                if (_highlightedControls.Count == 0)
+                {
+                    return;
+                }
+
+                --_highlightCurrentIndex;
+                if (_highlightCurrentIndex < 0)
+                {
+                    _highlightCurrentIndex = _highlightedControls.Count;
+                    SettingsSearchBoxFindSelectPrevious(sender, e);
+                    return;
+                }
+
+                SettingsSearchBringIntoViewAndHighlight(_highlightedControls[_highlightCurrentIndex]);
+            }
+        }
+
+        private void SettingsSearchBoxShortcutInit()
+        {
+            KeyboardAccelerator previousAccelerator = new KeyboardAccelerator
+            {
+                Key       = Windows.System.VirtualKey.Enter,
+                Modifiers = Windows.System.VirtualKeyModifiers.Shift
+            };
+
+            KeyboardAccelerator nextAccelerator = new KeyboardAccelerator
+            {
+                Key       = Windows.System.VirtualKey.Enter,
+                Modifiers = Windows.System.VirtualKeyModifiers.None
+            };
+
+            SettingsSearchHighlightPreviousBtn.Focus(FocusState.Keyboard);
+            SettingsSearchHighlightPreviousBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            SettingsSearchHighlightPreviousBtn.KeyboardAccelerators.Add(previousAccelerator);
+
+            SettingsSearchHighlightNextBtn.Focus(FocusState.Keyboard);
+            SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
+            SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
+        }
     }
 }
