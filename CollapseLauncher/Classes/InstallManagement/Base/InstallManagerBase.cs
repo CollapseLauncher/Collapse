@@ -2139,19 +2139,24 @@ namespace CollapseLauncher.InstallManager.Base
 #else
             false
 #endif
-            )
-        {
-            return localeCode switch
-                   {
-                       "zh-cn" => "Chinese",
-                       "en-us" => "English(US)",
-                       "ja-jp" => "Japanese",
-                       "ko-kr" => "Korean",
-                       _ => throwIfInvalid
-                           ? throw new NotSupportedException($"This locale code: {localeCode} is not supported")
-                           : string.Empty
-                   };
-        }
+            ) => GetLanguageStringByLocaleCodeStatic(localeCode, throwIfInvalid);
+
+        internal static string GetLanguageStringByLocaleCodeStatic([NotNull] string? localeCode, bool throwIfInvalid =
+#if DEBUG
+            true
+#else
+            false
+#endif
+        ) => localeCode switch
+             {
+                 "zh-cn" => "Chinese",
+                 "en-us" => "English(US)",
+                 "ja-jp" => "Japanese",
+                 "ko-kr" => "Korean",
+                 _ => throwIfInvalid
+                     ? throw new NotSupportedException($"This locale code: {localeCode} is not supported")
+                     : string.Empty
+             };
 
         protected virtual string GetLanguageStringByID(int id)
         {
@@ -2165,20 +2170,31 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string? GetLanguageLocaleCodeByLanguageString([NotNullIfNotNull(nameof(langString))] string? langString, bool throwIfInvalid = true)
-        {
-            return langString switch
-                   {
-                       "Chinese" => "zh-cn",
-                       "English" => "en-us",
-                       "English(US)" => "en-us",
-                       "Korean" => "ko-kr",
-                       "Japanese" => "ja-jp",
-                       _ => throwIfInvalid
-                           ? throw new NotSupportedException($"This language string: {langString} is not supported")
-                           : null
-                   };
-        }
+        protected virtual string? GetLanguageLocaleCodeByLanguageString([NotNullIfNotNull(nameof(langString))] string? langString, bool throwIfInvalid =
+#if DEBUG
+            true
+#else
+            false
+#endif
+            ) => GetLanguageLocaleCodeByLanguageStringStatic(langString, throwIfInvalid);
+
+        internal static string? GetLanguageLocaleCodeByLanguageStringStatic([NotNullIfNotNull(nameof(langString))] string? langString, bool throwIfInvalid =
+#if DEBUG
+            true
+#else
+            false
+#endif
+            ) => langString switch
+                 {
+                     "Chinese" => "zh-cn",
+                     "English" => "en-us",
+                     "English(US)" => "en-us",
+                     "Korean" => "ko-kr",
+                     "Japanese" => "ja-jp",
+                     _ => throwIfInvalid
+                         ? throw new NotSupportedException($"This language string: {langString} is not supported")
+                         : null
+                 };
 
         protected virtual string? GetLanguageDisplayByLocaleCode([NotNullIfNotNull(nameof(localeCode))] string? localeCode, bool throwIfInvalid = true)
         {

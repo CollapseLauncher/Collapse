@@ -1,7 +1,9 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.Sophon;
 using Microsoft.UI.Xaml;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
@@ -35,6 +37,9 @@ namespace CollapseLauncher
         #endregion
 
         #region Properties
+        private Dictionary<string, SophonAsset>.AlternateLookup<ReadOnlySpan<char>>? _sophonAssetDictRefLookup;
+        private Dictionary<string, SophonAsset> SophonAssetDictRef { get; } = new(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, SophonAsset>.AlternateLookup<ReadOnlySpan<char>> SophonAssetDictRefLookup { get => _sophonAssetDictRefLookup ??= SophonAssetDictRef.GetAlternateLookup<ReadOnlySpan<char>>(); }
         private bool IsParsePersistentManifestSuccess { get; set; }
         protected override string UserAgent { get; set; } = "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         #endregion
@@ -64,6 +69,7 @@ namespace CollapseLauncher
             // Reset status and progress
             ResetStatusAndProgress();
             AssetIndex.Clear();
+            SophonAssetDictRef.Clear();
 
             // Step 1: Ensure that every file are not read-only
             TryUnassignReadOnlyFiles(GamePath);

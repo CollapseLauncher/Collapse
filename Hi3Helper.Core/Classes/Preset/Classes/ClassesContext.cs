@@ -7,7 +7,10 @@ using static Hi3Helper.Locale;
 
 namespace Hi3Helper
 {
-    [JsonSourceGenerationOptions(IncludeFields = true, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = false)]
+    [JsonSourceGenerationOptions(IncludeFields = true,
+                                 GenerationMode = JsonSourceGenerationMode.Metadata,
+                                 IgnoreReadOnlyFields = false,
+                                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(DataProperties))]
     [JsonSerializable(typeof(PkgVersionProperties))]
     [JsonSerializable(typeof(DataPropertiesContent))]
