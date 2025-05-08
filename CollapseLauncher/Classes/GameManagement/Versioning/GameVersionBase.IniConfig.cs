@@ -63,7 +63,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         protected virtual IniFile GameIniProfile     { get; } = new();
         protected virtual IniFile GameIniVersion     { get; } = new();
         public virtual IniSection GameIniVersionSection { get => GameIniVersion[DefaultIniVersionSection]; }
-        public virtual IniSection GameIniProfileSection { get => GameIniVersion[DefaultIniProfileSection]; }
+        public virtual IniSection GameIniProfileSection { get => GameIniProfile[DefaultIniProfileSection]; }
         #endregion
 
         #region Game Config Path Properties
@@ -75,7 +75,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             get
             {
-                var configPath = GameIniProfile[DefaultIniProfileSection]["game_install_path"].ToString();
+                var configPath = GameIniProfileSection["game_install_path"].ToString();
                 var defaultPath = Path.Combine(GameConfigDirPath ?? "", GamePreset.GameDirectoryName ?? "Games", ConfigFileName);
 
                 if (string.IsNullOrEmpty(configPath)) return defaultPath;
@@ -173,9 +173,9 @@ namespace CollapseLauncher.GameManagement.Versioning
 
             string gameIniVersionPath = Path.Combine(GameDirPath, ConfigFileName);
 
-            GameIniVersion[DefaultIniVersionSection][channelIdKeyName] = GamePreset.ChannelID ?? 0;
-            GameIniVersion[DefaultIniVersionSection][subChannelIdKeyName] = GamePreset.SubChannelID ?? 0;
-            GameIniVersion[DefaultIniVersionSection][cpsKeyName] = GamePreset.LauncherCPSType;
+            GameIniVersionSection[channelIdKeyName] = GamePreset.ChannelID ?? 0;
+            GameIniVersionSection[subChannelIdKeyName] = GamePreset.SubChannelID ?? 0;
+            GameIniVersionSection[cpsKeyName] = GamePreset.LauncherCPSType;
 
             SaveGameIni(gameIniVersionPath, GameIniVersion);
         }
@@ -198,7 +198,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         #region Update Game Config Methods
         public void UpdateGamePath(string? path, bool saveValue = true)
         {
-            GameIniProfile[DefaultIniProfileSection]["game_install_path"] = path?.Replace('\\', '/');
+            GameIniProfileSection["game_install_path"] = path?.Replace('\\', '/');
             if (saveValue)
             {
                 SaveGameIni(GameIniProfilePath, GameIniProfile);
@@ -220,7 +220,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         public void UpdateGameVersion(GameVersion? version, bool saveValue = true)
         {
-            GameIniVersion[DefaultIniVersionSection]["game_version"] = version?.VersionString;
+            GameIniVersionSection["game_version"] = version?.VersionString;
             if (saveValue)
             {
                 SaveGameIni(GameIniVersionPath, GameIniVersion);
@@ -229,9 +229,9 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         public void UpdateGameChannels(bool saveValue = true)
         {
-            GameIniVersion[DefaultIniVersionSection]["channel"] = DefaultGameChannelID;
-            GameIniVersion[DefaultIniVersionSection]["sub_channel"] = DefaultGameSubChannelID;
-            GameIniVersion[DefaultIniVersionSection]["cps"] = DefaultGameCps;
+            GameIniVersionSection["channel"] = DefaultGameChannelID;
+            GameIniVersionSection["sub_channel"] = DefaultGameSubChannelID;
+            GameIniVersionSection["cps"] = DefaultGameCps;
 
             if (saveValue)
             {
@@ -253,7 +253,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 string keyName = $"plugin_{version.Key}_version";
 
                 // Set the value
-                GameIniVersion[DefaultIniVersionSection][keyName] = version.Value.VersionString;
+                GameIniVersionSection[keyName] = version.Value.VersionString;
             }
 
             if (saveValue)
@@ -274,7 +274,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 
             // Set the value
             const string keyName = "plugin_sdk_version";
-            GameIniVersion[DefaultIniVersionSection][keyName] = version.ToString();
+            GameIniVersionSection[keyName] = version.ToString();
 
             if (saveValue)
             {
@@ -339,7 +339,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             InitializeIniProp(GameIniProfilePath, GameIniProfile, DefaultIniProfile,
                               DefaultIniProfileSection);
             InitializeIniProp(GameIniVersionPath, GameIniVersion, DefaultIniVersion,
-                              DefaultIniVersionSection, true);
+                              DefaultIniVersionSection);
 
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath,
@@ -392,7 +392,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 }
             }
 
-            UpdateGameChannels(false);
+            // UpdateGameChannels(false);
         }
 
         private void SaveGameIni(string filePath, IniFile ini)
