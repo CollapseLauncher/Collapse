@@ -65,6 +65,7 @@ using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 using ZipArchive = SharpCompress.Archives.Zip.ZipArchive;
 using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+#pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
 #endif
 
 // ReSharper disable ForCanBeConvertedToForeach
@@ -2132,7 +2133,13 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageStringByLocaleCode([NotNull] string? localeCode)
+        protected virtual string GetLanguageStringByLocaleCode([NotNull] string? localeCode, bool throwIfInvalid =
+#if DEBUG
+            true
+#else
+            false
+#endif
+            )
         {
             return localeCode switch
                    {
@@ -2140,7 +2147,9 @@ namespace CollapseLauncher.InstallManager.Base
                        "en-us" => "English(US)",
                        "ja-jp" => "Japanese",
                        "ko-kr" => "Korean",
-                       _ => throw new KeyNotFoundException($"Locale code: {localeCode} is not supported!")
+                       _ => throwIfInvalid
+                           ? throw new NotSupportedException($"This locale code: {localeCode} is not supported")
+                           : string.Empty
                    };
         }
 
@@ -2359,7 +2368,7 @@ namespace CollapseLauncher.InstallManager.Base
                 sw.WriteLine(langString);
             }
         }
-        #endregion
+#endregion
 
         #region Private Methods - GetInstallationPath
         private async ValueTask<int> CheckExistingBHI3LInstallation(bool isHasOnlyMigrateOption = false)
@@ -2692,7 +2701,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             List<AppInfo> steamAppList = SteamTool.GetSteamApps(steamLibsList);
-        #nullable enable
+#nullable enable
             AppInfo? steamAppInfo = steamAppList.FirstOrDefault(x => x.Id == steamID);
 
             // If the app info is not null, then assign OutputPath to the game path
@@ -2703,14 +2712,14 @@ namespace CollapseLauncher.InstallManager.Base
 
             OutputPath = steamAppInfo.GameRoot;
             return true;
-        #nullable disable
+#nullable disable
 
             // If none of them has it, then return false
         }
 
         private bool TryGetExistingBHI3LPath(ref string OutputPath)
         {
-        #nullable enable
+#nullable enable
             // If the preset doesn't have BetterHi3Launcher registry ver info, then return false
             if (GameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg == null)
             {
@@ -2836,7 +2845,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-    #nullable enable
+#nullable enable
         protected virtual void TryAddPluginPackage(List<GameInstallPackage> assetList)
         {
             const string pluginKeyStart = "plugin_";
@@ -2906,7 +2915,7 @@ namespace CollapseLauncher.InstallManager.Base
                 assetList.Add(new GameInstallPackage(pluginResource.Value, GamePath));
             }
         }
-    #nullable restore
+#nullable restore
 
         private async ValueTask<int> CheckExistingOrAskFolderDialog()
         {
@@ -2935,7 +2944,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         #region Virtual Methods - GetInstallationPath
 
-    #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected virtual async ValueTask TryAddResourceVersionList(RegionResourceVersion    asset,
                                                                     List<GameInstallPackage> packageList,
                                                                     bool                     isSkipMainPackage = false)
@@ -3063,7 +3072,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
         }
-    #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         protected virtual async ValueTask TryAddOtherInstalledVoicePacks(
             List<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
@@ -3480,7 +3489,7 @@ namespace CollapseLauncher.InstallManager.Base
             LogWriteLine($"Total free space required: {ConverterTool.SummarizeSizeSimple(remainedDownloadUncompressed)} remained to be downloaded (Total: {ConverterTool.SummarizeSizeSimple(requiredSpaceUncompressed)}) with {driveInfo.Name} remaining free space: {ConverterTool.SummarizeSizeSimple(diskFreeSpace)}",
                          LogType.Default, true);
 
-        #if DEBUG
+#if DEBUG
             double diskSpaceGb = Math.Round(ConverterTool.SummarizeSizeDouble(Convert.ToDouble(diskFreeSpace), 3), 4);
             double requiredSpaceGb = Convert.ToDouble(requiredSpaceUncompressed / (1L << 30));
             double existingPackageSizeGb = Convert.ToDouble(sizeDownloaded / (1L << 30));
@@ -3499,7 +3508,7 @@ namespace CollapseLauncher.InstallManager.Base
                          LogType.Debug);
             LogWriteLine($"Remaining Package Download Size (Compressed Size)(GB): {remainingDownloadSizeGb}",
                          LogType.Debug);
-        #endif
+#endif
 
             if (diskFreeSpace < remainedDownloadUncompressed)
             {
@@ -3544,9 +3553,9 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsRunning   = true;
                     Status.IsCompleted = false;
                     Status.IsCanceled  = false;
-                    #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Update);
-                    #endif
+#endif
                     break;
                 case CompletenessStatus.Completed:
                     IsRunning          = false;
@@ -3555,9 +3564,9 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsCanceled  = false;
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
-                    #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                    #endif
+#endif
                     // HACK: Fix the progress not achieving 100% while completed
                     lock (Progress)
                     {
@@ -3572,9 +3581,9 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsCanceled  = true;
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
-                    #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                    #endif
+#endif
                     break;
                 case CompletenessStatus.Idle:
                     IsRunning          = false;
@@ -3583,9 +3592,9 @@ namespace CollapseLauncher.InstallManager.Base
                     Status.IsCanceled  = false;
                     Status.IsProgressAllIndetermined = false;
                     Status.IsProgressPerFileIndetermined = false;
-                    #if !DISABLEDISCORD
+#if !DISABLEDISCORD
                     InnerLauncherConfig.AppDiscordPresence?.SetActivity(ActivityType.Idle);
-                    #endif
+#endif
                     break;
             }
 

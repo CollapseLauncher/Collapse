@@ -36,8 +36,10 @@ namespace Hi3Helper.Shared.ClassStruct
         public string                  M                 { get; set; }
         public FileType                FT                { get; set; }
         public List<XMFBlockList>      BlkC              { get; set; }
+#nullable enable
         public ManifestAudioPatchInfo? AudioPatchInfo    { get; set; }
         public BlockPatchInfo?         BlockPatchInfo    { get; set; }
+#nullable restore
         public long                    S                 { get; set; }
         public bool                    IsPatchApplicable { get; set; }
         public bool                    IsBlockNeedRepair { get; set; }

@@ -77,7 +77,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await SophonPatch.CreateSophonChunkManifestInfoPair(httpClient,
                                                                     url: branchResources.PatchUrl,
                                                                     versionUpdateFrom: requestedVersionFrom.Value.VersionString,
-                                                                    matchingField: GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
+                                                                    matchingField: branchResources.MainBranchMatchingField,
                                                                     token: Token.Token);
 
             // If the patch metadata is not found, then return false and back to old compare method
