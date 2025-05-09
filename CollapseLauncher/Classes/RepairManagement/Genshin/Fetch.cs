@@ -1,11 +1,16 @@
 ﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.InstallManager.Genshin;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
+using Hi3Helper.Sophon;
+using Hi3Helper.Sophon.Structs;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -23,6 +28,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable CheckNamespace
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable GrammarMistakeInComment
 
 namespace CollapseLauncher
 {
@@ -51,7 +57,7 @@ namespace CollapseLauncher
 
             // Region: PrimaryManifest
             // Build primary manifest
-            await BuildPrimaryManifest(downloadClient, _httpClient_FetchManifestAssetProgress, assetIndex, hashtableManifest, token);
+            await BuildPrimaryManifest(downloadClient, assetIndex, hashtableManifest, token);
 
             // Region: PersistentManifest
             // Build persistent manifest
@@ -66,8 +72,18 @@ namespace CollapseLauncher
             // Clear hashtableManifest
             hashtableManifest.Clear();
 
-            // Eliminate unnecessary asset indexes
-            return IsParsePersistentManifestSuccess ? EliminateUnnecessaryAssetIndex(assetIndex) : assetIndex;
+            // Eliminate unnecessary asset indexes if persistent manifest is successfully parsed
+            if (!IsParsePersistentManifestSuccess)
+            {
+                return assetIndex;
+            }
+
+            // Section: Eliminate unused audio files
+            List<string> audioLangList     = (GameVersionManager as GameTypeGenshinVersion)!.AudioVoiceLanguageList;
+            string       audioLangListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
+            EliminateUnnecessaryAssetIndex(audioLangListPath, audioLangList, assetIndex, '/', x => x.remoteName);
+
+            return assetIndex;
         }
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
@@ -92,133 +108,94 @@ namespace CollapseLauncher
                });
         }
 
-        private List<PkgVersionProperties> EliminateUnnecessaryAssetIndex(IEnumerable<PkgVersionProperties> assetIndex)
+        internal static void EliminateUnnecessaryAssetIndex<T>(string          audioLangListPath,
+                                                               List<string>    audioLangList,
+                                                               List<T>         assetIndex,
+                                                               char            separatorChar,
+                                                               Func<T, string> predicate)
         {
-            // Section: Eliminate unused audio files
-            List<string> audioLangList = (GameVersionManager as GameTypeGenshinVersion)!.AudioVoiceLanguageList;
-            string audioLangListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
-
             // Get the list of audio lang list
             string[] currentAudioLangList = File.Exists(audioLangListPath) ? File.ReadAllLines(audioLangListPath) : [];
 
             // Set the ignored audio lang
             string[] ignoredAudioLangList = audioLangList
                 .Where(x => !currentAudioLangList.Contains(x))
-                .Select(x => $"/{x}/")
+                .Select(x => $"{separatorChar}{x}{separatorChar}")
                 .ToArray();
             SearchValues<string> ignoredAudioLangListSearch = SearchValues.Create(ignoredAudioLangList, StringComparison.OrdinalIgnoreCase);
 
             // Return only for asset index that doesn't have language included in ignoredAudioLangList
-            return assetIndex.Where(x => !x.remoteName
-                    .AsSpan()
-                    .ContainsAny(ignoredAudioLangListSearch))
-                .ToList();
+            List<T> tempFiltered = assetIndex.Where(x => !predicate(x)
+                                                        .AsSpan()
+                                                        .ContainsAny(ignoredAudioLangListSearch))
+                                             .ToList();
+            assetIndex.Clear();
+            assetIndex.AddRange(tempFiltered);
         }
 
         #region PrimaryManifest
-        private async Task BuildPrimaryManifest(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
+#nullable enable
+        private async Task BuildPrimaryManifest(DownloadClient                           downloadClient,
+                                                List<PkgVersionProperties>               assetIndex,
+                                                Dictionary<string, PkgVersionProperties> hashtableManifest,
+                                                CancellationToken                        token)
         {
-            try
+            // Try Cleanup Download Profile file
+            TryDeleteDownloadPref();
+
+            // Get Sophon Properties
+            IGameVersion     gameVersionManager = GameVersionManager;
+            string           gameAudioListPath  = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
+            SophonChunkUrls? sophonManifestUrls = gameVersionManager.GamePreset.LauncherResourceChunksURL;
+            HttpClient       httpClient         = downloadClient.GetHttpClient();
+
+            if (sophonManifestUrls == null)
             {
-                // Try Cleanup Download Profile file
-                TryDeleteDownloadPref();
-
-                // Build basic file entry.
-                string manifestPath = Path.Combine(GamePath, "pkg_version");
-
-                // Download basic package version list
-                var basicVerURL = CombineURLFromString(GameRepoURL, "pkg_version");
-#if DEBUG
-                LogWriteLine($"Downloading pkg_version...\r\n\t{basicVerURL}", LogType.Debug, true);
-#endif
-                await downloadClient.DownloadAsync(
-                    basicVerURL,
-                    EnsureCreationOfDirectory(manifestPath),
-                    true,
-                    progressDelegateAsync: downloadProgress,
-                    maxConnectionSessions: DownloadThreadCount,
-                    cancelToken: token
-                    );
-
-                // Download additional package lists
-                var dataVerPath = $@"{ExecPrefix}_Data\StreamingAssets\data_versions_streaming";
-                var dataVerURL = CombineURLFromString(GameRepoURL, dataVerPath);
-#if DEBUG
-                LogWriteLine($"Downloading data_versions_streaming...\r\n\t{dataVerURL}", LogType.Debug, true);
-#endif
-                await downloadClient.DownloadAsync(
-                    dataVerURL,
-                    EnsureCreationOfDirectory(Path.Combine(GamePath, dataVerPath)),
-                    true,
-                    progressDelegateAsync: downloadProgress,
-                    maxConnectionSessions: DownloadThreadCount,
-                    cancelToken: token
-                    );
-
-                var silenceVerPath = $@"{ExecPrefix}_Data\StreamingAssets\silence_versions_streaming";
-                var silenceVerURL = CombineURLFromString(GameRepoURL, silenceVerPath);
-#if DEBUG
-                LogWriteLine($"Downloading silence_versions_streaming...\r\n\t{silenceVerURL}", LogType.Debug, true);
-#endif
-                await downloadClient.DownloadAsync(
-                    silenceVerURL,
-                    EnsureCreationOfDirectory(Path.Combine(GamePath, silenceVerPath)),
-                    true,
-                    progressDelegateAsync: downloadProgress,
-                    maxConnectionSessions: DownloadThreadCount,
-                    cancelToken: token
-                    );
-
-                var resVerPath = $@"{ExecPrefix}_Data\StreamingAssets\res_versions_streaming";
-                var resVerURL = CombineURLFromString(GameRepoURL, resVerPath);
-#if DEBUG
-                LogWriteLine($"Downloading res_versions_streaming...\r\n\t{resVerURL}", LogType.Debug, true);
-#endif
-                await downloadClient.DownloadAsync(
-                    resVerURL,
-                    EnsureCreationOfDirectory(Path.Combine(GamePath, resVerPath)),
-                    true,
-                    progressDelegateAsync: downloadProgress,
-                    maxConnectionSessions: DownloadThreadCount,
-                    cancelToken: token
-                    );
-
-                var videoVerPath = $@"{ExecPrefix}_Data\StreamingAssets\VideoAssets\video_versions_streaming";
-                var videoVerURL = CombineURLFromString(GameRepoURL, videoVerPath);
-#if DEBUG
-                LogWriteLine($"Downloading video_versions_streaming...\r\n\t{videoVerURL}", LogType.Debug, true);
-#endif
-                await downloadClient.DownloadAsync(
-                    videoVerURL,
-                    EnsureCreationOfDirectory(Path.Combine(GamePath, videoVerPath)),
-                    true,
-                    progressDelegateAsync: downloadProgress,
-                    maxConnectionSessions: DownloadThreadCount,
-                    cancelToken: token
-                    );
-
-                // Parse basic package version.
-                var streamingAssetsPath = $@"{ExecPrefix}_Data\StreamingAssets";
-                ParseManifestToAssetIndex(manifestPath, "", assetIndex, hashtableManifest, GameRepoURL, true);
-
-                // Build additional blks entry.
-                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "data_versions_*", assetIndex, hashtableManifest,
-                    GameRepoURL, true);
-                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "silence_versions_*", assetIndex, hashtableManifest,
-                    GameRepoURL, true);
-                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "res_versions_*", assetIndex, hashtableManifest,
-                    GameRepoURL, true);
-
-                // Build cutscenes entry.
-                EnumerateManifestToAssetIndex(streamingAssetsPath, streamingAssetsPath, "VideoAssets\\*_versions_*", assetIndex, hashtableManifest,
-                    GameRepoURL, true);
+                LogWriteLine("Cannot get SophonChunkUrls property as it returns null from the Metadata. Reference of the Game Repair might not be complete. Ignoring!", LogType.Warning, true);
+                return;
             }
-            catch (Exception ex)
+
+#if DEBUG
+            LogWriteLine($"Fetching data reference from Sophon using Main Url: {sophonManifestUrls.MainUrl}", LogType.Debug, true);
+#endif
+
+            // Get Sophon main manifest info pair
+            SophonChunkManifestInfoPair manifestMainInfoPair = await SophonManifest
+                .CreateSophonChunkManifestInfoPair(httpClient,
+                                                   sophonManifestUrls.MainUrl,
+                                                   sophonManifestUrls.MainBranchMatchingField,
+                                                   token);
+
+            // Create fake pkg_version(s) from Sophon and get the list of SphonAsset(s)
+            List<SophonAsset> sophonAssetList = [];
+            await GenshinInstall.DownloadPkgVersionStatic(httpClient,
+                                                          gameVersionManager,
+                                                          GamePath,
+                                                          gameAudioListPath,
+                                                          manifestMainInfoPair,
+                                                          sophonAssetList,
+                                                          token);
+
+            foreach (SophonAsset asset in sophonAssetList)
             {
-                LogWriteLine($"Parsing primary manifest has failed!\r\n{ex}", LogType.Error, true);
-                ErrorSender.SendException(ex);
+                PkgVersionProperties assetAsPkgVersionProp = new()
+                {
+                    remoteName               = asset.AssetName,
+                    fileSize                 = asset.AssetSize,
+                    md5                      = asset.AssetHash,
+                    isPatch                  = false,
+                    isForceStoreInStreaming  = true,
+                    isForceStoreInPersistent = false,
+                    type                     = "SophonGeneric"
+                };
+
+                _ = SophonAssetDictRef.TryAdd(asset.AssetName.NormalizePath(), asset);
+                assetIndex.Add(assetAsPkgVersionProp);
+                hashtableManifest.TryAdd(asset.AssetName, assetAsPkgVersionProp);
             }
+            LogWriteLine($"Main asset list fetched with count: {SophonAssetDictRef.Count} from Sophon manifest", LogType.Default, true);
         }
+#nullable restore
 
         private void TryDeleteDownloadPref()
         {
@@ -233,7 +210,7 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
-        private async Task<bool> BuildPersistentManifest(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, List<PkgVersionProperties> assetIndex,
+        internal async Task<bool> BuildPersistentManifest(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, List<PkgVersionProperties> assetIndex,
             Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
         {
             try
@@ -350,7 +327,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static string GetParentFromAssetRelativePath(ReadOnlySpan<char> relativePath, out bool isPersistentAsStreaming)
+        internal static string GetParentFromAssetRelativePath(ReadOnlySpan<char> relativePath, out bool isPersistentAsStreaming)
         {
             isPersistentAsStreaming = false;
 
@@ -459,7 +436,7 @@ namespace CollapseLauncher
 
                 // Set the remote URL
                 string remoteUrl;
-                if (!string.IsNullOrEmpty(secondaryParentURL) && !manifestEntry.isPatch)
+                if (!string.IsNullOrEmpty(secondaryParentURL) && manifestEntry.isPatch)
                 {
                     remoteUrl = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
                 }
