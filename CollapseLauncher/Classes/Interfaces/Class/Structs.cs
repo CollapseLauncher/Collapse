@@ -145,6 +145,8 @@ namespace CollapseLauncher
 
         public static bool TryParse(string? version, [NotNullWhen(true)] out GameVersion? result)
         {
+            const string Separators = ",.;|";
+
             result = null;
             if (string.IsNullOrEmpty(version))
             {
@@ -153,7 +155,7 @@ namespace CollapseLauncher
 
             Span<Range>        ranges      = stackalloc Range[8];
             ReadOnlySpan<char> versionSpan = version.AsSpan();
-            int                splitRanges = versionSpan.Split(ranges, '.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            int                splitRanges = versionSpan.SplitAny(ranges, Separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
             if (splitRanges == 0)
             {
