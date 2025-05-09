@@ -758,12 +758,12 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
 
-    "CDNDescription_Github": "The official (primary-main) repository for the launcher.",
-    "CDNDescription_CollapseCDN": "The official (secondary-main) repository for the launcher.",
-    "CDNDescription_Cloudflare": "A mirror of the official (primary-main) repository hosted in Cloudflare R2 bucket.",
-    "CDNDescription_Bitbucket": "A mirror of the official (primary-main) repository hosted in Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (primary-main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (primary-main) repository hosted in Coding.",
+    "CDNDescription_Github": "The official (main) repository for the launcher.",
+    "CDNDescription_DigitalOcean": "A mirror of the official (main) repository powered by DigitalOcean.",
+    "CDNDescription_Cloudflare": "A mirror of the official (main) repository powered by Cloudflare R2 bucket.",
+    "CDNDescription_Bitbucket": "A mirror of the official (main) repository powered by Bitbucket.",
+    "CDNDescription_GitLab": "A mirror of the official (main) repository powered by GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (main) repository powered by Coding.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",

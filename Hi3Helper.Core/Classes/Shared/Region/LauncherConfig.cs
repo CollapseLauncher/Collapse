@@ -168,17 +168,17 @@ namespace Hi3Helper.Shared.Region
         [
             new()
             {
-                Name                   = "CollapseCDN",
-                URLPrefix              = "https://cdn.collapselauncher.com/cl-cdn",
-                Description            = Lang._Misc!.CDNDescription_CollapseCDN,
+                Name                   = "GitHub",
+                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
+                Description            = Lang._Misc!.CDNDescription_Github,
                 PartialDownloadSupport = true
             },
 
             new()
             {
-                Name                   = "GitHub",
-                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
-                Description            = Lang._Misc!.CDNDescription_Github,
+                Name                   = "DigitalOcean",
+                URLPrefix              = "https://cdn.collapselauncher.com/cl-cdn",
+                Description            = Lang._Misc!.CDNDescription_DigitalOcean,
                 PartialDownloadSupport = true
             },
 
