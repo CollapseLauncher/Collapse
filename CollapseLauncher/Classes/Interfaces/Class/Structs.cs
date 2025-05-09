@@ -2,6 +2,7 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
@@ -50,9 +51,9 @@ namespace CollapseLauncher
         public bool IsIncludePerFileIndicator { get; set; }
     }
 
+#nullable enable
     internal struct GameVendorProp
     {
-#nullable enable
         public GameVendorProp(string gamePath, string execName, GameVendorType fallbackVendorType)
         {
             // Set the fallback value of the Vendor Type first (in case the game isn't yet installed)
@@ -88,7 +89,6 @@ namespace CollapseLauncher
 
         public GameVendorType? VendorType { get; set; }
         public string? GameName { get; set; }
-#nullable disable
     }
 
     public static class GameVersionExt
@@ -108,70 +108,70 @@ namespace CollapseLauncher
 
     public readonly record struct GameVersion
     {
-        public GameVersion(int major, int minor, int build, int revision = 0)
+        public GameVersion(params ReadOnlySpan<int> ver)
         {
-            Major = major;
-            Minor = minor;
-            Build = build;
-            Revision = revision;
-        }
-
-        public GameVersion(ReadOnlySpan<int> ver)
-        {
-            if (ver.Length is not (3 or 4))
+            if (ver.Length == 0)
             {
-                throw new ArgumentException("Version array entered should have length of 3 or 4!");
+                throw new ArgumentException("Version array entered should have length at least 1 or max. 4!");
             }
 
-            Major = ver[0];
-            Minor = ver[1];
-            Build = ver[2];
-            if (ver.Length == 4)
-            {
-                Revision = ver[3];
-            }
+            Major    = ver[0];
+            Minor    = ver.Length >= 2 ? ver[1] : 0;
+            Build    = ver.Length >= 3 ? ver[2] : 0;
+            Revision = ver.Length >= 4 ? ver[3] : 0;
         }
 
         public GameVersion(Version version)
         {
-            Major = version.Major;
-            Minor = version.Minor;
-            Build = version.Build;
+            Major    = version.Major;
+            Minor    = version.Minor;
+            Build    = version.Build;
+            Revision = version.Revision;
         }
 
-        public GameVersion(string version)
+        public GameVersion(string? version)
         {
-            string[] ver = version.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            if (ver.Length is not (3 or 4))
+            if (!TryParse(version, out GameVersion? versionOut) || !versionOut.HasValue)
             {
-                throw new ArgumentException($"Version in the config.ini should be in \"x.x.x\" or \"x.x.x.x\" format! (current value: \"{version}\")");
+                throw new ArgumentException($"Version in the config.ini should be either in \"x\", \"x.x\", \"x.x.x\" or \"x.x.x.x\" format or all the values aren't numbers! (current value: \"{version}\")");
             }
 
-            if (!int.TryParse(ver[0], out Major)) throw new ArgumentException($"Major version is not a number! (current value: {ver[0]}");
-            if (!int.TryParse(ver[1], out Minor)) throw new ArgumentException($"Minor version is not a number! (current value: {ver[1]}");
-            if (!int.TryParse(ver[2], out Build)) throw new ArgumentException($"Build version is not a number! (current value: {ver[2]}");
-            if (ver.Length != 4)
-            {
-                return;
-            }
-
-            if (!int.TryParse(ver[3], out Revision)) throw new ArgumentException($"Revision version is not a number! (current value: {ver[3]}");
+            Major    = versionOut.Value.Major;
+            Minor    = versionOut.Value.Minor;
+            Build    = versionOut.Value.Build;
+            Revision = versionOut.Value.Revision;
         }
 
-        public static bool TryParse(string version, out GameVersion? result)
+        public static bool TryParse(string? version, [NotNullWhen(true)] out GameVersion? result)
         {
             result = null;
-            Span<Range> ranges = stackalloc Range[8];
-            ReadOnlySpan<char> versionSpan = version.AsSpan();
-            int splitRanges = versionSpan.Split(ranges, '.', StringSplitOptions.TrimEntries);
+            if (string.IsNullOrEmpty(version))
+            {
+                return false;
+            }
 
-            if (splitRanges is not (3 or 4)) return false;
+            Span<Range>        ranges      = stackalloc Range[8];
+            ReadOnlySpan<char> versionSpan = version.AsSpan();
+            int                splitRanges = versionSpan.Split(ranges, '.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+            if (splitRanges == 0)
+            {
+                if (!int.TryParse(versionSpan, null, out int majorOnly))
+                {
+                    return false;
+                }
+
+                result = new GameVersion(majorOnly);
+                return true;
+            }
 
             Span<int> versionSplits = stackalloc int[4];
             for (int i = 0; i < splitRanges; i++)
             {
                 if (!int.TryParse(versionSpan[ranges[i]], null, out int versionParsed))
+                {
                     return false;
+                }
 
                 versionSplits[i] = versionParsed;
             }
@@ -188,8 +188,11 @@ namespace CollapseLauncher
 
         public bool IsMatch(GameVersion? versionToCompare)
         {
-            if (versionToCompare == null) return false;
-            return Major == versionToCompare.Value.Major && Minor == versionToCompare.Value.Minor && Build == versionToCompare.Value.Build && Revision == versionToCompare.Value.Revision;
+            if (!versionToCompare.HasValue) return false;
+            return Major == versionToCompare.Value.Major &&
+                   Minor == versionToCompare.Value.Minor &&
+                   Build == versionToCompare.Value.Build &&
+                   Revision == versionToCompare.Value.Revision;
         }
 
         public GameVersion GetIncrementedVersion()
@@ -200,13 +203,13 @@ namespace CollapseLauncher
             nextMinor++;
             if (nextMinor < 10)
             {
-                return new GameVersion([nextMajor, nextMinor, Build, Revision]);
+                return new GameVersion(nextMajor, nextMinor, Build, Revision);
             }
 
             nextMinor = 0;
             nextMajor++;
 
-            return new GameVersion([nextMajor, nextMinor, Build, Revision]);
+            return new GameVersion(nextMajor, nextMinor, Build, Revision);
         }
 
         public          Version ToVersion() => new(Major, Minor, Build, Revision);
@@ -221,6 +224,7 @@ namespace CollapseLauncher
         public readonly int    Build;
         public readonly int    Revision;
     }
+#nullable restore
 
     public interface IAssetProperty
     {
