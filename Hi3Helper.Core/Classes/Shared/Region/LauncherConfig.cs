@@ -168,9 +168,9 @@ namespace Hi3Helper.Shared.Region
         [
             new()
             {
-                Name                   = "GitHub",
-                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
-                Description            = Lang._Misc!.CDNDescription_Github,
+                Name                   = "Cloudflare",
+                URLPrefix              = "https://r2.bagelnl.my.id/cl-cdn",
+                Description            = Lang._Misc!.CDNDescription_Cloudflare,
                 PartialDownloadSupport = true
             },
 
@@ -184,9 +184,9 @@ namespace Hi3Helper.Shared.Region
 
             new()
             {
-                Name                   = "Cloudflare",
-                URLPrefix              = "https://r2.bagelnl.my.id/cl-cdn",
-                Description            = Lang._Misc!.CDNDescription_Cloudflare,
+                Name                   = "GitHub",
+                URLPrefix              = "https://github.com/CollapseLauncher/CollapseLauncher-ReleaseRepo/raw/main",
+                Description            = Lang._Misc!.CDNDescription_Github,
                 PartialDownloadSupport = true
             },
 
