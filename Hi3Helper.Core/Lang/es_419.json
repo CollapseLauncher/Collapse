@@ -789,10 +789,11 @@
     "BuildChannelStable": "Estable",
 
     "CDNDescription_Github": "El repositorio oficial (principal) del launcher.",
-    "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado en Cloudflare R2 bucket.",
-    "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado en Bitbucket.",
-    "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado en GitLab.",
-    "CDNDescription_Coding": "Mirror del repositorio oficial (principal) alojado en Coding.",
+    "CDNDescription_DigitalOcean": "Mirror del repositorio oficial (principal) alojado por DigitalOcean.",
+    "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado por Cloudflare R2 bucket.",
+    "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado por Bitbucket.",
+    "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado por GitLab.",
+    "CDNDescription_Coding": "Mirror del repositorio oficial (principal) alojado por Coding.",
 
     "LocateExecutable": "Localizar el Ejecutable",
     "OpenDownloadPage": "Abrir página de descarga",
@@ -839,12 +840,12 @@
     "ExceptionFeedbackTemplate_User": "Nombre de Usuario (Opcional)",
     "ExceptionFeedbackTemplate_Email": "Email (Opcional):",
     "ExceptionFeedbackTemplate_Message": "Después de esta línea, dinos qué ha pasado: (No hace falta incluir el mensaje de error, nosotros lo adjuntaremos por ti).",
-    
+
     "Feedback": "Compártenos tus comentarios",
     "FeedbackSending": "Enviando tus comentarios...",
     "FeedbackSent": "¡Enviado con Éxito!",
     "FeedbackSendFailure": "¡Error al enviar tus comentarios! Compruebe los registros/consola para más información.",
-    
+
     "Tag_Deprecated": "Obsoleto",
     "Generic_GameFeatureDeprecation": "Debido a cambios imprevistos en el juego, esta función quedo obsoleta y se eliminará en el futuro. Usarla puede provocar comportamientos inesperados."
   },
