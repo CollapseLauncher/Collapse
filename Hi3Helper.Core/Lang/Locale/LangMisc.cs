@@ -99,6 +99,7 @@ namespace Hi3Helper
                 public string Default              { get; set; } = LangFallback?._Misc.Default;
 
                 public string CDNDescription_Github          { get; set; } = LangFallback?._Misc.CDNDescription_Github;
+                public string CDNDescription_CollapseCDN     { get; set; } = LangFallback?._Misc.CDNDescription_CollapseCDN;
                 public string CDNDescription_Cloudflare      { get; set; } = LangFallback?._Misc.CDNDescription_Cloudflare;
                 public string CDNDescription_Bitbucket       { get; set; } = LangFallback?._Misc.CDNDescription_Bitbucket;
                 public string CDNDescription_Statically      { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
