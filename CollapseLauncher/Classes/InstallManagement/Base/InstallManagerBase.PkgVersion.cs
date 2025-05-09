@@ -160,6 +160,42 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
+        protected virtual async Task<string> DownloadPkgVersion(DownloadClient downloadClient, RegionResourceVersion? packageLatestBase)
+        {
+            string? packageExtractBasePath = packageLatestBase?.decompressed_path;
+
+            // Check Fail-safe: Download pkg_version files if not exist
+            string pkgVersionPath = Path.Combine(GamePath, "pkg_version");
+            if (string.IsNullOrEmpty(packageExtractBasePath))
+            {
+                return pkgVersionPath;
+            }
+
+            // Check Fail-safe: Download main pkg_version file
+            string mainPkgVersionUrl = packageExtractBasePath.CombineURLFromString("pkg_version");
+            await downloadClient.DownloadAsync(mainPkgVersionUrl, pkgVersionPath, true);
+
+            // Check Fail-safe: Download audio pkg_version files
+            if (string.IsNullOrEmpty(_gameAudioLangListPathStatic) ||
+                string.IsNullOrEmpty(packageExtractBasePath))
+            {
+                return pkgVersionPath;
+            }
+
+            if (!File.Exists(_gameAudioLangListPathStatic))
+            {
+                throw new
+                    FileNotFoundException("Game does have audio lang index file but does not exist!"
+                                          + $" Expecting location: {_gameAudioLangListPathStatic}");
+            }
+
+            await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
+                                               packageExtractBasePath,
+                                               downloadClient);
+
+            return pkgVersionPath;
+        }
+
         protected virtual async Task<(List<LocalFileInfo>, long)> GetUnusedFileInfoList(bool includeZipCheck)
         {
             LoadingMessageHelper.ShowLoadingFrame();
@@ -195,32 +231,9 @@ namespace CollapseLauncher.InstallManager.Base
                     DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
                     RegionResourceVersion? packageLatestBase = GameVersionManager
                                                               .GetGameLatestZip(gameStateEnum).FirstOrDefault();
-                    string? packageExtractBasePath = packageLatestBase?.decompressed_path;
 
-                    // Check Fail-safe: Download pkg_version files if not exist
-                    string pkgVersionPath = Path.Combine(GamePath, "pkg_version");
-                    if (!string.IsNullOrEmpty(packageExtractBasePath))
-                    {
-                        // Check Fail-safe: Download main pkg_version file
-                        string mainPkgVersionUrl = packageExtractBasePath.CombineURLFromString("pkg_version");
-                        await downloadClient.DownloadAsync(mainPkgVersionUrl, pkgVersionPath, true);
-
-                        // Check Fail-safe: Download audio pkg_version files
-                        if (!string.IsNullOrEmpty(_gameAudioLangListPathStatic) &&
-                            !string.IsNullOrEmpty(packageExtractBasePath))
-                        {
-                            if (!File.Exists(_gameAudioLangListPathStatic))
-                            {
-                                throw new
-                                    FileNotFoundException("Game does have audio lang index file but does not exist!"
-                                                          + $" Expecting location: {_gameAudioLangListPathStatic}");
-                            }
-
-                            await DownloadOtherAudioPkgVersion(_gameAudioLangListPathStatic,
-                                                               packageExtractBasePath,
-                                                               downloadClient);
-                        }
-                    }
+                    // Download pkg_version file (with additional audio ones)
+                    string pkgVersionPath = await DownloadPkgVersion(downloadClient, packageLatestBase);
 
                     // Check Fail-safe: If the main pkg_version still not exist, throw!
                     bool isMainPkgVersionExist = File.Exists(pkgVersionPath);
@@ -341,7 +354,7 @@ namespace CollapseLauncher.InstallManager.Base
                 string pkgUrl      = baseExtractUrl.CombineURLFromString(pkgFileName);
 
                 // Skip if URL is not found
-                if ((await FallbackCDNUtil.GetURLStatusCode(pkgUrl, default)).StatusCode == HttpStatusCode.NotFound)
+                if ((await FallbackCDNUtil.GetURLStatusCode(pkgUrl, CancellationToken.None)).StatusCode == HttpStatusCode.NotFound)
                 {
                     continue;
                 }

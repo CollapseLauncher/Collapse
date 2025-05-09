@@ -77,7 +77,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await SophonPatch.CreateSophonChunkManifestInfoPair(httpClient,
                                                                     url: branchResources.PatchUrl,
                                                                     versionUpdateFrom: requestedVersionFrom.Value.VersionString,
-                                                                    matchingField: GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
+                                                                    matchingField: branchResources.MainBranchMatchingField,
                                                                     token: Token.Token);
 
             // If the patch metadata is not found, then return false and back to old compare method
@@ -101,7 +101,7 @@ namespace CollapseLauncher.InstallManager.Base
             (List<SophonPatchAsset>, List<SophonChunkManifestInfoPair>) patchAssets =
                 await GetAlterSophonPatchAssets(httpClient,
                                                 branchResources.PatchUrl,
-                                                GameRepoURL,
+                                                (isPreloadMode ? branchResources.PreloadUrl : branchResources.MainUrl) ?? "",
                                                 matchingFields,
                                                 requestedVersionFrom.Value.VersionString,
                                                 downloadSpeedLimiter,
@@ -128,22 +128,34 @@ namespace CollapseLauncher.InstallManager.Base
                                       SophonDownloadSpeedLimiter downloadLimiter,
                                       CancellationToken token)
         {
-            SophonChunkManifestInfoPair? rootPatchManifest = null;
-            List<SophonChunkManifestInfoPair> patchManifestList = [];
+            SophonChunkManifestInfoPair?      rootPatchManifest = null;
+            SophonChunkManifestInfoPair?      rootMainManifest  = null;
+            List<(SophonChunkManifestInfoPair Patch, SophonChunkManifestInfoPair Main)> patchManifestList = [];
 
             // Iterate matching fields and get the patch metadata
             foreach (string matchingField in matchingFields)
             {
                 // Initialize root manifest if it's null
-                rootPatchManifest ??= await SophonPatch.CreateSophonChunkManifestInfoPair(httpClient,
-                                                                                          url: manifestUrl,
-                                                                                          versionUpdateFrom: updateVersionfrom,
-                                                                                          matchingField: matchingField,
-                                                                                          token: token);
+                rootPatchManifest ??= await SophonPatch
+                    .CreateSophonChunkManifestInfoPair(httpClient,
+                                                       url: manifestUrl,
+                                                       versionUpdateFrom: updateVersionfrom,
+                                                       matchingField: matchingField,
+                                                       token: token);
+
+                rootMainManifest ??= await SophonManifest
+                    .CreateSophonChunkManifestInfoPair(httpClient,
+                                                       url: downloadOverUrl,
+                                                       matchingField: matchingField,
+                                                       token: token);
 
                 // Get the manifest pair based on the matching field
                 SophonChunkManifestInfoPair patchManifest = rootPatchManifest
                     .GetOtherPatchInfoPair(matchingField, updateVersionfrom);
+
+                // Get the main manifest pair based on the matching field
+                SophonChunkManifestInfoPair mainManifest = rootMainManifest
+                    .GetOtherManifestInfoPair(matchingField);
 
                 // If the patch metadata is not found, continue to other manifest pair
                 if (!patchManifest.IsFound)
@@ -155,19 +167,19 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Otherwise, add the manifest to the list
-                patchManifestList.Add(patchManifest);
+                patchManifestList.Add((patchManifest, mainManifest));
             }
 
             // Initialize the return list and iterate the manifests
             List<SophonPatchAsset> patchAssets = [];
-            foreach (SophonChunkManifestInfoPair manifestPair in patchManifestList)
+            foreach (var manifestPair in patchManifestList)
             {
                 // Get the asset and add it to the list
                 await foreach (SophonPatchAsset patchAsset in SophonPatch
                     .EnumerateUpdateAsync(httpClient,
-                                          manifestPair,
+                                          manifestPair.Patch,
+                                          manifestPair.Main,
                                           updateVersionfrom,
-                                          downloadOverUrl,
                                           downloadLimiter,
                                           token))
                 {
@@ -175,7 +187,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
             }
 
-            return (patchAssets, patchManifestList);
+            return (patchAssets, patchManifestList.Select(x => x.Patch).ToList());
         }
 
         protected virtual async Task<List<string>> GetAlterSophonPatchVOMatchingFields(CancellationToken token)
@@ -235,7 +247,7 @@ namespace CollapseLauncher.InstallManager.Base
             long downloadSizePatchOnlyRemote = patchManifestInfoPairs.Sum(x => x.ChunksInfo.TotalSize);
 
             // Get download counts
-            int downloadCountTotalAssetRemote = patchAssets.Count(x => x.PatchMethod != SophonPatchMethod.Remove);
+            int downloadCountTotalAssetRemote = patchAssets.Count;
             int downloadCountPatchOnlyRemote = patchManifestInfoPairs.Sum(x => x.ChunksInfo.ChunksCount);
 
             // Ensure disk space sufficiency

@@ -4,6 +4,8 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
+using Hi3Helper.Sophon;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +17,7 @@ using System.Threading.Tasks;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable IdentifierTypo
+// ReSharper disable StringLiteralTypo
 
 namespace CollapseLauncher
 {
@@ -106,22 +109,65 @@ namespace CollapseLauncher
 
             string   assetPath     = ConverterTool.NormalizePath(asset.AssetIndex.localName);
             FileInfo assetFileInfo = new FileInfo(assetPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            bool     isSuccess     = false;
 
-            // If file is unused, then delete
-            if (asset.AssetIndex.type == "Unused")
+            try
             {
-                // Delete the file
-                assetFileInfo.Delete();
-            }
-            else
-            {
+                // If file is unused, then delete
+                if (asset.AssetIndex.type?.Equals("Unused", StringComparison.OrdinalIgnoreCase) ?? false)
+                {
+                    // Delete the file
+                    assetFileInfo.Delete();
+                    return;
+                }
+
+                bool isUseSophonDownload = (asset.AssetIndex.type?.Equals("Unused", StringComparison.OrdinalIgnoreCase) ?? false) &&
+                                            string.IsNullOrEmpty(asset.AssetIndex.remoteURL) &&
+                                            string.IsNullOrEmpty(asset.AssetIndex.remoteURLPersistent);
+
+                if (isUseSophonDownload)
+                {
+                    ReadOnlySpan<char> splittedPath = asset.AssetIndex.localName
+                                                           .AsSpan(GamePath.Length)
+                                                           .TrimStart('\\');
+
+                    if (!SophonAssetDictRefLookup.TryGetValue(splittedPath, out SophonAsset downloadAsSophon))
+                    {
+                        throw new InvalidOperationException($"Asset {splittedPath} is marked as \"SophonGeneric\" but it wasn't included in the manifest");
+                    }
+
+                    DownloadProgress downloadStatus = new()
+                    {
+                        BytesTotal      = asset.AssetIndex.fileSize,
+                        BytesDownloaded = 0
+                    };
+
+                    await using FileStream outputStreamAsSophon = assetFileInfo.Create();
+                    await downloadAsSophon.WriteToStreamAsync(downloadClient.GetHttpClient(),
+                                                              outputStreamAsSophon,
+                                                              x =>
+                                                              {
+                                                                  Interlocked.Add(ref downloadStatus.BytesDownloaded, x);
+                                                                  downloadProgress((int)x, downloadStatus);
+                                                              },
+                                                              token: token);
+                    isSuccess = true;
+                    return;
+                }
+
                 // or start asset download task
-                await RunDownloadTask(asset.AssetIndex.fileSize, assetFileInfo, asset.AssetIndex.remoteURL, downloadClient, downloadProgress, token);
-                LogWriteLine($"File [T: {RepairAssetType.Generic}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
+                await RunDownloadTask(asset.AssetIndex.fileSize, assetFileInfo, asset.AssetIndex.remoteURL ?? asset.AssetIndex.remoteURLPersistent!, downloadClient, downloadProgress, token);
+                isSuccess = true;
             }
-
-            // Pop repair asset display entry
-            PopRepairAssetEntry(asset.AssetProperty);
+            finally
+            {
+                // Pop repair asset display entry
+                PopRepairAssetEntry(asset.AssetProperty);
+                if (isSuccess)
+                {
+                    LogWriteLine($"File [T: {RepairAssetType.Generic}] {asset.AssetIndex.remoteName} has been downloaded!", LogType.Default, true);
+                }
+            }
         }
         #endregion
     }

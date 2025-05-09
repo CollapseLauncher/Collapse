@@ -68,7 +68,8 @@ namespace CollapseLauncher
             public CancellationToken       CancelToken           { get; } = token;
         }
 
-        private          string? _mainMetaRepoUrl;
+        private          string? _primaryMainMetaRepoUrl;
+        private          string? _secondaryMainMetaRepoUrl;
         private readonly byte[]  _collapseHeader = "Collapse"u8.ToArray();
 
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
@@ -122,7 +123,8 @@ namespace CollapseLauncher
                 /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
                 SenadinaFileIdentifier? asbReferenceSenadinaFileIdentifier = null;
                 */
-                _mainMetaRepoUrl = null;
+                _primaryMainMetaRepoUrl = null;
+                _secondaryMainMetaRepoUrl = null;
 
                 // Get the status if the current game is Senadina version.
                 GameTypeHonkaiVersion gameVersionKind   = GameVersionManager.CastAs<GameTypeHonkaiVersion>();
@@ -132,20 +134,55 @@ namespace CollapseLauncher
                 // TODO: Use FallbackCDNUtil to fetch the stream.
                 if (IsSenadinaVersion && !IsOnlyRecoverMain)
                 {
-                    _mainMetaRepoUrl = $"https://r2.bagelnl.my.id/cl-meta/pustaka/{GameVersionManager!.GamePreset.ProfileName}/{string.Join('.', versionArray)}";
+                    _primaryMainMetaRepoUrl = $"https://r2.bagelnl.my.id/cl-meta/pustaka/{GameVersionManager!.GamePreset.ProfileName}/{string.Join('.', versionArray)}";
+                    _secondaryMainMetaRepoUrl = $"https://cdn.collapselauncher.com/cl-meta/pustaka/{GameVersionManager!.GamePreset.ProfileName}/{string.Join('.', versionArray)}";
 
                     // Get the Senadina File Identifier Dictionary and its file references
-                    senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(client, _mainMetaRepoUrl, token);
-                    audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
-                                                                                          SenadinaKind.chiptunesCurrent, versionArray, _mainMetaRepoUrl, false, token);
-                    blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
-                                                                                               SenadinaKind.platformBase, versionArray, _mainMetaRepoUrl, false, token);
-                    blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
-                                                                                               SenadinaKind.bricksBase, versionArray, _mainMetaRepoUrl, false, token);
-                    blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
-                                                                                                  SenadinaKind.bricksCurrent, versionArray, _mainMetaRepoUrl, false, token);
-                    patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
-                                                                                                SenadinaKind.wandCurrent, versionArray, _mainMetaRepoUrl, true, token);
+                    senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(client,
+                                                                                   _primaryMainMetaRepoUrl,
+                                                                                   _secondaryMainMetaRepoUrl,
+                                                                                   false,
+                                                                                   token);
+                    audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
+                                                                                          senadinaFileIdentifier,
+                                                                                          SenadinaKind.chiptunesCurrent,
+                                                                                          versionArray,
+                                                                                          _primaryMainMetaRepoUrl,
+                                                                                          _secondaryMainMetaRepoUrl,
+                                                                                          false,
+                                                                                          token);
+                    blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
+                                                                                                   senadinaFileIdentifier,
+                                                                                                   SenadinaKind.platformBase,
+                                                                                                   versionArray,
+                                                                                                   _primaryMainMetaRepoUrl,
+                                                                                                   _secondaryMainMetaRepoUrl,
+                                                                                                   false,
+                                                                                                   token);
+                    blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
+                                                                                               senadinaFileIdentifier,
+                                                                                               SenadinaKind.bricksBase,
+                                                                                               versionArray,
+                                                                                               _primaryMainMetaRepoUrl,
+                                                                                               _secondaryMainMetaRepoUrl,
+                                                                                               false,
+                                                                                               token);
+                    blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
+                                                                                                  senadinaFileIdentifier,
+                                                                                                  SenadinaKind.bricksCurrent,
+                                                                                                  versionArray,
+                                                                                                  _primaryMainMetaRepoUrl,
+                                                                                                  _secondaryMainMetaRepoUrl,
+                                                                                                  false,
+                                                                                                  token);
+                    patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
+                                                                                                senadinaFileIdentifier,
+                                                                                                SenadinaKind.wandCurrent,
+                                                                                                versionArray,
+                                                                                                _primaryMainMetaRepoUrl,
+                                                                                                _secondaryMainMetaRepoUrl,
+                                                                                                true,
+                                                                                                token);
                 /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
                     asbReferenceSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client, senadinaFileIdentifier,
                                                                                                 SenadinaKind.wonderland, versionArray, _mainMetaRepoUrl, true, token);
@@ -430,47 +467,88 @@ namespace CollapseLauncher
             assetIndex.AddRange(assetIndexFiltered);
         }
 
-        private async Task<Dictionary<string, SenadinaFileIdentifier>?> GetSenadinaIdentifierDictionary(HttpClient client, string mainUrl, CancellationToken token)
+        private async Task<Dictionary<string, SenadinaFileIdentifier>?>
+            GetSenadinaIdentifierDictionary(HttpClient        client,
+                                            string?           mainUrl,
+                                            string?           secondaryUrl,
+                                            bool              throwIfFail = false,
+                                            CancellationToken token = default)
         {
-            string             identifierUrl               = CombineURLFromString(mainUrl, "daftar-pustaka");
-            await using Stream fileIdentifierStream        = (await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, null, null, null, token))!;
-            await using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
+            mainUrl ??= secondaryUrl;
+            try
+            {
+                string identifierUrl = CombineURLFromString(mainUrl, "daftar-pustaka");
+                await using Stream fileIdentifierStream = (await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, null, null, null, token))!;
+                await using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
 
-            await ThrowIfFileIsNotSenadina(fileIdentifierStream, token);
-#if DEBUG
-            using StreamReader rd = new StreamReader(fileIdentifierStreamDecoder);
-            string response = await rd.ReadToEndAsync(token);
-            LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
-            return response.Deserialize(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier);
-#else
-            return await fileIdentifierStreamDecoder.DeserializeAsync(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier, token: token);
-#endif
+                await ThrowIfFileIsNotSenadina(fileIdentifierStream, token);
+            #if DEBUG
+                using StreamReader rd       = new StreamReader(fileIdentifierStreamDecoder);
+                string             response = await rd.ReadToEndAsync(token);
+                LogWriteLine($"[HonkaiRepair::GetSenadinaIdentifierDictionary() Dictionary Response:\r\n{response}", LogType.Debug, true);
+                return response.Deserialize(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier);
+            #else
+                return await fileIdentifierStreamDecoder.DeserializeAsync(SenadinaJsonContext.Default.DictionaryStringSenadinaFileIdentifier, token: token);
+            #endif
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"[Senadina::DaftarPustaka] Failed while fetching Senadina's daftar-pustaka from URL: {mainUrl}\r\n{ex}", LogType.Error, true);
+                if (throwIfFail)
+                {
+                    throw;
+                }
+                LogWriteLine($"[Senadina::DaftarPustaka] Trying to get Senadina's daftar-pustaka from secondary URL: {secondaryUrl}", LogType.Warning, true);
+                return await GetSenadinaIdentifierDictionary(client, null, secondaryUrl, true, token);
+            }
         }
 
-        private async Task<SenadinaFileIdentifier?> GetSenadinaIdentifierKind(HttpClient client, Dictionary<string, SenadinaFileIdentifier>? dict, SenadinaKind kind, int[] gameVersion, string mainUrl, bool skipThrow, CancellationToken token)
+        private async Task<SenadinaFileIdentifier?>
+            GetSenadinaIdentifierKind(HttpClient                                  client,
+                                      Dictionary<string, SenadinaFileIdentifier>? dict,
+                                      SenadinaKind                                kind,
+                                      int[]                                       gameVersion,
+                                      string?                                     mainUrl,
+                                      string?                                     secondaryUrl,
+                                      bool                                        skipThrow,
+                                      CancellationToken                           token)
         {
+            mainUrl ??= secondaryUrl;
             ArgumentNullException.ThrowIfNull(dict);
-            
-            string origFileRelativePath = $"{gameVersion[0]}_{gameVersion[1]}_{kind.ToString().ToLower()}";
-            string hashedRelativePath = SenadinaFileIdentifier.GetHashedString(origFileRelativePath);
 
-            string fileUrl = CombineURLFromString(mainUrl, hashedRelativePath);
-            if (!dict.TryGetValue(origFileRelativePath, out var identifier))
+            try
             {
-                LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
-                if (skipThrow) return null;
-                throw new
-                    FileNotFoundException("Assets reference for repair is not found. " +
-                                          "Please contact us in GitHub issues or Discord to let us know about this issue.");
+                string origFileRelativePath = $"{gameVersion[0]}_{gameVersion[1]}_{kind.ToString().ToLower()}";
+                string hashedRelativePath = SenadinaFileIdentifier.GetHashedString(origFileRelativePath);
+
+                string fileUrl = CombineURLFromString(mainUrl, hashedRelativePath);
+                if (!dict.TryGetValue(origFileRelativePath, out var identifier))
+                {
+                    LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
+                    if (skipThrow) return null;
+                    throw new
+                        FileNotFoundException("Assets reference for repair is not found. " +
+                                              "Please contact us in GitHub issues or Discord to let us know about this issue.");
+                }
+
+                Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
+
+                await ThrowIfFileIsNotSenadina(networkStream, token);
+                identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
+                identifier.relativePath = origFileRelativePath;
+
+                return identifier;
             }
-
-            Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
-
-            await ThrowIfFileIsNotSenadina(networkStream, token);
-            identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
-            identifier.relativePath = origFileRelativePath;
-
-            return identifier;
+            catch (Exception ex)
+            {
+                LogWriteLine($"[Senadina::Identifier] Failed while fetching Senadina's identifier kind: {kind} from URL: {mainUrl}\r\n{ex}", LogType.Error, true);
+                if (skipThrow)
+                {
+                    throw;
+                }
+                LogWriteLine($"[Senadina::Identifier] Trying to get Senadina's  identifier kind: {kind} from secondary URL: {secondaryUrl}", LogType.Warning, true);
+                return await GetSenadinaIdentifierKind(client, dict, kind, gameVersion, null, secondaryUrl, true, token);
+            }
         }
         
         private async Task ThrowIfFileIsNotSenadina(Stream stream, CancellationToken token)

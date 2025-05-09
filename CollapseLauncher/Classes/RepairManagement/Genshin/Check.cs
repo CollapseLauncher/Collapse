@@ -228,7 +228,9 @@ namespace CollapseLauncher
             async ValueTask<bool> IsFileMatched(Action<bool> storeAsStreaming, Action<bool> storeAsPersistent, Action<string, string> storeAsUnused)
             {
                 bool isUsePersistent = asset.isPatch ||
-                    (!asset.xxh64hashPersistent?.Equals(asset.xxh64hash, StringComparison.OrdinalIgnoreCase) ?? false);
+                                       (!string.IsNullOrEmpty(asset.xxh64hash) &&
+                                        !string.IsNullOrEmpty(asset.xxh64hashPersistent) &&
+                                        !asset.xxh64hashPersistent.Equals(asset.xxh64hash, StringComparison.OrdinalIgnoreCase));
 
                 // Try to get hash buffer
                 byte[] hashBuffer = ArrayPool<byte>.Shared.Rent(16);
