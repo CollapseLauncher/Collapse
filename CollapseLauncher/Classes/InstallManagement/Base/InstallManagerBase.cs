@@ -65,7 +65,6 @@ using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 using ZipArchive = SharpCompress.Archives.Zip.ZipArchive;
 using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
-#pragma warning disable CS8777 // Parameter must have a non-null value when exiting.
 #endif
 
 // ReSharper disable ForCanBeConvertedToForeach
@@ -2139,7 +2138,7 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual string GetLanguageStringByLocaleCode([NotNull] string? localeCode, bool throwIfInvalid =
+        protected virtual string GetLanguageStringByLocaleCode(string? localeCode, bool throwIfInvalid =
 #if DEBUG
             true
 #else
@@ -2147,7 +2146,7 @@ namespace CollapseLauncher.InstallManager.Base
 #endif
             ) => GetLanguageStringByLocaleCodeStatic(localeCode, throwIfInvalid);
 
-        internal static string GetLanguageStringByLocaleCodeStatic([NotNull] string? localeCode, bool throwIfInvalid =
+        internal static string GetLanguageStringByLocaleCodeStatic(string? localeCode, bool throwIfInvalid =
 #if DEBUG
             true
 #else
