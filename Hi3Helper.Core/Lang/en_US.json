@@ -758,11 +758,12 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
 
-    "CDNDescription_Github": "The official (main) repository for the launcher.",
-    "CDNDescription_Cloudflare": "A mirror of the official (main) repository hosted in Cloudflare R2 bucket.",
-    "CDNDescription_Bitbucket": "A mirror of the official (main) repository hosted in Bitbucket.",
-    "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
+    "CDNDescription_Github": "The official (primary-main) repository for the launcher.",
+    "CDNDescription_CollapseCDN": "The official (secondary-main) repository for the launcher.",
+    "CDNDescription_Cloudflare": "A mirror of the official (primary-main) repository hosted in Cloudflare R2 bucket.",
+    "CDNDescription_Bitbucket": "A mirror of the official (primary-main) repository hosted in Bitbucket.",
+    "CDNDescription_GitLab": "A mirror of the official (primary-main) repository hosted in GitLab.",
+    "CDNDescription_Coding": "A mirror of the official (primary-main) repository hosted in Coding.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",
@@ -808,8 +809,13 @@
     "ExceptionFeedbackTitle": "Tell us what happened:",
     "ExceptionFeedbackTemplate_User": "Username (Optional):",
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
-    "ExceptionFeedbackTemplate_Message": "Insert your feedback after this line",
-    
+    "ExceptionFeedbackTemplate_Message": "Tell us what happened after this line: (You don't need to include the error message, we will attach it for you!)",
+
+    "Feedback": "User Feedback",
+    "FeedbackSending": "Sending your feedback...",
+    "FeedbackSent": "Feedback sent!",
+    "FeedbackSendFailure": "Failed to send feedback! Check logs/console for more info.",
+
     "Tag_Deprecated": "Deprecated",
     "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
   },
