@@ -201,7 +201,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             using StreamReader voAudioLangReader = voAudioLangFileInfo.OpenText();
-            while ((await voAudioLangReader.ReadLineAsync(token)) is { } line)
+            while (await voAudioLangReader.ReadLineAsync(token) is { } line)
             {
                 string? matchingField = GetLanguageLocaleCodeByLanguageString(line);
                 if (string.IsNullOrEmpty(matchingField))
