@@ -37,10 +37,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -577,8 +580,8 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool isEnabled = GetAppConfigValue("UseCustomBG").ToBool();
-                string bgPath = GetAppConfigValue("CustomBGPath").ToString();
+                bool isEnabled = GetAppConfigValue("UseCustomBG");
+                string bgPath = GetAppConfigValue("CustomBGPath");
                 LogWriteLine("Read " + isEnabled + " BG Path: " + bgPath + " from config", LogType.Scheme, true);
                 BGPathDisplay.Text = !string.IsNullOrEmpty(bgPath) ? bgPath : Lang._Misc.NotSelected;
 
@@ -618,7 +621,7 @@ namespace CollapseLauncher.Pages
                 }
                 else
                 {
-                    var bgPath = GetAppConfigValue("CustomBGPath").ToString();
+                    var bgPath = GetAppConfigValue("CustomBGPath");
                     if (string.IsNullOrEmpty(bgPath))
                     {
                         LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = BackgroundMediaUtility.GetDefaultRegionBackgroundPath();
@@ -633,7 +636,7 @@ namespace CollapseLauncher.Pages
 
                 if (value)
                 {
-                    BGPathDisplay.Text = GetAppConfigValue("CustomBGPath").ToString();
+                    BGPathDisplay.Text = GetAppConfigValue("CustomBGPath");
                     AppBGCustomizer.Visibility = Visibility.Visible;
                     AppBGCustomizerNote.Visibility = Visibility.Visible;
                 }
@@ -653,7 +656,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool isEnabled = GetAppConfigValue("EnableConsole").ToBool();
+                bool isEnabled = GetAppConfigValue("EnableConsole");
                 ToggleIncludeGameLogs.Visibility = isEnabled ? Visibility.Visible : Visibility.Collapsed;
                 return isEnabled;
             }
@@ -690,21 +693,21 @@ namespace CollapseLauncher.Pages
             set => SentryHelper.IsEnabled = value;
         }
 
-        private static bool IsIntroEnabled
+        private bool IsIntroEnabled
         {
             get => LauncherConfig.IsIntroEnabled;
             set => LauncherConfig.IsIntroEnabled = value;
         }
 
-        private static bool IsMultipleInstanceEnabled
+        private bool IsMultipleInstanceEnabled
         {
             get => LauncherConfig.IsMultipleInstanceEnabled;
             set => LauncherConfig.IsMultipleInstanceEnabled = value;
         }
 
-        private static bool IsVideoBackgroundAudioMute
+        private bool IsVideoBackgroundAudioMute
         {
-            get => !GetAppConfigValue("BackgroundAudioIsMute").ToBool();
+            get => !GetAppConfigValue("BackgroundAudioIsMute");
             set
             {
                 if (!value)
@@ -714,7 +717,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static double VideoBackgroundAudioVolume
+        private double VideoBackgroundAudioVolume
         {
             get
             {
@@ -777,7 +780,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsDiscordGameStatusEnabled
+        private bool IsDiscordGameStatusEnabled
         {
             get => GetAppConfigValue("EnableDiscordGameStatus");
             set
@@ -787,31 +790,31 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsDiscordIdleStatusEnabled
+        private bool IsDiscordIdleStatusEnabled
         {
             get => AppDiscordPresence.IdleEnabled;
             set => AppDiscordPresence.IdleEnabled = value;
         }
 #else
-        private static bool IsDiscordRPCEnabled
+        private bool IsDiscordRPCEnabled
         {
             get => false;
             set => _ = value;
         }
 
-        private static bool IsDiscordGameStatusEnabled
+        private bool IsDiscordGameStatusEnabled
         {
             get => false;
             set => _ = value;
         }
 
-        private static bool IsDiscordIdleStatusEnabled
+        private bool IsDiscordIdleStatusEnabled
         {
             get => false;
             set => _ = value;
         }
 #endif
-        private static bool IsAcrylicEffectEnabled
+        private bool IsAcrylicEffectEnabled
         {
             get => EnableAcrylicEffect;
             set
@@ -826,7 +829,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsUseVideoBgDynamicColorUpdate
+        private bool IsUseVideoBgDynamicColorUpdate
         {
             get => IsUseVideoBGDynamicColorUpdate;
             set
@@ -852,7 +855,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static string Waifu2XToolTip
+        private string Waifu2XToolTip
         {
             get
             {
@@ -881,7 +884,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static string Waifu2XToolTipIcon
+        private string Waifu2XToolTipIcon
         {
             get
             {
@@ -894,7 +897,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsWaifu2XUsable => ImageLoaderHelper.IsWaifu2XUsable;
+        private bool IsWaifu2XUsable => ImageLoaderHelper.IsWaifu2XUsable;
 
         private int CurrentThemeSelection
         {
@@ -903,7 +906,7 @@ namespace CollapseLauncher.Pages
                 if (IsAppThemeNeedRestart)
                     AppThemeSelectionWarning.Visibility = Visibility.Visible;
 
-                string appTheme = GetAppConfigValue("ThemeMode").ToString();
+                string appTheme = GetAppConfigValue("ThemeMode");
                 bool isParseSuccess = Enum.TryParse(typeof(AppThemeMode), appTheme, out object themeIndex);
                 return isParseSuccess ? (int)themeIndex : -1;
             }
@@ -916,40 +919,61 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static int CurrentAppThreadDownloadValue
+        private int CurrentAppThreadDownloadValue
         {
-            get => GetAppConfigValue("DownloadThread").ToInt();
+            get => GetAppConfigValue("DownloadThread");
             set => SetAndSaveConfigValue("DownloadThread", value);
         }
 
-        private static int CurrentAppThreadExtractValue
+        private int CurrentAppThreadExtractValue
         {
-            get => GetAppConfigValue("ExtractionThread").ToInt();
+            get => GetAppConfigValue("ExtractionThread");
             set => SetAndSaveConfigValue("ExtractionThread", value);
         }
 
-        private static List<string> LanguageList => LanguageNames
-                                                   .Select(a => string.Format(Lang._SettingsPage.LanguageEntry, a.Value.LangName, a.Value.LangAuthor))
-                                                   .ToList();
-
-        private static int LanguageSelectedIndex
+        [field: AllowNull, MaybeNull]
+        private List<LangMetadata> LanguageList
         {
             get
             {
-                string key = GetAppConfigValue("AppLanguage").ToString().ToLower();
-                return LanguageNames.TryGetValue(key, out var name) ? name.LangIndex : 0;
-            }
-            set
-            {
-                if (value < 0) return;
+                if (field != null)
+                {
+                    return field;
+                }
 
-                string key = LanguageIDIndex[value];
-                SetAndSaveConfigValue("AppLanguage", key);
-                LoadLocale(key);
+                var keys = LanguageNames.Keys;
+                int dataLen = keys.Count;
+
+                List<LangMetadata> metadataList = [];
+
+                CollectionsMarshal.SetCount(metadataList, dataLen);
+                Span<LangMetadata> metadataSpan = CollectionsMarshal.AsSpan(metadataList);
+
+                int index = 0;
+                foreach (string key in keys)
+                {
+                    ref LangMetadata metadata = ref CollectionsMarshal.GetValueRefOrNullRef(LanguageNames, key);
+                    if (Unsafe.IsNullRef(ref metadata))
+                    {
+                        continue;
+                    }
+
+                    metadataSpan[index] = metadata;
+                    ++index;
+                }
+
+                return field = metadataList;
             }
         }
 
-        private int _lastLanguageSelectedIndex = -1;
+        private int LanguageSelectedIndex
+        {
+            get
+            {
+                string key = GetAppConfigValue("AppLanguage").Value.ToLower();
+                return LanguageNames.TryGetValue(key, out var name) ? name.LangIndex : 0;
+            }
+        }
 
         private void LanguageSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -958,13 +982,17 @@ namespace CollapseLauncher.Pages
                 return;
             }
 
-            if (_lastLanguageSelectedIndex == combobox.SelectedIndex
-                || combobox.SelectedIndex == -1)
+            if (e.AddedItems.FirstOrDefault()   is not LangMetadata asLangMetadataNew ||
+                e.RemovedItems.FirstOrDefault() is not LangMetadata asLangMetadataOld ||
+                asLangMetadataNew.LangID == asLangMetadataOld.LangID)
+            {
                 return;
+            }
 
-            LanguageSelectedIndex      = combobox.SelectedIndex;
-            _lastLanguageSelectedIndex = LanguageSelectedIndex;
-            Bindings.Update();
+            string selectedKey = asLangMetadataNew.LangID;
+            SetAndSaveConfigValue("AppLanguage", selectedKey);
+            LoadLocale(selectedKey);
+            UpdateBindings.Update();
 
             foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
             {
@@ -976,7 +1004,13 @@ namespace CollapseLauncher.Pages
                 comboBoxOthers.SelectedIndex = lastSelected;
             }
 
-            UpdateBindings.Update();
+            foreach (RadioButtons radioButtonOthers in this.FindDescendants().OfType<RadioButtons>())
+            {
+                int lastSelected = radioButtonOthers.SelectedIndex;
+                radioButtonOthers.SelectedIndex = -1;
+                radioButtonOthers.SelectedIndex = lastSelected;
+            }
+
             InitializeSettingsSearch();
         }
 
@@ -987,13 +1021,12 @@ namespace CollapseLauncher.Pages
 
             string switchToVer = IsPreview ? "Stable" : "Preview";
             ChangeReleaseBtnText.Text = string.Format(Lang._SettingsPage.AppChangeReleaseChannel, switchToVer);
-            
             AppBGCustomizerNote.Text = string.Format(Lang._SettingsPage.AppBG_Note,
                 string.Join("; ", BackgroundMediaUtility.SupportedImageExt),
                 string.Join("; ", BackgroundMediaUtility.SupportedMediaPlayerExt)
             );
 
-            string url = GetAppConfigValue("HttpProxyUrl").ToString();
+            string url = GetAppConfigValue("HttpProxyUrl");
             ValidateHttpProxyUrl(url);
 
             _dnsSettingsContext.ExternalDnsConnectionTypeList = null;
@@ -1020,20 +1053,38 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static int SelectedCDN
+        [field: AllowNull, MaybeNull]
+        private List<CDNURLProperty> CDNList { get => field ??= LauncherConfig.CDNList; }
+
+        private int SelectedCDN
         {
-            get => GetAppConfigValue("CurrentCDN").ToInt();
-            set
+            get
             {
-                if (value < 0) return;
-                SetAppConfigValue("CurrentCDN", value);
-                SaveAppConfig();
+                int value = GetAppConfigValue("CurrentCDN");
+                return value;
             }
         }
 
-        private static bool IsIncludeGameLogs
+        private void AppCDNSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            get => GetAppConfigValue("IncludeGameLogs").ToBool();
+            if (e.AddedItems.FirstOrDefault() is not CDNURLProperty asCdnUrlNew)
+            {
+                return;
+            }
+
+            int indexAt = CDNList.IndexOf(asCdnUrlNew);
+            if (indexAt < 0)
+            {
+                return;
+            }
+
+            SetAppConfigValue("CurrentCDN", indexAt);
+            SaveAppConfig();
+        }
+
+        private bool IsIncludeGameLogs
+        {
+            get => GetAppConfigValue("IncludeGameLogs");
             set => SetAndSaveConfigValue("IncludeGameLogs", value);
         }
 
@@ -1069,27 +1120,27 @@ namespace CollapseLauncher.Pages
                 LauncherConfig.IsInstantRegionChange = value;
             }
         }
-        private static bool IsUseDownloadChunksMerging
+        private bool IsUseDownloadChunksMerging
         {
-            get => GetAppConfigValue("UseDownloadChunksMerging").ToBool();
+            get => GetAppConfigValue("UseDownloadChunksMerging");
             set => SetAndSaveConfigValue("UseDownloadChunksMerging", value);
         }
 
-        private static bool IsLowerCollapsePriorityOnGameLaunch
+        private bool IsLowerCollapsePriorityOnGameLaunch
         {
-            get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool();
+            get => GetAppConfigValue("LowerCollapsePrioOnGameLaunch");
             set => SetAndSaveConfigValue("LowerCollapsePrioOnGameLaunch", value);
         }
 
-        private static bool IsAlwaysUseExternalBrowser
+        private bool IsAlwaysUseExternalBrowser
         {
-            get => GetAppConfigValue("UseExternalBrowser").ToBool();
+            get => GetAppConfigValue("UseExternalBrowser");
             set => SetAndSaveConfigValue("UseExternalBrowser", value);
         }
 
-        private static int AppGameLaunchedBehaviorIndex
+        private int AppGameLaunchedBehaviorIndex
         {
-            get => GetAppConfigValue("GameLaunchedBehavior").ToString() switch
+            get => GetAppConfigValue("GameLaunchedBehavior").Value switch
                    {
                        "Minimize" => 0,
                        "ToTray"   => 1,
@@ -1118,9 +1169,9 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsMinimizeToTaskbar
+        private bool IsMinimizeToTaskbar
         {
-            get => GetAppConfigValue("MinimizeToTray").ToBool();
+            get => GetAppConfigValue("MinimizeToTray");
             set => SetAndSaveConfigValue("MinimizeToTray", value);
         }
 
@@ -1139,62 +1190,62 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsStartupToTray
+        private bool IsStartupToTray
         {
             get => TaskSchedulerHelper.IsOnTrayEnabled();
             set => TaskSchedulerHelper.ToggleTrayEnabled(value);
         }
 
-        private static bool IsEnableSophon
+        private bool IsEnableSophon
         {
-            get => GetAppConfigValue("IsEnableSophon").ToBool();
+            get => GetAppConfigValue("IsEnableSophon");
             set => SetAndSaveConfigValue("IsEnableSophon", value);
         }
 
-        private static int SophonDownThread
+        private int SophonDownThread
         {
-            get => GetAppConfigValue("SophonCpuThread").ToInt();
+            get => GetAppConfigValue("SophonCpuThread");
             set => SetAndSaveConfigValue("SophonCpuThread", value);
         }
 
-        private static int SophonHttpConn
+        private int SophonHttpConn
         {
-            get => GetAppConfigValue("SophonHttpConnInt").ToInt();
+            get => GetAppConfigValue("SophonHttpConnInt");
             set => SetAndSaveConfigValue("SophonHttpConnInt", value);
         }
 
-        private static bool IsSophonPreloadPerfMode
+        private bool IsSophonPreloadPerfMode
         {
-            get => GetAppConfigValue("SophonPreloadApplyPerfMode").ToBool();
+            get => GetAppConfigValue("SophonPreloadApplyPerfMode");
             set => SetAndSaveConfigValue("SophonPreloadApplyPerfMode", value);
         }
 
 #nullable enable
-        private static bool IsUseProxy
+        private bool IsUseProxy
         {
-            get => GetAppConfigValue("IsUseProxy").ToBool();
+            get => GetAppConfigValue("IsUseProxy");
             set => SetAndSaveConfigValue("IsUseProxy", value);
         }
-        private static bool IsAllowHttpRedirections
+        private bool IsAllowHttpRedirections
         {
-            get => GetAppConfigValue("IsAllowHttpRedirections").ToBool();
+            get => GetAppConfigValue("IsAllowHttpRedirections");
             set => SetAndSaveConfigValue("IsAllowHttpRedirections", value);
         }
-        private static bool IsAllowHttpCookies
+        private bool IsAllowHttpCookies
         {
-            get => GetAppConfigValue("IsAllowHttpCookies").ToBool();
+            get => GetAppConfigValue("IsAllowHttpCookies");
             set => SetAndSaveConfigValue("IsAllowHttpCookies", value);
         }
 
-        private static bool IsAllowUntrustedCert
+        private bool IsAllowUntrustedCert
         {
-            get => GetAppConfigValue("IsAllowUntrustedCert").ToBool();
+            get => GetAppConfigValue("IsAllowUntrustedCert");
             set => SetAndSaveConfigValue("IsAllowUntrustedCert", value);
         }
 
         private double HttpClientTimeout
         {
-            get => GetAppConfigValue("HttpClientTimeout").ToDouble();
+            get => GetAppConfigValue("HttpClientTimeout");
             set
             {
                 if (double.IsNaN(value))
@@ -1342,13 +1393,13 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static string? HttpProxyUsername
+        private string? HttpProxyUsername
         {
-            get => GetAppConfigValue("HttpProxyUsername").ToString();
+            get => GetAppConfigValue("HttpProxyUsername");
             set => SetAndSaveConfigValue("HttpProxyUsername", value);
         }
 
-        private static string? HttpProxyPassword
+        private string? HttpProxyPassword
         {
             get
             {
@@ -1366,7 +1417,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsBurstDownloadModeEnabled
+        private bool IsBurstDownloadModeEnabled
         {
             get => LauncherConfig.IsBurstDownloadModeEnabled;
             set => LauncherConfig.IsBurstDownloadModeEnabled = value;
@@ -1426,13 +1477,13 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static bool IsEnforceToUse7ZipOnExtract
+        private bool IsEnforceToUse7ZipOnExtract
         {
             get => IsEnforceToUse7zipOnExtract;
             set => IsEnforceToUse7zipOnExtract = value;
         }
 
-        private static double DownloadSpeedLimit
+        private double DownloadSpeedLimit
         {
             get
             {
@@ -1448,7 +1499,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private static double DownloadChunkSize
+        private double DownloadChunkSize
         {
             get
             {
@@ -1960,78 +2011,64 @@ namespace CollapseLauncher.Pages
             if (t is StackPanel or Grid) 
                 return;
 
-            if (!string.IsNullOrEmpty(key) && IsElementVisible(t))
+            if (!string.IsNullOrEmpty(key) && t.IsElementVisible())
                 _settingsControls.TryAdd(key, t);
         #if DEBUG
             LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
         #endif
         }
 
-#nullable enable
-        private static bool IsElementVisible(FrameworkElement? element)
-        {
-            if (element == null)
-            {
-                return false;
-            }
-
-            if (element.Visibility == Visibility.Collapsed || element.Opacity < 1)
-            {
-                return false;
-            }
-
-            return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
-                   (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
-        }
-#nullable restore
-
         private void AddControlRecursive(object o, FrameworkElement t)
         {
-            if (t is StackPanel or Grid) 
-                return;
-            string key = null;
-
-            switch (o)
+            while (true)
             {
-                // Handle different content types
-                case string textContent:
-                    key = textContent;
-                    break;
-                case TextBlock textBlock:
-                    key = textBlock.Text;
-                    break;
-                case RadioButtons radioButtons:
+                if (t is StackPanel or Grid) return;
+                string key = null;
+
+                switch (o)
                 {
-                    AddControlRecursiveSelectible(radioButtons);
-                    return;
-                }
-                case FrameworkElement element:
-                {
-                    // Try to find TextBlock inside the content
-                    var textBlocks = element.FindDescendants().OfType<TextBlock>();
-                    var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
-                    if (enumerable.Any())
+                    // Handle different content types
+                    case string textContent:
+                        key = textContent;
+                        break;
+                    case TextBlock textBlock:
+                        key = textBlock.Text;
+                        break;
+                    case RadioButtons radioButtons:
                     {
-                        key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                        AddControlRecursiveSelectible(radioButtons);
+                        return;
                     }
-                    break;
+                    case FrameworkElement element:
+                    {
+                        // Try to find TextBlock inside the content
+                        var textBlocks = element.FindDescendants().OfType<TextBlock>();
+                        var enumerable = textBlocks as TextBlock[] ?? textBlocks.ToArray();
+                        if (enumerable.Length != 0)
+                        {
+                            key = string.Join(" ", enumerable.Select(tb => tb.Text));
+                        }
+
+                        break;
+                    }
+                    case null:
+                    {
+                        o = t;
+                        continue;
+                    }
                 }
-                case null:
+
+                if (string.IsNullOrEmpty(key))
                 {
-                    AddControlRecursive(t, t);
                     return;
                 }
-            }
 
-            if (string.IsNullOrEmpty(key))
-            {
-                return;
+                _settingsControls.TryAdd(key, t);
+            #if DEBUG
+                LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
+            #endif
+                break;
             }
-
-            _settingsControls.TryAdd(key, t);
-        #if DEBUG
-            LogWriteLine($"Got type {t.GetType()} with key {key}", LogType.Debug);
-        #endif
         }
 
     #nullable enable
