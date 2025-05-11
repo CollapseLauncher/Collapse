@@ -83,7 +83,25 @@ namespace CollapseLauncher
             string       audioLangListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
             EliminateUnnecessaryAssetIndex(audioLangListPath, audioLangList, assetIndex, '/', x => x.remoteName);
 
+#nullable enable
+            // Explicitly exclude ctable_streaming.dat
+            PkgVersionProperties? ctableStreamingContent = assetIndex.FirstOrDefault(x => x.remoteName.EndsWith("ctable_streaming.dat", StringComparison.OrdinalIgnoreCase));
+            if (ctableStreamingContent != null)
+            {
+                // If ctable.dat is found, then remove it from the asset index
+                assetIndex.Remove(ctableStreamingContent);
+            }
+
+            // Explicitly exclude ctable.dat if no url is assigned
+            PkgVersionProperties? ctableContent = assetIndex.FirstOrDefault(x => x.remoteName.EndsWith("ctable.dat", StringComparison.OrdinalIgnoreCase));
+            if (ctableContent != null && (string.IsNullOrEmpty(ctableContent.remoteURL) || string.IsNullOrEmpty(ctableContent.remoteURLPersistent)))
+            {
+                // If ctable.dat is found, then remove it from the asset index
+                assetIndex.Remove(ctableContent);
+            }
+
             return assetIndex;
+#nullable restore
         }
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
@@ -284,12 +302,19 @@ namespace CollapseLauncher
             }
         }
 
-        private async Task ParseManifestToAssetIndex(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, string primaryParentURL, string secondaryParentURL,
-            string manifestRemoteName, string manifestLocalName,
-            string persistentPath, string streamingAssetsPath,
-            List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable,
-            bool forceOverwrite = false, SearchValues<string> ignoreContainsParams = null,
-            CancellationToken token = default)
+        private async Task ParseManifestToAssetIndex(DownloadClient downloadClient,
+                                                     DownloadProgressDelegate downloadProgress,
+                                                     string primaryParentURL,
+                                                     string secondaryParentURL,
+                                                     string manifestRemoteName,
+                                                     string manifestLocalName,
+                                                     string persistentPath,
+                                                     string streamingAssetsPath,
+                                                     List<PkgVersionProperties> assetIndex,
+                                                     Dictionary<string, PkgVersionProperties> hashtable,
+                                                     bool forceOverwrite = false,
+                                                     SearchValues<string> ignoreContainsParams = null,
+                                                     CancellationToken token = default)
         {
             try
             {
@@ -448,6 +473,7 @@ namespace CollapseLauncher
 
                 // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
                 manifestEntry.remoteURL            = remoteUrl;
+                manifestEntry.remoteURLAlternative = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
                 manifestEntry.remoteName           = assetStreamingAssetPath;
                 manifestEntry.remoteNamePersistent = assetPersistentPath;
 

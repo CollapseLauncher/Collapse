@@ -18,6 +18,7 @@ using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CommentTypo
 
 namespace CollapseLauncher
 {
@@ -92,6 +93,20 @@ namespace CollapseLauncher
                 }
             }
 
+            // Duplicate ctable.dat to ctable_streaming.dat
+            string   streamingAssetsPath = Path.Combine(GamePath,            $"{ExecPrefix}_Data", "StreamingAssets");
+            string   ctablePath          = Path.Combine(streamingAssetsPath, "ctable.dat");
+            FileInfo ctableFileInfo      = new FileInfo(ctablePath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            string   ctableStreamingPath = Path.Combine(streamingAssetsPath, "ctable_streaming.dat");
+
+            // ReSharper disable once InvertIf
+            if (ctableFileInfo.Exists)
+            {
+                new FileInfo(ctableStreamingPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+                ctableFileInfo.CopyTo(ctableStreamingPath, true);
+                LogWriteLine($"File [T: {RepairAssetType.Generic}] {ctableStreamingPath} has been copied!", LogType.Default, true);
+            }
+
             return true;
         }
 
@@ -156,7 +171,13 @@ namespace CollapseLauncher
                 }
 
                 // or start asset download task
-                await RunDownloadTask(asset.AssetIndex.fileSize, assetFileInfo, asset.AssetIndex.remoteURL ?? asset.AssetIndex.remoteURLPersistent!, downloadClient, downloadProgress, token);
+                await RunDownloadTask(asset.AssetIndex.fileSize,
+                                      assetFileInfo,
+                                      asset.AssetIndex.remoteURL ?? asset.AssetIndex.remoteURLPersistent,
+                                      asset.AssetIndex.remoteURLAlternative,
+                                      downloadClient,
+                                      downloadProgress,
+                                      token);
                 isSuccess = true;
             }
             finally
