@@ -1,10 +1,13 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool.Parser.AssetIndex;
+using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Sophon;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Data.ConverterTool;
 using static Hi3Helper.Locale;
@@ -30,6 +33,8 @@ namespace CollapseLauncher
         private protected string               DispatcherURL           { get => GameVersionManager.GamePreset.GameDispatchURL ?? ""; }
         private protected string               DispatcherKey           { get => GameVersionManager.GamePreset.DispatcherKey ?? ""; }
         private protected int                  DispatcherKeyLength     { get => GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0x100; }
+        private protected QueryProperty        DispatchQuery           { get; set; }
+        private protected DateTime             LastDispatchQueryTime   { get; set; }
         private protected string               GamePersistentPath      { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
         private protected string               GameStreamingAssetsPath { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
         private protected GenshinAudioLanguage AudioLanguage           { get; init; } = (GenshinAudioLanguage)gameVersionManager.GamePreset.GetVoiceLanguageID();
@@ -117,6 +122,18 @@ namespace CollapseLauncher
         {
             // Trigger token cancellation
             Token.Cancel();
+        }
+
+        private async Task<QueryProperty> GetCachedDispatcherQuery(HttpClient client, CancellationToken token)
+        {
+            if (DispatchQuery != null && DateTime.Now <= LastDispatchQueryTime)
+            {
+                return DispatchQuery;
+            }
+
+            LastDispatchQueryTime = DateTime.Now.AddMinutes(5);
+            DispatchQuery         = await GetDispatcherQuery(client, token);
+            return DispatchQuery;
         }
 
         public void Dispose()
