@@ -22,6 +22,7 @@ using System.IO;
 using System.IO.Compression;
 using System.IO.Hashing;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -973,9 +974,42 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual bool IsArrayMatch(ReadOnlySpan<byte> source, ReadOnlySpan<byte> target) => source.SequenceEqual(target);
 
-        protected virtual async Task RunDownloadTask(long assetSize, FileInfo assetPath, string assetURL,
-            DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, bool isOverwrite = true)
+        protected virtual Task RunDownloadTask(long assetSize,
+                                               FileInfo assetPath,
+                                               string? assetURL,
+                                               DownloadClient downloadClient,
+                                               DownloadProgressDelegate downloadProgress,
+                                               CancellationToken token,
+                                               bool isOverwrite = true)
+            => RunDownloadTask(assetSize,
+                               assetPath,
+                               assetURL,
+                               null,
+                               downloadClient,
+                               downloadProgress,
+                               token,
+                               isOverwrite);
+
+        protected virtual async Task RunDownloadTask(long                     assetSize,
+                                                     FileInfo                 assetPath,
+                                                     string?                  assetURL,
+                                                     string?                  secondaryURL,
+                                                     DownloadClient           downloadClient,
+                                                     DownloadProgressDelegate downloadProgress,
+                                                     CancellationToken        token,
+                                                     bool                     isOverwrite = true)
         {
+            bool retrySecondary = false;
+        StartOver:
+            // Assign secondary URL if primaryAsset is null
+            assetURL ??= secondaryURL ?? "";
+
+            // Throw if both assetURL and secondaryURL are null
+            if (string.IsNullOrEmpty(assetURL))
+            {
+                throw new InvalidOperationException("Both assetURL and secondaryURL cannot be empty! You must define one of them!");
+            }
+
             // For any instances that uses Burst Download and if the speed limiter is null when
             // _isBurstDownloadEnabled set to false, then create the speed limiter instance
             bool isUseSelfSpeedLimiter = !IsBurstDownloadEnabled;
@@ -990,15 +1024,26 @@ namespace CollapseLauncher.Interfaces
             try
             {
                 // Always do multi-session download with the new DownloadClient regardless of any sizes (if applicable)
-                await downloadClient.DownloadAsync(
-                    assetURL,
-                    assetPath,
-                    isOverwrite,
-                    sessionChunkSize: LauncherConfig.DownloadChunkSize,
-                    progressDelegateAsync: downloadProgress,
-                    cancelToken: token,
-                    downloadSpeedLimiter: downloadSpeedLimiter
-                    );
+                await downloadClient.DownloadAsync(assetURL,
+                                                   assetPath,
+                                                   isOverwrite,
+                                                   sessionChunkSize: LauncherConfig.DownloadChunkSize,
+                                                   progressDelegateAsync: downloadProgress,
+                                                   cancelToken: token,
+                                                   downloadSpeedLimiter: downloadSpeedLimiter
+                                                  );
+            }
+            catch (HttpRequestException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.NotFound &&
+                    !retrySecondary &&
+                    !string.IsNullOrEmpty(secondaryURL))
+                {
+                    retrySecondary = true;
+                    assetURL       = null;
+                    goto StartOver;
+                }
+                throw;
             }
             finally
             {
