@@ -94,7 +94,7 @@ namespace CollapseLauncher
 
             // Explicitly exclude ctable.dat if no url is assigned
             PkgVersionProperties? ctableContent = assetIndex.FirstOrDefault(x => x.remoteName.EndsWith("ctable.dat", StringComparison.OrdinalIgnoreCase));
-            if (ctableContent != null && (string.IsNullOrEmpty(ctableContent.remoteURL) || string.IsNullOrEmpty(ctableContent.remoteURLPersistent)))
+            if (ctableContent != null && string.IsNullOrEmpty(ctableContent.remoteURL))
             {
                 // If ctable.dat is found, then remove it from the asset index
                 assetIndex.Remove(ctableContent);
@@ -114,8 +114,7 @@ namespace CollapseLauncher
                     {
                         var r = plugin.package.validate.Any(validate => validate.path != null &&
                                                     (asset.localName.Contains(validate.path) ||
-                                                    asset.remoteName.Contains(validate.path) ||
-                                                    asset.remoteNamePersistent.Contains(validate.path)));
+                                                    asset.remoteName.Contains(validate.path)));
                         if (r)
                         {
                             LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
@@ -203,8 +202,7 @@ namespace CollapseLauncher
                     md5                      = asset.AssetHash,
                     isPatch                  = false,
                     isForceStoreInStreaming  = true,
-                    isForceStoreInPersistent = false,
-                    type                     = "SophonGeneric"
+                    isForceStoreInPersistent = false
                 };
 
                 _ = SophonAssetDictRef.TryAdd(asset.AssetName.NormalizePath(), asset);
@@ -228,130 +226,6 @@ namespace CollapseLauncher
         #endregion
 
         #region PersistentManifest
-        internal async Task<bool> BuildPersistentManifest(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, List<PkgVersionProperties> assetIndex,
-            Dictionary<string, PkgVersionProperties> hashtableManifest, CancellationToken token)
-        {
-            try
-            {
-                // Get the Dispatcher Query
-                QueryProperty queryProperty = await GetDispatcherQuery(downloadClient.GetHttpClient(), token);
-
-                // Initialize persistent folder path and check for the folder existence
-                string basePersistentPath = $"{ExecPrefix}_Data\\Persistent";
-                string persistentFolder = Path.Combine(GamePath, basePersistentPath);
-
-                string baseStreamingAssetsPath = $"{ExecPrefix}_Data\\StreamingAssets";
-                string streamingAssetsFolder = Path.Combine(GamePath, baseStreamingAssetsPath);
-
-                if (!Directory.Exists(persistentFolder))
-                {
-                    Directory.CreateDirectory(persistentFolder);
-                }
-
-                if (!Directory.Exists(streamingAssetsFolder))
-                {
-                    Directory.CreateDirectory(streamingAssetsFolder);
-                }
-
-                // Parse res_versions_external
-                var primaryParentURL =
-                    CombineURLFromString(queryProperty.ClientGameResURL, "StandaloneWindows64");
-                var secondaryParentURL = CombineURLFromString(queryProperty.ClientAudioAssetsURL, "StandaloneWindows64");
-#if DEBUG
-                LogWriteLine($"Downloading res_versions_external...\r\n\t" +
-                             $"pri: {primaryParentURL}\r\n\t" +
-                             $"sec: {secondaryParentURL}", LogType.Debug, true);
-#endif
-                await ParseManifestToAssetIndex(downloadClient, downloadProgress, primaryParentURL, secondaryParentURL, "res_versions_external",
-                    "res_versions_persist", basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, token: token);
-
-                // Parse data_versions
-                var dataVerURL = queryProperty.ClientDesignDataURL;
-#if DEBUG
-                LogWriteLine($"Downloading data_versions_persist...\r\n\t" +
-                             $"{dataVerURL}", LogType.Debug, true);
-#endif
-                await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataVerURL, "",
-                    CombineURLFromString("AssetBundles", "data_versions"), "data_versions_persist", basePersistentPath,
-                    baseStreamingAssetsPath, assetIndex, hashtableManifest, token: token);
-
-                // Parse data_versions (silence)
-                var dataSilURL = queryProperty.ClientDesignDataSilURL;
-                SearchValues<string> dataSilIgnoreContainsParams = SearchValues.Create([
-                    // Containing InjectFix (aka IFix) files since the game only loads
-                    // it without storing it locally.
-                    "blocks/00/29342328.blk"
-                    // ,"blocks/00/32070509.blk" <- this one is stored locally
-                ], StringComparison.OrdinalIgnoreCase);
-#if DEBUG
-                LogWriteLine($"Downloading silence_data_versions_persist...\r\n\t" +
-                             $"{dataSilURL}", LogType.Debug, true);
-#endif
-                await ParseManifestToAssetIndex(downloadClient, downloadProgress, dataSilURL, "",
-                    CombineURLFromString("AssetBundles", "data_versions"), "silence_data_versions_persist",
-                    basePersistentPath, baseStreamingAssetsPath, assetIndex, hashtableManifest, true, dataSilIgnoreContainsParams, token);
-
-                // Save persistent manifest numbers
-                await SavePersistentRevision(queryProperty, token);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Parsing persistent manifest has failed. Ignoring!\r\n{ex}", LogType.Error, true);
-                return false;
-            }
-        }
-
-        private async Task ParseManifestToAssetIndex(DownloadClient downloadClient,
-                                                     DownloadProgressDelegate downloadProgress,
-                                                     string primaryParentURL,
-                                                     string secondaryParentURL,
-                                                     string manifestRemoteName,
-                                                     string manifestLocalName,
-                                                     string persistentPath,
-                                                     string streamingAssetsPath,
-                                                     List<PkgVersionProperties> assetIndex,
-                                                     Dictionary<string, PkgVersionProperties> hashtable,
-                                                     bool forceOverwrite = false,
-                                                     SearchValues<string> ignoreContainsParams = null,
-                                                     CancellationToken token = default)
-        {
-            try
-            {
-                // Get the manifest URL and Path
-                string manifestURL = CombineURLFromString(primaryParentURL, manifestRemoteName);
-                string manifestPath = Path.Combine(GamePath, persistentPath, manifestLocalName);
-
-                // Make sure the file has been deleted (if exist) before redownloading it
-                if (File.Exists(manifestPath))
-                {
-                    TryDeleteReadOnlyFile(manifestPath);
-                }
-
-                // Download the manifest
-                await downloadClient.DownloadAsync(manifestURL, manifestPath, true, progressDelegateAsync: downloadProgress, cancelToken: token);
-                LogWriteLine($"Manifest: {manifestRemoteName} (localName: {manifestLocalName}) has been fetched", LogType.Default, true);
-
-                // Parse the manifest
-                await ParsePkgVersionManifestAsync(manifestPath,
-                                                   persistentPath,
-                                                   streamingAssetsPath,
-                                                   primaryParentURL,
-                                                   secondaryParentURL,
-                                                   assetIndex,
-                                                   hashtable,
-                                                   forceOverwrite,
-                                                   ignoreContainsParams,
-                                                   token);
-            }
-            catch (TaskCanceledException) { throw; }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception ex)
-            {
-                LogWriteLine($"Failed parsing persistent manifest: {manifestRemoteName} (localName: {manifestLocalName}). Skipped!\r\n{ex}", LogType.Warning, true);
-            }
-        }
-
         internal static string GetParentFromAssetRelativePath(ReadOnlySpan<char> relativePath, out bool isPersistentAsStreaming)
         {
             isPersistentAsStreaming = false;
@@ -388,146 +262,7 @@ namespace CollapseLauncher
             return "";
         }
 
-        private static async Task ParsePkgVersionManifestAsync(string localManifestPath,
-                                                               string persistentPath,
-                                                               string streamingAssetPath,
-                                                               string primaryParentURL,
-                                                               string secondaryParentURL,
-                                                               List<PkgVersionProperties> assetIndex,
-                                                               Dictionary<string, PkgVersionProperties> assetIndexHashtable,
-                                                               bool forceOverwrite,
-                                                               SearchValues<string> ignoreContainsParams = null,
-                                                               CancellationToken token = default)
-        {
-            // Reverse-normalize path from using '\\' to '/' separator
-            NormalizePathInplaceNoTrim(persistentPath, '\\', '/');
-            NormalizePathInplaceNoTrim(streamingAssetPath, '\\', '/');
-
-            // Read the manifest file
-            FileInfo           manifestFileInfo = new FileInfo(localManifestPath).EnsureNoReadOnly();
-            using StreamReader reader           = manifestFileInfo.OpenText();
-
-            // Iterate the asset line
-            while (await reader.ReadLineAsync(token) is { } currentLine)
-            {
-                // Sanity check: Ignore non-json entry
-                if (IsCurrentLineJson(currentLine))
-                {
-                    continue;
-                }
-
-                // Deserialize manifest entry
-                PkgVersionProperties manifestEntry = currentLine.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
-
-                // If the ignoreContainsParams is not null and the remoteName contains
-                // ignore list, then move to another entry
-                if (ignoreContainsParams != null &&
-                    manifestEntry != null &&
-                    manifestEntry.remoteName
-                                 .AsSpan()
-                                 .ContainsAny(ignoreContainsParams))
-                {
-                    continue;
-                }
-
-                // Resolve the svc_catalog name where the localName contains "../"
-                if (manifestEntry != null && manifestEntry.remoteName.EndsWith("svc_catalog"))
-                {
-                    manifestEntry.localName = Path.GetFileName(manifestEntry.remoteName);
-                }
-
-                // Get relative path based on extension
-                bool   isUseRemoteName        = string.IsNullOrEmpty(manifestEntry!.localName);
-                string actualRelativeFilePath = isUseRemoteName ? manifestEntry.remoteName : manifestEntry.localName;
-
-                // Get relative path based on extension
-                string relativePath = GetParentFromAssetRelativePath(manifestEntry.remoteName, out bool isForceStreaming);
-                string assetPersistentPath = CombineURLFromString(persistentPath, relativePath, actualRelativeFilePath);
-                string assetStreamingAssetPath = CombineURLFromString(streamingAssetPath, relativePath, manifestEntry.remoteName);
-
-                // If the manifest is using a persistent manifest but
-                // has uncategorized type, then assume it as a streaming file.
-                if (isForceStreaming && !forceOverwrite)
-                {
-                    manifestEntry.isPatch = false;
-                    manifestEntry.isForceStoreInStreaming = true;
-                }
-
-                // If forceOverwrite is toggled, use persistent path anyway
-                if (forceOverwrite)
-                {
-                    manifestEntry.isPatch = true;
-                }
-
-                // Set the remote URL
-                string remoteUrl;
-                if (!string.IsNullOrEmpty(secondaryParentURL) && manifestEntry.isPatch)
-                {
-                    remoteUrl = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
-                }
-                else
-                {
-                    remoteUrl = CombineURLFromString(primaryParentURL, relativePath, manifestEntry.remoteName);
-                }
-
-                // Get the remoteName (StreamingAssets) and remoteNamePersistent (Persistent)
-                manifestEntry.remoteURL            = remoteUrl;
-                manifestEntry.remoteURLAlternative = CombineURLFromString(secondaryParentURL, relativePath, manifestEntry.remoteName);
-                manifestEntry.remoteName           = assetStreamingAssetPath;
-                manifestEntry.remoteNamePersistent = assetPersistentPath;
-
-                // Fill the null persistent property
-                manifestEntry.remoteURLPersistent  ??= manifestEntry.remoteURL;
-                manifestEntry.remoteNamePersistent ??= manifestEntry.remoteName;
-                manifestEntry.md5Persistent        ??= manifestEntry.md5;
-                manifestEntry.xxh64hashPersistent  ??= manifestEntry.xxh64hash;
-                if (manifestEntry.fileSizePersistent == 0 && manifestEntry.fileSize != 0)
-                {
-                    manifestEntry.fileSizePersistent = manifestEntry.fileSize;
-                }
-
-                // Try to add or replace the existing entry
-                AddOrReplaceEntry(manifestEntry, assetStreamingAssetPath, assetIndex, assetIndexHashtable);
-            }
-        }
-
-        private static bool IsCurrentLineJson(ReadOnlySpan<char> chars) => chars[0] != '{' && chars[^1] != '}';
-
-        private static void AddOrReplaceEntry(PkgVersionProperties                     manifestEntry,
-                                              string                                   fileStreamingAssetPath,
-                                              List<PkgVersionProperties>               assetIndex,
-                                              Dictionary<string, PkgVersionProperties> assetIndexHashtable)
-        {
-            // Try to add the current entry to the hashtable
-            if (assetIndexHashtable.TryAdd(fileStreamingAssetPath, manifestEntry))
-            {
-                // If successful, then add it to the list as well
-                assetIndex.Add(manifestEntry);
-                return;
-            }
-
-            // Find the existing table. If not found, then return
-            PkgVersionProperties existingAsset = assetIndexHashtable[fileStreamingAssetPath];
-            int existingIndex = assetIndex.IndexOf(existingAsset);
-            if (existingIndex == -1)
-            {
-                return;
-            }
-
-            // Resolve the ctable.dat to use persistent URL
-            if (existingAsset.remoteName.EndsWith("ctable.dat"))
-            {
-                existingAsset.remoteURL = manifestEntry.remoteURLPersistent ?? manifestEntry.remoteURL;
-            }
-
-            // Otherwise, add the existing one with the persistent properties
-            existingAsset.fileSizePersistent   = manifestEntry.fileSizePersistent == 0 ? manifestEntry.fileSize : manifestEntry.fileSizePersistent;
-            existingAsset.md5Persistent        = manifestEntry.md5Persistent ?? manifestEntry.md5;
-            existingAsset.xxh64hashPersistent  = manifestEntry.xxh64hashPersistent ?? manifestEntry.xxh64hash;
-            existingAsset.remoteNamePersistent = manifestEntry.remoteNamePersistent ?? manifestEntry.remoteName;
-            existingAsset.remoteURLPersistent  = manifestEntry.remoteURLPersistent ?? manifestEntry.remoteURL;
-            existingAsset.isPatch              = manifestEntry.isPatch;
-        }
+        private static bool IsCurrentLineJson(ReadOnlySpan<char> chars) => chars[0] == '{' && chars[^1] == '}';
 
         private async Task SavePersistentRevision(QueryProperty dispatchQuery, CancellationToken token)
         {
@@ -535,9 +270,16 @@ namespace CollapseLauncher
 
             // Get base_res_version_hash content
             string filePath = Path.Combine(GamePath, $@"{ExecPrefix}_Data\StreamingAssets\res_versions_streaming");
-            await using FileStream resVersionStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            byte[] hashBytes = Hash.GetCryptoHash<MD5>(resVersionStream);
-            string hash = Convert.ToHexStringLower(hashBytes);
+            FileInfo fileInfo = new FileInfo(filePath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            if (fileInfo.Exists)
+            {
+                await using FileStream resVersionStream = fileInfo.OpenRead();
+                byte[] hashBytes = Hash.GetCryptoHash<MD5>(resVersionStream, token: token);
+                string hash = Convert.ToHexStringLower(hashBytes);
+
+                // Get base_res_version_hash content
+                await File.WriteAllTextAsync(persistentPath + "\\base_res_version_hash", hash, token);
+            }
 
 #nullable enable
             // Write DownloadPref template
@@ -546,8 +288,6 @@ namespace CollapseLauncher
             if (prefTemplateBytes != null) await File.WriteAllBytesAsync(persistentPath + "\\DownloadPref", prefTemplateBytes, token);
 #nullable disable
 
-            // Get base_res_version_hash content
-            await File.WriteAllTextAsync(persistentPath + "\\base_res_version_hash", hash, token);
             // Get data_revision content
             await File.WriteAllTextAsync(persistentPath + "\\data_revision", $"{dispatchQuery.DataRevisionNum}", token);
             // Get res_revision content
@@ -621,60 +361,6 @@ namespace CollapseLauncher
         {
             ProgressAllSizeTotal = assetIndex.Sum(x => x.fileSize);
             ProgressAllCountTotal = assetIndex.Count;
-        }
-
-        private void EnumerateManifestToAssetIndex(string path, string parentPath, string filter, List<PkgVersionProperties> assetIndex, Dictionary<string, PkgVersionProperties> hashtable, string parentURL = "", bool forceStoreInStreaming = false)
-        {
-            // Iterate files inside the desired path based on filter.
-            foreach (string entry in Directory.EnumerateFiles(Path.Combine(GamePath, path), filter))
-            {
-                ParseManifestToAssetIndex(entry, parentPath, assetIndex, hashtable, parentURL, forceStoreInStreaming);
-            }
-        }
-
-        /// <summary>
-        /// This one is used to parse Generic Manifest
-        /// </summary>
-        private static void ParseManifestToAssetIndex(string manifestPath,
-                                                      string parentPath,
-                                                      List<PkgVersionProperties> assetIndex,
-                                                      Dictionary<string, PkgVersionProperties> hashtable,
-                                                      string parentURL,
-                                                      bool forceStoreInStreaming = false)
-        {
-            // Iterate JSON that only contains defined extensions.
-            using StreamReader reader = File.OpenText(manifestPath);
-            while (reader.ReadLine() is { } data)
-            {
-                // If it's not a valid JSON data, move to the next line
-                if (IsCurrentLineJson(data))
-                {
-                    continue;
-                }
-
-                // Deserialize JSON line into local entry.
-                PkgVersionProperties entry = data.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
-
-                // If the parent path is not defined, then use already-defined parent path from JSON and append it as remote name.
-                string relativeParentPath = string.IsNullOrEmpty(parentPath) ? "" : GetParentFromAssetRelativePath(entry.remoteName, out _);
-                entry.remoteName = Path.Combine(parentPath ?? "", relativeParentPath, entry.remoteName);
-
-                // Reverse-normalize the path separator
-                NormalizePathInplaceNoTrim(entry.remoteName, '\\', '/');
-
-                // Append remote URL to download later
-                entry.remoteURL               = CombineURLFromString(parentURL, entry.remoteName);
-                entry.isForceStoreInStreaming = forceStoreInStreaming;
-
-                // Always ensure that primary manifest doesn't get recognized as patch.
-                entry.isPatch = false;
-
-                // Check if the entry is duplicated. If not, then add to asset index.
-                if (hashtable.TryAdd(entry.remoteName, entry))
-                {
-                    assetIndex.Add(entry);
-                }
-            }
         }
         #endregion
 

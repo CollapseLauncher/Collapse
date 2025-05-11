@@ -249,8 +249,9 @@ namespace CollapseLauncher
         byte[] localCrcByte,
         byte[] remoteCrcByte)
         : IAssetProperty
+        where T : struct, Enum
     {
-        public string AssetTypeString { get => Enum.GetName(typeof(T), AssetType); }
+        public string AssetTypeString { get => Enum.GetName(AssetType); }
         public string Name            { get; } = name;
         public T      AssetType       { get; } = assetType;
         public string Source          { get; } = '\\' + source;
