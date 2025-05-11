@@ -15,17 +15,14 @@ If you wish to add new language that isn't yet listed in the Crowdin project, pl
 
 ## Tools Needed
 Below is a list of tools needed to contribute to this project:
-1. **Visual Studio 2022 (Any Edition - 17.8 or later)**
+1. **Visual Studio 2022 (Any Edition - latest version)**
    - Select .NET desktop development component
 2. **Windows SDK (10.0.26100.0 ONLY)** via Visual Studio Installer
-3. .NET 8 SDK: [**(8.0.0 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-4. WinUI 3: [**(WindowsAppSDK 1.4.0 Stable Runtime)**](https://aka.ms/windowsappsdk/1.4/latest/windowsappruntimeinstall-x64.exe)
+3. .NET 9 SDK: [**(9.0.4 or later)**](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 > **Note**:
-> 
-> Starting from November 21<sup>st</sup> 2023, you <b>must</b> have Visual Studio 2022 version 17.8+ installed on your computer due to the updated minimum system requirement of `WindowsAppSDK` and `.NET 8`.
-> 
-> Using a lower Visual Studio version (like VS2019) is not possible due to requirement from WindowsAppSDK used in this project.
+> Make sure to always use the latest version of Visual Studio in order to be able to open the project.
+
 ## Restrictions for New Feature(s)
 While this software is fully open source and not affiliated with HoYoverse, Cognosphere, or any of its related entities in any way, we are nonetheless bound to their Terms of Service and Code of Conduct when developing Collapse. This means that there are some features that we will **not** implement. We will close any issue or PRs that are made to add such functionality to Collapse. Such features include, but are not limited to:
 - Anything that, in any way, interacts with the miHoYo SDK and/or API, including their Authentication and Payment Processing endpoints.
@@ -48,6 +45,7 @@ While this software is fully open source and not affiliated with HoYoverse, Cogn
 - [Genshin Impact Terms of Service](https://genshin.hoyoverse.com/en/company/terms)
 - [Honkai Impact 3rd Terms of Service](https://honkaiimpact3.hoyoverse.com/global/en-us/terms)
 - [Honkai: Star Rail Terms of Service](https://hsr.hoyoverse.com/en-us/company/terms)
+- [Zenless Zone Zero Terms of Service](https://zenless.hoyoverse.com/en-us/company/terms)
 - [HoYoLAB Forum Terms of Service](https://www.hoyolab.com/agreement)
 
 # A Humble Thank You
