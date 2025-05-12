@@ -56,7 +56,7 @@ namespace CollapseLauncher
             bool isStringEmpty = string.IsNullOrEmpty(outputPath);
 
             if (!isFilePath) inputPath = Path.GetDirectoryName(inputPath);
-            bool isPathEqual = inputPath.AsSpan().TrimEnd('\\').SequenceEqual(outputPath.AsSpan().TrimEnd('\\'));
+            bool isPathEqual = inputPath.AsSpan().TrimEnd("\\/").SequenceEqual(outputPath.AsSpan().TrimEnd("\\/"));
 
             return isStringEmpty || isPathEqual;
         }

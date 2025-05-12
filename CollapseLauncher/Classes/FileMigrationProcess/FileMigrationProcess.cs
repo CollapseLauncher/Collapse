@@ -1,11 +1,16 @@
 ﻿using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ManagedTools;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Dispatching;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,7 +54,7 @@ namespace CollapseLauncher
             _currentFileCountMoved = 0;
             _totalFileSize = 0;
             _totalFileCount = 0;
-            FileMigrationProcessUIRef? uiRef = null;
+            FileMigrationProcessUIRef uiRef = null;
 
             try
             {
@@ -62,20 +67,20 @@ namespace CollapseLauncher
                 }
 
                 uiRef = BuildMainMigrationUI();
-                string outputPath = await StartRoutineInner(uiRef.Value);
-                uiRef.Value.MainDialogWindow!.Hide();
+                string outputPath = await StartRoutineInner(uiRef);
+                uiRef.MainDialogWindow!.Hide();
                 isSuccess = true;
 
                 return outputPath;
             }
             catch when (!isSuccess) // Throw if the isSuccess is not set to true
             {
-                if (!uiRef.HasValue || uiRef.Value.MainDialogWindow == null)
+                if (uiRef?.MainDialogWindow == null)
                 {
                     throw;
                 }
 
-                uiRef.Value.MainDialogWindow.Hide();
+                uiRef.MainDialogWindow.Hide();
                 await Task.Delay(500); // Give artificial delay to give main dialog window thread to close first
                 throw;
             }
@@ -122,7 +127,7 @@ namespace CollapseLauncher
             else
             {
                 Logger.LogWriteLine($"[FileMigrationProcess::MoveFile()] Moving file across different drives from: {inputPathInfo.FullName} to {outputPathInfo.FullName}", LogType.Default, true);
-                await MoveWriteFile(uiRef, inputPathInfo, outputPathInfo, TokenSource?.Token ?? default);
+                await MoveWriteFile(uiRef, inputPathInfo, outputPathInfo, TokenSource?.Token ?? CancellationToken.None);
             }
 
             return outputPathInfo.FullName;
@@ -134,51 +139,115 @@ namespace CollapseLauncher
             DirectoryInfo outputPathInfo = new DirectoryInfo(OutputPath);
             outputPathInfo.Create();
 
-            int parentInputPathLength = inputPathInfo.Parent!.FullName.Length + 1;
-            string outputDirBaseNamePath = inputPathInfo.FullName.Substring(parentInputPathLength);
-            string outputDirPath = Path.Combine(OutputPath, outputDirBaseNamePath);
+            bool isMoveBackward = inputPathInfo.FullName.StartsWith(outputPathInfo.FullName, StringComparison.OrdinalIgnoreCase) &&
+                                  !inputPathInfo.FullName.Equals(outputPathInfo.FullName, StringComparison.OrdinalIgnoreCase);
 
-            await Parallel.ForEachAsync(
-                inputPathInfo.EnumerateFiles("*", SearchOption.AllDirectories),
-                new ParallelOptions
+            // Listing all the existed files first
+            List <FileInfo> inputFileList = [];
+            inputFileList.AddRange(inputPathInfo
+                                  .EnumerateFiles("*", SearchOption.AllDirectories)
+                                  .EnumerateNoReadOnly()
+                                  .Where(x => isMoveBackward || IsNotInOutputDir(x)));
+
+            // Check if both destination and source are SSDs. If true, enable multi-threading.
+            // Disabling multi-threading while either destination or source are HDDs could help
+            // reduce massive seeking, hence improving speed.
+            bool isBothSsd = DriveTypeChecker.IsDriveSsd(InputPath) &&
+                             DriveTypeChecker.IsDriveSsd(OutputPath);
+            ParallelOptions parallelOptions = new ParallelOptions
+            {
+                CancellationToken = TokenSource?.Token ?? CancellationToken.None,
+                MaxDegreeOfParallelism = isBothSsd ? LauncherConfig.AppCurrentThread : 1
+            };
+
+            // Get old list of empty directories so it can be removed later.
+            StringComparer comparer = StringComparer.OrdinalIgnoreCase;
+            HashSet<string> oldDirectoryList = new(inputFileList
+                                                  .Select(x => x.DirectoryName)
+                                                  .Where(x => !string.IsNullOrEmpty(x) && !x.Equals(inputPathInfo.FullName, StringComparison.OrdinalIgnoreCase))
+                                                  .Distinct(comparer)
+                                                  .OrderDescending(), comparer);
+
+            // Perform file migration task
+            await Parallel.ForEachAsync(inputFileList, parallelOptions, Impl);
+            foreach (string dir in oldDirectoryList)
+            {
+                RemoveEmptyDirectory(dir);
+            }
+
+            return OutputPath;
+
+            bool IsNotInOutputDir(FileInfo fileInfo)
+            {
+                bool isEmpty = string.IsNullOrEmpty(fileInfo.DirectoryName);
+                if (isEmpty)
                 {
-                    CancellationToken = TokenSource?.Token ?? default,
-                    MaxDegreeOfParallelism = LauncherConfig.AppCurrentThread
-                },
-                async (inputFileInfo, cancellationToken) =>
+                    return false;
+                }
+
+                bool isStartsWith = fileInfo.DirectoryName.StartsWith(outputPathInfo.FullName);
+                return !isStartsWith;
+            }
+
+            void RemoveEmptyDirectory(string dir)
+            {
+                foreach (string innerDir in Directory.EnumerateDirectories(dir))
                 {
-                    int parentInputPathLengthLocal = inputPathInfo.Parent!.FullName.Length + 1;
-                    string inputFileBasePath = inputFileInfo!.FullName[parentInputPathLengthLocal..];
+                    RemoveEmptyDirectory(innerDir);
+                }
 
-                    // Update path display
-                    UpdateCountProcessed(uiRef, inputFileBasePath);
-
-                    string outputTargetPath = Path.Combine(outputPathInfo.FullName, inputFileBasePath);
-                    string outputTargetDirPath = Path.GetDirectoryName(outputTargetPath) ?? Path.GetPathRoot(outputTargetPath);
-
-                    if (string.IsNullOrEmpty(outputTargetDirPath)) 
-                        throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
-                                                                          InputPath));
-                    
-                    DirectoryInfo outputTargetDirInfo = new DirectoryInfo(outputTargetDirPath);
-                    outputTargetDirInfo.Create();
-
-                    if (IsSameOutputDrive)
+                try
+                {
+                    _ = FindFiles.TryIsDirectoryEmpty(dir, out bool isEmpty);
+                    if (!isEmpty)
                     {
-                        Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
-                        inputFileInfo.MoveTo(outputTargetPath, true);
-                        UpdateSizeProcessed(uiRef, inputFileInfo.Length);
+                        string parentDir = Path.GetDirectoryName(dir);
+                        if (!string.IsNullOrEmpty(parentDir))
+                        {
+                            RemoveEmptyDirectory(parentDir);
+                        }
                     }
-                    else
-                    {
-                        Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputTargetPath}", LogType.Default, true);
-                        FileInfo outputFileInfo = new FileInfo(outputTargetPath);
-                        await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
-                    }
-                });
 
-            inputPathInfo.Delete(true);
-            return outputDirPath;
+                    Directory.Delete(dir);
+                    Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Empty directory: {dir} has been deleted!", LogType.Default, true);
+                }
+                catch (IOException)
+                {
+                    // ignored
+                }
+            }
+
+            async ValueTask Impl(FileInfo inputFileInfo, CancellationToken cancellationToken)
+            {
+                string inputFileRelativePath = inputFileInfo.FullName
+                    .AsSpan(InputPath.Length)
+                    .TrimStart("\\/")
+                    .ToString();
+
+                string outputNewFilePath = Path.Combine(OutputPath, inputFileRelativePath);
+                string outputNewFileDir = Path.GetDirectoryName(outputNewFilePath) ?? Path.GetPathRoot(outputNewFilePath);
+                if (!string.IsNullOrEmpty(outputNewFileDir))
+                    Directory.CreateDirectory(outputNewFileDir);
+
+                // Update path display
+                UpdateCountProcessed(uiRef, inputFileRelativePath);
+                if (string.IsNullOrEmpty(outputNewFileDir))
+                    throw new InvalidOperationException(string.Format(Locale.Lang._Dialogs.InvalidGameDirNewTitleFormat,
+                                                                      InputPath));
+
+                if (IsSameOutputDrive)
+                {
+                    Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content in the same drive from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
+                    inputFileInfo.MoveTo(outputNewFilePath, true);
+                    UpdateSizeProcessed(uiRef, inputFileInfo.Length);
+                }
+                else
+                {
+                    Logger.LogWriteLine($"[FileMigrationProcess::MoveDirectory()] Moving directory content across different drives from: {inputFileInfo.FullName} to {outputNewFilePath}", LogType.Default, true);
+                    FileInfo outputFileInfo = new FileInfo(outputNewFilePath);
+                    await MoveWriteFile(uiRef, inputFileInfo, outputFileInfo, cancellationToken);
+                }
+            }
         }
     }
 }
