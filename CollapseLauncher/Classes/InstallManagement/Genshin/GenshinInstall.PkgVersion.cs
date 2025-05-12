@@ -5,6 +5,7 @@ using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using Hi3Helper.Sophon;
@@ -24,17 +25,15 @@ namespace CollapseLauncher.InstallManager.Genshin;
 #nullable enable
 internal sealed partial class GenshinInstall
 {
-    protected override async Task<string> DownloadPkgVersion(DownloadClient downloadClient,
+    private readonly List<PkgVersionProperties>               _repairAssetIndex     = [];
+    private readonly Dictionary<string, PkgVersionProperties> _repairAssetIndexDict = [];
+
+    protected override async Task<string> DownloadPkgVersion(DownloadClient         downloadClient,
                                                              RegionResourceVersion? _)
     {
-        // First, build the fake pkg_version from Sophon
-        string pkgVersionPath = await DownloadPkgVersionStatic(downloadClient.GetHttpClient(),
-                                                               GameVersionManager,
-                                                               GamePath,
-                                                               _gameAudioLangListPathStatic,
-                                                               token: Token.Token);
+        string pkgVersionPath = Path.Combine(GamePath, "pkg_version");
 
-        // Second, build persistent manifest from game_res dispatcher.
+        // Build asset index by borrowing methods from GenshinRepair instance
         // If game repair is not available, then skip.
         GamePresetProperty presetProperty = GamePropertyVault.GetCurrentGameProperty();
         if (presetProperty.GameRepair is not GenshinRepair genshinRepairInstance)
@@ -42,90 +41,69 @@ internal sealed partial class GenshinInstall
             return pkgVersionPath;
         }
 
+        // Clear last asset index list
+        _repairAssetIndex.Clear();
+        _repairAssetIndexDict.Clear();
+        
+        // Initialize asset index and load it from GenshinRepair instance
+        await genshinRepairInstance.BuildPrimaryManifest(downloadClient,
+                                                         _repairAssetIndex,
+                                                         _repairAssetIndexDict,
+                                                         CancellationToken.None);
+
         // Call and borrow persistent manifest method from GenshinRepair instance
         await genshinRepairInstance.BuildPersistentManifest(downloadClient,
-                                                            null,
-                                                            [],
-                                                            [],
-                                                            Token.Token);
+                                                            null!,
+                                                            _repairAssetIndex,
+                                                            _repairAssetIndexDict,
+                                                            CancellationToken.None);
 
         return pkgVersionPath;
     }
 
-    protected override async ValueTask ParsePkgVersions2FileInfo(List<LocalFileInfo> pkgFileInfo,
-                                                                 HashSet<string>     pkgFileInfoHashSet,
-                                                                 CancellationToken   token)
+    protected override ValueTask ParsePkgVersions2FileInfo(List<LocalFileInfo> pkgFileInfo,
+                                                           HashSet<string>     pkgFileInfoHashSet,
+                                                           CancellationToken   token)
     {
-        // Parse primary pkg_version as main manifest
-        await base.ParsePkgVersions2FileInfo(pkgFileInfo,
-                                             pkgFileInfoHashSet,
-                                             token);
+        foreach (PkgVersionProperties asset in _repairAssetIndex)
+        {
+            string relativePath = asset.remoteName;
+            ConverterTool.NormalizePathInplaceNoTrim(relativePath);
+
+            if (!pkgFileInfoHashSet.Add(relativePath))
+            {
+                continue;
+            }
+
+            LocalFileInfo assetLocalInfo = new LocalFileInfo
+            {
+                FileName     = Path.GetFileName(asset.remoteName),
+                RelativePath = relativePath,
+                FileSize     = asset.fileSize,
+                FullPath     = Path.Combine(GamePath, asset.remoteName)
+            };
+            assetLocalInfo.IsFileExist = File.Exists(assetLocalInfo.FullPath);
+
+            pkgFileInfo.Add(assetLocalInfo);
+        }
 
         string? execPrefix = Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
         if (string.IsNullOrEmpty(execPrefix))
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
-        string basePersistentPath      = $"{execPrefix}_Data\\Persistent";
-        string baseStreamingAssetsPath = $"{execPrefix}_Data\\StreamingAssets";
-        string persistentFolder        = Path.Combine(GamePath, basePersistentPath);
-
-        List<string>? audioLangList     = (GameVersionManager as GameTypeGenshinVersion)?.AudioVoiceLanguageList;
-        string        audioLangListPath = Path.Combine(GamePath, basePersistentPath, "audio_lang_14");
-
-        // Then add additional parsing to persistent manifests (provided by dispatcher)
-        string persistentResVersions = Path.Combine(persistentFolder, "res_versions_persist");
-        if (File.Exists(persistentResVersions))
-        {
-            await ParsePersistentManifest2FileInfo(GamePath,
-                                                   asset => Path.Combine(baseStreamingAssetsPath,
-                                                                                                     GenshinRepair.GetParentFromAssetRelativePath(asset.RelativePath,
-                                                                                                                                                  out _)),
-                                                   persistentResVersions,
-                                                   pkgFileInfo,
-                                                   pkgFileInfoHashSet,
-                                                   token);
-        }
+        string        basePersistentPath = $"{execPrefix}_Data\\Persistent";
+        List<string>? audioLangList      = (GameVersionManager as GameTypeGenshinVersion)?.AudioVoiceLanguageList;
+        string        audioLangListPath  = Path.Combine(GamePath, basePersistentPath, "audio_lang_14");
 
         // Filter unnecessary files
         if (audioLangList != null)
         {
             GenshinRepair.EliminateUnnecessaryAssetIndex(audioLangListPath, audioLangList, pkgFileInfo, '\\', x => x.FullPath);
         }
-    }
 
-    private static async Task ParsePersistentManifest2FileInfo(string                        baseGamePath,
-                                                               Func<LocalFileInfo, string?>? assetGetMiddlePath,
-                                                               string                        pkgFilePath,
-                                                               List<LocalFileInfo>           pkgFileInfo,
-                                                               HashSet<string>               pkgFileInfoHashSet,
-                                                               CancellationToken             token)
-    {
-        using StreamReader reader = File.OpenText(pkgFilePath);
-        while (await reader.ReadLineAsync(token) is { } line)
-        {
-            LocalFileInfo? localFileInfo = line.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
-
-            // If null, then go to next line
-            if (localFileInfo == null)
-                continue;
-
-            string? middlePath   = assetGetMiddlePath?.Invoke(localFileInfo);
-            string  fullBasePath = string.IsNullOrEmpty(middlePath) ? baseGamePath : Path.Combine(baseGamePath, middlePath);
-
-            localFileInfo.FullPath    = Path.Combine(fullBasePath, localFileInfo.RelativePath);
-            localFileInfo.FileName    = Path.GetFileName(localFileInfo.RelativePath);
-            localFileInfo.IsFileExist = File.Exists(localFileInfo.FullPath);
-
-            string relativePathNoBase = Path.Combine(middlePath ?? "", localFileInfo.RelativePath);
-
-            // Add it to the list and hashset (if it's not registered yet)
-            if (pkgFileInfoHashSet.Add(relativePathNoBase))
-            {
-                pkgFileInfo.Add(localFileInfo);
-            }
-        }
+        return ValueTask.CompletedTask;
     }
 
     public static async Task<string> DownloadPkgVersionStatic(HttpClient                   client,
