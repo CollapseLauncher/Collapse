@@ -152,10 +152,10 @@ namespace CollapseLauncher
 
         #region PrimaryManifest
 #nullable enable
-        private async Task BuildPrimaryManifest(DownloadClient                           downloadClient,
-                                                List<PkgVersionProperties>               assetIndex,
-                                                Dictionary<string, PkgVersionProperties> hashtableManifest,
-                                                CancellationToken                        token)
+        internal async Task BuildPrimaryManifest(DownloadClient                           downloadClient,
+                                                 List<PkgVersionProperties>               assetIndex,
+                                                 Dictionary<string, PkgVersionProperties> hashtableManifest,
+                                                 CancellationToken                        token)
         {
             // Try Cleanup Download Profile file
             TryDeleteDownloadPref();
