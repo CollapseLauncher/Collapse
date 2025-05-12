@@ -1025,5 +1025,21 @@ namespace CollapseLauncher.Extension
                 yield return item;
             }
         }
+
+        internal static bool IsElementVisible(this FrameworkElement? element)
+        {
+            if (element == null)
+            {
+                return false;
+            }
+
+            if (element.Visibility == Visibility.Collapsed || element.Opacity < 1)
+            {
+                return false;
+            }
+
+            return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
+                   (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
+        }
     }
 }

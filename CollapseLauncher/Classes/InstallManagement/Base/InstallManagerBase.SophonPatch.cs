@@ -201,7 +201,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             using StreamReader voAudioLangReader = voAudioLangFileInfo.OpenText();
-            while ((await voAudioLangReader.ReadLineAsync(token)) is { } line)
+            while (await voAudioLangReader.ReadLineAsync(token) is { } line)
             {
                 string? matchingField = GetLanguageLocaleCodeByLanguageString(line);
                 if (string.IsNullOrEmpty(matchingField))
@@ -318,7 +318,7 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonPatchAsset        patchAsset     = ctx.Item1;
                 Dictionary<string, int> downloadedDict = ctx.Item2;
 
-                lock (dictionaryLock)
+                using (dictionaryLock.EnterScope())
                 {
                     _ = downloadedDict.TryAdd(patchAsset.PatchNameSource, 0);
                     downloadedDict[patchAsset.PatchNameSource]++;
@@ -347,7 +347,7 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonPatchAsset patchAsset = ctx.Item1;
                 Dictionary<string, int> downloadedDict = ctx.Item2;
 
-                lock (dictionaryLock)
+                using (dictionaryLock.EnterScope())
                 {
                     if (!string.IsNullOrEmpty(patchAsset.PatchNameSource) &&
                         downloadedDict.Remove(patchAsset.PatchNameSource))

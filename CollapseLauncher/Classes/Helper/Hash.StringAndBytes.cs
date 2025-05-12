@@ -117,7 +117,7 @@ namespace CollapseLauncher.Helper
             where T : NonCryptographicHashAlgorithm
         {
             // Lock the thread and append the span to the hash algorithm
-            lock (hashSource.Lock)
+            using (hashSource.Lock.EnterScope())
             {
                 // Append and calculate the hash of the span
                 hashSource.Hash.Append(source);
@@ -235,7 +235,7 @@ namespace CollapseLauncher.Helper
             where T : HashAlgorithm
         {
             // Lock the thread and compute the hash of the span
-            lock (hashSource.Lock)
+            using (hashSource.Lock.EnterScope())
             {
                 // Reset the hash instance state.
                 hashSource.Hash.Initialize();

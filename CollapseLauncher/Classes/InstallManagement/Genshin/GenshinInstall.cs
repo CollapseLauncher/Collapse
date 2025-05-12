@@ -206,12 +206,12 @@ namespace CollapseLauncher.InstallManager.Genshin
             // Get the result from base method
             (List<LocalFileInfo>, long) resultBase = await base.GetUnusedFileInfoList(includeZipCheck);
 
-            // Once we get the result, take the "StreamingAssets\\ctable.dat" file out of the list
+            // Once we get the result, take the "StreamingAssets\\ctable.dat" and "svc_catalog" file out of the list
             List<LocalFileInfo> unusedFilesFiltered = resultBase
-                .Item1
-                .Where(x => !x.FullPath
-                    .EndsWith("StreamingAssets\\ctable.dat", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+                                                     .Item1
+                                                     .Where(x => !x.FullPath.EndsWith("StreamingAssets\\ctable.dat", StringComparison.OrdinalIgnoreCase) &&
+                                                                             !x.FullPath.EndsWith("svc_catalog", StringComparison.OrdinalIgnoreCase))
+                                                     .ToList();
             return (unusedFilesFiltered, unusedFilesFiltered.Select(x => x.FileSize).ToArray().Sum());
         }
         #endregion
