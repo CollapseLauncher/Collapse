@@ -386,7 +386,7 @@ namespace CollapseLauncher.Pages
                                                                                          catch (Exception ex)
                                                                                          {
                                                                                              Interlocked.Increment(ref deleteFailed);
-                                                                                             lock (failedListLock)
+                                                                                             using (failedListLock.EnterScope())
                                                                                              {
                                                                                                  failedList.Add(fileInfo);
                                                                                              }

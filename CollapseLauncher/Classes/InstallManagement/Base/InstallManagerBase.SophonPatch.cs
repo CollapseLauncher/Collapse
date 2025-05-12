@@ -318,7 +318,7 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonPatchAsset        patchAsset     = ctx.Item1;
                 Dictionary<string, int> downloadedDict = ctx.Item2;
 
-                lock (dictionaryLock)
+                using (dictionaryLock.EnterScope())
                 {
                     _ = downloadedDict.TryAdd(patchAsset.PatchNameSource, 0);
                     downloadedDict[patchAsset.PatchNameSource]++;
@@ -347,7 +347,7 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonPatchAsset patchAsset = ctx.Item1;
                 Dictionary<string, int> downloadedDict = ctx.Item2;
 
-                lock (dictionaryLock)
+                using (dictionaryLock.EnterScope())
                 {
                     if (!string.IsNullOrEmpty(patchAsset.PatchNameSource) &&
                         downloadedDict.Remove(patchAsset.PatchNameSource))

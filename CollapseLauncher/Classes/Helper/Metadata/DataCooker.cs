@@ -108,7 +108,7 @@ namespace CollapseLauncher.Helper.Metadata
                         : new byte[dataRawBuffer.Length];
                     isDecryptPoolUsed = isDecryptPoolAllowed;
 
-                    lock (RsaDecryptLock)
+                    using (RsaDecryptLock.EnterScope())
                     {
                         if (RsaInstance == null)
                         {

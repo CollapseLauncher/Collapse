@@ -164,7 +164,7 @@ namespace RegistryUtils
             get { return _regFilter; }
             set
             {
-                lock (_threadLock)
+                using (_threadLock.EnterScope())
                 {
                     if (IsMonitoring)
                         throw new InvalidOperationException("Monitoring thread is already running");
@@ -247,7 +247,7 @@ namespace RegistryUtils
             if (_disposed)
                 throw new ObjectDisposedException(null, "This instance is already disposed");
 
-            lock (_threadLock)
+            using (_threadLock.EnterScope())
             {
                 if (IsMonitoring)
                 {
@@ -270,7 +270,7 @@ namespace RegistryUtils
         {
             if (_disposed) return;
 
-            lock (_threadLock)
+            using (_threadLock.EnterScope())
             {
                 Thread thread = _thread;
                 if (thread == null)

@@ -112,7 +112,7 @@ namespace CollapseLauncher.Helper
                 UseExternalProxy(lProxyUri, lHttpProxyUsername, proxyPassword);
             }
 
-            lock (HttpClientBuilderSharedLock)
+            using (HttpClientBuilderSharedLock.EnterScope())
             {
                 if (!skipDnsInit && lIsUseExternalDns && ExternalDnsServers == null)
                 {

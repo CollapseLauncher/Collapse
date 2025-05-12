@@ -51,7 +51,7 @@ namespace Hi3Helper
             }
 #endif
 
-            lock (_lockObject)
+            using (_lockObject.EnterScope())
             {
                 // Try dispose the _logWriter even though it's not initialized.
                 // This will be used if the program need to change the log folder to another location.
@@ -76,7 +76,7 @@ namespace Hi3Helper
 #nullable enable
         public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
         {
-            lock (_lockObject)
+            using (_lockObject.EnterScope())
             {
                 DisposeBase();
 
