@@ -143,7 +143,7 @@ namespace CollapseLauncher
             };
 
             Grid mainGrid = UIElementExtensions.CreateGrid()
-                .WithWidth(600d)
+                .WithWidth(580d)
                 .WithColumns(new GridLength(1.0d, GridUnitType.Star), new GridLength(1.0d, GridUnitType.Star))
                 .WithRows(new GridLength(1.0d,    GridUnitType.Auto), new GridLength(20d,  GridUnitType.Pixel), new GridLength(20d, GridUnitType.Pixel), new GridLength(20d, GridUnitType.Pixel));
 
