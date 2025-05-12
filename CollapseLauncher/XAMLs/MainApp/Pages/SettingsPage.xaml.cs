@@ -2181,7 +2181,7 @@ namespace CollapseLauncher.Pages
                 return false;
             }
 
-            lock (_highlightLock)
+            using (_highlightLock.EnterScope())
             {
                 SettingsSearchBringIntoViewAndHighlight(firstControl);
                 _highlightCurrentIndex = 0;
@@ -2259,7 +2259,7 @@ namespace CollapseLauncher.Pages
 
         private void SettingsSearchBoxFindSelectNext(object? sender, RoutedEventArgs? e)
         {
-            lock (_highlightLock)
+            using (_highlightLock.EnterScope())
             {
                 if (_highlightedControls.Count == 0)
                 {
@@ -2280,7 +2280,7 @@ namespace CollapseLauncher.Pages
 
         private void SettingsSearchBoxFindSelectPrevious(object? sender, RoutedEventArgs? e)
         {
-            lock (_highlightLock)
+            using (_highlightLock.EnterScope())
             {
                 if (_highlightedControls.Count == 0)
                 {
