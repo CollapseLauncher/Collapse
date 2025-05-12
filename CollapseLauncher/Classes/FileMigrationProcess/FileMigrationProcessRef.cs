@@ -4,13 +4,13 @@ using Microsoft.UI.Xaml.Documents;
 
 namespace CollapseLauncher
 {
-    internal struct FileMigrationProcessUIRef
+    internal class FileMigrationProcessUIRef
     {
-        internal ContentDialogCollapse MainDialogWindow;
-        internal TextBlock PathActivitySubtitle;
-        internal Run SpeedIndicatorSubtitle;
-        internal Run FileCountIndicatorSubtitle;
-        internal Run FileSizeIndicatorSubtitle;
-        internal ProgressBar ProgressBarIndicator;
+        internal ContentDialogCollapse MainDialogWindow           { get; set; }
+        internal TextBlock             PathActivitySubtitle       { get; set; }
+        internal Run                   SpeedIndicatorSubtitle     { get; set; }
+        internal Run                   FileCountIndicatorSubtitle { get; set; }
+        internal Run                   FileSizeIndicatorSubtitle  { get; set; }
+        internal ProgressBar           ProgressBarIndicator       { get; set; }
     }
 }

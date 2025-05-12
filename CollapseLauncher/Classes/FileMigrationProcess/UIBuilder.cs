@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -20,18 +21,19 @@ namespace CollapseLauncher
     {
         private static async ValueTask<string> BuildCheckOutputPathUI(string dialogTitle, string inputPath, string outputPath, bool isFileTransfer)
         {
-            ContentDialogCollapse mainDialogWindow = new ContentDialogCollapse(ContentDialogTheme.Informational)
-            {
-                Title = dialogTitle,
-                CloseButtonText = Locale.Lang!._Misc!.Cancel,
-                PrimaryButtonText = null,
-                SecondaryButtonText = null,
-                DefaultButton = ContentDialogButton.Primary
-            };
-
             Grid mainGrid = UIElementExtensions.CreateGrid()
                 .WithRows(new GridLength(1.0,    GridUnitType.Star), new GridLength(1.0, GridUnitType.Star), new GridLength(1.0, GridUnitType.Star))
                 .WithColumns(new GridLength(1.0, GridUnitType.Star), GridLength.Auto);
+
+            ContentDialogCollapse mainDialogWindow = new ContentDialogCollapse(ContentDialogTheme.Informational)
+            {
+                Title               = dialogTitle,
+                CloseButtonText     = Locale.Lang!._Misc!.Cancel,
+                PrimaryButtonText   = null,
+                SecondaryButtonText = null,
+                DefaultButton       = ContentDialogButton.Primary,
+                Content             = mainGrid
+            };
 
             // ReSharper disable once UnusedVariable
             TextBlock locateFolderSubtitle = mainGrid.AddElementToGridColumn(new TextBlock
@@ -63,8 +65,6 @@ namespace CollapseLauncher
                 IsOpen = false
             }, 2, 0, 0, 2).WithMargin(0, 16, 0, 0);
 
-            mainDialogWindow.Content = mainGrid;
-
             if (!string.IsNullOrEmpty(outputPath))
                 ToggleOrCheckPathWarning(outputPath);
 
@@ -80,38 +80,49 @@ namespace CollapseLauncher
             ContentDialogResult mainDialogWindowResult = await mainDialogWindow.QueueAndSpawnDialog();
             return mainDialogWindowResult == ContentDialogResult.Primary ? choosePathTextBox.Text : null;
 
-            void ToggleWarningText(string text = null)
+            void ToggleWarningText(string text = null, bool isError = true)
             {
-                bool canContinue = string.IsNullOrEmpty(text);
+                bool canContinue = string.IsNullOrEmpty(text) || !isError;
                 mainDialogWindow.PrimaryButtonText = canContinue ? Locale.Lang!._Misc!.Next : null;
 
                 warningTextInfoBar.Title    = Locale.Lang!._FileMigrationProcess!.ChoosePathErrorTitle;
-                warningTextInfoBar.Severity = canContinue ? InfoBarSeverity.Success : InfoBarSeverity.Error;
+                warningTextInfoBar.Severity = canContinue ? !isError ? InfoBarSeverity.Warning : InfoBarSeverity.Success : InfoBarSeverity.Error;
                 warningTextInfoBar.IsOpen   = !canContinue;
                 warningTextInfoBar.Message  = text;
             }
 
             void ToggleOrCheckPathWarning(string path)
             {
-                string parentPath              = path;
+                string parentPath              = path.NormalizePath();
                 if (isFileTransfer) parentPath = Path.GetDirectoryName(path);
 
-                if (string.IsNullOrEmpty(parentPath))
+                ReadOnlySpan<char> parentPathTrimmed = parentPath.TrimEnd("\\/");
+                ReadOnlySpan<char> inputPathTrimmed = inputPath.TrimEnd("\\/");
+
+                if (parentPathTrimmed.IsEmpty)
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathUnselected);
                     return;
                 }
-                if (parentPath.StartsWith(inputPath, StringComparison.OrdinalIgnoreCase) || IsOutputPathSameAsInput(inputPath, path, isFileTransfer))
+
+                if (inputPathTrimmed.Equals(parentPathTrimmed, StringComparison.OrdinalIgnoreCase))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathIdentical);
                     return;
                 }
-                if (!(File.Exists(parentPath) || Directory.Exists(parentPath)))
+
+                string pathRoot = Path.GetPathRoot(path);
+
+                if ((isFileTransfer && !File.Exists(parentPath)) ||
+                    string.IsNullOrEmpty(pathRoot) ||
+                    !Directory.Exists(pathRoot))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNotExist);
                     return;
                 }
-                if (!ConverterTool.IsUserHasPermission(parentPath))
+
+                if (Directory.Exists(parentPath) &&
+                    !ConverterTool.IsUserHasPermission(parentPath))
                 {
                     ToggleWarningText(Locale.Lang!._FileMigrationProcess!.ChoosePathErrorPathNoPermission);
                     return;
@@ -132,7 +143,7 @@ namespace CollapseLauncher
             };
 
             Grid mainGrid = UIElementExtensions.CreateGrid()
-                .WithWidth(500d)
+                .WithWidth(580d)
                 .WithColumns(new GridLength(1.0d, GridUnitType.Star), new GridLength(1.0d, GridUnitType.Star))
                 .WithRows(new GridLength(1.0d,    GridUnitType.Auto), new GridLength(20d,  GridUnitType.Pixel), new GridLength(20d, GridUnitType.Pixel), new GridLength(20d, GridUnitType.Pixel));
 

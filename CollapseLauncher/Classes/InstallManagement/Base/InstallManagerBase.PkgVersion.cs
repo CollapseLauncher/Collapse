@@ -224,8 +224,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                  .Create();
 
                     // Initialize and get game state, then get the latest package info
-                    LoadingMessageHelper.SetMessage(
-                                                    Locale.Lang._FileCleanupPage.LoadingTitle,
+                    LoadingMessageHelper.SetMessage(Locale.Lang._FileCleanupPage.LoadingTitle,
                                                     Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
                     DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);

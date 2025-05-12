@@ -235,7 +235,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         private void UpdateCanvasOnSizeChangeEvent(object sender, SizeChangedEventArgs e)
         {
-            lock (_currentLock)
+            using (_currentLock.EnterScope())
             {
                 float scalingFactor = (float)WindowUtility.CurrentWindowMonitorScaleFactor;
                 float newWidth      = (float)(e.NewSize.Width * scalingFactor);
@@ -301,7 +301,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             if (IsUseVideoBgDynamicColorUpdate)
             {
-                lock (_currentLock)
+                using (_currentLock.EnterScope())
                 {
                     _currentCanvasDrawingSession?.Dispose();
                     Interlocked.Exchange(ref _currentCanvasDrawingSession, null);
@@ -373,7 +373,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private async void FrameGrabberEvent(MediaPlayer mediaPlayer, object args)
     #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            lock (_currentLock)
+            using (_currentLock.EnterScope())
             {
                 if (_currentCanvasVirtualImageSource is null)
                 {
@@ -391,7 +391,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             try
             {
-                lock (_currentLock)
+                using (_currentLock.EnterScope())
                 {
                     mediaPlayer.CopyFrameToVideoSurface(_currentCanvasBitmap);
                     _currentCanvasDrawingSession = _currentCanvasVirtualImageSource
@@ -413,7 +413,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 #endif
             finally
             {
-                lock (_currentLock)
+                using (_currentLock.EnterScope())
                 {
                     CurrentDispatcherQueue.TryEnqueue(() =>
                     {
