@@ -789,6 +789,7 @@
     "BuildChannelStable": "安定版",
 
     "CDNDescription_Github": "ランチャーの公式(メイン)リポジトリ。",
+    "CDNDescription_DigitalOcean": "DigitalOceanが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
@@ -839,12 +840,12 @@
     "ExceptionFeedbackTemplate_User": "ユーザー名（任意）：",
     "ExceptionFeedbackTemplate_Email": "メールアドレス（任意）：",
     "ExceptionFeedbackTemplate_Message": "この行よりも後にコメントを入力してください：（エラーメッセージは自動で添付されるので、書かなくて大丈夫ですよ！）",
-    
+
     "Feedback": "ユーザーフィードバック",
     "FeedbackSending": "フィードバックを送信しています…",
     "FeedbackSent": "送信しました！",
     "FeedbackSendFailure": "送信に失敗しました！ログ/コンソールで詳細を確認してください。",
-    
+
     "Tag_Deprecated": "非推奨",
     "Generic_GameFeatureDeprecation": "ゲーム側の仕様変更が原因で、この機能の使用は推奨できなくなりました。今後削除する予定です。使用した場合、予期せぬ動作を引き起こす可能性があります。"
   },
