@@ -584,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "AVERTISSEMENT : Votre système a le « Pack de compatibilité OpenCL™, OpenGL® et Vulkan® » d'installé. Il a été rapporté que ce package est incompatible avec le chargeur Vulkan et entraînera un plantage sur certains GPUs. Veuillez supprimer ce package afin d'activer le mode GPU.",
     "Waifu2X_Error_Loader": "ERREUR : Échec de l'initialisation de Vulkan Loader. Assurez-vous d'avoir un GPU compatible Vulkan avec des pilotes GPU appropriés installé.",
     "Waifu2X_Error_Output": "ERREUR : Échec de l'auto-test Waifu2X, l'image en sortie est vide.",
+    "Waifu2X_Initializing": "Waifu2X est en cours d'initialisation, veuillez patienter…",
 
     "NetworkSettings_Title": "Paramètres réseau",
     "NetworkSettings_Proxy_Title": "Paramètres de serveur mandataire (proxy)",
@@ -788,10 +789,11 @@
     "BuildChannelStable": "Stable",
 
     "CDNDescription_Github": "Le dépôt officiel (principal) du launcher",
-    "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) hébergé dans le seau R2 de Cloudflare",
-    "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) hébergé sur Bitbucket",
-    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) hébergé sur GitLab",
-    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) hébergé sur Coding",
+    "CDNDescription_DigitalOcean": "Un miroir du dépôt officiel (principal) propulsé par DigitalOcean",
+    "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) propulsé par le seau Cloudflare R2",
+    "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) propulsé par BitBucket",
+    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) propulsé par GitLab",
+    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) propulsé par Coding",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -837,12 +839,13 @@
     "ExceptionFeedbackTitle": "Dites-nous ce qu'il s'est passé :",
     "ExceptionFeedbackTemplate_User": "Nom d'utilisateur (optionnel) :",
     "ExceptionFeedbackTemplate_Email": "Adresse e-mail (optionnel) :",
-    "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne",
-    
+    "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne (vous n'êtes pas tenu de mentionner le message d'erreur, il sera automatiquement adjoint lors de l'envoi)",
+
     "Feedback": "Retour utilisateur",
     "FeedbackSending": "Envoi de vos commentaires…",
     "FeedbackSent": "Commentaires envoyés !",
     "FeedbackSendFailure": "Échec de l'envoi des commentaires ! Vérifiez les logs ou la console pour plus d'informations.",
+
     "Tag_Deprecated": "Abandonné",
     "Generic_GameFeatureDeprecation": "En raison de changements imprévus au sein du jeu, cette fonctionnalité a été abandonnée et sera supprimée à l'avenir. L'utilisation de cette fonctionnalité peut provoquer un comportement inattendu."
   },
