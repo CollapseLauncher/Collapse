@@ -123,10 +123,9 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual bool IsGameVersionMatch()
             // Ensure if the GameVersionInstalled is available (this is coming from the Game Profile's Ini file).
             // If not, then return false to indicate that the game isn't installed.
-            => GameVersionInstalled.HasValue &&
-                   // If the game is installed and the version doesn't match, then return to false.
-                   // But if the game version matches, then return to true.
-                   GameVersionInstalled.Value.IsMatch(GameVersionAPI);
+            // If the game is installed and the version doesn't match, then return to false.
+            // But if the game version matches, then return to true.
+            => GameVersionInstalled == GameVersionAPI;
 
         public virtual async ValueTask<bool> IsPluginVersionsMatch()
         {
@@ -153,7 +152,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             foreach (KeyValuePair<string, GameVersion> pluginVersion in pluginVersions)
             {
                 if (pluginVersionsInstalled.TryGetValue(pluginVersion.Key, out GameVersion installedPluginVersion) &&
-                    pluginVersion.Value.IsMatch(installedPluginVersion))
+                    pluginVersion.Value == installedPluginVersion)
                 {
                     continue;
                 }
@@ -487,10 +486,10 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // Get the preload status
-            bool isGameHasPreload = IsGameHasPreload() && GameVersionInstalled.Value.IsMatch(gameVersion);
+            bool isGameHasPreload = IsGameHasPreload() && GameVersionInstalled == gameVersion;
 
             // If the game version doesn't match with the API's version, then go to the next check.
-            if (GameVersionInstalled.Value.IsMatch(gameVersion) && !isGameHasPreload)
+            if (GameVersionInstalled == gameVersion && !isGameHasPreload)
             {
                 return null;
             }
@@ -509,16 +508,16 @@ namespace CollapseLauncher.GameManagement.Versioning
                 // Initialize patchProperty for versioning check.
                 DeltaPatchProperty patchProperty = new DeltaPatchProperty(path);
                 // If the version of the game is valid and the profile name matches, then return the property.
-                if (GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
-                    && (GameVersionAPI?.IsMatch(patchProperty.TargetVer) ?? false)
+                if (GameVersionInstalled == patchProperty.SourceVer
+                    && GameVersionAPI == patchProperty.TargetVer
                     && patchProperty.ProfileName == GamePreset.ProfileName)
                 {
                     return patchProperty;
                 }
 
                 // If the state is on preload, then try check the preload delta patch
-                if (GameVersionAPIPreload != null && isGameHasPreload && GameVersionInstalled.Value.IsMatch(patchProperty.SourceVer)
-                    && GameVersionAPIPreload.Value.IsMatch(patchProperty.TargetVer)
+                if (GameVersionAPIPreload.HasValue && isGameHasPreload && GameVersionInstalled == patchProperty.SourceVer
+                    && GameVersionAPIPreload == patchProperty.TargetVer
                     && patchProperty.ProfileName == GamePreset.ProfileName)
                 {
                     return patchProperty;

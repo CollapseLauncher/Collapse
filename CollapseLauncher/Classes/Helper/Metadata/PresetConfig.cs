@@ -292,7 +292,7 @@ namespace CollapseLauncher.Helper.Metadata
     [JsonSerializable(typeof(PresetConfig))]
     internal sealed partial class PresetConfigJsonContext : JsonSerializerContext;
 
-    internal sealed class PresetConfig
+    internal class PresetConfig
     {
         #region Constants
         // ReSharper disable once UnusedMember.Local
@@ -307,11 +307,11 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonIgnore]
         public  ILauncherApi?    GameLauncherApi { get; set; }
 
-        [JsonPropertyName("GameChannel")] public GameChannel       Channel { get; init; }
-        public                                   AudioLanguageType GameDefaultCVLanguage { get; init; }
-        public                                   GameNameType      GameType { get; init; } = GameNameType.Unknown;
-        public                                   GameVendorType    VendorType { get; init; }
-        public                                   LauncherType      LauncherType { get; init; }
+        public virtual GameChannel       GameChannel           { get; init; }
+        public         AudioLanguageType GameDefaultCVLanguage { get; init; }
+        public         GameNameType      GameType              { get; init; } = GameNameType.Unknown;
+        public         GameVendorType    VendorType            { get; init; }
+        public         LauncherType      LauncherType          { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BetterHi3LauncherVerInfoReg { get; init; }
@@ -329,7 +329,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? InternalGameNameInConfig { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? GameDirectoryName { get; init; }
+        public virtual string? GameDirectoryName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameDispatchURL { get; init; }
@@ -344,7 +344,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? GameDispatchURLTemplate { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? GameExecutableName { get; init; }
+        public virtual string? GameExecutableName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? GameGatewayDefault { get; init; }
@@ -353,7 +353,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? GameGatewayURLTemplate { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? GameName { get; set; }
+        public virtual string? GameName { get; set; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? LauncherId { get; init; }
@@ -426,7 +426,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? LauncherCPSType { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ProfileName { get; init; }
+        public virtual string? ProfileName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? ProtoDispatchKey { get; init; }
@@ -435,43 +435,42 @@ namespace CollapseLauncher.Helper.Metadata
         public string? SteamInstallRegistryLocation { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ZoneDescription { get; init; }
+        public virtual string? ZoneDescription { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ZoneFullname { get; init; }
+        public virtual string? ZoneFullname { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ZoneLogoURL { get; init; }
+        public virtual string? ZoneLogoURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ZoneName { get; init; }
+        public virtual string? ZoneName { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ZonePosterURL { get; init; }
+        public virtual string? ZonePosterURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? ZoneURL { get; init; }
+        public virtual string? ZoneURL { get; init; }
 
         [JsonConverter(typeof(ServeV3StringListConverter))]
         public List<string>? ConvertibleTo { get; init; }
 
         [JsonConverter(typeof(ServeV3StringListConverter))]
-        public List<string>? GameSupportedLanguages { get; init; }
+        public virtual List<string> GameSupportedLanguages { get; init; } = [];
 
         [JsonConverter(typeof(ServeV3StringListConverter))]
         public List<string>? GameDispatchArrayURL { get; init; }
 
         public bool? IsPluginUpdateEnabled      { get; init; } = false;
-        
-        public bool? IsConvertible              { get; init; }
-        public bool? IsExperimental             { get; init; }
-        public bool? IsGenshin                  { get; init; }
-        public bool? IsHideSocMedDesc           { get; init; } = true;
-        
-        #if !DEBUG
+
+        public bool? IsConvertible    { get; init; }
+        public bool? IsGenshin        { get; init; }
+        public bool? IsHideSocMedDesc { get; init; } = true;
+
+#if !DEBUG
         public bool? IsRepairEnabled            { get; set; }
         public bool? IsCacheUpdateEnabled       { get; set; }
-        #else
+#else
         public bool? IsRepairEnabled      = true;
         public bool? IsCacheUpdateEnabled = true;
         #endif

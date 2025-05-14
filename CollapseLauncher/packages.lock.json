@@ -456,6 +456,12 @@
       "hi3helper.http": {
         "type": "Project"
       },
+      "hi3helper.plugin.core": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.3, )"
+        }
+      },
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {

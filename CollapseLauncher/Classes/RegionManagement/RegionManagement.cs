@@ -330,9 +330,9 @@ namespace CollapseLauncher
                     GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
 
                     if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
-                            || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
-                                && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
-                            || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)))
+                            || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow
+                                && ValidForVerAbove < LauncherUpdateHelper.LauncherCurrentVersion)
+                            || LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow))
                     {
                         NotificationSender.SendNotification(toEntry);
                     }

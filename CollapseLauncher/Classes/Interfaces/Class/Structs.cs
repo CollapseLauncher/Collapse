@@ -1,9 +1,12 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -92,22 +95,8 @@ namespace CollapseLauncher
         public string? GameName { get; set; }
     }
 
-    public static class GameVersionExt
-    {
-        public static bool Compare(this GameVersion? fromVersion, GameVersion? toVersion)
-        {
-            if (!fromVersion.HasValue || !toVersion.HasValue) return false;
-            return fromVersion.Value.ToVersion() < toVersion.Value.ToVersion();
-        }
-
-        public static bool Equals(this GameVersion? fromVersion, GameVersion? toVersion)
-        {
-            if (!fromVersion.HasValue || !toVersion.HasValue) return false;
-            return fromVersion.Value.ToVersion() == toVersion.Value.ToVersion();
-        }
-    }
-
-    public readonly record struct GameVersion
+    public readonly struct GameVersion
+        : IVersion
     {
         public GameVersion(params ReadOnlySpan<int> ver)
         {
@@ -145,7 +134,7 @@ namespace CollapseLauncher
 
         public static bool TryParse(string? version, [NotNullWhen(true)] out GameVersion? result)
         {
-            const string Separators = ",.;|";
+            const string separators = ",.;|";
 
             result = null;
             if (string.IsNullOrEmpty(version))
@@ -155,7 +144,7 @@ namespace CollapseLauncher
 
             Span<Range>        ranges      = stackalloc Range[8];
             ReadOnlySpan<char> versionSpan = version.AsSpan();
-            int                splitRanges = versionSpan.SplitAny(ranges, Separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            int                splitRanges = versionSpan.SplitAny(ranges, separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
             if (splitRanges == 0)
             {
@@ -183,21 +172,6 @@ namespace CollapseLauncher
             return true;
         }
 
-        public bool IsMatch(string versionToCompare)
-        {
-            GameVersion parsed = new GameVersion(versionToCompare);
-            return IsMatch(parsed);
-        }
-
-        public bool IsMatch(GameVersion? versionToCompare)
-        {
-            if (!versionToCompare.HasValue) return false;
-            return Major == versionToCompare.Value.Major &&
-                   Minor == versionToCompare.Value.Minor &&
-                   Build == versionToCompare.Value.Build &&
-                   Revision == versionToCompare.Value.Revision;
-        }
-
         public GameVersion GetIncrementedVersion()
         {
             int nextMajor = Major;
@@ -215,17 +189,107 @@ namespace CollapseLauncher
             return new GameVersion(nextMajor, nextMinor, Build, Revision);
         }
 
-        public          Version ToVersion() => new(Major, Minor, Build, Revision);
-        public override string  ToString()  => $"{Major}.{Minor}.{Build}";
+        public unsafe   ReadOnlySpan<int> AsSpan()    => new(Unsafe.AsPointer(ref Unsafe.AsRef(in this)), 4);
+        public          Version           ToVersion() => new(Major, Minor, Build, Revision);
+        public override string            ToString()  => $"{Major}.{Minor}.{Build}.{Revision}";
 
-        public          string VersionStringManifest { get => string.Join('.', VersionArrayManifest); }
-        public          string VersionString         { get => string.Join('.', VersionArray); }
-        public          int[]  VersionArrayManifest  { get => [Major, Minor, Build, Revision]; }
-        public          int[]  VersionArray          { get => [Major, Minor, Build]; }
-        public readonly int    Major;
-        public readonly int    Minor;
-        public readonly int    Build;
-        public readonly int    Revision;
+        public static bool operator <(GameVersion? left, GameVersion? right) =>
+            left.HasValue && right.HasValue &&
+            (left.Value.Major < right.Value.Major ||
+            (left.Value.Major == right.Value.Major && left.Value.Minor < right.Value.Minor) ||
+            (left.Value.Major == right.Value.Major && left.Value.Minor == right.Value.Minor && left.Value.Build < right.Value.Build) ||
+            (left.Value.Major == right.Value.Major && left.Value.Minor == right.Value.Minor && left.Value.Build == right.Value.Build && left.Value.Revision < right.Value.Revision));
+
+        public static bool operator >(GameVersion? left, GameVersion? right) =>
+            right < left;
+
+        public static bool operator ==(GameVersion? left, GameVersion? right) =>
+            left.HasValue && right.HasValue &&
+            left.Value.Major == right.Value.Major &&
+            left.Value.Minor == right.Value.Minor &&
+            left.Value.Build == right.Value.Build &&
+            left.Value.Revision == right.Value.Revision;
+
+        public static bool operator !=(GameVersion? left, GameVersion? right) =>
+            !(left == right);
+
+        public static bool operator ==(GameVersion? left, string? right)
+        {
+            if (!left.HasValue || !TryParse(right, out GameVersion? rightAsParsed))
+            {
+                return false;
+            }
+
+            return left == rightAsParsed;
+        }
+
+        public static bool operator !=(GameVersion? left, string? right) =>
+            !(left == right);
+
+        public static bool operator ==(string? left, GameVersion? right) =>
+            right == left;
+
+        public static bool operator !=(string? left, GameVersion? right) =>
+            !(right == left);
+
+        public bool Equals(IVersion? other) =>
+            EqualsInner(this, other);
+
+        public override bool Equals([NotNullWhen(true)] object? obj) =>
+            EqualsInner(this, obj);
+
+        public override int GetHashCode() =>
+            HashCode.Combine(Major, Minor, Build, Revision);
+
+        private static bool EqualsInner(object? fromVersion, object? toVersion)
+        {
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
+            if (fromVersion is IVersion fromVersionAsI &&
+                toVersion is IVersion toVersionAsI)
+            {
+                return EqualsInner(fromVersionAsI, toVersionAsI);
+            }
+
+            if (fromVersion is IVersion fromVersionAsIComp &&
+                toVersion is string toVersionStr &&
+                TryParse(toVersionStr, out GameVersion? toVersionParsed))
+            {
+                return EqualsInner(fromVersionAsIComp, toVersionParsed);
+            }
+
+            return false;
+        }
+
+        private static bool EqualsInner(IVersion? thisVersion, IVersion? versionToCompare)
+        {
+            if (versionToCompare == null ||
+                thisVersion == null)
+            {
+                return false;
+            }
+
+            ReadOnlySpan<int> thisSpan  = thisVersion.AsSpan();
+            ReadOnlySpan<int> otherSpan = versionToCompare.AsSpan();
+
+            return otherSpan.Length == 4 &&
+                   thisSpan[0] == otherSpan[0] &&
+                   thisSpan[1] == otherSpan[1] &&
+                   thisSpan[2] == otherSpan[2] &&
+                   thisSpan[3] == otherSpan[3];
+        }
+
+        public string VersionString         { get => string.Join('.', VersionArray); }
+        public int[]  VersionArrayManifest  { get => [Major, Minor, Build, Revision]; }
+        public int[]  VersionArray          { get => [Major, Minor, Build]; }
+        public int    get_Major()           => Major;
+        public int    get_Minor()           => Major;
+        public int    get_Build()           => Build;
+        public int    get_Revision()        => Revision;
+
+        public readonly int Major;
+        public readonly int Minor;
+        public readonly int Build;
+        public readonly int Revision;
     }
 #nullable restore
 

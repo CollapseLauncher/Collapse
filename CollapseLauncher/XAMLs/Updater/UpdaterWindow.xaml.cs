@@ -92,7 +92,7 @@ public sealed partial class UpdaterWindow
 
             await File.WriteAllTextAsync(Path.Combine(WorkingDir, "..\\", "release"),
                                          m_arguments.Updater.UpdateChannel.ToString().ToLower());
-            if (updateInfo.Version != null)
+            if (updateInfo.Version.HasValue)
             {
                 var ver = updateInfo.Version.Value;
                 Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, ver.VersionString);
