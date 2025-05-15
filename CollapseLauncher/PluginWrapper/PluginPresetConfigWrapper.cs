@@ -82,12 +82,14 @@ namespace CollapseLauncher.PluginWrapper
         public override string GameExecutableName => _config.get_GameExecutableName();
         public override string GameDirectoryName  => _config.get_LauncherGameDirectoryName();
 
+        [field: AllowNull, MaybeNull]
         public override List<string> GameSupportedLanguages
         {
-            get => PluginComUtility
-                  .CreateArrayFromSelector(_config.get_GameSupportedLanguagesCount,
-                                           _config.get_GameSupportedLanguages)
-                  .ToList();
+            get => field ??= PluginComUtility
+                            .CreateArrayFromSelector(_config.get_GameSupportedLanguagesCount,
+                                                     _config.get_GameSupportedLanguages)
+                            .ToList();
+            init => throw new NotSupportedException();
         }
 
         public override GameChannel GameChannel
