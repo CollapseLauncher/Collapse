@@ -9,7 +9,7 @@ env:
  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
  DOTNET_INSTALL_DIR: '.\.dotnet' 
- DOTNET_VERSION: '9.0.2xx'
+ DOTNET_VERSION: '9.0.3xx'
  DOTNET_QUALITY: 'ga'
  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
  SIGNPATH_ARTIFACT_SLUG: 'initial' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
