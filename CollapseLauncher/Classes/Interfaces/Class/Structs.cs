@@ -34,7 +34,8 @@ namespace CollapseLauncher
 
     internal class TotalPerFileStatus
     {
-        public string ActivityStatus { get; set; }
+        public string ActivityStatus         { get; set; }
+        public bool   ActivityStatusInternet { get; set; }
 
         public string ActivityAll { get; set; }
         public bool IsProgressAllIndetermined { get; set; }
