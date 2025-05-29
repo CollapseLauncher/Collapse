@@ -336,10 +336,8 @@ namespace CollapseLauncher.GameManagement.Versioning
             GameConfigDirPath = Path.Combine(LauncherConfig.AppGameFolder, GamePreset.ProfileName ?? string.Empty);
 
             // Initialize INIs
-            InitializeIniProp(GameIniProfilePath, GameIniProfile, DefaultIniProfile,
-                              DefaultIniProfileSection);
-            InitializeIniProp(GameIniVersionPath, GameIniVersion, DefaultIniVersion,
-                              DefaultIniVersionSection);
+            InitializeIniProp(GameIniProfilePath, GameIniProfile);
+            InitializeIniProp(GameIniVersionPath, GameIniVersion);
 
             // Initialize the GameVendorType
             VendorTypeProp = new GameVendorProp(GameDirPath,
@@ -347,7 +345,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                                                 GamePreset.VendorType);
         }
 
-        private void InitializeIniProp(string iniFilePath, IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchedValues = false)
+        private void InitializeIniProp(string iniFilePath, IniFile ini)
         {
             // Get the file path of the INI file and normalize it
             iniFilePath = ConverterTool.NormalizePath(iniFilePath);
@@ -361,19 +359,10 @@ namespace CollapseLauncher.GameManagement.Versioning
             {
                 ini.Load(iniFilePath);
             }
-
-            // Initialize and ensure the non-existed values to their defaults.
-            InitializeIniDefaults(ini, defaults, section, allowOverwriteUnmatchedValues);
         }
 
-        private void InitializeIniDefaults(IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchedValues)
+        private static void InitializeIniDefaults(IniFile ini, IniSection defaults, string section, bool allowOverwriteUnmatchedValues)
         {
-            // If the section doesn't exist, then add the section.
-            if (!ini.ContainsKey(section))
-            {
-                ini.Add(section);
-            }
-
             // Iterate the defaults and start checking values.
             foreach (KeyValuePair<string, IniValue> value in defaults)
             {
@@ -391,8 +380,6 @@ namespace CollapseLauncher.GameManagement.Versioning
                     ini[section][value.Key] = value.Value;
                 }
             }
-
-            // UpdateGameChannels(false);
         }
 
         private void SaveGameIni(string filePath, IniFile ini)
