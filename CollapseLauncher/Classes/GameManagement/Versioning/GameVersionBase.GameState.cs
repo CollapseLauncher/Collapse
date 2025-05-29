@@ -358,6 +358,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             FixInvalidGameVendor(execName);
             FixInvalidGameConfigId();
             FixInvalidGameBilibiliStatus(execName);
+            InitializeIniDefaults(GameIniVersion, DefaultIniVersion, DefaultIniVersionSection, false);
             Reinitialize();
 
             textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }
