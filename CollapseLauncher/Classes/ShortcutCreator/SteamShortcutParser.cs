@@ -101,6 +101,12 @@ namespace CollapseLauncher.ShortcutUtils
             if (File.Exists(_path))
                 File.Move(_path, _path + "_old", true);
 
+            string directory = Path.GetDirectoryName(_path);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             using var fs = File.OpenWrite(_path);
             Dictionary<string, VdfObject> shortcutObject = new()
             {
