@@ -780,7 +780,8 @@ public sealed partial class HomePage
     #region Game Update Dialog
     private async void UpdateGameDialog(object sender, RoutedEventArgs e)
     {
-        bool isUseSophon = CurrentGameProperty.GameInstall?.IsUseSophon ?? false;
+        bool isUseSophon     = CurrentGameProperty.GameInstall?.IsUseSophon ?? false;
+        bool isUseDeltaPatch = CurrentGameProperty.GameVersion?.IsGameHasDeltaPatch() ?? false;
 
         HideImageCarousel(true);
 
@@ -797,7 +798,7 @@ public sealed partial class HomePage
             UpdateGameBtn.Visibility     = Visibility.Collapsed;
             CancelDownloadBtn.Visibility = Visibility.Visible;
 
-            if (isUseSophon)
+            if (isUseSophon && !isUseDeltaPatch)
             {
                 SophonProgressStatusGrid.Visibility             =  Visibility.Visible;
                 CurrentGameProperty.GameInstall.ProgressChanged += GameInstallSophon_ProgressChanged;
