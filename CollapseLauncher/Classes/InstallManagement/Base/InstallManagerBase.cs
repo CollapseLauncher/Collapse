@@ -257,7 +257,7 @@ namespace CollapseLauncher.InstallManager.Base
                 bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                 if (isDownloadNeeded)
                 {
-                    Status.ActivityStatus         = Lang._GameRepairPage.Status8!.Replace(": ", "");
+                    Status.ActivityStatus         = Lang._GameRepairPage.Status8!.Replace(": ", "").Replace("{0}", "");
                     Status.ActivityStatusInternet = false;
                     ProgressAllSizeCurrent        = 0;
                     ProgressAllCountCurrent       = 1;
@@ -285,7 +285,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         }
 
-        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai,
+        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame,
+                                                                bool              isHonkai,
                                                                 bool              isSR = false)
         {
             // Initialize the state and the package
