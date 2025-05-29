@@ -788,11 +788,12 @@
     "BuildChannelPreview": "预览版",
     "BuildChannelStable": "正式版",
 
-    "CDNDescription_Github": "启动器的官方（主）存储库。",
-    "CDNDescription_Cloudflare": "托管在 Cloudflare R2 存储桶的官方（主）仓库镜像。",
-    "CDNDescription_Bitbucket": "托管在 Bitbucket 的官方（主）仓库镜像。",
-    "CDNDescription_GitLab": "托管在 GitLab 的官方（主）仓库镜像。",
-    "CDNDescription_Coding": "托管在 Coding 的官方（主）仓库镜像。",
+    "CDNDescription_Github": "启动器的官方（主）仓库。",
+    "CDNDescription_DigitalOcean": "由 DigitalOcean 提供支持的官方（主）仓库镜像。",
+    "CDNDescription_Cloudflare": "由 Cloudflare R2 存储桶提供支持的官方（主）仓库镜像。",
+    "CDNDescription_Bitbucket": "由 Bitbucket 提供支持的官方（主）仓库镜像。",
+    "CDNDescription_GitLab": "由 GitLab 提供支持的官方（主）仓库镜像。",
+    "CDNDescription_Coding": "由 Coding 提供支持的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
     "OpenDownloadPage": "打开下载界面",
@@ -839,12 +840,12 @@
     "ExceptionFeedbackTemplate_User": "用户名（可选）：",
     "ExceptionFeedbackTemplate_Email": "邮箱（可选）：",
     "ExceptionFeedbackTemplate_Message": "请在这一行后面告诉我们发生了什么：（无需包含错误信息，我们会为您附上！）",
-    
+
     "Feedback": "用户反馈",
     "FeedbackSending": "正在发送您的反馈……",
     "FeedbackSent": "反馈已发送！",
     "FeedbackSendFailure": "发送反馈失败！请检查日志或控制台以获取更多信息。",
-    
+
     "Tag_Deprecated": "废弃",
     "Generic_GameFeatureDeprecation": "因不可预见的游戏变化，该功能已被弃用，并将在未来移除。使用此功能可能会导致意料外的行为。"
   },
