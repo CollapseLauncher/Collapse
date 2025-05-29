@@ -245,72 +245,80 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                // Get game state
-                if (CurrentGameProperty.GameVersion != null)
+                // If the game version is null, then assume that the game has never been installed. So, return.
+                if (CurrentGameProperty.GameVersion == null)
                 {
-                    var gameState = await CurrentGameProperty.GameVersion.GetGameState();
+                    return;
+                }
 
-                    // Start automatic scan if the game is in NotInstalled state
-                    // and if the return is 0 (yes), then save the config
-                    if (gameState == GameInstallStateEnum.NotInstalled &&
-                        CurrentGameProperty.GameInstall != null &&
-                        await CurrentGameProperty.GameInstall.GetInstallationPath(true) == 0)
+                // Get game state
+                var gameState = await CurrentGameProperty.GameVersion.GetGameState();
+
+                // Start automatic scan if the game is in NotInstalled state and GameInstall instance is not null
+                if (gameState == GameInstallStateEnum.NotInstalled && CurrentGameProperty.GameInstall != null)
+                {
+                    // If it's non-0, return
+                    int getInstallationPathRet = await CurrentGameProperty.GameInstall.GetInstallationPath(true);
+                    if (getInstallationPathRet != 0)
                     {
-                        // Save the config
-                        CurrentGameProperty.GameInstall.ApplyGameConfig();
-
-                        // Refresh the Home page.
-                        ReturnToHomePage();
                         return;
                     }
 
-                    // Check if the game state returns NotInstalled, double-check by doing config.ini validation
-                    if (!await CurrentGameProperty.GameVersion
-                                                  .EnsureGameConfigIniCorrectiveness(this))
-                    {
-                        // If the EnsureGameConfigIniCorrectiveness() returns false,
-                        // means config.ini has been changed. Then reload and return to the HomePage
-                        ReturnToHomePage();
-                        return;
-                    }
+                    // And if the return is 0, save config as the auto scan is set.
+                    // Save the config
+                    CurrentGameProperty.GameInstall.ApplyGameConfig();
 
-                    if (!(m_arguments.StartGame?.Play ?? false))
-                    {
-                        await CheckUserAccountControlStatus();
-                        return;
-                    }
+                    // Refresh the Home page.
+                    ReturnToHomePage();
+                    return;
+                }
 
-                    m_arguments.StartGame.Play = false;
+                // Check if the game state returns NotInstalled, double-check by doing config.ini validation
+                if (!await CurrentGameProperty.GameVersion
+                                              .EnsureGameConfigIniCorrectiveness(this))
+                {
+                    // If the EnsureGameConfigIniCorrectiveness() returns false,
+                    // means config.ini has been changed. Then reload and return to the HomePage
+                    ReturnToHomePage();
+                    return;
+                }
 
-                    if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
-                    {
-                        CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
-                        return;
-                    }
+                if (!(m_arguments.StartGame?.Play ?? false))
+                {
+                    await CheckUserAccountControlStatus();
+                    return;
+                }
 
-                    switch (gameState)
-                    {
-                        case GameInstallStateEnum.InstalledHavePreload:
-                        case GameInstallStateEnum.Installed:
-                            StartGame(null, null);
-                            break;
-                        case GameInstallStateEnum.InstalledHavePlugin:
-                        case GameInstallStateEnum.NeedsUpdate:
-                            if (CurrentGameProperty.GameInstall != null)
-                            {
-                                CurrentGameProperty.GameInstall.StartAfterInstall = true;
-                            }
-                            UpdateGameDialog(null, null);
-                            break;
-                        case GameInstallStateEnum.NotInstalled:
-                        case GameInstallStateEnum.GameBroken:
-                            if (CurrentGameProperty.GameInstall != null)
-                            {
-                                CurrentGameProperty.GameInstall.StartAfterInstall = true;
-                            }
-                            InstallGameDialog(null, null);
-                            break;
-                    }
+                m_arguments.StartGame.Play = false;
+
+                if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
+                {
+                    CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
+                    return;
+                }
+
+                switch (gameState)
+                {
+                    case GameInstallStateEnum.InstalledHavePreload:
+                    case GameInstallStateEnum.Installed:
+                        StartGame(null, null);
+                        break;
+                    case GameInstallStateEnum.InstalledHavePlugin:
+                    case GameInstallStateEnum.NeedsUpdate:
+                        if (CurrentGameProperty.GameInstall != null)
+                        {
+                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                        }
+                        UpdateGameDialog(null, null);
+                        break;
+                    case GameInstallStateEnum.NotInstalled:
+                    case GameInstallStateEnum.GameBroken:
+                        if (CurrentGameProperty.GameInstall != null)
+                        {
+                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                        }
+                        InstallGameDialog(null, null);
+                        break;
                 }
             }
             catch (ArgumentNullException ex)

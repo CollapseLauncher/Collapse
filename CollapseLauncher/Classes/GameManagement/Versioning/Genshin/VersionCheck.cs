@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.GameManagement.Versioning;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 // ReSharper disable IdentifierTypo
 
@@ -25,6 +26,21 @@ namespace CollapseLauncher.GameVersioning
         public override DeltaPatchProperty GetDeltaPatchInfo() => null;
 
 #nullable enable
+        protected override bool IsGameInstalledInner([NotNullWhen(true)] string? executableName)
+        {
+            // Try to perform check using base method first
+            if (base.IsGameInstalledInner(executableName))
+            {
+                return true;
+            }
+
+            // If it returns false, try to perform check using alternative executable name
+            FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, AlternativeExecName == executableName ? GlobalExecName : AlternativeExecName));
+
+            // Return true if the executable file exists and the size is more than 64 KiB. Otherwise, false.
+            return execFileInfo is { Exists: true, Length: > 1 << 16 };
+        }
+
         protected override string? TryFindGamePathFromExecutableAndConfig(string path, string? executableName)
         {
             string? basePath = base.TryFindGamePathFromExecutableAndConfig(path, executableName);
@@ -37,7 +53,6 @@ namespace CollapseLauncher.GameVersioning
 
             executableName = AlternativeExecName;
             return base.TryFindGamePathFromExecutableAndConfig(path, executableName);
-
         }
 
         protected override bool IsExecutableFileExist(string? executableName)
