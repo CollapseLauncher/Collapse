@@ -132,6 +132,10 @@ namespace CollapseLauncher
             Revision = versionOut.Value.Revision;
         }
 
+        public static GameVersion From(IVersion version) => From(version.AsSpan());
+
+        public static GameVersion From(params ReadOnlySpan<int> span) => new(span);
+
         public static bool TryParse(string? version, [NotNullWhen(true)] out GameVersion? result)
         {
             const string separators = ",.;|";

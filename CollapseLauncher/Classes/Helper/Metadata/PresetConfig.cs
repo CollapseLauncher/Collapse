@@ -56,6 +56,7 @@ namespace CollapseLauncher.Helper.Metadata
         Genshin,
         StarRail,
         Zenless,
+        Plugin,
         Unknown = int.MinValue
     }
 
@@ -63,14 +64,16 @@ namespace CollapseLauncher.Helper.Metadata
     public enum GameVendorType
     {
         miHoYo,
-        Cognosphere
+        Cognosphere,
+        Plugin
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter<LauncherType>))]
     public enum LauncherType
     {
         Sophon,
-        HoYoPlay
+        HoYoPlay,
+        Plugin
     }
 
     public class SophonChunkUrls
@@ -320,7 +323,8 @@ namespace CollapseLauncher.Helper.Metadata
         public string? DispatcherKey { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? FallbackLanguage { get; init; }
+        [JsonPropertyName("FallbackLanguage")]
+        public virtual string? DefaultLanguage { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? InternalGameNameFolder { get; init; }
@@ -521,7 +525,7 @@ namespace CollapseLauncher.Helper.Metadata
             {
                 LogWriteLine($"Language registry on \e[32;1m{Path.GetFileName(ConfigRegistryLocation)}\e[0m version doesn't exist. Fallback value will be used.",
                              LogType.Warning, true);
-                return FallbackLanguage;
+                return DefaultLanguage;
             }
 
             ReadOnlySpan<char> value = Encoding.UTF8.GetString(result).AsSpan().Trim('\0');
