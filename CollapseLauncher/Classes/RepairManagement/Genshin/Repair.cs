@@ -139,8 +139,17 @@ namespace CollapseLauncher
                 // If file is unused, then delete
                 if (asset.AssetProperty.AssetTypeString.Equals("Unused", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Delete the file
-                    assetFileInfo.Delete();
+                    if (assetFileInfo.Attributes.HasFlag(FileAttributes.Directory))
+                    {
+                        LogWriteLine($"[RepairAssetTypeGeneric] Trying to delete a directory! Skipping...\r\n\tPath: {assetFileInfo.FullName}", 
+                                     LogType.Error, true);
+                    }
+                    else
+                    {
+                        // Delete the file
+                        assetFileInfo.StripAlternateDataStream().EnsureNoReadOnly().Delete();
+                    }
+
                     return;
                 }
 
