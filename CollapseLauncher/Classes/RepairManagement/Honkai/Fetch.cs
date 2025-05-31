@@ -665,8 +665,9 @@ namespace CollapseLauncher
 
             // Get FileInfo of the version.txt file
             FileInfo fileInfo = new FileInfo(Path.Combine(GamePath!, NormalizePath(VideoBaseLocalPath)!, "Version.txt"))
-                .EnsureCreationOfDirectory()
-                .EnsureNoReadOnly();
+                               .EnsureCreationOfDirectory()
+                               .StripAlternateDataStream()
+                               .EnsureNoReadOnly();
 
             // Build video versioning file
             await using StreamWriter sw = fileInfo.CreateText();

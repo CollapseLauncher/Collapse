@@ -125,9 +125,11 @@ namespace CollapseLauncher
                 string newPath = Path.Combine(assetAsbPath, relativePath);
                 FileInfo newFileInfo = new FileInfo(newPath)
                                       .EnsureCreationOfDirectory()
+                                      .StripAlternateDataStream()
                                       .EnsureNoReadOnly();
 
                 FileInfo oldFileInfo = new FileInfo(filePath)
+                                      .StripAlternateDataStream()
                                       .EnsureNoReadOnly();
 
 #if DEBUG
@@ -157,6 +159,7 @@ namespace CollapseLauncher
             // Get persistent and streaming paths
             FileInfo fileInfo = new FileInfo(filePath)
                                .EnsureCreationOfDirectory()
+                               .StripAlternateDataStream()
                                .EnsureNoReadOnly();
 
             // Get remote hash to compare
@@ -240,7 +243,7 @@ namespace CollapseLauncher
                 {
                     // Get the File name and FileInfo
                     var filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(await listReader.ReadLineAsync(token)));
-                    var fInfo = new FileInfo(filePath).EnsureNoReadOnly();
+                    var fInfo = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly();
 
                     // If the file doesn't exist, then continue
                     if (!fInfo.Exists)

@@ -194,6 +194,7 @@ internal sealed partial class GenshinInstall
         string filePath = Path.Combine(gamePath, pkgVersionFilename);
         FileInfo fileInfo = new FileInfo(filePath)
                            .EnsureCreationOfDirectory()
+                           .StripAlternateDataStream()
                            .EnsureNoReadOnly();
 
         // Create file stream

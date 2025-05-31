@@ -11,7 +11,7 @@ namespace Hi3Helper
     public static class ILoggerHelper
     {
         private static readonly Dictionary<string, ILogger> ILoggerCache = new();
-        
+
         /// <summary>
         /// Retrieves an instance of <see cref="ILogger"/> from the cache based on the given prefix.
         /// </summary>
@@ -19,53 +19,60 @@ namespace Hi3Helper
         /// <returns>An instance of <see cref="ILogger"/> associated with the specified prefix.</returns>
         public static ILogger GetILogger(string prefix = "")
         {
-            if (ILoggerCache.TryGetValue(prefix, out var logger))
+            // Lock the cache to ensure thread safety when accessing the dictionary
+            lock (ILoggerCache)
             {
-                return logger; // Return the cached logger instance if it exists
+                // Use TryGetValue for thread-safe read operation
+                if (ILoggerCache.TryGetValue(prefix, out var logger))
+                {
+                    return logger; // Return the cached logger instance if it exists
+                }
+
+                // Create a new logger instance and cache it
+                logger               = new LoggerWrapper(prefix);
+                ILoggerCache[prefix] = logger;
+                return logger;
             }
-
-            // Create a new logger instance and cache it
-            logger               = new ILoggerWrapper(prefix);
-            ILoggerCache[prefix] = logger;
-            return logger;
         }
-    }
 
-    internal class ILoggerWrapper(string prefix = "") : ILogger
-    {
-        public IDisposable BeginScope<TState>(TState state)
-            where TState : notnull => default!;
-
-        public bool IsEnabled(LogLevel logLevel) => true;
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        private class LoggerWrapper(string prefix = "") : ILogger
         {
-            LogType logType = logLevel switch
-            {
-                LogLevel.Trace => LogType.Debug,
-                LogLevel.Debug => LogType.Debug,
-                LogLevel.Information => LogType.Default,
-                LogLevel.Warning => LogType.Warning,
-                LogLevel.Error => LogType.Error,
-                LogLevel.Critical => LogType.Error,
-                LogLevel.None => LogType.NoTag,
-                _ => LogType.Default
-            };
+            public IDisposable BeginScope<TState>(TState state)
+                where TState : notnull => default!;
 
-            bool isWriteToLog = logType switch
+            public bool IsEnabled(LogLevel logLevel) => true;
+
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+                                    Func<TState, Exception?, string> formatter)
             {
-                LogType.Error => true,
-                LogType.Warning => true,
-            #if DEBUG
-                LogType.Debug => true,
-            #else
+                LogType logType = logLevel switch
+                                  {
+                                      LogLevel.Trace => LogType.Debug,
+                                      LogLevel.Debug => LogType.Debug,
+                                      LogLevel.Information => LogType.Default,
+                                      LogLevel.Warning => LogType.Warning,
+                                      LogLevel.Error => LogType.Error,
+                                      LogLevel.Critical => LogType.Error,
+                                      LogLevel.None => LogType.NoTag,
+                                      _ => LogType.Default
+                                  };
+
+                bool isWriteToLog = logType switch
+                                    {
+                                        LogType.Error => true,
+                                        LogType.Warning => true,
+                                    #if DEBUG
+                                        LogType.Debug => true,
+                                    #else
                 LogType.Debug => false,
-            #endif
-                _ => false
-            };
+                                    #endif
+                                        _ => false
+                                    };
 
-            string message = formatter(state, exception);
-            Logger.LogWriteLine($"{(!string.IsNullOrEmpty(prefix) ? $"[{prefix}] " : "")}{message}", logType, isWriteToLog);
+                string message = formatter(state, exception);
+                Logger.LogWriteLine($"{(!string.IsNullOrEmpty(prefix) ? $"[{prefix}] " : "")}{message}", logType,
+                                    isWriteToLog);
+            }
         }
     }
 }

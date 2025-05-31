@@ -182,7 +182,7 @@ namespace CollapseLauncher
             // Set URL of the asset
             string assetURL  = customURL ?? asset.AssetIndex.RN;
             string assetPath = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.AssetIndex.N));
-            FileInfo assetFileInfo = new FileInfo(assetPath).EnsureNoReadOnly();
+            FileInfo assetFileInfo = new FileInfo(assetPath).StripAlternateDataStream().EnsureNoReadOnly();
 
             if (asset.AssetIndex.FT == FileType.Unused && !IsOnlyRecoverMain)
             {
