@@ -10,6 +10,7 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.Enums;
@@ -29,9 +30,7 @@ namespace CollapseLauncher
 {
     internal sealed partial class GamePresetProperty : IDisposable
     {
-    #pragma warning disable CS8618, CS9264
-        internal GamePresetProperty(UIElement uiElementParent,RegionResourceProp apiResourceProp, string gameName, string gameRegion)
-    #pragma warning restore CS8618, CS9264
+        internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig == null)
             {
@@ -93,12 +92,13 @@ namespace CollapseLauncher
             SentryHelper.CurrentGameHasDelta   = GameVersion.IsGameHasDeltaPatch();
         }
 
+        internal bool                 IsPlugin        => GamePreset is PluginPresetConfigWrapper;
         internal RegionResourceProp?  ApiResourceProp { get; set; }
         internal IGameSettings?       GameSettings    { get; set; }
         internal IGamePlaytime?       GamePlaytime    { get; set; }
         internal IRepair?             GameRepair      { get; set; }
         internal ICache?              GameCache       { get; set; }
-        internal ILogger              GamePropLogger  { get; set; }
+        internal ILogger?             GamePropLogger  { get; set; }
         internal IGameVersion?        GameVersion     { get; set; }
         internal IGameInstallManager? GameInstall     { get; set; }
         internal PresetConfig         GamePreset      { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }

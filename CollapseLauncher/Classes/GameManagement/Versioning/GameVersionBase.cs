@@ -11,9 +11,9 @@ namespace CollapseLauncher.GameManagement.Versioning
     {
         protected GameVersionBase(RegionResourceProp gameRegionProp, string gameName, string gameRegion)
         {
-            GameApiProp     = gameRegionProp;
-            GameName        = gameName;
-            GameRegion      = gameRegion;
+            GameApiProp = gameRegionProp;
+            GameName    = gameName;
+            GameRegion  = gameRegion;
 
             // Initialize INI Prop ahead of other operations
             // ReSharper disable once VirtualMemberCallInConstructor

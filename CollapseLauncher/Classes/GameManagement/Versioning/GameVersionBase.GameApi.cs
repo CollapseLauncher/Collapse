@@ -62,7 +62,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 GameVersion? currentInstalled = GameVersionInstalled;
 
                 // If no installation installed, then return null
-                if (currentInstalled == null)
+                if (!currentInstalled.HasValue)
                     return null;
 
                 // Check if the pre_download_game property has value. If not, then return null

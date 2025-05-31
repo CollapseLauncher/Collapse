@@ -92,7 +92,7 @@ namespace CollapseLauncher.Helper.Update
             }
 
             // If there's an update, then get the update metadata
-            GameVersion updateVersion = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
+            GameVersion? updateVersion = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
             AppUpdateVersionProp = await GetUpdateMetadata(updateChannel);
             if (AppUpdateVersionProp == null)
             {
@@ -100,7 +100,7 @@ namespace CollapseLauncher.Helper.Update
             }
 
             // Compare the version
-            IsLauncherUpdateAvailable = LauncherCurrentVersion.Compare(updateVersion);
+            IsLauncherUpdateAvailable = LauncherCurrentVersion < updateVersion;
 
             // Get the status if the update is ignorable or forced update.
             bool isUserIgnoreUpdate = (LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false) && !isForceCheckUpdate;

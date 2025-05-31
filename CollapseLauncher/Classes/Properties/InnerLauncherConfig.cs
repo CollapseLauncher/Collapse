@@ -128,7 +128,7 @@ namespace CollapseLauncher
                     GetGameTitleRegionTranslationTextBlock(ref gameRegionTextBlock, Locale.Lang._GameClientRegions);
                 panel.AddElementToStackPanel(gameRegionTranslatedTextBlock);
     
-                if (config != null && config.Channel != GameChannel.Stable)
+                if (config != null && config.GameChannel != GameChannel.Stable)
                 {
                     Grid expTag = UIElementExtensions.CreateGrid()
                                                      .WithPadding(4d, 0d)
@@ -144,7 +144,7 @@ namespace CollapseLauncher
 
                     expTag.AddElementToGridRow(new TextBlock
                     {
-                        Text                = GetGameChannelLabel(config.Channel),
+                        Text                = GetGameChannelLabel(config.GameChannel),
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment   = VerticalAlignment.Center,
                         FontSize            = 10,

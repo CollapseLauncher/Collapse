@@ -220,7 +220,7 @@ namespace CollapseLauncher.Dialogs
                 if (string.IsNullOrEmpty(localVersionString)) return false;
                 GameVersion localVersion = new GameVersion(localVersionString);
                 GameVersion? remoteVersion = CurrentGameProperty.GameVersion?.GetGameVersionApi();
-                if (!localVersion.IsMatch(remoteVersion)) return false;
+                if (localVersion != remoteVersion) return false;
 
                 var execPath = Path.Combine(gamePath, profile.GameExecutableName ?? "");
                 if (!File.Exists(execPath))

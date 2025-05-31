@@ -594,11 +594,11 @@ namespace CollapseLauncher
             string region = GetComboBoxGameRegionValue(selValue);
             PresetConfig preset = await LauncherMetadataHelper.GetMetadataConfig(category, region);
             
-            ChangeRegionWarningText.Text = preset!.Channel != GameChannel.Stable
-                ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.Channel)
+            ChangeRegionWarningText.Text = preset!.GameChannel != GameChannel.Stable
+                ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel)
                 : string.Empty;
             ChangeRegionWarning.Visibility =
-                preset.Channel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
+                preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
