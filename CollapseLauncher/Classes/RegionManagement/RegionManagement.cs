@@ -310,10 +310,12 @@ namespace CollapseLauncher
                 }
 
                 if (NotificationData.RegionPush == null) return;
+                
+                var regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
 
-                foreach (NotificationProp Entry in NotificationData.RegionPush)
+                foreach (var Entry in regionPushCopy)
                 {
-                    NotificationInvokerProp toEntry = new NotificationInvokerProp
+                    var toEntry = new NotificationInvokerProp
                     {
                         CloseAction = null,
                         IsAppNotif = false,
