@@ -32,7 +32,7 @@ namespace CollapseLauncher.Helper
 
     public partial class HttpClientBuilder<THandler>
     {
-        private static readonly IPAddressEqualityComparer IPAddressComparer = new();
+        public static readonly IPAddressEqualityComparer IPAddressComparer = new();
 
         public const string DnsHostSeparators = ";:,#/@%";
         public const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
@@ -149,8 +149,8 @@ namespace CollapseLauncher.Helper
                 return false;
             }
 
-            Span<Range>        delimitRanges    = stackalloc Range[2];
-            int                delimitRangesLen = inputAsSpan.Split(delimitRanges, '|');
+            Span<Range> delimitRanges    = stackalloc Range[2];
+            int         delimitRangesLen = inputAsSpan.Split(delimitRanges, '|');
 
             switch (delimitRangesLen)
             {
@@ -341,30 +341,30 @@ namespace CollapseLauncher.Helper
 
             Logger.LogWriteLine("[HttpClientBuilder<T>::ParseDnsSettings] No valid IP addresses has been parsed to be used as the DNS query host, the settings will be reverted", LogType.Warning, true);
             return this;
+        }
 
-            static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
+        internal static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
+        {
+            Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> lookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
+
+            foreach (ReadOnlySpan<char> currentHostLocal in input)
             {
-                Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> lookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
-
-                foreach (ReadOnlySpan<char> currentHostLocal in input)
+                if ('$' == currentHostLocal[0] && lookup.TryGetValue(currentHostLocal[1..], out IPAddress[]? addresses))
                 {
-                    if ('$' == currentHostLocal[0] && lookup.TryGetValue(currentHostLocal[1..], out IPAddress[]? addresses))
+                    foreach (IPAddress ipEntry in addresses)
                     {
-                        foreach (IPAddress ipEntry in addresses)
-                        {
-                            yield return ipEntry;
-                        }
-                        continue;
+                        yield return ipEntry;
                     }
-
-                    if (!IPAddress.TryParse(currentHostLocal, out IPAddress? addressFromString))
-                    {
-                        Logger.LogWriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse string: {currentHostLocal} as it's not a valid IPv4 or IPv6 address format", LogType.Warning, true);
-                        continue;
-                    }
-
-                    yield return addressFromString;
+                    continue;
                 }
+
+                if (!IPAddress.TryParse(currentHostLocal, out IPAddress? addressFromString))
+                {
+                    Logger.LogWriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse string: {currentHostLocal} as it's not a valid IPv4 or IPv6 address format", LogType.Warning, true);
+                    continue;
+                }
+
+                yield return addressFromString;
             }
         }
 
@@ -519,7 +519,7 @@ namespace CollapseLauncher.Helper
             ResourceRecordCollection CreateEmpty() => new();
         }
 
-        internal static bool TryGetCachedIp(ReadOnlySpan<char> host, out IPAddress[]? cachedIpAddress)
+        private static bool TryGetCachedIp(ReadOnlySpan<char> host, out IPAddress[]? cachedIpAddress)
         {
             ConcurrentDictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> resolveCacheLookup = DnsClientResolveCache.GetAlternateLookup<ReadOnlySpan<char>>();
             ConcurrentDictionary<string, DateTimeOffset>.AlternateLookup<ReadOnlySpan<char>> ttlCacheLookup = DnsClientResolveTtlCache.GetAlternateLookup<ReadOnlySpan<char>>();
@@ -557,34 +557,9 @@ namespace CollapseLauncher.Helper
             try
             {
                 string host = context.DnsEndPoint.Host;
+                IPAddress[] hostIpAddresses = await ResolveHostToIpAsync(host, dnsNameServers, token);
 
-                if (!TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
-                {
-                    (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
-                        await GetFallbackQuery(host, dnsNameServers, token);
-
-                    (ResourceRecord record, uint timeToLive)[] recordInfo = recordsIpv4
-                                     .MergeWithZigZag(recordsIpv6)
-                                     .EnumerateAOrAAAARecordOnly()
-                                     .ToArray();
-
-                    cachedIpAddress = recordInfo
-                        .Select(x => new IPAddress(x.record.Data.Span))
-                        .ToArray();
-
-                    double avgTtl = recordInfo
-                        .Select(x => x.timeToLive)
-                        .Average(x => x);
-
-                    DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(avgTtl);
-                    DnsClientResolveCache.TryAdd(host, cachedIpAddress);
-                    DnsClientResolveTtlCache.TryAdd(host, ttlOffset);
-                }
-
-                if (cachedIpAddress == null || cachedIpAddress.Length == 0)
-                    throw new Exception($"[HttpClientBuilder<T>::ConnectWithExternalDns] Cannot resolve the address of the host: {host}");
-
-                await socket.ConnectAsync(cachedIpAddress, context.DnsEndPoint.Port, token);
+                await socket.ConnectAsync(hostIpAddresses, context.DnsEndPoint.Port, token);
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch
@@ -592,6 +567,37 @@ namespace CollapseLauncher.Helper
                 socket.Dispose();
                 throw;
             }
+        }
+
+        internal static async Task<IPAddress[]> ResolveHostToIpAsync(string host, NameServer[] dnsNameServers, CancellationToken token)
+        {
+            if (!TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
+            {
+                (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
+                    await GetFallbackQuery(host, dnsNameServers, token);
+
+                (ResourceRecord record, uint timeToLive)[] recordInfo = recordsIpv4
+                                                                       .MergeWithZigZag(recordsIpv6)
+                                                                       .EnumerateAOrAAAARecordOnly()
+                                                                       .ToArray();
+
+                cachedIpAddress = recordInfo
+                                 .Select(x => new IPAddress(x.record.Data.Span))
+                                 .ToArray();
+
+                double avgTtl = recordInfo
+                               .Select(x => x.timeToLive)
+                               .Average(x => x);
+
+                DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(avgTtl);
+                DnsClientResolveCache.TryAdd(host, cachedIpAddress);
+                DnsClientResolveTtlCache.TryAdd(host, ttlOffset);
+            }
+
+            if (cachedIpAddress == null || cachedIpAddress.Length == 0)
+                throw new Exception($"[HttpClientBuilder<T>::ConnectWithExternalDns] Cannot resolve the address of the host: {host}");
+
+            return cachedIpAddress;
         }
 
         private static async ValueTask<Stream> ConnectWithSystemDns(SocketsHttpConnectionContext context,
@@ -614,7 +620,7 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        private class IPAddressEqualityComparer : IEqualityComparer<IPAddress>
+        public class IPAddressEqualityComparer : IEqualityComparer<IPAddress>
         {
             public bool Equals(IPAddress? x, IPAddress? y)
             {

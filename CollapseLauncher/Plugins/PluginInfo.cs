@@ -5,14 +5,18 @@ using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Shared.Region;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using System.Threading;
 using System.Threading.Tasks;
+using TurnerSoftware.DinoDNS;
 using PluginGameVersion = Hi3Helper.Plugin.Core.Management.GameVersion;
+// ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
 
@@ -37,6 +41,9 @@ internal class PluginInfo : IDisposable
     public DateTime                    CreationDate    { get; }
     public PluginPresetConfigWrapper[] PresetConfigs   { get; }
     public ILogger                     PluginLogger    { get; }
+    public NameServer[]?               NameServers     { get; private set; }
+
+    private DelegateSetDnsResolverCallback SetDnsResolverCallback { get; }
 
     public unsafe PluginInfo(string pluginFilePath)
     {
@@ -59,6 +66,15 @@ internal class PluginInfo : IDisposable
             {
                 throw new InvalidOperationException($"Plugin: {Path.GetFileName(pluginFilePath)} is missing some required exports. Plugin won't be loaded!");
             }
+
+            // Set logger and DNS resolver callbacks
+            nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(LoggerCallback);
+            if (callbackForLogger != nint.Zero)
+            {
+                setLoggerCallbackHandle(callbackForLogger);
+            }
+
+            SetDnsResolverCallback = setDnsResolverCallbackHandle;
 
             // TODO: Add versioning check.
             GameVersion pluginStandardVersion = GameVersion.From(getPluginStandardVersionHandle()->AsSpan());
@@ -112,16 +128,6 @@ internal class PluginInfo : IDisposable
             CreationDate    = pluginCreationDate == null ? DateTime.MinValue : *pluginCreationDate;
             PluginLogger    = pluginLogger;
 
-            // Set logger and DNS resolver callbacks
-            nint callbackForDnsResolver = LauncherConfig.GetAppConfigValue("IsUseExternalDns") ? nint.Zero : Marshal.GetFunctionPointerForDelegate(DnsResolverCallback);
-            nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(LoggerCallback);
-
-            setDnsResolverCallbackHandle(callbackForDnsResolver);
-            if (callbackForLogger != nint.Zero)
-            {
-                setLoggerCallbackHandle(callbackForLogger);
-            }
-
             Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} @0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
 
             isPluginLoaded = true;
@@ -137,8 +143,37 @@ internal class PluginInfo : IDisposable
         }
     }
 
-    internal async Task InitializePresetConfigs()
+    internal async Task Initialize(CancellationToken token = default)
     {
+        nint dnsCallback = LauncherConfig.GetAppConfigValue("IsUseExternalDns") ? nint.Zero : Marshal.GetFunctionPointerForDelegate(DnsResolverCallback);
+        if (dnsCallback != nint.Zero)
+        {
+            string? lExternalDnsAddresses = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses");
+            HttpClientBuilder.ParseDnsSettings(lExternalDnsAddresses, out string[]? nameServers, out DnsConnectionType dnsConnectionType);
+
+            if (nameServers != null && nameServers.Length != 0)
+            {
+                List<NameServer> nameServerList = [];
+                foreach (IPAddress currentHost in HttpClientBuilder
+                    .EnumerateHostAsIp(nameServers)
+                    .Distinct(HttpClientBuilder.IPAddressComparer))
+                {
+                    nameServerList.Add(new NameServer(currentHost, dnsConnectionType switch
+                                                                   {
+                                                                       DnsConnectionType.Udp => ConnectionType.Udp,
+                                                                       DnsConnectionType.DoT => ConnectionType.DoT,
+                                                                       _ => ConnectionType.DoH
+                                                                   }));
+                }
+
+                if (nameServerList.Count > 0)
+                {
+                    NameServers = nameServerList.ToArray();
+                    SetDnsResolverCallback(dnsCallback);
+                }
+            }
+        }
+
         foreach (PluginPresetConfigWrapper preset in PresetConfigs)
         {
             await preset.InitializeAsync();
@@ -190,9 +225,15 @@ internal class PluginInfo : IDisposable
         }
     }
 
-    private static void DnsResolverCallback(string domain, out string[] resolvedIp)
+    private void DnsResolverCallback(string domain, out string[] resolvedIp)
     {
-        HttpClientBuilder.TryGetCachedIp(domain, out IPAddress[]? resolvedIpAddresses);
+        ArgumentNullException.ThrowIfNull(NameServers, nameof(NameServers));
+
+        IPAddress[] resolvedIpAddresses =
+            HttpClientBuilder.ResolveHostToIpAsync(domain, NameServers, CancellationToken.None)
+            .GetAwaiter()
+            .GetResult();
+
         if (resolvedIpAddresses == null || resolvedIpAddresses.Length == 0)
         {
             resolvedIp = [];

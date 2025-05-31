@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CollapseLauncher.Plugins;
@@ -37,7 +38,7 @@ internal static class PluginManager
             try
             {
                 pluginInfo = new PluginInfo(pluginFile);
-                await pluginInfo.InitializePresetConfigs();
+                await pluginInfo.Initialize(CancellationToken.None);
 
                 foreach (var currentConfig in pluginInfo.PresetConfigs)
                 {
