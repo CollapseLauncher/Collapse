@@ -128,7 +128,7 @@ internal class PluginInfo : IDisposable
             CreationDate    = pluginCreationDate == null ? DateTime.MinValue : *pluginCreationDate;
             PluginLogger    = pluginLogger;
 
-            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} @0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
+            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginFileName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
 
             isPluginLoaded = true;
         }
@@ -250,4 +250,6 @@ internal class PluginInfo : IDisposable
     private void LoggerCallback(LogLevel logLevel, EventId eventId, string message)
         => PluginLogger.Log(logLevel: logLevel, eventId: eventId, message: message);
 #pragma warning restore CA2254
+
+    public override string ToString() => $"{Name} (by {Author}) - {Description}";
 }
