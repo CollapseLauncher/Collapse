@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -220,6 +221,9 @@ namespace CollapseLauncher.Helper.Metadata
             // Initialize the stamp and config file
             await InitializeStamp(currentChannel);
             await InitializeConfig(currentChannel, isCacheUpdateModeOnly, isShowLoadingMessage);
+
+            // Load preset config from plugins
+            await PluginManager.LoadPlugins(LauncherMetadataConfig!, LauncherGameNameRegionCollection!);
         }
 
         internal static async Task InitializeStamp(string currentChannel, bool throwAfterRetry = false)
