@@ -626,12 +626,14 @@ namespace CollapseLauncher.Helper.Image
 
         private static async Task<Stream> GetFallbackStreamUrl(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
         {
-            int maxRetries   = 3;
-            int currentRetry = UrlRetryCount.AddOrUpdate(urlLocal, 2, (_, val) => val + 1);
-            int baseDelay    = 1000; // 1 second base delay
+            Stream returnStream;
+            
+            int    maxRetries   = 3;
+            int    currentRetry = UrlRetryCount.AddOrUpdate(urlLocal, 2, (_, val) => val + 1);
+            int    baseDelay    = 1000; // 1 second base delay
             try
             {
-                return await GetFallbackStreamUrlInner(client, urlLocal, tokenLocal);
+                returnStream =  await GetFallbackStreamUrlInner(client, urlLocal, tokenLocal);
             }
             catch (Exception ex)
             {
@@ -646,8 +648,11 @@ namespace CollapseLauncher.Helper.Image
                 Logger.LogWriteLine($"Failed to download resource from: {urlLocal} (Attempt {currentRetry}/{maxRetries}). Retrying in {delay}ms...\r\n{ex}", LogType.Warning, true);
                 UrlRetryCount[urlLocal] = currentRetry;
                 await Task.Delay(delay, tokenLocal);
-                return await GetFallbackStreamUrl(client, urlLocal, tokenLocal); // Recursive call to retry
+                returnStream =  await GetFallbackStreamUrl(client, urlLocal, tokenLocal); // Recursive call to retry
             }
+            
+            UrlRetryCount.TryRemove(urlLocal, out _);
+            return returnStream;
         }
         
         private static async Task<Stream> GetFallbackStreamUrlInner(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
