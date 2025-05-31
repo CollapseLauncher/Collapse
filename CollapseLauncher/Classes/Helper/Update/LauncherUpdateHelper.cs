@@ -1,8 +1,8 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Classes.Extension;
+using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
@@ -66,8 +66,8 @@ namespace CollapseLauncher.Helper.Update
             IFileDownloader updateManagerHttpAdapter = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
             // Initialize update manager logger, locator and options
-            ILogger velopackLogger = ILoggerHelper.GetILogger();
-            VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(velopackLogger);
+            var velopackLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
+            var updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(velopackLogger);
             UpdateOptions updateManagerOptions = new UpdateOptions
             {
                 AllowVersionDowngrade = true,
@@ -81,7 +81,6 @@ namespace CollapseLauncher.Helper.Update
             UpdateManager updateManager = new UpdateManager(
                 updateSource,
                 updateManagerOptions,
-                velopackLogger,
                 updateManagerLocator);
 
             // Get the update info. If it's null, then return false (no update)

@@ -443,11 +443,15 @@
       "hi3helper.win32": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.3, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )"
         }
       },
       "hi3helper.win32.winrt": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Hi3Helper.Win32": "[1.0.0, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )"
+        }
       },
       "ImageCropper": {
         "type": "Project",
