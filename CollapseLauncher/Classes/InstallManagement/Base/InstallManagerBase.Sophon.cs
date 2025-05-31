@@ -435,6 +435,7 @@ namespace CollapseLauncher.InstallManager.Base
                                 // then move the temp file to the original file path
                                 var origFilePath  = new FileInfo(assetFullPath)
                                                    .EnsureCreationOfDirectory()
+                                                   .StripAlternateDataStream()
                                                    .EnsureNoReadOnly();
 
                                 // Move the thing
@@ -937,7 +938,7 @@ namespace CollapseLauncher.InstallManager.Base
                                             sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
-            FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).EnsureNoReadOnly();
+            FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).StripAlternateDataStream().EnsureNoReadOnly();
             if (fileInfo.Exists)
             {
                 // Use stream reader to read the list one-by-one

@@ -8,9 +8,11 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Helper;
+using Hi3Helper.Win32.TaskbarListCOM;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -28,8 +30,6 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.TaskbarListCOM;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
@@ -563,7 +563,7 @@ namespace CollapseLauncher.Interfaces
             // Iterate every file and set the read-only flag to false
             foreach (FileInfo file in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories))
             {
-                _ = file.EnsureNoReadOnly();
+                _ = file.StripAlternateDataStream().EnsureNoReadOnly();
             }
         }
 
@@ -575,28 +575,24 @@ namespace CollapseLauncher.Interfaces
 
         protected static void TryDeleteReadOnlyDir(string dirPath)
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(dirPath);
-            if (!dirInfo.Exists)
-            {
+            DirectoryInfo dirInfo = new DirectoryInfo(dirPath).EnsureNoReadOnly(out bool isDirExist);
+            if (!isDirExist)
                 return;
-            }
-
-            foreach (FileInfo files in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories)
-                .EnumerateNoReadOnly())
-            {
-                try
-                {
-                    files.Delete();
-                }
-                catch (Exception ex)
-                {
-                    SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"Failed while deleting file: {files.FullName}\r\n{ex}", LogType.Warning, true);
-                } // Suppress errors
-            }
 
             try
             {
+                // Remove read-only attribute from all files and subdirectories
+                foreach (var file in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
+                {
+                    file.StripAlternateDataStream().EnsureNoReadOnly();
+                }
+        
+                foreach (var subDir in dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories))
+                {
+                    subDir.EnsureNoReadOnly();
+                }
+        
+                // Delete the directory and all its contents
                 dirInfo.Refresh();
                 dirInfo.Delete(true);
             }
@@ -827,7 +823,7 @@ namespace CollapseLauncher.Interfaces
                 }
 
                 // Assign FileInfo to sdkDllPath
-                FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+                FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
 
                 // Do check if sdkDllFile is not null
                 // Try to create the file if not exist or open an existing one
@@ -1226,7 +1222,7 @@ namespace CollapseLauncher.Interfaces
         protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, long patchSize, Memory<byte> patchHash,
                                                        string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false, CancellationToken token = default)
             => await RunPatchTask(downloadClient, downloadProgress, patchSize,
-                patchHash, patchURL, new FileInfo(patchOutputFile).EnsureNoReadOnly(), new FileInfo(inputFile).EnsureNoReadOnly(),
+                patchHash, patchURL, new FileInfo(patchOutputFile).StripAlternateDataStream().EnsureNoReadOnly(), new FileInfo(inputFile).EnsureNoReadOnly(),
                 new FileInfo(outputFile).EnsureCreationOfDirectory().EnsureNoReadOnly(), isNeedRename, token);
 
         protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, long patchSize, Memory<byte> patchHash,
@@ -1246,25 +1242,32 @@ namespace CollapseLauncher.Interfaces
             // Always do loop if patch doesn't get downloaded properly
             while (true)
             {
-                await using FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
-                // Verify the patch file and if it doesn't match, then re-download it
-                byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
-                Array.Reverse(patchCrc);
-                if (!IsArrayMatch(patchCrc, patchHash.Span))
+                FileStream patchFileStream = await patchOutputFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None);
+                try
                 {
-                    // Revert back the total size
-                    Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
+                    // Verify the patch file and if it doesn't match, then re-download it
+                    byte[] patchCrc = await GetCryptoHashAsync<MD5>(patchFileStream, null, true, false, token);
+                    Array.Reverse(patchCrc);
+                    if (!IsArrayMatch(patchCrc, patchHash.Span))
+                    {
+                        // Revert back the total size
+                        Interlocked.Add(ref ProgressAllSizeCurrent, -patchSize);
 
-                    // Dispose patch stream before redownloading
-                    await patchFileStream.DisposeAsync();
+                        // Dispose patch stream before re-downloading
+                        await patchFileStream.DisposeAsync();
 
-                    // Re-download the patch file
-                    await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
-                    continue;
+                        // Re-download the patch file
+                        await RunDownloadTask(patchSize, patchOutputFile, patchURL, downloadClient, downloadProgress, token);
+                        continue;
+                    }
+
+                    // else, break and quit from loop
+                    break;
                 }
-
-                // else, break and quit from loop
-                break;
+                finally
+                {
+                    await patchFileStream.DisposeAsync();
+                }
             }
 
             // Start patching process

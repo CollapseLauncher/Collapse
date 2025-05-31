@@ -102,13 +102,13 @@ namespace CollapseLauncher
             // Duplicate ctable.dat to ctable_streaming.dat
             string   streamingAssetsPath = Path.Combine(GamePath,            $"{ExecPrefix}_Data", "StreamingAssets");
             string   ctablePath          = Path.Combine(streamingAssetsPath, "ctable.dat");
-            FileInfo ctableFileInfo      = new FileInfo(ctablePath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            FileInfo ctableFileInfo      = new FileInfo(ctablePath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
             string   ctableStreamingPath = Path.Combine(streamingAssetsPath, "ctable_streaming.dat");
 
             // ReSharper disable once InvertIf
             if (ctableFileInfo.Exists)
             {
-                new FileInfo(ctableStreamingPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+                new FileInfo(ctableStreamingPath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
                 ctableFileInfo.CopyTo(ctableStreamingPath, true);
                 LogWriteLine($"File [T: {RepairAssetType.Generic}] {ctableStreamingPath} has been copied!", LogType.Default, true);
             }
@@ -131,7 +131,7 @@ namespace CollapseLauncher
                 true);
 
             string   assetPath     = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.AssetIndex.remoteName));
-            FileInfo assetFileInfo = new FileInfo(assetPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            FileInfo assetFileInfo = new FileInfo(assetPath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
             bool     isSuccess     = false;
 
             try
