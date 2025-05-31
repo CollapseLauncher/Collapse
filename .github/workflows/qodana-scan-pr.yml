@@ -54,11 +54,12 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }} 
         uses: JetBrains/qodana-action@main
         with:
-          args: --ide,QDNET,-e,_JAVA_OPTIONS=-Xmx2g
+          args: --ide,QDNET
           pr-mode: true
         env:
             QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # read the steps about it below
             _JAVA_OPTIONS: -Xmx2g
+            JAVA_OPTIONS: -Xmx2g
       - uses: github/codeql-action/upload-sarif@v3
         if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
         with:
