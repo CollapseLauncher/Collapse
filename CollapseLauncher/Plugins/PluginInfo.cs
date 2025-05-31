@@ -68,7 +68,7 @@ internal class PluginInfo : IDisposable
             }
 
             // Set logger and DNS resolver callbacks
-            nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(LoggerCallback);
+            nint callbackForLogger = Marshal.GetFunctionPointerForDelegate<SharedLoggerCallback>(LoggerCallback);
             if (callbackForLogger != nint.Zero)
             {
                 setLoggerCallbackHandle(callbackForLogger);
@@ -145,7 +145,10 @@ internal class PluginInfo : IDisposable
 
     internal async Task Initialize(CancellationToken token = default)
     {
-        nint dnsCallback = LauncherConfig.GetAppConfigValue("IsUseExternalDns") ? nint.Zero : Marshal.GetFunctionPointerForDelegate(DnsResolverCallback);
+        nint dnsCallback = !LauncherConfig.GetAppConfigValue("IsUseExternalDns") ?
+            nint.Zero :
+            Marshal.GetFunctionPointerForDelegate<SharedDnsResolverCallback>(DnsResolverCallback);
+
         if (dnsCallback != nint.Zero)
         {
             string? lExternalDnsAddresses = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses");
