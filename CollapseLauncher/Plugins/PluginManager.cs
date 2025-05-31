@@ -18,7 +18,8 @@ internal static class PluginManager
     public static readonly ConcurrentDictionary<string, PluginInfo> PluginInstances = new(StringComparer.OrdinalIgnoreCase);
 
     internal static async Task LoadPlugins(Dictionary<string, Dictionary<string, PresetConfig>?> launcherMetadataConfig,
-                                           Dictionary<string, List<string>?> launcherGameNameRegionCollection)
+                                           Dictionary<string, List<string>?> launcherGameNameRegionCollection,
+                                           Dictionary<string, Stamp> launcherMetadataStampDictionary)
     {
         string pluginDir = Path.Combine(LauncherConfig.AppExecutableDir, "Lib\\Plugins");
         if (!Directory.Exists(pluginDir))
@@ -46,20 +47,31 @@ internal static class PluginManager
                     string gameRegion = currentConfig.ZoneName;
 
                     ref Dictionary<string, PresetConfig>? dict = ref CollectionsMarshal.GetValueRefOrAddDefault(launcherMetadataConfig, gameName, out _);
-                    if (Unsafe.IsNullRef(ref dict))
+                    if (Unsafe.IsNullRef(ref dict) || dict == null)
                     {
                         dict = new Dictionary<string, PresetConfig>(StringComparer.OrdinalIgnoreCase);
                     }
 
-                    dict?.TryAdd(gameRegion, currentConfig);
+                    dict.TryAdd(gameRegion, currentConfig);
 
                     ref List<string>? gameRegions = ref CollectionsMarshal.GetValueRefOrAddDefault(launcherGameNameRegionCollection, gameName, out _);
-                    if (Unsafe.IsNullRef(ref gameRegions))
+                    if (Unsafe.IsNullRef(ref gameRegions) || gameRegions == null)
                     {
                         gameRegions = [];
                     }
 
-                    gameRegions?.Add(gameRegion);
+                    gameRegions.Add(gameRegion);
+
+                    long stampTimestamp = long.Parse(pluginInfo.CreationDate.ToString("yyyyMMddHHmmss"));
+                    _ = launcherMetadataStampDictionary.TryAdd($"{gameName} - {gameRegion}", new Stamp
+                    {
+                        GameName = gameName,
+                        GameRegion = gameRegion,
+                        LastModifiedTimeUtc = pluginInfo.CreationDate,
+                        LastUpdated = stampTimestamp,
+                        MetadataType = MetadataType.PresetConfigPlugin,
+                        PresetConfigVersion = pluginInfo.StandardVersion.ToString()
+                    });
                 }
 
                 _ = PluginInstances.TryAdd(pluginFile, pluginInfo);
