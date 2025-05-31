@@ -38,9 +38,9 @@
       },
       "Microsoft.Windows.SDK.BuildTools": {
         "type": "Direct",
-        "requested": "[10.0.26100.3916, )",
-        "resolved": "10.0.26100.3916",
-        "contentHash": "Msz2kgT4zU6dt8LMZHPdSTt9d+esfxLQuI4dFdcAXvLkGtrEwPvviHJ1bgD9XH2HqtUE86Pk1QP+ZcWX1iQlSg=="
+        "requested": "[10.0.26100.4188, )",
+        "resolved": "10.0.26100.4188",
+        "contentHash": "sjksqXKnxleoY9qvKPS/fsiGKZ8ZYjwDTfSQvfv6gETTtQQIqZRIhCZCZ+rgjFjS6ZVjjn7iRjT/X64v25IEyA=="
       },
       "Microsoft.WindowsAppSDK": {
         "type": "Direct",

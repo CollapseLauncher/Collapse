@@ -53,8 +53,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <NoWarn>TA101</NoWarn>
-        <NoWarn>TA100</NoWarn>
+        <NoWarn>$(NoWarn);TA101;TA100</NoWarn>
+        <WarningLevel>5</WarningLevel>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
 
 <!--    <PropertyGroup Condition="'$(PublishAot)' == 'true' And '$(Configuration)' != 'Debug'">-->
@@ -170,7 +171,7 @@
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
-        <PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+        <PackageReference Include="Velopack" Version="0.0.1251" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -194,7 +195,7 @@
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.3916" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250410001-experimental1" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />

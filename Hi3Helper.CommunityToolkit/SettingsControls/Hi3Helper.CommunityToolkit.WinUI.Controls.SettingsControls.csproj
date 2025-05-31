@@ -36,7 +36,7 @@
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.WinUI.Triggers" Version="8.2.250402" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.3916" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250410001-experimental1" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
     </ItemGroup>
