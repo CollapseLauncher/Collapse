@@ -42,8 +42,11 @@ namespace CollapseLauncher.Helper.Update
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}", LogType.Warning, true);
-                await SentryHelper.ExceptionHandlerAsync(ex);
+                Logger.LogWriteLine($"The update manager check throws an error, Skipping update check!\r\n{ex}",
+                                    LogType.Warning, true);
+                if (!ex.Message.Contains("application which is not installed",
+                                         StringComparison.InvariantCultureIgnoreCase)) 
+                    await SentryHelper.ExceptionHandlerAsync(ex);
             }
         }
 
