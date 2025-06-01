@@ -13,6 +13,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
+using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.Helper.Loading;
@@ -993,6 +994,7 @@ namespace CollapseLauncher.Pages
             SetAndSaveConfigValue("AppLanguage", selectedKey);
             LoadLocale(selectedKey);
             UpdateBindings.Update();
+            PluginManager.SetPluginLocaleId(selectedKey);
 
             foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
             {

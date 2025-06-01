@@ -97,6 +97,18 @@ internal static class PluginManager
         }
     }
 
+    internal static void UnloadPlugins()
+    {
+        // Dispose all plugin instances before freeing the plugin handles.
+        foreach (var pluginInfo in PluginInstances.Values)
+        {
+            pluginInfo.Dispose();
+        }
+
+        // Clear the plugin instances.
+        PluginInstances.Clear();
+    }
+
     internal static void AssertIfUpxPacked(FileInfo fileInfo)
     {
         ReadOnlySpan<byte> searchValuesPattern1 = "UPX0\0\0\0\0"u8;
@@ -123,15 +135,11 @@ internal static class PluginManager
         }
     }
 
-    internal static void UnloadPlugins()
+    internal static void SetPluginLocaleId(string localeId)
     {
-        // Dispose all plugin instances before freeing the plugin handles.
         foreach (var pluginInfo in PluginInstances.Values)
         {
-            pluginInfo.Dispose();
+            pluginInfo.SetPluginLocaleId(localeId);
         }
-
-        // Clear the plugin instances.
-        PluginInstances.Clear();
     }
 }

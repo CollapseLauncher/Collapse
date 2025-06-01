@@ -140,6 +140,8 @@ internal class PluginInfo : IDisposable
             CreationDate    = pluginCreationDate == null ? DateTime.MinValue : *pluginCreationDate;
             PluginLogger    = pluginLogger;
 
+            pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));
+
             Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginFileName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
 
             isPluginLoaded = true;
@@ -194,6 +196,8 @@ internal class PluginInfo : IDisposable
             await preset.InitializeAsync(token);
         }
     }
+
+    internal void SetPluginLocaleId(string localeId) => Instance.SetPluginLocaleId(localeId);
 
     private static bool TryGetExport<T>(nint handle, string exportName, out T callback)
         where T : Delegate
