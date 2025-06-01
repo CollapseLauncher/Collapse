@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using ILauncherApi = CollapseLauncher.Helper.LauncherApiLoader.ILauncherApi;
 
 #nullable enable
 namespace CollapseLauncher.Plugins;
@@ -49,6 +50,16 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
         return false;
     }
+
+    public override ILauncherApi? GameLauncherApi
+    {
+        get => field ??= new PluginLauncherApiWrapper(_plugin, this);
+        set;
+    }
+
+    public override GameNameType   GameType     => GameNameType.Plugin;
+    public override LauncherType   LauncherType => LauncherType.Plugin;
+    public override GameVendorType VendorType   => GameVendorType.Plugin;
 
     public override string GameName        => _config.get_GameName();
     public override string ProfileName     => _config.get_ProfileName();

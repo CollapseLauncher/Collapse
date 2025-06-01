@@ -48,8 +48,8 @@ internal class PluginInfo : IDisposable
     private readonly DelegateSetDnsResolverCallback _setDnsResolverCallback;
 
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
-    // Reason: This field must be defined in the object's instance to avoid early Garbage Collection to the delegate
-    //         Defining it as local variable will cause early Garbage Collection and raise ExecutionEngineException.
+    // Reason: These fields must be defined in the object's instance to avoid early Garbage Collection to the delegate.
+    //         Defining it as local variables will cause early Garbage Collection and raise ExecutionEngineException.
     private readonly SharedLoggerCallback?      _sharedLoggerCallback;
     private readonly SharedDnsResolverCallback? _sharedDnsResolverCallback;
     // ReSharper enable PrivateFieldCanBeConvertedToLocalVariable

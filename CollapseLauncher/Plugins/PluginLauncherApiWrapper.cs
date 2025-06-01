@@ -6,7 +6,6 @@ using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
-using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using System;
 using System.Net.Http;
@@ -34,7 +33,7 @@ internal class PluginLauncherApiWrapper : ILauncherApi
 
         _plugin             = plugin;
         _pluginPresetConfig = presetConfig;
-        _pluginGameManager  = presetConfig.PluginGameManager;
+        // _pluginGameManager  = presetConfig.PluginGameManager;
         _pluginMediaApi     = presetConfig.PluginMediaApi;
         _pluginNewsApi      = presetConfig.PluginNewsApi;
     }
@@ -43,12 +42,8 @@ internal class PluginLauncherApiWrapper : ILauncherApi
     public bool IsForceRedirectToSophon => false;
     public bool IsLoadingCompleted      { get; private set; }
 
-    public string GameBackgroundImg => throw new NotImplementedException();
-    public string? GameBackgroundImgLocal
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-    }
+    public string  GameBackgroundImg      { get; private set; } = string.Empty;
+    public string? GameBackgroundImgLocal { get; set; }
 
     public string GameName              => _pluginPresetConfig.GameName;
     public string GameRegion            => _pluginPresetConfig.ZoneName;

@@ -307,13 +307,13 @@ namespace CollapseLauncher.Helper.Metadata
         #region Config Propeties
 
         [JsonIgnore]
-        public  ILauncherApi?    GameLauncherApi { get; set; }
+        public virtual ILauncherApi? GameLauncherApi { get; set; }
 
         public virtual GameChannel       GameChannel           { get; init; }
         public         AudioLanguageType GameDefaultCVLanguage { get; init; }
-        public         GameNameType      GameType              { get; init; } = GameNameType.Unknown;
-        public         GameVendorType    VendorType            { get; init; }
-        public         LauncherType      LauncherType          { get; init; }
+        public virtual GameNameType      GameType              { get; init; } = GameNameType.Unknown;
+        public virtual GameVendorType    VendorType            { get; init; }
+        public virtual LauncherType      LauncherType          { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? BetterHi3LauncherVerInfoReg { get; init; }
