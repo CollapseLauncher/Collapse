@@ -498,11 +498,11 @@ namespace CollapseLauncher.Helper.Image
         private static readonly HashSet<FileInfo> ProcessingFiles = [];
         private static readonly HashSet<string>   ProcessingUrls  = [];
 
-        public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
+        public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, bool isSkipCheck, CancellationToken token)
         {
             try
             {
-                _ = await TryDownloadToCompletenessAsync(url, useHttpClient, fileInfo, token);
+                _ = await TryDownloadToCompletenessAsync(url, useHttpClient, fileInfo, isSkipCheck, token);
             }
             catch
             {
@@ -510,12 +510,14 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
-        public static async Task<bool> TryDownloadToCompletenessAsync(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
+        public static async Task<bool> TryDownloadToCompletenessAsync(string? url, HttpClient? useHttpClient, FileInfo fileInfo, bool isSkipCheck, CancellationToken token)
         {
             if (string.IsNullOrEmpty(url))
             {
                 return false;
             }
+
+            fileInfo.EnsureCreationOfDirectory().EnsureNoReadOnly();
 
             if (ProcessingFiles.Contains(fileInfo) || ProcessingUrls.Contains(url))
             {
@@ -529,7 +531,9 @@ namespace CollapseLauncher.Helper.Image
                 ProcessingFiles.Add(fileInfo);
                 ProcessingUrls.Add(url);
                 // Initialize file temporary name
-                FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp");
+                FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp")
+                    .EnsureCreationOfDirectory()
+                    .EnsureNoReadOnly();
 
                 Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
@@ -551,8 +555,8 @@ namespace CollapseLauncher.Helper.Image
                             fileLength = netStream.Length;
 
                             // Create the prop file for download completeness checking
-                            string? outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
-                            string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                            string? outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+                            string  outputFilename   = Path.GetFileName(fileInfo.FullName);
                             if (outputParentPath != null)
                             {
                                 string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
@@ -569,15 +573,16 @@ namespace CollapseLauncher.Helper.Image
                         }
                     }
 
-                    if (await IsFileCompletelyDownloadedAsync(fileInfoTemp, true))
+                    Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
+                                        + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+
+                    // Move to its original filename
+                    fileInfoTemp.Refresh();
+                    fileInfoTemp.MoveTo(fileInfo.FullName, true);
+                    fileInfo.Refresh();
+
+                    if (isSkipCheck || await IsFileCompletelyDownloadedAsync(fileInfo, true))
                     {
-                        // Move to its original filename
-                        fileInfoTemp.Refresh();
-                        fileInfoTemp.MoveTo(fileInfo.FullName, true);
-
-                        Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
-                            + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
-
                         // Break from the loop and return true
                         return true;
                     }
@@ -631,7 +636,7 @@ namespace CollapseLauncher.Helper.Image
                 tokenLocal);
         }
 
-        public static string? GetCachedSprites(HttpClient? httpClient, string? url, CancellationToken token)
+        public static string? GetCachedSprites(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
             if (string.IsNullOrEmpty(url)) return url;
             if (token.IsCancellationRequested) return url;
@@ -641,20 +646,20 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (IsFileCompletelyDownloaded(fInfo, true))
+            if (IsFileCompletelyDownloaded(fInfo, !isSkipHashCheck))
             {
                 return cachePath;
             }
 
-            TryDownloadToCompletenessDetached(url, httpClient, fInfo, token);
+            TryDownloadToCompletenessDetached(url, httpClient, fInfo, isSkipHashCheck, token);
             return url;
 
         }
 
-        public static async Task<string?> GetCachedSpritesAsync(string? url, CancellationToken token)
-            => await GetCachedSpritesAsync(null, url, token);
+        public static async Task<string?> GetCachedSpritesAsync(string? url, bool isSkipHashCheck, CancellationToken token)
+            => await GetCachedSpritesAsync(null, url, isSkipHashCheck, token);
 
-        public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, CancellationToken token)
+        public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
             if (string.IsNullOrEmpty(url)) return url;
 
@@ -663,12 +668,12 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (await IsFileCompletelyDownloadedAsync(fInfo, true))
+            if (await IsFileCompletelyDownloadedAsync(fInfo, !isSkipHashCheck))
             {
                 return cachePath;
             }
 
-            if (!await TryDownloadToCompletenessAsync(url, httpClient, fInfo, token))
+            if (!await TryDownloadToCompletenessAsync(url, httpClient, fInfo, isSkipHashCheck, token))
             {
                 return url;
             }
