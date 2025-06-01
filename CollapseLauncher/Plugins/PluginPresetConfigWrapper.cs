@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 #nullable enable
@@ -17,14 +18,20 @@ namespace CollapseLauncher.Plugins;
 
 internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
+    private readonly IPlugin             _plugin;
     private readonly IPluginPresetConfig _config;
 
-    private PluginPresetConfigWrapper(IPluginPresetConfig config) => _config = config;
+    private PluginPresetConfigWrapper(IPlugin plugin, IPluginPresetConfig config)
+    {
+        _plugin = plugin;
+        _config = config;
+    }
 
-    public static PluginPresetConfigWrapper Create(IPluginPresetConfig presetConfig)
-        => new(presetConfig);
+    public static PluginPresetConfigWrapper Create(IPlugin plugin, IPluginPresetConfig presetConfig)
+        => new(plugin, presetConfig);
 
-    public static bool TryCreate(IPluginPresetConfig                                presetConfig,
+    public static bool TryCreate(IPlugin                                            plugin,
+                                 IPluginPresetConfig                                presetConfig,
                                  [NotNullWhen(true)] out PluginPresetConfigWrapper? wrapper)
     {
         Unsafe.SkipInit(out wrapper);
@@ -32,7 +39,7 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
         try
         {
-            wrapper = Create(presetConfig);
+            wrapper = Create(plugin, presetConfig);
             return true;
         }
         catch (Exception ex)
@@ -43,29 +50,20 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
         return false;
     }
 
-    public override string GameName => _config.get_GameName();
-
-    public override string ProfileName => _config.get_ProfileName();
-
+    public override string GameName        => _config.get_GameName();
+    public override string ProfileName     => _config.get_ProfileName();
     public override string ZoneDescription => _config.get_ZoneDescription();
-
-    public override string ZoneName => _config.get_ZoneName();
-
-    public override string ZoneFullname => _config.get_ZoneFullName();
-
-    public override string ZoneLogoURL => _config.get_ZoneLogoUrl();
-
-    public override string ZonePosterURL => _config.get_ZonePosterUrl();
-
-    public override string ZoneURL => _config.get_ZoneHomePageUrl();
+    public override string ZoneName        => _config.get_ZoneName();
+    public override string ZoneFullname    => _config.get_ZoneFullName();
+    public override string ZoneLogoURL     => _config.get_ZoneLogoUrl();
+    public override string ZonePosterURL   => _config.get_ZonePosterUrl();
+    public override string ZoneURL         => _config.get_ZoneHomePageUrl();
 
     public override string GameExecutableName => _config.get_GameExecutableName();
+    public override string GameDirectoryName  => _config.get_LauncherGameDirectoryName();
 
-    public override string GameDirectoryName => _config.get_LauncherGameDirectoryName();
-
-    public string? GameLogFileName => _config.get_GameLogFileName();
-
-    public string? GameAppDataPath => _config.get_GameAppDataPath();
+    public string? GameLogFileName => field ??= _config.get_GameLogFileName();
+    public string? GameAppDataPath => field ??= _config.get_GameAppDataPath();
 
     [field: AllowNull, MaybeNull]
     public override List<string> GameSupportedLanguages
@@ -98,10 +96,15 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
     [field: AllowNull, MaybeNull]
     public IGameManager PluginGameManager => field ??= _config.get_GameManager() ?? throw new NullReferenceException("IGameManager interface cannot be null!");
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(CancellationToken token = default)
     {
         int returnCode = 0;
         Guid cancelToken = Guid.CreateVersion7();
+
+        token.Register(() =>
+        {
+            _plugin.CancelAsync(in cancelToken);
+        });
 
         await _config.InitAsync(in cancelToken, ret => returnCode = ret).WaitFromHandle();
         

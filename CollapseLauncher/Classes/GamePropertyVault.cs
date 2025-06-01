@@ -1,4 +1,5 @@
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;

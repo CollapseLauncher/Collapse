@@ -30,6 +30,8 @@ internal class PluginInfo : IDisposable
     internal delegate        void               DelegateSetLoggerCallback(nint      loggerCallback);
     internal delegate        void               DelegateSetDnsResolverCallback(nint dnsResolverCallback);
 
+    private bool _isDisposed;
+
     public GameVersion                 StandardVersion { get; }
     public GameVersion                 Version         { get; }
     public IPlugin                     Instance        { get; }
@@ -43,7 +45,14 @@ internal class PluginInfo : IDisposable
     public ILogger                     PluginLogger    { get; }
     public NameServer[]?               NameServers     { get; private set; }
 
-    private DelegateSetDnsResolverCallback SetDnsResolverCallback { get; }
+    private readonly DelegateSetDnsResolverCallback _setDnsResolverCallback;
+
+    // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
+    // Reason: This field must be defined in the object's instance to avoid early Garbage Collection to the delegate
+    //         Defining it as local variable will cause early Garbage Collection and raise ExecutionEngineException.
+    private readonly SharedLoggerCallback?      _sharedLoggerCallback;
+    private readonly SharedDnsResolverCallback? _sharedDnsResolverCallback;
+    // ReSharper enable PrivateFieldCanBeConvertedToLocalVariable
 
     public unsafe PluginInfo(string pluginFilePath)
     {
@@ -68,13 +77,16 @@ internal class PluginInfo : IDisposable
             }
 
             // Set logger and DNS resolver callbacks
-            nint callbackForLogger = Marshal.GetFunctionPointerForDelegate<SharedLoggerCallback>(LoggerCallback);
+            _sharedLoggerCallback      = LoggerCallback;
+            _sharedDnsResolverCallback = DnsResolverCallback;
+
+            nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(_sharedLoggerCallback);
             if (callbackForLogger != nint.Zero)
             {
                 setLoggerCallbackHandle(callbackForLogger);
             }
 
-            SetDnsResolverCallback = setDnsResolverCallbackHandle;
+            _setDnsResolverCallback = setDnsResolverCallbackHandle;
 
             // TODO: Add versioning check.
             GameVersion pluginStandardVersion = GameVersion.From(getPluginStandardVersionHandle()->AsSpan());
@@ -83,13 +95,13 @@ internal class PluginInfo : IDisposable
 
             if (pluginInstancePtr == null)
             {
-                throw new NullReferenceException("Plugin's \"GetPlugin\" export function returns a null pointer!");
+                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginFileName}) export function returns a null pointer!");
             }
 
             IPlugin? pluginInstance = ComInterfaceMarshaller<IPlugin>.ConvertToManaged(pluginInstancePtr);
             if (pluginInstance == null)
             {
-                throw new NullReferenceException("Plugin's \"GetPlugin\" export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
+                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginFileName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
             }
 
             // Get preset configs
@@ -103,7 +115,7 @@ internal class PluginInfo : IDisposable
             for (int i = 0; i < presetConfigCount; i++)
             {
                 IPluginPresetConfig presetConfig = pluginInstance.GetPresetConfig(i);
-                if (!PluginPresetConfigWrapper.TryCreate(presetConfig, out PluginPresetConfigWrapper? presetConfigWrapper))
+                if (!PluginPresetConfigWrapper.TryCreate(pluginInstance, presetConfig, out PluginPresetConfigWrapper? presetConfigWrapper))
                 {
                     throw new InvalidOperationException($"Plugin: {pluginFileName} returns an invalid IPluginPresetConfig at index {i}!");
                 }
@@ -145,9 +157,9 @@ internal class PluginInfo : IDisposable
 
     internal async Task Initialize(CancellationToken token = default)
     {
-        nint dnsCallback = !LauncherConfig.GetAppConfigValue("IsUseExternalDns") ?
+        nint dnsCallback = !LauncherConfig.GetAppConfigValue("IsUseExternalDns") || _sharedDnsResolverCallback == null ?
             nint.Zero :
-            Marshal.GetFunctionPointerForDelegate<SharedDnsResolverCallback>(DnsResolverCallback);
+            Marshal.GetFunctionPointerForDelegate(_sharedDnsResolverCallback);
 
         if (dnsCallback != nint.Zero)
         {
@@ -172,14 +184,14 @@ internal class PluginInfo : IDisposable
                 if (nameServerList.Count > 0)
                 {
                     NameServers = nameServerList.ToArray();
-                    SetDnsResolverCallback(dnsCallback);
+                    _setDnsResolverCallback(dnsCallback);
                 }
             }
         }
 
         foreach (PluginPresetConfigWrapper preset in PresetConfigs)
         {
-            await preset.InitializeAsync();
+            await preset.InitializeAsync(token);
         }
     }
 
@@ -200,8 +212,21 @@ internal class PluginInfo : IDisposable
 
     public void Dispose()
     {
+        if (_isDisposed)
+        {
+            return;
+        }
+
         try
         {
+            if (TryGetExport(Handle, "SetLoggerCallback", out DelegateSetLoggerCallback setLoggerCallbackHandle) &&
+                TryGetExport(Handle, "SetDnsResolverCallback", out DelegateSetDnsResolverCallback setDnsResolverCallbackHandle))
+            {
+                setLoggerCallbackHandle(nint.Zero);
+                setDnsResolverCallbackHandle(nint.Zero);
+                Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS and Logger Callbacks have been detached!", LogType.Debug, true);
+            }
+
             // Try to dispose the IPlugin instance using the plugin's safe FreePlugin method first.
             if (TryGetExport(Handle, "FreePlugin", out DelegateFreePlugin freePluginCallback))
             {
@@ -209,17 +234,20 @@ internal class PluginInfo : IDisposable
                 freePluginCallback();
 
                 // Log the successful unload of the plugin.
-                Logger.LogWriteLine($"[LauncherMetadataHelper] Successfully unloaded plugin: {Name} using graceful free function.", LogType.Debug, true);
+                Logger.LogWriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using graceful free function.", LogType.Debug, true);
                 return;
             }
 
             // If the graceful free function is not available, try to call Dispose method directly.
             Instance.Dispose();
-            Logger.LogWriteLine($"[LauncherMetadataHelper] Successfully unloaded plugin: {Name} using explicit function.", LogType.Debug, true);
+            Logger.LogWriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using explicit function.", LogType.Debug, true);
+
+            // Mark as disposed
+            _isDisposed = true;
         }
         catch (Exception ex)
         {
-            Logger.LogWriteLine($"[LauncherMetadataHelper] Cannot dispose IPlugin instance from plugin: {Name} @0x{Handle:x8} due to unexpected error: {ex}", LogType.Warning, true);
+            Logger.LogWriteLine($"[PluginInfo] Cannot dispose IPlugin instance from plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) due to unexpected error: {ex}", LogType.Warning, true);
         }
         finally
         {

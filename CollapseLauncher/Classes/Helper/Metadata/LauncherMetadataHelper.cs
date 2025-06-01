@@ -226,6 +226,9 @@ namespace CollapseLauncher.Helper.Metadata
             await InitializeStamp(currentChannel);
             await InitializeConfig(currentChannel, isCacheUpdateModeOnly, isShowLoadingMessage);
 
+            // Unload Plugins first
+            PluginManager.UnloadPlugins();
+
             // Load preset config from plugins
             await PluginManager.LoadPlugins(LauncherMetadataConfig!, LauncherGameNameRegionCollection!, LauncherMetadataStampDictionary!);
         }

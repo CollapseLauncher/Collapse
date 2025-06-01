@@ -41,6 +41,8 @@
                             <ui:Color x:Key="SystemAccentColorLight1">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight2">#ffd52a</ui:Color>
                             <ui:Color x:Key="SystemAccentColorLight3">#ffd52a</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorBackgroundMask">#ffd52a</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorBackgroundMaskTransparent">#00ffd52a</ui:Color>
                             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent"
                                              Color="#00FFFFFF" />
                             <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent"
@@ -405,6 +407,8 @@
                             <ui:Color x:Key="SystemAccentColorDark1">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark2">#693758</ui:Color>
                             <ui:Color x:Key="SystemAccentColorDark3">#693758</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorBackgroundMask">#693758</ui:Color>
+                            <ui:Color x:Key="SystemAccentColorBackgroundMaskTransparent">#00693758</ui:Color>
                             <SolidColorBrush x:Key="SolidColorBrushForegroundTransparent"
                                              Color="#00000000" />
                             <SolidColorBrush x:Key="SolidColorBrushBackgroundTransparent"

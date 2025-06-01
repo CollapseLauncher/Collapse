@@ -184,14 +184,35 @@ namespace CollapseLauncher
             });
         }
 
-        private async Task DownloadBackgroundImage(CancellationToken Token)
+        private async Task DownloadBackgroundImage(CancellationToken token)
         {
             // Get and set the current path of the image
             string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
             string backgroundFileName = Path.GetFileName(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
             LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal =  Path.Combine(backgroundFolder, backgroundFileName);
             SetAndSaveConfigValue("CurrentBackground", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
+            var currentProperty = GamePropertyVault.GetCurrentGameProperty();
 
+            if (!currentProperty.IsPlugin)
+            {
+                await DownloadNonPluginBackgroundImage(backgroundFolder, currentProperty, token);
+                return;
+            }
+
+            // TODO: Handle plugin background download.
+            await DownloadPluginBackgroundImage(backgroundFolder, currentProperty, token);
+        }
+
+        private async Task DownloadPluginBackgroundImage(string             backgoundFolder,
+                                                         GamePresetProperty currentProperty,
+                                                         CancellationToken  token)
+        {
+        }
+
+        private async Task DownloadNonPluginBackgroundImage(string             backgroundFolder,
+                                                            GamePresetProperty currentProperty,
+                                                            CancellationToken  token)
+        {
             // Check if the background folder exist
             if (!Directory.Exists(backgroundFolder))
                 Directory.CreateDirectory(backgroundFolder);
@@ -201,22 +222,21 @@ namespace CollapseLauncher
 
             // Start downloading the background image
             var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
-
             if (isDownloaded)
             {
                 BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                 {
-                                                                     IsFirstStartup = false;
-                                                                     ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                 }, false, false, true);
+                                                                            {
+                                                                                IsFirstStartup = false;
+                                                                                ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                                            }, false, false, true);
                 return;
             }
-            
+
         #nullable enable
             string? tempImage = null;
             var lastBgCfg = "lastBg-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameName +
-                               "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
-            
+                            "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
+
             // Check if the last background image exist, then use that temporarily instead
             var lastGameBackground = GetAppConfigValue(lastBgCfg).ToString();
             if (!string.IsNullOrEmpty(lastGameBackground))
@@ -226,17 +246,17 @@ namespace CollapseLauncher
                     tempImage = lastGameBackground;
                 }
             }
-            
+
             // If the file is not downloaded, use template image first, then download the image
-            GameNameType? currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion?.GameType;
+            GameNameType? currentGameType = currentProperty.GameVersion?.GameType;
             tempImage ??= currentGameType switch
-            {
-                GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
-                GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
-                GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
-                GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
-                _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
-            };
+                          {
+                              GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
+                              GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
+                              GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
+                              GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
+                              _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
+                          };
             BackgroundImgChanger.ChangeBackground(tempImage, () =>
                                                              {
                                                                  IsFirstStartup = false;
@@ -245,16 +265,17 @@ namespace CollapseLauncher
             if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
                                                                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
                                                                        imgFileInfo,
-                                                                       Token))
+                                                                       false,
+                                                                       token))
             {
                 BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                {
-                    IsFirstStartup = false;
-                    ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                }, false, true, true);
+                                                                            {
+                                                                                IsFirstStartup = false;
+                                                                                ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                                            }, false, true, true);
                 SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
             }
-        #nullable disable
+        #nullable restore
         }
 
         private async Task FinalizeLoadRegion(string gameName, string gameRegion)
