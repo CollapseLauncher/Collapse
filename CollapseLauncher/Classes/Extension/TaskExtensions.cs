@@ -171,21 +171,26 @@ namespace CollapseLauncher.Extension
             throw new TimeoutException("The operation has timed out!");
         }
 
+        internal static Guid RegisterCancelToken(this IPlugin pluginInstance, CancellationToken token)
+        {
+            Guid guid = Guid.CreateVersion7();
+            token.Register(() =>
+            {
+                pluginInstance.CancelAsync(in guid);
+            });
+
+            return guid;
+        }
+
         internal static async Task InitPluginComAsync<T>(this T initializableInterface, IPlugin pluginInstance, CancellationToken token)
             where T : class
         {
             ArgumentNullException.ThrowIfNull(pluginInstance, nameof(pluginInstance));
 
-            Guid pluginAsyncCancelToken = Guid.CreateVersion7();
-            token.Register(() =>
-            {
-                pluginInstance.CancelAsync(in pluginAsyncCancelToken);
-            });
-
             IInitializableTask initiableTask = GetInitializableTask(initializableInterface);
 
             int returnCode = 0;
-            Task initTask = initiableTask.InitAsync(in pluginAsyncCancelToken, retCode => returnCode = retCode).WaitFromHandle();
+            Task initTask = initiableTask.InitAsync(pluginInstance.RegisterCancelToken(token), retCode => returnCode = retCode).WaitFromHandle();
             await initTask;
 
             if (initTask.IsCompletedSuccessfully)

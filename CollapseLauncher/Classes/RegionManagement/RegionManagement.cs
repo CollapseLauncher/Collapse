@@ -186,27 +186,13 @@ namespace CollapseLauncher
 
         private async Task DownloadBackgroundImage(CancellationToken token)
         {
+            var currentProperty = GamePropertyVault.GetCurrentGameProperty();
             // Get and set the current path of the image
             string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
             string backgroundFileName = Path.GetFileName(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
-            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal =  Path.Combine(backgroundFolder, backgroundFileName);
+            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = Path.Combine(backgroundFolder, backgroundFileName);
             SetAndSaveConfigValue("CurrentBackground", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
-            var currentProperty = GamePropertyVault.GetCurrentGameProperty();
-
-            if (!currentProperty.IsPlugin)
-            {
-                await DownloadNonPluginBackgroundImage(backgroundFolder, currentProperty, token);
-                return;
-            }
-
-            // TODO: Handle plugin background download.
-            await DownloadPluginBackgroundImage(backgroundFolder, currentProperty, token);
-        }
-
-        private async Task DownloadPluginBackgroundImage(string             backgoundFolder,
-                                                         GamePresetProperty currentProperty,
-                                                         CancellationToken  token)
-        {
+            await DownloadNonPluginBackgroundImage(backgroundFolder, currentProperty, token);
         }
 
         private async Task DownloadNonPluginBackgroundImage(string             backgroundFolder,

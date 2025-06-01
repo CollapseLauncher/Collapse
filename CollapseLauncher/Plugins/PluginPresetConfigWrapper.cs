@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
@@ -110,14 +111,7 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
     public async Task InitializeAsync(CancellationToken token = default)
     {
         int returnCode = 0;
-        Guid cancelToken = Guid.CreateVersion7();
-
-        token.Register(() =>
-        {
-            _plugin.CancelAsync(in cancelToken);
-        });
-
-        await _config.InitAsync(in cancelToken, ret => returnCode = ret).WaitFromHandle();
+        await _config.InitAsync(_plugin.RegisterCancelToken(token), ret => returnCode = ret).WaitFromHandle();
         
         if (returnCode != 0)
         {

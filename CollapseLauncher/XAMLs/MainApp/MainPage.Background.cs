@@ -192,8 +192,9 @@ public partial class MainPage : Page
             {
                 gameLauncherApi.GameBackgroundImgLocal = BGPath;
             }
-            // If it's still not, then check if API gives any background
-            else if (isAPIBackgroundAvailable)
+            // If it's still not, then check if API gives any background. Anyway, also ignore if the provided API is the plugin ones.
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
+            else if (!gameLauncherApi.IsPlugin && isAPIBackgroundAvailable)
             {
                 try
                 {
@@ -208,7 +209,7 @@ public partial class MainPage : Page
                 }
             }
             // IF ITS STILL NOT THERE, then use fallback game poster, IF ITS STILL NOT THEREEEE!! use paimon cute deadge pic :)
-            else
+            else if (!gameLauncherApi.IsPlugin)
             {
                 gameLauncherApi.GameBackgroundImgLocal = posterBg;
             }
