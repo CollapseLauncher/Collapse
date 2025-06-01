@@ -33,7 +33,7 @@ internal class PluginLauncherApiWrapper : ILauncherApi
 
         _plugin             = plugin;
         _pluginPresetConfig = presetConfig;
-        // _pluginGameManager  = presetConfig.PluginGameManager;
+        _pluginGameManager  = presetConfig.PluginGameManager;
         _pluginMediaApi     = presetConfig.PluginMediaApi;
         _pluginNewsApi      = presetConfig.PluginNewsApi;
     }
@@ -53,7 +53,6 @@ internal class PluginLauncherApiWrapper : ILauncherApi
     public HoYoPlayGameInfoField? LauncherGameInfoField { get; } = new();
     public LauncherGameNews       LauncherGameNews      { get; } = new();
     public RegionResourceProp     LauncherGameResource  => throw new NotImplementedException();
-
 
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();
@@ -90,8 +89,13 @@ internal class PluginLauncherApiWrapper : ILauncherApi
 
     private Task[] GetApiInitTasks(ActionOnTimeOutRetry? actionOnTimeoutRetry, CancellationToken cancelToken)
     {
-        Task[] tasks = new Task[3];
-        tasks[0] = Task.CompletedTask; // Placeholder for the IGameManager.InitAsync() task, if needed.
+        // GameManager initialization
+        ActionTimeoutTaskCallback retryGameManager = innerToken => _pluginGameManager.InitPluginComAsync(_plugin, innerToken);
+        Task initGameManagerTask = retryGameManager.WaitForRetryAsync(LauncherApiBase.ExecutionTimeout,
+                                                                      LauncherApiBase.ExecutionTimeoutStep,
+                                                                      LauncherApiBase.ExecutionTimeoutAttempt,
+                                                                      actionOnTimeoutRetry,
+                                                                      cancelToken);
 
         // Media API initialization
         ActionTimeoutTaskCallback retryMediaApi = innerToken => _pluginMediaApi.InitPluginComAsync(_plugin, innerToken);
@@ -100,7 +104,6 @@ internal class PluginLauncherApiWrapper : ILauncherApi
                                                                 LauncherApiBase.ExecutionTimeoutAttempt,
                                                                 actionOnTimeoutRetry,
                                                                 cancelToken);
-        tasks[1] = initMediaApiTask;
 
         // News API initialization
         ActionTimeoutTaskCallback retryCallback = innerToken => _pluginNewsApi.InitPluginComAsync(_plugin, innerToken);
@@ -109,8 +112,8 @@ internal class PluginLauncherApiWrapper : ILauncherApi
                                                            LauncherApiBase.ExecutionTimeoutAttempt,
                                                            actionOnTimeoutRetry,
                                                            cancelToken);
-        tasks[2] = initNewsApi;
-        return tasks;
+
+        return [initGameManagerTask, initMediaApiTask, initNewsApi];
     }
 
     protected virtual void Dispose(bool disposing)
