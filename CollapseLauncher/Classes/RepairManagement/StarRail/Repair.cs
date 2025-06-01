@@ -122,9 +122,17 @@ namespace CollapseLauncher
             }
             else
             {
-                // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
-                LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                try
+                {
+                    // Start asset download task
+                    await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
+                    LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                }
+                catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
+                {
+                    LogWriteLine($"URL for asset {asset.AssetIndex.N} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
+                                 $"\t URL: {asset.AssetIndex.GetRemoteURL()}", LogType.Warning, true);
+                }
             }
 
             // Pop repair asset display entry
