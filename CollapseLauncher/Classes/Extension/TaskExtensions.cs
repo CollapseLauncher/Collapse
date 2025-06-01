@@ -59,6 +59,8 @@ namespace CollapseLauncher.Extension
 
                     ActionTimeoutTaskCallback delegateCallback = funcCallback();
                     await delegateCallback(consolidatedToken.Token).ConfigureAwait(false);
+
+                    return;
                 }
                 catch (OperationCanceledException) when (fromToken.IsCancellationRequested) { throw; }
                 catch (Exception ex)
