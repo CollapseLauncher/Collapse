@@ -254,7 +254,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? IconImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
+            get => CurrentHttpClient == null ? field : ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
             init;
         }
 
@@ -262,7 +262,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? IconImgHover
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
+            get => CurrentHttpClient == null ? field : ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
             init;
         }
 
@@ -289,7 +289,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? QrImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
+            get => CurrentHttpClient == null ? field : ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
             init;
         }
 

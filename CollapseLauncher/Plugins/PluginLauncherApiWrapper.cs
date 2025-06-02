@@ -22,7 +22,7 @@ using LauncherApiBase = CollapseLauncher.Helper.LauncherApiLoader.LauncherApiBas
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal class PluginLauncherApiWrapper : ILauncherApi
+internal partial class PluginLauncherApiWrapper : ILauncherApi
 {
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
     private readonly IPlugin                   _plugin;
@@ -78,7 +78,10 @@ internal class PluginLauncherApiWrapper : ILauncherApi
             Task[] initTasks = GetApiInitTasks(onTimeoutRoutine, token);
             await Task.WhenAll(initTasks);
 
-            await ConvertNewsApiData(token);
+            LauncherGameNews.Content = new LauncherGameNewsData();
+
+            await ConvertBackgroundImageEntries(LauncherGameNews.Content, token);
+            await ConvertSocialMediaEntries(LauncherGameNews.Content, token);
 
             await (afterLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
             return true;
@@ -95,101 +98,9 @@ internal class PluginLauncherApiWrapper : ILauncherApi
         }
     }
 
-    private async Task ConvertNewsApiData(CancellationToken token)
+    private static bool IsFileDownloadCompleted(FileInfo fileInfo)
     {
-        LauncherGameNews.Content = new LauncherGameNewsData();
-
-        LauncherBackgroundFlag backgroundFlags = _pluginMediaApi.GetBackgroundFlag();
-        await ConvertNewsBackgroundImageDataEntries(LauncherGameNews.Content, token);
-    }
-
-    private async Task ConvertNewsBackgroundImageDataEntries(LauncherGameNewsData newsData, CancellationToken token)
-    {
-        Guid cancelToken = Guid.CreateVersion7();
-        token.Register(() => _plugin.CancelAsync(in cancelToken));
-
-        // TODO: Handle image sequence format with logo overlay (example: Wuthering Waves)
-        string backgroundFolder     = Path.Combine(LauncherConfig.AppGameImgFolder, "bg");
-        string? firstImageSpritePath = null;
-        string? firstImageSpriteUrl  = null;
-
-        using PluginDisposableMemory<LauncherPathEntry> backgroundEntries = PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetBackgroundEntries);
-        int count = backgroundEntries.Length;
-        for (int i = 0; i < count; i++)
-        {
-            using var entry           = backgroundEntries[i];
-            string    url             = entry.GetPathString();
-            string    fileName        = Path.GetFileNameWithoutExtension(url) + $"_{i}" + Path.GetExtension(url);
-            string    spriteLocalPath = Path.Combine(backgroundFolder, fileName);
-            FileInfo  fileInfo        = new(spriteLocalPath);
-
-            // Use local file as its url and do Copy Over instead.
-            if (url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
-            {
-                // Remove "file://" prefix and normalize the path
-                string localUrl = url.AsSpan()[7..].TrimStart("/\\").ToString().NormalizePath();
-
-                if (string.IsNullOrEmpty(localUrl) || !File.Exists(localUrl))
-                {
-                    continue; // Skip if the file does not exist
-                }
-
-                await using FileStream fromFileStream = new(localUrl, FileMode.Open, FileAccess.Read, FileShare.Read);
-                await using FileStream destCopyOver = fileInfo.Create();
-
-                await fromFileStream.CopyToAsync(destCopyOver, 64 << 10, token).ConfigureAwait(false);
-
-                firstImageSpriteUrl  ??= url;
-                firstImageSpritePath ??= spriteLocalPath;
-                continue; // Skip further processing for local files
-            }
-
-            // Check if the background download is completed
-            if (IsBackgroundImageDownloadCompleted(fileInfo))
-            {
-                firstImageSpriteUrl  ??= url;
-                firstImageSpritePath ??= spriteLocalPath;
-                continue;
-            }
-
-            // Start the download
-            Guid cancelTokenPass = _plugin.RegisterCancelToken(token);
-            await using FileStream destDownload = fileInfo.Create();
-            await _pluginMediaApi.DownloadAssetAsync(entry,
-                                                     destDownload.SafeFileHandle.DangerousGetHandle(),
-                                                     null,
-                                                     in cancelTokenPass).WaitFromHandle();
-
-            SaveFileStamp(fileInfo, destDownload.Length);
-
-            firstImageSpriteUrl  ??= url;
-            firstImageSpritePath ??= spriteLocalPath;
-        }
-
-        // Set props
-        GameBackgroundImg           = firstImageSpriteUrl ?? string.Empty;
-        GameBackgroundImgLocal      = firstImageSpritePath;
-        GameBackgroundSequenceCount = count;
-        GameBackgroundSequenceFps   = _pluginMediaApi.GetBackgroundSpriteFps();
-
-        newsData.Background = new LauncherGameNewsBackground
-        {
-            BackgroundImg = GameBackgroundImg
-        };
-    }
-
-    private static void SaveFileStamp(FileInfo fileInfo, long fileLength)
-    {
-        string  fileNamePrefix = Path.GetFileName(fileInfo.Name);
-        string? fileDir        = Path.GetDirectoryName(fileInfo.FullName);
-
-        string stampFileName = Path.Combine(fileDir ?? string.Empty, fileNamePrefix + $"#{fileLength}");
-        File.WriteAllText(stampFileName, string.Empty); // Create an empty file to mark completion
-    }
-
-    private static bool IsBackgroundImageDownloadCompleted(FileInfo fileInfo)
-    {
-        if (fileInfo.Exists)
+        if (!fileInfo.Exists)
         {
             return false;
         }
@@ -205,16 +116,15 @@ internal class PluginLauncherApiWrapper : ILauncherApi
             return false;
         }
 
-        ReadOnlySpan<char> markFileName = Path.GetFileNameWithoutExtension(firstMarkFile.AsSpan());
-        Span<Range> range = stackalloc Range[2];
-        int lenSplit = markFileName.Split(range, '#', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        Span<Range> range = stackalloc Range[16];
+        int lenSplit = firstMarkFile.Split(range, '#', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-        if (lenSplit != 2)
+        if (lenSplit < 2 || lenSplit > range.Length)
         {
             return false; // Invalid mark file format
         }
 
-        if (!int.TryParse(markFileName[range[1]], out int fileLength))
+        if (!int.TryParse(firstMarkFile[range[..lenSplit][^1]], out int fileLength))
         {
             return false; // Invalid file length in mark file
         }
