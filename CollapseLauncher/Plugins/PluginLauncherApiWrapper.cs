@@ -34,7 +34,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
 
         _plugin             = plugin;
         _pluginPresetConfig = presetConfig;
-        // _pluginGameManager  = presetConfig.PluginGameManager;
+        _pluginGameManager  = presetConfig.PluginGameManager;
         _pluginMediaApi     = presetConfig.PluginMediaApi;
         _pluginNewsApi      = presetConfig.PluginNewsApi;
     }
@@ -133,14 +133,12 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
     private Task[] GetApiInitTasks(ActionOnTimeOutRetry? actionOnTimeoutRetry, CancellationToken cancelToken)
     {
         // GameManager initialization
-        /*
         ActionTimeoutTaskCallback retryGameManager = innerToken => _pluginGameManager.InitPluginComAsync(_plugin, innerToken);
         Task initGameManagerTask = retryGameManager.WaitForRetryAsync(LauncherApiBase.ExecutionTimeout,
                                                                       LauncherApiBase.ExecutionTimeoutStep,
                                                                       LauncherApiBase.ExecutionTimeoutAttempt,
                                                                       actionOnTimeoutRetry,
                                                                       cancelToken);
-        */
 
         // Media API initialization
         ActionTimeoutTaskCallback retryMediaApi = innerToken => _pluginMediaApi.InitPluginComAsync(_plugin, innerToken);
@@ -158,7 +156,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
                                                            actionOnTimeoutRetry,
                                                            cancelToken);
 
-        return [Task.CompletedTask, initMediaApiTask, initNewsApi];
+        return [initGameManagerTask, initMediaApiTask, initNewsApi];
     }
 
     protected virtual void Dispose(bool disposing)
