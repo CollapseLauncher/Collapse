@@ -24,78 +24,6 @@ internal partial class PluginLauncherApiWrapper
     private delegate ref LauncherPathEntry            CreateDataAsPathDelegate();
     private delegate     PluginDisposableMemory<byte> CreateDataAsBufferDelegate();
 
-    private async Task ConvertBackgroundImageEntries(LauncherGameNewsData newsData, CancellationToken token)
-    {
-        // TODO: Handle image sequence format with logo overlay (example: Wuthering Waves)
-        string  backgroundFolder     = Path.Combine(LauncherConfig.AppGameImgFolder, "bg");
-        string? firstImageSpritePath = null;
-        string? firstImageSpriteUrl  = null;
-
-        using PluginDisposableMemory<LauncherPathEntry> backgroundEntries = PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetBackgroundEntries);
-        int count = backgroundEntries.Length;
-        for (int i = 0; i < count; i++)
-        {
-            using var entry           = backgroundEntries[i];
-            string    url             = entry.GetPathString();
-            string    fileName        = Path.GetFileNameWithoutExtension(url) + $"_{i}" + Path.GetExtension(url);
-            string    spriteLocalPath = Path.Combine(backgroundFolder, fileName);
-            FileInfo  fileInfo        = new(spriteLocalPath);
-
-            // Check if the background download is completed
-            if (IsFileDownloadCompleted(fileInfo))
-            {
-                firstImageSpriteUrl  ??= url;
-                firstImageSpritePath ??= spriteLocalPath;
-                continue;
-            }
-
-            // Use local file as its url and do Copy Over instead.
-            if (url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
-            {
-                // Remove "file://" prefix and normalize the path
-                string localUrl = url.AsSpan()[7..].TrimStart("/\\").ToString().NormalizePath();
-
-                if (string.IsNullOrEmpty(localUrl) || !File.Exists(localUrl))
-                {
-                    continue; // Skip if the file does not exist
-                }
-
-                await using FileStream fromFileStream = new(localUrl, FileMode.Open, FileAccess.Read, FileShare.Read);
-                await using FileStream destCopyOver   = fileInfo.Create();
-
-                await fromFileStream.CopyToAsync(destCopyOver, 64 << 10, token).ConfigureAwait(false);
-
-                firstImageSpriteUrl  ??= url;
-                firstImageSpritePath ??= spriteLocalPath;
-                continue; // Skip further processing for local files
-            }
-
-            // Start the download
-            Guid                   cancelTokenPass = _plugin.RegisterCancelToken(token);
-            await using FileStream destDownload    = fileInfo.Create();
-            await _pluginMediaApi.DownloadAssetAsync(entry,
-                                                     destDownload.SafeFileHandle.DangerousGetHandle(),
-                                                     null,
-                                                     in cancelTokenPass).WaitFromHandle();
-
-            SaveFileStamp(fileInfo, destDownload.Length);
-
-            firstImageSpriteUrl  ??= url;
-            firstImageSpritePath ??= spriteLocalPath;
-        }
-
-        // Set props
-        GameBackgroundImg           = firstImageSpriteUrl ?? string.Empty;
-        GameBackgroundImgLocal      = firstImageSpritePath;
-        GameBackgroundSequenceCount = count;
-        GameBackgroundSequenceFps   = _pluginMediaApi.GetBackgroundSpriteFps();
-
-        newsData.Background = new LauncherGameNewsBackground
-        {
-            BackgroundImg = GameBackgroundImg
-        };
-    }
-
     private async Task ConvertSocialMediaEntries(LauncherGameNewsData newsData, CancellationToken token)
     {
         string spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
@@ -139,7 +67,7 @@ internal partial class PluginLauncherApiWrapper
 
             newsData.SocialMedia.Add(new LauncherGameNewsSocialMedia
             {
-                IconId             = "0",
+                IconId             = Guid.CreateVersion7().ToString(),
                 IconImg            = iconUrl,
                 IconImgHover       = iconHoverUrl ?? iconUrl,
                 Title              = iconTitle,
@@ -219,8 +147,15 @@ internal partial class PluginLauncherApiWrapper
                                                 CancellationToken        token)
     {
         using LauncherPathEntry urlData = urlCreate.Invoke();
-        string                  dataUrl = urlData.GetPathString();
+        string?                 dataUrl = urlData.GetPathString();
 
+        return await CopyOverUrlData(outputDir, dataUrl, token);
+    }
+
+    private async Task<string?> CopyOverUrlData(string            outputDir,
+                                                string?           dataUrl,
+                                                CancellationToken token)
+    {
         if (string.IsNullOrEmpty(dataUrl))
         {
             return null;
@@ -241,7 +176,7 @@ internal partial class PluginLauncherApiWrapper
         await using FileStream fileStream = fileInfo.Create();
 
         Guid cancelToken = _plugin.RegisterCancelToken(token);
-        await _pluginNewsApi.DownloadAssetAsync(urlData,
+        await _pluginNewsApi.DownloadAssetAsync(dataUrl,
                                                 fileStream.SafeFileHandle.DangerousGetHandle(),
                                                 null,
                                                 in cancelToken).WaitFromHandle();

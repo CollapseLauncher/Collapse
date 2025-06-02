@@ -2,14 +2,11 @@
 using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
-using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
-using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
 using System.Linq;
@@ -82,6 +79,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
 
             await ConvertBackgroundImageEntries(LauncherGameNews.Content, token);
             await ConvertSocialMediaEntries(LauncherGameNews.Content, token);
+            await ConvertNewsAndCarouselEntries(LauncherGameNews.Content, token);
 
             await (afterLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
             return true;

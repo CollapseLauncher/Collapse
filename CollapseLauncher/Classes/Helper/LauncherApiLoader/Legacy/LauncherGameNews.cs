@@ -225,7 +225,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? CarouselImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
+            get => CurrentHttpClient == null ? field : ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, !IsImageUrlHashable, InnerToken ?? CancellationToken.None);
             init;
         }
 
