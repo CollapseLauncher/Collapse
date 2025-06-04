@@ -58,7 +58,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or set the API properties
         /// </summary>
-        RegionResourceProp GameApiProp { get; set; }
+        RegionResourceProp? GameApiProp { get; set; }
 
         /// <summary>
         /// Returns the type of the game

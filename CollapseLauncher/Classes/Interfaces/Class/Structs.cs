@@ -61,7 +61,7 @@ namespace CollapseLauncher
         public GameVendorProp(string gamePath, string execName, GameVendorType fallbackVendorType)
         {
             // Set the fallback value of the Vendor Type first (in case the game isn't yet installed)
-            VendorType = fallbackVendorType;
+            VendorType = Enum.GetName(fallbackVendorType);
 
             // Concat the vendor app info file and return if it doesn't exist
             string infoVendorPath = Path.Combine(gamePath, $"{execName}_Data\\app.info");
@@ -87,11 +87,11 @@ namespace CollapseLauncher
             }
 
             // Assign the values
-            VendorType = _VendorType;
+            VendorType = Enum.GetName(_VendorType);
             GameName = infoEntries[1];
         }
 
-        public GameVendorType? VendorType { get; set; }
+        public string? VendorType { get; set; }
         public string? GameName { get; set; }
     }
 

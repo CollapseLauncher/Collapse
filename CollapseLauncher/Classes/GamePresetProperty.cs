@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
@@ -12,7 +13,6 @@ using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
-using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.Extensions.Logging;
@@ -20,6 +20,7 @@ using Microsoft.UI.Xaml;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable CheckNamespace
@@ -30,66 +31,72 @@ namespace CollapseLauncher
 {
     internal sealed partial class GamePresetProperty : IDisposable
     {
-        internal GamePresetProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+        internal static GamePresetProperty Create(UIElement uiElementParent, RegionResourceProp? apiResourceProp, string gameName, string gameRegion)
         {
-            if (LauncherMetadataHelper.LauncherMetadataConfig == null)
-            {
-                return;
-            }
-
-            var gamePreset = LauncherMetadataHelper.LauncherMetadataConfig[gameName]?[gameRegion];
-
+            var gamePreset = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[gameRegion];
             if (gamePreset == null)
             {
                 throw new NullReferenceException($"Cannot find game with name: {gameName} and region: {gameRegion} on the currently loaded metadata config!");
             }
 
-            ApiResourceProp = apiResourceProp.Copy();
+            if (gamePreset.GameType == GameNameType.Plugin &&
+                gamePreset is not PluginPresetConfigWrapper)
+            {
+                throw new InvalidCastException($"[GamePresetProperty.Ctor] The game preset with name: {gameName} and region: {gameRegion} is not a valid PluginPresetConfigWrapper instance!");
+            }
+
+            GamePresetProperty property = new GamePresetProperty();
+
+            property.ApiResourceProp = apiResourceProp?.Copy();
             switch (gamePreset.GameType)
             {
                 case GameNameType.Honkai:
-                    GameVersion = new GameTypeHonkaiVersion(ApiResourceProp, gameName, gameRegion);
-                    GameSettings = new HonkaiSettings(GameVersion);
-                    GameCache = new HonkaiCache(uiElementParent, GameVersion);
-                    GameRepair = new HonkaiRepair(uiElementParent, GameVersion, GameCache, GameSettings);
-                    GameInstall = new HonkaiInstall(uiElementParent, GameVersion, GameCache);
+                    property.GameVersion  = new GameTypeHonkaiVersion(apiResourceProp, gameName, gameRegion);
+                    property.GameSettings = new HonkaiSettings(property.GameVersion);
+                    property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion);
+                    property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
+                    property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameCache);
                     break;
                 case GameNameType.StarRail:
-                    GameVersion = new GameTypeStarRailVersion(ApiResourceProp, gameName, gameRegion);
-                    GameSettings = new StarRailSettings(GameVersion);
-                    GameCache = new StarRailCache(uiElementParent, GameVersion);
-                    GameRepair = new StarRailRepair(uiElementParent, GameVersion);
-                    GameInstall = new StarRailInstall(uiElementParent, GameVersion);
+                    property.GameVersion  = new GameTypeStarRailVersion(apiResourceProp, gameName, gameRegion);
+                    property.GameSettings = new StarRailSettings(property.GameVersion);
+                    property.GameCache    = new StarRailCache(uiElementParent, property.GameVersion);
+                    property.GameRepair   = new StarRailRepair(uiElementParent, property.GameVersion);
+                    property.GameInstall  = new StarRailInstall(uiElementParent, property.GameVersion);
                     break;
                 case GameNameType.Genshin:
-                    GameVersion = new GameTypeGenshinVersion(ApiResourceProp, gameName, gameRegion);
-                    GameSettings = new GenshinSettings(GameVersion);
-                    GameCache = null;
-                    GameRepair = new GenshinRepair(uiElementParent, GameVersion, GameVersion.GameApiProp.data?.game?.latest?.decompressed_path ?? "");
-                    GameInstall = new GenshinInstall(uiElementParent, GameVersion);
+                    property.GameVersion = new GameTypeGenshinVersion(apiResourceProp, gameName, gameRegion);
+                    property.GameSettings = new GenshinSettings(property.GameVersion);
+                    property.GameCache = null;
+                    property.GameRepair = new GenshinRepair(uiElementParent, property.GameVersion, property.GameVersion.GameApiProp?.data?.game?.latest?.decompressed_path ?? "");
+                    property.GameInstall = new GenshinInstall(uiElementParent, property.GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    GameVersion = new GameTypeZenlessVersion(ApiResourceProp, gamePreset, gameName, gameRegion);
-                    GameSettings = new ZenlessSettings(GameVersion);
-                    GameCache = new ZenlessCache(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
-                    GameRepair = new ZenlessRepair(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
-                    GameInstall = new ZenlessInstall(uiElementParent, GameVersion, (GameSettings as ZenlessSettings)!);
+                    property.GameVersion = new GameTypeZenlessVersion(apiResourceProp, gamePreset, gameName, gameRegion);
+                    property.GameSettings = new ZenlessSettings(property.GameVersion);
+                    property.GameCache = new ZenlessCache(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);
+                    property.GameRepair = new ZenlessRepair(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);
+                    property.GameInstall = new ZenlessInstall(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);
+                    break;
+                case GameNameType.Plugin:
+                    PluginPresetConfigWrapper pluginPresetConfig = (PluginPresetConfigWrapper)gamePreset;
+                    PluginGameVersionWrapper  pluginGameVersion  = new PluginGameVersionWrapper(pluginPresetConfig);
+
+                    property.GameVersion  = pluginGameVersion;
+                    property.GameSettings = SettingsBase.CreateBaseFrom(pluginGameVersion);
+                    property.GameCache    = null;
+                    property.GameRepair   = null;
+                    property.GameInstall  = new PluginGameInstallWrapper(uiElementParent, pluginPresetConfig);
                     break;
                 case GameNameType.Unknown:
                 default:
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {gamePreset.GameType} ({gamePreset.ProfileName} - {gamePreset.ZoneName}) is not supported!");
             }
 
-            GamePlaytime = new Playtime(GameVersion, GameSettings);
-            GamePropLogger = ILoggerHelper.GetILogger($"GameProp: {GameVersion.GameName} - {GameVersion.GameRegion}");
+            property.GamePlaytime  = new Playtime(property.GameVersion, property.GameSettings);
+            property.GamePropLogger = ILoggerHelper.GetILogger($"GameProp: {gameName} - {gameRegion}");
 
-            SentryHelper.CurrentGameCategory   = GameVersion.GameName;
-            SentryHelper.CurrentGameRegion     = GameVersion.GameRegion;
-            SentryHelper.CurrentGameLocation   = GameVersion.GameDirPath;
-            SentryHelper.CurrentGameInstalled  = GameVersion.IsGameInstalled();
-            SentryHelper.CurrentGameUpdated    = GameVersion.IsGameVersionMatch();
-            SentryHelper.CurrentGameHasPreload = GameVersion.IsGameHasPreload();
-            SentryHelper.CurrentGameHasDelta   = GameVersion.IsGameHasDeltaPatch();
+            return property;
         }
 
         internal bool                 IsPlugin        => GamePreset is PluginPresetConfigWrapper;

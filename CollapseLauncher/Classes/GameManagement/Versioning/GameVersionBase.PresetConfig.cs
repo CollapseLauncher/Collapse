@@ -13,8 +13,8 @@ namespace CollapseLauncher.GameManagement.Versioning
     internal partial class GameVersionBase
     {
         #region Game Config Properties
-        public         string         GameName       { get; set; }
-        public         string         GameRegion     { get; set; }
+        public virtual string         GameName       { get; set; }
+        public virtual string         GameRegion     { get; set; }
         public virtual GameVendorProp VendorTypeProp { get; private set; }
         public virtual GameNameType   GameType
         {

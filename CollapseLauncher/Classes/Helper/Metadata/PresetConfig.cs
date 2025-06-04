@@ -65,7 +65,7 @@ namespace CollapseLauncher.Helper.Metadata
     {
         miHoYo,
         Cognosphere,
-        Plugin
+        CollapsePlugin
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter<LauncherType>))]
@@ -329,7 +329,7 @@ namespace CollapseLauncher.Helper.Metadata
         public string? InternalGameNameFolder { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
-        public string? InternalGameNameInConfig { get; init; }
+        public virtual string? InternalGameNameInConfig { get; init; }
 
         [JsonConverter(typeof(ServeV3StringConverter))]
         public virtual string? GameDirectoryName { get; init; }
@@ -507,8 +507,8 @@ namespace CollapseLauncher.Helper.Metadata
         public string ConfigRegistryLocation =>
             string.Format(PrefixRegGameConfig, VendorType, InternalGameNameInConfig);
 
-        public string? ActualGameDataLocation { get; set; }
-        public int     HashID                 { get; set; }
+        public         string? ActualGameDataLocation { get; set; }
+        public virtual int     HashID                 { get; set; }
 
         #endregion
 

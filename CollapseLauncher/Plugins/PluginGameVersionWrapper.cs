@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
@@ -8,13 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using GameVersion = CollapseLauncher.GameVersion;
 using PluginGameVersion = Hi3Helper.Plugin.Core.Management.GameVersion;
 
 #nullable enable
 namespace CollapseLauncher.Plugins;
 
-internal class PluginGameVersionWrapper : IGameVersion
+internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
 {
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
     private readonly IGameManager              _pluginGameManager;
@@ -26,41 +26,71 @@ internal class PluginGameVersionWrapper : IGameVersion
 
         _pluginPresetConfig = presetConfig;
         _pluginGameManager  = presetConfig.PluginGameManager;
+
+        // Initialize INI Prop ahead of other operations
+        // ReSharper disable once VirtualMemberCallInConstructor
+        InitializeIniProp();
+
+        // Initialize the Game Path into the plugin
+        _pluginGameManager.SetGamePath(base.GameDirPath);
+        _pluginGameManager.LoadConfig();
     }
 
-    public string GameName => _pluginPresetConfig.GameName ?? throw new NullReferenceException("Game Name in Plugin Preset Config cannot be null!");
-    public string GameRegion => _pluginPresetConfig.ZoneName ?? throw new NullReferenceException("Game Region/Zone Name in Plugin Preset Config cannot be null!");
+    public override void Reinitialize()
+    {
+        // Initialize the Game Path into the plugin
+        _pluginGameManager.SetGamePath(base.GameDirPath);
+        _pluginGameManager.LoadConfig();
 
-    public IniSection? GameIniVersionSection => null;
-    public IniSection? GameIniProfileSection => null;
+        base.Reinitialize();
+    }
 
-    public string GameDirPath
+    public override string GameName
+    {
+        get => _pluginPresetConfig.GameName ??
+                       throw new NullReferenceException("Game Name in Plugin Preset Config cannot be null!");
+    }
+
+    public override string GameRegion => _pluginPresetConfig.ZoneName ?? throw new NullReferenceException("Game Region/Zone Name in Plugin Preset Config cannot be null!");
+
+    public override IniSection? GameIniVersionSection => null;
+    // public override IniSection GameIniProfileSection => null;
+
+    public override string GameDirPath
     {
         get => _pluginGameManager.GetGamePath() ?? string.Empty;
-        set => _pluginGameManager.SetGamePath(value);
+        set
+        {
+            _pluginGameManager.SetGamePath(value);
+            base.GameDirPath = value; // Ensure the path is set in the base class as well
+        }
     }
 
-    public PresetConfig GamePreset => _pluginPresetConfig;
+    public override PresetConfig GamePreset => _pluginPresetConfig;
 
-    public RegionResourceProp GameApiProp { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    // public override RegionResourceProp? GameApiProp { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    public GameNameType GameType => GameNameType.Plugin;
+    public override GameNameType GameType => GameNameType.Plugin;
 
-    public string GameDirAppDataPath => _pluginPresetConfig.GameAppDataPath ?? string.Empty;
-    public string GameOutputLogName  => _pluginPresetConfig.GameLogFileName ?? string.Empty;
+    public override string GameDirAppDataPath => _pluginPresetConfig.GameAppDataPath ?? string.Empty;
+    public override string GameOutputLogName  => _pluginPresetConfig.GameLogFileName ?? string.Empty;
 
-    public GameVendorProp VendorTypeProp => _vendorTypeProp ??= new GameVendorProp();
+    public override GameVendorProp VendorTypeProp => _vendorTypeProp ??= new GameVendorProp
+    {
+        GameName   = _pluginPresetConfig.GameName,
+        VendorType = _pluginPresetConfig.VendorTypeInString
+    };
 
-    public ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement) => ValueTask.FromResult(true);
+    public override ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement) => ValueTask.FromResult(true);
 
-    public string? FindGameInstallationPath(string path) => null;
+    public override string? FindGameInstallationPath(string path) => null;
 
-    public DeltaPatchProperty? GetDeltaPatchInfo() => null;
+    public override DeltaPatchProperty? GetDeltaPatchInfo() => null;
 
-    public List<RegionResourceVersion>  GetGameLatestZip(GameInstallStateEnum gameState) => [];
-    public List<RegionResourcePlugin>?  GetGamePluginZip()                               => null;
-    public List<RegionResourceVersion>? GetGamePreloadZip()                              => null;
-    public List<RegionResourcePlugin>?  GetGameSdkZip()                                  => null;
+    public override List<RegionResourceVersion>  GetGameLatestZip(GameInstallStateEnum gameState) => [];
+    public override List<RegionResourcePlugin>?  GetGamePluginZip()                               => null;
+    public override List<RegionResourceVersion>? GetGamePreloadZip()                              => null;
+    public override List<RegionResourcePlugin>?  GetGameSdkZip()                                  => null;
 
 
     // ReSharper disable ConvertIfStatementToReturnStatement
@@ -89,7 +119,7 @@ internal class PluginGameVersionWrapper : IGameVersion
     }
     // ReSharper enable ConvertIfStatementToReturnStatement
 
-    public GameVersion? GetGameExistingVersion()
+    public override GameVersion? GetGameExistingVersion()
     {
         _pluginGameManager.GetCurrentGameVersion(out PluginGameVersion gameVersion);
         if (gameVersion == PluginGameVersion.Empty)
@@ -100,7 +130,7 @@ internal class PluginGameVersionWrapper : IGameVersion
         return GameVersion.From(gameVersion);
     }
 
-    public GameVersion? GetGameVersionApi()
+    public override GameVersion? GetGameVersionApi()
     {
         _pluginGameManager.GetApiGameVersion(out PluginGameVersion gameVersion);
         if (gameVersion == PluginGameVersion.Empty)
@@ -111,7 +141,7 @@ internal class PluginGameVersionWrapper : IGameVersion
         return GameVersion.From(gameVersion);
     }
 
-    public GameVersion? GetGameVersionApiPreload()
+    public override GameVersion? GetGameVersionApiPreload()
     {
         _pluginGameManager.GetApiPreloadGameVersion(out PluginGameVersion gameVersion);
 
@@ -123,34 +153,42 @@ internal class PluginGameVersionWrapper : IGameVersion
         return GameVersion.From(gameVersion);
     }
 
-    public void InitializeIniProp()
+    /*
+    public override void InitializeIniProp()
+    {
+        // NOP
+    }
+    */
+
+    public override bool IsForceRedirectToSophon() => false;
+    public override bool IsGameHasDeltaPatch()     => false;
+
+    public override bool IsGameHasPreload()   => _pluginGameManager.IsGameHasPreload();
+    public override bool IsGameInstalled()    => _pluginGameManager.IsGameInstalled();
+    public override bool IsGameVersionMatch() => GetGameExistingVersion() == GetGameVersionApi();
+
+    public override ValueTask<bool> IsPluginVersionsMatch() => ValueTask.FromResult(true);
+    public override ValueTask<bool> IsSdkVersionsMatch()    => ValueTask.FromResult(true);
+
+    /*
+    public override void Reinitialize()
+    {
+        // NOP
+    }
+    */
+
+    public override void UpdateGameChannels(bool saveValue = true)
     {
         // NOP
     }
 
-    public bool IsForceRedirectToSophon() => false;
-    public bool IsGameHasDeltaPatch()     => false;
-
-    public bool IsGameHasPreload()   => _pluginGameManager.IsGameHasPreload();
-    public bool IsGameInstalled()    => _pluginGameManager.IsGameInstalled();
-    public bool IsGameVersionMatch() => GetGameExistingVersion() == GetGameVersionApi();
-
-    public ValueTask<bool> IsPluginVersionsMatch() => ValueTask.FromResult(true);
-    public ValueTask<bool> IsSdkVersionsMatch()    => ValueTask.FromResult(true);
-
-    void IGameVersion.Reinitialize()
+    public override void UpdateGamePath(string? path, bool saveValue = true)
     {
-        // NOP
+        _pluginGameManager.SetGamePath(path ?? throw new ArgumentNullException(nameof(path), "path cannot be null!"), saveValue);
+        base.UpdateGamePath(path, saveValue);
     }
 
-    void IGameVersion.UpdateGameChannels(bool saveValue)
-    {
-        // NOP
-    }
-
-    public void UpdateGamePath(string? path, bool saveValue) => _pluginGameManager.SetGamePath(path ?? throw new ArgumentNullException(nameof(path), "path cannot be null!"), saveValue);
-
-    public void UpdateGameVersion(GameVersion? version, bool saveValue)
+    public override void UpdateGameVersion(GameVersion? version, bool saveValue = true)
     {
         if (!version.HasValue)
         {
@@ -169,14 +207,14 @@ internal class PluginGameVersionWrapper : IGameVersion
         _pluginGameManager.SetGamePath(currentPath, saveValue);
     }
 
-    public void UpdateGameVersionToLatest(bool saveValue) => UpdateGameVersion(GetGameVersionApi(), saveValue);
+    public override void UpdateGameVersionToLatest(bool saveValue = true) => UpdateGameVersion(GetGameVersionApi(), saveValue);
 
-    public void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue)
+    public override void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue = true)
     {
         // NOP
     }
 
-    public void UpdateSdkVersion(GameVersion? version, bool saveValue)
+    public override void UpdateSdkVersion(GameVersion? version, bool saveValue = true)
     {
         // NOP
     }

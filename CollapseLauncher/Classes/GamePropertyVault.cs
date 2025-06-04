@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 // ReSharper disable PartialTypeWithSinglePart
@@ -57,7 +58,7 @@ namespace CollapseLauncher.Statics
             throw new KeyNotFoundException($"Cached region with Hash ID: {hashId} was not found in the vault!");
         }
 
-        public static async Task LoadGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+        public static void LoadGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
                 .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false)
@@ -66,7 +67,7 @@ namespace CollapseLauncher.Statics
                 CurrentGameHashID = gamePreset.HashID;
             }
 
-            await Task.Run(() => RegisterGameProperty(uiElementParent, apiResourceProp, gameName, gameRegion));
+            RegisterGameProperty(uiElementParent, apiResourceProp, gameName, gameRegion);
         }
 
         private static void RegisterGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
@@ -81,23 +82,38 @@ namespace CollapseLauncher.Statics
                 return;
             }
 
-            CleanupUnusedGameProperty();
+            // CleanupUnusedGameProperty();
             if (Vault.TryGetValue(gamePreset.HashID, out GamePresetProperty? value))
             {
             #if DEBUG
                 Logger.LogWriteLine($"[GamePropertyVault] Game property has been cached by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
             #endif
                 value.GameVersion?.Reinitialize();
+                UpdateSentryState(value);
                 return;
             }
 
-            GamePresetProperty property = new GamePresetProperty(uiElementParent, apiResourceProp, gameName, gameRegion);
+            GamePresetProperty property = GamePresetProperty.Create(uiElementParent, apiResourceProp, gameName, gameRegion);
+            UpdateSentryState(property);
             _ = Vault.TryAdd(gamePreset.HashID, property);
         #if DEBUG
             Logger.LogWriteLine($"[GamePropertyVault] Creating & caching game property by Hash ID: {gamePreset.HashID}", LogType.Debug, true);
         #endif
         }
 
+        internal static void UpdateSentryState(GamePresetProperty property)
+        {
+            SentryHelper.CurrentGameCategory   = property.GameVersion?.GameName ?? string.Empty;
+            SentryHelper.CurrentGameRegion     = property.GameVersion?.GameRegion ?? string.Empty;
+            SentryHelper.CurrentGameLocation   = property.GameVersion?.GameDirPath ?? string.Empty;
+            SentryHelper.CurrentGameInstalled  = property.GameVersion?.IsGameInstalled() ?? false;
+            SentryHelper.CurrentGameUpdated    = property.GameVersion?.IsGameVersionMatch() ?? false;
+            SentryHelper.CurrentGameHasPreload = property.GameVersion?.IsGameHasPreload() ?? false;
+            SentryHelper.CurrentGameHasDelta   = property.GameVersion?.IsGameHasDeltaPatch() ?? false;
+            SentryHelper.CurrentGameIsPlugin   = property.GamePreset.GameType == GameNameType.Plugin;
+        }
+
+        /*
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private static async void CleanupUnusedGameProperty()
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -117,6 +133,7 @@ namespace CollapseLauncher.Statics
                 Vault.Remove(key, out _);
             }
         }
+        */
 
         public static async Task AttachNotificationForCurrentGame(int hashID = int.MinValue)
         {

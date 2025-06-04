@@ -9,7 +9,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 {
     internal partial class GameVersionBase : IGameVersion
     {
-        protected GameVersionBase(RegionResourceProp gameRegionProp, string gameName, string gameRegion)
+        protected GameVersionBase(RegionResourceProp? gameRegionProp, string gameName, string gameRegion)
         {
             GameApiProp = gameRegionProp;
             GameName    = gameName;
@@ -19,5 +19,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             // ReSharper disable once VirtualMemberCallInConstructor
             InitializeIniProp();
         }
+
+        protected GameVersionBase() { }
     }
 }

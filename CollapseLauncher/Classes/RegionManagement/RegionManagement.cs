@@ -117,7 +117,7 @@ namespace CollapseLauncher
                     }
                     
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
-                    await FinalizeLoadRegion(gameName, gameRegion);
+                    await FinalizeLoadRegion(gameName, gameRegion, token);
                     _ = ChangeBackgroundImageAsRegionAsync();
                     IsLoadRegionComplete = true;
 
@@ -264,7 +264,7 @@ namespace CollapseLauncher
         #nullable restore
         }
 
-        private async Task FinalizeLoadRegion(string gameName, string gameRegion)
+        private async Task FinalizeLoadRegion(string gameName, string gameRegion, CancellationToken token)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
@@ -272,21 +272,24 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
-            await LoadGameStaticsByGameType(preset, gameName, gameRegion);
+            await LoadGameStaticsByGameType(preset, gameName, gameRegion, token);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
             // Init NavigationPanel Items
-            await Task.Run(() => InitializeNavigationItems());
+            await Task.Run(() => InitializeNavigationItems(), token);
         }
 
-        private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
+        private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion, CancellationToken token)
         {
             // Attach notification for the current game and dispose statics
             await GamePropertyVault.AttachNotificationForCurrentGame();
-            await Task.Run(DisposeAllPageStatics);
+            await Task.Run(DisposeAllPageStatics, token);
 
             // Load region property (and potentially, cached one)
-            await GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
+            GamePropertyVault.LoadGameProperty(this,
+                                                     preset.GameType == GameNameType.Plugin ? null : preset.GameLauncherApi.LauncherGameResource,
+                                                     gameName,
+                                                     gameRegion);
 
             // Spawn Region Notification
             _ = SpawnRegionNotification(preset.ProfileName);

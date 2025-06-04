@@ -15,7 +15,7 @@ namespace CollapseLauncher.GameManagement.Versioning
     internal partial class GameVersionBase
     {
         #region Game Region Resource Prop
-        public RegionResourceProp GameApiProp { get; set; }
+        public virtual RegionResourceProp? GameApiProp { get; set; }
 
         // Assign for the Game Delta-Patch properties (if any).
         // If there's no Delta-Patch, then set it to null.
@@ -198,11 +198,11 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Game Version API Methods
-        public GameVersion? GetGameExistingVersion() => GameVersionInstalled;
+        public virtual GameVersion? GetGameExistingVersion() => GameVersionInstalled;
 
-        public GameVersion? GetGameVersionApi() => GameVersionAPI;
+        public virtual GameVersion? GetGameVersionApi() => GameVersionAPI;
 
-        public GameVersion? GetGameVersionApiPreload() => GameVersionAPIPreload;
+        public virtual GameVersion? GetGameVersionApiPreload() => GameVersionAPIPreload;
         #endregion
 
         #region Game Info Methods

@@ -41,6 +41,14 @@ namespace CollapseLauncher.GameSettings.Base
 
         protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;
 
+        public static IGameSettings CreateBaseFrom(IGameVersion gameVersionManager)
+        {
+            SettingsBase settings = new SettingsBase(gameVersionManager);
+            settings.InitializeSettings();
+
+            return settings;
+        }
+
         public virtual void InitializeSettings()
         {
             SettingsCustomArgument = CustomArgs.Load();
