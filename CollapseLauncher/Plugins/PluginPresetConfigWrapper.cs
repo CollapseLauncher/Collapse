@@ -20,12 +20,12 @@ namespace CollapseLauncher.Plugins;
 
 internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
-    private readonly IPlugin             _plugin;
+    public readonly  IPlugin             Plugin;
     private readonly IPluginPresetConfig _config;
 
     private PluginPresetConfigWrapper(IPlugin plugin, IPluginPresetConfig config)
     {
-        _plugin = plugin;
+        Plugin  = plugin;
         _config = config;
     }
 
@@ -54,13 +54,20 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     public override ILauncherApi? GameLauncherApi
     {
-        get => field ??= new PluginLauncherApiWrapper(_plugin, this);
+        get => field ??= new PluginLauncherApiWrapper(Plugin, this);
         set;
     }
 
-    public override GameNameType   GameType     => GameNameType.Plugin;
-    public override LauncherType   LauncherType => LauncherType.Plugin;
-    public override GameVendorType VendorType   => GameVendorType.Plugin;
+    public override GameNameType   GameType           => GameNameType.Plugin;
+    public override LauncherType   LauncherType       => LauncherType.Plugin;
+    public override GameVendorType VendorType         => GameVendorType.CollapsePlugin;
+    public          string         VendorTypeInString => _config.get_GameVendorName();
+
+    public override string? InternalGameNameInConfig
+    {
+        get => field ??= _config.get_GameRegistryKeyName();
+        init;
+    }
 
     public override string GameName        => _config.get_GameName();
     public override string ProfileName     => _config.get_ProfileName();
@@ -99,6 +106,10 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     public override string DefaultLanguage => _config.get_GameMainLanguage();
 
+    private         int? _hashID;
+    public override int HashID { get => _hashID ??= HashCode.Combine(GameName, ZoneName); set => _hashID = value; }
+
+
     [field: AllowNull, MaybeNull]
     public ILauncherApiMedia PluginMediaApi => field ??= _config.get_LauncherApiMedia() ?? throw new NullReferenceException("ILauncherApiMedia interface cannot be null!");
 
@@ -110,9 +121,7 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     public async Task InitializeAsync(CancellationToken token = default)
     {
-        int returnCode = 0;
-        await _config.InitAsync(_plugin.RegisterCancelToken(token), ret => returnCode = ret).WaitFromHandle();
-        
+        int returnCode = await _config.InitAsync(Plugin.RegisterCancelToken(token)).WaitFromHandle<int>();
         if (returnCode != 0)
         {
             throw new InvalidOperationException($"Failed to initialize IPluginPresetConfig with return code: {returnCode}");

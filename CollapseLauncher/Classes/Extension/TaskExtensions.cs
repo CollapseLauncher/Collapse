@@ -6,7 +6,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static Hi3Helper.Plugin.Core.IInitializableTask;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable IdentifierTypo
 
@@ -16,7 +15,6 @@ namespace CollapseLauncher.Extension
     public delegate Task<TResult?> ActionTimeoutTaskCallback<TResult>(CancellationToken token);
     public delegate Task ActionTimeoutTaskCallback(CancellationToken token);
     public delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
-    public delegate nint WaitFromHandleResultDelegate(in Guid cancelToken, InitAsyncIsSuccessCallback getResultCallback);
 
     internal static class TaskExtensions
     {
@@ -189,13 +187,17 @@ namespace CollapseLauncher.Extension
 
             IInitializableTask initiableTask = GetInitializableTask(initializableInterface);
 
-            int returnCode = 0;
-            Task initTask = initiableTask.InitAsync(pluginInstance.RegisterCancelToken(token), retCode => returnCode = retCode).WaitFromHandle();
-            await initTask;
+            Task<int> initTask = initiableTask.InitAsync(pluginInstance.RegisterCancelToken(token)).WaitFromHandle<int>();
+            int returnCode = await initTask;
 
             if (initTask.IsCompletedSuccessfully)
             {
                 return;
+            }
+
+            if (returnCode == 69420)
+            {
+                throw new NotImplementedException("InitAsync isn't overriden!");
             }
 
             throw new COMException($"Initialization for {nameof(T)} has failed with return code: {returnCode}", initTask.Exception);
