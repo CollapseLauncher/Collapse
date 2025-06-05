@@ -143,9 +143,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3296-prerelease, )",
-        "resolved": "1.0.3296-prerelease",
-        "contentHash": "HyIJKcn3X6BEe8AKBZ24GGT9Yqig+vb52UQeRY8c1HTbfJi9MYDGYQWIESjkzlJWC/3xUMB3QvlCuARl0EKaEw=="
+        "requested": "[1.0.3344-prerelease, )",
+        "resolved": "1.0.3344-prerelease",
+        "contentHash": "I1n0XLQuJcVOrTPLl0pYARi57q+AtVswrCHHHaB0ROvmxn3IvYQg+r++IYUpJnzucwEyDNWqn/ZLoxTeD6sjAA=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -207,12 +207,12 @@
       },
       "SharpCompress": {
         "type": "Direct",
-        "requested": "[0.39.0, )",
-        "resolved": "0.39.0",
-        "contentHash": "0esqIUDlg68Z7+Weuge4QzEvNtawUO4obTJFL7xuf4DBHMxVRr+wbNgiX9arMrj3kGXQSvLe0zbZG3oxpkwJOA==",
+        "requested": "[0.40.0, )",
+        "resolved": "0.40.0",
+        "contentHash": "yP/aFX1jqGikVF7u2f05VEaWN4aCaKNLxSas82UgA2GGVECxq/BcqZx3STHCJ78qilo1azEOk1XpBglIuGMb7w==",
         "dependencies": {
           "System.Buffers": "4.6.0",
-          "ZstdSharp.Port": "0.8.4"
+          "ZstdSharp.Port": "0.8.5"
         }
       },
       "System.CommandLine": {
@@ -565,7 +565,7 @@
           "CommunityToolkit.WinUI.Extensions": "[8.2.250402, )",
           "CommunityToolkit.WinUI.Media": "[8.2.250402, )",
           "Microsoft.Graphics.Win2D": "[1.3.2, )",
-          "Microsoft.Web.WebView2": "[1.0.3296-prerelease, )",
+          "Microsoft.Web.WebView2": "[1.0.3344-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.4188, )",
           "Microsoft.WindowsAppSDK": "[1.8.250515001-experimental2, )"
@@ -593,7 +593,7 @@
         "dependencies": {
           "CommunityToolkit.Common": "[8.4.0, )",
           "CommunityToolkit.WinUI.Triggers": "[8.2.250402, )",
-          "Microsoft.Web.WebView2": "[1.0.3296-prerelease, )",
+          "Microsoft.Web.WebView2": "[1.0.3344-prerelease, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
           "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.4188, )",
           "Microsoft.WindowsAppSDK": "[1.8.250515001-experimental2, )"
@@ -621,9 +621,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3296-prerelease, )",
-        "resolved": "1.0.3296-prerelease",
-        "contentHash": "HyIJKcn3X6BEe8AKBZ24GGT9Yqig+vb52UQeRY8c1HTbfJi9MYDGYQWIESjkzlJWC/3xUMB3QvlCuARl0EKaEw=="
+        "requested": "[1.0.3344-prerelease, )",
+        "resolved": "1.0.3344-prerelease",
+        "contentHash": "I1n0XLQuJcVOrTPLl0pYARi57q+AtVswrCHHHaB0ROvmxn3IvYQg+r++IYUpJnzucwEyDNWqn/ZLoxTeD6sjAA=="
       },
       "PhotoSauce.NativeCodecs.Libwebp": {
         "type": "Direct",

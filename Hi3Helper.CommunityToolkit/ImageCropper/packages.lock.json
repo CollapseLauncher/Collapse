@@ -47,9 +47,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3296-prerelease, )",
-        "resolved": "1.0.3296-prerelease",
-        "contentHash": "HyIJKcn3X6BEe8AKBZ24GGT9Yqig+vb52UQeRY8c1HTbfJi9MYDGYQWIESjkzlJWC/3xUMB3QvlCuARl0EKaEw=="
+        "requested": "[1.0.3344-prerelease, )",
+        "resolved": "1.0.3344-prerelease",
+        "contentHash": "I1n0XLQuJcVOrTPLl0pYARi57q+AtVswrCHHHaB0ROvmxn3IvYQg+r++IYUpJnzucwEyDNWqn/ZLoxTeD6sjAA=="
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
@@ -176,9 +176,9 @@
       },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
-        "requested": "[1.0.3296-prerelease, )",
-        "resolved": "1.0.3296-prerelease",
-        "contentHash": "HyIJKcn3X6BEe8AKBZ24GGT9Yqig+vb52UQeRY8c1HTbfJi9MYDGYQWIESjkzlJWC/3xUMB3QvlCuARl0EKaEw=="
+        "requested": "[1.0.3344-prerelease, )",
+        "resolved": "1.0.3344-prerelease",
+        "contentHash": "I1n0XLQuJcVOrTPLl0pYARi57q+AtVswrCHHHaB0ROvmxn3IvYQg+r++IYUpJnzucwEyDNWqn/ZLoxTeD6sjAA=="
       },
       "Microsoft.WindowsAppSDK.Foundation": {
         "type": "Transitive",
