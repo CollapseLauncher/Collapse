@@ -70,7 +70,7 @@
         <DefineConstants>$(DefineConstants);AOT</DefineConstants>
         <IlcInstructionSet>sse2</IlcInstructionSet>
         <!-- Security thingymajig -->
-        <ControlFlowGuard>true</ControlFlowGuard>
+        <ControlFlowGuard>Guard</ControlFlowGuard>
         <CetCompat>true</CetCompat>
     </PropertyGroup>
 
