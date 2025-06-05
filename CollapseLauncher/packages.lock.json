@@ -530,7 +530,7 @@
           "Google.Protobuf": "[3.31.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
-          "System.IO.Hashing": "[9.0.4, )"
+          "System.IO.Hashing": "[9.0.5, )"
         }
       },
       "hi3helper.http": {
