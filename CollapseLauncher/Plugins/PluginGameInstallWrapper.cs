@@ -66,7 +66,7 @@ internal class PluginGameInstallWrapper : IGameInstallManager
         return Task.CompletedTask;
     }
 
-    public ValueTask<int> StartPackageVerification(List<GameInstallPackage> gamePackage = null)
+    public ValueTask<int> StartPackageVerification(List<GameInstallPackage>? gamePackage = null)
     {
         // NOP
         return new ValueTask<int>(0);

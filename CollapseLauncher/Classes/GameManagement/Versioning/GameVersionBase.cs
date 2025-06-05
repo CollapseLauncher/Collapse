@@ -9,11 +9,13 @@ namespace CollapseLauncher.GameManagement.Versioning
 {
     internal partial class GameVersionBase : IGameVersion
     {
-        protected GameVersionBase(RegionResourceProp? gameRegionProp, string gameName, string gameRegion)
+        protected GameVersionBase(RegionResourceProp? gameRegionProp, string? gameName, string? gameRegion)
         {
+            // ReSharper disable VirtualMemberCallInConstructor
             GameApiProp = gameRegionProp;
             GameName    = gameName;
             GameRegion  = gameRegion;
+            // ReSharper enable VirtualMemberCallInConstructor
 
             // Initialize INI Prop ahead of other operations
             // ReSharper disable once VirtualMemberCallInConstructor

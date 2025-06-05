@@ -22,12 +22,12 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Get the game name
         /// </summary>
-        string GameName { get; }
+        string? GameName { get; }
 
         /// <summary>
         /// Get the region name of the game
         /// </summary>
-        string GameRegion { get; }
+        string? GameRegion { get; }
 
         /// <summary>
         /// Get the version section of the game INI's configuration

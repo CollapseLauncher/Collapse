@@ -114,9 +114,9 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual bool IsGameHasPreload()
         {
             if (GamePreset.LauncherType == LauncherType.Sophon)
-                return GameApiProp.data?.pre_download_game != null;
+                return GameApiProp?.data?.pre_download_game != null;
 
-            return GameApiProp.data?.pre_download_game?.latest != null || GameApiProp.data?.pre_download_game?.diffs != null;
+            return GameApiProp?.data?.pre_download_game?.latest != null || GameApiProp?.data?.pre_download_game?.diffs != null;
         }
 
         public virtual bool IsGameHasDeltaPatch() => false;
@@ -434,19 +434,14 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual async ValueTask<List<RegionResourcePlugin>> CheckPluginUpdate(string pluginKey)
         {
             List<RegionResourcePlugin> result = [];
-            if (GameApiProp.data?.plugins == null)
+            if (GameApiProp?.data?.plugins == null)
             {
                 return result;
             }
 
             RegionResourcePlugin? plugin = GameApiProp.data?.plugins?
                 .FirstOrDefault(x => x.plugin_id != null && x.plugin_id.Equals(pluginKey, StringComparison.OrdinalIgnoreCase));
-            if (plugin == null)
-            {
-                return result;
-            }
-
-            if (plugin.package?.validate == null)
+            if (plugin?.package?.validate == null)
             {
                 return result;
             }

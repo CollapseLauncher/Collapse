@@ -91,7 +91,7 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
                         .CreateArrayFromSelector(_config.get_GameSupportedLanguagesCount,
                                                  _config.get_GameSupportedLanguages)
                         .ToList();
-        init => throw new NotSupportedException();
+        init;
     }
 
     public override GameChannel GameChannel
