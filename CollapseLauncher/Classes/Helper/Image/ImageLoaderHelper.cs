@@ -17,6 +17,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -625,15 +626,48 @@ namespace CollapseLauncher.Helper.Image
                 ProcessingUrls.Remove(url);
             }
         }
+        
+        private static ConcurrentDictionary<string, int> UrlRetryCount = new();
 
         private static async Task<Stream> GetFallbackStreamUrl(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
+        {
+            Stream returnStream;
+            
+            int    maxRetries   = 3;
+            int    currentRetry = UrlRetryCount.AddOrUpdate(urlLocal, 2, (_, val) => val + 1);
+            int    baseDelay    = 1000; // 1 second base delay
+            try
+            {
+                returnStream =  await GetFallbackStreamUrlInner(client, urlLocal, tokenLocal);
+            }
+            catch (Exception ex)
+            {
+                if (currentRetry > maxRetries)
+                {
+                    Logger.LogWriteLine($"Failed to download resource from: {urlLocal} after {maxRetries} attempts.\r\n{ex}", LogType.Error, true);
+                    UrlRetryCount.TryRemove(urlLocal, out _);
+                    throw;
+                }
+                
+                int delay = baseDelay * currentRetry;
+                Logger.LogWriteLine($"Failed to download resource from: {urlLocal} (Attempt {currentRetry}/{maxRetries}). Retrying in {delay}ms...\r\n{ex}", LogType.Warning, true);
+                UrlRetryCount[urlLocal] = currentRetry;
+                await Task.Delay(delay, tokenLocal);
+                returnStream =  await GetFallbackStreamUrl(client, urlLocal, tokenLocal); // Recursive call to retry
+            }
+            
+            UrlRetryCount.TryRemove(urlLocal, out _);
+            return returnStream;
+        }
+        
+        private static async Task<Stream> GetFallbackStreamUrlInner(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
         {
             if (client == null)
                 return await FallbackCDNUtil.GetHttpStreamFromResponse(urlLocal, tokenLocal);
 
             return await BridgedNetworkStream.CreateStream(
-                await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
-                tokenLocal);
+                                                           await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
+                                                           tokenLocal);
         }
 
         public static string? GetCachedSprites(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
