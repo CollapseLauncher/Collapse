@@ -510,8 +510,6 @@
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )",
-          "Microsoft.Web.WebView2": "[1.0.3344-prerelease, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.4188, )",
           "Microsoft.WindowsAppSDK": "[1.8.250515001-experimental2, )"
         }
       },
