@@ -177,8 +177,15 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 return;
             }
 
+            if (GameVersion.TryParse(gameBranch.GameMainField?.Tag, out GameVersion? latestSophonVersion) &&
+                GameVersion.TryParse(LauncherGameResource.data.game?.latest?.version, out GameVersion? latestZipVersion) &&
+                latestSophonVersion == latestZipVersion)
+            {
+                return;
+            }
+
             var branchPreloadField = gameBranch.GamePreloadField;
-            var branchBaseField = gameBranch.GameMainField;
+            var branchBaseField    = gameBranch.GameMainField;
 
             if (branchPreloadField != null)
             {
