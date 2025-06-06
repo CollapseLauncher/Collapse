@@ -268,7 +268,8 @@ namespace CollapseLauncher.InstallManager.Honkai
                 // 8th check: Ensure that the file is Sophon Chunk file
                 // if game state is installed.
                 case GameInstallStateEnum.Installed
-                    when localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase):
+                    when localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase) ||
+                         localFileInfo.RelativePath.StartsWith("ldiff",          StringComparison.OrdinalIgnoreCase):
                 // 9th check: If ACE-BASE.sys is detected
                 // AND game state is installed.
                 case GameInstallStateEnum.Installed when
