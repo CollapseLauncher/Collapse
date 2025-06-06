@@ -195,7 +195,7 @@ namespace CollapseLauncher
 
         public unsafe   ReadOnlySpan<int> AsSpan()    => new(Unsafe.AsPointer(ref Unsafe.AsRef(in this)), 4);
         public          Version           ToVersion() => new(Major, Minor, Build, Revision);
-        public override string            ToString()  => $"{Major}.{Minor}.{Build}.{Revision}";
+        public override string            ToString()  => $"{Major}.{Minor}.{Build}";
 
         public static bool operator <(GameVersion? left, GameVersion? right) =>
             left.HasValue && right.HasValue &&
