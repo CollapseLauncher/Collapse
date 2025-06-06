@@ -164,7 +164,7 @@ public partial class Updater : IDisposable
 
             await UpdateManager.ApplyReleases(updateInfo, InvokeApplyUpdateProgress);
 #else
-            await _updateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, false, token);
+            await _updateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, token);
             _velopackVersionToUpdate = updateInfo.TargetFullRelease;
 
             await EnsureVelopackUpdateExec(token);
