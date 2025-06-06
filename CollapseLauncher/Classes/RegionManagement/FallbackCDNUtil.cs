@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Classes.Extension;
+using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
@@ -6,6 +7,7 @@ using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -36,13 +38,13 @@ namespace CollapseLauncher
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
 #else
 #nullable enable
-        public async Task DownloadFile(string url,
-                                       string targetFile,
-                                       Action<int> progress,
-                                       string? authorization = null,
-                                       string? accept = null,
-                                       double timeout = 30.0,
-                                       CancellationToken cancelToken = default)
+        private async Task DownloadFileInner(string url,
+                                             string targetFile,
+                                             Action<int> progress,
+                                             string? authorization = null,
+                                             string? accept = null,
+                                             double timeout = 30.0,
+                                             CancellationToken cancelToken = default)
 #endif
         {
             // Initialize new proxy-aware HttpClient
@@ -80,7 +82,7 @@ namespace CollapseLauncher
 #if !USEVELOPACK
         public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
 #else
-        public async Task<byte[]> DownloadBytes(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
+        public async Task<byte[]> DownloadBytesInner(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
 #endif
         {
             string relativePath = GetRelativePathOnly(url);
@@ -93,7 +95,7 @@ namespace CollapseLauncher
 #if !USEVELOPACK
         public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
 #else
-        public async Task<string> DownloadString(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
+        public async Task<string> DownloadStringInner(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
 #endif
         {
             string relativePath = GetRelativePathOnly(url);
@@ -124,6 +126,27 @@ namespace CollapseLauncher
             // If it's not a CDN-based url, return it anyway.
             return url;
         }
+
+        #if USEVELOPACK
+        public async Task DownloadFile(string                       url,
+                                       string                       targetFile,
+                                       Action<int>                  progress,
+                                       IDictionary<string, string>? headers     = null,
+                                       double                       timeout     = 30,
+                                       CancellationToken            cancelToken = new CancellationToken())
+            => await DownloadFileInner(url,  targetFile, progress, headers.TryGetValueIgnoreCase("Authorization"),
+                                       null, timeout,    cancelToken);
+
+        public async Task<byte[]> DownloadBytes(string url, IDictionary<string, string>? headers = null, double timeout = 30)
+            => await DownloadBytesInner(url, headers.TryGetValueIgnoreCase("Authorization"), null, timeout);
+
+        public async Task<string> DownloadString(string                       url, 
+                                                 IDictionary<string, string>? headers = null,
+                                                 double                       timeout = 30)
+            => await DownloadStringInner(url,          headers?.TryGetValueIgnoreCase("Authorization") 
+                                                       ?? null, null, timeout);
+
+    #endif
     }
 
 #if USEVELOPACK

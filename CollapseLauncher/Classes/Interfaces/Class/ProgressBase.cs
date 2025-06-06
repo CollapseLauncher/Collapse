@@ -563,7 +563,7 @@ namespace CollapseLauncher.Interfaces
             // Iterate every file and set the read-only flag to false
             foreach (FileInfo file in directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories))
             {
-                _ = file.EnsureNoReadOnly();
+                _ = file.StripAlternateDataStream().EnsureNoReadOnly();
             }
         }
 
@@ -584,7 +584,7 @@ namespace CollapseLauncher.Interfaces
                 // Remove read-only attribute from all files and subdirectories
                 foreach (var file in dirInfo.EnumerateFiles("*", SearchOption.AllDirectories))
                 {
-                    file.EnsureNoReadOnly();
+                    file.StripAlternateDataStream().EnsureNoReadOnly();
                 }
         
                 foreach (var subDir in dirInfo.EnumerateDirectories("*", SearchOption.AllDirectories))
@@ -823,7 +823,7 @@ namespace CollapseLauncher.Interfaces
                 }
 
                 // Assign FileInfo to sdkDllPath
-                FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+                FileInfo sdkDllFile = new FileInfo(sdkDllPath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
 
                 // Do check if sdkDllFile is not null
                 // Try to create the file if not exist or open an existing one
@@ -1222,7 +1222,7 @@ namespace CollapseLauncher.Interfaces
         protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, long patchSize, Memory<byte> patchHash,
                                                        string patchURL, string patchOutputFile, string inputFile, string outputFile, bool isNeedRename = false, CancellationToken token = default)
             => await RunPatchTask(downloadClient, downloadProgress, patchSize,
-                patchHash, patchURL, new FileInfo(patchOutputFile).EnsureNoReadOnly(), new FileInfo(inputFile).EnsureNoReadOnly(),
+                patchHash, patchURL, new FileInfo(patchOutputFile).StripAlternateDataStream().EnsureNoReadOnly(), new FileInfo(inputFile).EnsureNoReadOnly(),
                 new FileInfo(outputFile).EnsureCreationOfDirectory().EnsureNoReadOnly(), isNeedRename, token);
 
         protected virtual async ValueTask RunPatchTask(DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, long patchSize, Memory<byte> patchHash,

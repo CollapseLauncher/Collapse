@@ -102,7 +102,7 @@ namespace CollapseLauncher
         {
             // Increment total count and update the status
             ProgressAllCountCurrent++;
-            FileInfo fileInfo = new FileInfo(asset.AssetIndex.LocalName!).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.LocalName!).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
             Status.ActivityStatus = string.Format(Lang._Misc.Downloading + " {0}: {1}", asset.AssetIndex.AssetType, Path.GetFileName(fileInfo.Name));
             UpdateAll();
 
