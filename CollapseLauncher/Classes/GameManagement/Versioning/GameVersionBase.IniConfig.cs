@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
@@ -300,23 +302,24 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Find Game Config Methods
-        public virtual string? FindGameInstallationPath(string path)
-        {
-            // Try to find the base game path from the executable location.
-            string? basePath = TryFindGamePathFromExecutableAndConfig(path, GamePreset.GameExecutableName);
-
-            // If the executable file and version config doesn't exist (null), then return null.
-            if (string.IsNullOrEmpty(basePath))
+        public virtual Task<string?> FindGameInstallationPath(string path)
+            => Task.Factory.StartNew(() =>
             {
-                return null;
-            }
+                // Try to find the base game path from the executable location.
+                string? basePath = TryFindGamePathFromExecutableAndConfig(path, GamePreset.GameExecutableName);
 
-            // Check if the ini file does have the "game_version" value.
-            string iniPath = Path.Combine(basePath, ConfigFileName);
-            return IsTryParseIniVersionExist(iniPath) ? basePath :
-                // If the file doesn't exist, return as null.
-                null;
-        }
+                // If the executable file and version config doesn't exist (null), then return null.
+                if (string.IsNullOrEmpty(basePath))
+                {
+                    return null;
+                }
+
+                // Check if the ini file does have the "game_version" value.
+                string iniPath = Path.Combine(basePath, ConfigFileName);
+                return IsTryParseIniVersionExist(iniPath) ? basePath :
+                    // If the file doesn't exist, return as null.
+                    null;
+            });
 
         protected virtual string? TryFindGamePathFromExecutableAndConfig(string path, string? executableName)
         {
