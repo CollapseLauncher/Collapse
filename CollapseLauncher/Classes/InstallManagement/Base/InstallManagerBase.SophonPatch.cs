@@ -239,6 +239,11 @@ namespace CollapseLauncher.InstallManager.Base
                 CancellationToken      = token,
                 TaskScheduler          = TaskScheduler.Default
             };
+            
+            if (LauncherConfig.GetAppConfigValue("SophonPreloadApplyPerfMode"))
+            {
+                parallelOptions.MaxDegreeOfParallelism = Environment.ProcessorCount;
+            }
 
             string patchOutputDir = _gameSophonChunkDir;
 
