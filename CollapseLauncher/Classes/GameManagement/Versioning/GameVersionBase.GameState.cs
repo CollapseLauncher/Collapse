@@ -226,7 +226,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, executableName));
 
             // Check if the vendor type exist. If not, then return false
-            if (VendorTypeProp.GameName == null || !string.IsNullOrEmpty(VendorTypeProp.VendorType))
+            if (VendorTypeProp.GameName == null || string.IsNullOrEmpty(VendorTypeProp.VendorType))
             {
                 return false;
             }
