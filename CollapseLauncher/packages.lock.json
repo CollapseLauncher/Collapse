@@ -287,8 +287,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.30.0",
-        "contentHash": "ZnEI4oZWnHvd+Yz5Gcnx5Q5RQIuzptIzd0fmxAN8f81FYHI0USZqMOrPTkrsd/QEzo9vl2b217v9FqFgHfufQw=="
+        "resolved": "3.31.1",
+        "contentHash": "gSnJbUmGiOTdWddPhqzrEscHq9Ls6sqRDPB9WptckyjTUyx70JOOAaDLkFff8gManZNN3hllQ4aQInnQyq/Z/A=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -406,29 +406,8 @@
           "System.Text.Json": "[9.0.5, )"
         }
       },
-      "h.generatedicons.system.drawing": {
-        "type": "Project",
-        "dependencies": {
-          "System.Drawing.Common": "[9.0.3, )"
-        }
-      },
-      "h.notifyicon": {
-        "type": "Project",
-        "dependencies": {
-          "H.GeneratedIcons.System.Drawing": "[1.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.3, )"
-        }
-      },
       "h.notifyicon.winui": {
-        "type": "Project",
-        "dependencies": {
-          "H.NotifyIcon": "[0.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.3, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.1, )",
-          "Microsoft.Web.WebView2": "[1.0.3065.39, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.22621.3233, )",
-          "Microsoft.WindowsAppSDK": "[1.6.250205002, )"
-        }
+        "type": "Project"
       },
       "hi3helper.core": {
         "type": "Project",
@@ -443,10 +422,10 @@
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.30.0, )",
+          "Google.Protobuf": "[3.31.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
-          "System.IO.Hashing": "[9.0.4, )"
+          "System.IO.Hashing": "[9.0.5, )"
         }
       },
       "hi3helper.http": {
@@ -455,7 +434,7 @@
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.30.0, )",
+          "Google.Protobuf": "[3.31.1, )",
           "Hi3Helper.ZstdNet": "[*, )",
           "SharpHDiffPatch.Core": "[*, )",
           "System.IO.Hashing": "[*, )"
