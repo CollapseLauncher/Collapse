@@ -2798,7 +2798,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         }
 
-        private async Task<string?> AskGameFolderDialog(Func<string, string>? checkExistingGameDelegate = null)
+        private async Task<string?> AskGameFolderDialog(Func<string, Task<string>>? checkExistingGameDelegate = null)
         {
             // Set initial folder variable as empty
             string folder = "";
@@ -2957,7 +2957,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Check for existing installation and if it's found, then override result
             // with pathPossibleExisting value and return 0 to skip the process
-            string pathPossibleExisting = GameVersionManager.FindGameInstallationPath(result);
+            string pathPossibleExisting = await GameVersionManager.FindGameInstallationPath(result);
             if (pathPossibleExisting != null)
             {
                 GameVersionManager.UpdateGamePath(pathPossibleExisting, false);

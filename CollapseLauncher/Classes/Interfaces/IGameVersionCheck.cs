@@ -182,7 +182,7 @@ namespace CollapseLauncher.Interfaces
         /// Try to find game installation path from the given path.
         /// If it returns null, then there's no game installation found.
         /// </summary>
-        string? FindGameInstallationPath(string path);
+        Task<string?> FindGameInstallationPath(string path);
 
         /// <summary>
         /// Update the location of the game folder and also save it to the Game Profile's Ini file.

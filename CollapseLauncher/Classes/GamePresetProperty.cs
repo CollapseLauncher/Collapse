@@ -83,7 +83,7 @@ namespace CollapseLauncher
                     PluginGameVersionWrapper  pluginGameVersion  = new PluginGameVersionWrapper(pluginPresetConfig);
 
                     property.GameVersion  = pluginGameVersion;
-                    property.GameSettings = SettingsBase.CreateBaseFrom(pluginGameVersion);
+                    property.GameSettings = SettingsBase.CreateBaseFrom(pluginGameVersion, true);
                     property.GameCache    = null;
                     property.GameRepair   = null;
                     property.GameInstall  = new PluginGameInstallWrapper(uiElementParent, pluginPresetConfig);

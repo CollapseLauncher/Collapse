@@ -73,8 +73,8 @@ public partial class HomePage
                     await Task.Delay(delay);
             }
                 
-            int? height = _Settings.SettingsScreen.height;
-            int? width  = _Settings.SettingsScreen.width;
+            int height = _Settings.SettingsScreen?.height ?? 0;
+            int width  = _Settings.SettingsScreen?.width ?? 0;
 
             Process proc = new Process();
             proc.StartInfo.FileName        = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
@@ -104,7 +104,7 @@ public partial class HomePage
                 
             if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
             {
-                SetBackScreenSettings(_Settings, (int)height, (int)width, CurrentGameProperty);
+                SetBackScreenSettings(_Settings, height, width, CurrentGameProperty);
             }
 
             // Stop update check
@@ -836,8 +836,8 @@ public partial class HomePage
 
                         CurrentGameProperty!.GamePlaytime!.StartSession(currentGameProcess);
 
-                        int? height = gameSettings.SettingsScreen.height;
-                        int? width  = gameSettings.SettingsScreen.width;
+                        int height = gameSettings.SettingsScreen?.height ?? 0;
+                        int width  = gameSettings.SettingsScreen?.width ?? 0;
 
                         // Start the resizable window payload
                         StartResizableWindowPayload(gamePreset.GameExecutableName,

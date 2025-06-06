@@ -56,8 +56,8 @@ internal class PluginGameInstallWrapper : IGameInstallManager
 
     public ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false)
     {
-        // NOP
-        return new ValueTask<int>(0);
+          // NOP
+        return new ValueTask<int>(-1);
     }
 
     public Task StartPackageDownload(bool skipDialog = false)

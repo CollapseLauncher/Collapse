@@ -2,7 +2,9 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -83,7 +85,15 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
 
     public override ValueTask<bool> EnsureGameConfigIniCorrectiveness(UIElement uiParentElement) => ValueTask.FromResult(true);
 
-    public override string? FindGameInstallationPath(string path) => null;
+    public override async Task<string?> FindGameInstallationPath(string path)
+    {
+        Guid cancelToken = Guid.CreateVersion7();
+        string? gameInstallPath = await _pluginGameManager
+            .FindExistingInstallPathAsync(in cancelToken)
+            .WaitFromHandle<PluginDisposableMemoryMarshal>();
+
+        return gameInstallPath;
+    }
 
     public override DeltaPatchProperty? GetDeltaPatchInfo() => null;
 
