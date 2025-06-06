@@ -93,7 +93,7 @@ namespace CollapseLauncher.InstallManager.Base
                                  && !_forceIgnoreDeltaPatch
                                  && LauncherConfig.GetAppConfigValue("IsEnableSophon").ToBool();
 
-                return isForceRedirect && isEnabled;
+                return isForceRedirect || isEnabled;
             }
         }
         #endregion
