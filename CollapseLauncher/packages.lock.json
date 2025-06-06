@@ -101,9 +101,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.41.1, )",
-        "resolved": "0.41.1",
-        "contentHash": "vRSlilV2gcm769RDMe158oftaQN7FZpGe2roEEMGOXLcNUlmSbNUVppZIKaAFIQ/E575divDfoAV3yz6GL6R9Q=="
+        "requested": "[0.41.2, )",
+        "resolved": "0.41.2",
+        "contentHash": "oso8cno80OzCgAQOygtJXT1UhlVr2eSjwzXLqSLHyfKmSJ+3OcwDbrpzNwMj3/1SgncvQxP7OsNQ3bRfE3HvjQ=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -262,11 +262,11 @@
       },
       "Velopack": {
         "type": "Direct",
-        "requested": "[0.0.1251, )",
-        "resolved": "0.0.1251",
-        "contentHash": "rDojkZXbakJgTKn8wmw4/kPGP+j63AO87dKRhzwYIVYL1rj7KZKXw+uhA6R6nCXMnHZ0isW9QXNW0O2h7bTVAQ==",
+        "requested": "[0.0.1297, )",
+        "resolved": "0.0.1297",
+        "contentHash": "FfZ3B+U97TSZ4Ibcvve6TqJvSYp7jOAPKFUTG69FYb2MjgTeHzfd9j1/jgHRhDDlldpPnXM6iExuihrSKQRiNA==",
         "dependencies": {
-          "NuGet.Versioning": "6.13.2"
+          "NuGet.Versioning": "6.14.0"
         }
       },
       "CommunityToolkit.WinUI.Animations": {
@@ -425,13 +425,13 @@
       },
       "NuGet.Versioning": {
         "type": "Transitive",
-        "resolved": "6.13.2",
-        "contentHash": "pGYNyvCVM+Z9jITTiJiuxFC8oJXFdh2k25ZDV4tSAOSuKyAWvh1VcfJy0WZGWdI6J7Avkbl0qra7XENYFSy4Ng=="
+        "resolved": "6.14.0",
+        "contentHash": "4v4blkhCv8mpKtfx+z0G/X0daVCzdIaHSC51GkUspugi5JIMn2Bo8xm5PdZYF0U68gOBfz/+aPWMnpRd85Jbow=="
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.9.0",
-        "contentHash": "4+4OKYZKYJEK1gYsyeiqguugO6w7w8yianVMVVfbKSOtqA2nRs1RD/G3Nk4j8VsCQeiWWObOZb+5k5wfB5YzIw=="
+        "resolved": "5.10.0",
+        "contentHash": "YArPx8bL+kU2htpoOI1k2W/n3gbuiA7TLchYIs4AcLbbB2MXmX1+Eo1IIiBf484eqVXRpO0Dm3bvQa4fg+ZhCw=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
@@ -521,7 +521,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.2.0, )",
-          "Sentry": "[5.9.0, )"
+          "Sentry": "[5.10.0, )"
         }
       },
       "hi3helper.enctool": {
