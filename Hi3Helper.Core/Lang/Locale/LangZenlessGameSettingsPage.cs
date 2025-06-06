@@ -47,6 +47,9 @@ namespace Hi3Helper
                 
                 public string Audio_PlaybackDev_TV { get; set; } =
                     LangFallback?._ZenlessGameSettingsPage.Audio_PlaybackDev_TV;
+
+                public string Audio_Ambient { get; set; } =
+                    LangFallback?._ZenlessGameSettingsPage.Audio_Ambient;
             }
         }
     }

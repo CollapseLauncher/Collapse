@@ -1600,7 +1600,8 @@
     "Audio_PlaybackDev": "Audio Playback Device",
     "Audio_PlaybackDev_Headphones": "Headphones",
     "Audio_PlaybackDev_Speakers": "Speakers",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_TV": "TV",
+    "Audio_Ambient": "Ambient Noise Volume"
   },
 
   "_NotificationToast": {
