@@ -483,7 +483,8 @@ namespace CollapseLauncher.InstallManager.Base
             // if game state is installed.
             // If all those matches failed, then return them as a non-game file
             return gameState == GameInstallStateEnum.Installed
-                   && localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase);
+                   && (localFileInfo.RelativePath.StartsWith("chunk_collapse", StringComparison.OrdinalIgnoreCase) ||
+                       localFileInfo.RelativePath.StartsWith("ldiff",          StringComparison.OrdinalIgnoreCase));
         }
 
         protected virtual async Task GetRelativeLocalFilePaths(List<LocalFileInfo> localFileInfoList,

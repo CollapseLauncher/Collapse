@@ -7,14 +7,21 @@
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable LoopCanBeConvertedToQuery
 
+using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Structs;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -93,6 +100,9 @@ namespace CollapseLauncher.InstallManager.Base
             List<string> matchingFields = [GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField];
             matchingFields.AddRange(await GetAlterSophonPatchVOMatchingFields(Token.Token));
 
+            // Perform check on additional data package (in this case: Zenless Zone Zero has some cutscene files registered)
+            await ConfirmAdditionalPatchDataPackageFiles(patchManifest, matchingFields, Token.Token);
+
             // Create a sophon download speed limiter instance
             SophonDownloadSpeedLimiter downloadSpeedLimiter =
                 SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
@@ -117,6 +127,178 @@ namespace CollapseLauncher.InstallManager.Base
                                         Token.Token);
 
             return true;
+        }
+
+        protected virtual async Task ConfirmAdditionalPatchDataPackageFiles(SophonChunkManifestInfoPair patchManifest,
+                                                                            List<string> matchingFieldsList,
+                                                                            CancellationToken token)
+        {
+            string[] commonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
+            string currentVersion = GameVersion.ToString();
+
+            List<SophonManifestPatchIdentity> otherManifestIdentity = patchManifest.OtherSophonPatchData.ManifestIdentityList
+                                                                                   .Where(x => !commonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                                                                                   .ToList();
+
+            if (otherManifestIdentity.Count == 0)
+            {
+                return;
+            }
+
+            long sizeCurrentToDownload = patchManifest.OtherSophonPatchData.ManifestIdentityList
+                                                      .Where(x => matchingFieldsList.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                                                      .Sum(x =>
+                                                           {
+                                                               var firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
+                                                               return firstTag?.CompressedSize ?? 0;
+                                                           });
+            long sizeAdditionalToDownload = otherManifestIdentity
+                                           .Sum(x =>
+                                                {
+                                                    var firstTag = x.DiffTaggedInfo.FirstOrDefault(y => y.Key == currentVersion).Value;
+                                                    return firstTag?.CompressedSize ?? 0;
+                                                });
+
+            bool isDownloadAdditionalData = await SpawnAdditionalPackageDownloadDialog(sizeCurrentToDownload,
+                                                                                       sizeAdditionalToDownload,
+                                                                                       true,
+                                                                                       GetFileDetails);
+
+            if (!isDownloadAdditionalData)
+            {
+                return;
+            }
+
+            matchingFieldsList.AddRange(otherManifestIdentity.Select(identity => identity.MatchingField));
+            return;
+
+            string GetFileDetails()
+            {
+                string filePath = Path.GetTempFileName();
+                filePath = Path.Combine(Path.GetDirectoryName(filePath) ?? "", Path.GetFileNameWithoutExtension(filePath) + ".log");
+                
+                long sizeUncompressed = 0;
+                long sizeCompressed   = 0;
+                long fileCount        = 0;
+                long chunkCount       = 0;
+
+                // ReSharper disable once ConvertToUsingDeclaration
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    using StreamWriter writer = new StreamWriter(fileStream);
+                    foreach (var field in otherManifestIdentity)
+                    {
+                        var fieldInfo = field.DiffTaggedInfo.FirstOrDefault(x => x.Key == currentVersion).Value;
+                        if (fieldInfo == null)
+                        {
+                            continue;
+                        }
+
+                        writer.WriteLine($"Additional MatchingField ID: {field.MatchingField} ({field.CategoryName})");
+                        writer.WriteLine($"    Patch Size to Download (Compressed): {ConverterTool.SummarizeSizeSimple(fieldInfo.CompressedSize)} ({fieldInfo.CompressedSize} bytes)");
+                        writer.WriteLine($"    Patch Size to Download (Uncompressed): {ConverterTool.SummarizeSizeSimple(fieldInfo.UncompressedSize)} ({fieldInfo.UncompressedSize} bytes)");
+                        writer.WriteLine($"    Update Chunk Count: {fieldInfo.ChunkCount}");
+                        writer.WriteLine($"    File Count: {fieldInfo.FileCount}");
+                        writer.WriteLine();
+
+                        sizeCompressed   += fieldInfo.CompressedSize;
+                        sizeUncompressed += fieldInfo.UncompressedSize;
+                        fileCount        += fieldInfo.FileCount;
+                        chunkCount       += fieldInfo.ChunkCount;
+                    }
+
+                    writer.WriteLine($"Total Patch Size to Download (Compressed): {ConverterTool.SummarizeSizeSimple(sizeCompressed)} ({sizeCompressed} bytes)");
+                    writer.WriteLine($"Total Patch Size to Download (Uncompressed): {ConverterTool.SummarizeSizeSimple(sizeUncompressed)} ({sizeUncompressed} bytes)");
+                    writer.WriteLine($"Total Update Chunk Count: {chunkCount}");
+                    writer.WriteLine($"Total File Count: {fileCount}");
+                }
+
+                return filePath;
+            }
+        }
+
+        protected async Task<bool> SpawnAdditionalPackageDownloadDialog(long baseDownloadSize,
+                                                                        long additionalDownloadSize,
+                                                                        bool isUpdate,
+                                                                        Func<string>? getFileDetailPath)
+        {
+            Grid grid = UIElementExtensions.CreateGrid()
+                .WithRows(GridLength.Auto, new GridLength(1, GridUnitType.Star));
+
+            grid.AddElementToGridRow(new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap
+            }
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle1, true)
+           .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(additionalDownloadSize), Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle2, true)
+           .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(baseDownloadSize + additionalDownloadSize), true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle3)
+           .AddTextBlockNewLine(2)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle4, true)
+           .AddTextBlockLine($"\"{Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle5, true)
+           .AddTextBlockLine($"\"{Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn}\"", true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle6, true)
+           .AddTextBlockLine(ConverterTool.SummarizeSizeSimple(baseDownloadSize), true, Microsoft.UI.Text.FontWeights.Bold)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableSubtitle7)
+           .AddTextBlockNewLine(2)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableFootnote1, true, Microsoft.UI.Text.FontWeights.Bold, size: 12, opacity: 0.75d)
+           .AddTextBlockLine(Locale.Lang._Dialogs.SophonAdditionalPkgAvailableFootnote2, size: 12, opacity: 0.75d),
+           0);
+
+            if (getFileDetailPath != null)
+            {
+                Button showFileDetails = UIElementExtensions.CreateButtonWithIcon<Button>(Locale.Lang._Dialogs.SophonAdditionalPkgSeeDetailsBtn,
+                                                                                          iconGlyph: "",
+                                                                                          iconFontFamily: "FontAwesomeSolid",
+                                                                                          buttonStyle: "AccentButtonStyle",
+                                                                                          cornerRadius: new CornerRadius(14));
+                showFileDetails.WithMargin(new Thickness(0, 16d, 0, 0));
+                showFileDetails.Click += async (sender, _) =>
+                                         {
+                                             if (sender is not ButtonBase button)
+                                             {
+                                                 return;
+                                             }
+
+                                             button.IsEnabled = false;
+
+                                             string filePath = getFileDetailPath.Invoke();
+                                             if (!string.IsNullOrEmpty(filePath))
+                                             {
+                                                 Process process = new Process
+                                                 {
+                                                     StartInfo = new ProcessStartInfo
+                                                     {
+                                                         FileName = filePath,
+                                                         UseShellExecute = true
+                                                     }
+                                                 };
+                                                 process.Start();
+                                             }
+
+                                             await Task.Delay(TimeSpan.FromSeconds(2));
+                                             button.IsEnabled = true;
+                                         };
+
+                grid.AddElementToGridRow(showFileDetails, 1);
+            }
+
+            ContentDialogResult confirmAdditionalTag = await SimpleDialogs.SpawnDialog(
+             isUpdate ? Locale.Lang._Dialogs.SophonAdditionalPkgAvailableUpdateTitle : Locale.Lang._Dialogs.SophonAdditionalPkgAvailableDownloadTitle,
+             grid,
+             ParentUI,
+             Locale.Lang._Misc.Cancel,
+             Locale.Lang._Dialogs.SophonAdditionalConfirmYesBtn,
+             Locale.Lang._Dialogs.SophonAdditionalConfirmNoBtn,
+             defaultButton: ContentDialogButton.Secondary,
+             dialogTheme: CustomControls.ContentDialogTheme.Warning);
+
+            if (confirmAdditionalTag == ContentDialogResult.None)
+                throw new OperationCanceledException("Cancelling the download/update");
+
+            return confirmAdditionalTag == ContentDialogResult.Primary;
         }
 
         protected virtual async Task<(List<SophonPatchAsset>, List<SophonChunkManifestInfoPair>)>

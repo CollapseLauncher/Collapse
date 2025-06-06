@@ -316,11 +316,6 @@ namespace CollapseLauncher.InstallManager.Base
                         // Set the voice language ID to value given
                         GameVersionManager.GamePreset.SetVoiceLanguageID(setAsDefaultVo);
 
-                        // Get the remote total size and current total size
-                        ProgressAllCountTotal    = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                        ProgressAllSizeTotal     = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
-                        ProgressAllSizeCurrent   = 0;
-
                         // If the fallback is used from update, use the same display as All Size for Per File progress.
                         if (fallbackFromUpdate)
                         {
@@ -343,6 +338,11 @@ namespace CollapseLauncher.InstallManager.Base
                             sophonInfoPairList,
                             downloadSpeedLimiter,
                             Token.Token);
+
+                        // Get the remote total size and current total size
+                        ProgressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
+                        ProgressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                        ProgressAllSizeCurrent = 0;
 
                         // Check for the disk space requirement first and ensure that the space is sufficient
                         await EnsureDiskSpaceSufficiencyAsync(
@@ -469,13 +469,15 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private static async Task<List<SophonAsset>> GetSophonAssetListFromPair(
-            HttpClient                               client,
-            IEnumerable<SophonChunkManifestInfoPair> sophonInfoPairs,
-            SophonDownloadSpeedLimiter               downloadSpeedLimiter,
-            CancellationToken                        token)
+        private async Task<List<SophonAsset>> GetSophonAssetListFromPair(
+            HttpClient                        client,
+            List<SophonChunkManifestInfoPair> sophonInfoPairs,
+            SophonDownloadSpeedLimiter        downloadSpeedLimiter,
+            CancellationToken                 token)
         {
             List<SophonAsset> sophonAssetList = [];
+
+            await ConfirmAdditionalInstallDataPackageFiles(sophonInfoPairs, token);
 
             // Avoid duplicates by using HashSet of the url
             HashSet<string> currentlyProcessedPair = [];
@@ -509,6 +511,100 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Return the list
             return sophonAssetList;
+        }
+
+        protected async Task ConfirmAdditionalInstallDataPackageFiles(
+            List<SophonChunkManifestInfoPair> installManifest,
+            CancellationToken                 token)
+        {
+            string[] commonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
+
+            SophonChunkManifestInfoPair? installManifestFirst = installManifest.FirstOrDefault();
+            if (installManifestFirst == null)
+            {
+                return;
+            }
+
+            List<string> matchingFieldsList = installManifest.Select(x => x.MatchingField).ToList();
+
+            List<SophonManifestBuildIdentity> otherManifestIdentity = installManifestFirst.OtherSophonBuildData.ManifestIdentityList
+               .Where(x => !commonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+               .ToList();
+
+            if (otherManifestIdentity.Count == 0)
+            {
+                return;
+            }
+
+            long sizeCurrentToDownload = installManifestFirst.OtherSophonBuildData.ManifestIdentityList
+                                                             .Where(x => matchingFieldsList.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                                                             .Sum(x =>
+                                                                  {
+                                                                      var firstTag = x.ChunkInfo;
+                                                                      return firstTag?.CompressedSize ?? 0;
+                                                                  });
+
+            long sizeAdditionalToDownload = otherManifestIdentity
+                                           .Sum(x => x.ChunkInfo.CompressedSize);
+
+            bool isDownloadAdditionalData = await SpawnAdditionalPackageDownloadDialog(sizeCurrentToDownload,
+                                                                                       sizeAdditionalToDownload,
+                                                                                       false,
+                                                                                       GetFileDetails);
+
+            if (!isDownloadAdditionalData)
+            {
+                return;
+            }
+
+            List<string> additionalMatchingFields = otherManifestIdentity.Select(x => x.MatchingField).ToList();
+
+            installManifest.AddRange(additionalMatchingFields.Select(matchingField => installManifestFirst.GetOtherManifestInfoPair(matchingField)));
+            return;
+
+            string GetFileDetails()
+            {
+                string filePath = Path.GetTempFileName();
+                filePath = Path.Combine(Path.GetDirectoryName(filePath) ?? "", Path.GetFileNameWithoutExtension(filePath) + ".log");
+
+                long sizeUncompressed = 0;
+                long sizeCompressed = 0;
+                long fileCount = 0;
+                long chunkCount = 0;
+
+                // ReSharper disable once ConvertToUsingDeclaration
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    using StreamWriter writer = new StreamWriter(fileStream);
+                    foreach (var field in otherManifestIdentity)
+                    {
+                        var fieldInfo = field.ChunkInfo;
+                        if (fieldInfo == null)
+                        {
+                            continue;
+                        }
+
+                        writer.WriteLine($"Additional MatchingField ID: {field.MatchingField} ({field.CategoryName})");
+                        writer.WriteLine($"    Patch Size to Download (Compressed): {ConverterTool.SummarizeSizeSimple(fieldInfo.CompressedSize)} ({fieldInfo.CompressedSize} bytes)");
+                        writer.WriteLine($"    Patch Size to Download (Uncompressed): {ConverterTool.SummarizeSizeSimple(fieldInfo.UncompressedSize)} ({fieldInfo.UncompressedSize} bytes)");
+                        writer.WriteLine($"    Update Chunk Count: {fieldInfo.ChunkCount}");
+                        writer.WriteLine($"    File Count: {fieldInfo.FileCount}");
+                        writer.WriteLine();
+
+                        sizeCompressed += fieldInfo.CompressedSize;
+                        sizeUncompressed += fieldInfo.UncompressedSize;
+                        fileCount += fieldInfo.FileCount;
+                        chunkCount += fieldInfo.ChunkCount;
+                    }
+
+                    writer.WriteLine($"Total Patch Size to Download (Compressed): {ConverterTool.SummarizeSizeSimple(sizeCompressed)} ({sizeCompressed} bytes)");
+                    writer.WriteLine($"Total Patch Size to Download (Uncompressed): {ConverterTool.SummarizeSizeSimple(sizeUncompressed)} ({sizeUncompressed} bytes)");
+                    writer.WriteLine($"Total Update Chunk Count: {chunkCount}");
+                    writer.WriteLine($"Total File Count: {fileCount}");
+                }
+
+                return filePath;
+            }
         }
 
         public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
