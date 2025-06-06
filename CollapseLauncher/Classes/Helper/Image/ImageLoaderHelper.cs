@@ -628,9 +628,11 @@ namespace CollapseLauncher.Helper.Image
         {
             Stream returnStream;
             
-            int    maxRetries   = 3;
-            int    currentRetry = UrlRetryCount.AddOrUpdate(urlLocal, 2, (_, val) => val + 1);
-            int    baseDelay    = 1000; // 1 second base delay
+            const int maxRetries   = 4;
+            const int baseDelay    = 1000; // 1 second base delay
+
+            var currentRetry = UrlRetryCount.AddOrUpdate(urlLocal, 1, (_, val) => val + 1);
+            
             try
             {
                 returnStream =  await GetFallbackStreamUrlInner(client, urlLocal, tokenLocal);
@@ -644,7 +646,7 @@ namespace CollapseLauncher.Helper.Image
                     throw;
                 }
                 
-                int delay = baseDelay * currentRetry;
+                var delay = baseDelay * currentRetry;
                 Logger.LogWriteLine($"Failed to download resource from: {urlLocal} (Attempt {currentRetry}/{maxRetries}). Retrying in {delay}ms...\r\n{ex}", LogType.Warning, true);
                 UrlRetryCount[urlLocal] = currentRetry;
                 await Task.Delay(delay, tokenLocal);
@@ -667,8 +669,7 @@ namespace CollapseLauncher.Helper.Image
 
         public static string? GetCachedSprites(HttpClient? httpClient, string? url, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(url)) return url;
-            if (token.IsCancellationRequested) return url;
+            if (string.IsNullOrEmpty(url) || token.IsCancellationRequested) return url;
 
             string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(url));
             if (!Directory.Exists(AppGameImgCachedFolder))
