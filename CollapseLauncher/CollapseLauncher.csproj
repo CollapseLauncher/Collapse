@@ -426,6 +426,35 @@
         <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
 
+
+    <Target Name="PostPublish" AfterTargets="Publish" Condition="'$(PublishAot)' != 'true'">
+        <!-- Trim unused files and debug symbols -->
+        <ItemGroup>
+            <FilesToDelete Include="$(PublishDir)*.winmd;" />
+            <FilesToDelete Include="$(PublishDir)*.xml;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
+            <FilesToDelete Include="$(PublishDir)workloads*.json;" />
+        </ItemGroup>
+        <Delete Files="@(FilesToDelete)" />
+        <Delete Files="$(PublishDir)aspnetcorev2_inprocess.dll" />
+        <Delete Files="$(PublishDir)DwmSceneI.dll" />
+        <Delete Files="$(PublishDir)DWriteCore.dll" />
+        <Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
+        <Delete Files="$(PublishDir)Microsoft.Graphics.Imaging.dll" />
+        <Delete Files="$(PublishDir)Microsoft.Windows.Widgets.dll" />
+        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.dll" />
+        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
+        <Delete Files="$(PublishDir)Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll" />
+        <Delete Files="$(PublishDir)PushNotificationsLongRunningTask.ProxyStub.dll" />
+        <Delete Files="$(PublishDir)SessionHandleIPCProxyStub.dll" />
+        <Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
+        <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
+        <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
+        <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
+    </Target>
+
     <ItemGroup>
       <Compile Update="Properties\Resources.Designer.cs">
         <DesignTime>True</DesignTime>
