@@ -600,7 +600,7 @@ namespace CollapseLauncher.Helper
                     if (MainWindow.IsCriticalOpInProgress)
                     {
                         // Display reason using ShutdownBlocker
-                        ShutdownBlocker.StartBlocking(CurrentWindowPtr, "Critical operation in progress",
+                        ShutdownBlocker.StartBlocking(CurrentWindowPtr, Locale.Lang._Dialogs.EnsureExitSubtitle,
                                                       ILoggerHelper.GetILogger("ShutdownBlocker"));
                         return 0;
                     }

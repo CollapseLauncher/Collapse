@@ -239,7 +239,7 @@ namespace CollapseLauncher
             if (!IsCriticalOpInProgress) return;
 
             e.Cancel = true;
-            ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, "Critical operation in progress",
+            ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, Lang._Dialogs.EnsureExitSubtitle,
                                           ILoggerHelper.GetILogger("ShutdownBlocker"));
         }
 
