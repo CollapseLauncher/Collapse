@@ -616,6 +616,12 @@ namespace CollapseLauncher.Pages
             set => Settings.GeneralData.Audio_SfxVolume = value;
         }
 
+        public int Audio_VolAmbient
+        {
+            get => Settings.GeneralData.Audio_AmbientVolume;
+            set => Settings.GeneralData.Audio_AmbientVolume = value;
+        }
+
         public int Audio_PlaybackDevice
         {
             get => (int)Settings.GeneralData.Audio_PlaybackDevice;

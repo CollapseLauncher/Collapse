@@ -360,16 +360,29 @@ namespace CollapseLauncher.Extension
             return textBlock;
         }
 
-        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d)
+        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, bool appendSpaceAtEnd, FontWeight? weight = null, double size = 14d, double opacity = 1d)
         {
             message += ' ';
-            return textBlock.AddTextBlockLine(message, weight, size);
+            return textBlock.AddTextBlockLine(message, weight, size, opacity);
         }
 
-        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d)
+        internal static TextBlock AddTextBlockLine(this TextBlock textBlock, string message, FontWeight? weight = null, double size = 14d, double opacity = 1d)
         {
             weight ??= FontWeights.Normal;
-            textBlock.Inlines.Add(new Run { Text = message, FontWeight = weight.Value, FontSize = size });
+            Run run = new Run { Text = message, FontWeight = weight.Value, FontSize = size };
+
+            if (opacity < 1d)
+            {
+                SolidColorBrush brush       = GetApplicationResource<SolidColorBrush>("DefaultTextForegroundThemeBrush");
+                SolidColorBrush opaqueBrush = new SolidColorBrush(brush.Color)
+                {
+                    Opacity = opacity
+                };
+                run.Foreground      = opaqueBrush;
+            }
+
+            textBlock.Inlines.Add(run);
+
             return textBlock;
         }
 

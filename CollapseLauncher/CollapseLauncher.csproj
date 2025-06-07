@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.2</Version>
+        <Version>1.83.3</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -175,7 +175,7 @@
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
-        <PackageReference Include="Velopack" Version="0.0.1251" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+        <PackageReference Include="Velopack" Version="0.0.1297" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -194,7 +194,7 @@
         
         <PackageReference Include="GitInfo" Version="3.5.0" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
-        <PackageReference Include="Markdig.Signed" Version="0.41.1" />
+        <PackageReference Include="Markdig.Signed" Version="0.41.2" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3344-prerelease" />
@@ -384,16 +384,16 @@
 		<RemoveDir Directories="$(PublishDir)NpuDetect" Condition="Exists('$(PublishDir)NpuDetect')" />
     </Target>
 
-    <Target Name="PostPublish" AfterTargets="_CopyAotSymbols" Condition="'$(PublishAot)' == 'true'">
+    <Target Name="PostPublish" AfterTargets="Publish">
         <!-- Region: Libsql.Client -->
-        <Delete Files="$(PublishDir)csharp_bindings.dll" />
+        <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'"/>
 
         <!-- Region: waifu2x-ncnn-vulkan -->
-        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" />
-        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" />
+        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'"/>
+        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'"/>
 
         <!-- Region: libzstd -->
-        <ItemGroup>
+        <ItemGroup Condition="'$(PublishAot)' == 'true'">
             <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
         </ItemGroup>
         
