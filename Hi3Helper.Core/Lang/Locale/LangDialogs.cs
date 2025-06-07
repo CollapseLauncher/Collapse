@@ -212,6 +212,7 @@ namespace Hi3Helper
                 public string UACWarningDontShowAgain { get; set; } = LangFallback?._Dialogs.UACWarningDontShowAgain;
                 public string EnsureExitTitle { get; set; } = LangFallback?._Dialogs.EnsureExitTitle;
                 public string EnsureExitSubtitle { get; set; } = LangFallback?._Dialogs.EnsureExitSubtitle;
+                public string EnsureExitSubtitle2 { get; set; } = LangFallback?._Dialogs.EnsureExitSubtitle2;
                 
                 public string UserFeedback_DialogTitle { get; set; } = LangFallback?._Dialogs.UserFeedback_DialogTitle;
                 public string UserFeedback_TextFieldTitleHeader { get; set; } = LangFallback?._Dialogs.UserFeedback_TextFieldTitleHeader;
