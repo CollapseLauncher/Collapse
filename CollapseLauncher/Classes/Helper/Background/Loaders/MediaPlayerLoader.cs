@@ -21,7 +21,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.Storage;
@@ -424,15 +423,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
-        public void Dimm()
-        {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(true));
-        }
+        public void Dimm() => BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(true));
 
-        public void Undimm()
-        {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(false));
-        }
+        public void Undimm() => BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(false));
 
         private async Task ToggleImageVisibility(bool hideImage)
         {
@@ -458,10 +451,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 );
         }
 
-        public void Show(bool isForceShow = false)
-        {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ShowInner());
-        }
+        public void Show(bool isForceShow = false) => BackgroundMediaUtility.RunQueuedTask(ShowInner());
 
         private async Task ShowInner()
         {
@@ -480,10 +470,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
                               );
         }
 
-        public void Hide()
-        {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(HideInner());
-        }
+        public void Hide() => BackgroundMediaUtility.RunQueuedTask(HideInner());
 
         private async Task HideInner()
         {
@@ -508,17 +495,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             DisposeMediaModules();
         }
 
-        public async void WindowUnfocused()
-        {
-            try
-            {
-                await (BackgroundMediaUtility.SharedActionBlockQueue?.SendAsync(WindowUnfocusedInner()) ?? Task.CompletedTask);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
+        public void WindowUnfocused() => BackgroundMediaUtility.RunQueuedTask(WindowUnfocusedInner());
 
         private async Task WindowUnfocusedInner()
         {
@@ -527,17 +504,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             Pause();
         }
 
-        public async void WindowFocused()
-        {
-            try
-            {
-                await (BackgroundMediaUtility.SharedActionBlockQueue?.SendAsync(WindowFocusedInner()) ?? Task.CompletedTask);
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
+        public void WindowFocused() => BackgroundMediaUtility.RunQueuedTask(WindowFocusedInner());
 
         private async Task WindowFocusedInner()
         {
