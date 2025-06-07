@@ -294,7 +294,6 @@ namespace CollapseLauncher
 
             GamePropertyVault.SafeDisposeVaults();
             SentryHelper.StopSentrySdk();
-            SystemEvents.SessionEnding -= MainEntryPoint.SystemEvent_EndingSession;
             _TrayIcon?.Dispose();
             Close();
             Application.Current.Exit();

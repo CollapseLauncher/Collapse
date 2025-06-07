@@ -5,7 +5,6 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
-using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
@@ -599,9 +598,6 @@ namespace CollapseLauncher.Helper
                     // Return FALSE (0) to prevent shutdown if critical operation is in progress
                     if (MainWindow.IsCriticalOpInProgress)
                     {
-                        // Display reason using ShutdownBlocker
-                        ShutdownBlocker.StartBlocking(CurrentWindowPtr, Locale.Lang._Dialogs.EnsureExitSubtitle,
-                                                      ILoggerHelper.GetILogger("ShutdownBlocker"));
                         return 0;
                     }
                     // Let Windows continue shutdown if no critical operation
