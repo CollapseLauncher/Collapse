@@ -175,7 +175,7 @@ internal static class Sleepy
         }
 
         // Get the FileInfo
-        FileInfo fileInfo = new FileInfo(filePath).EnsureNoReadOnly();
+        FileInfo fileInfo = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly();
 
         // Create the stream and write the thing
         using FileStream stream = fileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.Write);

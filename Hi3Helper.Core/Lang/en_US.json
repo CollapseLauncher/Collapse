@@ -1028,6 +1028,22 @@
     "SophonIncrementUpdateUnavailSubtitle3": " and incremental update for your version is not available. However, you could still update your game by re-downloading the entire thing from scratch.",
     "SophonIncrementUpdateUnavailSubtitle4": "Click \"{0}\" to continue updating the entire thing or click \"{1}\" to cancel the process",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "Additional Packages are Available to Update!",
+    "SophonAdditionalPkgAvailableDownloadTitle": "Additional Packages are Available to Download!",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "Your game has additional packages that can be downloaded. The size of the additional data is:",
+    "SophonAdditionalPkgAvailableSubtitle2": ". In total, you may require to download:",
+    "SophonAdditionalPkgAvailableSubtitle3": "of data if you wish to include the additional packages.",
+    "SophonAdditionalPkgAvailableSubtitle4": "Click",
+    "SophonAdditionalPkgAvailableSubtitle5": "if you want to download the additional package or click",
+    "SophonAdditionalPkgAvailableSubtitle6": "if you only need to download the base files with only:",
+    "SophonAdditionalPkgAvailableSubtitle7": "in total size.",
+    "SophonAdditionalPkgAvailableFootnote1": "Note:",
+    "SophonAdditionalPkgAvailableFootnote2": "You might be required to download the additional packages later in-game if you choose to download the base files only.",
+    "SophonAdditionalPkgSeeDetailsBtn": "See Additional Package Details",
+    "SophonAdditionalConfirmYesBtn": "Download All",
+    "SophonAdditionalConfirmNoBtn": "Download Base Only",
+
     "UACWarningTitle": "Warning: UAC Disabled Detected",
     "UACWarningContent": "Disabling User Account Control (UAC) is never a good idea.\nThe security of the OS will be compromised and the game may not run properly.\n\nClick the \"Learn More\" button to see how to enable UAC.\nThe related entry is: Run all administrators in Admin Approval Mode.",
     "UACWarningLearnMore": "Learn More",
@@ -1584,7 +1600,8 @@
     "Audio_PlaybackDev": "Audio Playback Device",
     "Audio_PlaybackDev_Headphones": "Headphones",
     "Audio_PlaybackDev_Speakers": "Speakers",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_TV": "TV",
+    "Audio_Ambient": "Ambient Noise Volume"
   },
 
   "_NotificationToast": {

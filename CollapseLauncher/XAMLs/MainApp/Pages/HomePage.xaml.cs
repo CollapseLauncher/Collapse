@@ -238,14 +238,26 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                // Get game state
-                GameInstallStateEnum gameState = await CurrentGameProperty.GameVersion.GetGameState();
-
-                // Start automatic scan if the game is in NotInstalled state
-                // and if the return is 0 (yes), then save the config
-                if (gameState == GameInstallStateEnum.NotInstalled &&
-                    await CurrentGameProperty.GameInstall.GetInstallationPath(true) == 0)
+                // If the game version is null, then assume that the game has never been installed. So, return.
+                if (CurrentGameProperty.GameVersion == null)
                 {
+                    return;
+                }
+
+                // Get game state
+                var gameState = await CurrentGameProperty.GameVersion.GetGameState();
+
+                // Start automatic scan if the game is in NotInstalled state and GameInstall instance is not null
+                if (gameState == GameInstallStateEnum.NotInstalled && CurrentGameProperty.GameInstall != null)
+                {
+                    // If it's non-0, return
+                    int getInstallationPathRet = await CurrentGameProperty.GameInstall.GetInstallationPath(true);
+                    if (getInstallationPathRet != 0)
+                    {
+                        return;
+                    }
+
+                    // And if the return is 0, save config as the auto scan is set.
                     // Save the config
                     CurrentGameProperty.GameInstall.ApplyGameConfig();
 
@@ -256,7 +268,7 @@ namespace CollapseLauncher.Pages
 
                 // Check if the game state returns NotInstalled, double-check by doing config.ini validation
                 if (!await CurrentGameProperty.GameVersion
-                          .EnsureGameConfigIniCorrectiveness(this))
+                                              .EnsureGameConfigIniCorrectiveness(this))
                 {
                     // If the EnsureGameConfigIniCorrectiveness() returns false,
                     // means config.ini has been changed. Then reload and return to the HomePage
@@ -272,7 +284,7 @@ namespace CollapseLauncher.Pages
 
                 m_arguments.StartGame.Play = false;
 
-                if (CurrentGameProperty.GameInstall.IsRunning)
+                if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
                 {
                     CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
                     return;
@@ -286,12 +298,18 @@ namespace CollapseLauncher.Pages
                         break;
                     case GameInstallStateEnum.InstalledHavePlugin:
                     case GameInstallStateEnum.NeedsUpdate:
-                        CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                        if (CurrentGameProperty.GameInstall != null)
+                        {
+                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                        }
                         UpdateGameDialog(null, null);
                         break;
                     case GameInstallStateEnum.NotInstalled:
                     case GameInstallStateEnum.GameBroken:
-                        CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                        if (CurrentGameProperty.GameInstall != null)
+                        {
+                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                        }
                         InstallGameDialog(null, null);
                         break;
                 }

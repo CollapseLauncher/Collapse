@@ -112,7 +112,7 @@ namespace CollapseLauncher
                 string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
-            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).EnsureNoReadOnly();
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).StripAlternateDataStream().EnsureNoReadOnly();
 
             // If asset type is unused, then delete it
             if (asset.AssetIndex.FT == FileType.Unused)

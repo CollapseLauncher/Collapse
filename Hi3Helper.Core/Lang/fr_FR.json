@@ -80,12 +80,17 @@
     "UnhandledTitle3": "Le jeu s'est arrêté",
     "UnhandledSubtitle3": "Le jeu s'est arrêté de façon inattendue avec les détails d'erreur ci-dessous :",
     "UnhandledTitle4": "Avertissement",
+    "WarningSubtitle": "Une erreur mineure est survenue avec les détails suivants :",
     "UnhandledSubtitle4": "Ce n'est pas un problème majeur, mais nous pensons que nous devrions vous le faire savoir :\r\nEn raison de tests A/B de miHoYo, Collapse ne supporte pas la lecture de la clé suivante : App_Settings_h2319593470.\r\nNous nous excusons pour la gêne occasionnée et vous remercions de votre compréhension.",
     "UnhandledTitleDiskCrc": "Corruption du disque détectée !",
     "UnhandledSubDiskCrc": "Une corruption du disque a été détectée en tentant d'accéder à un fichier. Veuillez effectuer une vérification de votre disque en utilisant CHKDSK.",
     "CopyClipboardBtn1": "Tout copier dans le presse-papier",
     "CopyClipboardBtn2": "Copié dans le presse-papier !",
-    "GoBackPageBtn1": "Retourner à la page précédente"
+    "GoBackPageBtn1": "Retourner à la page précédente",
+    
+    "CustomBackground_NotFound": "L'arrière-plan personnalisé est manquant ! L'image par défaut a été utilisée.",
+    "CustomBackground_RegionalTag": "Arrière-plan régional",
+    "CustomBackground_GlobalTag": "Arrière-plan global"
   },
 
   "_MainPage": {
@@ -579,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "AVERTISSEMENT : Votre système a le « Pack de compatibilité OpenCL™, OpenGL® et Vulkan® » d'installé. Il a été rapporté que ce package est incompatible avec le chargeur Vulkan et entraînera un plantage sur certains GPUs. Veuillez supprimer ce package afin d'activer le mode GPU.",
     "Waifu2X_Error_Loader": "ERREUR : Échec de l'initialisation de Vulkan Loader. Assurez-vous d'avoir un GPU compatible Vulkan avec des pilotes GPU appropriés installé.",
     "Waifu2X_Error_Output": "ERREUR : Échec de l'auto-test Waifu2X, l'image en sortie est vide.",
+    "Waifu2X_Initializing": "Waifu2X est en cours d'initialisation, veuillez patienter…",
 
     "NetworkSettings_Title": "Paramètres réseau",
     "NetworkSettings_Proxy_Title": "Paramètres de serveur mandataire (proxy)",
@@ -608,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonChecking": "Vérification de la connectivité…",
     "NetworkSettings_ProxyTest_ButtonSuccess": "Le test de connectivité du serveur mandataire a réussi !",
     "NetworkSettings_ProxyTest_ButtonFailed": "Le test a échoué ! Le serveur mandataire est injoignable.",
+
+    "NetworkSettings_Dns_Title": "Paramètres de DNS personnalisé",
+    "NetworkSettings_Dns_ConnectionType": "Type de connexion",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS over HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS over TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Représente le type de protocole DNS qui sera utilisé pour effectuer la requête DNS. Quelques protocoles sont supportés par Collapse, incluant :",
+    "NetworkSettings_Dns_ProviderSelection": "Fournisseur DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Personnalisé",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Il y a quelques fournisseurs de services DNS disponibles inclus dans Collapse. Vous pouvez utiliser votre propre fournisseur/serveur DNS en définissant l'option « Fournisseur DNS » sur « Personnalisé ».",
+    "NetworkSettings_Dns_CustomProvider": "Fournisseur(s) DNS personnalisé(s)",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Dépend du paramètre «",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "»",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Lors que vous définissez «",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "» en tant que",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "choisi, vous pouvez ajouter votre propre fournisseur/serveur DNS en entrant son adresse IPv4/IPv6 ou son nom d'hôte. Vous pouvez aussi ajouter des fournisseurs DNS prédéfinis (qui commencent par le symbole « $ ») à côté de vos fournisseurs/serveurs DNS personnalisés en séparant chaque entrée avec l'un de ces symboles :",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Exemple :",
+    "NetworkSettings_Dns_ChangesWarning": "Vous devez redémarrer Collapse afin que les modifications prennent effet.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Tester et enregistrer les modifications",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Validation et application des modifications…",
+    "NetworkSettings_Dns_SettingsSavedButton": "Modifications enregistrées !",
+    "NetworkSettings_Dns_SettingsFailedButton": "Échec de l'enregistrement des modifications !",
 
     "NetworkSettings_Http_Title": "Paramètres du client HTTP .NET",
     "NetworkSettings_Http_Redirect": "Autoriser la redirection HTTP",
@@ -664,7 +692,9 @@
     "Database_Warning_PropertyChanged": "Les paramètres de la base de données ont changé",
     "Database_ValidationChecking": "Validation des paramètres…",
     "Database_Placeholder_DbUserIdTextBox": "Exemple de GUID : ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici"
+    "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici",
+    
+    "SearchPlaceholder": "Rechercher un paramètre…"
   },
 
   "_Misc": {
@@ -759,10 +789,11 @@
     "BuildChannelStable": "Stable",
 
     "CDNDescription_Github": "Le dépôt officiel (principal) du launcher",
-    "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) hébergé dans le seau R2 de Cloudflare",
-    "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) hébergé sur Bitbucket",
-    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) hébergé sur GitLab",
-    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) hébergé sur Coding",
+    "CDNDescription_DigitalOcean": "Un miroir du dépôt officiel (principal) propulsé par DigitalOcean",
+    "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) propulsé par le seau Cloudflare R2",
+    "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) propulsé par BitBucket",
+    "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) propulsé par GitLab",
+    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) propulsé par Coding",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -808,10 +839,15 @@
     "ExceptionFeedbackTitle": "Dites-nous ce qu'il s'est passé :",
     "ExceptionFeedbackTemplate_User": "Nom d'utilisateur (optionnel) :",
     "ExceptionFeedbackTemplate_Email": "Adresse e-mail (optionnel) :",
-    "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne",
-    
-    "Tag_Deprecated": "Deprecated",
-    "Generic_GameFeatureDeprecation": "Due to unforeseen game changes, this feature has been deprecated and will be removed in the future. Using this feature may cause unexpected behavior."
+    "ExceptionFeedbackTemplate_Message": "Insérez vos commentaires sous cette ligne (vous n'êtes pas tenu de mentionner le message d'erreur, il sera automatiquement adjoint lors de l'envoi)",
+
+    "Feedback": "Retour utilisateur",
+    "FeedbackSending": "Envoi de vos commentaires…",
+    "FeedbackSent": "Commentaires envoyés !",
+    "FeedbackSendFailure": "Échec de l'envoi des commentaires ! Vérifiez les logs ou la console pour plus d'informations.",
+
+    "Tag_Deprecated": "Abandonné",
+    "Generic_GameFeatureDeprecation": "En raison de changements imprévus au sein du jeu, cette fonctionnalité a été abandonnée et sera supprimée à l'avenir. L'utilisation de cette fonctionnalité peut provoquer un comportement inattendu."
   },
 
   "_BackgroundNotification": {

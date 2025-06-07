@@ -601,6 +601,19 @@
                                                 TickPlacement="Outside"
                                                 Value="{x:Bind Audio_VolSfx, Mode=TwoWay}" />
                                     </StackPanel>
+                                    <TextBlock Margin="0,16,0,16"
+                                               Style="{ThemeResource SubtitleTextBlockStyle}"
+                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Audio_Ambient}"
+                                               TextWrapping="Wrap" />
+                                    <StackPanel Margin="0,0,32,8"
+                                                Orientation="Vertical">
+                                        <Slider x:Name="AudioAmbientVolumeSlider"
+                                                Maximum="10"
+                                                Style="{ThemeResource FatSliderStyle}"
+                                                TickFrequency="1"
+                                                TickPlacement="Outside"
+                                                Value="{x:Bind Audio_VolAmbient, Mode=TwoWay}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

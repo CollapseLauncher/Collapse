@@ -16,12 +16,12 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.82.24</Version>
+        <Version>1.82.25</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
-        <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
-        <WindowsSdkPackageVersion>10.0.22621.57</WindowsSdkPackageVersion>
+        <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+        <WindowsSdkPackageVersion>10.0.26100.57</WindowsSdkPackageVersion>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
@@ -36,7 +36,9 @@
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
         <!-- Analyzers Settings -->
+        <EnableAOTAnalyzer>true</EnableAOTAnalyzer>
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <!-- Other Settings -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -48,18 +50,28 @@
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+        <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
     </PropertyGroup>
 
     <PropertyGroup>
-        <NoWarn>TA101</NoWarn>
-        <NoWarn>TA100</NoWarn>
+        <NoWarn>$(NoWarn);TA101;TA100</NoWarn>
+        <WarningLevel>5</WarningLevel>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(PublishAot)' == 'true' And '$(Configuration)' != 'Debug'">
+<!--    <PropertyGroup Condition="'$(PublishAot)' == 'true' And '$(Configuration)' != 'Debug'">-->
+    <PropertyGroup Condition="'$(PublishAot)' == 'true'">
         <RunAOTCompilation>true</RunAOTCompilation>
         <OptimizationPreference>Speed</OptimizationPreference>
         <StripSymbols>true</StripSymbols>
+        <IlcTrimMetadata>true</IlcTrimMetadata>
         <EventSourceSupport>false</EventSourceSupport>
+        <DebuggerSupport>false</DebuggerSupport>
+        <DefineConstants>$(DefineConstants);AOT</DefineConstants>
+        <IlcInstructionSet>sse2</IlcInstructionSet>
+        <!-- Security thingymajig -->
+        <ControlFlowGuard>Guard</ControlFlowGuard>
+        <CetCompat>true</CetCompat>
     </PropertyGroup>
 
 <!--
@@ -82,21 +94,21 @@
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
         <TrimMode>full</TrimMode>
         <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>True</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Publish'">
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
+        <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;MHYPLUGINSUPPORT</DefineConstants>
         <Optimize>true</Optimize>
         <GitSkipCache>true</GitSkipCache>
     </PropertyGroup>
@@ -114,8 +126,8 @@
             - GetUserProfileDirectoryW function from Win32's userenv.dll
             - SHGetKnownFolderPath function from Win32's shell32.dll
         -->
-        <NativeLibrary Include="StaticLib\WindowsKits\10.0.22621.0_um_x64\UserEnv.lib" />
-        <NativeLibrary Include="StaticLib\WindowsKits\10.0.22621.0_um_x64\shell32.lib" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\UserEnv.lib" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\shell32.lib" />
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
@@ -140,6 +152,11 @@
         <NativeLibrary Include="StaticLib\libwebpdemux_msvc-ucrt.lib" />
         <DirectPInvoke Include="webpmux" />
         <NativeLibrary Include="StaticLib\libwebpmux_msvc-ucrt.lib" />
+
+        <!-- Region: zstd (Decompressor only) -->
+        <DirectPInvoke Include="libzstd" />
+        <NativeLibrary Include="StaticLib\libzstd-static_msvc-ucrt.lib" />
+
         <!--
         These libraries are required by libwebp to resolve external calls.
         -->
@@ -154,19 +171,20 @@
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.3" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
-        <PackageReference Include="Velopack" Version="0.0.1053" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+        <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
+        <PackageReference Include="Velopack" Version="0.0.1297" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250129-preview2" />
-        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250129-preview2" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.2.250402" />
+        <PackageReference Include="CommunityToolkit.WinUI.Controls.Sizers" Version="8.2.250402" />
         
         <!--
         Only include FFmpegInteropX NuGet if USEFFMPEGFORVIDEOBG is defined in constants.
@@ -175,25 +193,25 @@
         <PackageReference Include="FFmpegInteropX" Version="*-*" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         
         <PackageReference Include="GitInfo" Version="3.5.0" PrivateAssets="all" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.74" />
-        <PackageReference Include="Markdig.Signed" Version="0.40.0" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+        <PackageReference Include="Markdig.Signed" Version="0.41.2" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3065.39" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3344-prerelease" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250205002" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250515001-experimental2" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
-        <PackageReference Include="SharpCompress" Version="0.39.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
+        <PackageReference Include="SharpCompress" Version="0.40.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.3" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.3" />
-        <PackageReference Include="System.Text.Json" Version="9.0.3" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.5" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.5" />
+        <PackageReference Include="System.Text.Json" Version="9.0.5" />
     </ItemGroup>
 
     <ItemGroup>
@@ -359,32 +377,47 @@
     <Target Name="PostBuild" AfterTargets="Publish">
         <Exec Command="del /s /q $(PublishDir)av*-58.dll $(PublishDir)av*-60.dll $(PublishDir)avfilter-9.dll $(PublishDir)av*.lib&#xD;&#xA;rd /s /q $(PublishDir)Lib\win-arm64 &amp; exit 0" Condition="$(DefineConstants.Contains('USEFFMPEGFORVIDEOBG'))" />
         <Exec Command="copy /Y $(ProjectDir)$(OutDir)Lib\win-x64\Hi3Helper.TaskScheduler.exe $(PublishDir)Lib\win-x64\" />
+        <Exec Command="&quot;$(ProjectDir)aot-locale-cleanup.bat&quot; &quot;$(PublishDir)&quot;" Condition="'$(PublishAot)' == 'true'" />
         <RemoveDir Directories="$(PublishDir)Lib\win-arm64" Condition="Exists('$(PublishDir)Lib\win-arm64')" />
-        <RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
+		<RemoveDir Directories="$(PublishDir)Lib\win-x86" Condition="Exists('$(PublishDir)Lib\win-x86')" />
+		<RemoveDir Directories="$(PublishDir)NpuDetect" Condition="Exists('$(PublishDir)NpuDetect')" />
     </Target>
 
-    <Target Name="PostPublish" AfterTargets="_CopyAotSymbols" Condition="'$(PublishAot)' == 'true'">
+    <Target Name="PostPublish" AfterTargets="Publish">
         <!-- Region: Libsql.Client -->
-        <Delete Files="$(PublishDir)csharp_bindings.dll" />
+        <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'"/>
 
         <!-- Region: waifu2x-ncnn-vulkan -->
-        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" />
-        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" />
+        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'"/>
+        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'"/>
+
+        <!-- Region: libzstd -->
+        <ItemGroup Condition="'$(PublishAot)' == 'true'">
+            <FilesToDelete Include="$(PublishDir)Lib\win-x64\libzstd*" />
+        </ItemGroup>
         
         <!-- Trim unused files and debug symbols -->
         <ItemGroup>
             <FilesToDelete Include="$(PublishDir)*.winmd;" />
-            <FilesToDelete Include="$(PublishDir)*.xml;" />
+			<FilesToDelete Include="$(PublishDir)*.xml;" />
+			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
+			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
+			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
+			<FilesToDelete Include="$(PublishDir)workloads*.json;" />
         </ItemGroup>
         <Delete Files="@(FilesToDelete)" />
+		<Delete Files="$(PublishDir)aspnetcorev2_inprocess.dll" />
         <Delete Files="$(PublishDir)DwmSceneI.dll" />
         <Delete Files="$(PublishDir)DWriteCore.dll" />
-        <Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
+		<Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
+		<Delete Files="$(PublishDir)Microsoft.Graphics.Imaging.dll" />
         <Delete Files="$(PublishDir)Microsoft.Windows.Widgets.dll" />
         <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.dll" />
-        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
+		<Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
+		<Delete Files="$(PublishDir)Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll" />
         <Delete Files="$(PublishDir)PushNotificationsLongRunningTask.ProxyStub.dll" />
-        <Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
+		<Delete Files="$(PublishDir)SessionHandleIPCProxyStub.dll" />
+		<Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
         <Delete Files="$(PublishDir)webp.dll" />

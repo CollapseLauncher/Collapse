@@ -633,6 +633,18 @@ namespace CollapseLauncher.GameSettings.Zenless
             set => _sfxVolData?.SetData(value);
         }
 
+        // Key 20192 Ambient
+        private SystemSettingLocalData<int>? _ambientVolData;
+
+        [JsonIgnore]
+        public int Audio_AmbientVolume
+        {
+            get => (_ambientVolData ??= SystemSettingDataMap
+            .AsSystemSettingLocalData("20192", 10))
+            .GetData();
+            set => _ambientVolData?.SetData(value);
+        }
+
         // Key 10104 Playback Device Type
         private SystemSettingLocalData<AudioPlaybackDevice>? _playDevData;
 

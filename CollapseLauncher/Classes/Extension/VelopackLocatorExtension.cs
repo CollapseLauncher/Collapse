@@ -5,15 +5,16 @@ using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ShellLinkCOM;
-using Microsoft.Extensions.Logging;
 using NuGet.Versioning;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Velopack;
 using Velopack.Locators;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo
@@ -55,19 +56,26 @@ namespace CollapseLauncher.Classes.Extension
 #else
             // Allocate the Velopack locator manually to avoid Velopack from re-assigning
             // its custom AUMID
-            ILogger logger = ILoggerHelper.GetILogger("Velopack");
-            WindowsVelopackLocator locator = new WindowsVelopackLocator(logger);
+            var logger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
+
+            var currentProcess = Process.GetCurrentProcess();
+
+            var locator =
+                new WindowsVelopackLocator(currentProcess.MainModule!.FileName,
+                                           (uint)currentProcess.Id,
+                                           logger);
             // HACK: Always ensure to set the AUMID field null so it won't
             //       set the AUMID to its own.
             locator.GetLocatorAumidField() = null;
 
-            VelopackApp builder = VelopackApp.Build()
-                       .WithRestarted(TryCleanupFallbackUpdate)
-                       .WithAfterUpdateFastCallback(TryCleanupFallbackUpdate)
-                       .WithFirstRun(TryCleanupFallbackUpdate)
-                       .SetLocator(locator);
+            var velopackBuilder = VelopackApp.Build()
+                                             .OnRestarted(TryCleanupFallbackUpdate)
+                                             .OnAfterUpdateFastCallback(TryCleanupFallbackUpdate)
+                                             .OnFirstRun(TryCleanupFallbackUpdate)
+                                             .SetLocator(locator)
+                                             .SetLogger(logger);
 
-            builder.Run(logger);
+            velopackBuilder.Run();
 
             _ = Task.Run(DeleteVelopackLock);
 
