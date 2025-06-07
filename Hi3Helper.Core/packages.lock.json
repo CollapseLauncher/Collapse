@@ -61,7 +61,6 @@
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )"
         }
       }
-    },
-    "net9.0-windows10.0.26100/win-x64": {}
+    }
   }
 }
