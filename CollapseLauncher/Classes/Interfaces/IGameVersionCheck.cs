@@ -22,12 +22,12 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Get the game name
         /// </summary>
-        string GameName { get; }
+        string? GameName { get; }
 
         /// <summary>
         /// Get the region name of the game
         /// </summary>
-        string GameRegion { get; }
+        string? GameRegion { get; }
 
         /// <summary>
         /// Get the version section of the game INI's configuration
@@ -58,7 +58,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or set the API properties
         /// </summary>
-        RegionResourceProp GameApiProp { get; set; }
+        RegionResourceProp? GameApiProp { get; set; }
 
         /// <summary>
         /// Returns the type of the game
@@ -182,7 +182,7 @@ namespace CollapseLauncher.Interfaces
         /// Try to find game installation path from the given path.
         /// If it returns null, then there's no game installation found.
         /// </summary>
-        string? FindGameInstallationPath(string path);
+        Task<string?> FindGameInstallationPath(string path);
 
         /// <summary>
         /// Update the location of the game folder and also save it to the Game Profile's Ini file.

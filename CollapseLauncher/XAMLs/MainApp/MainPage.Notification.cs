@@ -167,9 +167,9 @@ public partial class MainPage : Page
             GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
 
             if (Entry.ValidForVerBelow == null && IsNotificationTimestampValid(Entry)
-                || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
-                    && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
-                || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow))
+                || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow
+                    && ValidForVerAbove < LauncherUpdateHelper.LauncherCurrentVersion)
+                || LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow)
             {
                 if (Entry.ActionProperty != null)
                 {

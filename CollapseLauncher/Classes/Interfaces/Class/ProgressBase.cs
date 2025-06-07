@@ -785,7 +785,7 @@ namespace CollapseLauncher.Interfaces
         protected async Task FetchBilibiliSdk(CancellationToken token)
         {
             // Check whether the sdk is not null, 
-            if (GameVersionManager.GameApiProp.data?.sdk == null) return;
+            if (GameVersionManager.GameApiProp?.data?.sdk == null) return;
 
             // Set total activity string as "Loading Indexes..."
             Status.ActivityStatus = Lang!._GameRepairPage!.Status2;

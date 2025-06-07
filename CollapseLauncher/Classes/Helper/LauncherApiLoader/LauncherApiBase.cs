@@ -34,14 +34,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public const int           ExecutionTimeout        = 10;
         public const int           ExecutionTimeoutStep    = 5;
         public const int           ExecutionTimeoutAttempt = 5;
-        protected       PresetConfig? PresetConfig { get; }
-
-        public bool    IsLoadingCompleted      { get; private set; }
-        public bool    IsForceRedirectToSophon { get; private set; }
-        public string? GameBackgroundImg       { get => LauncherGameNews?.Content?.Background?.BackgroundImg; } 
-        public string? GameBackgroundImgLocal  { get; set; }
-        public string? GameName                { get; init; }
-        public string? GameRegion              { get; init; }
+        public       bool          IsPlugin => false;
+        public       bool          IsLoadingCompleted { get; private set; }
+        public       bool          IsForceRedirectToSophon { get; private set; }
+        public       string?       GameBackgroundImg { get => LauncherGameNews?.Content?.Background?.BackgroundImg; }
+        public       string?       GameBackgroundImgLocal { get; set; }
+        public       string?       GameName { get; init; }
+        public       string?       GameRegion { get; init; }
+        protected    PresetConfig? PresetConfig { get; }
 
         public string? GameNameTranslation =>
             InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles);
@@ -244,12 +244,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                                                 token);
             sophonUrls.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
 
-            ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> launcherSophonBranchCallback = 
+            ActionTimeoutTaskCallback<HoYoPlayLauncherGameInfo?> launcherSophonBranchCallback =
                 innerToken =>
                     ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig.LauncherResourceChunksURL?.BranchUrl,
                                                           HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
-                                                          innerToken)
-                    .ConfigureAwait(false);
+                                                          innerToken);
 
             LauncherGameResourceSophon = await launcherSophonBranchCallback
                .WaitForRetryAsync(ExecutionTimeout,
@@ -265,12 +264,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             EnsurePresetConfigNotNull();
             EnsureResourceUrlNotNull();
 
-            ActionTimeoutTaskAwaitableCallback<RegionResourceProp?> launcherGameResourceCallback =
+            ActionTimeoutTaskCallback<RegionResourceProp?> launcherGameResourceCallback =
                 innerToken =>
                     ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig?.LauncherResourceURL,
                                                           RegionResourcePropJsonContext.Default.RegionResourceProp,
-                                                          innerToken)
-                                        .ConfigureAwait(false);
+                                                          innerToken);
 
             Task[] tasks = [
                 launcherGameResourceCallback
@@ -290,13 +288,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                            .ContinueWith(AfterExecute, token);
             }
 
-            ActionTimeoutTaskAwaitableCallback<RegionResourceProp?> launcherPluginPropCallback =
+            ActionTimeoutTaskCallback<RegionResourceProp?> launcherPluginPropCallback =
                 innerToken =>
                     ApiGeneralHttpClient.GetFromJsonAsync(string.Format(PresetConfig?.LauncherPluginURL!,
                                                                         GetDeviceId(PresetConfig!)),
                                                           RegionResourcePropJsonContext.Default.RegionResourceProp,
-                                                          innerToken)
-                                        .ConfigureAwait(false);
+                                                          innerToken);
 
             tasks[1] = launcherPluginPropCallback
                       .WaitForRetryAsync(ExecutionTimeout,
@@ -467,7 +464,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 throw new NullReferenceException("Launcher news URL is null or empty!");
             }
 
-            ActionTimeoutTaskAwaitableCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
+            ActionTimeoutTaskCallback<LauncherGameNews?> taskGameLauncherNewsSophonCallback =
                 innerToken =>
                     isMultiLang
                         ? LoadMultiLangLauncherNews(presetConfig.LauncherSpriteURL, lang, innerToken)
@@ -481,25 +478,23 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                                                      .ConfigureAwait(false);
         }
 
-        private ConfiguredTaskAwaitable<LauncherGameNews?>
+        private Task<LauncherGameNews?>
             LoadSingleLangLauncherNews(string            launcherSpriteUrl,
                                        CancellationToken token)
         {
             return ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl,
                                                           LauncherGameNewsJsonContext.Default.LauncherGameNews,
-                                                          token)
-                                        .ConfigureAwait(false);
+                                                          token);
         }
 
-        private ConfiguredTaskAwaitable<LauncherGameNews?>
+        private Task<LauncherGameNews?>
             LoadMultiLangLauncherNews(string            launcherSpriteUrl,
                                       string            lang,
                                       CancellationToken token)
         {
             return ApiResourceHttpClient.GetFromJsonAsync(string.Format(launcherSpriteUrl, lang),
                                                           LauncherGameNewsJsonContext.Default.LauncherGameNews,
-                                                          token)
-                                        .ConfigureAwait(false);
+                                                          token);
         }
 
         protected virtual string GetDeviceId(PresetConfig preset)
