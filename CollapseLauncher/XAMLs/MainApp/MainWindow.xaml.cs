@@ -37,13 +37,13 @@ namespace CollapseLauncher
     {
         private static bool _isForceDisableIntro;
 
-        private static readonly Lock CriticalOpLock = new Lock();
+        private static readonly Lock CriticalOpLock = new();
         public static bool IsCriticalOpInProgress
         {
             get;
             set
             {
-                lock (CriticalOpLock)
+                using (CriticalOpLock.EnterScope())
                 {
                     var lastValue = field;
                     field = value;
