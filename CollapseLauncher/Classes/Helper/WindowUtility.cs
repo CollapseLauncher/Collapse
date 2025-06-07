@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
@@ -451,12 +452,14 @@ namespace CollapseLauncher.Helper
 
         private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
         {
-            const uint WM_SYSCOMMAND        = 0x0112;
-            const uint WM_SHOWWINDOW        = 0x0018;
-            const uint WM_NCHITTEST         = 0x0084;
-            const uint WM_NCCALCSIZE        = 0x0083;
-            const uint WM_SETTINGCHANGE     = 0x001A;
-            const uint WM_ACTIVATE          = 0x0006;
+            const uint WM_SYSCOMMAND      = 0x0112;
+            const uint WM_SHOWWINDOW      = 0x0018;
+            const uint WM_NCHITTEST       = 0x0084;
+            const uint WM_NCCALCSIZE      = 0x0083;
+            const uint WM_SETTINGCHANGE   = 0x001A;
+            const uint WM_ACTIVATE        = 0x0006;
+            const uint WM_QUERYENDSESSION = 0x0011;
+            const uint WM_ENDSESSION      = 0x0016;
 
             switch (msg)
             {
@@ -592,6 +595,32 @@ namespace CollapseLauncher.Helper
 
                         break;
                     }
+                case WM_QUERYENDSESSION:
+                    // Return FALSE (0) to prevent shutdown if critical operation is in progress
+                    if (MainWindow.IsCriticalOpInProgress)
+                    {
+                        // Display reason using ShutdownBlocker
+                        ShutdownBlocker.StartBlocking(CurrentWindowPtr, "Critical operation in progress",
+                                                      ILoggerHelper.GetILogger("ShutdownBlocker"));
+                        return 0;
+                    }
+                    // Let Windows continue shutdown if no critical operation
+                    break;
+            
+                case WM_ENDSESSION:
+                    // wParam is TRUE if session is ending
+                    if (wParam != UIntPtr.Zero)
+                    {
+                        if (MainWindow.IsCriticalOpInProgress)
+                        {
+                            // Still try to block it at this stage
+                            return 0;
+                        }
+                
+                        // No critical operation, calling app close method
+                        (CurrentWindow as MainWindow)?.CloseApp();
+                    }
+                    break;
             }
 
             return PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);

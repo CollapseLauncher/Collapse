@@ -11,6 +11,7 @@ using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
@@ -18,7 +19,9 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.Win32;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -34,8 +37,31 @@ namespace CollapseLauncher
     public sealed partial class MainWindow : Window
     {
         private static bool _isForceDisableIntro;
-        
-        public static bool IsCriticalOpInProgress { get; set; }
+
+        private static readonly Lock CriticalOpLock = new Lock();
+        public static bool IsCriticalOpInProgress
+        {
+            get;
+            set
+            {
+                lock (CriticalOpLock)
+                {
+                    var lastValue = field;
+                    field = value;
+                    
+                    if (value)
+                    {
+                        ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, "Critical operation in progress",
+                                                      ILoggerHelper.GetILogger("ShutdownBlocker"));
+                    }
+                    else if (lastValue)
+                    {
+                        ShutdownBlocker.StopBlocking(WindowUtility.CurrentWindowPtr,
+                                                     ILoggerHelper.GetILogger("ShutdownBlocker"));
+                    }
+                }
+            }
+        }
 
         public void InitializeWindowProperties(bool startOobe = false)
         {
@@ -268,6 +294,7 @@ namespace CollapseLauncher
 
             GamePropertyVault.SafeDisposeVaults();
             SentryHelper.StopSentrySdk();
+            SystemEvents.SessionEnding -= MainEntryPoint.SystemEvent_EndingSession;
             _TrayIcon?.Dispose();
             Close();
             Application.Current.Exit();
