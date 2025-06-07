@@ -5,6 +5,7 @@ using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
@@ -39,7 +40,6 @@ using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable UnusedMember.Global
 
-#pragma warning disable CA2012
 namespace CollapseLauncher.Helper
 {
     internal enum WindowBackdropKind
@@ -50,6 +50,7 @@ namespace CollapseLauncher.Helper
         None
     }
 
+    internal delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
     internal static class WindowUtility
     {
         private static event EventHandler<RectInt32[]>? DragAreaChangeEvent;
@@ -57,15 +58,40 @@ namespace CollapseLauncher.Helper
         private static nint _oldMainWndProcPtr;
         private static nint _oldDesktopSiteBridgeWndProcPtr;
 
-        private delegate IntPtr WndProcDelegate(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam);
-
-        internal static nint CurrentWindowPtr = nint.Zero;
-        internal static Window? CurrentWindow;
-        internal static AppWindow? CurrentAppWindow;
-        internal static WindowId? CurrentWindowId;
-        internal static OverlappedPresenter? CurrentOverlappedPresenter;
 
         private static readonly TaskbarList Taskbar = new();
+
+        internal static Window? CurrentWindow { get; set; }
+
+        internal static nint CurrentWindowPtr
+        {
+            get => WindowNative.GetWindowHandle(CurrentWindow);
+        }
+
+        internal static WindowId? CurrentWindowId
+        {
+            get => Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
+        }
+
+        internal static AppWindow? CurrentAppWindow
+        {
+            get => CurrentWindowId.HasValue ? AppWindow.GetFromWindowId(CurrentWindowId.Value) : null;
+        }
+
+        internal static InputNonClientPointerSource? CurrentInputNonClientPointerSource
+        {
+            get => CurrentWindowId.HasValue ? InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value) : null;
+        }
+
+        internal static OverlappedPresenter? CurrentOverlappedPresenter
+        {
+            get => CurrentAppWindow?.Presenter as OverlappedPresenter;
+        }
+
+        internal static DispatcherQueue? CurrentDispatcherQueue
+        {
+            get => CurrentWindow?.DispatcherQueue;
+        }
 
         internal static DisplayArea? CurrentWindowDisplayArea
         {
@@ -200,7 +226,7 @@ namespace CollapseLauncher.Helper
                 if (InnerLauncherConfig.m_isWindows11)
                 {
                     // We have no title bar
-                    var titleBarHeight = PInvoke.GetSystemMetrics(SystemMetric.SM_CYSIZEFRAME) +
+                    int titleBarHeight = PInvoke.GetSystemMetrics(SystemMetric.SM_CYSIZEFRAME) +
                                          PInvoke.GetSystemMetrics(SystemMetric.SM_CYCAPTION) +
                                          PInvoke.GetSystemMetrics(SystemMetric.SM_CXPADDEDBORDER);
                     value.Height -= titleBarHeight;
@@ -366,25 +392,16 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        internal static DispatcherQueue? CurrentDispatcherQueue { get; set; }
-
         internal static void RegisterWindow(this Window window)
         {
             // Uninstall existing drag area change
             UninstallDragAreaChangeMonitor();
 
-            CurrentWindow          = window;
-            CurrentWindowPtr       = WindowNative.GetWindowHandle(window);
-            CurrentWindowId        = Win32Interop.GetWindowIdFromWindow(CurrentWindowPtr);
-            CurrentDispatcherQueue = window.DispatcherQueue;
-
+            CurrentWindow = window;
             if (!CurrentWindowId.HasValue)
             {
                 throw new NullReferenceException($"Window ID cannot be retrieved from pointer: 0x{CurrentWindowPtr:x8}");
             }
-
-            CurrentAppWindow           = AppWindow.GetFromWindowId(CurrentWindowId.Value);
-            CurrentOverlappedPresenter = CurrentAppWindow.Presenter as OverlappedPresenter;
 
             // Install WndProc callback
             _oldMainWndProcPtr = InstallWndProcCallback(CurrentWindowPtr, MainWndProc);
@@ -429,19 +446,20 @@ namespace CollapseLauncher.Helper
         {
             // Install WndProc hook
             const int GWLP_WNDPROC = -4;
-            WndProcDelegate mNewWndProcDelegate = wndProc;
-            IntPtr pWndProc = Marshal.GetFunctionPointerForDelegate(mNewWndProcDelegate);
+            IntPtr    pWndProc     = Marshal.GetFunctionPointerForDelegate(wndProc);
             return PInvoke.SetWindowLongPtr(hwnd, GWLP_WNDPROC, pWndProc);
         }
 
         private static IntPtr MainWndProc(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
         {
-            const uint WM_SYSCOMMAND = 0x0112;
-            const uint WM_SHOWWINDOW = 0x0018;
-            const uint WM_NCHITTEST = 0x0084;
-            const uint WM_NCCALCSIZE = 0x0083;
-            const uint WM_SETTINGCHANGE = 0x001A;
-            const uint WM_ACTIVATE = 0x0006;
+            const uint WM_SYSCOMMAND      = 0x0112;
+            const uint WM_SHOWWINDOW      = 0x0018;
+            const uint WM_NCHITTEST       = 0x0084;
+            const uint WM_NCCALCSIZE      = 0x0083;
+            const uint WM_SETTINGCHANGE   = 0x001A;
+            const uint WM_ACTIVATE        = 0x0006;
+            const uint WM_QUERYENDSESSION = 0x0011;
+            const uint WM_ENDSESSION      = 0x0016;
 
             switch (msg)
             {
@@ -542,7 +560,7 @@ namespace CollapseLauncher.Helper
                         const int HTTOPRIGHT = 14;
                         const int HTCLOSE = 20;
 
-                        var result = PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
+                        IntPtr result = PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
                         return result switch
                         {
                             // Hide all system buttons
@@ -567,7 +585,7 @@ namespace CollapseLauncher.Helper
                     }
                 case WM_SETTINGCHANGE:
                     {
-                        var setting = Marshal.PtrToStringAnsi(lParam);
+                        string? setting = Marshal.PtrToStringAnsi(lParam);
                         if (setting == "ImmersiveColorSet")
                         {
                             PInvoke.SetPreferredAppMode(PInvoke.ShouldAppsUseDarkMode()
@@ -577,6 +595,32 @@ namespace CollapseLauncher.Helper
 
                         break;
                     }
+                case WM_QUERYENDSESSION:
+                    // Return FALSE (0) to prevent shutdown if critical operation is in progress
+                    if (MainWindow.IsCriticalOpInProgress)
+                    {
+                        // Display reason using ShutdownBlocker
+                        ShutdownBlocker.StartBlocking(CurrentWindowPtr, "Critical operation in progress",
+                                                      ILoggerHelper.GetILogger("ShutdownBlocker"));
+                        return 0;
+                    }
+                    // Let Windows continue shutdown if no critical operation
+                    break;
+            
+                case WM_ENDSESSION:
+                    // wParam is TRUE if session is ending
+                    if (wParam != UIntPtr.Zero)
+                    {
+                        if (MainWindow.IsCriticalOpInProgress)
+                        {
+                            // Still try to block it at this stage
+                            return 0;
+                        }
+                
+                        // No critical operation, calling app close method
+                        (CurrentWindow as MainWindow)?.CloseApp();
+                    }
+                    break;
             }
 
             return PInvoke.CallWindowProc(_oldMainWndProcPtr, hwnd, msg, wParam, lParam);
@@ -592,9 +636,9 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            InputNonClientPointerSource incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-            incps.SetRegionRects(NonClientRegionKind.Close, null);
-            incps.SetRegionRects(NonClientRegionKind.Minimize, null);
+            InputNonClientPointerSource? incps = CurrentInputNonClientPointerSource;
+            incps?.SetRegionRects(NonClientRegionKind.Close,    null);
+            incps?.SetRegionRects(NonClientRegionKind.Minimize, null);
             EnableWindowNonClientArea();
         }
 
@@ -666,7 +710,7 @@ namespace CollapseLauncher.Helper
             // Hide window border but keep drop shadow
             if (!InnerLauncherConfig.m_isWindows11)
             {
-                var margin = new MARGINS
+                MARGINS margin = new()
                 {
                     cyBottomHeight = 1
                 };
@@ -679,7 +723,7 @@ namespace CollapseLauncher.Helper
                 PInvoke.SetWindowPos(CurrentWindowPtr, 0, 0, 0, 0, 0, flags);
             }
 
-            var desktopSiteBridgeHwnd = PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
+            IntPtr desktopSiteBridgeHwnd = PInvoke.FindWindowEx(CurrentWindowPtr, 0, "Microsoft.UI.Content.DesktopChildSiteBridge", "");
             _oldDesktopSiteBridgeWndProcPtr = InstallWndProcCallback(desktopSiteBridgeHwnd, DesktopSiteBridgeWndProc);
         }
 
@@ -692,7 +736,7 @@ namespace CollapseLauncher.Helper
                 case WM_WINDOWPOSCHANGING:
                     {
                         // Fix the weird 1px offset
-                        var windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+                        WINDOWPOS windowPos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
                         if (windowPos is { x: 0, y: 1 } &&
                             windowPos.cx == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width * CurrentWindowMonitorScaleFactor) &&
                             windowPos.cy == (int)(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height * CurrentWindowMonitorScaleFactor) - 1)
@@ -759,14 +803,14 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            double scaleFactor = CurrentWindowMonitorScaleFactor;
-            var incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
+            double                       scaleFactor = CurrentWindowMonitorScaleFactor;
+            InputNonClientPointerSource? incps       = CurrentInputNonClientPointerSource;
             RectInt32[] safeArea =
             [
                 new(CurrentAppWindow.Size.Width - (int)((144 + 12) * scaleFactor), 0, (int)((144 + 12) * scaleFactor),
                     (int)(48 * scaleFactor))
             ];
-            incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
+            incps?.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
         }
 
         internal static void DisableWindowNonClientArea()
@@ -776,10 +820,13 @@ namespace CollapseLauncher.Helper
                 return;
             }
 
-            double       scaleFactor = CurrentWindowMonitorScaleFactor;
-            var          incps = InputNonClientPointerSource.GetForWindowId(CurrentWindowId.Value);
-            RectInt32[] safeArea = [new(0, 0, CurrentAppWindow.Size.Width, (int)(48 * scaleFactor))];
-            incps.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
+            double                       scaleFactor = CurrentWindowMonitorScaleFactor;
+            InputNonClientPointerSource? incps       = CurrentInputNonClientPointerSource;
+            RectInt32[] safeArea =
+            [
+                new(0, 0, CurrentAppWindow.Size.Width, (int)(48 * scaleFactor))
+            ];
+            incps?.SetRegionRects(NonClientRegionKind.Passthrough, safeArea);
         }
 
         internal static bool IsCurrentWindowInFocus()

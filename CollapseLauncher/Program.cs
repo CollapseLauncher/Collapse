@@ -6,11 +6,13 @@ using Hi3Helper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Hi3Helper.Win32.Native.ManagedTools;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -25,6 +27,7 @@ using System.Threading.Tasks;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
+using static CollapseLauncher.MainWindow;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
@@ -197,6 +200,8 @@ namespace CollapseLauncher
                 MainEntryPointExtension.XamlCheckProcessRequirements();
                 ComWrappersSupport.InitializeComWrappers();
 
+                SystemEvents.SessionEnding += SystemEvent_EndingSession;
+
                 StartMainApplication();
             }
         #if !DEBUG
@@ -223,6 +228,15 @@ namespace CollapseLauncher
         private static async Task InitDatabaseHandler()
         {
             await DbHandler.Init();
+        }
+
+        public static void SystemEvent_EndingSession(object sender, SessionEndingEventArgs e)
+        {
+            if (!IsCriticalOpInProgress) return;
+
+            e.Cancel = true;
+            ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, "Critical operation in progress",
+                                          ILoggerHelper.GetILogger("ShutdownBlocker"));
         }
 
         private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e)
