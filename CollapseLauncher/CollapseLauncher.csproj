@@ -420,9 +420,9 @@
 		<Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
-        <Delete Files="$(PublishDir)webp.dll" />
-        <Delete Files="$(PublishDir)webpdemux.dll" />
-        <Delete Files="$(PublishDir)webpmux.dll" />
+        <Delete Files="$(PublishDir)webp.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)webpdemux.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)webpmux.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
 
