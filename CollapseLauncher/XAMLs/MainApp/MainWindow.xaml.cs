@@ -19,7 +19,6 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.Win32;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
