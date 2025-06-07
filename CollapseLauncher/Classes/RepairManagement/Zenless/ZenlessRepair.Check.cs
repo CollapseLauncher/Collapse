@@ -146,7 +146,7 @@ namespace CollapseLauncher
                                               new AssetProperty<RepairAssetType>(
                                                    Path.GetFileName(asset.N),
                                                    ConvertRepairAssetTypeEnum(asset.FT),
-                                                   Path.GetDirectoryName(asset.N),
+                                                   GetBaseAssetDir(asset.N),
                                                    asset.S,
                                                    null,
                                                    null
@@ -154,6 +154,12 @@ namespace CollapseLauncher
                                              ));
                 targetAssetIndex.Add(asset);
             }
+        }
+
+        private string GetBaseAssetDir(string assetPath)
+        {
+            int offset = GamePath.Length;
+            return Path.GetDirectoryName(assetPath[offset..].TrimStart('\\'));
         }
 
         private static RepairAssetType ConvertRepairAssetTypeEnum(FileType assetType) => assetType switch
