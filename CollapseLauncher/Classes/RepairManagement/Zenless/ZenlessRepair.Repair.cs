@@ -4,7 +4,6 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,65 +20,76 @@ namespace CollapseLauncher
         private async Task<bool> Repair(List<FilePropertiesRemote> repairAssetIndex, CancellationToken token)
         {
             // Set total activity string as "Waiting for repair process to start..."
-            Status.ActivityStatus = Locale.Lang._GameRepairPage.Status11;
-            Status.IsProgressAllIndetermined = true;
+            Status.ActivityStatus                = Locale.Lang._GameRepairPage.Status11;
+            Status.IsProgressAllIndetermined     = true;
             Status.IsProgressPerFileIndetermined = true;
+            Status.IsCompleted                   = false;
 
-            // Update status
-            UpdateStatus();
-
-            // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
-                .UseLauncherConfig(DownloadThreadWithReservedCount)
-                .SetUserAgent(UserAgent)
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
-
-            // Use the new DownloadClient instance
-            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
-
-            // Iterate repair asset and check it using different method for each type
-            ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
-            if (IsBurstDownloadEnabled)
+            try
             {
-                await Parallel.ForEachAsync(
-                    PairEnumeratePropertyAndAssetIndexPackage(
+                // Update status
+                UpdateStatus();
+
+                // Initialize new proxy-aware HttpClient
+                using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
+                    .UseLauncherConfig(DownloadThreadWithReservedCount)
+                    .SetUserAgent(UserAgent)
+                    .SetAllowedDecompression(DecompressionMethods.None)
+                    .Create();
+
+                // Use the new DownloadClient instance
+                DownloadClient downloadClient = DownloadClient.CreateInstance(client);
+
+                // Iterate repair asset and check it using different method for each type
+                ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
+                if (IsBurstDownloadEnabled)
+                {
+                    await Parallel.ForEachAsync(
+                        PairEnumeratePropertyAndAssetIndexPackage(
 #if ENABLEHTTPREPAIR
-                    EnforceHttpSchemeToAssetIndex(repairAssetIndex)
+                        EnforceHttpSchemeToAssetIndex(repairAssetIndex)
 #else
                     repairAssetIndex
 #endif
-                    , assetProperty),
-                    new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = DownloadThreadCount },
-                    async (asset, innerToken) =>
+                        , assetProperty),
+                        new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = DownloadThreadCount },
+                        async (asset, innerToken) =>
+                        {
+                            // Assign a task depends on the asset type
+                            Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, innerToken);
+
+                            // Await the task
+                            await assetTask;
+                        });
+                }
+                else
+                {
+                    foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
+                        PairEnumeratePropertyAndAssetIndexPackage(
+#if ENABLEHTTPREPAIR
+                        EnforceHttpSchemeToAssetIndex(repairAssetIndex)
+#else
+                    repairAssetIndex
+#endif
+                        , assetProperty))
                     {
                         // Assign a task depends on the asset type
-                        Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, innerToken);
+                        Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, token);
 
                         // Await the task
                         await assetTask;
-                    });
-            }
-            else
-            {
-                foreach ((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset in
-                    PairEnumeratePropertyAndAssetIndexPackage(
-#if ENABLEHTTPREPAIR
-                    EnforceHttpSchemeToAssetIndex(repairAssetIndex)
-#else
-                    repairAssetIndex
-#endif
-                    , assetProperty))
-                {
-                    // Assign a task depends on the asset type
-                    Task assetTask = RepairAssetTypeGeneric(asset, downloadClient, IsCacheUpdateMode ? _httpClient_UpdateAssetProgress : _httpClient_RepairAssetProgress, token);
-
-                    // Await the task
-                    await assetTask;
+                    }
                 }
-            }
 
-            return true;
+                return true;
+            }
+            finally
+            {
+                Status.IsCompleted = true;
+                Status.IsCanceled  = token.IsCancellationRequested;
+                // Update status
+                UpdateStatus();
+            }
         }
 
         #region GenericRepair
