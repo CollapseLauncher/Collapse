@@ -14,6 +14,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -206,16 +207,24 @@ namespace CollapseLauncher.GameManagement.Versioning
 #endif
         }
 
-        public virtual bool IsGameInstalled()
+        public virtual bool IsGameInstalled() => IsGameInstalledInner(GamePreset.GameExecutableName);
+
+        protected virtual bool IsGameInstalledInner([NotNullWhen(true)] string? executableName)
         {
+            // If the executable name is null or empty, return false
+            if (string.IsNullOrEmpty(executableName))
+            {
+                return false;
+            }
+
             // If the GameVersionInstalled doesn't have a value (not null), then return as false.
             if (!GameVersionInstalled.HasValue)
             {
                 return false;
             }
 
-            // Check if the executable file exist and has the size at least > 2 MiB. If not, then return as false.
-            FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, GamePreset.GameExecutableName ?? string.Empty));
+            // Check if the executable file exist and has the size at least > 64 KiB. If not, then return as false.
+            FileInfo execFileInfo = new FileInfo(Path.Combine(GameDirPath, executableName));
 
             // Check if the vendor type exist. If not, then return false
             if (VendorTypeProp.GameName == null || !VendorTypeProp.VendorType.HasValue)
@@ -358,6 +367,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             FixInvalidGameVendor(execName);
             FixInvalidGameConfigId();
             FixInvalidGameBilibiliStatus(execName);
+            InitializeIniDefaults(GameIniVersion, DefaultIniVersion, DefaultIniVersionSection, false);
             Reinitialize();
 
             textBlock = new TextBlock { TextAlignment = TextAlignment.Left, TextWrapping = TextWrapping.WrapWholeWords }

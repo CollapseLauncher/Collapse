@@ -4,6 +4,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -100,7 +101,7 @@ namespace CollapseLauncher
                 string.Format(Locale.Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
                 true);
 
-            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).EnsureNoReadOnly();
+            FileInfo fileInfo = new FileInfo(asset.AssetIndex.N!).StripAlternateDataStream().EnsureNoReadOnly();
 
             // If asset type is unused, then delete it
             if (asset.AssetIndex.FT == FileType.Unused)
@@ -113,9 +114,17 @@ namespace CollapseLauncher
             }
             else
             {
-                // Start asset download task
-                await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
-                Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                try
+                {
+                    // Start asset download task
+                    await RunDownloadTask(asset.AssetIndex.S, fileInfo, asset.AssetIndex.RN, downloadClient, downloadProgress, token);
+                    Logger.LogWriteLine($"File [T: {asset.AssetIndex.FT}] {(asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N)} has been downloaded!", LogType.Default, true);
+                }
+                catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Logger.LogWriteLine($"URL for asset {asset.AssetIndex.N} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
+                                 $"\t URL: {asset.AssetIndex.GetRemoteURL()}", LogType.Warning, true);
+                }
             }
 
             // Pop repair asset display entry

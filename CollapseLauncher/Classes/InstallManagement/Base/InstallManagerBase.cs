@@ -257,7 +257,7 @@ namespace CollapseLauncher.InstallManager.Base
                 bool isDownloadNeeded = await _gameRepairTool.StartCheckRoutine()!;
                 if (isDownloadNeeded)
                 {
-                    Status.ActivityStatus         = Lang._GameRepairPage.Status8!.Replace(": ", "");
+                    Status.ActivityStatus         = Lang._GameRepairPage.Status8!.Replace(": ", "").Replace("{0}", "");
                     Status.ActivityStatusInternet = false;
                     ProgressAllSizeCurrent        = 0;
                     ProgressAllCountCurrent       = 1;
@@ -285,7 +285,8 @@ namespace CollapseLauncher.InstallManager.Base
 
         }
 
-        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame, bool isHonkai,
+        protected virtual async ValueTask<bool> StartDeltaPatch(IRepairAssetIndex repairGame,
+                                                                bool              isHonkai,
                                                                 bool              isSR = false)
         {
             // Initialize the state and the package
@@ -928,9 +929,15 @@ namespace CollapseLauncher.InstallManager.Base
                 await installTaskDelegate(asset);
 
                 // Get the information about diff and delete list file
-                FileInfo hdiffMapList = new FileInfo(Path.Combine(GamePath, "hdiffmap.json")).EnsureNoReadOnly();
-                FileInfo hdiffList    = new FileInfo(Path.Combine(GamePath, "hdifffiles.txt")).EnsureNoReadOnly();
-                FileInfo deleteList   = new FileInfo(Path.Combine(GamePath, "deletefiles.txt")).EnsureNoReadOnly();
+                FileInfo hdiffMapList = new FileInfo(Path.Combine(GamePath, "hdiffmap.json"))
+                                       .StripAlternateDataStream()
+                                       .EnsureNoReadOnly();
+                FileInfo hdiffList    = new FileInfo(Path.Combine(GamePath, "hdifffiles.txt"))
+                                       .StripAlternateDataStream()
+                                       .EnsureNoReadOnly();
+                FileInfo deleteList = new FileInfo(Path.Combine(GamePath, "deletefiles.txt"))
+                                     .StripAlternateDataStream()
+                                     .EnsureNoReadOnly();
 
                 // If diffmap list file exist, then rename the file
                 if (hdiffMapList.Exists)
@@ -1115,7 +1122,9 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 string outputPath = Path.Combine(GamePath, zipEntry.Key);
-                FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+                FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory()
+                                                              .StripAlternateDataStream()
+                                                              .EnsureNoReadOnly();
 
                 await using FileStream outputStream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.Write);
                 await using Stream entryStream = zipEntry.OpenEntryStream();
@@ -1755,16 +1764,17 @@ namespace CollapseLauncher.InstallManager.Base
                     bool isSuccess = false;
 
                     FileInfo sourcePath = new FileInfo(GetBasePersistentDirectory(gameDir, entry.SourceFileName ?? ""))
-                                             .EnsureNoReadOnly(out bool isSourceExist);
+                                         .StripAlternateDataStream().EnsureNoReadOnly(out bool isSourceExist);
                     string sourcePathDir = sourcePath.DirectoryName;
                     FileInfo patchPath = new FileInfo(Path.Combine(gameDir, entry.PatchFileName ?? ""))
-                                             .EnsureNoReadOnly(out bool isPatchExist);
+                                        .StripAlternateDataStream().EnsureNoReadOnly(out bool isPatchExist);
                     string targetPathBasedOnSource = Path.Combine(sourcePathDir ?? "", Path.GetFileName(entry.TargetFileName ?? ""));
                     FileInfo targetPath = new FileInfo(targetPathBasedOnSource)
-                                             .EnsureCreationOfDirectory()
-                                             .EnsureNoReadOnly();
+                                         .EnsureCreationOfDirectory()
+                                         .StripAlternateDataStream()
+                                         .EnsureNoReadOnly();
                     FileInfo targetPathTemp = new FileInfo(targetPath + "_tmp")
-                                             .EnsureNoReadOnly();
+                                             .StripAlternateDataStream().EnsureNoReadOnly();
 
                     try
                     {
@@ -1984,7 +1994,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     Interlocked.Increment(ref ProgressAllCountTotal);
-                    FileInfo patchFile = new FileInfo(patchPath).EnsureNoReadOnly();
+                    FileInfo patchFile = new FileInfo(patchPath).StripAlternateDataStream().EnsureNoReadOnly();
                     _ = patchFile.TryDeleteFile();
                 }
                 Token.Token.ThrowIfCancellationRequested();
@@ -3305,8 +3315,9 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Get the file path
                 FileInfo fileInfo = new FileInfo(package.PathOutput)
-                    .EnsureCreationOfDirectory()
-                    .EnsureNoReadOnly();
+                                   .EnsureCreationOfDirectory()
+                                   .StripAlternateDataStream()
+                                   .EnsureNoReadOnly();
 
                 bool isCanMultiSession = false;
                 // If a legacy downloader is used, then use the legacy Http downloader

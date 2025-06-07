@@ -1,11 +1,11 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Classes.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -24,6 +24,7 @@ using System.Linq;
 #else
 using Velopack;
 using Velopack.Locators;
+using Velopack.Logging;
 using Velopack.Sources;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
@@ -41,8 +42,8 @@ public partial class Updater : IDisposable
     private readonly UpdateManager   _updateManager;
     private readonly IFileDownloader _updateDownloader;
 #if USEVELOPACK
-    private readonly ILogger       _updateManagerLogger;
-    private          VelopackAsset _velopackVersionToUpdate;
+    private readonly IVelopackLogger _updateManagerLogger;
+    private          VelopackAsset   _velopackVersionToUpdate;
 #endif
     private GameVersion     _newVersionTag;
 
@@ -73,20 +74,18 @@ public partial class Updater : IDisposable
                 );
         _updateDownloader = new UpdateManagerHttpAdapter();
 #if USEVELOPACK
-        _updateManagerLogger = ILoggerHelper.GetILogger();
-        VelopackLocator updateManagerLocator = VelopackLocator.GetDefault(_updateManagerLogger);
+        _updateManagerLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
+        var updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(_updateManagerLogger);
         UpdateOptions updateManagerOptions = new UpdateOptions
         {
             AllowVersionDowngrade = true,
             ExplicitChannel = _channelName
         };
-
         // Initialize update manager source
         IUpdateSource updateSource = new SimpleWebSource(_channelURL, _updateDownloader);
         _updateManager = new UpdateManager(
                 updateSource,
                 updateManagerOptions,
-                _updateManagerLogger,
                 updateManagerLocator);
 #else
         UpdateManager = new UpdateManager(ChannelURL, null, null, UpdateDownloader);
@@ -165,7 +164,7 @@ public partial class Updater : IDisposable
 
             await UpdateManager.ApplyReleases(updateInfo, InvokeApplyUpdateProgress);
 #else
-            await _updateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, false, token);
+            await _updateManager.DownloadUpdatesAsync(updateInfo, InvokeDownloadUpdateProgress, token);
             _velopackVersionToUpdate = updateInfo.TargetFullRelease;
 
             await EnsureVelopackUpdateExec(token);

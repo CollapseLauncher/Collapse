@@ -190,6 +190,22 @@ namespace Hi3Helper
                 public string SophonIncrementUpdateUnavailSubtitle2 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle2;
                 public string SophonIncrementUpdateUnavailSubtitle3 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle3;
                 public string SophonIncrementUpdateUnavailSubtitle4 { get; set; } = LangFallback?._Dialogs.SophonIncrementUpdateUnavailSubtitle4;
+
+                public string SophonAdditionalPkgAvailableUpdateTitle { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableUpdateTitle;
+                public string SophonAdditionalPkgAvailableDownloadTitle { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableDownloadTitle;
+                public string SophonAdditionalPkgAvailableSubtitle1 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle1;
+                public string SophonAdditionalPkgAvailableSubtitle2 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle2;
+                public string SophonAdditionalPkgAvailableSubtitle3 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle3;
+                public string SophonAdditionalPkgAvailableSubtitle4 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle4;
+                public string SophonAdditionalPkgAvailableSubtitle5 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle5;
+                public string SophonAdditionalPkgAvailableSubtitle6 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle6;
+                public string SophonAdditionalPkgAvailableSubtitle7 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableSubtitle7;
+                public string SophonAdditionalPkgAvailableFootnote1 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableFootnote1;
+                public string SophonAdditionalPkgAvailableFootnote2 { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgAvailableFootnote2;
+                public string SophonAdditionalPkgSeeDetailsBtn { get; set; } = LangFallback?._Dialogs.SophonAdditionalPkgSeeDetailsBtn;
+                public string SophonAdditionalConfirmYesBtn { get; set; } = LangFallback?._Dialogs.SophonAdditionalConfirmYesBtn;
+                public string SophonAdditionalConfirmNoBtn { get; set; } = LangFallback?._Dialogs.SophonAdditionalConfirmNoBtn;
+
                 public string UACWarningTitle { get; set; } = LangFallback?._Dialogs.UACWarningTitle;
                 public string UACWarningContent { get; set; } = LangFallback?._Dialogs.UACWarningContent;
                 public string UACWarningLearnMore { get; set; } = LangFallback?._Dialogs.UACWarningLearnMore;

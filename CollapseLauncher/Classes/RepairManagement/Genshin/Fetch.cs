@@ -270,7 +270,7 @@ namespace CollapseLauncher
 
             // Get base_res_version_hash content
             string filePath = Path.Combine(GamePath, $@"{ExecPrefix}_Data\StreamingAssets\res_versions_streaming");
-            FileInfo fileInfo = new FileInfo(filePath).EnsureCreationOfDirectory().EnsureNoReadOnly();
+            FileInfo fileInfo = new FileInfo(filePath).EnsureCreationOfDirectory().StripAlternateDataStream().EnsureNoReadOnly();
             if (fileInfo.Exists)
             {
                 await using FileStream resVersionStream = fileInfo.OpenRead();
