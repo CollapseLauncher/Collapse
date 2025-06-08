@@ -22,11 +22,10 @@ internal static class PluginManager
                                            Dictionary<string, List<string>?> launcherGameNameRegionCollection,
                                            Dictionary<string, Stamp> launcherMetadataStampDictionary)
     {
-        string pluginDir = Path.Combine(LauncherConfig.AppExecutableDir, "Lib\\Plugins");
-        DirectoryInfo directoryInfo = new DirectoryInfo(pluginDir);
+        DirectoryInfo directoryInfo = new DirectoryInfo(LauncherConfig.AppPluginFolder);
         if (!directoryInfo.Exists)
         {
-            return;
+            directoryInfo.Create();
         }
 
         foreach (FileInfo pluginFile in directoryInfo.EnumerateFiles("Hi3Helper.Plugin.*.dll", SearchOption.TopDirectoryOnly))

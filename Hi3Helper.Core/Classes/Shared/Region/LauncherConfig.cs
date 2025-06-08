@@ -234,8 +234,9 @@ namespace Hi3Helper.Shared.Region
 
         [field: AllowNull, MaybeNull]
         public static Process AppCurrentProcess           { get => field ??= Process.GetCurrentProcess(); }
-        public static int     AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
-        public static string  AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+        public static int    AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
+        public static string AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+        public static string AppPluginFolder             => Path.Combine(AppGameFolder, "_plugins");
 
 
         [field: AllowNull, MaybeNull]
