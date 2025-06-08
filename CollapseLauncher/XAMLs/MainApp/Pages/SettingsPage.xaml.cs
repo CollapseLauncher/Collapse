@@ -274,6 +274,10 @@ namespace CollapseLauncher.Pages
         {
             try
             {
+                var stream = BackgroundMediaUtility.GetAlternativeFileStream();
+                if (stream != null)
+                    await stream.DisposeAsync();
+
                 (sender as Button).IsEnabled = false;
                 if (Directory.Exists(AppGameImgFolder))
                     Directory.Delete(AppGameImgFolder, true);

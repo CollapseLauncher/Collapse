@@ -1080,7 +1080,8 @@
     "UACWarningDontShowAgain": "Don't Show Again",
 
     "EnsureExitTitle": "Exiting Application",
-    "EnsureExitSubtitle": "There are critical operations running in the background. Are you sure you want to exit?",
+    "EnsureExitSubtitle": "There are critical operations running in the background.",
+    "EnsureExitSubtitle2": "Are you sure you want to exit?",
 
     "UserFeedback_DialogTitle": "Share Your Thoughts",
     "UserFeedback_TextFieldTitleHeader": "Feedback Title",

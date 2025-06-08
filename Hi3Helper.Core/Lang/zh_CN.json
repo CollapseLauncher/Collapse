@@ -1080,7 +1080,8 @@
     "UACWarningDontShowAgain": "不再显示",
 
     "EnsureExitTitle": "正在退出应用",
-    "EnsureExitSubtitle": "后台正在运行重要操作。您确定要退出吗？",
+    "EnsureExitSubtitle": "后台正在运行重要操作。",
+    "EnsureExitSubtitle2": "您确定要退出吗？",
 
     "UserFeedback_DialogTitle": "分享你的想法",
     "UserFeedback_TextFieldTitleHeader": "反馈标题",

@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.3</Version>
+        <Version>1.83.4</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -421,9 +421,9 @@
 		<Delete Files="$(PublishDir)WindowsAppRuntime.DeploymentExtensions.OneCore.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop.dll" />
         <Delete Files="$(PublishDir)WindowsAppSdk.AppxDeploymentExtensions.Desktop-EventLog-Instrumentation.dll" />
-        <Delete Files="$(PublishDir)webp.dll" />
-        <Delete Files="$(PublishDir)webpdemux.dll" />
-        <Delete Files="$(PublishDir)webpmux.dll" />
+        <Delete Files="$(PublishDir)webp.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)webpdemux.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)webpmux.dll" Condition="'$(PublishAot)' == 'true'" />
         <Delete Files="$(PublishDir)Microsoft.UI.Xaml\Assets\map.html" />
     </Target>
 

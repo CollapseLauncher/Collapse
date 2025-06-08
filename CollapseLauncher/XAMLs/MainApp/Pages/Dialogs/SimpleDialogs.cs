@@ -994,7 +994,7 @@ namespace CollapseLauncher.Dialogs
         public static Task<ContentDialogResult> Dialog_EnsureExit()
         {
             return SpawnDialog(Lang._Dialogs.EnsureExitTitle,
-                               Lang._Dialogs.EnsureExitSubtitle,
+                               $"{Lang._Dialogs.EnsureExitSubtitle} {Lang._Dialogs.EnsureExitSubtitle2}",
                                null,
                                Lang._Misc.NoCancel,
                                Lang._Misc.Yes,

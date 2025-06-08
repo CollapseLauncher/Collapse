@@ -253,7 +253,8 @@ namespace CollapseLauncher.Helper.Database
                 {
                     LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! Retrying...\r\n{ex}",
                                  LogType.Error, true);
-                    break;
+                    
+                    await Task.Delay(500);
                 }
                 catch (Exception ex) when (!redirectThrow)
                 {
@@ -320,7 +321,8 @@ namespace CollapseLauncher.Helper.Database
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! Retrying...\r\n{ex}",
                                  LogType.Error, true);
-                    break;
+                    
+                    await Task.Delay(500);
                 }
                 catch (Exception ex) when (!redirectThrow)
                 {

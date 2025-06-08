@@ -1080,7 +1080,8 @@
     "UACWarningDontShowAgain": "次回から表示しない",
 
     "EnsureExitTitle": "アプリケーションの終了",
-    "EnsureExitSubtitle": "バックグラウンドで重要な操作を実行中です。本当に終了しますか?",
+    "EnsureExitSubtitle": "バックグラウンドで重要な操作を実行中です。",
+    "EnsureExitSubtitle2": "本当にランチャーを終了しますか？",
 
     "UserFeedback_DialogTitle": "感想を送る",
     "UserFeedback_TextFieldTitleHeader": "フィードバックのタイトル",
