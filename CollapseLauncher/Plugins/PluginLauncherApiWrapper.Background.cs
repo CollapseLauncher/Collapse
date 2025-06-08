@@ -28,7 +28,7 @@ internal partial class PluginLauncherApiWrapper
         for (int i = 0; i < count; i++)
         {
             using var entry = backgroundEntries[i];
-            string?   url   = entry.GetPathString();
+            string?   url   = entry.Path;
             if (string.IsNullOrEmpty(url))
             {
                 continue;
@@ -37,6 +37,7 @@ internal partial class PluginLauncherApiWrapper
             string    fileName        = Path.GetFileNameWithoutExtension(url) + $"_{i}" + Path.GetExtension(url);
             string    spriteLocalPath = Path.Combine(backgroundFolder, fileName);
             FileInfo  fileInfo        = new(spriteLocalPath);
+            fileInfo.Directory?.Create();
 
             // Check if the background download is completed
             if (IsFileDownloadCompleted(fileInfo))

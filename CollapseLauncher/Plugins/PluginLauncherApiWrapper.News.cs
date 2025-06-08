@@ -2,7 +2,6 @@
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
-using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.Region;
 using System;
 using System.IO;
@@ -37,11 +36,11 @@ internal partial class PluginLauncherApiWrapper
         {
             using var entry = entrySpan[i];
 
-            string?               title       = entry.GetTitleString();
-            // string?               description = entry.GetDescriptionString(); // TODO: Add description as tooltip for the news entry on UI level
-            string?               clickUrl    = entry.GetUrlString();
-            string?               postDate    = entry.GetPostDateString();
-            LauncherNewsEntryType newsType    = entry.Type;
+            string?               title    = entry.Title;
+            string?               clickUrl = entry.Url;
+            string?               postDate = entry.PostDate;
+            LauncherNewsEntryType newsType = entry.Type;
+            // string? description = entry.Description; // TODO: Add description as tooltip for the news entry on UI level
 
             if (string.IsNullOrEmpty(clickUrl) ||
                 string.IsNullOrEmpty(title))
@@ -77,15 +76,15 @@ internal partial class PluginLauncherApiWrapper
         {
             using var entry = entrySpan[i];
 
-            string? imageUrl  = entry.ImageUrl.CreateStringFromNullTerminated();
+            string? imageUrl  = entry.ImageUrl;
             string? imagePath = await CopyOverUrlData(spriteFolder, imageUrl, token);
             if (string.IsNullOrEmpty(imagePath))
             {
                 continue;
             }
 
-            string? description = entry.Description.CreateStringFromNullTerminated();
-            string? clickUrl    = entry.ClickUrl.CreateStringFromNullTerminated();
+            string? description = entry.Description;
+            string? clickUrl    = entry.ClickUrl;
 
             newsData.NewsCarousel ??= [];
             newsData.NewsCarousel.Add(new LauncherGameNewsCarousel

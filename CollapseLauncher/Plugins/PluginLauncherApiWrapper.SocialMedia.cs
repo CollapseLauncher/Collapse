@@ -8,10 +8,14 @@ using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.Region;
 using System;
+using System.Buffers;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable ConvertIfStatementToReturnStatement
@@ -21,9 +25,6 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal partial class PluginLauncherApiWrapper
 {
-    private delegate ref LauncherPathEntry            CreateDataAsPathDelegate();
-    private delegate     PluginDisposableMemory<byte> CreateDataAsBufferDelegate();
-
     private async Task ConvertSocialMediaEntries(LauncherGameNewsData newsData, CancellationToken token)
     {
         string spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
@@ -37,33 +38,32 @@ internal partial class PluginLauncherApiWrapper
             using var                    entry = socialMediaEntry[i];
             LauncherSocialMediaEntryFlag flags = entry.Flags;
 
-            string? iconTitle          = entry.SocialMediaDescription.CreateStringFromNullTerminated();
-            string? iconClickUrl       = entry.SocialMediaClickUrl.CreateStringFromNullTerminated();
-            string? qrImageDescription = entry.QrImageDescription.CreateStringFromNullTerminated();
+            string? iconTitle          = entry.Description;
+            string? iconClickUrl       = entry.ClickUrl;
+            string? qrImageDescription = entry.QrDescription;
+
+            string? iconDataMarshal      = entry.IconPath;
+            string? iconHoverDataMarshal = entry.IconHoverPath;
+            string? qrImageDataMarshal   = entry.QrPath;
 
             string? iconUrl = await GetSocialMediaIconFromFlags(flags,
                                                                 LauncherSocialMediaEntryFlag.IconIsPath,
                                                                 LauncherSocialMediaEntryFlag.IconIsDataBuffer,
                                                                 spriteFolder,
-                                                                entry.GetIconAsPath,
-                                                                entry.GetIconAsDataBuffer,
+                                                                iconDataMarshal,
                                                                 token);
             string? iconHoverUrl = await GetSocialMediaIconFromFlags(flags,
                                                                      LauncherSocialMediaEntryFlag.IconIsPath,
                                                                      LauncherSocialMediaEntryFlag.IconIsDataBuffer,
                                                                      spriteFolder,
-                                                                     entry.GetIconHoverAsPath,
-                                                                     entry.GetIconHoverAsDataBuffer,
+                                                                     iconHoverDataMarshal,
                                                                      token);
-            string? qrImageUrl = flags.HasFlag(LauncherSocialMediaEntryFlag.HasQrImage) ?
-                await GetSocialMediaIconFromFlags(flags,
-                                                  LauncherSocialMediaEntryFlag.QrImageIsPath,
-                                                  LauncherSocialMediaEntryFlag.QrImageIsDataBuffer,
-                                                  spriteFolder,
-                                                  entry.GetQrImageAsPath,
-                                                  entry.GetQrImageAsDataBuffer,
-                                                  token) :
-                null;
+            string? qrImageUrl = await GetSocialMediaIconFromFlags(flags,
+                                                                   LauncherSocialMediaEntryFlag.QrImageIsPath,
+                                                                   LauncherSocialMediaEntryFlag.QrImageIsDataBuffer,
+                                                                   spriteFolder,
+                                                                   qrImageDataMarshal,
+                                                                   token);
 
             newsData.SocialMedia.Add(new LauncherGameNewsSocialMedia
             {
@@ -74,7 +74,7 @@ internal partial class PluginLauncherApiWrapper
                 SocialMediaUrl     = iconClickUrl,
                 QrImg              = qrImageUrl,
                 QrTitle            = qrImageDescription,
-                QrLinks            = GetSocialMediaInnerLinks(ref entry.ChildEntryHandle.AsRef<LauncherSocialMediaEntry>()),
+                QrLinks            = GetSocialMediaInnerLinks(ref entry.ChildEntryHandle),
                 IsImageUrlHashable = false,
             });
         }
@@ -92,24 +92,21 @@ internal partial class PluginLauncherApiWrapper
         {
             try
             {
-                using PluginDisposableMemory<byte> descriptionSpan = innerEntry.SocialMediaDescription;
-                using PluginDisposableMemory<byte> descriptionUrl  = innerEntry.SocialMediaClickUrl;
+                string? description    = innerEntry.Description;
+                string? descriptionUrl = innerEntry.ClickUrl;
 
-                innerEntry = ref innerEntry.ChildEntryHandle.AsRef<LauncherSocialMediaEntry>();
+                innerEntry = ref innerEntry.ChildEntryHandle;
 
-                if (descriptionSpan.IsEmpty ||
-                    descriptionUrl.IsEmpty)
+                if (string.IsNullOrEmpty(description) ||
+                    string.IsNullOrEmpty(descriptionUrl))
                 {
                     continue;
                 }
 
-                string? description = descriptionSpan.CreateStringFromNullTerminated();
-                string? url         = descriptionUrl.CreateStringFromNullTerminated();
-
                 links.Add(new LauncherGameNewsSocialMediaQrLinks
                 {
                     Title = description,
-                    Url   = url,
+                    Url   = descriptionUrl,
                 });
             }
             finally
@@ -125,31 +122,25 @@ internal partial class PluginLauncherApiWrapper
                                                             LauncherSocialMediaEntryFlag flagIfUrl,
                                                             LauncherSocialMediaEntryFlag flagIfBuffer,
                                                             string                       outputDir,
-                                                            CreateDataAsPathDelegate     dataAsUrlCreate,
-                                                            CreateDataAsBufferDelegate   dataAsBufferCreate,
+                                                            string?                      embeddedDataOrPath,
                                                             CancellationToken            token)
     {
+        if (string.IsNullOrEmpty(embeddedDataOrPath))
+        {
+            return null;
+        }
+
         if (flags.HasFlag(flagIfUrl))
         {
-            return await CopyOverUrlData(outputDir, dataAsUrlCreate, token);
+            return await CopyOverUrlData(outputDir, embeddedDataOrPath, token);
         }
 
         if (flags.HasFlag(flagIfBuffer))
         {
-            return await CopyOverEmbeddedData(outputDir, dataAsBufferCreate, token);
+            return await CopyOverEmbeddedData(outputDir, embeddedDataOrPath, token);
         }
 
         return string.Empty;
-    }
-
-    private async Task<string?> CopyOverUrlData(string                   outputDir,
-                                                CreateDataAsPathDelegate urlCreate,
-                                                CancellationToken        token)
-    {
-        using LauncherPathEntry urlData = urlCreate.Invoke();
-        string?                 dataUrl = urlData.GetPathString();
-
-        return await CopyOverUrlData(outputDir, dataUrl, token);
     }
 
     private async Task<string?> CopyOverUrlData(string            outputDir,
@@ -159,6 +150,12 @@ internal partial class PluginLauncherApiWrapper
         if (string.IsNullOrEmpty(dataUrl))
         {
             return null;
+        }
+
+        // Safeguard: Check if the data is actually base64. If so, redirect.
+        if (IsDataActuallyBase64(dataUrl))
+        {
+            return await CopyOverEmbeddedData(outputDir, dataUrl, token);
         }
 
         string fileName = Path.GetFileName(dataUrl);
@@ -186,37 +183,130 @@ internal partial class PluginLauncherApiWrapper
         return filePath;
     }
 
-    private static async Task<string?> CopyOverEmbeddedData(string                     outputDir,
-                                                            CreateDataAsBufferDelegate bufferCreate,
-                                                            CancellationToken          token)
+    private static bool IsDataActuallyBase64(string data)
     {
-        using PluginDisposableMemory<byte> dataBuffer = bufferCreate.Invoke();
-        if (dataBuffer.IsEmpty)
+        if (Base64Url.IsValid(data))
+        {
+            return true;
+        }
+
+        if (!Base64.IsValid(data))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private delegate bool WriteEmbeddedBase64DataToBuffer(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded);
+
+    private static async Task<string?> CopyOverEmbeddedData(string            outputDir,
+                                                            string?           dataBase64,
+                                                            CancellationToken token)
+    {
+
+        if (string.IsNullOrEmpty(dataBase64))
         {
             return null;
         }
 
-        ReadOnlySpan<byte> headerSpan            = dataBuffer.AsSpan(0, Math.Min(1 << 10, dataBuffer.Length));
-        string             fileExtension         = DecideEmbeddedDataExtension(headerSpan);
-        string             fileBaseNameSignature = GetHashString(headerSpan);
-        string             filePath              = Path.Combine(outputDir, $"embeddedPluginAssets-{fileBaseNameSignature}" + fileExtension);
-
-        FileInfo fileInfo = new FileInfo(filePath)
-            .EnsureCreationOfDirectory()
-            .EnsureNoReadOnly();
-
-        if (IsFileDownloadCompleted(fileInfo))
+        WriteEmbeddedBase64DataToBuffer writeToDelegate;
+        if (Base64Url.IsValid(dataBase64, out int bufferLen))
         {
-            return filePath;
+            writeToDelegate = WriteBufferFromBase64Url;
+        }
+        else if (Base64.IsValid(dataBase64, out bufferLen))
+        {
+            writeToDelegate = WriteBufferFromBase64Raw;
+        }
+        else
+        {
+            return null;
         }
 
-        await using UnmanagedMemoryStream unmanagedStream = dataBuffer.AsStream();
-        await using FileStream fileStream = fileInfo.Create();
+        byte[] dataBuffer = ArrayPool<byte>.Shared.Rent(bufferLen);
+        try
+        {
+            if (!writeToDelegate(dataBase64, dataBuffer, out int dataDecoded) || dataDecoded == 0)
+            {
+                return null;
+            }
 
-        await unmanagedStream.CopyToAsync(fileStream, token);
-        SaveFileStamp(fileInfo, fileStream.Length);
+            ReadOnlySpan<byte> headerSpan    = dataBuffer.AsSpan(0, Math.Min(1 << 10, dataDecoded));
+            string             fileExtension = DecideEmbeddedDataExtension(headerSpan);
 
-        return filePath;
+            string fileBaseNameSignature = GetHashString(headerSpan);
+            string filePath = Path.Combine(outputDir, $"embeddedPluginAssets-{fileBaseNameSignature}" + fileExtension);
+
+            FileInfo fileInfo = new FileInfo(filePath)
+                               .EnsureCreationOfDirectory()
+                               .EnsureNoReadOnly();
+
+            if (IsFileDownloadCompleted(fileInfo))
+            {
+                return filePath;
+            }
+
+            await using UnmanagedMemoryStream unmanagedStream = ToStream(dataBuffer.AsSpan(0, dataDecoded));
+            await using FileStream            fileStream      = fileInfo.Create();
+
+            await unmanagedStream.CopyToAsync(fileStream, token);
+            SaveFileStamp(fileInfo, fileStream.Length);
+
+            return filePath;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(dataBuffer);
+        }
+
+        unsafe UnmanagedMemoryStream ToStream(Span<byte> buffer)
+        {
+            ref byte dataRef = ref MemoryMarshal.AsRef<byte>(buffer);
+            return new UnmanagedMemoryStream((byte*)Unsafe.AsPointer(ref dataRef), buffer.Length);
+        }
+
+        bool WriteBufferFromBase64Url(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+        {
+            if (Base64Url.TryDecodeFromChars(chars, buffer, out dataDecoded))
+            {
+                return true;
+            }
+
+            dataDecoded = 0;
+            return false;
+        }
+
+        bool WriteBufferFromBase64Raw(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+        {
+            int    tempBufferToUtf8Len = Encoding.UTF8.GetByteCount(chars);
+            byte[] tempBufferToUtf8    = ArrayPool<byte>.Shared.Rent(tempBufferToUtf8Len);
+            try
+            {
+                if (!Encoding.UTF8.TryGetBytes(chars, tempBufferToUtf8, out int utf8StrWritten))
+                {
+                    dataDecoded = 0;
+                    return false;
+                }
+
+                OperationStatus decodeStatus = Base64.DecodeFromUtf8(tempBufferToUtf8.AsSpan(0, utf8StrWritten), buffer, out _, out dataDecoded);
+                if (decodeStatus == OperationStatus.Done)
+                {
+                    return true;
+                }
+
+                dataDecoded = 0;
+            #if DEBUG
+                throw new InvalidOperationException($"Cannot decode data string from Base64 as it returns with status: {decodeStatus}");
+            #else
+                return false;
+            #endif
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(tempBufferToUtf8);
+            }
+        }
     }
 
     private static string GetHashString(ReadOnlySpan<byte> headerData)
