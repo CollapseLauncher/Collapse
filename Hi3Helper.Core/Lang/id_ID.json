@@ -80,21 +80,26 @@
     "UnhandledTitle3": "Game Crash",
     "UnhandledSubtitle3": "Telah terjadi crash pada game dengan error sebagai berikut:",
     "UnhandledTitle4": "Peringatan",
+    "WarningSubtitle": "Ada sedikit issue terjadi dengan detail sebagai berikut:",
     "UnhandledSubtitle4": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting) bahwa dikarenakan PC kamu mendapatkan beberapa fitur A/B testing miHoYo/HoYoverse untuk game ini, Collapse tidak bisa memproses key registri berikut: App_Settings_h2319593470.\r\nTerima kasih atas perhatiannya dan mohon maaf atas hal ini.",
     "UnhandledTitleDiskCrc": "Kerusakan pada Disk Terdeteksi!",
     "UnhandledSubDiskCrc": "Kerusakan pada disk terdeteksi saat mengakses file. Mohon untuk periksa disk kamu menggunakan chkdsk.",
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
-    "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya"
+    "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya",
+    
+    "CustomBackground_NotFound": "File latar belakang kustom hilang! Kembali menggunakan gambar bawaan",
+    "CustomBackground_RegionalTag": "Latar Belakang Region",
+    "CustomBackground_GlobalTag": "Latar Belakang Keseluruhan"
   },
 
   "_MainPage": {
     "PageTitle": "Halaman Awal",
-    "RegionChangeConfirm": "Wilayah game akan diubah. Lanjutkan?",
+    "RegionChangeConfirm": "Region game akan diubah. Lanjutkan?",
     "RegionChangeConfirmBtn": "Ya, Ubah",
     "RegionChangeWarnTitle": "Peringatan:",
     "RegionChangeWarnExper1": "Game ini masih dalam tahap {0}.\r\nResiko ditanggung kamu sendiri!",
-    "RegionLoadingTitle": "Memuat Wilayah",
+    "RegionLoadingTitle": "Memuat Region",
     "RegionLoadingAPITitle1": "Memuat",
     "RegionLoadingAPITitle2": "API Launcher",
     "RegionLoadingSubtitleTimeOut": "Terjadi masa tenggang saat membaca wilayah {0} (> {1} detik). Mencoba lagi...",
@@ -201,7 +206,7 @@
     "Exception_DownloadTimeout3": "**PERINGATAN** Mengubah thread unduhan akan memulai ulang unduhanmu dari 0 dan kamu harus menghapus chunk dari unduhan sebelumnya secara manual!",
 
     "GameStateInvalid_Title": "Direktori Data Game/Nama Executable/Config.ini/File App.Info Tidak Valid!",
-    "GameStateInvalid_Subtitle1": "Collapse Launcher telah mendeteksi bahwa properti pada file game tidak valid untuk wilayah:\r\n",
+    "GameStateInvalid_Subtitle1": "Collapse Launcher telah mendeteksi bahwa properti pada file game tidak valid untuk region:\r\n",
     "GameStateInvalid_Subtitle2": "Langkah perbaikan dibutuhkan agar launcher dapat mendeteksi game dengan benar.",
     "GameStateInvalid_Subtitle3": "Klik \"",
     "GameStateInvalid_Subtitle4": "\" untuk memperbaiki properti game atau klik \"",
@@ -433,7 +438,7 @@
     "Debug_MultipleInstance": "Perbolehkan Multiple Instance",
 
     "ChangeRegionWarning_Toggle": "Tampilkan Peringatan Penggantian Region",
-    "ChangeRegionInstant_Toggle": "Mengubah Pilihan Region secara Instant",
+    "ChangeRegionInstant_Toggle": "Mengubah Pilihan Region secara Instan",
     "ChangeRegionWarning_Warning": "*Anda perlu memulai ulang launcher untuk menerapkan setelan ini.",
 
     "Language": "Bahasa",
@@ -481,7 +486,7 @@
     "SophonHelp_Thread": "Bagian ini mengatur banyaknya chunks yang akan diunduh secara simultan secara bersamaan. Turunkan nilai ini apabila unduhan kamu macet.",
     "SophonHttpNumberBox": "Jumlah Max. Koneksi HTTP",
     "SophonHelp_Http": "Bagian ini mengatur banyaknya jumlah koneksi yang akan dipakai oleh Collapse saat mengunduh chunks secara bersamaan.",
-    "SophonToggle": "Gunakan Sophon pada Wilayah yang Didukung",
+    "SophonToggle": "Gunakan Sophon pada Region yang Didukung",
     "SophonPredownPerfMode_Toggle": "[EKSPERIMENTAL] Gunakan semua CPU core saat menerapkan pra-unduh",
     "SophonPredownPerfMode_Tooltip": "Saat dinyalakan, semua CPU thread pada sistem-mu akan digunakan seluruhnya. Matikan apabila masalah terjadi.",
 
@@ -579,6 +584,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "PERINGATAN: Kamu memiliki \"OpenCL™, OpenGL®, dan Vulkan® Compatibility Pack\" yang terpasang di komputermu. Dikabarkan bahwa program tersebut tidak kompatibel dengan Vulkan Loader pada fitur ini dan akan menyebabkan Crash pada beberapa GPU. Silahkan hapus program tersebut untuk menggunakan GPU pada fitur ini.",
     "Waifu2X_Error_Loader": "ERROR: Gagal dalam mempersiapkan Vulkan API. Pastikan bahwa kamu memiliki GPU yang mendukung Vulkan API dan memiliki driver yang sesuai.",
     "Waifu2X_Error_Output": "ERROR: Gagal saat menjalankan Self-test pada Waifu2X, gambar test mengeluarkan output yang kosong.",
+    "Waifu2X_Initializing": "Sedang mempersiapkan Waifu2X, mohon tunggu.",
 
     "NetworkSettings_Title": "Pengaturan Jaringan",
     "NetworkSettings_Proxy_Title": "Pengaturan Proxy",
@@ -608,6 +614,28 @@
     "NetworkSettings_ProxyTest_ButtonChecking": "Memeriksa Konektivitas...",
     "NetworkSettings_ProxyTest_ButtonSuccess": "Test Konektivitas Proxy telah Berhasil!",
     "NetworkSettings_ProxyTest_ButtonFailed": "Test Gagal! Proxy tidak dapat Dihubungi",
+
+    "NetworkSettings_Dns_Title": "Pengaturan DNS Kustom",
+    "NetworkSettings_Dns_ConnectionType": "Tipe Koneksi",
+    "NetworkSettings_Dns_ConnectionType_SelectionUdp": "UDP (Port 53)",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoH": "DNS lewat HTTPS",
+    "NetworkSettings_Dns_ConnectionType_SelectionDoT": "DNS lewat TLS",
+    "NetworkSettings_Dns_ConnectionType_Tooltip1": "Menentukan tipe protokol apa yang akan digunakan oleh DNS untuk query record. Ada beberapa tipe protokol yang didukung oleh Collapse Launcher, yaitu:",
+    "NetworkSettings_Dns_ProviderSelection": "Penyedia DNS",
+    "NetworkSettings_Dns_ProviderSelection_SelectionCustom": "Kustom",
+    "NetworkSettings_Dns_ProviderSelection_Tooltip1": "Terdapat beberapa Penyedia DNS luar yang tersedia pada Collapse Launcher secara bawaan. Kamu juga dapat menggunakan Penyedia/Server DNS kustom dengan memilih \"Kustom\" pada pilihan \"Penyedia DNS\".",
+    "NetworkSettings_Dns_CustomProvider": "Host Penyedia DNS Kustom",
+    "NetworkSettings_Dns_CustomProvider_Tooltip1": "Tergantung pada",
+    "NetworkSettings_Dns_CustomProvider_Tooltip2": "pengaturan",
+    "NetworkSettings_Dns_CustomProvider_Tooltip3": "Ketika kamu memilih",
+    "NetworkSettings_Dns_CustomProvider_Tooltip4": "pada bagian",
+    "NetworkSettings_Dns_CustomProvider_Tooltip5": "sebagai pilihan, kamu dapat menambahkan Penyedia/Server DNS kustom dengan memasukan IPv4/IPv6 atau hostnamenya. Kamu juga bisa menambahkan Penyedia DNS yang sudah di-predefined (dimulai dengan simbol '$') bersamaan dengan Penyedia/Server DNS Kustom yang kamu masukan dengan memisahkan setiap entri dengan simbol di bawah ini:",
+    "NetworkSettings_Dns_CustomProvider_Tooltip6": "Contoh:",
+    "NetworkSettings_Dns_ChangesWarning": "Kamu butuh restart aplikasi ini agar perubahan pada pengaturan DNS dapat diterapkan.",
+    "NetworkSettings_Dns_ValidateAndSaveSettingsButton": "Tes & Simpan Perubahan",
+    "NetworkSettings_Dns_ApplyingSettingsButton": "Memvalidasi dan Menerapkan Perubahan...",
+    "NetworkSettings_Dns_SettingsSavedButton": "Perubahan Disimpan!",
+    "NetworkSettings_Dns_SettingsFailedButton": "Perubahan Gagal Disimpan!",
 
     "NetworkSettings_Http_Title": "Pengaturan .NET HTTP Client",
     "NetworkSettings_Http_Redirect": "Perbolehkan Pengalihan HTTP",
@@ -664,7 +692,9 @@
     "Database_Warning_PropertyChanged": "Pengaturan Database telah berubah",
     "Database_ValidationChecking": "Validasi Pengaturan...",
     "Database_Placeholder_DbUserIdTextBox": "Contoh GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
-    "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini"
+    "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini",
+    
+    "SearchPlaceholder": "Ketik untuk mencari..."
   },
 
   "_Misc": {
@@ -758,9 +788,10 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
 
-    "CDNDescription_Github": "Repositori resmi (utama) untuk launcher",
+    "CDNDescription_Github": "Repositori resmi (utama) untuk launcher.",
+    "CDNDescription_DigitalOcean": "Mirror dari repositori resmi (main) yang dihost dalam DigitalOcean.",
     "CDNDescription_Cloudflare": "Mirror dari repositori resmi (main) yang dihost dalam bucket Cloudflare R2.",
-    "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket.",
+    "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket,",
     "CDNDescription_GitLab": "Mirror dari repositori resmi (main) yang dihost dalam GitLab.",
     "CDNDescription_Coding": "Mirror dari repositori resmi (main) yang dihost dalam Coding.",
 
@@ -777,7 +808,7 @@
     "DiscordRP_Idle": "Idle",
     "DiscordRP_Default": "Tidak ada Aktivitas",
     "DiscordRP_Ad": "- Dengan Collapse Launcher",
-    "DiscordRP_Region": "Wilayah:",
+    "DiscordRP_Region": "Region:",
 
     "DownloadModeLabelSophon": "Mode Sophon",
 
@@ -808,8 +839,13 @@
     "ExceptionFeedbackTitle": "Apa yang terjadi?:",
     "ExceptionFeedbackTemplate_User": "Username (Opsional):",
     "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
-    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini",
-    
+    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini: (Kamu tidak perlu lampirkan pesan error karena akan langsung disisipkan)",
+
+    "Feedback": "Umpan Balik Pengguna",
+    "FeedbackSending": "Mengirimkan umpan balikmu...",
+    "FeedbackSent": "Umpan balik terkirim!",
+    "FeedbackSendFailure": "Gagal mengirimkan umpan balik! Cek log/console untuk info lebih lanjut.",
+
     "Tag_Deprecated": "Tidak berlaku",
     "Generic_GameFeatureDeprecation": "Karena perubahan di sisi game, fitur ini tidak berlaku lagi dan akan dihapus di waktu mendatang. Menggunakan fitur ini dapat mengakibatkan perilaku game yang tidak diharapkan."
   },
@@ -987,7 +1023,7 @@
     "ShortcutCreationSuccessSubtitle1": "Sebuah pintasan baru sudah dibuat!",
     "ShortcutCreationSuccessSubtitle2": "Lokasi:",
     "ShortcutCreationSuccessSubtitle3": "Catatan:",
-    "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+    "ShortcutCreationSuccessSubtitle4": "• Menggunakan pintasan ini akan memulai game setelah region dimuat.",
     "ShortcutCreationSuccessSubtitle5": " • Apabila game tidak terpasang/belum diperbarui, maka Collapse akan mencoba untuk memasang atau memperbarui game. Mohon diingat bahwa dialog instalasi akan tetap muncul.",
 
     "SteamShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
@@ -997,7 +1033,7 @@
     "SteamShortcutCreationSuccessTitle": "Sukses!",
     "SteamShortcutCreationSuccessSubtitle1": "Pintasan telah dibuat untuk setiap pengguna Steam di komputer ini!",
     "SteamShortcutCreationSuccessSubtitle2": "Catatan:",
-    "SteamShortcutCreationSuccessSubtitle3": "• Menggunakan pintasan ini akan memulai game setelah wilayah termuat.",
+    "SteamShortcutCreationSuccessSubtitle3": "• Menggunakan pintasan ini akan memulai game setelah region dimuat.",
     "SteamShortcutCreationSuccessSubtitle4": "• Mengulangi proses ini dapat memperbaiki gambar yang hilang/rusak pada pintasan.",
     "SteamShortcutCreationSuccessSubtitle5": "• Pintasan akan terlihat setelah Steam dimuat ulang.",
     "SteamShortcutCreationSuccessSubtitle6": " • Dalam menggunakan overlay pada Steam, Steam harus berjalan sebagai administrator dan Collapse harus ditutup atau memiliki opsi \"Multiple Instances\" yang sudah dinyalakan pada menu \"Pengaturan Aplikasi\".",
@@ -1022,13 +1058,30 @@
     "SophonIncrementUpdateUnavailSubtitle3": " dan pembaruan incremental untuk versi tersebut tidak tersedia. Tapi, kamu tetap bisa memperbarui game kamu dengan mengunduh ulang semuanya dari awal.",
     "SophonIncrementUpdateUnavailSubtitle4": "Klik \"{0}\" untuk memperbarui semuanya atau klik \"{1}\" untuk membatalkan proses",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "Paket Tambahan Tersedia untuk Diperbarui!",
+    "SophonAdditionalPkgAvailableDownloadTitle": "Paket Tambahan Tersedia untuk Diunduh!",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "Game kamu memiliki paket tambahan yang dapat diunduh. Ukuran data tambahan adalah:",
+    "SophonAdditionalPkgAvailableSubtitle2": ". Ukuran total yang perlu kamu unduh adalah:",
+    "SophonAdditionalPkgAvailableSubtitle3": "apabila kamu memilih untuk unduh paket tambahan tersebut.",
+    "SophonAdditionalPkgAvailableSubtitle4": "Klik",
+    "SophonAdditionalPkgAvailableSubtitle5": "apabila kamu ingin mengunduh paket tambahan atau klik",
+    "SophonAdditionalPkgAvailableSubtitle6": "apabila kamu hanya ingin mengunduh paket inti saja dengan:",
+    "SophonAdditionalPkgAvailableSubtitle7": "untuk ukuran total.",
+    "SophonAdditionalPkgAvailableFootnote1": "Catatan:",
+    "SophonAdditionalPkgAvailableFootnote2": "Kemungkinan paket tambahan perlu diunduh di dalam game apabila kamu memilih untuk mengunduh paket inti saja.",
+    "SophonAdditionalPkgSeeDetailsBtn": "Lihat Detil Paket Tambahan",
+    "SophonAdditionalConfirmYesBtn": "Unduh Semuanya",
+    "SophonAdditionalConfirmNoBtn": "Unduh Paket Inti Saja",
+
     "UACWarningTitle": "Peringatan: UAC Terdeteksi Dimatikan!",
     "UACWarningContent": "Mematikan User Account Control (UAC) sangat tidak disarankan.\nUAC dibutuhkan untuk beberapa game agar bisa berjalan dengan baik dan mematikan UAC bisa membahayakan keamanan Operasi Sistem kamu, lho!\n\nKlik tombol \"Pelajari Lebih Lanjut\" untuk mencari tahu cara menyalakan UAC kembali.\nEntry yang perlu dinyalakan: \"Run all administrators in Admin Approval Mode.\"",
     "UACWarningLearnMore": "Pelajari Lebih Lanjut",
     "UACWarningDontShowAgain": "Jangan Munculkan Lagi",
 
     "EnsureExitTitle": "Keluar dari Aplikasii",
-    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang. Yakin ingin keluar?",
+    "EnsureExitSubtitle": "Ada aktivitas kritikal yang sedang berjalan di latar belakang.",
+    "EnsureExitSubtitle2": "Yakin ingin keluar?",
 
     "UserFeedback_DialogTitle": "Bagikan Pendapatmu",
     "UserFeedback_TextFieldTitleHeader": "Judul Umpan-Balik",
@@ -1316,7 +1369,7 @@
     "Audio_Title": "Pengaturan Suara",
     "Audio_Master": "Suara Utama",
     "Audio_BGM": "Suara Musik",
-    "Audio_SFX": "Suara Efek Suara",
+    "Audio_SFX": "Volume Efek Suara",
     "Audio_VO": "Volume Suara",
     "Audio_Mute": "Mute Suara",
 
@@ -1445,7 +1498,7 @@
     "General_GoSettings": "Ke halaman Pengaturan",
     "General_OpenNotifTray": "Buka Notifikasi",
     "General_ReloadRegion": "Muat ulang halaman saat ini",
-    "General_ReloadRegion_Desc": "Tombol F5 dapat digunakan sebagai alternatif.\nCatatan, memuat ulang halaman utama akan memuat ulang Wilayah.",
+    "General_ReloadRegion_Desc": "Tombol F5 dapat digunakan sebagai alternatif.\nCatatan, memuat ulang halaman utama akan memuat ulang region.",
 
     "Switch_Title": "Peralihan Game/Region Cepat",
     "Switch_Subtitle": "Catatan: Kombinasi mengikuti urutan pilihan.",
@@ -1578,7 +1631,8 @@
     "Audio_PlaybackDev": "Perangkat Pemutaran Suara",
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
-    "Audio_PlaybackDev_TV": "Televisi"
+    "Audio_PlaybackDev_TV": "Televisi",
+    "Audio_Ambient": "Volume Suara Sekitar"
   },
 
   "_NotificationToast": {

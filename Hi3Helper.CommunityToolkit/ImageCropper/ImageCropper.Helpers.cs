@@ -427,7 +427,7 @@ public partial class ImageCropper
             case ThumbPosition.Bottom:
             case ThumbPosition.Left:
             case ThumbPosition.Right:
-                return false;
+                break;
             case ThumbPosition.UpperLeft:
             case ThumbPosition.UpperRight:
             case ThumbPosition.LowerLeft:

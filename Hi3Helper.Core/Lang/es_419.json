@@ -1022,6 +1022,22 @@
     "SophonIncrementUpdateUnavailSubtitle3": " y la actualización incremental no está disponible para tu versión. Sin embargo, aún podrías actualizar tu juego volviendo a descargarlo desde cero.",
     "SophonIncrementUpdateUnavailSubtitle4": "Haz clic en \"{0}\" para continuar actualizando todo o en \"{1}\" para cancelar el proceso",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "¡Paquetes disponibles para actualizar!",
+    "SophonAdditionalPkgAvailableDownloadTitle": "Hay paquetes adicionales disponibles para descargar",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "Tu juego tiene paquetes adicionales que se pueden descargar. El tamaño de los archivos es:",
+    "SophonAdditionalPkgAvailableSubtitle2": ". en total, es posible que necesite descargar:",
+    "SophonAdditionalPkgAvailableSubtitle3": "de datos si deseas incluir los archivos adicionales.",
+    "SophonAdditionalPkgAvailableSubtitle4": "Haz clic en",
+    "SophonAdditionalPkgAvailableSubtitle5": "si deseas descargar los datos adicionales o clic en",
+    "SophonAdditionalPkgAvailableSubtitle6": "si solo quieres los archivos base con tamaño:",
+    "SophonAdditionalPkgAvailableSubtitle7": "en total.",
+    "SophonAdditionalPkgAvailableFootnote1": "Aviso:",
+    "SophonAdditionalPkgAvailableFootnote2": "Si decides descargar solo los archivos base, es posible que aun se requiera descargar datos adicionales dentro del juego.",
+    "SophonAdditionalPkgSeeDetailsBtn": "Ver detalles de Datos Adicionales",
+    "SophonAdditionalConfirmYesBtn": "Descargar Todo",
+    "SophonAdditionalConfirmNoBtn": "Descargar Solo Base",
+
     "UACWarningTitle": "Advertencia: Detectado UAC deshabilitado",
     "UACWarningContent": "Desactivar el Control de cuentas de usuario (UAC) nunca es una buena idea. \nLa seguridad del SO se verá comprometida y es posible que el juego no funcione correctamente. \n\nHaz clic en \"Más información\" para ver cómo activar UAC. \nLa entrada relacionada es: Ejecución de todos los administradores en Administración modo de aprobación.",
     "UACWarningLearnMore": "Más información",
@@ -1578,7 +1594,8 @@
     "Audio_PlaybackDev": "Dispositivo de Audio",
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_TV": "TV",
+    "Audio_Ambient": "Volumen Sonido Ambiente"
   },
 
   "_NotificationToast": {

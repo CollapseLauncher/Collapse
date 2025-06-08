@@ -121,15 +121,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
                               );
         }
 
-        public void Dimm()
-        {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(true));
-        }
+        public void Dimm() => BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(true));
 
-        public void Undimm()
-        {
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(false));
-        }
+        public void Undimm() => BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(false));
 
         private async Task ToggleImageVisibility(bool hideImage, bool completeInvisible = false, bool isForceShow = false)
         {
@@ -207,13 +201,13 @@ namespace CollapseLauncher.Helper.Background.Loaders
         public void Show(bool isForceShow = false)
         {
             if (ImageBackParentGrid?.Opacity > 0f) return;
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(false, true, isForceShow));
+            BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(false, true, isForceShow));
         }
 
         public void Hide()
         {
             if (ImageBackParentGrid?.Opacity < 1f) return;
-            BackgroundMediaUtility.SharedActionBlockQueue?.Post(ToggleImageVisibility(true, true));
+            BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(true, true));
         }
 
         public void Mute()

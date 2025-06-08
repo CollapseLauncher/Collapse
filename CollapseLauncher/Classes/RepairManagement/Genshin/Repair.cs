@@ -191,6 +191,11 @@ namespace CollapseLauncher
                                       token);
                 isSuccess = true;
             }
+            catch (HttpRequestException e) when (e.StatusCode == HttpStatusCode.NotFound)
+            {
+                LogWriteLine($"URL for asset {asset.AssetIndex.remoteName} returned 404 Not Found. This may indicate that the asset is no longer available on the server.\r\n" +
+                             $"\t URL: {asset.AssetIndex.GetRemoteURL()}", LogType.Warning, true);
+            }
             finally
             {
                 // Pop repair asset display entry
