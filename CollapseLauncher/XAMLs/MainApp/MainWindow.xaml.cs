@@ -11,6 +11,7 @@ using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Input;
@@ -19,6 +20,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
@@ -34,8 +36,31 @@ namespace CollapseLauncher
     public sealed partial class MainWindow : Window
     {
         private static bool _isForceDisableIntro;
-        
-        public static bool IsCriticalOpInProgress { get; set; }
+
+        private static readonly Lock CriticalOpLock = new();
+        public static bool IsCriticalOpInProgress
+        {
+            get;
+            set
+            {
+                using (CriticalOpLock.EnterScope())
+                {
+                    var lastValue = field;
+                    field = value;
+                    
+                    if (value)
+                    {
+                        ShutdownBlocker.StartBlocking(WindowUtility.CurrentWindowPtr, Locale.Lang._Dialogs.EnsureExitSubtitle,
+                                                      ILoggerHelper.GetILogger("ShutdownBlocker"));
+                    }
+                    else if (lastValue)
+                    {
+                        ShutdownBlocker.StopBlocking(WindowUtility.CurrentWindowPtr,
+                                                     ILoggerHelper.GetILogger("ShutdownBlocker"));
+                    }
+                }
+            }
+        }
 
         public void InitializeWindowProperties(bool startOobe = false)
         {
