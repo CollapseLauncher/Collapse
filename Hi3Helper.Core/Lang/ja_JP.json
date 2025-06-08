@@ -117,8 +117,8 @@
 
   "_HomePage": {
     "PageTitle": "ランチャー",
-    "PreloadTitle": "事前ダウンロードが利用可能です！",
-    "PreloadNotifTitle": "バージョン{0}の事前ダウンロードパッケージが利用可能です！",
+    "PreloadTitle": "事前ダウンロードを利用できます！",
+    "PreloadNotifTitle": "バージョン{0}の事前ダウンロードパッケージが利用できます！",
     "PreloadNotifDeltaDetectTitle": "バージョン{0}のパッケージをデルタパッチ形式で事前ダウンロードしました！",
     "PreloadNotifSubtitle": "バックグラウンドでダウンロードを開始するには、 \"ダウンロード\"をクリックしてください。",
     "PreloadNotifDeltaDetectSubtitle": "次バージョンのパッチをデルタパッチ形式で正常に事前ダウンロードしました。この事前ダウンロード形式は後でゲームの更新に使用されます。",
@@ -1058,6 +1058,22 @@
     "SophonIncrementUpdateUnavailSubtitle3": "ため、差分更新式アップデートができません。ゲームをアップデートするには、ゲーム全体の再ダウンロードが必要です。",
     "SophonIncrementUpdateUnavailSubtitle4": "\"{0}\"を押すと全体の再ダウンロードを実行し、\"{1}\"を押すとアップデートをキャンセルします。",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "追加パッケージをアップデートできます！",
+    "SophonAdditionalPkgAvailableDownloadTitle": "追加パッケージをダウンロードできます！",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "ゲームにダウンロード可能な追加パッケージがあります。追加データのサイズは",
+    "SophonAdditionalPkgAvailableSubtitle2": "です。追加パッケージを含める場合、合計で",
+    "SophonAdditionalPkgAvailableSubtitle3": "のデータダウンロードが必要となる可能性があります。",
+    "SophonAdditionalPkgAvailableSubtitle4": "追加パッケージもダウンロードする場合は",
+    "SophonAdditionalPkgAvailableSubtitle5": "をクリックしてください。基礎リソースのみをダウンロードする場合は",
+    "SophonAdditionalPkgAvailableSubtitle6": "をクリックしてください。基礎リソースのみのサイズは",
+    "SophonAdditionalPkgAvailableSubtitle7": "です。",
+    "SophonAdditionalPkgAvailableFootnote1": "注：",
+    "SophonAdditionalPkgAvailableFootnote2": "基礎リソースのみダウンロードを選択した場合、ゲームのプレイ中に追加パッケージのダウンロードが必要となる可能性があります。",
+    "SophonAdditionalPkgSeeDetailsBtn": "追加パッケージの詳細を見る",
+    "SophonAdditionalConfirmYesBtn": "全てダウンロード",
+    "SophonAdditionalConfirmNoBtn": "基礎リソースのみダウンロード",
+
     "UACWarningTitle": "警告：UACの無効化を検出しました",
     "UACWarningContent": "ユーザーアカウント制御（UAC）の無効化は全くもって非推奨です。\nOSのセキュリティが侵害され、ゲームが正常に動作しなくなる可能性があるためです。\n\n\"もっと見る\"を押すと、UACを有効化する方法が表示されます。\n関連項目：「管理承認モードですべての管理者を実行する」",
     "UACWarningLearnMore": "もっと見る",
@@ -1267,8 +1283,8 @@
   },
 
   "_AppNotification": {
-    "NotifMetadataUpdateTitle": "ランチャーメタデータが更新可能です！",
-    "NotifMetadataUpdateSubtitle": "新しいランチャーメタデータが利用可能です！このプロセスは、ランチャーがmiHoYo/HoYoverseのサーバーと適切に通信できるようにするために自動的に行われます。まもなく更新が始まります！",
+    "NotifMetadataUpdateTitle": "ランチャーメタデータを更新できます！",
+    "NotifMetadataUpdateSubtitle": "新しいランチャーメタデータを利用できます！このプロセスは、ランチャーがmiHoYo/HoYoverseのサーバーと適切に通信できるようにするために自動的に行われます。まもなく更新が始まります！",
     "NotifMetadataUpdateBtn": "メタデータ更新",
     "NotifMetadataUpdateBtnCountdown": "メタデータを {0}秒後に更新します。",
     "NotifMetadataUpdateBtnUpdating": "メタデータを更新しています。お待ちください...",
@@ -1614,7 +1630,8 @@
     "Audio_PlaybackDev": "再生デバイス",
     "Audio_PlaybackDev_Headphones": "ヘッドホン",
     "Audio_PlaybackDev_Speakers": "スピーカー",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_TV": "TV",
+    "Audio_Ambient": "アンビエント音量"
   },
 
   "_NotificationToast": {
