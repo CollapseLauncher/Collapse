@@ -1044,7 +1044,8 @@
     "UACWarningDontShowAgain": "No mostrar de nuevo",
 
     "EnsureExitTitle": "Saliendo de la aplicación ",
-    "EnsureExitSubtitle": "Hay operaciones críticas ejecutándose en segundo plano. ¿Estás seguro de que quieres salir?",
+    "EnsureExitSubtitle": "Hay operaciones críticas ejecutándose en segundo plano.",
+    "EnsureExitSubtitle2": "¿Estás seguro de que quieres salir?",
 
     "UserFeedback_DialogTitle": "Comparta su opinión",
     "UserFeedback_TextFieldTitleHeader": "Título",
