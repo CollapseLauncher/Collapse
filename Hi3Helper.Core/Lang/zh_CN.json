@@ -1058,6 +1058,22 @@
     "SophonIncrementUpdateUnavailSubtitle3": "且该版本的增量更新不可用。不过，您仍然可以通过重新下载整个游戏来更新您的游戏。",
     "SophonIncrementUpdateUnavailSubtitle4": "点击“{0}”继续更新整个游戏，或点击“{1}”取消更新过程",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "附加组件包可更新！",
+    "SophonAdditionalPkgAvailableDownloadTitle": "附加组件包可下载！",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "您的游戏包含可下载的附加组件包。附加组件大小：",
+    "SophonAdditionalPkgAvailableSubtitle2": "。如果您希望包含附加组件包，则可能总共需要下载：",
+    "SophonAdditionalPkgAvailableSubtitle3": "的数据。",
+    "SophonAdditionalPkgAvailableSubtitle4": "如果你想要下载附加组件包，请点击",
+    "SophonAdditionalPkgAvailableSubtitle5": "；如果只需要下载基础文件，请点击",
+    "SophonAdditionalPkgAvailableSubtitle6": "，总大小仅为：",
+    "SophonAdditionalPkgAvailableSubtitle7": "。",
+    "SophonAdditionalPkgAvailableFootnote1": "注：",
+    "SophonAdditionalPkgAvailableFootnote2": "如果您选择仅下载基础文件，可能需要稍后在游戏中下载附加组件包。",
+    "SophonAdditionalPkgSeeDetailsBtn": "查看附加组件包详情",
+    "SophonAdditionalConfirmYesBtn": "下载全部",
+    "SophonAdditionalConfirmNoBtn": "仅下载基础文件",
+
     "UACWarningTitle": "警告：检测到已禁用 UAC",
     "UACWarningContent": "禁用用户账户控制（UAC）从来不是一个好主意。\n操作系统的安全性会受到影响，游戏也可能无法正常运行。\n\n点击“了解更多”按钮查看如何启用 UAC。\n相关条目为：在管理员审批模式下运行所有管理员。",
     "UACWarningLearnMore": "了解更多",
@@ -1614,7 +1630,8 @@
     "Audio_PlaybackDev": "声音播放设备",
     "Audio_PlaybackDev_Headphones": "耳机",
     "Audio_PlaybackDev_Speakers": "音响",
-    "Audio_PlaybackDev_TV": "电视"
+    "Audio_PlaybackDev_TV": "电视",
+    "Audio_Ambient": "人文氛围音量"
   },
 
   "_NotificationToast": {
