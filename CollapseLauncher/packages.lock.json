@@ -353,19 +353,6 @@
         "resolved": "1.7.20250508.1",
         "contentHash": "omgDNQElO0w0wY20I7XLGHISyn7Z4quh9Pc+Gp9XkRHJgiks7ARDhq4Vu+DK32bDoCBrFe1CLK4ovete4QiuVw=="
       },
-      "Microsoft.Windows.SDK.Win32Metadata": {
-        "type": "Transitive",
-        "resolved": "63.0.31-preview",
-        "contentHash": "ImR/LEJIcTiQuwYognFXPED1+zRjlb4WYX5mC3E8d0Q09Zey+MMqfMDxNlX1vBbcP3dy/Fp0Lbav25FsXZwyYQ=="
-      },
-      "Microsoft.Windows.WDK.Win32Metadata": {
-        "type": "Transitive",
-        "resolved": "0.13.25-experimental",
-        "contentHash": "IM50tb/+UIwBr9FMr6ZKcZjCMW+Axo6NjGqKxgjUfyCY8dRnYUfrJEXxAaXoWtYP4X8EmASmC1Jtwh4XucseZg==",
-        "dependencies": {
-          "Microsoft.Windows.SDK.Win32Metadata": "63.0.31-preview"
-        }
-      },
       "Microsoft.WindowsAppSDK.AI": {
         "type": "Transitive",
         "resolved": "1.8.135-experimental",
@@ -515,9 +502,7 @@
         "type": "Project",
         "dependencies": {
           "H.GeneratedIcons.System.Drawing": "[1.0.0, )",
-          "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )",
-          "Microsoft.Windows.SDK.Win32Metadata": "[63.0.31-preview, )",
-          "Microsoft.Windows.WDK.Win32Metadata": "[0.13.25-experimental, )"
+          "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )"
         }
       },
       "h.notifyicon.winui": {
@@ -525,8 +510,6 @@
         "dependencies": {
           "H.NotifyIcon": "[0.0.0, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.5, )",
-          "Microsoft.Web.WebView2": "[1.0.3344-prerelease, )",
-          "Microsoft.Windows.SDK.BuildTools": "[10.0.26100.4188, )",
           "Microsoft.WindowsAppSDK": "[1.8.250515001-experimental2, )"
         }
       },
