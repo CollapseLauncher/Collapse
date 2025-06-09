@@ -810,7 +810,7 @@
     "ExceptionFeedbackTemplate_User": "Username (Optional):",
     "ExceptionFeedbackTemplate_Email": "Email (Optional):",
     "ExceptionFeedbackTemplate_Message": "Tell us what happened after this line: (You don't need to include the error message, we will attach it for you!)",
-
+    
     "Feedback": "User Feedback",
     "FeedbackSending": "Sending your feedback...",
     "FeedbackSent": "Feedback sent!",
