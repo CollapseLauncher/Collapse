@@ -226,7 +226,16 @@ namespace CollapseLauncher
 
         private static async Task InitDatabaseHandler()
         {
-            await DbHandler.Init();
+            try
+            {
+                await DbHandler.Init();
+            }
+            catch (Exception e)
+            {
+                LogWriteLine($"There was an error while initializing the database handler!\r\n{e}",
+                             LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(e);
+            }
         }
 
         private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e)
@@ -274,7 +283,7 @@ namespace CollapseLauncher
         #endif
         }
 
-        public static void StartMainApplication()
+        private static void StartMainApplication()
         {
             Application.Start(_ =>
                               {
