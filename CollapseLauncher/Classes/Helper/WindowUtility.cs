@@ -107,7 +107,7 @@ namespace CollapseLauncher.Helper
                 try
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-                    if (dispatcherQueue.HasThreadAccess)
+                    if (dispatcherQueue.HasThreadAccessSafe())
                     {
                         return CurrentWindowId.HasValue
                             ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)

@@ -1,6 +1,7 @@
 ﻿#if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
 #endif
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -194,7 +195,7 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
-            if (!DispatcherQueue.HasThreadAccess)
+            if (!DispatcherQueue.HasThreadAccessSafe())
             {
                 DispatcherQueue?.TryEnqueue(Update);
                 return;
@@ -214,7 +215,7 @@ namespace CollapseLauncher.Pages
 
         private void _cacheTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
-            if (!DispatcherQueue.HasThreadAccess)
+            if (!DispatcherQueue.HasThreadAccessSafe())
             {
                 DispatcherQueue?.TryEnqueue(Update);
                 return;

@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
@@ -35,7 +36,7 @@ namespace CollapseLauncher.Helper.Animation
         {
             foreach (KeyFrameAnimation anim in animBase!)
             {
-                if (element?.DispatcherQueue?.HasThreadAccess ?? false)
+                if (element?.DispatcherQueue?.HasThreadAccessSafe() ?? false)
                 {
                     anim!.Duration = duration;
                     element.StartAnimation(anim);
@@ -53,7 +54,7 @@ namespace CollapseLauncher.Helper.Animation
         internal static async Task StartAnimation(this UIElement element, TimeSpan duration, params KeyFrameAnimation[] animBase)
         {
             CompositionAnimationGroup animGroup = null;
-            if (element.DispatcherQueue?.HasThreadAccess ?? false)
+            if (element.DispatcherQueue?.HasThreadAccessSafe() ?? false)
             {
                 animGroup = CompositionTarget.GetCompositorForCurrentThread().CreateAnimationGroup();
             }
@@ -69,7 +70,7 @@ namespace CollapseLauncher.Helper.Animation
             {
                 foreach (KeyFrameAnimation anim in animBase!)
                 {
-                    if (element.DispatcherQueue?.HasThreadAccess ?? false)
+                    if (element.DispatcherQueue?.HasThreadAccessSafe() ?? false)
                     {
                         anim.Duration = duration;
                         anim.StopBehavior = AnimationStopBehavior.LeaveCurrentValue;
@@ -83,7 +84,7 @@ namespace CollapseLauncher.Helper.Animation
                             animGroup.Add(anim);
                         });
                 }
-                if (element.DispatcherQueue?.HasThreadAccess ?? false)
+                if (element.DispatcherQueue?.HasThreadAccessSafe() ?? false)
                 {
                     element.StartAnimation(animGroup);
                 }
