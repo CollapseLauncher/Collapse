@@ -133,11 +133,10 @@ namespace CollapseLauncher.InstallManager.Base
                                                                             List<string> matchingFieldsList,
                                                                             CancellationToken token)
         {
-            string[] commonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
             string currentVersion = GameVersion.ToString();
 
             List<SophonManifestPatchIdentity> otherManifestIdentity = patchManifest.OtherSophonPatchData.ManifestIdentityList
-                                                                                   .Where(x => !commonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+                                                                                   .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                                                                                    .ToList();
 
             if (otherManifestIdentity.Count == 0)
@@ -159,14 +158,17 @@ namespace CollapseLauncher.InstallManager.Base
                                                     return firstTag?.CompressedSize ?? 0;
                                                 });
 
-            bool isDownloadAdditionalData = await SpawnAdditionalPackageDownloadDialog(sizeCurrentToDownload,
-                                                                                       sizeAdditionalToDownload,
-                                                                                       true,
-                                                                                       GetFileDetails);
-
-            if (!isDownloadAdditionalData)
+            if (AskAdditionalSophonPkg)
             {
-                return;
+                bool isDownloadAdditionalData = await SpawnAdditionalPackageDownloadDialog(sizeCurrentToDownload,
+                                                                                           sizeAdditionalToDownload,
+                                                                                           true,
+                                                                                           GetFileDetails);
+
+                if (!isDownloadAdditionalData)
+                {
+                    return;
+                }
             }
 
             matchingFieldsList.AddRange(otherManifestIdentity.Select(identity => identity.MatchingField));
@@ -312,11 +314,13 @@ namespace CollapseLauncher.InstallManager.Base
         {
             SophonChunkManifestInfoPair?      rootPatchManifest = null;
             SophonChunkManifestInfoPair?      rootMainManifest  = null;
-            List<(SophonChunkManifestInfoPair Patch, SophonChunkManifestInfoPair Main)> patchManifestList = [];
+            List<(SophonChunkManifestInfoPair Patch, SophonChunkManifestInfoPair Main, bool IsCommon)> patchManifestList = [];
 
             // Iterate matching fields and get the patch metadata
             foreach (string matchingField in matchingFields)
             {
+                bool isCommonPackage = CommonSophonPackageMatchingFields.Contains(matchingField, StringComparer.OrdinalIgnoreCase);
+
                 // Initialize root manifest if it's null
                 rootPatchManifest ??= await SophonPatch
                     .CreateSophonChunkManifestInfoPair(httpClient,
@@ -349,7 +353,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Otherwise, add the manifest to the list
-                patchManifestList.Add((patchManifest, mainManifest));
+                patchManifestList.Add((patchManifest, mainManifest, isCommonPackage));
             }
 
             // Initialize the return list and iterate the manifests
@@ -365,6 +369,16 @@ namespace CollapseLauncher.InstallManager.Base
                                           downloadLimiter,
                                           token))
                 {
+                    if (!manifestPair.IsCommon)
+                    {
+                        string existingFilePath = Path.Combine(GamePath, patchAsset.TargetFilePath);
+                        if (!File.Exists(existingFilePath))
+                        {
+                            Logger.LogWriteLine($"Patch from matching field: {manifestPair.Main.MatchingField} is discarded: {patchAsset.TargetFilePath}", LogType.Warning, true);
+                            continue;
+                        }
+                    }
+
                     patchAssets.Add(patchAsset);
                 }
             }
@@ -426,7 +440,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get download sizes
             long downloadSizeTotalAssetRemote = patchAssets.Where(x => x.PatchMethod != SophonPatchMethod.Remove).Sum(x => x.TargetFileSize);
-            long downloadSizePatchOnlyRemote = patchManifestInfoPairs.Sum(x => x.ChunksInfo.TotalSize);
+            long downloadSizePatchOnlyRemote = patchAssets.Where(x => x.PatchMethod is SophonPatchMethod.CopyOver or SophonPatchMethod.Patch).Sum(x => x.PatchChunkLength);
 
             // Get download counts
             int downloadCountTotalAssetRemote = patchAssets.Count;
@@ -508,6 +522,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 UpdateCurrentDownloadStatus();
                 await patchAsset.DownloadPatchAsync(httpClient,
+                                                    GamePath,
                                                     patchOutputDir,
                                                     true,
                                                     read =>
