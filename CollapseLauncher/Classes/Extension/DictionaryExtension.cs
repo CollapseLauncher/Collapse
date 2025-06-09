@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CollapseLauncher.Classes.Extension
+namespace CollapseLauncher.Extension
 {
 #nullable enable
     public static class DictionaryExtension

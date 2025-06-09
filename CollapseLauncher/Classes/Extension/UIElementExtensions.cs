@@ -888,7 +888,7 @@ namespace CollapseLauncher.Extension
             // attach the shadow while the element is already loaded.
             if (element.Parent is null) element.Loaded += (_, _) =>
             {
-                if (element.DispatcherQueue.HasThreadAccess)
+                if (element.DispatcherQueue.HasThreadAccessSafe())
                     AssignShadowAttachment(element, isMasked);
                 else
                     element.DispatcherQueue.TryEnqueue(() => AssignShadowAttachment(element, isMasked));
