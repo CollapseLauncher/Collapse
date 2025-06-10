@@ -96,6 +96,13 @@ namespace CollapseLauncher.InstallManager.Base
                 return isForceRedirect || isEnabled;
             }
         }
+
+        public virtual bool AskAdditionalSophonPkg
+        {
+            get => File.Exists(Path.Combine(GamePath, "@AskAdditionalSophonPackage"));
+        }
+
+        public string[] CommonSophonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
         #endregion
 
         #region Sophon Verification Methods
@@ -548,14 +555,17 @@ namespace CollapseLauncher.InstallManager.Base
             long sizeAdditionalToDownload = otherManifestIdentity
                                            .Sum(x => x.ChunkInfo.CompressedSize);
 
-            bool isDownloadAdditionalData = await SpawnAdditionalPackageDownloadDialog(sizeCurrentToDownload,
-                                                                                       sizeAdditionalToDownload,
-                                                                                       false,
-                                                                                       GetFileDetails);
-
-            if (!isDownloadAdditionalData)
+            if (AskAdditionalSophonPkg)
             {
-                return;
+                bool isDownloadAdditionalData = await SpawnAdditionalPackageDownloadDialog(sizeCurrentToDownload,
+                                                                                           sizeAdditionalToDownload,
+                                                                                           false,
+                                                                                           GetFileDetails);
+
+                if (!isDownloadAdditionalData)
+                {
+                    return;
+                }
             }
 
             List<string> additionalMatchingFields = otherManifestIdentity.Select(x => x.MatchingField).ToList();
@@ -710,6 +720,7 @@ namespace CollapseLauncher.InstallManager.Base
                         requestedBaseUrlTo,
                         sophonUpdateAssetList,
                         GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
+                        false,
                         downloadSpeedLimiter);
 
                     // If it doesn't success to get the base diff, then fallback to actually download the whole game
@@ -756,10 +767,19 @@ namespace CollapseLauncher.InstallManager.Base
                     if (_gameAudioLangListPath != null)
                     {
                         // Add existing voice-over diff data
-                        await AddSophonAdditionalVODiffAssetsToList(httpClient,         requestedBaseUrlFrom,
-                                                                    requestedBaseUrlTo, sophonUpdateAssetList,
+                        await AddSophonAdditionalVODiffAssetsToList(httpClient,
+                                                                    requestedBaseUrlFrom,
+                                                                    requestedBaseUrlTo,
+                                                                    sophonUpdateAssetList,
                                                                     downloadSpeedLimiter);
                     }
+
+                    await TryGetAdditionalPackageForSophonDiff(httpClient,
+                                                               requestedBaseUrlFrom,
+                                                               requestedBaseUrlTo,
+                                                               GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
+                                                               sophonUpdateAssetList,
+                                                               downloadSpeedLimiter);
                 }
 
                 // Get the remote chunk size
@@ -980,27 +1000,69 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-#endregion
+        #endregion
 
         #region Sophon Asset Package Methods
+        private async Task TryGetAdditionalPackageForSophonDiff(HttpClient                 httpClient,
+                                                                string                     requestedUrlFrom,
+                                                                string                     requestedUrlTo,
+                                                                string                     mainMatchingField,
+                                                                List<SophonAsset>          sophonPreloadAssetList,
+                                                                SophonDownloadSpeedLimiter downloadSpeedLimiter)
+        {
+            SophonChunkManifestInfoPair manifestPair = await SophonManifest
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, mainMatchingField, false, Token.Token);
+
+            if (!manifestPair.IsFound)
+            {
+                return;
+            }
+
+            List<string> additionalPackageMatchingFields = manifestPair.OtherSophonBuildData.ManifestIdentityList
+               .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
+               .Select(x => x.MatchingField)
+               .ToList();
+
+            if (additionalPackageMatchingFields.Count == 0)
+            {
+                return;
+            }
+
+            foreach (string matchingField in additionalPackageMatchingFields)
+            {
+                await AddSophonDiffAssetsToList(httpClient,
+                                                requestedUrlFrom,
+                                                requestedUrlTo,
+                                                sophonPreloadAssetList,
+                                                matchingField,
+                                                true,
+                                                downloadSpeedLimiter);
+            }
+        }
+
         private async Task<bool> AddSophonDiffAssetsToList(HttpClient                 httpClient,
                                                            string                     requestedUrlFrom,
                                                            string                     requestedUrlTo,
                                                            List<SophonAsset>          sophonPreloadAssetList,
                                                            string                     matchingField,
+                                                           bool                       discardIfOldNotExist,
                                                            SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, Token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, false, Token.Token);
             SophonChunkManifestInfoPair requestPairTo = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, Token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, false, Token.Token);
 
             // If the request pair source is not found, then return false
-            if (!requestPairFrom.IsFound)
+            if (!requestPairFrom.IsFound && !requestPairTo.IsFound)
             {
                 Logger.LogWriteLine($"Sophon manifest for source via URL: {requestedUrlFrom} is not found! Return message: {requestPairFrom.ReturnMessage} ({requestPairFrom.ReturnCode})", LogType.Warning, true);
-                return false;
+                if (!requestPairTo.IsFound)
+                {
+                    return false;
+                }
+                Logger.LogWriteLine($"The target Sophon manifest still exist. The assets from target's matching field: {matchingField} will be used instead!", LogType.Warning, true);
             }
 
             // If the request pair target is not found, then return false
@@ -1010,19 +1072,37 @@ namespace CollapseLauncher.InstallManager.Base
                 return false;
             }
 
-            // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
-            RearrangeDataListLocaleOrder(requestPairFrom.OtherSophonBuildData.ManifestIdentityList,
-                                         x => x.MatchingField);
             RearrangeDataListLocaleOrder(requestPairTo.OtherSophonBuildData.ManifestIdentityList,
                                          x => x.MatchingField);
 
-            // Add asset to the list
-            await foreach (SophonAsset sophonAsset in SophonUpdate
-                                                     .EnumerateUpdateAsync(httpClient, requestPairFrom, requestPairTo,
-                                                                           false,      downloadSpeedLimiter)
-                                                     .WithCancellation(Token.Token))
+            if (requestPairFrom.IsFound)
             {
-                sophonPreloadAssetList.Add(sophonAsset);
+                // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
+                RearrangeDataListLocaleOrder(requestPairFrom.OtherSophonBuildData.ManifestIdentityList,
+                                             x => x.MatchingField);
+
+                // Add asset to the list
+                await foreach (SophonAsset sophonAsset in SophonUpdate
+                                                         .EnumerateUpdateAsync(httpClient, requestPairFrom, requestPairTo,
+                                                                               false, downloadSpeedLimiter)
+                                                         .WithCancellation(Token.Token))
+                {
+                    sophonPreloadAssetList.Add(sophonAsset);
+                }
+            }
+            else
+            {
+                await foreach (SophonAsset sophonAsset in SophonManifest.EnumerateAsync(httpClient, requestPairTo, downloadSpeedLimiter, Token.Token))
+                {
+                    string filePath = Path.Combine(GamePath, sophonAsset.AssetName);
+                    if (!File.Exists(filePath) && discardIfOldNotExist)
+                    {
+                        Logger.LogWriteLine($"Asset from matching field: {matchingField} is discarded: {sophonAsset.AssetName}", LogType.Warning, true);
+                        continue;
+                    }
+
+                    sophonPreloadAssetList.Add(sophonAsset);
+                }
             }
 
             // Return as success
@@ -1038,8 +1118,13 @@ namespace CollapseLauncher.InstallManager.Base
             // Get the main VO language name from Id
             string mainLangId = GetLanguageLocaleCodeByID(_gameVoiceLanguageID);
             // Get the manifest pair for both previous (from) and next (to) version for the main VO
-            await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                            sophonPreloadAssetList, mainLangId,       downloadSpeedLimiter);
+            await AddSophonDiffAssetsToList(httpClient,
+                                            requestedUrlFrom,
+                                            requestedUrlTo,
+                                            sophonPreloadAssetList,
+                                            mainLangId,
+                                            false,
+                                            downloadSpeedLimiter);
 
             // Check if the audio lang list file is exist, then try add others
             FileInfo fileInfo = new FileInfo(_gameAudioLangListPath).StripAlternateDataStream().EnsureNoReadOnly();
@@ -1055,7 +1140,7 @@ namespace CollapseLauncher.InstallManager.Base
 #if !DEBUG
                         , false
 #endif
-                                                                               );
+                        );
 
                     // Check if the voice pack is actually the same as default.
                     if (string.IsNullOrEmpty(otherLangId) ||
@@ -1065,8 +1150,13 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Get the manifest pair for both previous (from) and next (to) version for other VOs
-                    await AddSophonDiffAssetsToList(httpClient,             requestedUrlFrom, requestedUrlTo,
-                                                    sophonPreloadAssetList, otherLangId,      downloadSpeedLimiter);
+                    await AddSophonDiffAssetsToList(httpClient,
+                                                    requestedUrlFrom,
+                                                    requestedUrlTo,
+                                                    sophonPreloadAssetList,
+                                                    otherLangId,
+                                                    false,
+                                                    downloadSpeedLimiter);
                 }
             }
         }

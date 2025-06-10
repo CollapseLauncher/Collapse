@@ -489,6 +489,7 @@ namespace CollapseLauncher.Helper.Background
 
         public static void SetAlternativeFileStream(FileStream stream)
         {
+            _alternativeFileStream?.Dispose();
             _alternativeFileStream = stream;
         }
 

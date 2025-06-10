@@ -1,5 +1,6 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
@@ -463,7 +464,7 @@ public sealed partial class HomePage
 
     private void GameInstall_StatusChanged(object sender, TotalPerFileStatus e)
     {
-        if (DispatcherQueue.HasThreadAccess)
+        if (DispatcherQueue != null && DispatcherQueue.HasThreadAccessSafe())
             GameInstall_StatusChanged_Inner(e);
         else
             DispatcherQueue?.TryEnqueue(() => GameInstall_StatusChanged_Inner(e));
@@ -483,7 +484,7 @@ public sealed partial class HomePage
 
     private void GameInstall_ProgressChanged(object sender, TotalPerFileProgress e)
     {
-        if (DispatcherQueue.HasThreadAccess)
+        if (DispatcherQueue != null && DispatcherQueue.HasThreadAccessSafe())
             GameInstall_ProgressChanged_Inner(e);
         else
             DispatcherQueue?.TryEnqueue(() => GameInstall_ProgressChanged_Inner(e));
@@ -500,7 +501,7 @@ public sealed partial class HomePage
 
     private void GameInstallSophon_StatusChanged(object sender, TotalPerFileStatus e)
     {
-        if (DispatcherQueue.HasThreadAccess)
+        if (DispatcherQueue != null && DispatcherQueue.HasThreadAccessSafe())
             GameInstallSophon_StatusChanged_Inner(e);
         else
             DispatcherQueue?.TryEnqueue(() => GameInstallSophon_StatusChanged_Inner(e));
@@ -508,7 +509,7 @@ public sealed partial class HomePage
 
     private void GameInstallSophon_ProgressChanged(object sender, TotalPerFileProgress e)
     {
-        if (DispatcherQueue.HasThreadAccess)
+        if (DispatcherQueue != null && DispatcherQueue.HasThreadAccessSafe())
             GameInstallSophon_ProgressChanged_Inner(e);
         else
             DispatcherQueue?.TryEnqueue(() => GameInstallSophon_ProgressChanged_Inner(e));

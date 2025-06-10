@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using Velopack.Logging;
 
-namespace CollapseLauncher.Classes.Extension
+namespace CollapseLauncher.Extension
 {
     public class VelopackLoggerAdaptor(ILogger logger) : IVelopackLogger
     {
