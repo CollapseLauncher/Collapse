@@ -1,6 +1,7 @@
 ﻿#if !DISABLEDISCORD
 using CollapseLauncher.DiscordPresence;
 #endif
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
@@ -193,7 +194,7 @@ namespace CollapseLauncher.Pages
 
         private void _repairTool_StatusChanged(object sender, TotalPerFileStatus e)
         {
-            if (!DispatcherQueue.HasThreadAccess)
+            if (!DispatcherQueue.HasThreadAccessSafe())
             {
                 DispatcherQueue?.TryEnqueue(Update);
                 return;
@@ -215,7 +216,7 @@ namespace CollapseLauncher.Pages
 
         private void _repairTool_ProgressChanged(object sender, TotalPerFileProgress e)
         {
-            if (!DispatcherQueue.HasThreadAccess)
+            if (!DispatcherQueue.HasThreadAccessSafe())
             {
                 DispatcherQueue?.TryEnqueue(Update);
                 return;

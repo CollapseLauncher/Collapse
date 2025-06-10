@@ -2115,7 +2115,7 @@
                         HorizontalContentAlignment="Stretch"
                         Click="ShareYourFeedbackClick"
                         CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ShareYourFeedbackButton)}"
-                        IsEnabled="False"
+                        IsEnabled="True"
                         Style="{ThemeResource AccentButtonStyle}">
                     <Grid Margin="0,-2,0,0"
                           HorizontalAlignment="Stretch">

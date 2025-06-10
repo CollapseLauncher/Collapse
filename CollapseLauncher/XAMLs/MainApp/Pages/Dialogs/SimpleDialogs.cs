@@ -2,6 +2,7 @@ using CollapseLauncher.CustomControls;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
@@ -1294,12 +1295,7 @@ namespace CollapseLauncher.Dialogs
                 var userTemplate  = Lang._Misc.ExceptionFeedbackTemplate_User;
                 var emailTemplate = Lang._Misc.ExceptionFeedbackTemplate_Email;
 
-                string exceptionContent = $"""
-                                          {userTemplate} 
-                                          {emailTemplate} 
-                                          {Lang._Misc.ExceptionFeedbackTemplate_Message}
-                                          ------------------------------------
-                                          """;
+                string exceptionContent = UserFeedbackTemplate.FeedbackTemplate;
                 string exceptionTitle   = $"{Lang._Misc.ExceptionFeedbackTitle} {ErrorSender.ExceptionTitle}";
 
                 UserFeedbackDialog  feedbackDialog = new UserFeedbackDialog(contentDialog.XamlRoot)
@@ -1309,35 +1305,47 @@ namespace CollapseLauncher.Dialogs
                     Message = exceptionContent
                 };
                 UserFeedbackResult? feedbackResult = await feedbackDialog.ShowAsync();
-                // TODO: (Optional) Implement generic user feedback pathway (preferably when SentryErrorId is null
-                // Using https://paste.mozilla.org/ 
-                // API Documentation: https://docs.dpaste.org/api/
-                // Though im not sure since user will still need to paste the link to us 🤷
 
                 if (feedbackResult is null)
                 {
                     return;
                 }
+                
+                var feedbackLoadingTitle = Lang._Misc.Feedback;
 
-                // Parse username and email
-                var msg = feedbackResult.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-                if (msg.Length <= 4) return; // Do not send feedback if format is not correct
-                var user     = msg[0].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                var email    = msg[1].Replace(userTemplate, "", StringComparison.InvariantCulture).Trim();
-                var feedback = msg.Length > 4 ? string.Join("\n", msg.Skip(4)).Trim() : null;
-
-                if (string.IsNullOrEmpty(user)) user = "none";
-
-                // Validate email
-                var addr = System.Net.Mail.MailAddress.TryCreate(email, out var address);
-                email = addr ? address!.Address : "user@collapselauncher.com";
-
-                if (string.IsNullOrEmpty(feedback)) return;
-
-                var feedbackContent = $"{feedback}\n\nRating: {feedbackResult.Rating}/5";
-
-                SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, email, user, feedbackContent);
-                isFeedbackSent = true;
+                LoadingMessageHelper.Initialize();
+                LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSending);
+                LoadingMessageHelper.ShowLoadingFrame();
+                
+                var parsedFeedback = UserFeedbackTemplate.ParseTemplate(feedbackResult);
+                if (parsedFeedback == null)
+                {
+                    Logger.LogWriteLine("Failed to parse feedback template! Not sending feedback", LogType.Error, true);
+                    
+                    LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                    await Task.Delay(1000);
+                    LoadingMessageHelper.HideLoadingFrame();
+                }
+                else
+                {
+                    if (SentryHelper.SendExceptionFeedback(ErrorSender.SentryErrorId, parsedFeedback.Email,
+                                                           parsedFeedback.User, parsedFeedback.Message))
+                    {
+                        // Hide the loading message after 200ms
+                        await Task.Delay(500);
+                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSent);
+                        await Task.Delay(1000);
+                        LoadingMessageHelper.HideLoadingFrame();
+                        isFeedbackSent = true;
+                    }
+                    else
+                    {
+                        await Task.Delay(250);
+                        LoadingMessageHelper.SetMessage(feedbackLoadingTitle, Lang._Misc.FeedbackSendFailure);
+                        await Task.Delay(1000);
+                        LoadingMessageHelper.HideLoadingFrame();
+                    }
+                }
             }
             catch (Exception ex)
             {

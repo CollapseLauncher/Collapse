@@ -107,7 +107,7 @@ namespace CollapseLauncher.Helper
                 try
                 {
                     DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-                    if (dispatcherQueue.HasThreadAccess)
+                    if (dispatcherQueue.HasThreadAccessSafe())
                     {
                         return CurrentWindowId.HasValue
                             ? DisplayInformation.CreateForWindowId(CurrentWindowId.Value)
@@ -794,10 +794,10 @@ namespace CollapseLauncher.Helper
 
         internal static void EnableWindowNonClientArea()
         {
-            if (!CurrentWindowId.HasValue || CurrentAppWindow == null)
-            {
-                return;
-            }
+            // Do early check to prevent null reference exception
+            if (CurrentWindow == null || CurrentAppWindow == null) return;
+            
+            if (!CurrentWindowId.HasValue) return;
 
             double                       scaleFactor = CurrentWindowMonitorScaleFactor;
             InputNonClientPointerSource? incps       = CurrentInputNonClientPointerSource;
@@ -811,10 +811,9 @@ namespace CollapseLauncher.Helper
 
         internal static void DisableWindowNonClientArea()
         {
-            if (!CurrentWindowId.HasValue || CurrentAppWindow == null)
-            {
-                return;
-            }
+            if (CurrentWindow == null || CurrentAppWindow == null) return;
+            
+            if (!CurrentWindowId.HasValue) return;
 
             double                       scaleFactor = CurrentWindowMonitorScaleFactor;
             InputNonClientPointerSource? incps       = CurrentInputNonClientPointerSource;

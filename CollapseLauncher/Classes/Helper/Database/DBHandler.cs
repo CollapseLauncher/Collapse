@@ -137,9 +137,17 @@ namespace CollapseLauncher.Helper.Database
                 _ = UserId;
 
                 if (string.IsNullOrEmpty(Uri))
-                    throw new NullReferenceException(Lang._SettingsPage.Database_Error_EmptyUri);
+                {
+                    IsEnabled = false;
+                    throw new NullReferenceException($"DB_001 {Lang._SettingsPage.Database_Error_EmptyUri}");
+                }
+                    
                 if (string.IsNullOrEmpty(Token))
-                    throw new NullReferenceException(Lang._SettingsPage.Database_Error_EmptyToken);
+                {
+                    IsEnabled = false;
+                    throw new NullReferenceException($"DB_002 {Lang._SettingsPage.Database_Error_EmptyToken}");
+                }
+                    
 
                 // Connect to database
                 // Libsql-client-dotnet technically support file based SQLite by pushing `file://` proto in the URL.
@@ -184,7 +192,7 @@ namespace CollapseLauncher.Helper.Database
             {
                 LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
                              LogType.Error, true);
-                var ex = new AggregateException("Unauthorized: wrong token inserted", e);
+                var ex = new AggregateException("DB_003 Unauthorized: wrong token inserted", e);
                 throw ex;
             }
             catch (Exception e)
@@ -252,7 +260,8 @@ namespace CollapseLauncher.Helper.Database
                 {
                     LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! Retrying...\r\n{ex}",
                                  LogType.Error, true);
-                    break;
+                    
+                    await Task.Delay(500);
                 }
                 catch (Exception ex) when (!redirectThrow)
                 {
@@ -318,7 +327,8 @@ namespace CollapseLauncher.Helper.Database
                 {
                     LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! Retrying...\r\n{ex}",
                                  LogType.Error, true);
-                    break;
+                    
+                    await Task.Delay(500);
                 }
                 catch (Exception ex) when (!redirectThrow)
                 {

@@ -251,7 +251,7 @@ namespace CollapseLauncher
             if (e.Exception.GetType() == typeof(NotImplementedException))
             {
                 PreviousTag = "unavailable";
-                if (!DispatcherQueue?.HasThreadAccess ?? false)
+                if (!DispatcherQueue?.HasThreadAccessSafe() ?? false)
                     DispatcherQueue?.TryEnqueue(() => MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage)));
                 else
                     MainFrameChanger.ChangeMainFrame(typeof(UnavailablePage));

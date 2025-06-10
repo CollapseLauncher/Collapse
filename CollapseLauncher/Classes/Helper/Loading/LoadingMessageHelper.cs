@@ -78,7 +78,7 @@ namespace CollapseLauncher.Helper.Loading
         {
             try
             {
-                if (CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccess)
+                if (CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccessSafe())
                 {
                     await ShowLoadingFrameInner();
                     return;
@@ -118,7 +118,7 @@ namespace CollapseLauncher.Helper.Loading
         {
             try
             {
-                if (CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccess)
+                if (CurrentMainWindow.LoadingStatusBackgroundGrid.DispatcherQueue.HasThreadAccessSafe())
                 {
                     await HideLoadingFrameInner();
                     return;

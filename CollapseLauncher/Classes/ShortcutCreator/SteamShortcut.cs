@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Classes.Extension;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
