@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Classes.Extension;
+﻿using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;

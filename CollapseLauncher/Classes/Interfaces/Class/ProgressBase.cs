@@ -1418,7 +1418,7 @@ namespace CollapseLauncher.Interfaces
         {
             try
             {
-                if (ParentUI!.DispatcherQueue!.HasThreadAccess)
+                if (ParentUI!.DispatcherQueue!.HasThreadAccessSafe())
                 {
                     if (assetProperty == null)
                     {

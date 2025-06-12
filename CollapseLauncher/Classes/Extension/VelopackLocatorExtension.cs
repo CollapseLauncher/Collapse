@@ -20,7 +20,7 @@ using Velopack.Locators;
 // ReSharper disable CommentTypo
 
 #nullable enable
-namespace CollapseLauncher.Classes.Extension
+namespace CollapseLauncher.Extension
 {
     internal static class VelopackLocatorExtension
     {
