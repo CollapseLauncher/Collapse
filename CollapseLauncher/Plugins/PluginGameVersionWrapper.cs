@@ -192,9 +192,15 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
         // NOP
     }
 
+    public void UpdateGamePath() => UpdateGamePath(GameDirPath);
+
     public override void UpdateGamePath(string? path, bool saveValue = true)
     {
-        _pluginGameManager.SetGamePath(path ?? throw new ArgumentNullException(nameof(path), "path cannot be null!"), saveValue);
+        _pluginGameManager.SetGamePath(path ?? throw new ArgumentNullException(nameof(path), "path cannot be null!"));
+        if (saveValue)
+        {
+            _pluginGameManager.SaveConfig();
+        }
         base.UpdateGamePath(path, saveValue);
     }
 
@@ -214,7 +220,11 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
             return;
         }
 
-        _pluginGameManager.SetGamePath(currentPath, saveValue);
+        _pluginGameManager.SetGamePath(currentPath);
+        if (saveValue)
+        {
+            _pluginGameManager.SaveConfig();
+        }
     }
 
     public override void UpdateGameVersionToLatest(bool saveValue = true) => UpdateGameVersion(GetGameVersionApi(), saveValue);
