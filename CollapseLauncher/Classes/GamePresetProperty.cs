@@ -86,7 +86,7 @@ namespace CollapseLauncher
                     property.GameSettings = SettingsBase.CreateBaseFrom(pluginGameVersion, true);
                     property.GameCache    = null;
                     property.GameRepair   = null;
-                    property.GameInstall  = new PluginGameInstallWrapper(uiElementParent, pluginPresetConfig);
+                    property.GameInstall  = new PluginGameInstallWrapper(uiElementParent, pluginPresetConfig, pluginGameVersion);
                     break;
                 case GameNameType.Unknown:
                 default:

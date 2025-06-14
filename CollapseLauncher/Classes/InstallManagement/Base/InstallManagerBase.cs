@@ -89,6 +89,7 @@ namespace CollapseLauncher.InstallManager.Base
         Official,
         BetterHi3Launcher,
         Steam,
+        Plugin,
         Unknown
     }
 
