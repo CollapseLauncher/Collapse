@@ -1433,6 +1433,7 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
+                    Visibility="{x:Bind pages:HomePage.CommunityToolsButtonVisibility}"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
                     Shadow="{ThemeResource SharedShadow}">
                 <Button.Resources>
@@ -1526,12 +1527,14 @@
                                       HorizontalScrollMode="Enabled"
                                       VerticalScrollBarVisibility="Disabled"
                                       VerticalScrollMode="Disabled">
-                            <Grid Margin="16,0,8,0">
+                            <Grid Margin="16,0,8,0"
+                                  ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
+                                <StackPanel Grid.Column="0"
+                                            Visibility="{x:Bind pages:HomePage.CommunityToolsOfficialGridVisibility}">
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
@@ -1558,7 +1561,7 @@
                                     </GridView>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1"
-                                            Margin="16,0,0,0">
+                                            Visibility="{x:Bind pages:HomePage.CommunityToolsCommunityGridVisibility}">
                                     <TextBlock Margin="0,0,0,8"
                                                FontSize="16"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
