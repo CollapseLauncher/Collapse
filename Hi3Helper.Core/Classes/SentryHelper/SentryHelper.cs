@@ -344,6 +344,7 @@ namespace Hi3Helper.SentryHelper
         public static bool   CurrentGameUpdated    { get; set; }
         public static bool   CurrentGameHasPreload { get; set; }
         public static bool   CurrentGameHasDelta   { get; set; }
+        public static bool   CurrentGameIsPlugin   { get; set; }
 
         private static int CpuThreadsTotal => Environment.ProcessorCount;
 
@@ -464,6 +465,7 @@ namespace Hi3Helper.SentryHelper
                 { "Updated", CurrentGameUpdated.ToString() },
                 { "HasPreload", CurrentGameHasPreload.ToString() },
                 { "HasDelta", CurrentGameHasDelta.ToString() },
+                { "IsGameFromPlugin", CurrentGameIsPlugin.ToString() },
                 { "Location", CurrentGameLocation },
                 { "CdnOption", AppCdnOption }
             }, "GameInfo");
