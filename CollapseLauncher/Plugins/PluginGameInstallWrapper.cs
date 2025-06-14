@@ -87,7 +87,8 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
             // Return as success (0) and update the game path.
             if (dialogResult == ContentDialogResult.Primary)
             {
-                GameManager.UpdateGamePath(existingPath);
+                GameManager.GameDirPath = existingPath;
+                GameManager.Reinitialize();
                 return 0;
             }
         }
