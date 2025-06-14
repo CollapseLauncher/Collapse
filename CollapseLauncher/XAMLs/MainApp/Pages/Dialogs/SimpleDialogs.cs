@@ -838,7 +838,8 @@ namespace CollapseLauncher.Dialogs
             string                  existingGamePath,        string gameTitle, string gameRegion, string launcherName,
             MigrateFromLauncherType migrateFromLauncherType, bool   isHasOnlyMigrateOption)
         {
-            if (migrateFromLauncherType != MigrateFromLauncherType.Official)
+            if (migrateFromLauncherType != MigrateFromLauncherType.Official &&
+                migrateFromLauncherType != MigrateFromLauncherType.Plugin)
             {
                 return migrateFromLauncherType switch
                        {

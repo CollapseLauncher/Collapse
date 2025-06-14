@@ -5,6 +5,8 @@ using CollapseLauncher.InstallManager;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Utility;
@@ -21,23 +23,22 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal class PluginGameInstallWrapper : IGameInstallManager
+internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IGameInstallManager
 {
-    public event EventHandler<TotalPerFileProgress>? ProgressChanged;
-    public event EventHandler<TotalPerFileStatus>?   StatusChanged;
-    public event EventHandler?                       FlushingTrigger;
+    public event EventHandler? FlushingTrigger;
 
-    public bool                    IsRunning         { get; }
-    public UIElement               ParentUI          { get; }
-    public DispatcherQueue         DispatcherQueue   { get; }
-    public CancellationTokenSource CancelTokenSource { get; set; }
+    public bool            IsRunning       { get; }
+    public DispatcherQueue DispatcherQueue { get; }
 
     private readonly IPlugin                   _plugin;
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
-    private readonly PluginGameVersionWrapper  _gameManager;
     private readonly IGameInstaller            _gameInstaller;
 
+    private PluginGameVersionWrapper GameManager =>
+        GameVersionManager as PluginGameVersionWrapper ?? throw new InvalidCastException("GameVersionManager is not PluginGameVersionWrapper");
+
     internal PluginGameInstallWrapper(UIElement parentUi, PluginPresetConfigWrapper pluginPresetConfig, PluginGameVersionWrapper pluginVersionManager)
+        : base(parentUi, pluginVersionManager, pluginVersionManager.GameDirPath, null, null)
     {
         ParentUI        = parentUi ?? throw new ArgumentNullException(nameof(parentUi));
         IsRunning       = false;
@@ -45,34 +46,22 @@ internal class PluginGameInstallWrapper : IGameInstallManager
 
         _plugin             = pluginPresetConfig.Plugin ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
         _pluginPresetConfig = pluginPresetConfig ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
+        _gameInstaller      = pluginPresetConfig.PluginGameInstaller;
 
-        _gameManager   = pluginVersionManager;
-        _gameInstaller = pluginPresetConfig.PluginGameInstaller;
-
-        CancelTokenSource = new CancellationTokenSource();
+        IsSophonInUpdateMode = false;
     }
 
-    public void CancelRoutine() => ResetAndCancelTokenSource();
+    public void CancelRoutine()
+    {
+        Token.Cancel();
+        ResetAndCancelTokenSource();
+    }
 
     private void ResetAndCancelTokenSource()
     {
-        CancelTokenSource.Dispose();
-        CancelTokenSource = new CancellationTokenSource();
+        Token.Dispose();
+        ResetStatusAndProgressProperty();
     }
-
-    public void Dispatch(DispatcherQueueHandler handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
-    {
-        if (DispatcherQueue.HasThreadAccess)
-        {
-            handler();
-            return;
-        }
-
-        DispatcherQueue.TryEnqueue(priority, handler);
-    }
-
-    public Task DispatchAsync(Action handler, DispatcherQueuePriority priority = DispatcherQueuePriority.Normal)
-        => Task.Factory.StartNew(() => Dispatch(() => handler(), priority));
 
     public void Dispose()
     {
@@ -83,7 +72,7 @@ internal class PluginGameInstallWrapper : IGameInstallManager
     public async ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false)
     {
         // Try get existing path
-        string? existingPath = await _gameManager.FindGameInstallationPath(string.Empty);
+        string? existingPath = await GameManager.FindGameInstallationPath(string.Empty);
 
         // If the path is existed, 
         if (!string.IsNullOrEmpty(existingPath) && Directory.Exists(existingPath))
@@ -91,14 +80,14 @@ internal class PluginGameInstallWrapper : IGameInstallManager
             ContentDialogResult dialogResult = await SimpleDialogs.Dialog_MigrationChoiceDialog(existingPath,
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.GameName, Locale.Lang._GameClientTitles) ?? _pluginPresetConfig.GameName,
                 InnerLauncherConfig.GetGameTitleRegionTranslationString(_pluginPresetConfig.ZoneName, Locale.Lang._GameClientRegions) ?? _pluginPresetConfig.ZoneName,
-                nameof(MigrateFromLauncherType.Unknown),
-                MigrateFromLauncherType.Unknown,
-                false);
+                nameof(MigrateFromLauncherType.Plugin),
+                MigrateFromLauncherType.Plugin,
+                true);
 
             // Return as success (0) and update the game path.
             if (dialogResult == ContentDialogResult.Primary)
             {
-                _gameManager.UpdateGamePath(existingPath);
+                GameManager.UpdateGamePath(existingPath);
                 return 0;
             }
         }
@@ -119,11 +108,11 @@ internal class PluginGameInstallWrapper : IGameInstallManager
         // Register the game path without saving it first.
         // This to ensure that the plugin is aware of the installation path to be used.
         // Then tell the plugin to reinitialize the game manager.
-        _gameManager.GameDirPath = installPath;
-        _gameManager.Reinitialize();
+        GameManager.GameDirPath = installPath;
+        GameManager.Reinitialize();
 
         // Check if the game is installed after the game manager is reinitialized.
-        if (_gameManager.IsGameInstalled())
+        if (GameManager.IsGameInstalled())
         {
             // Return as completed and apply the config.
             return 0;
@@ -184,46 +173,170 @@ internal class PluginGameInstallWrapper : IGameInstallManager
 
     public async Task StartPackageInstallation()
     {
-        bool isUpdateMode = !_gameManager.IsGameVersionMatch();
+        bool isUpdateMode = !GameManager.IsGameVersionMatch();
 
-        Guid cancelGuid = _plugin.RegisterCancelToken(CancelTokenSource.Token);
+        Lock updateStatusLock = new Lock();
+        ResetStatusAndProgressProperty();
 
-        await _gameInstaller.InitPluginComAsync(_plugin, CancelTokenSource.Token);
+        try
+        {
+            Status.IsProgressAllIndetermined = true;
+            Status.IsProgressPerFileIndetermined = true;
+            Status.IsRunning = true;
+            Status.IsIncludePerFileIndicator = false;
+            UpdateStatus();
 
-        GameInstallerKind sizeInstallerKind = isUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
-        long sizeToDownload = await _gameInstaller.GetGameSizeAsync(sizeInstallerKind, in cancelGuid).WaitFromHandle<long>();
+            int stateCount = 0;
+            int stateCountTotal = 0;
 
-        // TODO: Check remained size
-        Task routineTask = isUpdateMode ?
-            _gameInstaller
-               .StartUpdateAsync(UpdateProgress,
-                                 UpdateStatus,
-                                 _plugin.RegisterCancelToken(CancelTokenSource.Token))
-               .WaitFromHandle() :
-            _gameInstaller
-               .StartInstallAsync(UpdateProgress,
-                                  UpdateStatus,
-                                  _plugin.RegisterCancelToken(CancelTokenSource.Token))
-               .WaitFromHandle();
+            int assetCount = 0;
+            int assetCountTotal = 0;
 
-        await routineTask.ConfigureAwait(false);
+            long lastDownloaded = 0;
+
+            Guid cancelGuid = _plugin.RegisterCancelToken(Token.Token);
+            await _gameInstaller.InitPluginComAsync(_plugin, Token.Token);
+
+            InstallProgressDelegate      progressDelegate       = UpdateProgressCallback;
+            InstallProgressStateDelegate progressStatusDelegate = UpdateStatusCallback;
+
+            GameInstallerKind sizeInstallerKind = isUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
+            long sizeToDownload = await _gameInstaller.GetGameSizeAsync(sizeInstallerKind, in cancelGuid).WaitFromHandle<long>();
+            long sizeAlreadyDownloaded = await _gameInstaller.GetGameDownloadedSizeAsync(sizeInstallerKind, in cancelGuid).WaitFromHandle<long>();
+
+            await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
+
+            Task routineTask = isUpdateMode ?
+                _gameInstaller
+                   .StartUpdateAsync(progressDelegate,
+                                     progressStatusDelegate,
+                                     _plugin.RegisterCancelToken(Token.Token))
+                   .WaitFromHandle() :
+                _gameInstaller
+                   .StartInstallAsync(progressDelegate,
+                                      progressStatusDelegate,
+                                      _plugin.RegisterCancelToken(Token.Token))
+                   .WaitFromHandle();
+
+            await routineTask.ConfigureAwait(false);
+
+            return;
+
+            void UpdateProgressCallback(in InstallProgress delegateProgress)
+            {
+                using (updateStatusLock.EnterScope())
+                {
+                    stateCount = delegateProgress.StateCount;
+                    stateCountTotal = delegateProgress.TotalStateToComplete;
+
+                    assetCount = delegateProgress.DownloadedCount;
+                    assetCountTotal = delegateProgress.TotalCountToDownload;
+
+                    long downloadedBytes = delegateProgress.DownloadedBytes;
+                    long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
+
+                    long readDownload = delegateProgress.DownloadedBytes - lastDownloaded;
+                    double currentSpeed = CalculateSpeed(readDownload);
+
+                    Progress.ProgressAllEntryCountCurrent = assetCount;
+                    Progress.ProgressAllEntryCountTotal = assetCountTotal;
+
+                    Progress.ProgressAllSizeCurrent = downloadedBytes;
+                    Progress.ProgressAllSizeTotal = downloadedBytesTotal;
+                    Progress.ProgressAllSpeed = currentSpeed;
+
+                    Progress.ProgressAllTimeLeft = ConverterTool
+                       .ToTimeSpanRemain(downloadedBytesTotal, downloadedBytes, currentSpeed);
+
+                    Progress.ProgressAllPercentage = ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes);
+
+                    lastDownloaded = downloadedBytes;
+
+                    if (CheckIfNeedRefreshStopwatch())
+                    {
+                        return;
+                    }
+
+                    if (Status.IsProgressAllIndetermined)
+                    {
+                        Status.IsProgressAllIndetermined     = false;
+                        Status.IsProgressPerFileIndetermined = false;
+                        UpdateStatus();
+                    }
+
+                    UpdateProgress();
+                }
+            }
+
+            void UpdateStatusCallback(InstallProgressState delegateState)
+            {
+                using (updateStatusLock.EnterScope())
+                {
+                    string stateString = delegateState switch
+                    {
+                        InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal),
+                        InstallProgressState.Idle => Locale.Lang._Misc.Idle,
+                        InstallProgressState.Install => string.Format(Locale.Lang._Misc.Extracting + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal),
+                        InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Lang._Misc.Verifying + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal),
+                        _ => string.Format((!isUpdateMode ? Locale.Lang._Misc.Downloading : Locale.Lang._Misc.Updating) + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal)
+                    };
+
+                    Status.ActivityStatus = stateString;
+                    Status.ActivityAll = string.Format(Locale.Lang._Misc.PerFromTo, assetCount, assetCountTotal);
+
+                    UpdateStatus();
+                }
+            }
+        }
+        catch (OperationCanceledException) when (Token.IsCancellationRequested)
+        {
+            Status.IsCanceled = true;
+            throw;
+        }
+        finally
+        {
+            Status.IsCompleted = true;
+            UpdateStatus();
+        }
     }
 
-    void UpdateProgress(in InstallProgress progress)
+    private static async Task EnsureDiskSpaceAvailability(string gamePath, long sizeToDownload, long sizeAlreadyDownloaded)
     {
-    }
+        long sizeRemainedToDownload = sizeToDownload - sizeAlreadyDownloaded;
 
-    void UpdateStatus(in InstallProgressState state)
-    {
+        // Push log regarding how much size remained to download
+        Logger.LogWriteLine($"Size remained to download: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)}.",
+                            LogType.Default, true);
+
+        // Get the information about the disk
+        DriveInfo driveInfo = new DriveInfo(gamePath);
+
+        // Push log regarding disk space
+        Logger.LogWriteLine($"Total free space remained on disk: {driveInfo.Name}: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}.",
+                            LogType.Default, true);
+
+        // If the space is insufficient, then show the dialog and throw
+        if (sizeRemainedToDownload > driveInfo.TotalFreeSpace)
+        {
+            string errStr = $"Free Space on {driveInfo.Name} is not sufficient! " +
+                            $"(Free space: {ConverterTool.SummarizeSizeSimple(driveInfo.TotalFreeSpace)}, Req. Space: {ConverterTool.SummarizeSizeSimple(sizeRemainedToDownload)} (Total: {ConverterTool.SummarizeSizeSimple(sizeToDownload)}), " +
+                            $"Drive: {driveInfo.Name})";
+            await SimpleDialogs.Dialog_InsufficientDriveSpace(driveInfo.TotalFreeSpace,
+                                                              sizeRemainedToDownload, driveInfo.Name);
+
+            // Push log for the disk space error
+            Logger.LogWriteLine(errStr, LogType.Error, true);
+            throw new TaskCanceledException(errStr);
+        }
     }
 
     public void ApplyGameConfig(bool forceUpdateToLatest = false)
     {
-        _gameManager.UpdateGamePath();
+        GameManager.UpdateGamePath();
 
         if (forceUpdateToLatest)
         {
-            _gameManager.UpdateGameVersionToLatest();
+            GameManager.UpdateGameVersionToLatest();
         }
     }
 
@@ -241,7 +354,7 @@ internal class PluginGameInstallWrapper : IGameInstallManager
 
     public void Flush()
     {
-        // NOP
+        FlushingTrigger?.Invoke(this, EventArgs.Empty);
     }
 
     public ValueTask<bool> IsPreloadCompleted(CancellationToken token = default)
@@ -275,5 +388,4 @@ internal class PluginGameInstallWrapper : IGameInstallManager
 
     public bool StartAfterInstall { get; set; }
     public bool IsUseSophon => false;
-    public bool IsSophonInUpdateMode => false;
 }
