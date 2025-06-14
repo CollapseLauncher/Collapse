@@ -400,7 +400,6 @@ namespace CollapseLauncher.Interfaces
 
             Interlocked.Exchange(ref _riLastTick, Environment.TickCount);
             return true;
-
         }
         #endregion
 
@@ -684,9 +683,6 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual void ResetStatusAndProgress()
         {
-            // Reset the cancellation token
-            Token = new CancellationTokenSourceWrapper();
-
             // Reset RepairAssetProperty list
             AssetEntry!.Clear();
 
