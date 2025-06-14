@@ -109,39 +109,25 @@ namespace CollapseLauncher
         internal IGameVersion?        GameVersion     { get; set; }
         internal IGameInstallManager? GameInstall     { get; set; }
         internal PresetConfig         GamePreset      { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
-
-        [field: AllowNull, MaybeNull]
+        
         internal string GameExecutableName
         {
-            get
-            {
-                if (string.IsNullOrEmpty(field))
-                    field = GamePreset.GameExecutableName ?? "";
-                return field;
-            }
+            get => GamePreset.GameExecutableName ?? "";
         }
 
-        [field: AllowNull, MaybeNull]
         internal string GameExecutableNameWithoutExtension
         {
-            get
-            {
-                if (string.IsNullOrEmpty(field))
-                    field = Path.GetFileNameWithoutExtension(GameExecutableName);
-                return field;
-            }
+            get => Path.GetFileNameWithoutExtension(GameExecutableName);
         }
 
-        [field: AllowNull, MaybeNull]
         internal string GameExecutableDir
         {
-            get => field ??= GameVersion?.GameDirPath ?? throw new NullReferenceException();
+            get => GameVersion?.GameDirPath ?? throw new NullReferenceException();
         }
 
-        [field: AllowNull, MaybeNull]
         internal string GameExecutablePath
         {
-            get => field ??= Path.Combine(GameExecutableDir, GameExecutableName);
+            get => Path.Combine(GameExecutableDir, GameExecutableName);
         }
 
         internal bool IsGameRunning
