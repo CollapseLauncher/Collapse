@@ -61,42 +61,42 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
     public override GameNameType   GameType           => GameNameType.Plugin;
     public override LauncherType   LauncherType       => LauncherType.Plugin;
     public override GameVendorType VendorType         => GameVendorType.CollapsePlugin;
-    public          string         VendorTypeInString => _config.get_GameVendorName();
+    public          string         VendorTypeInString => _config.comGet_GameVendorName();
 
     public override string? InternalGameNameInConfig
     {
-        get => field ??= _config.get_GameRegistryKeyName();
+        get => field ??= _config.comGet_GameRegistryKeyName();
         init;
     }
 
-    public override string GameName        => _config.get_GameName();
-    public override string ProfileName     => _config.get_ProfileName();
-    public override string ZoneDescription => _config.get_ZoneDescription();
-    public override string ZoneName        => _config.get_ZoneName();
-    public override string ZoneFullname    => _config.get_ZoneFullName();
-    public override string ZoneLogoURL     => _config.get_ZoneLogoUrl();
-    public override string ZonePosterURL   => _config.get_ZonePosterUrl();
-    public override string ZoneURL         => _config.get_ZoneHomePageUrl();
+    public override string GameName        => _config.comGet_GameName();
+    public override string ProfileName     => _config.comGet_ProfileName();
+    public override string ZoneDescription => _config.comGet_ZoneDescription();
+    public override string ZoneName        => _config.comGet_ZoneName();
+    public override string ZoneFullname    => _config.comGet_ZoneFullName();
+    public override string ZoneLogoURL     => _config.comGet_ZoneLogoUrl();
+    public override string ZonePosterURL   => _config.comGet_ZonePosterUrl();
+    public override string ZoneURL         => _config.comGet_ZoneHomePageUrl();
 
-    public override string GameExecutableName => _config.get_GameExecutableName();
-    public override string GameDirectoryName  => _config.get_LauncherGameDirectoryName();
+    public override string GameExecutableName => _config.comGet_GameExecutableName();
+    public override string GameDirectoryName  => _config.comGet_LauncherGameDirectoryName();
 
-    public string? GameLogFileName => field ??= _config.get_GameLogFileName();
-    public string? GameAppDataPath => field ??= _config.get_GameAppDataPath();
+    public string? GameLogFileName => field ??= _config.comGet_GameLogFileName();
+    public string? GameAppDataPath => field ??= _config.comGet_GameAppDataPath();
 
     [field: AllowNull, MaybeNull]
     public override List<string> GameSupportedLanguages
     {
         get => field ??= Mem
-                        .CreateArrayFromSelector(_config.get_GameSupportedLanguagesCount,
-                                                 _config.get_GameSupportedLanguages)
+                        .CreateArrayFromSelector(_config.comGet_GameSupportedLanguagesCount,
+                                                 _config.comGet_GameSupportedLanguages)
                         .ToList();
         init;
     }
 
     public override GameChannel GameChannel
     {
-        get => _config.get_ReleaseChannel() switch
+        get => _config.comGet_ReleaseChannel() switch
         {
             GameReleaseChannel.OpenBeta => GameChannel.Beta,
             GameReleaseChannel.ClosedBeta => GameChannel.DevRelease,
@@ -104,20 +104,23 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
         };
     }
 
-    public override string DefaultLanguage => _config.get_GameMainLanguage();
+    public override string DefaultLanguage => _config.comGet_GameMainLanguage();
 
     private         int? _hashID;
     public override int HashID { get => _hashID ??= HashCode.Combine(GameName, ZoneName); set => _hashID = value; }
 
 
     [field: AllowNull, MaybeNull]
-    public ILauncherApiMedia PluginMediaApi => field ??= _config.get_LauncherApiMedia() ?? throw new NullReferenceException("ILauncherApiMedia interface cannot be null!");
+    public ILauncherApiMedia PluginMediaApi => field ??= _config.comGet_LauncherApiMedia() ?? throw new NullReferenceException("ILauncherApiMedia interface cannot be null!");
 
     [field: AllowNull, MaybeNull]
-    public ILauncherApiNews PluginNewsApi => field ??= _config.get_LauncherApiNews() ?? throw new NullReferenceException("ILauncherApiNews interface cannot be null!");
+    public ILauncherApiNews PluginNewsApi => field ??= _config.comGet_LauncherApiNews() ?? throw new NullReferenceException("ILauncherApiNews interface cannot be null!");
 
     [field: AllowNull, MaybeNull]
-    public IGameManager PluginGameManager => field ??= _config.get_GameManager() ?? throw new NullReferenceException("IGameManager interface cannot be null!");
+    public IGameManager PluginGameManager => field ??= _config.comGet_GameManager() ?? throw new NullReferenceException("IGameManager interface cannot be null!");
+
+    [field: AllowNull, MaybeNull]
+    public IGameInstaller PluginGameInstaller => field ??= _config.comGet_GameInstaller() ?? throw new NullReferenceException("IGameInstaller interface cannot be null!");
 
     public async Task InitializeAsync(CancellationToken token = default)
     {
