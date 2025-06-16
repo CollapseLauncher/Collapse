@@ -27,7 +27,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
 {
     public event EventHandler? FlushingTrigger;
 
-    public bool            IsRunning       { get; }
+    public bool            IsRunning       { get; private set; }
     public DispatcherQueue DispatcherQueue { get; }
 
     private readonly IPlugin                   _plugin;
@@ -181,10 +181,12 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
 
         try
         {
-            Status.IsProgressAllIndetermined = true;
+            IsRunning = true;
+
+            Status.IsProgressAllIndetermined     = true;
             Status.IsProgressPerFileIndetermined = true;
-            Status.IsRunning = true;
-            Status.IsIncludePerFileIndicator = false;
+            Status.IsRunning                     = true;
+            Status.IsIncludePerFileIndicator     = false;
             UpdateStatus();
 
             int stateCount = 0;
@@ -297,6 +299,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         finally
         {
             Status.IsCompleted = true;
+            IsRunning = false;
             UpdateStatus();
         }
     }
