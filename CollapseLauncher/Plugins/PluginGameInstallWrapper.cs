@@ -10,6 +10,7 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Utility;
+using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -174,7 +175,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
 
     public async Task StartPackageInstallation()
     {
-        bool isUpdateMode = !GameManager.IsGameVersionMatch();
+        bool isUpdateMode = await GameManager.GetGameState() == GameInstallStateEnum.NeedsUpdate;
 
         Lock updateStatusLock = new Lock();
         ResetStatusAndProgressProperty();
