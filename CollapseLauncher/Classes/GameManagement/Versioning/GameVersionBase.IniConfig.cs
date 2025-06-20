@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;

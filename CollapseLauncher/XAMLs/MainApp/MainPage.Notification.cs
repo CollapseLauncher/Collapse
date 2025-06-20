@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
@@ -227,11 +228,11 @@ public partial class MainPage : Page
 
             string[] verStrings = await File.ReadAllLinesAsync(updateNotifFile.FullName);
             string   verString  = string.Empty;
-            if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion? version))
+            if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion version))
             {
-                verString = version?.VersionString;
+                verString = version.VersionString;
                 SpawnNotificationPush(Lang._Misc.UpdateCompleteTitle,
-                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version?.VersionString, IsPreview ? "Preview" : "Stable"),
+                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version.ToString("n", null), IsPreview ? "Preview" : "Stable"),
                                       NotifSeverity.Success,
                                       0xAF,
                                       true,

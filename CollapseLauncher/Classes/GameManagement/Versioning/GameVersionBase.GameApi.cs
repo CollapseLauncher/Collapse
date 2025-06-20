@@ -1,4 +1,5 @@
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -44,7 +45,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return null;
 
                 // If the version provided by the SDK API, return the result
-                return GameVersion.TryParse(GameApiProp.data?.sdk?.version, out GameVersion? result) ? result :
+                return GameVersion.TryParse(GameApiProp.data?.sdk?.version, null, out GameVersion result) ? result :
                     // Otherwise, return null
                     null;
             }
@@ -52,7 +53,7 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         protected virtual GameVersion? GameVersionAPI
         {
-            get => GameVersion.TryParse(GameApiProp?.data?.game?.latest?.version, out GameVersion? version) ? version : null;
+            get => GameVersion.TryParse(GameApiProp?.data?.game?.latest?.version, out GameVersion version) ? version : null;
         }
 
         protected virtual GameVersion? GameVersionAPIPreload
@@ -187,7 +188,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return null;
 
                 // Try parse the version.
-                return !GameVersion.TryParse(versionName, out GameVersion? result) ?
+                return !GameVersion.TryParse(versionName, out GameVersion result) ?
                     // If it's not valid, then return null
                     null :
                     // Otherwise, return the result

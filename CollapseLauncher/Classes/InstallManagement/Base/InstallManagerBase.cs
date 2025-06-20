@@ -29,6 +29,7 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
@@ -1246,7 +1247,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 RegionResourcePlugin? gameSdkList = GameVersionManager.GetGameSdkZip()?.FirstOrDefault();
-                if (gameSdkList != null && GameVersion.TryParse(gameSdkList.version, out GameVersion? sdkVersionResult))
+                if (gameSdkList != null && GameVersion.TryParse(gameSdkList.version, out GameVersion sdkVersionResult))
                 {
                     GameVersionManager.UpdateSdkVersion(sdkVersionResult);
                 }
@@ -2896,14 +2897,13 @@ namespace CollapseLauncher.InstallManager.Base
             // If the game ini section is not null, then try eliminate the version section
             if (GameVersionManager.GameIniVersionSection != null)
             {
-                foreach (KeyValuePair<string, IniValue> iniProperty in GameVersionManager.GameIniVersionSection
+                foreach (var (iniKey, value) in GameVersionManager.GameIniVersionSection
                             .Where(x => x.Key.StartsWith(pluginKeyStart) && x.Key.EndsWith(pluginKeyEnd)))
                 {
                     // Get the plugin id from the ini property's key
-                    string iniKey            = iniProperty.Key;
                     int    startIniKeyOffset = pluginKeyStart.Length;
                     int startIniKeyLength =
-                        iniProperty.Key.LastIndexOf(pluginKeyEnd, StringComparison.OrdinalIgnoreCase) -
+                        iniKey.LastIndexOf(pluginKeyEnd, StringComparison.OrdinalIgnoreCase) -
                         startIniKeyOffset;
                     string iniPluginId = iniKey.AsSpan(startIniKeyOffset, startIniKeyLength).ToString();
 
@@ -2915,9 +2915,9 @@ namespace CollapseLauncher.InstallManager.Base
 
                     // Try to get the plugin version from both installed and api's one
                     string               pluginResourceVersion = pluginResource.version!;
-                    if (!GameVersion.TryParse(pluginResourceVersion, out GameVersion? pluginResourceVersionResult)
-                        || !GameVersion.TryParse(iniProperty.Value.ToString(),
-                                                 out GameVersion? installedPluginVersionResult))
+                    if (!GameVersion.TryParse(pluginResourceVersion, out GameVersion pluginResourceVersionResult)
+                        || !GameVersion.TryParse(value.ToString(),
+                                                 out GameVersion installedPluginVersionResult))
                     {
                         continue;
                     }
@@ -2935,7 +2935,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Add the plugin resources to asset list
             foreach (KeyValuePair<string, RegionResourcePlugin> pluginResource in pluginResourceDictionary)
             {
-                if (!GameVersion.TryParse(pluginResource.Value.version, out GameVersion? _))
+                if (!GameVersion.TryParse(pluginResource.Value.version, out _))
                 {
                     LogWriteLine($"Failed to parse plugin version: {pluginResource.Value.version} with id: {pluginResource.Key}",
                                  LogType.Error, true);

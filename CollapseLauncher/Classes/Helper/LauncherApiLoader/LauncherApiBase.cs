@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Microsoft.Win32;
 using System;
 #if SIMULATEPRELOAD
@@ -177,8 +178,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 return;
             }
 
-            if (GameVersion.TryParse(gameBranch.GameMainField?.Tag, out GameVersion? latestSophonVersion) &&
-                GameVersion.TryParse(LauncherGameResource.data.game?.latest?.version, out GameVersion? latestZipVersion) &&
+            if (GameVersion.TryParse(gameBranch.GameMainField?.Tag, out GameVersion latestSophonVersion) &&
+                GameVersion.TryParse(LauncherGameResource.data.game?.latest?.version, out GameVersion latestZipVersion) &&
                 latestSophonVersion == latestZipVersion)
             {
                 return;

@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System.Collections.Generic;

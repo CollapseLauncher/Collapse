@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Shared.Region;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,6 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
 using TurnerSoftware.DinoDNS;
-using PluginGameVersion = Hi3Helper.Plugin.Core.Management.GameVersion;
 // ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
@@ -23,12 +23,12 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal class PluginInfo : IDisposable
 {
-    internal unsafe delegate PluginGameVersion* DelegateGetPluginStandardVersion();
-    internal unsafe delegate PluginGameVersion* DelegateGetPluginVersion();
-    internal unsafe delegate void*              DelegateGetPlugin();
-    internal delegate        void               DelegateFreePlugin();
-    internal delegate        void               DelegateSetLoggerCallback(nint      loggerCallback);
-    internal delegate        void               DelegateSetDnsResolverCallback(nint dnsResolverCallback);
+    internal unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
+    internal unsafe delegate GameVersion* DelegateGetPluginVersion();
+    internal unsafe delegate void*        DelegateGetPlugin();
+    internal delegate        void         DelegateFreePlugin();
+    internal delegate        void         DelegateSetLoggerCallback(nint      loggerCallback);
+    internal delegate        void         DelegateSetDnsResolverCallback(nint dnsResolverCallback);
 
     private bool _isDisposed;
 
@@ -89,8 +89,8 @@ internal class PluginInfo : IDisposable
             _setDnsResolverCallback = setDnsResolverCallbackHandle;
 
             // TODO: Add versioning check.
-            GameVersion pluginStandardVersion = GameVersion.From(getPluginStandardVersionHandle()->AsSpan());
-            GameVersion pluginVersion         = GameVersion.From(getPluginVersionHandle()->AsSpan());
+            GameVersion pluginStandardVersion = *getPluginStandardVersionHandle();
+            GameVersion pluginVersion         = *getPluginVersionHandle();
             void*       pluginInstancePtr     = getPluginHandle();
 
             if (pluginInstancePtr == null)

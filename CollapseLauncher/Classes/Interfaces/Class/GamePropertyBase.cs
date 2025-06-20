@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using Hi3Helper.Plugin.Core.Management;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;

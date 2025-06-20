@@ -2,6 +2,7 @@
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.SentryHelper;
 using System;

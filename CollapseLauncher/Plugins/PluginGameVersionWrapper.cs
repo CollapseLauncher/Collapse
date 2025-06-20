@@ -11,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using PluginGameVersion = Hi3Helper.Plugin.Core.Management.GameVersion;
-
 #nullable enable
 namespace CollapseLauncher.Plugins;
 
@@ -131,36 +129,36 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
 
     public override GameVersion? GetGameExistingVersion()
     {
-        _pluginGameManager.GetCurrentGameVersion(out PluginGameVersion gameVersion);
-        if (gameVersion == PluginGameVersion.Empty)
+        _pluginGameManager.GetCurrentGameVersion(out GameVersion gameVersion);
+        if (gameVersion == GameVersion.Empty)
         {
             return null;
         }
 
-        return GameVersion.From(gameVersion);
+        return gameVersion;
     }
 
     public override GameVersion? GetGameVersionApi()
     {
-        _pluginGameManager.GetApiGameVersion(out PluginGameVersion gameVersion);
-        if (gameVersion == PluginGameVersion.Empty)
+        _pluginGameManager.GetApiGameVersion(out GameVersion gameVersion);
+        if (gameVersion == GameVersion.Empty)
         {
             return null;
         }
 
-        return GameVersion.From(gameVersion);
+        return gameVersion;
     }
 
     public override GameVersion? GetGameVersionApiPreload()
     {
-        _pluginGameManager.GetApiPreloadGameVersion(out PluginGameVersion gameVersion);
+        _pluginGameManager.GetApiPreloadGameVersion(out GameVersion gameVersion);
 
-        if (gameVersion == PluginGameVersion.Empty)
+        if (gameVersion == GameVersion.Empty)
         {
             return null;
         }
 
-        return GameVersion.From(gameVersion);
+        return gameVersion;
     }
 
     /*
@@ -211,8 +209,7 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
             throw new ArgumentNullException(nameof(version), "version cannot be null!");
         }
 
-        PluginGameVersion inGameVersion = new PluginGameVersion(version.Value.AsSpan());
-        _pluginGameManager.SetCurrentGameVersion(in inGameVersion);
+        _pluginGameManager.SetCurrentGameVersion(version.Value);
         
         string? currentPath = _pluginGameManager.GetGamePath();
         if (string.IsNullOrEmpty(currentPath))
