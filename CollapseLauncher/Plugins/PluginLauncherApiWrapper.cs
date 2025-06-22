@@ -46,7 +46,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
     public string  GameBackgroundImg           { get; private set; } = string.Empty;
     public string? GameBackgroundImgLocal      { get; set; }
     public int     GameBackgroundSequenceCount { get; private set; } = 1;
-    public float   GameBackgroundSequenceFps   { get; private set; } = 0;
+    public float   GameBackgroundSequenceFps   { get; private set; }
 
     public string GameName              => _pluginPresetConfig.GameName;
     public string GameRegion            => _pluginPresetConfig.ZoneName;
@@ -55,7 +55,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
 
     public HoYoPlayGameInfoField? LauncherGameInfoField { get; } = new();
     public LauncherGameNews       LauncherGameNews      { get; } = new();
-    public RegionResourceProp     LauncherGameResource  => throw new NotImplementedException();
+    public RegionResourceProp     LauncherGameResource  { get; } = new();
 
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();
