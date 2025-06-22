@@ -66,7 +66,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
 
     public void Dispose()
     {
-        _gameInstaller.Dispose();
+        _gameInstaller.Free();
         GC.SuppressFinalize(this);
     }
 
