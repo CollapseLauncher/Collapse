@@ -10,8 +10,10 @@ using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Utility;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -351,10 +353,29 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         return new ValueTask<bool>(false);
     }
 
-    public ValueTask<bool> UninstallGame()
+    public async ValueTask<bool> UninstallGame()
     {
-        // NOP
-        return new ValueTask<bool>(false);
+        Guid interfaceGuid = new Guid(ComInterfaceId.ExGameUninstaller);
+        IGameUninstaller? asUninstaller = _gameInstaller.CastComInterfaceAs<IGameInstaller, IGameUninstaller>(in interfaceGuid);
+
+        if (asUninstaller == null)
+        {
+            Logger.LogWriteLine("The current plugin interface doesn't implement IGameUninstaller. Function will not be called!", LogType.Warning, true);
+            return false;
+        }
+
+        try
+        {
+            await asUninstaller.InitPluginComAsync(_plugin, CancellationToken.None);
+            await asUninstaller.UninstallAsync(_plugin.RegisterCancelToken(CancellationToken.None)).WaitFromHandle();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+            Logger.LogWriteLine($"An error has occurred while performing game uninstaller from the plugin.\r\n{ex}", LogType.Error, true);
+            return false;
+        }
     }
 
     public void Flush()
