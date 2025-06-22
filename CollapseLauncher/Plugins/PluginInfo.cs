@@ -199,19 +199,40 @@ internal class PluginInfo : IDisposable
 
     internal void SetPluginLocaleId(string localeId) => Instance.SetPluginLocaleId(localeId);
 
-    private static bool TryGetExport<T>(nint handle, string exportName, out T callback)
+    private static unsafe bool TryGetExport<T>(nint handle, string exportName, out T callback)
         where T : Delegate
     {
+        const string tryGetApiExportName = "TryGetApiExport";
+
         Unsafe.SkipInit(out callback);
 
-        if (!NativeLibrary.TryGetExport(handle, exportName, out nint exportHandle) ||
-            exportHandle == nint.Zero)
+        if (!NativeLibrary.TryGetExport(handle, tryGetApiExportName, out nint tryGetApiExportP) ||
+            tryGetApiExportP == nint.Zero)
         {
             return false;
         }
 
-        callback = Marshal.GetDelegateForFunctionPointer<T>(exportHandle);
+        delegate* unmanaged[Cdecl]<char*, void**, int> tryGetApiExportCallback = (delegate* unmanaged[Cdecl]<char*, void**, int>)tryGetApiExportP;
+
+        nint exportP   = nint.Zero;
+        int  tryResult = tryGetApiExportCallback(GetExportPtr(), (void**)&exportP);
+
+        if (tryResult != 0 ||
+            exportP == nint.Zero)
+        {
+            return false;
+        }
+
+        callback = Marshal.GetDelegateForFunctionPointer<T>(exportP);
         return true;
+
+        char* GetExportPtr()
+        {
+            fixed (char* charP = exportName)
+            {
+                return charP;
+            }
+        }
     }
 
     public void Dispose()
