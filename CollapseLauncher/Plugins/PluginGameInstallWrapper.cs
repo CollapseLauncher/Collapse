@@ -47,8 +47,8 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         IsRunning       = false;
         DispatcherQueue = ParentUI.DispatcherQueue;
 
-        _plugin             = pluginPresetConfig.Plugin ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
         _pluginPresetConfig = pluginPresetConfig ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
+        _plugin             = pluginPresetConfig.Plugin ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
         _gameInstaller      = pluginPresetConfig.PluginGameInstaller;
 
         IsSophonInUpdateMode = false;
