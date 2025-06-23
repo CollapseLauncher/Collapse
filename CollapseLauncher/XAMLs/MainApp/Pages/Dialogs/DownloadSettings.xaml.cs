@@ -32,9 +32,7 @@ namespace CollapseLauncher.Dialogs
                     PostInstallBehaviour.Shutdown or PostInstallBehaviour.Restart
                 ? Visibility.Visible : Visibility.Collapsed;
             PostInstallBox.SelectedIndex = (int)CurrentPostInstallBehaviour;
-            var tag = InnerLauncherConfig.m_mainPage?.Tag as String ?? "";
-            Hi3Helper.Logger.LogWriteLine(tag);
-            if (tag == "settings")
+            if (MainPage.PreviousTag == "settings")
                 NetworkSettings.Visibility = Visibility.Collapsed;
         }
 
@@ -85,7 +83,7 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private void IgnoreInput(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             args.Handled = true;
         }

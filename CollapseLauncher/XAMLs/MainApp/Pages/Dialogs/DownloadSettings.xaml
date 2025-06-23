@@ -17,7 +17,7 @@
     </UserControl.Resources>
     <ScrollViewer MaxHeight="250">
         <ScrollViewer.KeyboardAccelerators>
-            <KeyboardAccelerator Key="Enter" Invoked="KeyboardAccelerator_Invoked"/>
+            <KeyboardAccelerator Key="Enter" Invoked="IgnoreInput"/>
         </ScrollViewer.KeyboardAccelerators>
         <StackPanel>
             <TextBlock FontSize="16"
