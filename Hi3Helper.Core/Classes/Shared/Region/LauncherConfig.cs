@@ -454,6 +454,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
+        public static int PostIntallShutdownTimeout
+        {
+            get => GetAppConfigValue("PostInstallShutdownTimeout");
+            set => SetAndSaveConfigValue("PostInstallShutdownTimeout", value);
+        }
+
         public static bool                 ForceInvokeUpdate     = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
@@ -547,7 +553,9 @@ namespace Hi3Helper.Shared.Region
             { "HttpClientTimeout", 90 },
 
             { "IsUseExternalDns", false },
-            { "ExternalDnsAddresses", string.Empty }
+            { "ExternalDnsAddresses", string.Empty },
+
+            { "PostInstallShutdownTimeout", 60 }
         };
 
         #endregion

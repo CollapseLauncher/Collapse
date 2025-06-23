@@ -1,0 +1,135 @@
+<UserControl x:Class="CollapseLauncher.Dialogs.DownloadSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:conv="using:CollapseLauncher.Pages"
+             xmlns:helper="using:Hi3Helper"
+             xmlns:local="using:CollapseLauncher"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             CacheMode="BitmapCache"
+             Loaded="Control_Loaded"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <conv:TimeToStringConverter x:Key="TimeToStringConverter" />
+        <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
+        <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
+        <conv:DoubleFormatter x:Key="DoubleFormatter" />
+    </UserControl.Resources>
+    <ScrollViewer MaxHeight="250">
+        <StackPanel>
+            <TextBlock FontSize="16"
+                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                       Text="Post Install Behaviour"
+                       Margin="0,0,0,12"/>
+            <TextBlock Text="Behaviour after successful install"
+                    Margin="0,0,0,4"/>
+            <ComboBox x:Name="PostInstallBox"
+                  Margin="0,8,0,0"
+                  MinWidth="250"
+                  SelectionChanged="OnPostInstallBehaviourChange">
+                <ComboBox.Items>
+                    <TextBlock Text="Do Nothing" TextWrapping="Wrap"/>
+                    <TextBlock Text="Start Game" TextWrapping="Wrap"/>
+                    <TextBlock Text="Restart Computer" TextWrapping="Wrap"/>
+                    <TextBlock Text="Shutdown Computer" TextWrapping="Wrap"/>
+                </ComboBox.Items>
+            </ComboBox>
+            <StackPanel x:Name="ShutdownTimeout"
+                        Visibility="Collapsed">
+                <TextBlock Text="Timeout before restart/shutdown"
+                           Margin="0,16,0,4"/>
+                <Grid Margin="0,8,0,0"
+                      ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <NumberBox x:Name="ShutdownTimeoutBox"
+                               Grid.Column="0"
+                               Margin="0,0,0,0"
+                               Minimum="0"
+                               Maximum="300"
+                               SmallChange="1"
+                               LargeChange="10"
+                               SpinButtonPlacementMode="Inline"
+                               Value="{x:Bind PostIntallShutdownTimeout, Mode=TwoWay}"/>
+                    <Grid x:Name="ShutdownTimeoutGrid"
+                          Grid.Column="1"
+                          Margin="0,0,0,4"
+                          Padding="10,4"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Bottom"
+                          Background="{ThemeResource DefaultBGColorAccentBrush}"
+                          CornerRadius="4"
+                          Shadow="{ThemeResource FatSliderThumbShadow}"
+                          Translation="0,0,8">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       FontSize="12"
+                                       FontStyle="Italic"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                       Text="= "
+                                       Margin="0,0,4,0"/>
+                            <TextBlock VerticalAlignment="Center"
+                                       FontSize="12"
+                                       FontStyle="Italic"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                       Text="{x:Bind ShutdownTimeoutBox.Value, Converter={StaticResource TimeToStringConverter}, Mode=OneWay}" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </StackPanel>
+            <StackPanel x:Name="NetworkSettings">
+                <TextBlock FontSize="16"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Text="Network Settings"
+                           Margin="0,24,0,8"/>
+                <ToggleSwitch x:Name="NetworkDownloadSpeedLimitToggle"
+                              Margin="0,4,0,0"
+                              Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}"
+                              IsOn="{x:Bind IsUseDownloadSpeedLimiter, Mode=TwoWay}"
+                              OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                              OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                <Grid Margin="0,8,0,8"
+                      ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <NumberBox x:Name="NetworkDownloadSpeedLimitNumberBox"
+                               Width="Auto"
+                               MinWidth="120"
+                               MaxWidth="300"
+                               Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_NumBox}"
+                               IsEnabled="{x:Bind NetworkDownloadSpeedLimitToggle.IsOn, Mode=OneWay}"
+                               LargeChange="10"
+                               Maximum="1000"
+                               Minimum="0"
+                               NumberFormatter="{StaticResource DoubleFormatter}"
+                               SmallChange="0.125"
+                               SpinButtonPlacementMode="Inline"
+                               Text="100"
+                               Value="{x:Bind DownloadSpeedLimit, Mode=TwoWay}" />
+                    <Grid x:Name="NetworkDownloadSpeedLimitGrid"
+                          Grid.Column="1"
+                          Padding="10,4"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Bottom"
+                          Background="{ThemeResource DefaultBGColorAccentBrush}"
+                          CornerRadius="4"
+                          Shadow="{ThemeResource FatSliderThumbShadow}"
+                          Translation="0,0,8">
+                        <TextBlock VerticalAlignment="Center"
+                                   FontSize="12"
+                                   FontStyle="Italic"
+                                   FontWeight="SemiBold"
+                                   Foreground="{ThemeResource DefaultFGColorAccentBrush}"
+                                   Text="{x:Bind NetworkDownloadSpeedLimitNumberBox.Value, Converter={StaticResource DownloadSpeedLimitToStringConverter}, Mode=OneWay}" />
+                    </Grid>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
