@@ -1,10 +1,8 @@
-﻿using CollapseLauncher.Pages;
-using Hi3Helper;
-using Hi3Helper.Shared.Region;
+﻿using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using System;
-using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.Dialogs
 {
@@ -85,5 +83,10 @@ namespace CollapseLauncher.Dialogs
             }
         }
         #endregion
+
+        private void KeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            args.Handled = true;
+        }
     }
 }
