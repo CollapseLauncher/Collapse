@@ -33,6 +33,7 @@ namespace CollapseLauncher.Dialogs
                 ? Visibility.Visible : Visibility.Collapsed;
             PostInstallBox.SelectedIndex = (int)CurrentPostInstallBehaviour;
             var tag = InnerLauncherConfig.m_mainPage?.Tag as String ?? "";
+            Hi3Helper.Logger.LogWriteLine(tag);
             if (tag == "settings")
                 NetworkSettings.Visibility = Visibility.Collapsed;
         }

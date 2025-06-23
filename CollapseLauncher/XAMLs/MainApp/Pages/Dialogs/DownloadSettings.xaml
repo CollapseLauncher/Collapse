@@ -22,24 +22,24 @@
         <StackPanel>
             <TextBlock FontSize="16"
                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="Post Install Behaviour"
+                       Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Title}"
                        Margin="0,0,0,12"/>
-            <TextBlock Text="Behaviour after successful install"
+            <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle2}"
                     Margin="0,0,0,4"/>
             <ComboBox x:Name="PostInstallBox"
                   Margin="0,8,0,0"
                   MinWidth="250"
                   SelectionChanged="OnPostInstallBehaviourChange">
                 <ComboBox.Items>
-                    <TextBlock Text="Do Nothing" TextWrapping="Wrap"/>
-                    <TextBlock Text="Start Game" TextWrapping="Wrap"/>
-                    <TextBlock Text="Restart Computer" TextWrapping="Wrap"/>
-                    <TextBlock Text="Shutdown Computer" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumNothing}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumStartGame}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumRestart}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumShutdown}" TextWrapping="Wrap"/>
                 </ComboBox.Items>
             </ComboBox>
             <StackPanel x:Name="ShutdownTimeout"
                         Visibility="Collapsed">
-                <TextBlock Text="Timeout before restart/shutdown"
+                <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle2}"
                            Margin="0,16,0,4"/>
                 <Grid Margin="0,8,0,0"
                       ColumnSpacing="8">
@@ -87,7 +87,7 @@
             <StackPanel x:Name="NetworkSettings">
                 <TextBlock FontSize="16"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="Network Settings"
+                           Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_Title}"
                            Margin="0,24,0,8"/>
                 <ToggleSwitch x:Name="NetworkDownloadSpeedLimitToggle"
                               Margin="0,4,0,0"
@@ -95,7 +95,7 @@
                               IsOn="{x:Bind IsUseDownloadSpeedLimiter, Mode=TwoWay}"
                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
-                <Grid Margin="0,8,0,8"
+                <Grid Margin="0,8,12,8"
                       ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
