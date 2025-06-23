@@ -1,15 +1,26 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Buffers;
+using System.Buffers.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.IO.Hashing;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Notifications;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -100,10 +111,20 @@ namespace CollapseLauncher.Pages.OOBE
             toastNotifier?.Show(toastService);
         }
 
+        private delegate bool WriteEmbeddedBase64DataToBuffer(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded);
+
         internal static (string? LogoPath, string? HeroPath) GetLogoAndHeroImgPath(PresetConfig? gamePresetConfig)
         {
             if (gamePresetConfig == null) // If config is null, return
                 return (null, null);
+
+            if (gamePresetConfig is PluginPresetConfigWrapper pluginPresetConfig)
+            {
+                string? appIconUrl   = CopyToLocalIfBase64(pluginPresetConfig.Plugin.GetPluginAppIconUrl());
+                string? appPosterUrl = CopyToLocalIfBase64(pluginPresetConfig.Plugin.GetNotificationPosterUrl());
+
+                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.png");
+            }
 
             // Get logo name and poster name
             (string logoName, string posterName) = gamePresetConfig.GameType switch
@@ -117,6 +138,123 @@ namespace CollapseLauncher.Pages.OOBE
             // Return paths
             return ($@"Assets\Images\GameLogo\{logoName}-logo.png",
                     $@"Assets\Images\GamePoster\poster_{posterName}.png");
+
+            string? CopyToLocalIfBase64(string? url)
+            {
+                if (string.IsNullOrEmpty(url))
+                {
+                    return null;
+                }
+
+                WriteEmbeddedBase64DataToBuffer writeToDelegate;
+                if (Base64Url.IsValid(url, out int bufferLen))
+                {
+                    writeToDelegate = WriteBufferFromBase64Url;
+                }
+                else if (Base64.IsValid(url, out bufferLen))
+                {
+                    writeToDelegate = WriteBufferFromBase64Raw;
+                }
+                else
+                {
+                    return url;
+                }
+
+                ReadOnlySpan<char> urlAsSpan = url;
+
+                string tempDirPath      = Path.GetTempPath();
+                string tempFileNameBase = Hash.GetHashStringFromString<XxHash128>(urlAsSpan.Length > 32 ? urlAsSpan[..^32] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 32)]);
+                string tempFilePath     = Path.Combine(tempDirPath, tempFileNameBase);
+
+                string? existingFilePath = Directory
+                    .EnumerateFiles(tempDirPath, tempFileNameBase + ".*", SearchOption.TopDirectoryOnly)
+                    .FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(existingFilePath))
+                {
+                    return existingFilePath;
+                }
+
+                byte[] decodedBuffer = ArrayPool<byte>.Shared.Rent(bufferLen);
+                try
+                {
+                    if (!writeToDelegate(url, decodedBuffer, out int writtenToBuffer))
+                    {
+                        return null;
+                    }
+
+                    string tempFileExt = PluginLauncherApiWrapper.DecideEmbeddedDataExtension(decodedBuffer);
+                    tempFilePath += tempFileExt;
+
+                    using UnmanagedMemoryStream bufferStream = ToStream(new Span<byte>(decodedBuffer, 0, writtenToBuffer));
+                    using FileStream            fileStream   = File.Create(tempFilePath);
+                    bufferStream.CopyTo(fileStream);
+
+                    return tempFilePath;
+                }
+                catch
+#if DEBUG
+                (Exception ex)
+#endif
+                {
+#if DEBUG
+                    Logger.LogWriteLine($"An error has occurred while writing Base64 URL to local file.\r\n{ex}", LogType.Error, true);
+#endif
+                    return null;
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(decodedBuffer);
+                }
+            }
+
+            unsafe UnmanagedMemoryStream ToStream(Span<byte> buffer)
+            {
+                ref byte dataRef = ref MemoryMarshal.AsRef<byte>(buffer);
+                return new UnmanagedMemoryStream((byte*)Unsafe.AsPointer(ref dataRef), buffer.Length);
+            }
+
+            bool WriteBufferFromBase64Url(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            {
+                if (Base64Url.TryDecodeFromChars(chars, buffer, out dataDecoded))
+                {
+                    return true;
+                }
+
+                dataDecoded = 0;
+                return false;
+            }
+
+            bool WriteBufferFromBase64Raw(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            {
+                int    tempBufferToUtf8Len = Encoding.UTF8.GetByteCount(chars);
+                byte[] tempBufferToUtf8    = ArrayPool<byte>.Shared.Rent(tempBufferToUtf8Len);
+                try
+                {
+                    if (!Encoding.UTF8.TryGetBytes(chars, tempBufferToUtf8, out int utf8StrWritten))
+                    {
+                        dataDecoded = 0;
+                        return false;
+                    }
+
+                    OperationStatus decodeStatus = Base64.DecodeFromUtf8(tempBufferToUtf8.AsSpan(0, utf8StrWritten), buffer, out _, out dataDecoded);
+                    if (decodeStatus == OperationStatus.Done)
+                    {
+                        return true;
+                    }
+
+                    dataDecoded = 0;
+                #if DEBUG
+                    throw new InvalidOperationException($"Cannot decode data string from Base64 as it returns with status: {decodeStatus}");
+                #else
+                    return false;
+                #endif
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(tempBufferToUtf8);
+                }
+            }
         }
 
 
