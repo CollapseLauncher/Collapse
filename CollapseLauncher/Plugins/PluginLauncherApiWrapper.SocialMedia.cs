@@ -316,25 +316,31 @@ internal partial class PluginLauncherApiWrapper
         return hashString;
     }
 
-    private static string DecideEmbeddedDataExtension(ReadOnlySpan<byte> headerData)
+    internal static string DecideEmbeddedDataExtension(ReadOnlySpan<byte> headerData)
     {
-        if (headerData.StartsWith("<svg"u8))
+        ReadOnlySpan<byte> pngMagic   = [0x89, 0x50, 0x4E, 0x47];
+        ReadOnlySpan<byte> jpgMagic   = "JFIF\0"u8;
+        ReadOnlySpan<byte> svgMagic   = "<svg"u8;
+        ReadOnlySpan<byte> webp1Magic = "RIFF"u8;
+        ReadOnlySpan<byte> webp2Magic = "WEBP"u8;
+
+        if (headerData.StartsWith(svgMagic))
         {
             return ".svg";
         }
 
-        if (headerData.StartsWith("‰PNG"u8))
+        if (headerData.StartsWith(pngMagic))
         {
             return ".png";
         }
 
-        if (headerData.IndexOf("JFIF\0"u8) > 0)
+        if (headerData.IndexOf(jpgMagic) > 0)
         {
             return ".jpg";
         }
 
-        if (headerData.StartsWith("RIFF"u8) &&
-            headerData.IndexOf("WEBP"u8) > 7)
+        if (headerData.StartsWith(webp1Magic) &&
+            headerData.IndexOf(webp2Magic) > 7)
         {
             return ".webp";
         }
