@@ -470,8 +470,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "9.0.5",
-        "contentHash": "iFhbuwiertFWWVlbOtfVV2MaojUW0/eQ2AKkBcjvmWHYw2orW5OiTHPqAeB7ny5+s09EQaZaQmX4SIpGX8HUdg=="
+        "resolved": "9.0.6",
+        "contentHash": "oMOYyDCLu7sRdupDnpq1yXqUiM+K0j9ZZAVIYDoT06cXTnflNiCLTCb9A6+1yn2a3aBqmOi1xMudbF+WOPFY5Q=="
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",

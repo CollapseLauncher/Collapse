@@ -42,6 +42,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -82,14 +83,17 @@ namespace CollapseLauncher.Pages
 
         private readonly DnsSettingsContext _dnsSettingsContext;
 
-        private readonly Dictionary<string, FrameworkElement>               _settingsControls      = new();
-        private readonly Lock                                               _highlightLock         = new();
-        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls   = new([]);
+        private readonly Dictionary<string, FrameworkElement>               _settingsControls    = new();
+        private readonly Lock                                               _highlightLock       = new();
+        private readonly ObservableCollection<HighlightableControlProperty> _highlightedControls = new([]);
         private          int                                                _highlightCurrentIndex;
         private          Brush                                              _highlightBrush;
         private          Brush                                              _highlightSelectedBrush;
+        private readonly List<MethodInfo>                                   _dialogMethods;
+        private          List<string>                                       DialogMethodNames        { get; }
+        public           string                                             SelectedDialogMethodName { get; set; }
 
-#nullable enable
+    #nullable enable
         private string? _previousSearchQuery;
 #nullable restore
 
@@ -98,6 +102,18 @@ namespace CollapseLauncher.Pages
         #region Settings Page Handler
         public SettingsPage()
         {
+#if DEBUG
+            _dialogMethods = typeof(SimpleDialogs)
+                            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                            .Where(m => m.ReturnType == typeof(Task<ContentDialogResult>))
+                            .ToList();
+            
+            DialogMethodNames = _dialogMethods.Select(m => m.Name).ToList();
+            
+            if (DialogMethodNames.Count > 0)
+                SelectedDialogMethodName = DialogMethodNames[0];
+#endif
+    
             InitializeComponent();
 
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
@@ -113,7 +129,9 @@ namespace CollapseLauncher.Pages
 
             string version = $" {LauncherUpdateHelper.LauncherCurrentVersionString}";
 #if DEBUG
-            version += "d";
+            version                       += "d";
+            DebugItemSeparator.Visibility =  Visibility.Visible;
+            DebugStackPanel.Visibility    =  Visibility.Visible;
 #endif
             if (IsPreview)
                 version += " Preview";
@@ -2325,5 +2343,110 @@ namespace CollapseLauncher.Pages
             SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
         }
+#if DEBUG
+        private async void DebugCustomDialogButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var method = _dialogMethods.FirstOrDefault(m => m.Name == SelectedDialogMethodName);
+                if (method == null)
+                {
+                    LogWriteLine("[DBG-DialogSpawner] No method found.", LogType.Debug);
+                    return;
+                }
+
+                LogWriteLine($"[DBG-DialogSpawner] Invoking method: {method.Name}",              LogType.Debug);
+                LogWriteLine($"[DBG-DialogSpawner] Parameters: {method.GetParameters().Length}", LogType.Debug);
+                LogWriteLine($"[DBG-DialogSpawner] Return type: {method.ReturnType}",            LogType.Debug);
+
+                var parameters = method.GetParameters();
+                object[]? parameterValues = null;
+                if (parameters.Length > 0)
+                {
+                    parameterValues = await ShowDebugParameterInputDialog(method, this.XamlRoot);
+                    if (parameterValues == null)
+                    {
+                        LogWriteLine("[DBG-DialogSpawner] Parameter input dialog was cancelled.", LogType.Warning);
+                        return;
+                    }
+                }
+                LogWriteLine("[DBG-DialogSpawner] Invoking method with parameters: " + 
+                             (parameterValues != null ? string.Join(", ", parameterValues) : "None"), LogType.Debug);
+                var result = method.Invoke(null, parameterValues);
+                if (result is Task<ContentDialogResult> task)
+                {
+                    await task;
+                }
+                else
+                {
+                    LogWriteLine("[DBG-DialogSpawner] Method did not return a ContentDialogResult task.", LogType.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine("[DBG-DialogSpawner] Exception: " + ex, LogType.Error);
+                await new ContentDialog
+                {
+                    Title           = "Exception",
+                    Content         = ex.ToString(),
+                    CloseButtonText = "OK"
+                }.ShowAsync();
+            }
+        }
+
+        private async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method, XamlRoot xamlRoot)
+        {
+            var parameters = method.GetParameters();
+            var stackPanel = new StackPanel();
+            var controls   = new List<Control>();
+
+            foreach (var parameter in parameters)
+            {
+                var textBox = new TextBox { Header = parameter.Name, PlaceholderText = parameter.ParameterType.Name };
+                stackPanel.Children.Add(textBox);
+                controls.Add(textBox);
+            }
+
+            var dialog = new ContentDialog
+            {
+                Title             = "Enter Parameters",
+                Content           = stackPanel,
+                PrimaryButtonText = "OK",
+                CloseButtonText   = "Cancel",
+                XamlRoot          = xamlRoot
+            };
+
+            if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+                return null;
+            
+            var values = new object[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                var text = ((TextBox)controls[i]).Text;
+                values[i] = Convert.ChangeType(text, parameters[i].ParameterType);
+            }
+
+            return values;
+        }
+
+        private void DebugCustomDialogComboBox_OnQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (DialogMethodNames.Contains(args.QueryText))
+            {
+                SelectedDialogMethodName = args.QueryText;
+            }
+        }
+
+        private void DebugCustomDialogComboBox_OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                var filtered = DialogMethodNames
+                              .Where(name => name.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                              .ToList();
+                sender.ItemsSource = filtered;
+            }
+        }
     }
+#endif
 }
