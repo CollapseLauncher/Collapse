@@ -241,7 +241,32 @@ namespace CollapseLauncher.Helper.StreamUtility
                 return fileInfo; // Return original FileInfo if any error occurs
             }
         }
+
+        public static FileInfo ResolveSymlink(this FileInfo fileInfo)
+        {
+            if (!fileInfo.Attributes.HasFlag(FileAttributes.ReparsePoint)) return fileInfo;
+
+            try
+            {
+                var target = new FileInfo(fileInfo.LinkTarget!);
+                if (!target.Exists)
+                {
+                    Logger.LogWriteLine($"[StreamExtension] Symlink target does not exist: {target.FullName}\r\n\t" +
+                                        $"Returning original FileInfo {fileInfo.FullName}", LogType.Warning, true);
+                    return fileInfo;
+                }
+
+                Logger.LogWriteLine($"[StreamExtension] Resolved symlink: {fileInfo.FullName} -> {target.FullName}",
+                                    LogType.Default, true);
+                return target;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[StreamExtension] Failed to resolve symlink for {fileInfo.FullName}\r\n{ex}",
+                                    LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+                return fileInfo;
+            }
+        }
     }
-    
-    
 }
