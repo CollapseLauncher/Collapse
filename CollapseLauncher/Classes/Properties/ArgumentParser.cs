@@ -107,8 +107,10 @@ namespace CollapseLauncher
             AddPublicCommands();
             _rootCommand.Description = "Collapse Launcher is a game client for all currently released miHoYo/Hoyoverse games.\n" +
                                       "It supports installing games, repairing game files and much more!";
-
-            if (_rootCommand.Invoke(args) <= 0)
+            
+            var result = _rootCommand.Parse(args);
+            
+            if (result.Errors.Count <= 0)
             {
                 return;
             }
@@ -118,41 +120,47 @@ namespace CollapseLauncher
             m_appMode = AppMode.Launcher;
         }
 
-        public static void ParseHi3CacheUpdaterArguments(params string[] args)
+        private static void ParseHi3CacheUpdaterArguments(params string[] _)
         {
             Command hi3CacheUpdate = new Command("hi3cacheupdate", "Update the app or change the Release Channel of the app");
-            _rootCommand.AddCommand(hi3CacheUpdate);
+            _rootCommand.Add(hi3CacheUpdate);
             AddHi3CacheUpdaterOptions(hi3CacheUpdate);
         }
 
-        public static void ParseUpdaterArguments(params string[] args)
+        private static void ParseUpdaterArguments(params string[] _)
         {
             Command updater = new Command("update", "Update the app or change the Release Channel of the app");
-            _rootCommand.AddCommand(updater);
+            _rootCommand.Add(updater);
             AddUpdaterOptions(updater);
         }
 
-        public static void ParseElevateUpdaterArguments(params string[] args)
+        private static void ParseElevateUpdaterArguments(params string[] _)
         {
             Command elevateUpdater = new Command("elevateupdate", "Elevate updater to run as administrator");
-            _rootCommand.AddCommand(elevateUpdater);
+            _rootCommand.Add(elevateUpdater);
             AddUpdaterOptions(elevateUpdater);
         }
 
-        public static void AddHi3CacheUpdaterOptions(Command command)
-        {
-            command.SetHandler(() =>
-            {
-            });
-        }
+        private static void AddHi3CacheUpdaterOptions(Command _) { }
 
-        public static void AddUpdaterOptions(Command command)
+        private static void AddUpdaterOptions(Command command)
         {
-            Option<string>            oInput   = new(["--input", "-i"], "App path") { IsRequired = true };
-            Option<AppReleaseChannel> oChannel = new Option<AppReleaseChannel>(["--channel", "-c"], "App release channel") { IsRequired = true }.FromAmong();
-            command.AddOption(oInput);
-            command.AddOption(oChannel);
-            command.Handler = CommandHandler.Create((string input, AppReleaseChannel channel) =>
+            var oInput = new Option<string>("--output-path")
+            {
+                Description = "Output path for the output file",
+                Required    = true
+            };
+
+            var oChannel = new Option<AppReleaseChannel>("--channel", "-c")
+                {
+                    Required = true,
+                    Description = "App release channel"
+                };
+
+            command.Options.Add(oInput);
+            command.Options.Add(oChannel);
+            
+            command.Action = CommandHandler.Create((string input, AppReleaseChannel channel) =>
             {
                 m_arguments.Updater = new ArgumentUpdater
                 {
@@ -162,52 +170,81 @@ namespace CollapseLauncher
             });
         }
 
-        public static void ParseTakeOwnershipArguments(params string[] args)
+        private static void ParseTakeOwnershipArguments(params string[] _)
         {
-            Option<string> inputOption = new(["--input", "-i"], description: "Folder path to claim") { IsRequired = true };
-            var            command     = new Command("takeownership", "Take ownership of the folder");
-            command.AddOption(inputOption);
-            command.Handler = CommandHandler.Create((string input) =>
+            var inputOption = new Option<string>("--input-path")
+            {
+                Required = true,
+                Description = "Folder path to claim"
+            };
+
+            var command = new Command("takeownership", "Take ownership of the folder");
+            command.Options.Add(inputOption);
+            command.Action = CommandHandler.Create((string input) =>
             {
                 m_arguments.TakeOwnership = new ArgumentReindexer
                 {
                     AppPath = input
                 };
             });
-            var rootCommandInternal = new RootCommand();
-            rootCommandInternal.AddCommand(command);
+            
+            _rootCommand.Add(command);
         }
 
-        public static void ParseMigrateArguments(bool isBhi3L = false, params string[] args)
+        private static void ParseMigrateArguments(bool isBhi3L = false, params string[] _)
         {
             var migrate = !isBhi3L ? new Command("migrate", "Migrate Game from one installation to another location") : new Command("migratebhi3l", "Migrate Game from BetterHi3Launcher to another location");
             AddMigrateOptions(isBhi3L, migrate);
-            _rootCommand.AddCommand(migrate);
+            _rootCommand.Add(migrate);
         }
 
-        public static void ParseOobeArguments(params string[] args)
+        private static void ParseOobeArguments(params string[] _)
         {
-            _rootCommand.AddCommand(new Command("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup"));
+            _rootCommand.Add(new Command("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup"));
         }
 
-        public static void ParseGenerateVelopackMetadataArguments(params string[] args)
+        private static void ParseGenerateVelopackMetadataArguments(params string[] _)
         {
-            _rootCommand.AddCommand(new Command("generatevelopackmetadata", "Generate Velopack metadata to enable update management"));
+            _rootCommand.Add(new Command("generatevelopackmetadata", "Generate Velopack metadata to enable update management"));
         }
 
         private static void AddMigrateOptions(bool isBhi3L, Command command)
         {
-            Option<string> inputOption  = new(["--input", "-i"],  description: "Installation Source") { IsRequired = true };
-            Option<string> outputOption = new(["--output", "-o"], description: "Installation Target") { IsRequired = true };
-            command.AddOption(inputOption);
-            command.AddOption(outputOption);
+            var inputOption = new Option<string>("--input")
+            {
+                Aliases     = { "-i" },
+                Description = "Installation Source",
+                Required    = true
+            };
+
+            var outputOption = new Option<string>("--output")
+            {
+                Aliases     = { "-o" },
+                Description = "Installation Target",
+                Required    = true
+            };
+
+            command.Add(inputOption);
+            command.Add(outputOption);
             if (isBhi3L)
             {
-                Option<string> gameVerOption = new(["--gamever", "-g"], description: "Game version string (Format: x.x.x)") { IsRequired                  = true };
-                Option<string> regLocOption  = new(["--regloc", "-r"],  description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
-                command.AddOption(gameVerOption);
-                command.AddOption(regLocOption);
-                command.Handler = CommandHandler.Create(
+                var gameVerOption = new Option<string>("--gamever")
+                {
+                    Aliases     = { "-g" },
+                    Description = "Game version string (Format: x.x.x)",
+                    Required    = true
+                };
+
+                var regLocOption = new Option<string>("--regloc")
+                {
+                    Aliases     = { "-r" },
+                    Description = "Location of game registry for BetterHI3Launcher keys",
+                    Required    = true
+                };
+
+                command.Add(gameVerOption);
+                command.Add(regLocOption);
+                command.Action = CommandHandler.Create(
                     (string input, string output, string gameVer, string regLoc) =>
                     {
                         m_arguments.Migrate = new ArgumentMigrate
@@ -221,7 +258,7 @@ namespace CollapseLauncher
                     });
                 return;
             }
-            command.Handler = CommandHandler.Create(
+            command.Action = CommandHandler.Create(
                 (string input, string output) =>
                 {
                     m_arguments.Migrate = new ArgumentMigrate
@@ -235,18 +272,42 @@ namespace CollapseLauncher
                 });
         }
 
-        public static void ParseMoveSteamArguments(params string[] args)
+        private static void ParseMoveSteamArguments(params string[] _)
         {
-            Option<string> inputOption   = new(["--input", "-i"],   description: "Installation Source") { IsRequired                                  = true };
-            Option<string> outputOption  = new(["--output", "-o"],  description: "Installation Target") { IsRequired                                  = true };
-            Option<string> keyNameOption = new(["--keyname", "-k"], description: "Registry key name") { IsRequired                                    = true };
-            Option<string> regLocOption  = new(["--regloc", "-r"],  description: "Location of game registry for BetterHI3Launcher keys") { IsRequired = true };
+            var inputOption = new Option<string>("--input")
+            {
+                Aliases     = { "-i" },
+                Required    = true,
+                Description = "Steam Game Installation Source Path"
+            };
+
+            var outputOption = new Option<string>("--output")
+            {
+                Aliases     = { "-o" },
+                Required    = true,
+                Description = "Steam Game Installation Target"
+            };
+            
+            var keyNameOption = new Option<string>("--keyname")
+            {
+                Aliases     = { "-k" },
+                Required    = true,
+                Description = "Registry key name for the game"
+            };
+            
+            var regLocOption = new Option<string>("--regloc")
+            {
+                Aliases     = { "-r" },
+                Required    = true,
+                Description = "Location of game registry for BetterHI3Launcher keys"
+            };
+            
             var            command       = new Command("movesteam", "Migrate Game from Steam to another location");
-            command.AddOption(inputOption);
-            command.AddOption(outputOption);
-            command.AddOption(keyNameOption);
-            command.AddOption(regLocOption);
-            command.Handler = CommandHandler.Create(
+            command.Options.Add(inputOption);
+            command.Options.Add(outputOption);
+            command.Options.Add(keyNameOption);
+            command.Options.Add(regLocOption);
+            command.Action = CommandHandler.Create(
                 (string input, string output, string keyName, string regLoc) =>
                 {
                     m_arguments.Migrate = new ArgumentMigrate
@@ -258,32 +319,49 @@ namespace CollapseLauncher
                         IsBhi3L = false
                     };
                 });
+            
             var rootCommandInternal = new RootCommand();
-            rootCommandInternal.AddCommand(command);
+            rootCommandInternal.Add(command);
         }
 
         private static void AddPublicCommands()
         {
-            _rootCommand.AddCommand(new Command("tray", "Start Collapse in system tray"));
+            _rootCommand.Add(new Command("tray", "Start Collapse in system tray"));
             AddOpenCommand();
         }
 
         private static void AddOpenCommand()
         {
-            Option<string> gameOption = new(["--game", "-g"],
-                                            description: "Game number/name\n" +
-                                                         "e.g. 0 or \"Honkai Impact 3rd\""){ IsRequired = true };
-            Option<string> regionOption = new(["--region", "-r"], 
-                                              description: "Region number/name\n" +
-                                                           "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game") { IsRequired = false };
-            Option<bool> startGameOption = new(["--play", "-p"], description: "Start Game after loading the Game/Region") { IsRequired = false };
+            var gameOption = new Option<string>("--game")
+            {
+                Aliases = { "-g" },
+                Description = "Game number/name\n" +
+                              "e.g. 0 or \"Honkai Impact 3rd\"",
+                Required = true
+            };
+
+            var regionOption = new Option<string>("--region")
+            {
+                Aliases = { "-r" },
+                Description = "Region number/name\n" +
+                              "e.g. For Genshin Impact, 0 or \"Global\" would load the Global region for the game",
+                Required = false
+            };
+            
+            var startGameOption = new Option<bool>("--play")
+            {
+                Aliases = { "-p" },
+                Description = "Start Game after loading the Game/Region",
+                Required = false
+            };
+
             var command = new Command("open", "Open the Launcher in a specific Game and Region (if specified).\n" +
                                 "Note that game/regions provided will be ignored if invalid.\n" +
                                 "Quotes are required if the game/region name has spaces.");
-            command.AddOption(gameOption);
-            command.AddOption(regionOption);
-            command.AddOption(startGameOption);
-            command.Handler = CommandHandler.Create(
+            command.Add(gameOption);
+            command.Add(regionOption);
+            command.Add(startGameOption);
+            command.Action = CommandHandler.Create(
                 (string game, string region, bool play) =>
                 {
                     m_arguments.StartGame = new ArgumentStartGame
@@ -293,7 +371,7 @@ namespace CollapseLauncher
                         Play = play
                     };
                 });
-            _rootCommand.AddCommand(command);
+            _rootCommand.Add(command);
         }
 
         public static void ResetRootCommand()
