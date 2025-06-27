@@ -111,9 +111,7 @@ namespace CollapseLauncher
             var result = _rootCommand.Parse(args);
             
             if (result.Errors.Count <= 0)
-            {
                 return;
-            }
 
             var e = new ArgumentException("Argument to run this command is invalid! See the information above for more detail.");
             Console.WriteLine(e);
@@ -151,11 +149,12 @@ namespace CollapseLauncher
                 Required    = true
             };
 
-            var oChannel = new Option<AppReleaseChannel>("--channel", "-c")
-                {
-                    Required = true,
-                    Description = "App release channel"
-                };
+            var oChannel = new Option<AppReleaseChannel>("--channel")
+            {
+                Aliases = { "-c" },
+                Required = true,
+                Description = "App release channel"
+            };
 
             command.Options.Add(oInput);
             command.Options.Add(oChannel);
@@ -320,8 +319,7 @@ namespace CollapseLauncher
                     };
                 });
             
-            var rootCommandInternal = new RootCommand();
-            rootCommandInternal.Add(command);
+            _rootCommand.Add(command);
         }
 
         private static void AddPublicCommands()
