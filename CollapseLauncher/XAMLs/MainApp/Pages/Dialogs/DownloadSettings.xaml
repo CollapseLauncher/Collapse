@@ -4,7 +4,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:conv="using:CollapseLauncher.Pages"
              xmlns:helper="using:Hi3Helper"
-             xmlns:local="using:CollapseLauncher"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              CacheMode="BitmapCache"
              Loaded="Control_Loaded"
@@ -12,7 +11,6 @@
     <UserControl.Resources>
         <conv:TimeToStringConverter x:Key="TimeToStringConverter" />
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
-        <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
         <conv:DoubleFormatter x:Key="DoubleFormatter" />
     </UserControl.Resources>
     <ScrollViewer MaxHeight="250">
@@ -56,7 +54,7 @@
                                SmallChange="1"
                                LargeChange="10"
                                SpinButtonPlacementMode="Inline"
-                               Value="{x:Bind PostIntallShutdownTimeout, Mode=TwoWay}"/>
+                               Value="{x:Bind PostInstallShutdownTimeout, Mode=TwoWay}"/>
                     <Grid x:Name="ShutdownTimeoutGrid"
                           Grid.Column="1"
                           Margin="0,0,0,4"

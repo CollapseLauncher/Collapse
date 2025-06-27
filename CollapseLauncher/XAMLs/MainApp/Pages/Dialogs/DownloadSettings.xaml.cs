@@ -13,7 +13,7 @@ namespace CollapseLauncher.Dialogs
         private PostInstallBehaviour CurrentPostInstallBehaviour =>
             CurrentGameProperty.GameInstall.PostInstallBehaviour;
 
-        private int PostIntallShutdownTimeout
+        private int PostInstallShutdownTimeout
         {
             get => LauncherConfig.PostIntallShutdownTimeout;
             set => LauncherConfig.PostIntallShutdownTimeout = value;

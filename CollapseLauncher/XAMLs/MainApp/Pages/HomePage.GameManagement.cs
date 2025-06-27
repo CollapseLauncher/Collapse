@@ -569,7 +569,7 @@ public sealed partial class HomePage
                 StartGame(null, null);
                 break;
             case PostInstallBehaviour.Hibernate:
-                Process.Start(new ProcessStartInfo("shutdown", "/h")
+                Process.Start(new ProcessStartInfo("C:\\Windows\\System32\\shutdown.exe", "/h")
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
@@ -584,7 +584,7 @@ public sealed partial class HomePage
                     _ => "/a"
                 };
 
-                Process.Start(new ProcessStartInfo("shutdown", $"{shutdownType} /t {shutdownTimeout}")
+                Process.Start(new ProcessStartInfo("C:\\Windows\\System32\\shutdown.exe", $"{shutdownType} /t {shutdownTimeout}")
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,

@@ -156,9 +156,7 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Public Properties
-
         public event EventHandler FlushingTrigger;
-        public virtual bool       StartAfterInstall { get; set; }
         public virtual bool       IsRunning         { get; protected set; }
         public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
         #endregion
