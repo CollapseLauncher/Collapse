@@ -62,35 +62,35 @@ namespace CollapseLauncher
             {
                 case "hi3cacheupdate":
                     m_appMode = AppMode.Hi3CacheUpdater;
-                    ParseHi3CacheUpdaterArguments(args);
+                    ParseHi3CacheUpdaterArguments();
                     break;
                 case "update":
                     m_appMode = AppMode.Updater;
-                    ParseUpdaterArguments(args);
+                    ParseUpdaterArguments();
                     break;
                 case "elevateupdate":
                     m_appMode = AppMode.ElevateUpdater;
-                    ParseElevateUpdaterArguments(args);
+                    ParseElevateUpdaterArguments();
                     break;
                 case "takeownership":
                     m_appMode = AppMode.InvokerTakeOwnership;
-                    ParseTakeOwnershipArguments(args);
+                    ParseTakeOwnershipArguments();
                     break;
                 case "migrate":
                     m_appMode = AppMode.InvokerMigrate;
-                    ParseMigrateArguments(false, args);
+                    ParseMigrateArguments(false);
                     break;
                 case "migratebhi3l":
                     m_appMode = AppMode.InvokerMigrate;
-                    ParseMigrateArguments(true, args);
+                    ParseMigrateArguments(true);
                     break;
                 case "movesteam":
                     m_appMode = AppMode.InvokerMoveSteam;
-                    ParseMoveSteamArguments(args);
+                    ParseMoveSteamArguments();
                     break;
                 case "oobesetup":
                     m_appMode = AppMode.OOBEState;
-                    ParseOobeArguments(args);
+                    ParseOobeArguments();
                     break;
                 case "tray":
                     m_appMode = AppMode.StartOnTray;
@@ -100,7 +100,7 @@ namespace CollapseLauncher
                     break;
                 case "generatevelopackmetadata":
                     m_appMode = AppMode.GenerateVelopackMetadata;
-                    ParseGenerateVelopackMetadataArguments(args);
+                    ParseGenerateVelopackMetadataArguments();
                     break;
             }
 
@@ -118,28 +118,28 @@ namespace CollapseLauncher
             m_appMode = AppMode.Launcher;
         }
 
-        private static void ParseHi3CacheUpdaterArguments(params string[] _)
+        private static void ParseHi3CacheUpdaterArguments()
         {
             Command hi3CacheUpdate = new Command("hi3cacheupdate", "Update the app or change the Release Channel of the app");
             _rootCommand.Add(hi3CacheUpdate);
-            AddHi3CacheUpdaterOptions(hi3CacheUpdate);
+            AddHi3CacheUpdaterOptions();
         }
 
-        private static void ParseUpdaterArguments(params string[] _)
+        private static void ParseUpdaterArguments()
         {
             Command updater = new Command("update", "Update the app or change the Release Channel of the app");
             _rootCommand.Add(updater);
             AddUpdaterOptions(updater);
         }
 
-        private static void ParseElevateUpdaterArguments(params string[] _)
+        private static void ParseElevateUpdaterArguments()
         {
             Command elevateUpdater = new Command("elevateupdate", "Elevate updater to run as administrator");
             _rootCommand.Add(elevateUpdater);
             AddUpdaterOptions(elevateUpdater);
         }
 
-        private static void AddHi3CacheUpdaterOptions(Command _) { }
+        private static void AddHi3CacheUpdaterOptions() { }
 
         private static void AddUpdaterOptions(Command command)
         {
@@ -169,7 +169,7 @@ namespace CollapseLauncher
             });
         }
 
-        private static void ParseTakeOwnershipArguments(params string[] _)
+        private static void ParseTakeOwnershipArguments()
         {
             var inputOption = new Option<string>("--input-path")
             {
@@ -190,19 +190,19 @@ namespace CollapseLauncher
             _rootCommand.Add(command);
         }
 
-        private static void ParseMigrateArguments(bool isBhi3L = false, params string[] _)
+        private static void ParseMigrateArguments(bool isBhi3L)
         {
             var migrate = !isBhi3L ? new Command("migrate", "Migrate Game from one installation to another location") : new Command("migratebhi3l", "Migrate Game from BetterHi3Launcher to another location");
             AddMigrateOptions(isBhi3L, migrate);
             _rootCommand.Add(migrate);
         }
 
-        private static void ParseOobeArguments(params string[] _)
+        private static void ParseOobeArguments()
         {
             _rootCommand.Add(new Command("oobesetup", "Starts Collapse in OOBE mode, to simulate first-time setup"));
         }
 
-        private static void ParseGenerateVelopackMetadataArguments(params string[] _)
+        private static void ParseGenerateVelopackMetadataArguments()
         {
             _rootCommand.Add(new Command("generatevelopackmetadata", "Generate Velopack metadata to enable update management"));
         }
@@ -271,7 +271,7 @@ namespace CollapseLauncher
                 });
         }
 
-        private static void ParseMoveSteamArguments(params string[] _)
+        private static void ParseMoveSteamArguments()
         {
             var inputOption = new Option<string>("--input")
             {
@@ -300,8 +300,8 @@ namespace CollapseLauncher
                 Required    = true,
                 Description = "Location of game registry for BetterHI3Launcher keys"
             };
-            
-            var            command       = new Command("movesteam", "Migrate Game from Steam to another location");
+
+            var command = new Command("movesteam", "Migrate Game from Steam to another location");
             command.Options.Add(inputOption);
             command.Options.Add(outputOption);
             command.Options.Add(keyNameOption);
@@ -380,39 +380,39 @@ namespace CollapseLauncher
 
     public class Arguments
     {
-        public ArgumentUpdater Updater { get; set; }
-        public ArgumentReindexer Reindexer { get; set; }
+        public ArgumentUpdater   Updater       { get; set; }
+        public ArgumentReindexer Reindexer     { get; set; }
         public ArgumentReindexer TakeOwnership { get; set; }
-        public ArgumentMigrate Migrate { get; set; }
-        public ArgumentStartGame StartGame { get; set; }
+        public ArgumentMigrate   Migrate       { get; set; }
+        public ArgumentStartGame StartGame     { get; set; }
     }
 
     public class ArgumentUpdater
     {
-        public string AppPath { get; set; }
-        public AppReleaseChannel UpdateChannel { get; set; }
+        public string            AppPath       { get; init; }
+        public AppReleaseChannel UpdateChannel { get; init; }
     }
 
     public class ArgumentReindexer
     {
-        public string AppPath { get; set; }
+        public string AppPath { get; init; }
         public string Version { get; set; }
     }
 
     public class ArgumentMigrate
     {
-        public string InputPath { get; set; }
-        public string OutputPath { get; set; }
-        public string GameVer { get; set; }
-        public string RegLoc { get; set; }
-        public string KeyName { get; set; }
-        public bool IsBhi3L { get; set; }
+        public string InputPath  { get; init; }
+        public string OutputPath { get; init; }
+        public string GameVer    { get; init; }
+        public string RegLoc     { get; init; }
+        public string KeyName    { get; init; }
+        public bool   IsBhi3L    { get; init; }
     }
 
     public class ArgumentStartGame
     {
-        public string Game { get; set; }
-        public string Region { get; set; }
-        public bool Play { get; set; }
+        public string Game   { get; init; }
+        public string Region { get; init; }
+        public bool   Play   { get; set; }
     }
 }
