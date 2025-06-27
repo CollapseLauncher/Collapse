@@ -223,6 +223,13 @@ namespace CollapseLauncher.Helper.StreamUtility
             return match.Success ? match.Groups["path"].Value : path;
         }
 
+        
+        /// <summary>
+        /// Strips the alternate data stream from a file path.
+        /// <para> e.g. "C:\path\to\file.txt:stream" becomes "C:\path\to\file.txt". </para>
+        /// </summary>
+        /// <param name="fileInfo">FileInfo to be stripped</param>
+        /// <returns>FileInfo instance with ADS stripped if detected, returns original if the input doesn't use ADS or there's an error with the process.</returns>
         public static FileInfo StripAlternateDataStream(this FileInfo fileInfo)
         {
             try
@@ -242,18 +249,26 @@ namespace CollapseLauncher.Helper.StreamUtility
             }
         }
 
+        
+        /// <summary>
+        /// Resolves the symlink of a FileInfo instance.
+        /// <para>Detects if the file has ReparsePoint attribute and resolve the target file path.</para>
+        /// </summary>
+        /// <param name="fileInfo">FileInfo to be resolved.</param>
+        /// <returns>Instance of FileInfo to the resolved symlink file.</returns>
+        /// <exception cref="FileNotFoundException">Target file of the symlink does not exist.</exception>
         public static FileInfo ResolveSymlink(this FileInfo fileInfo)
         {
-            if (!fileInfo.Attributes.HasFlag(FileAttributes.ReparsePoint)) return fileInfo;
+            if (!fileInfo.Attributes.HasFlag(FileAttributes.ReparsePoint))
+                return fileInfo;
 
             try
             {
                 var target = new FileInfo(fileInfo.LinkTarget!);
                 if (!target.Exists)
                 {
-                    Logger.LogWriteLine($"[StreamExtension] Symlink target does not exist: {target.FullName}\r\n\t" +
-                                        $"Returning original FileInfo {fileInfo.FullName}", LogType.Warning, true);
-                    return fileInfo;
+                    throw new
+                        FileNotFoundException($"[StreamExtension] Target symlink {target.FullName} for {fileInfo.FullName} does not exist.");
                 }
 
                 Logger.LogWriteLine($"[StreamExtension] Resolved symlink: {fileInfo.FullName} -> {target.FullName}",
@@ -265,7 +280,7 @@ namespace CollapseLauncher.Helper.StreamUtility
                 Logger.LogWriteLine($"[StreamExtension] Failed to resolve symlink for {fileInfo.FullName}\r\n{ex}",
                                     LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
-                return fileInfo;
+                throw;
             }
         }
     }
