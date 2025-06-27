@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -92,6 +92,7 @@
         - ENABLEUSERFEEDBACK : Enable user feedback feature
 -->
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <OutputType>Exe</OutputType>
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
