@@ -563,13 +563,27 @@ public sealed partial class HomePage
         var behaviour = CurrentGameProperty.GameInstall.PostInstallBehaviour;
         switch (behaviour)
         {
+            case PostInstallBehaviour.Nothing:
+                break;
             case PostInstallBehaviour.StartGame:
                 StartGame(null, null);
                 break;
-            case PostInstallBehaviour.Restart:
-            case PostInstallBehaviour.Shutdown:
+            case PostInstallBehaviour.Hibernate:
+                Process.Start(new ProcessStartInfo("shutdown", "/h")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                });
+                break;
+            default:
                 var shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
-                var shutdownType = behaviour == PostInstallBehaviour.Restart ? "/r" : "/s"; 
+                var shutdownType = behaviour switch
+                {
+                    PostInstallBehaviour.Restart => "/r",
+                    PostInstallBehaviour.Shutdown => "/s",
+                    _ => "/a"
+                };
+
                 Process.Start(new ProcessStartInfo("shutdown", $"{shutdownType} /t {shutdownTimeout}")
                 {
                     CreateNoWindow = true,

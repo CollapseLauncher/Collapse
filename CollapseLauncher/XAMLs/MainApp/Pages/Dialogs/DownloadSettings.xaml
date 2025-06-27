@@ -33,6 +33,7 @@
                 <ComboBox.Items>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumNothing}" TextWrapping="Wrap"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumStartGame}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumHibernate}" TextWrapping="Wrap"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumRestart}" TextWrapping="Wrap"/>
                     <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumShutdown}" TextWrapping="Wrap"/>
                 </ComboBox.Items>

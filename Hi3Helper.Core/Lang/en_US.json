@@ -1101,6 +1101,7 @@
     "PostInstallBehaviour_Subtitle2": "Timeout before restart/shutdown",
     "PostInstallBehaviour_EnumNothing": "Do Nothing",
     "PostInstallBehaviour_EnumStartGame": "Start Game",
+    "PostInstallBehaviour_EnumHibernate": "Hibernate",
     "PostInstallBehaviour_EnumRestart": "Restart Computer",
     "PostInstallBehaviour_EnumShutdown": "Shutdown Computer"
   },

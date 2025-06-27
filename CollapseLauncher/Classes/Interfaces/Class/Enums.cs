@@ -49,6 +49,7 @@ namespace CollapseLauncher
     {
         Nothing,
         StartGame,
+        Hibernate,
         Restart,
         Shutdown
     }
