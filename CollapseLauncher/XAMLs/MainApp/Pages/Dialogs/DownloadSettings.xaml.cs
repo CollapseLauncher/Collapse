@@ -20,32 +20,6 @@ namespace CollapseLauncher.Dialogs
         }
         #endregion
 
-        internal DownloadSettings(GamePresetProperty currentGameProperty)
-        {
-            CurrentGameProperty = currentGameProperty;
-            InitializeComponent();
-        }
-
-        private void Control_Loaded(object sender, RoutedEventArgs e)
-        {
-            ShutdownTimeout.Visibility = CurrentPostInstallBehaviour is
-                    PostInstallBehaviour.Shutdown or PostInstallBehaviour.Restart
-                ? Visibility.Visible : Visibility.Collapsed;
-            PostInstallBox.SelectedIndex = (int)CurrentPostInstallBehaviour;
-            if (MainPage.PreviousTag == "settings")
-                NetworkSettings.Visibility = Visibility.Collapsed;
-        }
-
-        private void OnPostInstallBehaviourChange(object sender, SelectionChangedEventArgs e)
-        {
-            CurrentGameProperty.GameInstall.PostInstallBehaviour =
-                (PostInstallBehaviour)(PostInstallBox.SelectedIndex);
-
-            ShutdownTimeout.Visibility = CurrentPostInstallBehaviour is
-                    PostInstallBehaviour.Shutdown or PostInstallBehaviour.Restart
-                ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         #region Download Speed Limiter Properties
         private bool IsUseDownloadSpeedLimiter
         {
@@ -82,6 +56,29 @@ namespace CollapseLauncher.Dialogs
             }
         }
         #endregion
+
+        internal DownloadSettings(GamePresetProperty currentGameProperty)
+        {
+            CurrentGameProperty = currentGameProperty;
+            InitializeComponent();
+        }
+
+        private void Control_Loaded(object sender, RoutedEventArgs e)
+        {
+            PostInstallBox.SelectedIndex = (int)CurrentPostInstallBehaviour;
+            if (MainPage.PreviousTag == "settings")
+                NetworkSettings.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnPostInstallBehaviourChange(object sender, SelectionChangedEventArgs e)
+        {
+            CurrentGameProperty.GameInstall.PostInstallBehaviour =
+                (PostInstallBehaviour)PostInstallBox.SelectedIndex;
+
+            ShutdownTimeout.Visibility = CurrentPostInstallBehaviour is
+                    PostInstallBehaviour.Shutdown or PostInstallBehaviour.Restart
+                ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         private void IgnoreInput(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {

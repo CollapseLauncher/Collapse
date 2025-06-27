@@ -161,10 +161,7 @@ namespace CollapseLauncher.Pages
             }
 
             TimeSpan span = TimeSpan.FromSeconds(asDouble);
-            var result = $"{span.Seconds}s";
-            if (span.Minutes > 0)
-                result = $"{span.Minutes}m " + result;
-            return span.Hours > 0 ? $"{span.Hours}h " + result : result;
+            return span.ToString("mm\\:ss");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
