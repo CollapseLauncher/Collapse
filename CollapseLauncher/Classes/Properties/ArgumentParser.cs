@@ -358,9 +358,9 @@ namespace CollapseLauncher
             var command = new Command("open", "Open the Launcher in a specific Game and Region (if specified).\n" +
                                 "Note that game/regions provided will be ignored if invalid.\n" +
                                 "Quotes are required if the game/region name has spaces.");
-            command.Add(gameOption);
-            command.Add(regionOption);
-            command.Add(startGameOption);
+            command.Options.Add(gameOption);
+            command.Options.Add(regionOption);
+            command.Options.Add(startGameOption);
             command.Action = CommandHandler.Create(
                 (string game, string region, bool play) =>
                 {
