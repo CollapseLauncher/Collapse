@@ -2343,7 +2343,7 @@ namespace CollapseLauncher.Pages
             SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
         }
-#if DEBUG
+
         private async void DebugCustomDialogButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2448,5 +2448,4 @@ namespace CollapseLauncher.Pages
             }
         }
     }
-#endif
 }
