@@ -143,7 +143,7 @@ namespace CollapseLauncher
 
         private static void AddUpdaterOptions(Command command)
         {
-            var oInput = new Option<string>("--output-path")
+            var oInput = new Option<string>("--input-path")
             {
                 Description = "Output path for the output file",
                 Required    = true
@@ -159,11 +159,11 @@ namespace CollapseLauncher
             command.Options.Add(oInput);
             command.Options.Add(oChannel);
             
-            command.Action = CommandHandler.Create((string input, AppReleaseChannel channel) =>
+            command.Action = CommandHandler.Create((string inputPath, AppReleaseChannel channel) =>
             {
                 m_arguments.Updater = new ArgumentUpdater
                 {
-                    AppPath = input,
+                    AppPath = inputPath,
                     UpdateChannel = channel
                 };
             });
@@ -179,11 +179,11 @@ namespace CollapseLauncher
 
             var command = new Command("takeownership", "Take ownership of the folder");
             command.Options.Add(inputOption);
-            command.Action = CommandHandler.Create((string input) =>
+            command.Action = CommandHandler.Create((string inputPath) =>
             {
                 m_arguments.TakeOwnership = new ArgumentReindexer
                 {
-                    AppPath = input
+                    AppPath = inputPath
                 };
             });
             
