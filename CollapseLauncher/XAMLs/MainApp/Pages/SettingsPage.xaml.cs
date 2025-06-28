@@ -193,11 +193,13 @@ namespace CollapseLauncher.Pages
             BackgroundImgChanger.ToggleBackground(true);
             
             InitializeSettingsSearch();
+            UpdateFileDownloadSettings();
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
 #endif
         }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             FallbackCDNUtil.InitializeHttpClient();
@@ -2324,6 +2326,12 @@ namespace CollapseLauncher.Pages
             SettingsSearchHighlightNextBtn.Focus(FocusState.Keyboard);
             SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
+        }
+
+        private void UpdateFileDownloadSettings()
+        {
+            NetworkDownloadSpeedLimitToggle.IsOn = IsUseDownloadSpeedLimiter;
+            NetworkDownloadSpeedLimitNumberBox.Value = DownloadSpeedLimit;
         }
     }
 }
