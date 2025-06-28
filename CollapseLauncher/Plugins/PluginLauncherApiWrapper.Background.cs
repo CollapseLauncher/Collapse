@@ -71,10 +71,12 @@ internal partial class PluginLauncherApiWrapper
             // Start the download
             Guid                   cancelTokenPass = _plugin.RegisterCancelToken(token);
             await using FileStream destDownload    = fileInfo.Create();
-            await _pluginMediaApi.DownloadAssetAsync(entry,
-                                                     destDownload.SafeFileHandle.DangerousGetHandle(),
-                                                     null,
-                                                     in cancelTokenPass).WaitFromHandle();
+            _pluginMediaApi.DownloadAssetAsync(entry,
+                                               destDownload.SafeFileHandle.DangerousGetHandle(),
+                                               null,
+                                               in cancelTokenPass,
+                                               out nint asyncDownloadAssetResult);
+            await asyncDownloadAssetResult.WaitFromHandle();
 
             SaveFileStamp(fileInfo, destDownload.Length);
 
@@ -83,10 +85,11 @@ internal partial class PluginLauncherApiWrapper
         }
 
         // Set props
+        _pluginMediaApi.GetBackgroundSpriteFps(out float fps);
         GameBackgroundImg           = firstImageSpriteUrl ?? string.Empty;
         GameBackgroundImgLocal      = firstImageSpritePath;
         GameBackgroundSequenceCount = count;
-        GameBackgroundSequenceFps   = _pluginMediaApi.GetBackgroundSpriteFps();
+        GameBackgroundSequenceFps   = fps;
 
         newsData.Background = new LauncherGameNewsBackground
         {

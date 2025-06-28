@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
@@ -61,70 +62,260 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
     public override GameNameType   GameType           => GameNameType.Plugin;
     public override LauncherType   LauncherType       => LauncherType.Plugin;
     public override GameVendorType VendorType         => GameVendorType.CollapsePlugin;
-    public          string         VendorTypeInString => _config.comGet_GameVendorName();
+    public string VendorTypeInString
+    {
+        get
+        {
+            _config.comGet_GameVendorName(out string result);
+            return result;
+        }
+    }
 
     public override string? InternalGameNameInConfig
     {
-        get => field ??= _config.comGet_GameRegistryKeyName();
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+            _config.comGet_GameRegistryKeyName(out field);
+
+            return field;
+        }
         init;
     }
 
-    public override string GameName        => _config.comGet_GameName();
-    public override string ProfileName     => _config.comGet_ProfileName();
-    public override string ZoneDescription => _config.comGet_ZoneDescription();
-    public override string ZoneName        => _config.comGet_ZoneName();
-    public override string ZoneFullname    => _config.comGet_ZoneFullName();
-    public override string ZoneLogoURL     => _config.comGet_ZoneLogoUrl();
-    public override string ZonePosterURL   => _config.comGet_ZonePosterUrl();
-    public override string ZoneURL         => _config.comGet_ZoneHomePageUrl();
+    public override string GameName
+    {
+        get
+        {
+            _config.comGet_GameName(out string result);
+            return result;
+        }
+    }
 
-    public override string GameExecutableName => _config.comGet_GameExecutableName();
-    public override string GameDirectoryName  => _config.comGet_LauncherGameDirectoryName();
+    public override string ProfileName
+    {
+        get
+        {
+            _config.comGet_ProfileName(out string result);
+            return result;
+        }
+    }
 
-    public string? GameLogFileName => field ??= _config.comGet_GameLogFileName();
-    public string? GameAppDataPath => field ??= _config.comGet_GameAppDataPath();
+    public override string ZoneDescription
+    {
+        get
+        {
+            _config.comGet_ZoneDescription(out string result);
+            return result;
+        }
+    }
+
+    public override string ZoneName
+    {
+        get
+        {
+            _config.comGet_ZoneName(out string result);
+            return result;
+        }
+    }
+
+    public override string ZoneFullname
+    {
+        get
+        {
+            _config.comGet_ZoneFullName(out string result);
+            return result;
+        }
+    }
+
+    public override string ZoneLogoURL
+    {
+        get
+        {
+            _config.comGet_ZoneLogoUrl(out string result);
+            return result;
+        }
+    }
+
+    public override string ZonePosterURL
+    {
+        get
+        {
+            _config.comGet_ZonePosterUrl(out string result);
+            return result;
+        }
+    }
+
+    public override string ZoneURL
+    {
+        get
+        {
+            _config.comGet_ZoneHomePageUrl(out string result);
+            return result;
+        }
+    }
+
+    public override string GameExecutableName
+    {
+        get
+        {
+            _config.comGet_GameExecutableName(out string result);
+            return result;
+        }
+    }
+
+    public override string GameDirectoryName
+    {
+        get
+        {
+            _config.comGet_LauncherGameDirectoryName(out string result);
+            return result;
+        }
+    }
+
+    public string? GameLogFileName
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+            _config.comGet_GameLogFileName(out field);
+            return field;
+        }
+    }
+
+    public string? GameAppDataPath
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+            _config.comGet_GameAppDataPath(out field);
+            return field;
+        }
+    }
 
     [field: AllowNull, MaybeNull]
     public override List<string> GameSupportedLanguages
     {
-        get => field ??= Mem
-                        .CreateArrayFromSelector(_config.comGet_GameSupportedLanguagesCount,
-                                                 _config.comGet_GameSupportedLanguages)
-                        .ToList();
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+
+            _config.comGet_GameSupportedLanguagesCount(out int count);
+            field = [];
+            for (int i = 0; i < count; i++)
+            {
+                _config.comGet_GameSupportedLanguages(i, out string result);
+                field.Add(result);
+            }
+
+            return field;
+        }
         init;
     }
 
     public override GameChannel GameChannel
     {
-        get => _config.comGet_ReleaseChannel() switch
+        get
         {
-            GameReleaseChannel.OpenBeta => GameChannel.Beta,
-            GameReleaseChannel.ClosedBeta => GameChannel.DevRelease,
-            _ => GameChannel.Stable
-        };
+            _config.comGet_ReleaseChannel(out GameReleaseChannel result);
+            return result switch
+                   {
+                       GameReleaseChannel.OpenBeta => GameChannel.Beta,
+                       GameReleaseChannel.ClosedBeta => GameChannel.DevRelease,
+                       _ => GameChannel.Stable
+                   };
+        }
     }
 
-    public override string DefaultLanguage => _config.comGet_GameMainLanguage();
+    public override string DefaultLanguage
+    {
+        get
+        {
+            _config.comGet_GameMainLanguage(out string result);
+            return result;
+        }
+    }
 
     private         int? _hashID;
-    public override int HashID { get => _hashID ??= HashCode.Combine(GameName, ZoneName); set => _hashID = value; }
+    public override int  HashID { get => _hashID ??= HashCode.Combine(GameName, ZoneName); set => _hashID = value; }
 
 
     [field: AllowNull, MaybeNull]
-    public ILauncherApiMedia PluginMediaApi => field ??= _config.comGet_LauncherApiMedia() ?? throw new NullReferenceException("ILauncherApiMedia interface cannot be null!");
+    public ILauncherApiMedia PluginMediaApi
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+
+            _config.comGet_LauncherApiMedia(out field);
+            return field ?? throw new NullReferenceException("ILauncherApiMedia interface cannot be null!");
+        }
+    }
 
     [field: AllowNull, MaybeNull]
-    public ILauncherApiNews PluginNewsApi => field ??= _config.comGet_LauncherApiNews() ?? throw new NullReferenceException("ILauncherApiNews interface cannot be null!");
+    public ILauncherApiNews PluginNewsApi
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+
+            _config.comGet_LauncherApiNews(out field);
+            return field ?? throw new NullReferenceException("ILauncherApiNews interface cannot be null!");
+        }
+    }
 
     [field: AllowNull, MaybeNull]
-    public IGameManager PluginGameManager => field ??= _config.comGet_GameManager() ?? throw new NullReferenceException("IGameManager interface cannot be null!");
+    public IGameManager PluginGameManager
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+
+            _config.comGet_GameManager(out field);
+            return field ?? throw new NullReferenceException("IGameManager interface cannot be null!");
+        }
+    }
 
     [field: AllowNull, MaybeNull]
-    public IGameInstaller PluginGameInstaller => field ??= _config.comGet_GameInstaller() ?? throw new NullReferenceException("IGameInstaller interface cannot be null!");
+    public IGameInstaller PluginGameInstaller
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+
+            _config.comGet_GameInstaller(out field);
+            return field ?? throw new NullReferenceException("IGameInstaller interface cannot be null!");
+        }
+    }
 
     public async Task InitializeAsync(CancellationToken token = default)
     {
-        int returnCode = await _config.InitAsync(Plugin.RegisterCancelToken(token)).WaitFromHandle<int>();
+        _config.InitAsync(Plugin.RegisterCancelToken(token), out nint asyncResult);
+        int returnCode = await asyncResult.WaitFromHandle<int>();
         if (returnCode != 0)
         {
             throw new InvalidOperationException($"Failed to initialize IPluginPresetConfig with return code: {returnCode}");

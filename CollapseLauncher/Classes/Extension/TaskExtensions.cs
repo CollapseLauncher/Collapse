@@ -187,8 +187,9 @@ namespace CollapseLauncher.Extension
 
             IInitializableTask initiableTask = GetInitializableTask(initializableInterface);
 
-            Task<int> initTask = initiableTask.InitAsync(pluginInstance.RegisterCancelToken(token)).WaitFromHandle<int>();
-            int returnCode = await initTask;
+            initiableTask.InitAsync(pluginInstance.RegisterCancelToken(token), out nint asyncResult);
+            Task<int> initTask   = asyncResult.WaitFromHandle<int>();
+            int       returnCode = await initTask;
 
             if (initTask.IsCompletedSuccessfully)
             {

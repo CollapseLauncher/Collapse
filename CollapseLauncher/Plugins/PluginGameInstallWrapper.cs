@@ -207,25 +207,37 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
             InstallProgressStateDelegate progressStatusDelegate = UpdateStatusCallback;
 
             GameInstallerKind sizeInstallerKind = isUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
-            long sizeToDownload = await _gameInstaller.GetGameSizeAsync(sizeInstallerKind, in cancelGuid).WaitFromHandle<long>();
-            long sizeAlreadyDownloaded = await _gameInstaller.GetGameDownloadedSizeAsync(sizeInstallerKind, in cancelGuid).WaitFromHandle<long>();
+
+            _gameInstaller.GetGameSizeAsync(sizeInstallerKind, in cancelGuid, out nint asyncGetGameSizeResult);
+            long sizeToDownload = await asyncGetGameSizeResult.WaitFromHandle<long>();
+
+            _gameInstaller.GetGameDownloadedSizeAsync(sizeInstallerKind, in cancelGuid, out nint asyncGetDownloadedSizeResult);
+            long sizeAlreadyDownloaded = await asyncGetDownloadedSizeResult.WaitFromHandle<long>();
 
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
-            Task routineTask = isUpdateMode ?
+            Task routineTask;
+            if (isUpdateMode)
+            {
                 _gameInstaller
                    .StartUpdateAsync(progressDelegate,
                                      progressStatusDelegate,
-                                     _plugin.RegisterCancelToken(Token.Token))
-                   .WaitFromHandle() :
+                                     _plugin.RegisterCancelToken(Token.Token),
+                                     out nint asyncStartUpdateResult);
+                routineTask = asyncStartUpdateResult.WaitFromHandle();
+            }
+            else
+            {
                 _gameInstaller
                    .StartInstallAsync(progressDelegate,
                                       progressStatusDelegate,
-                                      _plugin.RegisterCancelToken(Token.Token))
-                   .WaitFromHandle();
+                                      _plugin.RegisterCancelToken(Token.Token),
+                                      out nint asyncStartInstallResult);
+
+                routineTask = asyncStartInstallResult.WaitFromHandle();
+            }
 
             await routineTask.ConfigureAwait(false);
-
             return;
 
             void UpdateProgressCallback(in InstallProgress delegateProgress)
@@ -367,7 +379,8 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         try
         {
             await asUninstaller.InitPluginComAsync(_plugin, CancellationToken.None);
-            await asUninstaller.UninstallAsync(_plugin.RegisterCancelToken(CancellationToken.None)).WaitFromHandle();
+            asUninstaller.UninstallAsync(_plugin.RegisterCancelToken(CancellationToken.None), out nint asyncUninstallResult);
+            await asyncUninstallResult.WaitFromHandle();
             return true;
         }
         catch (Exception ex)

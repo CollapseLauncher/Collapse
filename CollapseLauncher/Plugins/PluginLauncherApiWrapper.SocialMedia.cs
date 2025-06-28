@@ -173,10 +173,12 @@ internal partial class PluginLauncherApiWrapper
         await using FileStream fileStream = fileInfo.Create();
 
         Guid cancelToken = _plugin.RegisterCancelToken(token);
-        await _pluginNewsApi.DownloadAssetAsync(dataUrl,
-                                                fileStream.SafeFileHandle.DangerousGetHandle(),
-                                                null,
-                                                in cancelToken).WaitFromHandle();
+        _pluginNewsApi.DownloadAssetAsync(dataUrl,
+                                          fileStream.SafeFileHandle.DangerousGetHandle(),
+                                          null,
+                                          in cancelToken,
+                                          out nint asyncDownloadAssetResult);
+        await asyncDownloadAssetResult.WaitFromHandle();
 
         SaveFileStamp(fileInfo, fileStream.Length);
 

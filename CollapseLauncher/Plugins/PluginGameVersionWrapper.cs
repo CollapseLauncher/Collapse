@@ -58,7 +58,11 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
 
     public override string GameDirPath
     {
-        get => _pluginGameManager.GetGamePath() ?? string.Empty;
+        get
+        {
+            _pluginGameManager.GetGamePath(out string? path);
+            return path ?? string.Empty;
+        }
         set
         {
             _pluginGameManager.SetGamePath(value);
@@ -86,9 +90,9 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     public override async Task<string?> FindGameInstallationPath(string path)
     {
         Guid cancelToken = Guid.CreateVersion7();
-        string? gameInstallPath = await _pluginGameManager
-            .FindExistingInstallPathAsync(in cancelToken)
-            .WaitFromHandle<PluginDisposableMemoryMarshal>();
+        _pluginGameManager
+           .FindExistingInstallPathAsync(in cancelToken, out nint asyncFindExistingInstallPathResult);
+        string? gameInstallPath = await asyncFindExistingInstallPathResult.WaitFromHandle<PluginDisposableMemoryMarshal>();
 
         return gameInstallPath;
     }
@@ -104,9 +108,9 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     // ReSharper disable ConvertIfStatementToReturnStatement
     ValueTask<GameInstallStateEnum> IGameVersion.GetGameState()
     {
-        bool isHavePreload     = _pluginGameManager.IsGameHasPreload();
-        bool isGameInstalled   = _pluginGameManager.IsGameInstalled();
-        bool isGameNeedsUpdate = _pluginGameManager.IsGameHasUpdate();
+        _pluginGameManager.IsGameHasPreload(out bool isHavePreload);
+        _pluginGameManager.IsGameInstalled(out bool isGameInstalled);
+        _pluginGameManager.IsGameHasUpdate(out bool isGameNeedsUpdate);
 
         if (isGameInstalled && isHavePreload)
         {
@@ -171,8 +175,16 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     public override bool IsForceRedirectToSophon() => false;
     public override bool IsGameHasDeltaPatch()     => false;
 
-    public override bool IsGameHasPreload()   => _pluginGameManager.IsGameHasPreload();
-    public override bool IsGameInstalled()    => _pluginGameManager.IsGameInstalled();
+    public override bool IsGameHasPreload()
+    {
+        _pluginGameManager.IsGameHasPreload(out bool result);
+        return result;
+    }
+    public override bool IsGameInstalled()
+    {
+        _pluginGameManager.IsGameInstalled(out bool result);
+        return result;
+    }
     public override bool IsGameVersionMatch() => GetGameExistingVersion() == GetGameVersionApi();
 
     public override ValueTask<bool> IsPluginVersionsMatch() => ValueTask.FromResult(true);
@@ -211,7 +223,7 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
 
         _pluginGameManager.SetCurrentGameVersion(version.Value);
         
-        string? currentPath = _pluginGameManager.GetGamePath();
+        _pluginGameManager.GetGamePath(out string? currentPath);
         if (string.IsNullOrEmpty(currentPath))
         {
             return;

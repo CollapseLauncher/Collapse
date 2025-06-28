@@ -105,7 +105,7 @@ internal class PluginInfo : IDisposable
             }
 
             // Get preset configs
-            int presetConfigCount = pluginInstance.GetPresetConfigCount();
+            pluginInstance.GetPresetConfigCount(out int presetConfigCount);
             if (presetConfigCount <= 0)
             {
                 throw new InvalidOperationException($"Plugin: {pluginFileName} doesn't have IPluginPresetConfig definition!");
@@ -114,7 +114,7 @@ internal class PluginInfo : IDisposable
             PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
             for (int i = 0; i < presetConfigCount; i++)
             {
-                IPluginPresetConfig presetConfig = pluginInstance.GetPresetConfig(i);
+                pluginInstance.GetPresetConfig(i, out IPluginPresetConfig presetConfig);
                 if (!PluginPresetConfigWrapper.TryCreate(pluginInstance, presetConfig, out PluginPresetConfigWrapper? presetConfigWrapper))
                 {
                     throw new InvalidOperationException($"Plugin: {pluginFileName} returns an invalid IPluginPresetConfig at index {i}!");
@@ -123,11 +123,11 @@ internal class PluginInfo : IDisposable
             }
 
             // Set this PluginInfo properties
-            string    pluginName         = pluginInstance.GetPluginName();
-            string    pluginDescription  = pluginInstance.GetPluginDescription();
-            string    pluginAuthor       = pluginInstance.GetPluginAuthor();
-            DateTime* pluginCreationDate = pluginInstance.GetPluginCreationDate();
-            ILogger   pluginLogger       = ILoggerHelper.GetILogger(pluginFileName);
+            pluginInstance.GetPluginName(out string? pluginName);
+            pluginInstance.GetPluginDescription(out string? pluginDescription);
+            pluginInstance.GetPluginAuthor(out string? pluginAuthor);
+            pluginInstance.GetPluginCreationDate(out DateTime* pluginCreationDate);
+            ILogger pluginLogger = ILoggerHelper.GetILogger(pluginFileName);
 
             Instance        = pluginInstance;
             StandardVersion = pluginStandardVersion;
