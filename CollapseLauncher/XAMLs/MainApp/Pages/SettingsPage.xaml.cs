@@ -1646,7 +1646,7 @@ namespace CollapseLauncher.Pages
             set
             {
                 DbHandler.IsEnabled = value;
-                if (value) _ = DbHandler.Init();
+                if (value) _ = DbHandler.TryInit();
             }
         }
 
