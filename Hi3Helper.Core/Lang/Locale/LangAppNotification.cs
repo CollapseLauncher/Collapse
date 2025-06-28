@@ -30,6 +30,11 @@ namespace Hi3Helper
                 public string NotifKbShortcutTitle { get; set; } = LangFallback?._AppNotification.NotifKbShortcutTitle;
                 public string NotifKbShortcutSubtitle { get; set; } = LangFallback?._AppNotification.NotifKbShortcutSubtitle;
                 public string NotifKbShortcutBtn { get; set; } = LangFallback?._AppNotification.NotifKbShortcutBtn;
+                
+                public string NotifDbConnectedTitle { get; set; } = LangFallback?._AppNotification.NotifDbConnectedTitle;
+                public string NotifDbConnectedSubtitle { get; set; } = LangFallback?._AppNotification.NotifDbConnectedSubtitle;
+                public string NotifDbTokenExpiredTitle { get; set; } = LangFallback?._AppNotification.NotifDbTokenExpiredTitle;
+                public string NotifDbTokenExpiredSubtitle { get; set; } = LangFallback?._AppNotification.NotifDbTokenExpiredSubtitle;
             }
         }
         #endregion

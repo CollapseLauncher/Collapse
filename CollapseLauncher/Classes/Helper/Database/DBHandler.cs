@@ -1,4 +1,5 @@
 using Hi3Helper;
+using Hi3Helper.Shared.ClassStruct;
 using Libsql.Client;
 using System;
 using System.Diagnostics;
@@ -140,13 +141,13 @@ namespace CollapseLauncher.Helper.Database
                     IsEnabled = false;
                     throw new NullReferenceException($"DB_001 {Lang._SettingsPage.Database_Error_EmptyUri}");
                 }
-                    
+
                 if (string.IsNullOrEmpty(Token))
                 {
                     IsEnabled = false;
                     throw new NullReferenceException($"DB_002 {Lang._SettingsPage.Database_Error_EmptyToken}");
                 }
-                    
+
 
                 // Connect to database
                 // Libsql-client-dotnet technically support file based SQLite by pushing `file://` proto in the URL.
@@ -167,12 +168,53 @@ namespace CollapseLauncher.Helper.Database
                     _isFirstInit = false;
                 }
                 else LogWriteLine("[DbHandler::Init] Reinitializing database system...");
+                
+                InnerLauncherConfig
+                   .m_mainPage?
+                   .SpawnNotificationPush(
+                                          Lang._AppNotification.NotifDbConnectedTitle,
+                                          Lang._AppNotification.NotifDbTokenExpiredTitle,
+                                          NotifSeverity.Informational,
+                                          -900,
+                                          true,
+                                          true,
+                                          null,
+                                          null,
+                                          true,
+                                          true);
             }
             catch (DllNotFoundException e)
             {
-                LogWriteLine("[DbHandler::Init] Error when connecting to database system! Probably missing Visual C/C++ redist!\r\n" + e,
+                LogWriteLine("[DbHandler::Init] Error when connecting to database system! Probably missing Visual C/C++ redist!\r\n" +
+                             e,
                              LogType.Error, true);
                 if (redirectThrow) throw;
+            }
+            catch (LibsqlException e) when (e.Message.Contains("token expired"))
+            {
+                LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token expired!\r\n{e}",
+                             LogType.Error, true);
+                try
+                {
+                    InnerLauncherConfig
+                       .m_mainPage?
+                       .SpawnNotificationPush(
+                                              Lang._AppNotification.NotifDbTokenExpiredTitle,
+                                              Lang._AppNotification.NotifDbTokenExpiredSubtitle,
+                                              NotifSeverity.Error,
+                                              -899,
+                                              true,
+                                              true,
+                                              null,
+                                              null,
+                                              true,
+                                              true);
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Failed to spawn notification for token expired!\r\n{ex}",
+                                 LogType.Error, true);
+                }
             }
             // No need to handle all these error catcher with sentry
             // The error should be handled in the method caller instead
@@ -226,7 +268,7 @@ namespace CollapseLauncher.Helper.Database
             LogWriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
             var t = Stopwatch.StartNew();
         #endif
-            const int retryCount = 3;
+            const int retryCount = 5;
             for (var i = 0; i < retryCount; i++)
             {
                 try
@@ -251,6 +293,32 @@ namespace CollapseLauncher.Helper.Database
                 #endif
                     return str;
                 }
+                catch (LibsqlException e) when (e.Message.Contains("token expired"))
+                {
+                    LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token expired!\r\n{e}",
+                                 LogType.Error, true);
+                    try
+                    {
+                        InnerLauncherConfig
+                           .m_mainPage?
+                           .SpawnNotificationPush(
+                                                  Lang._AppNotification.NotifDbTokenExpiredTitle,
+                                                  Lang._AppNotification.NotifDbTokenExpiredSubtitle,
+                                                  NotifSeverity.Error,
+                                                  -899,
+                                                  true,
+                                                  true,
+                                                  null,
+                                                  null,
+                                                  true,
+                                                  true);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed to spawn notification for token expired!\r\n{ex}",
+                                     LogType.Error, true);
+                    }
+                }
                 // No need to handle all these error catcher with sentry
                 // The error should be handled in the method caller instead
                 catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
@@ -258,9 +326,7 @@ namespace CollapseLauncher.Helper.Database
                                                   ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)) &&
                                                  i < retryCount - 1)
                 {
-                    if (i > 0)
-                        LogWriteLine("[DBHandler::QueryKey] Database stream expired, retrying...", LogType.Error, true);
-
+                    LogWriteLine("[DBHandler::QueryKey] Database stream expired, retrying...", LogType.Error, true);
                     await Init();
                 }
                 catch (Exception ex) when (i < retryCount - 1)
@@ -282,14 +348,12 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                     throw;
                 }
-            #if DEBUG
-                finally
-                {
-                    t.Stop();
-                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
-                }
-            #endif
             }
+            
+        #if DEBUG
+            t.Stop();
+            LogWriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
+        #endif
 
             return null;
         }
@@ -318,14 +382,39 @@ namespace CollapseLauncher.Helper.Database
                     await _database!.Execute(command, parameters);
                     break;
                 }
+                catch (LibsqlException e) when (e.Message.Contains("token expired"))
+                {
+                    LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token expired!\r\n{e}",
+                                 LogType.Error, true);
+                    try
+                    {
+                        InnerLauncherConfig
+                           .m_mainPage?
+                           .SpawnNotificationPush(
+                                                  Lang._AppNotification.NotifDbTokenExpiredTitle,
+                                                  Lang._AppNotification.NotifDbTokenExpiredSubtitle,
+                                                  NotifSeverity.Error,
+                                                  -899,
+                                                  true,
+                                                  true,
+                                                  null,
+                                                  null,
+                                                  true,
+                                                  true);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed to spawn notification for token expired!\r\n{ex}",
+                                     LogType.Error, true);
+                    }
+                }
                 catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
                                                   ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
                                                   ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)) &&
                                                  i < retryCount - 1)
                 {
-                    if (i > 0)
-                        LogWriteLine("[DBHandler::StoreKeyValue] Database stream expired, retrying...", LogType.Error,
-                                     true);
+                    LogWriteLine("[DBHandler::StoreKeyValue] Database stream expired, retrying...", LogType.Error,
+                                 true);
 
                     await Init();
                 }
@@ -350,15 +439,12 @@ namespace CollapseLauncher.Helper.Database
                                  LogType.Error, true);
                     throw;
                 }
-            #if DEBUG
-                finally
-                {
-                    t.Stop();
-                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
-                                 LogType.Debug, true);
-                }
-            #endif
             }
+        #if DEBUG
+            t.Stop();
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
+                         LogType.Debug, true);
+        #endif
         }
     }
 }

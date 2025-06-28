@@ -126,6 +126,18 @@ namespace Hi3Helper.Shared.ClassStruct
         }
     }
 
+    // ReSharper disable GrammarMistakeInComment
+    /// <summary>
+    /// Defines notification severity levels used to visually indicate the importance of a notification.
+    /// </summary>
+    /// Severity levels in ascending order of urgency:
+    /// <list type="bullet">
+    ///   <item><term>Informational</term><description>: General information that requires no specific action</description></item>
+    ///   <item><term>Success</term><description>: Positive confirmation of a completed action or process</description></item>
+    ///   <item><term>Warning</term><description>: Important information that may require attention</description></item>
+    ///   <item><term>Error</term><description>: Critical issue that requires immediate attention</description></item>
+    /// </list>
+    // ReSharper restore GrammarMistakeInComment
     [JsonConverter(typeof(JsonStringEnumConverter<NotifSeverity>))]
     public enum NotifSeverity : uint
     {

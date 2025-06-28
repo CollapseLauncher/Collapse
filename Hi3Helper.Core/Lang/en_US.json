@@ -1300,7 +1300,12 @@
 
     "NotifKbShortcutTitle": "A new feature has arrived!",
     "NotifKbShortcutSubtitle": "We are introducing a new way to navigate around Collapse, Keyboard Shortcuts.\nYou can now use your keyboard to have faster access to some functionalities!\n\nWanna know more?\nTry using CTRL + Tab or click the button below.",
-    "NotifKbShortcutBtn": "Show all shortcuts"
+    "NotifKbShortcutBtn": "Show all shortcuts",
+    
+    "NotifDbConnectedTitle": "User synchronization Database is successfully connected!",
+    "NotifDbConnectedSubtitle": "Sync database is now connected and ready to use.\r\nYou are connected to {0}.",
+    "NotifDbTokenExpiredTitle": "Your Sync Database Token has expired!",
+    "NotifDbTokenExpiredSubtitle": "Your Sync Database Token has expired and you need to re-login to the Sync Database.\r\nPlease generate new token and input it in the Sync Database Settings page."
   },
 
   "_StarRailGameSettingsPage": {

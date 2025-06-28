@@ -320,7 +320,21 @@ public partial class MainPage : Page
                };
     }
 
-    private void SpawnNotificationPush(string Title, string TextContent, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
+    /// <summary>
+    /// Spawns a notification push to the UI with specified content and behavior.
+    /// </summary>
+    /// <param name="Title">The title text displayed at the top of the notification.</param>
+    /// <param name="TextContent">The main content message of the notification.</param>
+    /// <param name="Severity">The <see cref="NotifSeverity"/> level that determines the notification's visual style and color.</param>
+    /// <param name="MsgId">A unique identifier for the notification, used for tracking and management.</param>
+    /// <param name="IsClosable">Determines whether the notification can be closed by the user.</param>
+    /// <param name="Disposable">Determines if the user can choose to never show this notification again.</param>
+    /// <param name="CloseClickHandler">Optional event handler that executes when the notification is closed.</param>
+    /// <param name="OtherContent">Optional additional UI elements to display within the notification.</param>
+    /// <param name="IsAppNotif">Indicates if this is an application notification rather than a system notification.</param>
+    /// <param name="Show">Controls whether the notification should be displayed immediately.</param>
+    /// <param name="ForceShowNotificationPanel">When true, forces the notification panel to be displayed.</param>
+    public void SpawnNotificationPush(string Title, string TextContent, NotifSeverity Severity, int MsgId = 0, bool IsClosable = true,
                                        bool Disposable = false, TypedEventHandler<InfoBar, object> CloseClickHandler = null, FrameworkElement OtherContent = null, bool IsAppNotif = true,
                                        bool? Show = false, bool ForceShowNotificationPanel = false)
     {
