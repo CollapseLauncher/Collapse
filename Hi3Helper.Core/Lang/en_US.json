@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Send anonymous crash reports to developers",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "This setting is disabled due to 'DISABLE_SENTRY' environment variable being set to true.",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Spawn Custom Dialog",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
     "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",

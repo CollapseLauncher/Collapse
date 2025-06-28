@@ -2471,6 +2471,58 @@
                             </Grid>
                         </Grid>
                     </Button>
+                    <NavigationViewItemSeparator Margin="16,16" Visibility="Collapsed" x:Name="DebugItemSeparator" />
+                    <StackPanel Orientation="Vertical" Spacing="8" Visibility="Collapsed" x:Name="DebugStackPanel">
+                        <AutoSuggestBox x:Name="DebugCustomDialogComboBox"
+                                  ItemsSource="{x:Bind DialogMethodNames, Mode=OneWay}"
+                                  Text="{x:Bind SelectedDialogMethodName, Mode=TwoWay}"
+                                  QuerySubmitted="DebugCustomDialogComboBox_OnQuerySubmitted"
+                                  TextChanged="DebugCustomDialogComboBox_OnTextChanged"
+                                  PlaceholderText="Search custom dialog..."/>
+                        <Button x:Name="DebugCustomDialogButton"
+                                Margin="0,0,0,8"
+                                Padding="12,8"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                Click="DebugCustomDialogButton_Click"
+                                CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(DebugCustomDialogButton)}"
+                                IsEnabled="True"
+                                Style="{ThemeResource AccentButtonStyle}">
+                            <Grid Margin="0,-2,0,0"
+                                  HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid HorizontalAlignment="Left">
+                                    <TextBlock HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               FontWeight="Medium"
+                                               HorizontalTextAlignment="Left"
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Debug_CustomDialogBtn}" />
+                                </Grid>
+                                <Grid Grid.Column="1"
+                                      Margin="4,2,0,0"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      RenderTransformOrigin="0.5, 0.5">
+                                    <Grid.RenderTransform>
+                                        <RotateTransform Angle="-90" />
+                                    </Grid.RenderTransform>
+                                    <AnimatedIcon Width="16"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center">
+                                        <animatedvisuals:AnimatedChevronDownSmallVisualSource />
+                                        <AnimatedIcon.FallbackIconSource>
+                                            <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                                            Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
+                                                            Glyph="&#xE70D;" />
+                                        </AnimatedIcon.FallbackIconSource>
+                                    </AnimatedIcon>
+                                </Grid>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
                     <StackPanel HorizontalAlignment="Center"
                                 Orientation="Horizontal">
                         <TextBlock Margin="0,0,6,0"
