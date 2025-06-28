@@ -2363,7 +2363,7 @@ namespace CollapseLauncher.Pages
                 object[]? parameterValues = null;
                 if (parameters.Length > 0)
                 {
-                    parameterValues = await ShowDebugParameterInputDialog(method, this.XamlRoot);
+                    parameterValues = await ShowDebugParameterInputDialog(method);
                     if (parameterValues == null)
                     {
                         LogWriteLine("[DBG-DialogSpawner] Parameter input dialog was cancelled.", LogType.Warning);
@@ -2397,7 +2397,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        private async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method, XamlRoot xamlRoot)
+        private async Task<object[]?> ShowDebugParameterInputDialog(MethodInfo method)
         {
             var parameters = method.GetParameters();
             var stackPanel = new StackPanel();
