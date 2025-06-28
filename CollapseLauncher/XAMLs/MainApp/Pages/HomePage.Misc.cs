@@ -132,11 +132,20 @@ public partial class HomePage
                 return;
             }
 
-            // Assign the priority to the process and write a log (just for displaying any info)
-            if (!gameProp.TrySetGameProcessPriority(processId, Hi3Helper.Win32.Native.Enums.PriorityClass.ABOVE_NORMAL_PRIORITY_CLASS))
+            var result =
+                gameProp.TrySetGameProcessPriority(processId,
+                                                   Hi3Helper.Win32.Native.Enums.PriorityClass
+                                                            .ABOVE_NORMAL_PRIORITY_CLASS);
+            var lastError = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+            
+            if (!result && lastError != 0)
             {
-                throw new Win32Exception();
+                LogWriteLine($"[HomePage::GameBoost_Invoke] Failed to boost game process {processName} [{processId}] " +
+                             $"priority to Above Normal! Last Win32 Error: {lastError}",
+                             LogType.Error, true);
+                throw new Win32Exception(lastError);
             }
+
             GameBoostInvokeTryCount = 0;
             LogWriteLine($"[HomePage::GameBoost_Invoke] Game process {processName} " +
                          $"[{processId}] priority is boosted to above normal!", LogType.Warning, true);
