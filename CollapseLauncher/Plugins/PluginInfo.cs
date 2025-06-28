@@ -281,22 +281,39 @@ internal class PluginInfo : IDisposable
         }
     }
 
-    private void DnsResolverCallback(string domain, out string[] resolvedIp)
+    private unsafe void DnsResolverCallback(ref ushort hostnameP, out nint ipAddresses, out int ipAddressesCount)
     {
         ArgumentNullException.ThrowIfNull(NameServers, nameof(NameServers));
 
+        string? hostname = Utf16StringMarshaller.ConvertToManaged((ushort*)Unsafe.AsPointer(ref hostnameP));
+        if (hostname == null)
+        {
+            ipAddressesCount = 0;
+            ipAddresses      = nint.Zero;
+            return;
+        }
+
         IPAddress[] resolvedIpAddresses =
-            HttpClientBuilder.ResolveHostToIpAsync(domain, NameServers, CancellationToken.None)
+            HttpClientBuilder.ResolveHostToIpAsync(hostname, NameServers, CancellationToken.None)
             .GetAwaiter()
             .GetResult();
 
         if (resolvedIpAddresses == null || resolvedIpAddresses.Length == 0)
         {
-            resolvedIp = [];
+            ipAddressesCount = 0;
+            ipAddresses      = nint.Zero;
             return;
         }
 
-        resolvedIp = resolvedIpAddresses.Select(ip => ip.ToString()).ToArray();
+        ipAddressesCount = resolvedIpAddresses.Length;
+        ushort** ipAddressesP = (ushort**)NativeMemory.Alloc((nuint)(sizeof(void*) * resolvedIpAddresses.Length));
+        ipAddresses = (nint)ipAddressesP;
+
+        foreach ((int Index, IPAddress Item) ipAddress in resolvedIpAddresses.Index())
+        {
+            string ipAsString = ipAddress.Item.ToString();
+            ipAddressesP[ipAddress.Index] = Utf16StringMarshaller.ConvertToUnmanaged(ipAsString);
+        }
     }
 
 #pragma warning disable CA2254
