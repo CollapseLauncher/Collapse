@@ -2385,12 +2385,15 @@ namespace CollapseLauncher.Pages
             catch (Exception ex)
             {
                 LogWriteLine("[DBG-DialogSpawner] Exception: " + ex, LogType.Error);
-                await new ContentDialog
-                {
-                    Title           = "Exception",
-                    Content         = ex.ToString(),
-                    CloseButtonText = "OK"
-                }.ShowAsync();
+                await SpawnDialog(
+                                  "Error",
+                                  ex.ToString(),
+                                  sender as UIElement,
+                                  Lang._Misc.Close,
+                                  null,
+                                  null,
+                                  ContentDialogButton.Close,
+                                  ContentDialogTheme.Error);
             }
         }
 
@@ -2407,16 +2410,17 @@ namespace CollapseLauncher.Pages
                 controls.Add(textBox);
             }
 
-            var dialog = new ContentDialog
-            {
-                Title             = "Enter Parameters",
-                Content           = stackPanel,
-                PrimaryButtonText = "OK",
-                CloseButtonText   = "Cancel",
-                XamlRoot          = xamlRoot
-            };
+            var dialog = await SpawnDialog(
+                                           "Enter Parameters",
+                                           stackPanel,
+                                           null,
+                                           Lang._Misc.Cancel,
+                                           Lang._Misc.Okay,
+                                           null,
+                                           ContentDialogButton.Primary,
+                                           ContentDialogTheme.Success);
 
-            if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            if (dialog != ContentDialogResult.Primary)
                 return null;
             
             var values = new object[parameters.Length];
