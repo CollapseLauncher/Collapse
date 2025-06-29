@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Statics;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
 using System;
@@ -34,6 +35,32 @@ namespace CollapseLauncher.Pages
             && IsPostInfoPanelVisible == Visibility.Collapsed ? Visibility.Collapsed : Visibility.Visible;
 
         internal static int PostEmptyMascotTextWidth => Locale.Lang._HomePage.PostPanel_NoNews.Length > 30 ? 200 : 100;
+
+        internal static Visibility CommunityToolsButtonVisibility
+        {
+            get => !IsCommunityToolsOfficialAvailable &&
+                   !IsCommunityToolsCommunityAvailable ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        internal static Visibility CommunityToolsOfficialGridVisibility
+        {
+            get => !IsCommunityToolsOfficialAvailable ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        internal static bool IsCommunityToolsOfficialAvailable
+        {
+            get => (PageStatics.CommunityToolsProperty?.OfficialToolsList?.Count ?? 0) != 0;
+        }
+
+        internal static Visibility CommunityToolsCommunityGridVisibility
+        {
+            get => !IsCommunityToolsCommunityAvailable ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        internal static bool IsCommunityToolsCommunityAvailable
+        {
+            get => (PageStatics.CommunityToolsProperty?.CommunityToolsList?.Count ?? 0) != 0;
+        }
 
         internal static int DefaultPostPanelIndex
         {

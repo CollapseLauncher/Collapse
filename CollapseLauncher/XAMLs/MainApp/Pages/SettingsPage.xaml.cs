@@ -13,6 +13,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
+using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.Helper.Loading;
@@ -20,6 +21,7 @@ using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
@@ -997,6 +999,7 @@ namespace CollapseLauncher.Pages
             SetAndSaveConfigValue("AppLanguage", selectedKey);
             LoadLocale(selectedKey);
             UpdateBindings.Update();
+            PluginManager.SetPluginLocaleId(selectedKey);
 
             foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
             {

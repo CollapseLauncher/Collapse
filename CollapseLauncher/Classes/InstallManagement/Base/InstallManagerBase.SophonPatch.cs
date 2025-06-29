@@ -13,6 +13,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Structs;

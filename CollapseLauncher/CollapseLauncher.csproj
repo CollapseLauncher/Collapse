@@ -217,6 +217,7 @@
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
@@ -336,6 +337,7 @@
 
             <!-- Descriptor for all classes that cannot be trimmed -->
             <TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+            <TrimmerRootAssembly Include="CollapseLauncher" />
 
             <!--
             <TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
@@ -385,11 +387,11 @@
 
     <Target Name="PostPublish" AfterTargets="Publish">
         <!-- Region: Libsql.Client -->
-        <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'"/>
+        <Delete Files="$(PublishDir)csharp_bindings.dll" Condition="'$(PublishAot)' == 'true'" />
 
         <!-- Region: waifu2x-ncnn-vulkan -->
-        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'"/>
-        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'"/>
+        <Delete Files="$(PublishDir)Lib\waifu2x-ncnn-vulkan.dll" Condition="'$(PublishAot)' == 'true'" />
+        <Delete Files="$(PublishDir)Lib\libomp140.x86_64.dll" Condition="'$(PublishAot)' == 'true'" />
 
         <!-- Region: libzstd -->
         <ItemGroup Condition="'$(PublishAot)' == 'true'">

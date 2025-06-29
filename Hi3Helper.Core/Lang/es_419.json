@@ -1094,7 +1094,13 @@
     "UserFeedback_SubmitBtn": "Compártenos tus comentarios",
     "UserFeedback_SubmitBtn_Processing": "Procesando...",
     "UserFeedback_SubmitBtn_Completed": "¡Completado!",
-    "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!"
+    "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!",
+
+    "PluginManagerUpdateAvailableTitle": "¡Tienes {0} Plugin(s) para ser actualizado(s)!",
+    "PluginManagerUpdateAvailableSubtitle1": "Hay disponible {0} actualización(es) de plugin(s). Es necesario reiniciar el launcher para aplicar la actualización:",
+    "PluginManagerUpdateAvailableSubtitle2": "¿Deseas reiniciar el Launcher?",
+    "PluginManagerUpdateAvailableCancelBtn": "Más Tarde",
+    "PluginManagerUpdateAvailableConfirmBtn": "¡Reiniciar Ahora!"
   },
 
   "_FileMigrationProcess": {

@@ -42,10 +42,10 @@ namespace Hi3Helper.Shared.Region
             AppConfigProperty.ProfilePath = AppConfigFile;
 
             // Set user permission check to its default and check for the existence of config file.
-            bool IsConfigFileExist = File.Exists(AppConfigProperty.ProfilePath);
+            bool isConfigFileExist = File.Exists(AppConfigProperty.ProfilePath);
 
             // If the config file is exist, then continue to load the file
-            if (IsConfigFileExist)
+            if (isConfigFileExist)
             {
                 LoadAppConfig();
             }
@@ -78,10 +78,10 @@ namespace Hi3Helper.Shared.Region
             }
 
             // Check if user has permission
-            bool IsUserHasPermission = ConverterTool.IsUserHasPermission(gameFolder);
+            bool isUserHasPermission = ConverterTool.IsUserHasPermission(gameFolder);
 
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
-            IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
+            IsFirstInstall = !(isConfigFileExist && isUserHasPermission);
 
             // Initialize the DownloadClient speed at start.
             // ignored
@@ -234,8 +234,9 @@ namespace Hi3Helper.Shared.Region
 
         [field: AllowNull, MaybeNull]
         public static Process AppCurrentProcess           { get => field ??= Process.GetCurrentProcess(); }
-        public static int     AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
-        public static string  AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+        public static int    AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
+        public static string AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+        public static string AppPluginFolder             => Path.Combine(AppGameFolder, "_plugins");
 
 
         [field: AllowNull, MaybeNull]

@@ -9,6 +9,7 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -594,11 +595,11 @@ namespace CollapseLauncher
             string region = GetComboBoxGameRegionValue(selValue);
             PresetConfig preset = await LauncherMetadataHelper.GetMetadataConfig(category, region);
             
-            ChangeRegionWarningText.Text = preset!.Channel != GameChannel.Stable
-                ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.Channel)
+            ChangeRegionWarningText.Text = preset!.GameChannel != GameChannel.Stable
+                ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel)
                 : string.Empty;
             ChangeRegionWarning.Visibility =
-                preset.Channel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
+                preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
@@ -621,9 +622,57 @@ namespace CollapseLauncher
         #region Metadata Update Method
         private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
-            bool IsUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
-            if (!IsUpdate)
+            bool isMetadataHasUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
+            (List<string> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
+
+            if (!isMetadataHasUpdate && !isPluginHasUpdate)
             {
+                return false;
+            }
+
+            if (isPluginHasUpdate)
+            {
+                TextBlock textBlock = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap
+                }.AddTextBlockLine(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle1, pluginUpdateNameList.Count))
+                .AddTextBlockNewLine(2);
+
+                foreach (string pluginUpdateName in pluginUpdateNameList)
+                {
+                    textBlock.AddTextBlockLine($"    • {pluginUpdateName}", FontWeights.Bold);
+                }
+                textBlock.AddTextBlockNewLine(2)
+                    .AddTextBlockLine(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle2);
+
+                ContentDialogResult pluginUpdateConfirm =
+                    await SimpleDialogs.SpawnDialog(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableTitle, pluginUpdateNameList.Count),
+                                                    textBlock,
+                                                    null,
+                                                    Lang._Dialogs.PluginManagerUpdateAvailableCancelBtn,
+                                                    Lang._Dialogs.PluginManagerUpdateAvailableConfirmBtn,
+                                                    null,
+                                                    ContentDialogButton.Primary,
+                                                    ContentDialogTheme.Success);
+
+                if (pluginUpdateConfirm != ContentDialogResult.Primary)
+                {
+                    return false;
+                }
+
+                try
+                {
+                    var collapsePath = AppExecutablePath;
+                    Process.Start(collapsePath);
+                    (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
+                    ErrorSender.SendException(ex);
+                }
+
                 return false;
             }
 
