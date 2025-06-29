@@ -1094,7 +1094,13 @@
     "UserFeedback_SubmitBtn": "Submit your feedback",
     "UserFeedback_SubmitBtn_Processing": "Processing...",
     "UserFeedback_SubmitBtn_Completed": "Completed!",
-    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!"
+    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!",
+
+    "PluginManagerUpdateAvailableTitle": "You have {0} plugin(s) ready to be updated!",
+    "PluginManagerUpdateAvailableSubtitle1": "There are {0} plugin(s) update available. The launcher is required to be restarted in order to apply update to these plugins:",
+    "PluginManagerUpdateAvailableSubtitle2": "Do you wish to restart the launcher?",
+    "PluginManagerUpdateAvailableCancelBtn": "Later",
+    "PluginManagerUpdateAvailableConfirmBtn": "Restart Now!"
   },
 
   "_FileMigrationProcess": {

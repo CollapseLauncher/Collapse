@@ -1,16 +1,15 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Utility;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -324,7 +323,14 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     public void Dispose()
     {
-        _config.Dispose();
+        _config.Free();
+
+        ComMarshal.FreeInstance(PluginNewsApi);
+        ComMarshal.FreeInstance(PluginMediaApi);
+        ComMarshal.FreeInstance(PluginGameManager);
+        ComMarshal.FreeInstance(PluginGameInstaller);
+        ComMarshal.FreeInstance(_config);
+
         GC.SuppressFinalize(this);
     }
 }

@@ -4,6 +4,7 @@ using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ internal class PluginInfo : IDisposable
     {
         nint   pluginHandle   = nint.Zero;
         bool   isPluginLoaded = false;
-        string pluginFileName = Path.GetFileName(pluginFilePath);
+        string pluginRelName  = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pluginFilePath)) ?? "", Path.GetFileName(pluginFilePath));
 
         try
         {
@@ -95,20 +96,20 @@ internal class PluginInfo : IDisposable
 
             if (pluginInstancePtr == null)
             {
-                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginFileName}) export function returns a null pointer!");
+                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export function returns a null pointer!");
             }
 
             IPlugin? pluginInstance = ComInterfaceMarshaller<IPlugin>.ConvertToManaged(pluginInstancePtr);
             if (pluginInstance == null)
             {
-                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginFileName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
+                throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
             }
 
             // Get preset configs
             pluginInstance.GetPresetConfigCount(out int presetConfigCount);
             if (presetConfigCount <= 0)
             {
-                throw new InvalidOperationException($"Plugin: {pluginFileName} doesn't have IPluginPresetConfig definition!");
+                throw new InvalidOperationException($"Plugin: {pluginRelName} doesn't have IPluginPresetConfig definition!");
             }
 
             PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
@@ -117,7 +118,7 @@ internal class PluginInfo : IDisposable
                 pluginInstance.GetPresetConfig(i, out IPluginPresetConfig presetConfig);
                 if (!PluginPresetConfigWrapper.TryCreate(pluginInstance, presetConfig, out PluginPresetConfigWrapper? presetConfigWrapper))
                 {
-                    throw new InvalidOperationException($"Plugin: {pluginFileName} returns an invalid IPluginPresetConfig at index {i}!");
+                    throw new InvalidOperationException($"Plugin: {pluginRelName} returns an invalid IPluginPresetConfig at index {i}!");
                 }
                 PresetConfigs[i] = presetConfigWrapper;
             }
@@ -127,7 +128,7 @@ internal class PluginInfo : IDisposable
             pluginInstance.GetPluginDescription(out string? pluginDescription);
             pluginInstance.GetPluginAuthor(out string? pluginAuthor);
             pluginInstance.GetPluginCreationDate(out DateTime* pluginCreationDate);
-            ILogger pluginLogger = ILoggerHelper.GetILogger(pluginFileName);
+            ILogger pluginLogger = ILoggerHelper.GetILogger(pluginRelName);
 
             Instance        = pluginInstance;
             StandardVersion = pluginStandardVersion;
@@ -142,7 +143,7 @@ internal class PluginInfo : IDisposable
 
             pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));
 
-            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginFileName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
+            Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
 
             isPluginLoaded = true;
         }
@@ -244,6 +245,12 @@ internal class PluginInfo : IDisposable
 
         try
         {
+            // Dispose loaded preset config
+            foreach (var presetConfig in PresetConfigs)
+            {
+                presetConfig.Dispose();
+            }
+
             if (TryGetExport(Handle, "SetLoggerCallback", out DelegateSetLoggerCallback setLoggerCallbackHandle) &&
                 TryGetExport(Handle, "SetDnsResolverCallback", out DelegateSetDnsResolverCallback setDnsResolverCallbackHandle))
             {
@@ -264,7 +271,7 @@ internal class PluginInfo : IDisposable
             }
 
             // If the graceful free function is not available, try to call Dispose method directly.
-            Instance.Dispose();
+            Instance.Free();
             Logger.LogWriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using explicit function.", LogType.Debug, true);
 
             // Mark as disposed
@@ -277,6 +284,7 @@ internal class PluginInfo : IDisposable
         finally
         {
             // Free the plugin handle and remove it from the dictionary.
+            ComMarshal.FreeInstance(Instance);
             NativeLibrary.Free(Handle);
         }
     }

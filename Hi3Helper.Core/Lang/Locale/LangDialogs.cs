@@ -226,6 +226,12 @@ namespace Hi3Helper
                 public string UserFeedback_SubmitBtn_Processing { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Processing;
                 public string UserFeedback_SubmitBtn_Completed { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Completed;
                 public string UserFeedback_SubmitBtn_Cancelled { get; set; } = LangFallback?._Dialogs.UserFeedback_SubmitBtn_Cancelled;
+
+                public string PluginManagerUpdateAvailableTitle { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableTitle;
+                public string PluginManagerUpdateAvailableSubtitle1 { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableSubtitle1;
+                public string PluginManagerUpdateAvailableSubtitle2 { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableSubtitle2;
+                public string PluginManagerUpdateAvailableCancelBtn { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableCancelBtn;
+                public string PluginManagerUpdateAvailableConfirmBtn { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableConfirmBtn;
             }
         }
         #endregion
