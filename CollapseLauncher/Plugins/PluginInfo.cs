@@ -281,15 +281,14 @@ internal class PluginInfo : IDisposable
         }
     }
 
-    private unsafe void DnsResolverCallback(ref ushort hostnameP, out nint ipAddresses, out int ipAddressesCount)
+    private unsafe void DnsResolverCallback(char* hostnameP, char* ipResolvedWriteBuffer, int ipResolvedWriteBufferLength, int* ipResolvedWriteCount)
     {
         ArgumentNullException.ThrowIfNull(NameServers, nameof(NameServers));
 
-        string? hostname = Utf16StringMarshaller.ConvertToManaged((ushort*)Unsafe.AsPointer(ref hostnameP));
+        string? hostname = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(hostnameP).ToString();
         if (hostname == null)
         {
-            ipAddressesCount = 0;
-            ipAddresses      = nint.Zero;
+            *ipResolvedWriteCount = 0;
             return;
         }
 
@@ -300,26 +299,26 @@ internal class PluginInfo : IDisposable
 
         if (resolvedIpAddresses == null || resolvedIpAddresses.Length == 0)
         {
-            ipAddressesCount = 0;
-            ipAddresses      = nint.Zero;
+            *ipResolvedWriteCount = 0;
             return;
         }
 
-        ipAddressesCount = resolvedIpAddresses.Length;
-        ushort** ipAddressesP = (ushort**)NativeMemory.Alloc((nuint)(sizeof(void*) * resolvedIpAddresses.Length));
-        ipAddresses = (nint)ipAddressesP;
+        *ipResolvedWriteCount = resolvedIpAddresses.Length;
 
-        foreach ((int Index, IPAddress Item) ipAddress in resolvedIpAddresses.Index())
+        int offset = 0;
+        foreach (IPAddress ipAddress in resolvedIpAddresses)
         {
-            string ipAsString = ipAddress.Item.ToString();
-            ipAddressesP[ipAddress.Index] = Utf16StringMarshaller.ConvertToUnmanaged(ipAsString);
+            string ipAsString = ipAddress.ToString();
+            ipAsString.CopyTo(new Span<char>(ipResolvedWriteBuffer + offset, ipAsString.Length));
+            ipResolvedWriteBuffer[offset += ipAsString.Length] = '\0';
+            offset++;
         }
     }
 
-#pragma warning disable CA2254
-    private void LoggerCallback(LogLevel logLevel, EventId eventId, string message)
-        => PluginLogger.Log(logLevel: logLevel, eventId: eventId, message: message);
-#pragma warning restore CA2254
+#pragma warning disable CA2254, CS8500
+    private unsafe void LoggerCallback(LogLevel* logLevel, EventId* eventId, char* messageBuffer, int messageLength)
+        => PluginLogger.Log(logLevel: *logLevel, eventId: *eventId, message: new ReadOnlySpan<char>(messageBuffer, messageLength).ToString());
+#pragma warning restore CA2254, CS8500
 
     public override string ToString() => $"{Name} (by {Author}) - {Description}";
 }
