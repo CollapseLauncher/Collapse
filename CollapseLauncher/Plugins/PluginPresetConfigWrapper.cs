@@ -46,7 +46,7 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
         }
         catch (Exception ex)
         {
-            SharedStatic.InstanceLogger?.LogError(ex, "Failed while trying to create IPluginPresetConfig wrapper");
+            SharedStatic.InstanceLogger.LogError(ex, "Failed while trying to create IPluginPresetConfig wrapper");
         }
 
         return false;

@@ -18,9 +18,7 @@ using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Threading.Tasks;
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable CheckNamespace

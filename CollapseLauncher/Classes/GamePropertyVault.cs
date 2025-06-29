@@ -1,5 +1,4 @@
 using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -8,7 +7,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 // ReSharper disable PartialTypeWithSinglePart

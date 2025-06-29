@@ -293,8 +293,8 @@ internal class PluginInfo : IDisposable
     {
         ArgumentNullException.ThrowIfNull(NameServers, nameof(NameServers));
 
-        string? hostname = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(hostnameP).ToString();
-        if (hostname == null)
+        string hostname = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(hostnameP).ToString();
+        if (string.IsNullOrEmpty(hostname))
         {
             *ipResolvedWriteCount = 0;
             return;
@@ -305,7 +305,7 @@ internal class PluginInfo : IDisposable
             .GetAwaiter()
             .GetResult();
 
-        if (resolvedIpAddresses == null || resolvedIpAddresses.Length == 0)
+        if (resolvedIpAddresses.Length == 0)
         {
             *ipResolvedWriteCount = 0;
             return;

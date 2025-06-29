@@ -68,7 +68,7 @@ namespace CollapseLauncher.Interfaces
         [field: MaybeNull, AllowNull]
         protected string GameRepoURL
         {
-            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp.data?.game?.latest?.decompressed_path : field;
+            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp?.data?.game?.latest?.decompressed_path : field;
             set;
         }
 
