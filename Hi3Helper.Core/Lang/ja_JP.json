@@ -1094,7 +1094,13 @@
     "UserFeedback_SubmitBtn": "フィードバックを送信",
     "UserFeedback_SubmitBtn_Processing": "送信中…",
     "UserFeedback_SubmitBtn_Completed": "送信完了！",
-    "UserFeedback_SubmitBtn_Cancelled": "キャンセルしました！"
+    "UserFeedback_SubmitBtn_Cancelled": "キャンセルしました！",
+
+    "PluginManagerUpdateAvailableTitle": " {0}個のプラグインをアップデートできます！",
+    "PluginManagerUpdateAvailableSubtitle1": "アップデート可能なプラグインが{0}個あります。以下のプラグインの更新を適用するには、ランチャーの再起動が必要です。",
+    "PluginManagerUpdateAvailableSubtitle2": "ランチャーを再起動しますか？",
+    "PluginManagerUpdateAvailableCancelBtn": "後でやる",
+    "PluginManagerUpdateAvailableConfirmBtn": "今やる！"
   },
 
   "_FileMigrationProcess": {
