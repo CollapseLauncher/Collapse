@@ -11,6 +11,8 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Input;
@@ -623,7 +625,7 @@ namespace CollapseLauncher
         private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
             bool isMetadataHasUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
-            (List<string> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
+            (List<(string, SelfUpdateReturnInfo)> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
 
             if (!isMetadataHasUpdate && !isPluginHasUpdate)
             {
@@ -638,9 +640,30 @@ namespace CollapseLauncher
                 }.AddTextBlockLine(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle1, pluginUpdateNameList.Count))
                 .AddTextBlockNewLine(2);
 
-                foreach (string pluginUpdateName in pluginUpdateNameList)
+                foreach ((string, SelfUpdateReturnInfo) pluginUpdateName in pluginUpdateNameList)
                 {
-                    textBlock.AddTextBlockLine($"    • {pluginUpdateName}", FontWeights.Bold);
+                    try
+                    {
+                    #nullable enable
+                        // DO NOT REMOVE! USED FOR LATER!
+                        string? pluginName = pluginUpdateName.Item2.Name;
+                        string? pluginAuthor = pluginUpdateName.Item2.Author;
+                        string? pluginDescription = pluginUpdateName.Item2.Description;
+                        GameVersion pluginUpcomingVersion = pluginUpdateName.Item2.PluginVersion ?? GameVersion.Empty;
+                        GameVersion pluginUpcomingStandardVersion = pluginUpdateName.Item2.StandardVersion ?? GameVersion.Empty;
+                        DateTimeOffset pluginCreationDate = (pluginUpdateName.Item2.CreationDate ?? default).ToLocalTime();
+                        DateTimeOffset pluginCompileDate = (pluginUpdateName.Item2.CompiledDate ?? default).ToLocalTime();
+
+                        // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                        pluginUpdateName.Item2.Dispose();
+
+                        textBlock.AddTextBlockLine($"    • {pluginUpdateName.Item1}", FontWeights.Bold);
+                    #nullable restore
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
                 textBlock.AddTextBlockNewLine(2)
                     .AddTextBlockLine(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle2);

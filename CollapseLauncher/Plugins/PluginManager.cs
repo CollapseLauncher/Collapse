@@ -124,17 +124,57 @@ internal static class PluginManager
         PluginInstances.Clear();
     }
 
-    internal static async Task<(List<string>, bool)> StartUpdateBackgroundRoutine()
+    private static bool IsValidReturnCode(SelfUpdateReturnCode retCode)
     {
-        int updated = 0;
-        string rootPluginDir = LauncherConfig.AppPluginFolder;
-        List<string> pluginUpdateNameList = [];
+        uint asUint = (uint)retCode;
+        if (retCode.HasFlag(SelfUpdateReturnCode.Ok) &&
+            asUint is >= 0b_00000001_00000000_00000000_00000000 and <= 0b_10000000_00000000_00000000_00000000)
+        {
+            return true;
+        }
+
+        if (retCode.HasFlag(SelfUpdateReturnCode.Error) &&
+            asUint is >= 0b_00000000_00000000_00000001_00000000 and <= 0b_00000000_10000000_00000000_00000000)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static unsafe SelfUpdateReturnInfo ReplicateFromPtr(nint ptr)
+    {
+        // Fallback if the result is actually the enum.
+        SelfUpdateReturnCode asRetCode = (SelfUpdateReturnCode)(uint)ptr;
+        if (IsValidReturnCode(asRetCode))
+        {
+            return new SelfUpdateReturnInfo
+            {
+                _retCode = (SelfUpdateReturnCode)(uint)ptr
+            };
+        }
+
+        // Return the struct if it returns it.
+        SelfUpdateReturnInfo* selfUpdateReturnInfo = ptr.AsPointer<SelfUpdateReturnInfo>();
+        SelfUpdateReturnInfo  ret                  = *selfUpdateReturnInfo; // basically copy the fields.
+
+        // Free the struct from native memory (but not the pointer inside of it since it's already copied above).
+        Mem.Free(selfUpdateReturnInfo);
+        return ret;
+    }
+
+    internal static async Task<(List<(string, SelfUpdateReturnInfo)>, bool)> StartUpdateBackgroundRoutine()
+    {
+        int                                  updated              = 0;
+        string                               rootPluginDir        = LauncherConfig.AppPluginFolder;
+        List<(string, SelfUpdateReturnInfo)> pluginUpdateNameList = [];
 
         await Parallel.ForEachAsync(PluginInstances, Impl);
         return (pluginUpdateNameList, updated > 0);
 
         async ValueTask Impl(KeyValuePair<string, PluginInfo> pluginInfo, CancellationToken cancelToken)
         {
+            bool isDisposeReturnInfo = true;
             IPlugin pluginInstance = pluginInfo.Value.Instance;
             string pluginUpdateOutputPath = Path.Combine(rootPluginDir, pluginInfo.Key, "pendingUpdate");
 
@@ -149,47 +189,64 @@ internal static class PluginManager
                                                      null,
                                                      pluginInstance.RegisterCancelToken(cancelToken),
                                                      out nint asyncResult);
-            SelfUpdateReturnCode checkUpdateStatus = await asyncResult.WaitFromHandle<SelfUpdateReturnCode>();
 
-            if (checkUpdateStatus.HasFlag(SelfUpdateReturnCode.Error))
+            nint                 checkUpdateStatusP   = await asyncResult.WaitFromHandle<nint>();
+            SelfUpdateReturnInfo selfUpdateReturnInfo = ReplicateFromPtr(checkUpdateStatusP);
+            SelfUpdateReturnCode checkUpdateStatus    = selfUpdateReturnInfo.ReturnCode;
+
+            try
             {
-                Logger.LogWriteLine($"Cannot check update status for plugin: {pluginInfo.Key} due to an error with return code: {checkUpdateStatus}", LogType.Error, true);
-                return;
-            }
-
-            if (checkUpdateStatus == SelfUpdateReturnCode.NoAvailableUpdate)
-            {
-                return;
-            }
-            Logger.LogWriteLine($"Update is available for: {pluginInfo.Key}! Starting update routine...", LogType.Default, true);
-
-            selfUpdateInstance.TryPerformUpdateAsync(pluginUpdateOutputPath,
-                                                     false,
-                                                     null,
-                                                     pluginInstance.RegisterCancelToken(cancelToken),
-                                                     out asyncResult);
-            SelfUpdateReturnCode updateRoutineStatus = await asyncResult.WaitFromHandle<SelfUpdateReturnCode>();
-
-            // Increase the count if update is successful
-            if (updateRoutineStatus is SelfUpdateReturnCode.UpdateSuccess or SelfUpdateReturnCode.RollingBackSuccess)
-            {
-                Logger.LogWriteLine($"Update for: {pluginInfo.Key} is success! Return code: {updateRoutineStatus}", LogType.Default, true);
-                string updateCompletedStampPath = Path.Combine(pluginUpdateOutputPath, ".updateCompleted");
-                await File.WriteAllTextAsync(updateCompletedStampPath, "Update Completed!", cancelToken);
-
-                lock (pluginUpdateNameList)
+                if (checkUpdateStatus.HasFlag(SelfUpdateReturnCode.Error))
                 {
-                    pluginUpdateNameList.Add(pluginInfo.Key);
+                    Logger.LogWriteLine($"Cannot check update status for plugin: {pluginInfo.Key} due to an error with return code: {checkUpdateStatus}", LogType.Error, true);
+                    return;
                 }
-                Interlocked.Increment(ref updated);
-                return;
-            }
 
-            Logger.LogWriteLine($"Failed while trying to update plugin: {pluginInfo.Key}, Rolling Back! Return code: {updateRoutineStatus}", LogType.Error, true);
-            DirectoryInfo dirInfo = new DirectoryInfo(pluginUpdateOutputPath);
-            if (dirInfo.Exists)
+                if (checkUpdateStatus == SelfUpdateReturnCode.NoAvailableUpdate)
+                {
+                    return;
+                }
+                Logger.LogWriteLine($"Update is available for: {pluginInfo.Key}! Starting update routine...", LogType.Default, true);
+
+                selfUpdateInstance.TryPerformUpdateAsync(pluginUpdateOutputPath,
+                                                         false,
+                                                         null,
+                                                         pluginInstance.RegisterCancelToken(cancelToken),
+                                                         out asyncResult);
+
+                nint                 updateRoutineStatusP    = await asyncResult.WaitFromHandle<nint>();
+                SelfUpdateReturnInfo updateRoutineStatusInfo = ReplicateFromPtr(updateRoutineStatusP);
+                SelfUpdateReturnCode updateRoutineStatus     = updateRoutineStatusInfo.ReturnCode;
+
+                // Increase the count if update is successful
+                if (updateRoutineStatus is SelfUpdateReturnCode.UpdateSuccess or SelfUpdateReturnCode.RollingBackSuccess)
+                {
+                    Logger.LogWriteLine($"Update for: {pluginInfo.Key} is success! Return code: {updateRoutineStatus}", LogType.Default, true);
+                    string updateCompletedStampPath = Path.Combine(pluginUpdateOutputPath, ".updateCompleted");
+                    await File.WriteAllTextAsync(updateCompletedStampPath, "Update Completed!", cancelToken);
+
+                    lock (pluginUpdateNameList)
+                    {
+                        pluginUpdateNameList.Add((pluginInfo.Key, selfUpdateReturnInfo));
+                    }
+                    Interlocked.Increment(ref updated);
+                    Interlocked.Exchange(ref isDisposeReturnInfo, false);
+                    return;
+                }
+
+                Logger.LogWriteLine($"Failed while trying to update plugin: {pluginInfo.Key}, Rolling Back! Return code: {updateRoutineStatus}", LogType.Error, true);
+                DirectoryInfo dirInfo = new DirectoryInfo(pluginUpdateOutputPath);
+                if (dirInfo.Exists)
+                {
+                    dirInfo.TryDeleteDirectory(true);
+                }
+            }
+            finally
             {
-                dirInfo.TryDeleteDirectory(true);
+                if (isDisposeReturnInfo)
+                {
+                    selfUpdateReturnInfo.Dispose();
+                }
             }
         }
     }
