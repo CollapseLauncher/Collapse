@@ -215,25 +215,27 @@ internal class PluginInfo : IDisposable
 
         delegate* unmanaged[Cdecl]<char*, void**, int> tryGetApiExportCallback = (delegate* unmanaged[Cdecl]<char*, void**, int>)tryGetApiExportP;
 
-        nint exportP   = nint.Zero;
-        int  tryResult = tryGetApiExportCallback(GetExportPtr(), (void**)&exportP);
-
-        if (tryResult != 0 ||
-            exportP == nint.Zero)
+        nint  exportP     = nint.Zero;
+        char* exportNameP = GetExportPtr();
+        try
         {
-            return false;
-        }
+            int tryResult = tryGetApiExportCallback(exportNameP, (void**)&exportP);
 
-        callback = Marshal.GetDelegateForFunctionPointer<T>(exportP);
-        return true;
-
-        char* GetExportPtr()
-        {
-            fixed (char* charP = exportName)
+            if (tryResult != 0 ||
+                exportP == nint.Zero)
             {
-                return charP;
+                return false;
             }
+
+            callback = Marshal.GetDelegateForFunctionPointer<T>(exportP);
+            return true;
         }
+        finally
+        {
+            Utf16StringMarshaller.Free((ushort*)exportNameP);
+        }
+
+        char* GetExportPtr() => (char*)Utf16StringMarshaller.ConvertToUnmanaged(exportName);
     }
 
     public void Dispose()
