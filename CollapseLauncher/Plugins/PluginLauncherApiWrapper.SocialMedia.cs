@@ -137,7 +137,7 @@ internal partial class PluginLauncherApiWrapper
 
         if (flags.HasFlag(flagIfBuffer))
         {
-            return await CopyOverEmbeddedData(outputDir, embeddedDataOrPath, token);
+            return await CopyOverEmbeddedDataAsync(outputDir, embeddedDataOrPath, token);
         }
 
         return string.Empty;
@@ -155,7 +155,7 @@ internal partial class PluginLauncherApiWrapper
         // Safeguard: Check if the data is actually base64. If so, redirect.
         if (IsDataActuallyBase64(dataUrl))
         {
-            return await CopyOverEmbeddedData(outputDir, dataUrl, token);
+            return await CopyOverEmbeddedDataAsync(outputDir, dataUrl, token);
         }
 
         string fileName = Path.GetFileName(dataUrl);
@@ -185,7 +185,7 @@ internal partial class PluginLauncherApiWrapper
         return filePath;
     }
 
-    private static bool IsDataActuallyBase64(string data)
+    internal static bool IsDataActuallyBase64(string data)
     {
         if (Base64Url.IsValid(data))
         {
@@ -202,9 +202,13 @@ internal partial class PluginLauncherApiWrapper
 
     private delegate bool WriteEmbeddedBase64DataToBuffer(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded);
 
-    private static async Task<string?> CopyOverEmbeddedData(string            outputDir,
+    internal static Task<string?> CopyOverEmbeddedDataAsync(string            outputDir,
                                                             string?           dataBase64,
                                                             CancellationToken token)
+        => Task.Factory.StartNew(() => CopyOverEmbeddedData(outputDir, dataBase64), token);
+
+    internal static string? CopyOverEmbeddedData(string  outputDir,
+                                                 string? dataBase64)
     {
 
         if (string.IsNullOrEmpty(dataBase64))
@@ -249,10 +253,10 @@ internal partial class PluginLauncherApiWrapper
                 return filePath;
             }
 
-            await using UnmanagedMemoryStream unmanagedStream = ToStream(dataBuffer.AsSpan(0, dataDecoded));
-            await using FileStream            fileStream      = fileInfo.Create();
+            using UnmanagedMemoryStream unmanagedStream = ToStream(dataBuffer.AsSpan(0, dataDecoded));
+            using FileStream            fileStream      = fileInfo.Create();
 
-            await unmanagedStream.CopyToAsync(fileStream, token);
+            unmanagedStream.CopyTo(fileStream);
             SaveFileStamp(fileInfo, fileStream.Length);
 
             return filePath;

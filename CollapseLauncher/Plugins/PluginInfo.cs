@@ -36,15 +36,17 @@ internal class PluginInfo : IDisposable
     public GameVersion                 StandardVersion { get; }
     public GameVersion                 Version         { get; }
     public IPlugin                     Instance        { get; }
-    public string                      PluginFilePath  { get; }
     public nint                        Handle          { get; }
-    public string                      Name            { get; }
-    public string                      Description     { get; }
-    public string                      Author          { get; }
-    public DateTime                    CreationDate    { get; }
     public PluginPresetConfigWrapper[] PresetConfigs   { get; }
     public ILogger                     PluginLogger    { get; }
     public NameServer[]?               NameServers     { get; private set; }
+
+    public string    PluginFilePath { get; }
+    public string    PluginFileName { get; }
+    public string?   Name           => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoNameUnknown;
+    public string?   Description    => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoDescUnknown;
+    public string?   Author         => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoAuthorUnknown;
+    public DateTime? CreationDate   => field ?? DateTime.MinValue;
 
     private readonly DelegateSetDnsResolverCallback _setDnsResolverCallback;
 
@@ -134,11 +136,12 @@ internal class PluginInfo : IDisposable
             StandardVersion = pluginStandardVersion;
             Version         = pluginVersion;
             PluginFilePath  = pluginFilePath;
+            PluginFileName  = Path.GetFileName(pluginFilePath);
             Handle          = libraryHandle;
-            Name            = !string.IsNullOrEmpty(pluginName) ? pluginName : "Unknown";
-            Description     = !string.IsNullOrEmpty(pluginDescription) ? pluginDescription : "No description provided.";
-            Author          = !string.IsNullOrEmpty(pluginAuthor) ? pluginAuthor : "Unknown Author";
-            CreationDate    = pluginCreationDate == null ? DateTime.MinValue : *pluginCreationDate;
+            Name            = pluginName;
+            Description     = pluginDescription;
+            Author          = pluginAuthor;
+            CreationDate    = pluginCreationDate == null ? null : *pluginCreationDate;
             PluginLogger    = pluginLogger;
 
             pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));

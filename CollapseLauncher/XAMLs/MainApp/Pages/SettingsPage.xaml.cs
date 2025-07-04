@@ -26,6 +26,7 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -1931,6 +1932,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
+        #region Settings Search
         private void InitializeSettingsSearch()
         {
             // Create brushes for highlighting
@@ -2328,5 +2330,57 @@ namespace CollapseLauncher.Pages
             SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
         }
+        #endregion
+
+        #region Plugins
+        private void CopyLoadedPluginInformationClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is not Button { Tag: PluginInfo asPluginInfo } asButton)
+                {
+                    return;
+                }
+
+                try
+                {
+                    string info =
+                        $"""
+                         Name: {asPluginInfo.Name}
+                         Author: {asPluginInfo.Author}
+                         Description:
+                         {asPluginInfo.Description}
+
+                         =========
+
+                         Plugin Version: {asPluginInfo.Version}
+                         Interface Version: {asPluginInfo.StandardVersion}
+                         Creation Date: {asPluginInfo.CreationDate?.ToString(LocalFullDateTimeConverter.FullFormat)}
+                         Main Library Path: {asPluginInfo.PluginFilePath}
+                         Loaded Presets:
+                         """;
+
+                    foreach (PluginPresetConfigWrapper wrapper in asPluginInfo.PresetConfigs)
+                    {
+                        string name = wrapper.GameName;
+                        string region = wrapper.ZoneName;
+
+                        info += $"\r\n  • {name} - {region}";
+                    }
+
+                    Clipboard.CopyStringToClipboard(info);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed to copy loaded plugin information: {ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+        #endregion
     }
 }

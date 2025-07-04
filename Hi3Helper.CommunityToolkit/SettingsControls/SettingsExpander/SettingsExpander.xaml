@@ -1,5 +1,8 @@
 ﻿<!--  Licensed to the .NET Foundation under one or more agreements. The .NET Foundation licenses this file to you under the MIT license. See the LICENSE file in the project root for more information.  -->
 <!-- ReSharper disable Xaml.PathError -->
+<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<!-- ReSharper disable Xaml.ConstructorWarning -->
+<!-- ReSharper disable MarkupAttributeTypo -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
@@ -13,7 +16,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <x:String x:Key="SettingsExpanderChevronToolTip">Show all settings</x:String>
-    <Thickness x:Key="SettingsExpanderHeaderPadding">16,16,4,16</Thickness>
+    <Thickness x:Key="SettingsExpanderHeaderPadding">16,0,4,0</Thickness>
     <Thickness x:Key="SettingsExpanderItemPadding">58,8,44,8</Thickness>
     <Thickness x:Key="SettingsExpanderItemBorderThickness">0,1,0,0</Thickness>
     <Thickness x:Key="ClickableSettingsExpanderItemPadding">58,8,16,8</Thickness>

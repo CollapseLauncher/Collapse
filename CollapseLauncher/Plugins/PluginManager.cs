@@ -96,12 +96,12 @@ internal static class PluginManager
 
                         gameRegions.Add(gameRegion);
 
-                        long stampTimestamp = long.Parse(pluginInfo.CreationDate.ToString("yyyyMMddHHmmss"));
+                        long stampTimestamp = long.Parse(pluginInfo.CreationDate?.ToString("yyyyMMddHHmmss") ?? "0");
                         _ = launcherMetadataStampDictionary.TryAdd($"{gameName} - {gameRegion}", new Stamp
                         {
                             GameName = gameName,
                             GameRegion = gameRegion,
-                            LastModifiedTimeUtc = pluginInfo.CreationDate,
+                            LastModifiedTimeUtc = pluginInfo.CreationDate ?? DateTime.MinValue,
                             LastUpdated = stampTimestamp,
                             MetadataType = MetadataType.PresetConfigPlugin,
                             PresetConfigVersion = pluginInfo.StandardVersion.ToString()

@@ -28,8 +28,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.TaskScheduler", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper", "Hi3Helper.CommunityToolkit\ImageCropper\Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj", "{558A1D17-BEB4-49DF-A200-15ABE283BDED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls", "Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj", "{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon.WinUI", "H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj", "{141083CC-A924-4E19-904C-AF91361405A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H.NotifyIcon", "H.NotifyIcon\src\libs\H.NotifyIcon\H.NotifyIcon.csproj", "{6C8A25FA-BA1C-4EE4-8A9D-2FB4918077FB}"
@@ -41,6 +39,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.Win32.WinRT", "Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj", "{5CA5A261-1D5B-8A4D-EA87-B031CFFD4DDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.Plugin.Core", "Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj", "{6D56B964-1509-482F-4589-C780CDE5C703}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls", "Hi3Helper.CommunityToolkit\SettingsControls\Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj", "{EDB972FD-0B83-1092-166C-05DC18846ABE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,12 +126,6 @@ Global
 		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Publish|x64.Build.0 = Release|x64
 		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Release|x64.ActiveCfg = Release|x64
 		{558A1D17-BEB4-49DF-A200-15ABE283BDED}.Release|x64.Build.0 = Release|x64
-		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Debug|x64.ActiveCfg = Debug|x64
-		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Debug|x64.Build.0 = Debug|x64
-		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Publish|x64.ActiveCfg = Release|x64
-		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Publish|x64.Build.0 = Release|x64
-		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Release|x64.ActiveCfg = Release|x64
-		{5A1243EC-EFD9-4B55-8F29-D1A91A9B027D}.Release|x64.Build.0 = Release|x64
 		{141083CC-A924-4E19-904C-AF91361405A5}.Debug|x64.ActiveCfg = Debug|x64
 		{141083CC-A924-4E19-904C-AF91361405A5}.Debug|x64.Build.0 = Debug|x64
 		{141083CC-A924-4E19-904C-AF91361405A5}.Publish|x64.ActiveCfg = Release|x64
@@ -168,6 +162,12 @@ Global
 		{6D56B964-1509-482F-4589-C780CDE5C703}.Publish|x64.Build.0 = Release|x64
 		{6D56B964-1509-482F-4589-C780CDE5C703}.Release|x64.ActiveCfg = Release|x64
 		{6D56B964-1509-482F-4589-C780CDE5C703}.Release|x64.Build.0 = Release|x64
+		{EDB972FD-0B83-1092-166C-05DC18846ABE}.Debug|x64.ActiveCfg = Debug|x64
+		{EDB972FD-0B83-1092-166C-05DC18846ABE}.Debug|x64.Build.0 = Debug|x64
+		{EDB972FD-0B83-1092-166C-05DC18846ABE}.Publish|x64.ActiveCfg = Release|x64
+		{EDB972FD-0B83-1092-166C-05DC18846ABE}.Publish|x64.Build.0 = Release|x64
+		{EDB972FD-0B83-1092-166C-05DC18846ABE}.Release|x64.ActiveCfg = Release|x64
+		{EDB972FD-0B83-1092-166C-05DC18846ABE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
