@@ -693,8 +693,22 @@
     "Database_ValidationChecking": "設定を検証しています…",
     "Database_Placeholder_DbUserIdTextBox": "GUIDサンプル: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください",
-    
-    "SearchPlaceholder": "検索ワードを入力してください…"
+
+    "SearchPlaceholder": "検索ワードを入力してください…",
+
+    "Plugin_LoadedInfoTitle": "導入中のプラグイン情報",
+    "Plugin_OpenManagerBtn": "プラグイン管理メニューを開く",
+    "Plugin_AuthorBy": "（{0} 制作）",
+    "Plugin_LoadedInfoDesc": "説明",
+    "Plugin_LoadedInfoPluginVer": "プラグインバージョン",
+    "Plugin_LoadedInfoInterfaceVer": "インターフェースバージョン",
+    "Plugin_LoadedInfoCreationDate": "作成日時",
+    "Plugin_LoadedInfoMainLibLocation": "メインライブラリの位置",
+    "Plugin_LoadedInfoLoadedPresets": "ローディングプリセット",
+    "Plugin_LoadedInfoClipboardCopied": "情報をコピーしました！",
+    "Plugin_PluginInfoNameUnknown": "不明",
+    "Plugin_PluginInfoDescUnknown": "説明文なし",
+    "Plugin_PluginInfoAuthorUnknown": "作者不明"
   },
 
   "_Misc": {
