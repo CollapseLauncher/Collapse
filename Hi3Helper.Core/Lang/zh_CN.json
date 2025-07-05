@@ -693,8 +693,22 @@
     "Database_ValidationChecking": "验证设置中……",
     "Database_Placeholder_DbUserIdTextBox": "GUID 示例：ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "在这里输入您的身份验证令牌",
-    
-    "SearchPlaceholder": "输入以搜索……"
+
+    "SearchPlaceholder": "输入以搜索……",
+
+    "Plugin_LoadedInfoTitle": "已加载的插件信息",
+    "Plugin_OpenManagerBtn": "打开插件管理菜单",
+    "Plugin_AuthorBy": "作者 {0}",
+    "Plugin_LoadedInfoDesc": "描述",
+    "Plugin_LoadedInfoPluginVer": "插件版本",
+    "Plugin_LoadedInfoInterfaceVer": "接口版本",
+    "Plugin_LoadedInfoCreationDate": "创建日期",
+    "Plugin_LoadedInfoMainLibLocation": "主程序库位置",
+    "Plugin_LoadedInfoLoadedPresets": "加载的预设",
+    "Plugin_LoadedInfoClipboardCopied": "信息已复制！",
+    "Plugin_PluginInfoNameUnknown": "未知",
+    "Plugin_PluginInfoDescUnknown": "无描述",
+    "Plugin_PluginInfoAuthorUnknown": "未知作者"
   },
 
   "_Misc": {
@@ -1094,7 +1108,13 @@
     "UserFeedback_SubmitBtn": "提交您的反馈",
     "UserFeedback_SubmitBtn_Processing": "处理中…",
     "UserFeedback_SubmitBtn_Completed": "完成！",
-    "UserFeedback_SubmitBtn_Cancelled": "已取消！"
+    "UserFeedback_SubmitBtn_Cancelled": "已取消！",
+
+    "PluginManagerUpdateAvailableTitle": "您有 {0} 个插件已准备好更新！",
+    "PluginManagerUpdateAvailableSubtitle1": "目前有 {0} 个插件可更新。启动器需要重新启动以应用这些插件的更新：",
+    "PluginManagerUpdateAvailableSubtitle2": "您希望重新启动启动器吗？",
+    "PluginManagerUpdateAvailableCancelBtn": "稍后",
+    "PluginManagerUpdateAvailableConfirmBtn": "现在就重启！"
   },
 
   "_FileMigrationProcess": {
