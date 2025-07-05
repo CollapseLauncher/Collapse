@@ -693,8 +693,22 @@
     "Database_ValidationChecking": "Validando Configuración...",
     "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí",
-    
-    "SearchPlaceholder": "Escribe para buscar..."
+
+    "SearchPlaceholder": "Escribe para buscar...",
+
+    "Plugin_LoadedInfoTitle": "Información de los plugins cargados",
+    "Plugin_OpenManagerBtn": "Abrir menú de gestión de plugins",
+    "Plugin_AuthorBy": "por {0}",
+    "Plugin_LoadedInfoDesc": "Descripción",
+    "Plugin_LoadedInfoPluginVer": "Versión de Plugin",
+    "Plugin_LoadedInfoInterfaceVer": "Versión de interfaz",
+    "Plugin_LoadedInfoCreationDate": "Fecha de creación",
+    "Plugin_LoadedInfoMainLibLocation": "Ubicación biblioteca principal",
+    "Plugin_LoadedInfoLoadedPresets": "Preajustes cargados",
+    "Plugin_LoadedInfoClipboardCopied": "¡Información copiada!",
+    "Plugin_PluginInfoNameUnknown": "Desconocido",
+    "Plugin_PluginInfoDescUnknown": "Sin Descripción",
+    "Plugin_PluginInfoAuthorUnknown": "Autor Desconocido"
   },
 
   "_Misc": {
