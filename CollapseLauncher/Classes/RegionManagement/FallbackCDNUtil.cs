@@ -482,7 +482,9 @@ namespace CollapseLauncher
                 LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
                 // Try check the status of the URL
-                var httpResponse = await GetURLHttpResponse(absoluteURL, token, isUncompressRequest);
+                using var timeoutCts = new CancellationTokenSource(5000);
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutCts.Token);
+                var httpResponse = await GetURLHttpResponse(absoluteURL, linkedCts.Token, isUncompressRequest, 1);
 
                 // If it's not a successful code, log the information
                 if (!httpResponse.IsSuccessStatusCode)
