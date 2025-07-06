@@ -794,6 +794,7 @@
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository powered by Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository powered by GitLab.",
     "CDNDescription_Coding": "A mirror of the official (main) repository powered by Coding.",
+    "CDNDescription_CNB": "A mirror of the official (main) repository powered by CNB.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",
