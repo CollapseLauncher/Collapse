@@ -13,6 +13,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
+using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.Helper.Loading;
@@ -20,10 +21,12 @@ using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -997,6 +1000,7 @@ namespace CollapseLauncher.Pages
             SetAndSaveConfigValue("AppLanguage", selectedKey);
             LoadLocale(selectedKey);
             UpdateBindings.Update();
+            PluginManager.SetPluginLocaleId(selectedKey);
 
             foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
             {
@@ -1928,6 +1932,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
+        #region Settings Search
         private void InitializeSettingsSearch()
         {
             // Create brushes for highlighting
@@ -2325,5 +2330,57 @@ namespace CollapseLauncher.Pages
             SettingsSearchHighlightNextBtn.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden;
             SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
         }
+        #endregion
+
+        #region Plugins
+        private void CopyLoadedPluginInformationClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is not Button { Tag: PluginInfo asPluginInfo } asButton)
+                {
+                    return;
+                }
+
+                try
+                {
+                    string info =
+                        $"""
+                         Name: {asPluginInfo.Name}
+                         Author: {asPluginInfo.Author}
+                         Description:
+                         {asPluginInfo.Description}
+
+                         =========
+
+                         Plugin Version: {asPluginInfo.Version}
+                         Interface Version: {asPluginInfo.StandardVersion}
+                         Creation Date: {asPluginInfo.CreationDate?.ToString(LocalFullDateTimeConverter.FullFormat)}
+                         Main Library Path: {asPluginInfo.PluginFilePath}
+                         Loaded Presets:
+                         """;
+
+                    foreach (PluginPresetConfigWrapper wrapper in asPluginInfo.PresetConfigs)
+                    {
+                        string name = wrapper.GameName;
+                        string region = wrapper.ZoneName;
+
+                        info += $"\r\n  • {name} - {region}";
+                    }
+
+                    Clipboard.CopyStringToClipboard(info);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed to copy loaded plugin information: {ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+        #endregion
     }
 }

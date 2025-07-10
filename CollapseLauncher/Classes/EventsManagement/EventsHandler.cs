@@ -1,4 +1,5 @@
-﻿using Hi3Helper.SentryHelper;
+﻿using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -63,7 +64,7 @@ namespace CollapseLauncher
         {
             get
             {
-                return !GameVersion.TryParse(VersionString, out GameVersion? result) ? null : result;
+                return !GameVersion.TryParse(VersionString, null, out GameVersion result) ? null : result;
             }
         }
 

@@ -169,6 +169,25 @@ namespace CollapseLauncher.Helper.StreamUtility
             }
         }
 
+        internal static bool TryDeleteDirectory(this DirectoryInfo directoryPath, bool isRecursive = false, bool throwIfFailed = false)
+        {
+            try
+            {
+                if (directoryPath.Exists)
+                    directoryPath.Delete(isRecursive);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (throwIfFailed)
+                    throw;
+
+                Logger.LogWriteLine($"Failed to delete directory: {directoryPath.FullName}\r\n{ex}", LogType.Error, true);
+                return false;
+            }
+        }
+
         internal static string NormalizePath(this string path)
             => ConverterTool.NormalizePath(path);
 
