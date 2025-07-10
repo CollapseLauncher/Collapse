@@ -693,8 +693,22 @@
     "Database_ValidationChecking": "Validasi Pengaturan...",
     "Database_Placeholder_DbUserIdTextBox": "Contoh GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Masukkan token autentikasimu di sini",
-    
-    "SearchPlaceholder": "Ketik untuk mencari..."
+
+    "SearchPlaceholder": "Ketik untuk mencari...",
+
+    "Plugin_LoadedInfoTitle": "Informasi Plugin",
+    "Plugin_OpenManagerBtn": "Buka Menu Manajemen Plugin",
+    "Plugin_AuthorBy": "oleh {0}",
+    "Plugin_LoadedInfoDesc": "Deskripsi",
+    "Plugin_LoadedInfoPluginVer": "Versi Plugin",
+    "Plugin_LoadedInfoInterfaceVer": "Versi Antarmuka (API)",
+    "Plugin_LoadedInfoCreationDate": "Tanggal Dibuat",
+    "Plugin_LoadedInfoMainLibLocation": "Lokasi Librari Utama",
+    "Plugin_LoadedInfoLoadedPresets": "Preset yang Dimuat",
+    "Plugin_LoadedInfoClipboardCopied": "Informasi Telah Disalin!",
+    "Plugin_PluginInfoNameUnknown": "Tidak diketahui",
+    "Plugin_PluginInfoDescUnknown": "Tidak ada deskripsi",
+    "Plugin_PluginInfoAuthorUnknown": "Pembuat Tidak Dikenal"
   },
 
   "_Misc": {
@@ -832,11 +846,11 @@
     "IsBytesNotANumber": "= Bukan Nomor",
 
     "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
-    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami.",
+    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka browser untuk mengunduh file yang diperlukan dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue kepada kami.",
     "ExceptionFeedbackBtn": "Kasih tahu kami dong",
     "ExceptionFeedbackBtn_Unavailable": "Laporan crash tidak tersedia atau dimatikan",
     "ExceptionFeedbackBtn_FeedbackSent": "Umpan-Balikmu sudah dikirim!",
-    "ExceptionFeedbackTitle": "Apa yang terjadi?:",
+    "ExceptionFeedbackTitle": "Beritahu kami apa yang terjadi:",
     "ExceptionFeedbackTemplate_User": "Username (Opsional):",
     "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
     "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini: (Kamu tidak perlu melampirkan pesan error, app akan langsung melampirkannya otomatis!)",
@@ -996,7 +1010,7 @@
     "StopGameTitle": "Tutup Paksa Game",
     "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
 
-    "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Ditemukan!",
+    "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Terdeteksi!",
     "MeteredConnectionWarningSubtitle": "Koneksi internet anda saat ini terdeteksi sebagai koneksi \"berbayar\"! Melanjutkan proses update dapat menambah tagihan internet dari penyedia layanan internet. Apakah kamu ingin melanjutkan aksi ini?",
 
     "ResetKbShortcutsTitle": "Apa kamu yakin untuk mengatur ulang semua pintasan?",
@@ -1013,7 +1027,7 @@
     "OperationWarningNotCancellableMsg5": "\" untuk membatalkan.",
 
     "GenericWarningExceptionTitle": "Peringatan",
-    "GenericWarningExceptionSubtitle": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting)",
+    "GenericWarningExceptionSubtitle": "Kami memberitahukan (namun sebenarnya tidak terlalu penting) bahwa:",
 
     "ShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
     "ShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat pada tempat ini:",
