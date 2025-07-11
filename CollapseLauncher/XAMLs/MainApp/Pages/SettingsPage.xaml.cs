@@ -102,6 +102,9 @@ namespace CollapseLauncher.Pages
         #region Settings Page Handler
         public SettingsPage()
         {
+            // This is a waste of memory because it initalizes the list even if DEBUG is not defined.
+            _dialogMethods = new List<MethodInfo>();
+            DialogMethodNames = new List<string>();
 #if DEBUG
             _dialogMethods = typeof(SimpleDialogs)
                             .GetMethods(BindingFlags.Public | BindingFlags.Static)
