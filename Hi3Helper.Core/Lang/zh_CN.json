@@ -794,6 +794,7 @@
     "CDNDescription_Bitbucket": "由 Bitbucket 提供支持的官方（主）仓库镜像。",
     "CDNDescription_GitLab": "由 GitLab 提供支持的官方（主）仓库镜像。",
     "CDNDescription_Coding": "由 Coding 提供支持的官方（主）仓库镜像。",
+    "CDNDescription_CNB": "由 CNB 提供支持的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
     "OpenDownloadPage": "打开下载界面",
