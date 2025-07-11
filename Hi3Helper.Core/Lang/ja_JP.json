@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "匿名で開発者にクラッシュレポートを送る",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "環境変数'DISABLE_SENTRY'の値がtrueであるため、この設定は無効になっています。",
     "Debug_MultipleInstance": "Collapseの多重起動を許可する",
+    "Debug_CustomDialogBtn": "[デバッグ]カスタムダイアログを呼び出す",
 
     "ChangeRegionWarning_Toggle": "ゲームの変更時に確認ダイアログを表示",
     "ChangeRegionInstant_Toggle": "上部タブでゲームをクイック切り替え",
@@ -794,6 +795,7 @@
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Coding": "Codingが提供する公式(メイン)リポジトリのミラー。",
+    "CDNDescription_CNB": "CNBが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",
     "OpenDownloadPage": "配布サイトを開く",
