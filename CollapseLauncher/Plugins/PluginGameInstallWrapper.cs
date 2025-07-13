@@ -209,10 +209,10 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
             GameInstallerKind sizeInstallerKind = isUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
 
             _gameInstaller.GetGameSizeAsync(sizeInstallerKind, in cancelGuid, out nint asyncGetGameSizeResult);
-            long sizeToDownload = await asyncGetGameSizeResult.WaitFromHandle<long>();
+            long sizeToDownload = await asyncGetGameSizeResult.AsTask<long>();
 
             _gameInstaller.GetGameDownloadedSizeAsync(sizeInstallerKind, in cancelGuid, out nint asyncGetDownloadedSizeResult);
-            long sizeAlreadyDownloaded = await asyncGetDownloadedSizeResult.WaitFromHandle<long>();
+            long sizeAlreadyDownloaded = await asyncGetDownloadedSizeResult.AsTask<long>();
 
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
@@ -224,7 +224,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
                                      progressStatusDelegate,
                                      _plugin.RegisterCancelToken(Token.Token),
                                      out nint asyncStartUpdateResult);
-                routineTask = asyncStartUpdateResult.WaitFromHandle();
+                routineTask = asyncStartUpdateResult.AsTask();
             }
             else
             {
@@ -234,7 +234,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
                                       _plugin.RegisterCancelToken(Token.Token),
                                       out nint asyncStartInstallResult);
 
-                routineTask = asyncStartInstallResult.WaitFromHandle();
+                routineTask = asyncStartInstallResult.AsTask();
             }
 
             await routineTask.ConfigureAwait(false);
@@ -380,7 +380,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         {
             await asUninstaller.InitPluginComAsync(_plugin, CancellationToken.None);
             asUninstaller.UninstallAsync(_plugin.RegisterCancelToken(CancellationToken.None), out nint asyncUninstallResult);
-            await asyncUninstallResult.WaitFromHandle();
+            await asyncUninstallResult.AsTask();
             return true;
         }
         catch (Exception ex)

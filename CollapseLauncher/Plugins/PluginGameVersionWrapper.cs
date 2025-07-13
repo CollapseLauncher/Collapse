@@ -92,7 +92,7 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
         Guid cancelToken = Guid.CreateVersion7();
         _pluginGameManager
            .FindExistingInstallPathAsync(in cancelToken, out nint asyncFindExistingInstallPathResult);
-        string? gameInstallPath = await asyncFindExistingInstallPathResult.WaitFromHandle<PluginDisposableMemoryMarshal>();
+        string? gameInstallPath = await asyncFindExistingInstallPathResult.AsTask<PluginDisposableMemoryMarshal>();
 
         return gameInstallPath;
     }

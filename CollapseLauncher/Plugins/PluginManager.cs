@@ -148,10 +148,7 @@ internal static class PluginManager
         SelfUpdateReturnCode asRetCode = (SelfUpdateReturnCode)(uint)ptr;
         if (IsValidReturnCode(asRetCode))
         {
-            return new SelfUpdateReturnInfo
-            {
-                _retCode = (SelfUpdateReturnCode)(uint)ptr
-            };
+            return new SelfUpdateReturnInfo((SelfUpdateReturnCode)(uint)ptr);
         }
 
         // Return the struct if it returns it.
@@ -190,7 +187,7 @@ internal static class PluginManager
                                                      pluginInstance.RegisterCancelToken(cancelToken),
                                                      out nint asyncResult);
 
-            nint                 checkUpdateStatusP   = await asyncResult.WaitFromHandle<nint>();
+            nint                 checkUpdateStatusP   = await asyncResult.AsTask<nint>();
             SelfUpdateReturnInfo selfUpdateReturnInfo = ReplicateFromPtr(checkUpdateStatusP);
             SelfUpdateReturnCode checkUpdateStatus    = selfUpdateReturnInfo.ReturnCode;
 
@@ -214,7 +211,7 @@ internal static class PluginManager
                                                          pluginInstance.RegisterCancelToken(cancelToken),
                                                          out asyncResult);
 
-                nint                 updateRoutineStatusP    = await asyncResult.WaitFromHandle<nint>();
+                nint                 updateRoutineStatusP    = await asyncResult.AsTask<nint>();
                 SelfUpdateReturnInfo updateRoutineStatusInfo = ReplicateFromPtr(updateRoutineStatusP);
                 SelfUpdateReturnCode updateRoutineStatus     = updateRoutineStatusInfo.ReturnCode;
 

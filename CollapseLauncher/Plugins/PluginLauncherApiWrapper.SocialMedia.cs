@@ -178,7 +178,7 @@ internal partial class PluginLauncherApiWrapper
                                           null,
                                           in cancelToken,
                                           out nint asyncDownloadAssetResult);
-        await asyncDownloadAssetResult.WaitFromHandle();
+        await asyncDownloadAssetResult.AsTask();
 
         SaveFileStamp(fileInfo, fileStream.Length);
 

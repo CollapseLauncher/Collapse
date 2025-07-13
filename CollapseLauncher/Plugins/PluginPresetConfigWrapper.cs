@@ -314,7 +314,7 @@ internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
     public async Task InitializeAsync(CancellationToken token = default)
     {
         _config.InitAsync(Plugin.RegisterCancelToken(token), out nint asyncResult);
-        int returnCode = await asyncResult.WaitFromHandle<int>();
+        int returnCode = await asyncResult.AsTask<int>();
         if (returnCode != 0)
         {
             throw new InvalidOperationException($"Failed to initialize IPluginPresetConfig with return code: {returnCode}");
