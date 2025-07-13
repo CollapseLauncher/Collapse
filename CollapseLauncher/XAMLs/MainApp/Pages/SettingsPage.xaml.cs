@@ -2386,12 +2386,16 @@ namespace CollapseLauncher.Pages
             try
             {
                 asButton.IsEnabled = false;
-                FullPageOverlay overlayMenu = this.CreateOverlayByNewContent<SettingsPage>(FullPageOverlaySize.Full, new FontIconSource
+                FullPageOverlay overlayMenu = new FullPageOverlay(new SettingsPage(), XamlRoot)
                 {
-                    Glyph = "\uE912"
-                });
+                    Size               = FullPageOverlaySize.Full,
+                    OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle,
+                    OverlayTitleIcon   = new FontIconSource
+                    {
+                        Glyph = "\uE912"
+                    }
+                };
 
-                overlayMenu.OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle;
                 await overlayMenu.ShowAsync();
             }
             finally

@@ -41,6 +41,7 @@ public partial class FullPageOverlay
     private CancellationTokenSource? _closeCts;
 
     public static readonly List<FullPageOverlay> CurrentlyOpenedOverlays = [];
+    private static readonly Lock ThisThreadLock = new();
     #endregion
 
     #region Properties
@@ -81,6 +82,15 @@ public partial class FullPageOverlay
     }
 
     /// <summary>
+    /// Sets the visibility of the close button
+    /// </summary>
+    public Visibility CloseButtonVisibility
+    {
+        get => (Visibility)GetValue(CloseButtonVisibilityProperty);
+        set => SetValue(CloseButtonVisibilityProperty, value);
+    }
+
+    /// <summary>
     /// Sets the source callback to get the title of the overlay
     /// </summary>
     public Func<string?>? OverlayTitleSource
@@ -98,27 +108,30 @@ public partial class FullPageOverlay
 
     private static void OnUILayoutUnloaded(object sender, RoutedEventArgs e)
     {
-        if (sender is not FullPageOverlay asOverlay)
+        using (ThisThreadLock.EnterScope())
         {
-            return;
+            if (sender is not FullPageOverlay asOverlay)
+            {
+                return;
+            }
+
+            asOverlay.UnassignEvents();
+            asOverlay.OverlayTitleSource = null;
+            asOverlay.OverlayTitle       = null;
+            asOverlay.OverlayTitleIcon   = null;
+            asOverlay.ContentBackground  = null;
+            asOverlay.Content            = null;
+
+            asOverlay._closeCts?.Dispose();
+            Interlocked.Exchange(ref asOverlay._closeCts,                   null);
+            Interlocked.Exchange(ref asOverlay._parentOverlayGrid!,         null);
+            Interlocked.Exchange(ref asOverlay.LayoutCloseButton!,          null);
+            Interlocked.Exchange(ref asOverlay._layoutSmokeBackgroundGrid!, null);
+            Interlocked.Exchange(ref asOverlay._layoutContentPresenter!,    null);
+            Interlocked.Exchange(ref asOverlay._layoutOverlayTitleGrid!,    null);
+
+            GC.Collect();
         }
-
-        asOverlay.UnassignEvents();
-        asOverlay.OverlayTitleSource = null;
-        asOverlay.OverlayTitle       = null;
-        asOverlay.OverlayTitleIcon   = null;
-        asOverlay.ContentBackground  = null;
-        asOverlay.Content            = null;
-
-        asOverlay._closeCts?.Dispose();
-        Interlocked.Exchange(ref asOverlay._closeCts,                   null);
-        Interlocked.Exchange(ref asOverlay._parentOverlayGrid!,         null);
-        Interlocked.Exchange(ref asOverlay.LayoutCloseButton!,          null);
-        Interlocked.Exchange(ref asOverlay._layoutSmokeBackgroundGrid!, null);
-        Interlocked.Exchange(ref asOverlay._layoutContentPresenter!,    null);
-        Interlocked.Exchange(ref asOverlay._layoutOverlayTitleGrid!,    null);
-
-        GC.Collect();
     }
     #endregion
 
@@ -127,5 +140,6 @@ public partial class FullPageOverlay
     public static readonly DependencyProperty ContentBackgroundProperty = DependencyProperty.Register(nameof(ContentBackground), typeof(Brush), typeof(FullPageOverlay), new PropertyMetadata(null));
     public static readonly DependencyProperty OverlayTitleIconProperty = DependencyProperty.Register(nameof(OverlayTitleIcon), typeof(IconSource), typeof(FullPageOverlay), new PropertyMetadata(new FontIconSource { Glyph = "\uE80A" }));
     public static readonly DependencyProperty OverlayTitleProperty = DependencyProperty.Register(nameof(OverlayTitle), typeof(string), typeof(FullPageOverlay), new PropertyMetadata(null));
+    public static readonly DependencyProperty CloseButtonVisibilityProperty = DependencyProperty.Register(nameof(CloseButtonVisibility), typeof(Visibility), typeof(FullPageOverlay), new PropertyMetadata(Visibility.Visible));
     #endregion
 }

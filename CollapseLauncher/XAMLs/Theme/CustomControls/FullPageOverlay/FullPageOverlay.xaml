@@ -9,16 +9,17 @@
                           TintOpacity="1"
                           TintLuminosityOpacity="0"
                           TintColor="{ThemeResource SmokeFillColorDefault}"
-                          FallbackColor="{ThemeResource SmokeFillColorDefault}"/>
+                          FallbackColor="#F0222222"/>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="SmokeBackgroundBrush"
                              Color="{ThemeResource CardBackgroundFillColorSecondary}"
-                             Opacity="0.6"/>
+                             Opacity="0.8"/>
             <AcrylicBrush x:Key="ContentBackgroundAcrylicBrush"
                           TintOpacity="0.0"
                           TintLuminosityOpacity="0.8"
-                          TintColor="{ThemeResource ControlFillColorDefault}"/>
+                          TintColor="{ThemeResource ControlFillColorDefault}"
+                          FallbackColor="#F0FFFFFF"/>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
@@ -190,7 +191,7 @@
                                     <ScaleTransform x:Name="ScaleTransform" />
                                 </Grid.RenderTransform>
                                 <Grid x:Name="OverlayTitleGrid"
-                                      Background="{TemplateBinding ContentBackground}"
+                                      Background="{ThemeResource AccentAAFillColorDefaultBrush}"
                                       Margin="16,16,0,0"
                                       Padding="12,8"
                                       HorizontalAlignment="Left"
@@ -209,14 +210,16 @@
                                           CornerRadius="4">
                                         <IconSourceElement IconSource="{TemplateBinding OverlayTitleIcon}"
                                                            VerticalAlignment="Center"
-                                                           HorizontalAlignment="Center"/>
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="{ThemeResource TextFillColorInverseBrush}"/>
                                     </Grid>
                                     <TextBlock Grid.Column="1"
                                                Text="{TemplateBinding OverlayTitle}"
                                                FontSize="14"
-                                               FontWeight="Normal"
+                                               FontWeight="Bold"
                                                VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
+                                               HorizontalAlignment="Center"
+                                               Foreground="{ThemeResource TextFillColorInverseBrush}"/>
                                 </Grid>
                                 <ContentPresenter x:Name="Presenter"
                                                   Content="{TemplateBinding Content}"
@@ -235,7 +238,8 @@
                                     Style="{ThemeResource NewAccentButtonStyle}"
                                     Opacity="1"
                                     Shadow="{ThemeResource SharedShadow}"
-                                    Translation="0,0,16">
+                                    Translation="0,0,16"
+                                    Visibility="{TemplateBinding CloseButtonVisibility}">
                                 <Button.RenderTransform>
                                     <TranslateTransform x:Name="CloseButtonTranslateTransform"/>
                                 </Button.RenderTransform>

@@ -52,26 +52,34 @@ public partial class FullPageOverlay : ContentControl
     #region Public Methods
     public async Task ShowAsync()
     {
-        // Get the count of the Rows and Column so it can be spanned across the grid.
-        int parentGridRowCount    = _parentOverlayGrid.RowDefinitions.Count;
-        int parentGridColumnCount = _parentOverlayGrid.ColumnDefinitions.Count;
-        // Add the UI element to the grid
-        _parentOverlayGrid.AddElementToGridRowColumn(this,
-                                                     0,
-                                                     0,
-                                                     parentGridRowCount,
-                                                     parentGridColumnCount);
-
-        // Assign if CTS is null or cancelled already.
-        if (_closeCts is null || _closeCts.IsCancellationRequested)
+        using (ThisThreadLock.EnterScope())
         {
-            Interlocked.Exchange(ref _closeCts, new CancellationTokenSource());
+            // Get the count of the Rows and Column so it can be spanned across the grid.
+            int parentGridRowCount    = _parentOverlayGrid.RowDefinitions.Count;
+            int parentGridColumnCount = _parentOverlayGrid.ColumnDefinitions.Count;
+            // Add the UI element to the grid
+            _parentOverlayGrid.AddElementToGridRowColumn(this,
+                                                         0,
+                                                         0,
+                                                         parentGridRowCount,
+                                                         parentGridColumnCount);
+
+            // Assign if CTS is null or cancelled already.
+            if (_closeCts is null || _closeCts.IsCancellationRequested)
+            {
+                _closeCts = new CancellationTokenSource();
+            }
+
+            // Update the drag area of the app
+            CurrentlyOpenedOverlays.Add(this);
         }
 
-        // Update the drag area of the app
-        CurrentlyOpenedOverlays.Add(this);
-        await Task.Delay(500);
-        ChangeTitleDragArea.Change(ChangeTitleDragArea.CurrentDragAreaType | DragAreaTemplate.OverlayOpened);
+        await Task.Delay(300);
+
+        using (ThisThreadLock.EnterScope())
+        {
+            ChangeTitleDragArea.Change(ChangeTitleDragArea.CurrentDragAreaType | DragAreaTemplate.OverlayOpened);
+        }
 
         try
         {
@@ -85,24 +93,33 @@ public partial class FullPageOverlay : ContentControl
         }
         finally
         {
-            // Dispose the CTS
-            _closeCts.Dispose();
-
-            // Set the visual state as hidden and remove the UI element from the overlay grid.
-            VisualStateManager.GoToState(this, "OverlayHidden", true);
-            _parentOverlayGrid.Children.Remove(this);
-
-            // Update the drag area of the app
-            CurrentlyOpenedOverlays.Remove(this);
-            if (CurrentlyOpenedOverlays.Count == 0)
+            using (ThisThreadLock.EnterScope())
             {
-                // Remove DragAreaTemplate.OverlayOpened flag if there's no any overlays opened anymore and update it 
-                ChangeTitleDragArea.Change(ChangeTitleDragArea.CurrentDragAreaType & ~DragAreaTemplate.OverlayOpened);
+                // Dispose the CTS
+                _closeCts.Dispose();
+
+                // Set the visual state as hidden and remove the UI element from the overlay grid.
+                VisualStateManager.GoToState(this, "OverlayHidden", true);
+                _parentOverlayGrid.Children.Remove(this);
+
+                // Update the drag area of the app
+                CurrentlyOpenedOverlays.Remove(this);
+                if (CurrentlyOpenedOverlays.Count == 0)
+                {
+                    // Remove DragAreaTemplate.OverlayOpened flag if there's no any overlays opened anymore and update it 
+                    ChangeTitleDragArea.Change(ChangeTitleDragArea.CurrentDragAreaType & ~DragAreaTemplate.OverlayOpened);
+                }
             }
         }
     }
 
-    public void Hide() => _closeCts?.Cancel();
+    public void Hide()
+    {
+        using (ThisThreadLock.EnterScope())
+        {
+            _closeCts?.Cancel();
+        }
+    }
     #endregion
 
     #region Internal Methods
@@ -131,29 +148,43 @@ public partial class FullPageOverlay : ContentControl
 
     private void AssignEvents()
     {
-        Loaded                             += OnUILayoutLoaded;
-        Unloaded                           += OnUILayoutUnloaded;
-        UpdateBindingsInvoker.UpdateEvents += UpdateBindings;
-
-        if (LayoutCloseButton != null)
+        using (ThisThreadLock.EnterScope())
         {
-            LayoutCloseButton.Click += InvalidateTokenOnClose;
+            Loaded                             += OnUILayoutLoaded;
+            Unloaded                           += OnUILayoutUnloaded;
+            UpdateBindingsInvoker.UpdateEvents += UpdateBindings;
+
+            if (LayoutCloseButton != null)
+            {
+                LayoutCloseButton.Click += InvalidateTokenOnClose;
+            }
         }
     }
 
     private void UnassignEvents()
     {
-        Loaded                             -= OnUILayoutLoaded;
-        Unloaded                           -= OnUILayoutUnloaded;
-        UpdateBindingsInvoker.UpdateEvents -= UpdateBindings;
-
-        if (LayoutCloseButton != null)
+        using (ThisThreadLock.EnterScope())
         {
-            LayoutCloseButton.Click -= InvalidateTokenOnClose;
+            Loaded                             -= OnUILayoutLoaded;
+            Unloaded                           -= OnUILayoutUnloaded;
+            UpdateBindingsInvoker.UpdateEvents -= UpdateBindings;
+
+            if (LayoutCloseButton != null)
+            {
+                LayoutCloseButton.Click -= InvalidateTokenOnClose;
+            }
         }
     }
 
-    private void InvalidateTokenOnClose(object sender, RoutedEventArgs _) => Hide();
+    private void InvalidateTokenOnClose(object sender, RoutedEventArgs _)
+    {
+        if (sender is Button asButton)
+        {
+            asButton.IsEnabled = false;
+        }
+
+        Hide();
+    }
 
     private void UpdateBindings(object? sender, EventArgs e)
     {

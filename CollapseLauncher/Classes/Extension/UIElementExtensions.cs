@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
-using CommunityToolkit.WinUI;
+﻿using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
@@ -1055,29 +1054,6 @@ namespace CollapseLauncher.Extension
 
             return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
                    (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
-        }
-
-        internal static FullPageOverlay CreateOverlayByNewContent<T>(
-            this FrameworkElement? element,
-            FullPageOverlaySize    size  = FullPageOverlaySize.Full,
-            IconSource?            icon  = null,
-            string?                title = null)
-            where T : FrameworkElement, new()
-        {
-            T content = new()
-            {
-                XamlRoot = element?.XamlRoot
-            };
-
-            FullPageOverlay pageOverlay = new FullPageOverlay(content);
-            if (icon != null)
-            {
-                pageOverlay.OverlayTitleIcon = icon;
-            }
-
-            pageOverlay.OverlayTitle = title;
-            pageOverlay.Size         = size;
-            return pageOverlay;
         }
 
         internal static Grid FindOverlayGrid([NotNull] this XamlRoot? root, bool isAlwaysOnTop)
