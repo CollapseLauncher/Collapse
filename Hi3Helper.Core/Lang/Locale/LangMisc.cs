@@ -32,6 +32,7 @@ namespace Hi3Helper
                 public string PerFromToPlaceholder { get; set; } = LangFallback?._Misc.PerFromToPlaceholder;
                 public string Cancel               { get; set; } = LangFallback?._Misc.Cancel;
                 public string Close                { get; set; } = LangFallback?._Misc.Close;
+                public string CloseOverlay         { get; set; } = LangFallback?._Misc.Close;
                 public string Skip                 { get; set; } = LangFallback?._Misc.Skip;
                 public string MoveToDifferentDir   { get; set; } = LangFallback?._Misc.MoveToDifferentDir;
                 public string UseCurrentDir        { get; set; } = LangFallback?._Misc.UseCurrentDir;

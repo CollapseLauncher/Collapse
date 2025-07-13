@@ -11,16 +11,13 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
-using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
@@ -29,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -105,6 +103,8 @@ namespace CollapseLauncher
             _localBackgroundHandler?.Dispose();
             CurrentBackgroundHandler = null;
             _localBackgroundHandler = null;
+
+            Interlocked.Exchange(ref m_mainPage, null);
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -290,7 +290,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Drag Area
-        private RectInt32[] DragAreaMode_Normal
+        internal RectInt32[] DragAreaMode_Normal
         {
             get
             {
@@ -310,7 +310,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static RectInt32[] DragAreaMode_Full
+        internal static RectInt32[] DragAreaMode_Full
         {
             get
             {
@@ -328,57 +328,10 @@ namespace CollapseLauncher
             }
         }
 
-        private static RectInt32 GetElementPos(FrameworkElement element)
-        {
-            GeneralTransform transformTransform = element.TransformToVisual(null);
-            Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-
-            return new RectInt32(
-                _X: (int)Math.Round(bounds.X * scaleFactor),
-                _Y: (int)Math.Round(bounds.Y * scaleFactor),
-                _Width: (int)Math.Round(bounds.Width * scaleFactor),
-                _Height: (int)Math.Round(bounds.Height * scaleFactor)
-            );
-        }
-
         private static void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
         private static void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
-        {
-            UpdateLayout();
-
-            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId ?? throw new NullReferenceException());
-            WindowUtility.EnableWindowNonClientArea();
-            WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
-
-            switch (e.Template)
-            {
-                case DragAreaTemplate.None:
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
-                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
-                    ]);
-                    break;
-                case DragAreaTemplate.Full:
-                    nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
-                    break;
-                case DragAreaTemplate.Default:
-                    nonClientInputSrc.ClearAllRegionRects();
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
-                        GetElementPos(GridBG_RegionGrid),
-                        GetElementPos(GridBG_IconGrid),
-                        GetElementPos(GridBG_NotifBtn),
-                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
-                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
-                    ]);
-                    break;
-            }
-
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
-        }
         #endregion
 
         #region Admin Checks
@@ -462,7 +415,6 @@ namespace CollapseLauncher
             BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
-            ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
@@ -479,7 +431,6 @@ namespace CollapseLauncher
             BackgroundImgChangerInvoker.IsImageHide -= BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
-            ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
@@ -645,15 +596,6 @@ namespace CollapseLauncher
                     try
                     {
                     #nullable enable
-                        // DO NOT REMOVE! USED FOR LATER!
-                        string? pluginName = pluginUpdateName.Item2.Name;
-                        string? pluginAuthor = pluginUpdateName.Item2.Author;
-                        string? pluginDescription = pluginUpdateName.Item2.Description;
-                        GameVersion pluginUpcomingVersion = pluginUpdateName.Item2.PluginVersion ?? GameVersion.Empty;
-                        GameVersion pluginUpcomingStandardVersion = pluginUpdateName.Item2.StandardVersion ?? GameVersion.Empty;
-                        DateTimeOffset pluginCreationDate = (pluginUpdateName.Item2.CreationDate ?? default).ToLocalTime();
-                        DateTimeOffset pluginCompileDate = (pluginUpdateName.Item2.CompiledDate ?? default).ToLocalTime();
-
                         // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                         pluginUpdateName.Item2.Dispose();
 

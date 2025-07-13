@@ -2444,7 +2444,7 @@
                             Padding="12,8"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            IsEnabled="False"
+                            Click="OpenPluginManagerClick"
                             CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionClearLogsFolder)}"
                             Style="{ThemeResource AccentButtonStyle}">
                         <Grid Margin="0,-2,0,0"

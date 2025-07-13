@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.WinUI;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
@@ -13,6 +14,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
 using Windows.UI;
@@ -190,7 +192,7 @@ namespace CollapseLauncher.Extension
                 Source = objectToBind,
                 Mode = bindingMode,
                 Path = new PropertyPath(propertyName),
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                UpdateSourceTrigger = UpdateSourceTrigger.Default
             };
 
             // If the converter is assigned, then add the converter
@@ -1053,6 +1055,89 @@ namespace CollapseLauncher.Extension
 
             return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
                    (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
+        }
+
+        internal static FullPageOverlay CreateOverlayByNewContent<T>(
+            this FrameworkElement? element,
+            FullPageOverlaySize    size  = FullPageOverlaySize.Full,
+            IconSource?            icon  = null,
+            string?                title = null)
+            where T : FrameworkElement, new()
+        {
+            T content = new()
+            {
+                XamlRoot = element?.XamlRoot
+            };
+
+            FullPageOverlay pageOverlay = new FullPageOverlay(content);
+            if (icon != null)
+            {
+                pageOverlay.OverlayTitleIcon = icon;
+            }
+
+            pageOverlay.OverlayTitle = title;
+            pageOverlay.Size         = size;
+            return pageOverlay;
+        }
+
+        internal static Grid FindOverlayGrid([NotNull] this XamlRoot? root, bool isAlwaysOnTop)
+        {
+            // XAML root cannot be empty or null!
+            ArgumentNullException.ThrowIfNull(root);
+
+            // If alwaysOnTop is not preferred, find for a grid called "OverlayRootGrid" under the XamlRoot's Content.
+            if (!isAlwaysOnTop)
+            {
+                FrameworkElement? parent = root.Content.FindDescendant("OverlayRootGrid", StringComparison.OrdinalIgnoreCase);
+                if (parent is not Grid parentAsGrid)
+                {
+                    //If the "OverlayRootGrid" doesn't exist, start searching for any last grid existed.
+                    goto FindAnyLastGrid;
+                }
+
+                // Otherwise, return the "OverlayRootGrid"
+                return parentAsGrid;
+            }
+
+        FindAnyLastGrid:
+            // Assign the XamlRoot's Content as grid. If it's not a grid, find any last child grid
+            // on the XamlRoot's VisualTree children.
+            Grid? topGrid = root.Content as Grid;
+            topGrid ??= FindLastChildGrid(root.Content);
+
+            // If it still cannot find any grid, throw.
+            if (topGrid is null)
+            {
+                throw new InvalidOperationException("Cannot find any or the last grid in your XAML layout!");
+            }
+
+            // Otherwise, any grid that have been found.
+            return topGrid;
+        }
+
+        internal static Grid? FindLastChildGrid(DependencyObject? element)
+        {
+            // Get count of any children existed under the element's VisualTree
+            int visualTreeCount = VisualTreeHelper.GetChildrenCount(element);
+            if (visualTreeCount == 0)
+            {
+                // If none is found, return null.
+                return null;
+            }
+
+            // Find the last grid to be found under the element's VisualTree
+            Grid? lastGrid = null;
+            for (int i = 0; i < visualTreeCount; i++)
+            {
+                DependencyObject currentObject = VisualTreeHelper.GetChild(element, i);
+                if (currentObject is Grid asGrid)
+                {
+                    lastGrid = asGrid;
+                }
+            }
+
+            // Return the result (whether if it's not found/as null, or any last grid)
+            return lastGrid;
         }
     }
 }

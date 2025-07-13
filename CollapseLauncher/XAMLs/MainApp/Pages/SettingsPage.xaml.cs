@@ -19,6 +19,7 @@ using CollapseLauncher.Statics;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core.Management;
@@ -2337,48 +2338,65 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                if (sender is not Button { Tag: PluginInfo asPluginInfo } asButton)
+                if (sender is not Button { Tag: PluginInfo asPluginInfo })
                 {
                     return;
                 }
 
-                try
+                string info =
+                    $"""
+                     Name: {asPluginInfo.Name}
+                     Author: {asPluginInfo.Author}
+                     Description:
+                     {asPluginInfo.Description}
+                     
+                     =========
+                     
+                     Plugin Version: {asPluginInfo.Version}
+                     Interface Version: {asPluginInfo.StandardVersion}
+                     Creation Date: {asPluginInfo.CreationDate?.ToString(LocalFullDateTimeConverter.FullFormat)}
+                     Main Library Path: {asPluginInfo.PluginFilePath}
+                     Loaded Presets:
+                     """;
+
+                foreach (PluginPresetConfigWrapper wrapper in asPluginInfo.PresetConfigs)
                 {
-                    string info =
-                        $"""
-                         Name: {asPluginInfo.Name}
-                         Author: {asPluginInfo.Author}
-                         Description:
-                         {asPluginInfo.Description}
+                    string name = wrapper.GameName;
+                    string region = wrapper.ZoneName;
 
-                         =========
-
-                         Plugin Version: {asPluginInfo.Version}
-                         Interface Version: {asPluginInfo.StandardVersion}
-                         Creation Date: {asPluginInfo.CreationDate?.ToString(LocalFullDateTimeConverter.FullFormat)}
-                         Main Library Path: {asPluginInfo.PluginFilePath}
-                         Loaded Presets:
-                         """;
-
-                    foreach (PluginPresetConfigWrapper wrapper in asPluginInfo.PresetConfigs)
-                    {
-                        string name = wrapper.GameName;
-                        string region = wrapper.ZoneName;
-
-                        info += $"\r\n  • {name} - {region}";
-                    }
-
-                    Clipboard.CopyStringToClipboard(info);
+                    info += $"\r\n  • {name} - {region}";
                 }
-                catch
-                {
-                    // ignored
-                }
+
+                Clipboard.CopyStringToClipboard(info);
             }
             catch (Exception ex)
             {
                 LogWriteLine($"Failed to copy loaded plugin information: {ex}", LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
+            }
+        }
+
+        private async void OpenPluginManagerClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button asButton)
+            {
+                return;
+            }
+
+            try
+            {
+                asButton.IsEnabled = false;
+                FullPageOverlay overlayMenu = this.CreateOverlayByNewContent<SettingsPage>(FullPageOverlaySize.Full, new FontIconSource
+                {
+                    Glyph = "\uE912"
+                });
+
+                overlayMenu.OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle;
+                await overlayMenu.ShowAsync();
+            }
+            finally
+            {
+                asButton.IsEnabled = true;
             }
         }
         #endregion

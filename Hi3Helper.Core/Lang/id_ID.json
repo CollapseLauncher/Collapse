@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
     "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya",
-    
+
     "CustomBackground_NotFound": "File latar belakang kustom hilang! Kembali menggunakan gambar bawaan",
     "CustomBackground_RegionalTag": "Latar Belakang Region",
     "CustomBackground_GlobalTag": "Latar Belakang Keseluruhan"
@@ -711,6 +711,10 @@
     "Plugin_PluginInfoAuthorUnknown": "Pembuat Tidak Dikenal"
   },
 
+  "_PluginManagementMenuPage": {
+    "PageTitle": "Menu Manajemen Plugin"
+  },
+
   "_Misc": {
     "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
 
@@ -731,6 +735,7 @@
     "EverythingIsOkay": "Semuanya Berhasil!",
     "Cancel": "Batal",
     "Close": "Tutup",
+    "CloseOverlay": "Tutup Overlay",
     "UseCurrentDir": "Pakai lokasi saat ini",
     "UseDefaultDir": "Pakai lokasi bawaan",
     "MoveToDifferentDir": "Pindah ke direktori lain",
@@ -1354,7 +1359,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Bayangan Karakter di Map Eksplorasi",
     "Graphics_HalfResTransparent": "Transparan Setengah Resolusi",
-    
+
     "Graphics_DLSS_UHP": "Performa Ultra",
     "Graphics_DLSS_Perf": "Performa",
     "Graphics_DLSS_Balanced": "Seimbang",

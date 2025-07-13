@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Copy All to Clipboard",
     "CopyClipboardBtn2": "Copied to Clipboard!",
     "GoBackPageBtn1": "Go Back to Previous Page",
-    
+
     "CustomBackground_NotFound": "Custom background file is missing! Using default image",
     "CustomBackground_RegionalTag": "Region BG",
     "CustomBackground_GlobalTag": "Global BG"
@@ -711,6 +711,10 @@
     "Plugin_PluginInfoAuthorUnknown": "Unknown Author"
   },
 
+  "_PluginManagementMenuPage": {
+    "PageTitle": "Plugin Management Menu"
+  },
+
   "_Misc": {
     "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
 
@@ -731,6 +735,7 @@
     "EverythingIsOkay": "All OK!",
     "Cancel": "Cancel",
     "Close": "Close",
+    "CloseOverlay": "Close Overlay",
     "UseCurrentDir": "Use current directory",
     "UseDefaultDir": "Use default directory",
     "MoveToDifferentDir": "Move to different directory",
@@ -1354,7 +1359,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Character Shadow in Map Exploration",
     "Graphics_HalfResTransparent": "Half Resolution Transparency",
-    
+
     "Graphics_DLSS_UHP": "Ultra Performance",
     "Graphics_DLSS_Perf": "Performance",
     "Graphics_DLSS_Balanced": "Balanced",
