@@ -86,14 +86,23 @@ namespace CollapseLauncher.InstallManager.Base
         {
             get
             {
-                bool isForceRedirect = GameVersionManager.IsForceRedirectToSophon();
-                bool isEnabled = GameVersionManager.GamePreset.LauncherResourceChunksURL != null
-                                 && !File.Exists(Path.Combine(GamePath, "@DisableSophon"))
-                                 && !_canDeltaPatch
-                                 && !_forceIgnoreDeltaPatch
-                                 && LauncherConfig.GetAppConfigValue("IsEnableSophon").ToBool();
+                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager.GamePreset.LauncherResourceChunksURL == null)
+                {
+                    return false;
+                }
 
-                return isForceRedirect || isEnabled;
+                bool isForceRedirect = GameVersionManager.IsForceRedirectToSophon();
+                if (!isForceRedirect && File.Exists(Path.Combine(GamePath, "@DisableSophon")))
+                {
+                    return false;
+                }
+
+                if (!isForceRedirect && !LauncherConfig.GetAppConfigValue("IsEnableSophon"))
+                {
+                    return false;
+                }
+
+                return true;
             }
         }
 
