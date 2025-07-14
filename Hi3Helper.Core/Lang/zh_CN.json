@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "向开发者发送匿名崩溃报告",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "由于环境变量“DISABLE_SENTRY”被设为 true，该设置已被禁用。",
     "Debug_MultipleInstance": "允许开启多个 Collapse",
+    "Debug_CustomDialogBtn": "[调试] 生成自定义对话框",
 
     "ChangeRegionWarning_Toggle": "显示区服更改警告",
     "ChangeRegionInstant_Toggle": "选择后立即更改区服",
@@ -794,6 +795,7 @@
     "CDNDescription_Bitbucket": "由 Bitbucket 提供支持的官方（主）仓库镜像。",
     "CDNDescription_GitLab": "由 GitLab 提供支持的官方（主）仓库镜像。",
     "CDNDescription_Coding": "由 Coding 提供支持的官方（主）仓库镜像。",
+    "CDNDescription_CNB": "由 CNB 提供支持的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
     "OpenDownloadPage": "打开下载界面",

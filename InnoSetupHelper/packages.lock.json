@@ -10,9 +10,9 @@
       },
       "System.IO.Hashing": {
         "type": "Direct",
-        "requested": "[9.0.5, )",
-        "resolved": "9.0.5",
-        "contentHash": "iFhbuwiertFWWVlbOtfVV2MaojUW0/eQ2AKkBcjvmWHYw2orW5OiTHPqAeB7ny5+s09EQaZaQmX4SIpGX8HUdg=="
+        "requested": "[9.0.6, )",
+        "resolved": "9.0.6",
+        "contentHash": "oMOYyDCLu7sRdupDnpq1yXqUiM+K0j9ZZAVIYDoT06cXTnflNiCLTCb9A6+1yn2a3aBqmOi1xMudbF+WOPFY5Q=="
       }
     }
   }

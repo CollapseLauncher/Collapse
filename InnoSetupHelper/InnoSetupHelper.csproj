@@ -20,7 +20,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.3" />
-	  <PackageReference Include="System.IO.Hashing" Version="9.0.5" />
+	  <PackageReference Include="System.IO.Hashing" Version="9.0.6" />
 	</ItemGroup>
 
 </Project>
