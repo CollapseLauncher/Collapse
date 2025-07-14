@@ -335,6 +335,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                        matchingField: matchingField,
                                                        token: token);
 
+                Logger.LogWriteLine($"Getting diff for matching field: {matchingField}", LogType.Debug, true);
+
                 // Get the manifest pair based on the matching field
                 SophonChunkManifestInfoPair patchManifest = rootPatchManifest
                     .GetOtherPatchInfoPair(matchingField, updateVersionfrom);
@@ -369,16 +371,6 @@ namespace CollapseLauncher.InstallManager.Base
                                           downloadLimiter,
                                           token))
                 {
-                    if (!manifestPair.IsCommon)
-                    {
-                        string existingFilePath = Path.Combine(GamePath, patchAsset.TargetFilePath);
-                        if (!File.Exists(existingFilePath))
-                        {
-                            Logger.LogWriteLine($"Patch from matching field: {manifestPair.Main.MatchingField} is discarded: {patchAsset.TargetFilePath}", LogType.Warning, true);
-                            continue;
-                        }
-                    }
-
                     patchAssets.Add(patchAsset);
                 }
             }
