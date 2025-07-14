@@ -539,10 +539,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             return null;
         }
 
-        public virtual bool IsForceRedirectToSophon()
-        {
-            return GamePreset.GameLauncherApi?.IsForceRedirectToSophon ?? false;
-        }
+        public virtual bool IsForceRedirectToSophon() => GamePreset.GameLauncherApi?.IsForceRedirectToSophon ?? false;
         #endregion
     }
 }
