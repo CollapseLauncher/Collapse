@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Send anonymous crash reports to developers",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "This setting is disabled due to 'DISABLE_SENTRY' environment variable being set to true.",
     "Debug_MultipleInstance": "Allow running multiple instances of Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Spawn Custom Dialog",
 
     "ChangeRegionWarning_Toggle": "Show Region Change Warning",
     "ChangeRegionInstant_Toggle": "Instantly Change Region on Selection",
@@ -794,6 +795,7 @@
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository powered by Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository powered by GitLab.",
     "CDNDescription_Coding": "A mirror of the official (main) repository powered by Coding.",
+    "CDNDescription_CNB": "A mirror of the official (main) repository powered by CNB.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Open Download Page",

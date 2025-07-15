@@ -335,6 +335,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                        matchingField: matchingField,
                                                        token: token);
 
+                Logger.LogWriteLine($"Getting diff for matching field: {matchingField}", LogType.Debug, true);
+
                 // Get the manifest pair based on the matching field
                 SophonChunkManifestInfoPair patchManifest = rootPatchManifest
                     .GetOtherPatchInfoPair(matchingField, updateVersionfrom);
@@ -369,16 +371,6 @@ namespace CollapseLauncher.InstallManager.Base
                                           downloadLimiter,
                                           token))
                 {
-                    if (!manifestPair.IsCommon)
-                    {
-                        string existingFilePath = Path.Combine(GamePath, patchAsset.TargetFilePath);
-                        if (!File.Exists(existingFilePath))
-                        {
-                            Logger.LogWriteLine($"Patch from matching field: {manifestPair.Main.MatchingField} is discarded: {patchAsset.TargetFilePath}", LogType.Warning, true);
-                            continue;
-                        }
-                    }
-
                     patchAssets.Add(patchAsset);
                 }
             }
@@ -422,12 +414,14 @@ namespace CollapseLauncher.InstallManager.Base
             Dictionary<string, int> downloadedPatchHashSet = new();
             Lock dictionaryLock = new();
 
-            IEnumerable<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelineDownloadEnumerable = patchAssets
+            List<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelineDownloadEnumerable = patchAssets
                .EnsureOnlyGetDedupPatchAssets()
-               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet));
+               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet))
+               .ToList();
 
-            IEnumerable<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelinePatchEnumerable = patchAssets
-               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet));
+            List<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelinePatchEnumerable = patchAssets
+               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet))
+               .ToList();
 
             ParallelOptions parallelOptions = new()
             {
@@ -449,7 +443,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get download counts
             int downloadCountTotalAssetRemote = patchAssets.Count;
-            int downloadCountPatchOnlyRemote = patchManifestInfoPairs.Sum(x => x.ChunksInfo.ChunksCount);
 
             // Ensure disk space sufficiency
             await EnsureDiskSpaceSufficiencyAsync(downloadSizePatchOnlyRemote,
@@ -478,8 +471,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                   token);
 
             // Assign local download progress
-            ProgressAllCountCurrent          = 1;
-            ProgressAllCountTotal            = downloadCountPatchOnlyRemote;
+            ProgressAllCountCurrent          = 0;
+            ProgressAllCountTotal            = pipelineDownloadEnumerable.Count;
             ProgressPerFileSizeCurrent       = 0;
             ProgressPerFileSizeTotal         = downloadSizePatchOnlyRemote;
             ProgressAllSizeCurrent           = 0;
@@ -496,7 +489,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // If it's not a preload mode (patch mode), then execute the patch pipeline as well
-            ProgressAllCountCurrent          = 1;
+            ProgressAllCountCurrent          = 0;
             ProgressAllCountTotal            = downloadCountTotalAssetRemote;
             ProgressPerFileSizeCurrent       = 0;
             ProgressPerFileSizeTotal         = downloadSizePatchOnlyRemote;
