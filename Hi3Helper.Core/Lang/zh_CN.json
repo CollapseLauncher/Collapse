@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页",
-    
+
     "CustomBackground_NotFound": "自定义背景文件丢失！将使用默认图像",
     "CustomBackground_RegionalTag": "区服背景",
     "CustomBackground_GlobalTag": "全局背景"
@@ -711,6 +711,10 @@
     "Plugin_PluginInfoAuthorUnknown": "未知作者"
   },
 
+  "_PluginManagementMenuPage": {
+    "PageTitle": "插件管理菜单"
+  },
+
   "_Misc": {
     "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
 
@@ -731,6 +735,7 @@
     "EverythingIsOkay": "一切正常！",
     "Cancel": "取消",
     "Close": "关闭",
+    "CloseOverlay": "关闭叠加层",
     "UseCurrentDir": "使用当前目录",
     "UseDefaultDir": "使用默认目录",
     "MoveToDifferentDir": "移动到不同的目录",
@@ -1354,7 +1359,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "地图探索中角色实时阴影",
     "Graphics_HalfResTransparent": "半分辨率透明",
-    
+
     "Graphics_DLSS_UHP": "超高性能",
     "Graphics_DLSS_Perf": "性能",
     "Graphics_DLSS_Balanced": "平衡",
