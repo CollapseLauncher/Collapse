@@ -109,7 +109,7 @@ namespace CollapseLauncher
                                       "It supports installing games, repairing game files and much more!";
             
             var result = _rootCommand.Parse(args);
-            
+            result.Invoke();
             if (result.Errors.Count <= 0)
                 return;
 
