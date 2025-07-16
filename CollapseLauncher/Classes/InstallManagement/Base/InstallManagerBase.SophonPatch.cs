@@ -338,8 +338,14 @@ namespace CollapseLauncher.InstallManager.Base
                 Logger.LogWriteLine($"Getting diff for matching field: {matchingField}", LogType.Debug, true);
 
                 // Get the manifest pair based on the matching field
-                SophonChunkManifestInfoPair patchManifest = rootPatchManifest
-                    .GetOtherPatchInfoPair(matchingField, updateVersionfrom);
+                if (!rootPatchManifest
+                   .TryGetOtherPatchInfoPair(matchingField, updateVersionfrom, out var patchManifest))
+                {
+                    Logger.LogWriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find past-version patch manifest for matching field: {matchingField}, Skipping!",
+                                        LogType.Warning,
+                                        true);
+                    continue;
+                }
 
                 // Get the main manifest pair based on the matching field
                 SophonChunkManifestInfoPair mainManifest = rootMainManifest
