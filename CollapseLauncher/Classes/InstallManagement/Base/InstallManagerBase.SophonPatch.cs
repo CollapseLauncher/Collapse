@@ -339,7 +339,7 @@ namespace CollapseLauncher.InstallManager.Base
 
                 // Get the manifest pair based on the matching field
                 if (!rootPatchManifest
-                   .TryGetOtherPatchInfoPair(matchingField, updateVersionfrom, out var patchManifest))
+                       .TryGetOtherPatchInfoPair(matchingField, updateVersionfrom, out var patchManifest))
                 {
                     Logger.LogWriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find past-version patch manifest for matching field: {matchingField}, Skipping!",
                                         LogType.Warning,
