@@ -465,7 +465,7 @@ namespace CollapseLauncher.InstallManager.Base
                 parallelOptions.MaxDegreeOfParallelism = Environment.ProcessorCount;
             }
 
-            string patchOutputDir = _gameSophonChunkDir;
+            string patchOutputDir = Path.Combine(GamePath, "ldiff");
 
             // Get download sizes
             long downloadSizeTotalAssetRemote = patchAssets.Where(x => x.PatchMethod != SophonPatchMethod.Remove).Sum(x => x.TargetFileSize);
