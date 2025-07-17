@@ -87,14 +87,23 @@ namespace CollapseLauncher.InstallManager.Base
         {
             get
             {
-                bool isForceRedirect = GameVersionManager.IsForceRedirectToSophon();
-                bool isEnabled = GameVersionManager.GamePreset.LauncherResourceChunksURL != null
-                                 && !File.Exists(Path.Combine(GamePath, "@DisableSophon"))
-                                 && !_canDeltaPatch
-                                 && !_forceIgnoreDeltaPatch
-                                 && LauncherConfig.GetAppConfigValue("IsEnableSophon").ToBool();
+                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager.GamePreset.LauncherResourceChunksURL == null)
+                {
+                    return false;
+                }
 
-                return isForceRedirect || isEnabled;
+                bool isForceRedirect = GameVersionManager.IsForceRedirectToSophon();
+                if (!isForceRedirect && File.Exists(Path.Combine(GamePath, "@DisableSophon")))
+                {
+                    return false;
+                }
+
+                if (!isForceRedirect && !LauncherConfig.GetAppConfigValue("IsEnableSophon"))
+                {
+                    return false;
+                }
+
+                return true;
             }
         }
 
@@ -241,7 +250,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                              Token.Token);
 
                         // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
-                        RearrangeDataListLocaleOrder(sophonMainInfoPair.OtherSophonBuildData.ManifestIdentityList,
+                        RearrangeDataListLocaleOrder(sophonMainInfoPair.OtherSophonBuildData!.ManifestIdentityList,
                                                      x => x.MatchingField);
 
                         // Add the manifest to the pair list
@@ -348,8 +357,8 @@ namespace CollapseLauncher.InstallManager.Base
                             Token.Token);
 
                         // Get the remote total size and current total size
-                        ProgressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo.FilesCount);
-                        ProgressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo.TotalSize);
+                        ProgressAllCountTotal  = sophonInfoPairList.Sum(x => x.ChunksInfo!.FilesCount);
+                        ProgressAllSizeTotal   = sophonInfoPairList.Sum(x => x.ChunksInfo!.TotalSize);
                         ProgressAllSizeCurrent = 0;
 
                         // Check for the disk space requirement first and ensure that the space is sufficient
@@ -493,7 +502,7 @@ namespace CollapseLauncher.InstallManager.Base
             foreach (SophonChunkManifestInfoPair sophonDownloadInfoPair in sophonInfoPairs)
             {
                 // Try add and if the hashset already contains the same Manifest ID registered, then skip
-                if (!currentlyProcessedPair.Add(sophonDownloadInfoPair.ManifestInfo.ManifestId))
+                if (!currentlyProcessedPair.Add(sophonDownloadInfoPair.ManifestInfo!.ManifestId))
                 {
                     Logger.LogWriteLine($"Found duplicate operation for {sophonDownloadInfoPair.ManifestInfo.ManifestId}! Skipping...",
                                         LogType.Warning, true);
@@ -534,9 +543,9 @@ namespace CollapseLauncher.InstallManager.Base
                 return;
             }
 
-            List<string> matchingFieldsList = installManifest.Select(x => x.MatchingField).ToList();
+            List<string> matchingFieldsList = installManifest.Select(x => x.MatchingField).ToList()!;
 
-            List<SophonManifestBuildIdentity> otherManifestIdentity = installManifestFirst.OtherSophonBuildData.ManifestIdentityList
+            List<SophonManifestBuildIdentity> otherManifestIdentity = installManifestFirst.OtherSophonBuildData!.ManifestIdentityList
                .Where(x => !commonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                .ToList();
 
@@ -1019,7 +1028,7 @@ namespace CollapseLauncher.InstallManager.Base
                 return;
             }
 
-            List<string> additionalPackageMatchingFields = manifestPair.OtherSophonBuildData.ManifestIdentityList
+            List<string> additionalPackageMatchingFields = manifestPair.OtherSophonBuildData!.ManifestIdentityList
                .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                .Select(x => x.MatchingField)
                .ToList();
@@ -1073,13 +1082,13 @@ namespace CollapseLauncher.InstallManager.Base
                 return false;
             }
 
-            RearrangeDataListLocaleOrder(requestPairTo.OtherSophonBuildData.ManifestIdentityList,
+            RearrangeDataListLocaleOrder(requestPairTo.OtherSophonBuildData!.ManifestIdentityList,
                                          x => x.MatchingField);
 
             if (requestPairFrom.IsFound)
             {
                 // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
-                RearrangeDataListLocaleOrder(requestPairFrom.OtherSophonBuildData.ManifestIdentityList,
+                RearrangeDataListLocaleOrder(requestPairFrom.OtherSophonBuildData!.ManifestIdentityList,
                                              x => x.MatchingField);
 
                 // Add asset to the list

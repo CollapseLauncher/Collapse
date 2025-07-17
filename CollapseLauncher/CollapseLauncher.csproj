@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.5</Version>
+        <Version>1.83.7</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -171,9 +171,9 @@
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.6" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
         <PackageReference Include="Velopack" Version="0.0.1297" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
@@ -194,13 +194,13 @@
         
         <PackageReference Include="GitInfo" Version="3.5.0" PrivateAssets="all" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
-        <PackageReference Include="Markdig.Signed" Version="0.41.2" />
+        <PackageReference Include="Markdig.Signed" Version="0.41.3" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3344-prerelease" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3415-prerelease" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250515001-experimental2" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250702007-experimental4" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
@@ -209,9 +209,9 @@
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.5" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.5" />
-        <PackageReference Include="System.Text.Json" Version="9.0.5" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.6" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.6" />
+        <PackageReference Include="System.Text.Json" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>
@@ -405,16 +405,16 @@
 			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
 			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
 			<FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
+            <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Widgets*.dll;" />
 			<FilesToDelete Include="$(PublishDir)workloads*.json;" />
         </ItemGroup>
         <Delete Files="@(FilesToDelete)" />
 		<Delete Files="$(PublishDir)aspnetcorev2_inprocess.dll" />
         <Delete Files="$(PublishDir)DwmSceneI.dll" />
         <Delete Files="$(PublishDir)DWriteCore.dll" />
-		<Delete Files="$(PublishDir)Microsoft.Graphics.Display.dll" />
 		<Delete Files="$(PublishDir)Microsoft.Graphics.Imaging.dll" />
-        <Delete Files="$(PublishDir)Microsoft.Windows.Widgets.dll" />
         <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.dll" />
+        <Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Bootstrap.Net.dll" />
 		<Delete Files="$(PublishDir)Microsoft.WindowsAppRuntime.Insights.Resource.dll" />
 		<Delete Files="$(PublishDir)Microsoft.Windows.ApplicationModel.Background.UniversalBGTask.dll" />
         <Delete Files="$(PublishDir)PushNotificationsLongRunningTask.ProxyStub.dll" />

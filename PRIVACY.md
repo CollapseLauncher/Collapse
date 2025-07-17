@@ -35,6 +35,13 @@ While Collapse itself does not collect the information outlined above, we utiliz
   https://www.tencentcloud.com/document/product/1133/45791
 - Opt-out: You can change the CDN provider by going to the application settings.
 
+#### Service Provider: CNB; Tencent Cloud Computing (Beijing) Co., Ltd.
+- Purpose: Content Delivery Network (CDN) Provider
+- Information collected: IP address, type of browser, language, device model, operating system version
+- Privacy policies:
+  https://docs.cnb.cool/en/saas/privacy.html
+- Opt-out: You can change the CDN provider by going to the application settings.
+
 #### Service Provider: Sentry (Functional Software, Inc.)
 - Purpose: Error Tracking and Monitoring
 - Information collected: Error data, Collapse log file, session information, environment information (device information, OS version, application version, etc.)

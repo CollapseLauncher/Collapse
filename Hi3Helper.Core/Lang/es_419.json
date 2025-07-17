@@ -808,6 +808,7 @@
     "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado por Bitbucket.",
     "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado por GitLab.",
     "CDNDescription_Coding": "Mirror del repositorio oficial (principal) alojado por Coding.",
+    "CDNDescription_CNB": "Mirror del repositorio oficial (principal) alojado por CNB.",
 
     "LocateExecutable": "Localizar el Ejecutable",
     "OpenDownloadPage": "Abrir página de descarga",

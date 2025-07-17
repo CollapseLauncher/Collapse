@@ -32,8 +32,7 @@ namespace CollapseLauncher.Helper.Database
                 DbConfig.DbEnabled = value;
 
                 _isFirstInit = true; // Force first init
-                if (value) _ = Init();
-                else Dispose(); // Dispose instance if user disabled database function globally
+                if (!value) Dispose(); // Dispose instance if user disabled database function globally
             }
         }
         
@@ -200,6 +199,13 @@ namespace CollapseLauncher.Helper.Database
                 LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
                 throw;
             }
+        }
+
+        public static async Task TryInit()
+        {
+            if (string.IsNullOrEmpty(Uri) || string.IsNullOrEmpty(Token))
+                return;
+            await Init();
         }
 
         private static void Dispose()
