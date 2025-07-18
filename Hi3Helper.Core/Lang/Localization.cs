@@ -38,7 +38,9 @@ namespace Hi3Helper
             }
             catch (Exception ex)
             {
+#if !APPLYUPDATE
                 SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+#endif
                 LogWriteLine($"Failed while parsing locale file: {langRelativePath}. Ignoring!\r\n{ex}", LogType.Warning, true);
             }
         }
@@ -52,12 +54,18 @@ namespace Hi3Helper
 
             try
             {
+#if !APPLYUPDATE
                 _ = LoadLang(fileUri);
+#else
+                _ = LoadLangBase(fileUri);
+#endif
                 LogWriteLine($"Locale file: {fileUri.AbsoluteUri} loaded as {this.LangName} by {this.LangAuthor}", LogType.Scheme, true);
             }
             catch (Exception e)
             {
+#if !APPLYUPDATE
                 SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+#endif
                 LogWriteLine($"Failed while parsing locale file: {fileUri.AbsoluteUri}. Ignoring!\r\n{e}", LogType.Warning, true);
             }
         }
@@ -65,12 +73,13 @@ namespace Hi3Helper
 
         public LocalizationParams LoadLang()
         {
-        #if APPLYUPDATE
-            return LoadLang(new Uri(LangFilePath));
-        #else
+#if APPLYUPDATE
+            using Stream s = AssetLoader.Open(new Uri(LangFilePath));
+            return LoadLang(s);
+#else
             using Stream s = new FileStream(LangFilePath!, FileMode.Open, FileAccess.Read);
             return LoadLang(s);
-        #endif
+#endif
         }
 
         public LocalizationParamsBase LoadLangBase(string langPath)
@@ -80,12 +89,10 @@ namespace Hi3Helper
         }
 
 #if APPLYUPDATE
-        public LocalizationParamsBase LoadLangBase(Uri langUri)
+        public LocalizationParamsBase LoadLangBase(Uri langPath)
         {
-            using (Stream s = AssetLoader.Open(langUri))
-            {
-                return LoadLangBase(s);
-            }
+            using Stream s = AssetLoader.Open(langPath);
+            return LoadLang(s);
         }
 #endif
 
@@ -195,7 +202,9 @@ namespace Hi3Helper
             }
             catch (Exception ex)
             {
+#if !APPLYUPDATE
                 SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+#endif
                 throw new LocalizationInnerException($"Failed while loading locale with ID {langID}!", ex);
             }
             finally
@@ -231,12 +240,18 @@ namespace Hi3Helper
             }
             catch (Exception ex)
             {
+#if !APPLYUPDATE
                 SentryHelper.SentryHelper.ExceptionHandler(ex);
+#endif
                 LogWriteLine($"An error has occurred while parsing size prefix value for locale file with ID: {langData.LanguageID}!\r\n{ex}", LogType.Warning, true);
                 return;
             }
 
+#if !APPLYUPDATE
             ConverterTool.SizeSuffixes = sizeSurfixes;
+#else
+            UpdateTask.SizeSuffixes = sizeSurfixes;
+#endif
         }
 
         public static Dictionary<string, LangMetadata> LanguageNames   = new();
