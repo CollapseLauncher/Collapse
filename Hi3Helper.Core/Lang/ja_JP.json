@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "すべてをクリップボードにコピー",
     "CopyClipboardBtn2": "クリップボードにコピーしました！",
     "GoBackPageBtn1": "前のページに戻る",
-    
+
     "CustomBackground_NotFound": "カスタム背景のファイルが見つかりません！デフォルトの画像を使用します",
     "CustomBackground_RegionalTag": "サーバー別背景",
     "CustomBackground_GlobalTag": "共通背景"
@@ -712,6 +712,10 @@
     "Plugin_PluginInfoAuthorUnknown": "作者不明"
   },
 
+  "_PluginManagementMenuPage": {
+    "PageTitle": "プラグイン管理メニュー"
+  },
+
   "_Misc": {
     "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
 
@@ -732,6 +736,7 @@
     "EverythingIsOkay": "これでヨシ！",
     "Cancel": "キャンセル",
     "Close": "閉じる",
+    "CloseOverlay": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
     "UseDefaultDir": "既定のディレクトリを使用",
     "MoveToDifferentDir": "別のディレクトリへ移動",
@@ -1356,7 +1361,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "マップ探索内のキャラのリアルタイムシャドウ",
     "Graphics_HalfResTransparent": "透明オブジェクトのハーフ解像度",
-    
+
     "Graphics_DLSS_UHP": "ウルトラパフォーマンス",
     "Graphics_DLSS_Perf": "パフォーマンス",
     "Graphics_DLSS_Balanced": "バランス",
