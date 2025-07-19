@@ -277,20 +277,20 @@ namespace CollapseLauncher.Extension
             var currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
             var xmlPath        = Path.Combine(LauncherConfig.AppExecutableDir, "sq.version");
             var xmlContent = string.Format(xmlTemplate, currentVersion, LauncherConfig.IsPreview ? "preview" : "stable",
-                                           aumid);
+                                           aumid).ReplaceLineEndings("\n");
             
             // Check if file exist
             if (File.Exists(xmlPath))
             {
                 // Check if the content is the same
                 var existingContent = File.ReadAllText(xmlPath);
-                if (existingContent.ReplaceLineEndings("\n").Equals(xmlContent.ReplaceLineEndings("\n"), StringComparison.Ordinal))
+                if (existingContent.ReplaceLineEndings("\n").Equals(xmlContent, StringComparison.Ordinal))
                 {
                     Logger.LogWriteLine("Velopack metadata is already up-to-date, skipping write operation.", LogType.Default, true);
                     return;
                 }
             }
-            File.WriteAllText(xmlPath, xmlContent.ReplaceLineEndings("\n"));
+            File.WriteAllText(xmlPath, xmlContent);
             Logger.LogWriteLine($"Velopack metadata has been successfully written!\r\n{xmlContent}", LogType.Default, true);
         }
     }
