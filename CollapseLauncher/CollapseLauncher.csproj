@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -92,6 +92,7 @@
         - ENABLEUSERFEEDBACK : Enable user feedback feature
 -->
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <OutputType>Exe</OutputType>
         <!-- !! IMPORTANT !!-->
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
@@ -206,8 +207,8 @@
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="SharpCompress" Version="0.40.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-        <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta6.25358.103" />
+        <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta5.25306.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.6" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.6" />
