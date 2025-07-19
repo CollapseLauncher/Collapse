@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Enviar anónimamente informes de errores a los desarrolladores",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "Esta configuración está desactivada debido a que la variable 'DISABLE_SENTRY' está establecida como true.",
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Generar diálogo personalizado",
 
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
     "ChangeRegionInstant_Toggle": "Cambio de región instantánea ",
