@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior",
-    
+
     "CustomBackground_NotFound": "¡No se encontró el archivo de fondo personalizado! Se usara la imagen por defecto",
     "CustomBackground_RegionalTag": "Fondo Región",
     "CustomBackground_GlobalTag": "Fondo Global"
@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Enviar anónimamente informes de errores a los desarrolladores",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "Esta configuración está desactivada debido a que la variable 'DISABLE_SENTRY' está establecida como true.",
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Generar diálogo personalizado",
 
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
     "ChangeRegionInstant_Toggle": "Cambio de región instantánea ",
@@ -711,6 +712,10 @@
     "Plugin_PluginInfoAuthorUnknown": "Autor Desconocido"
   },
 
+  "_PluginManagementMenuPage": {
+    "PageTitle": "Menú de gestión de plugins"
+  },
+
   "_Misc": {
     "SizePrefixes1000U": "B|KB|MB|GB|TB|PB|EB|ZB|YB",
 
@@ -731,6 +736,7 @@
     "EverythingIsOkay": "¡Todo Bien!",
     "Cancel": "Cancelar",
     "Close": "Cerrar",
+    "CloseOverlay": "Cerrar Superposición (Overlay)",
     "UseCurrentDir": "Usar directorio actual",
     "UseDefaultDir": "Usar directorio predeterminado",
     "MoveToDifferentDir": "Mover a otra ubicación ",
@@ -1355,7 +1361,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
-    
+
     "Graphics_DLSS_UHP": "Ultra Rendimiento",
     "Graphics_DLSS_Perf": "Rendimiento",
     "Graphics_DLSS_Balanced": "Balanceado",
