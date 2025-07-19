@@ -23,7 +23,7 @@ internal static class ResourceDictionaryExtensions
             // Clone theme dictionaries
             if (source.ThemeDictionaries != null)
             {
-                foreach (var theme in source.ThemeDictionaries)
+                foreach (KeyValuePair<object, object> theme in source.ThemeDictionaries)
                 {
                     if (theme.Value is ResourceDictionary themedResource)
                     {
@@ -50,7 +50,7 @@ internal static class ResourceDictionaryExtensions
             }
 
             // Clone all contents
-            foreach (var item in source)
+            foreach (KeyValuePair<object, object> item in source)
             {
                 destination[item.Key] = item.Value;
             }

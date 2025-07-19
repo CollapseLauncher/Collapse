@@ -1,4 +1,6 @@
-﻿using Hi3Helper.SentryHelper;
+﻿using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
+using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -63,7 +65,7 @@ namespace CollapseLauncher
         {
             get
             {
-                return !GameVersion.TryParse(VersionString, out GameVersion? result) ? null : result;
+                return !GameVersion.TryParse(VersionString, null, out GameVersion result) ? null : result;
             }
         }
 
@@ -408,17 +410,34 @@ namespace CollapseLauncher
     }
     #endregion
     #region ChangeTitleDragArea
+    [Flags]
     public enum DragAreaTemplate
     {
-        None,
-        Full,
-        Default
+        None = 0,
+        Full = 1,
+        Default = 2,
+
+        OverlayOpened = 4
     }
 
     internal static class ChangeTitleDragArea
     {
         private static readonly ChangeTitleDragAreaInvoker Invoker = new();
-        public static   void                       Change(DragAreaTemplate template) => Invoker.Change(template);
+        public static DragAreaTemplate CurrentDragAreaType;
+
+        public static void UpdateLayout() => Change(CurrentDragAreaType);
+
+        public static void Change(DragAreaTemplate template)
+        {
+            // Ensure to keep the overlay opened even if the drag area type is changed.
+            if (CurrentDragAreaType.HasFlag(DragAreaTemplate.OverlayOpened) &&
+                FullPageOverlay.CurrentlyOpenedOverlays.Count > 0)
+            {
+                template |= DragAreaTemplate.OverlayOpened;
+            }
+
+            Invoker.Change(CurrentDragAreaType = template);
+        }
     }
 
     internal class ChangeTitleDragAreaInvoker

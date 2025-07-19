@@ -166,10 +166,8 @@ namespace CollapseLauncher.Pages
 
                 await GetCurrentGameState();
 
-                if (!GetAppConfigValue("ShowEventsPanel").ToBool())
-                {
+                if (!GetAppConfigValue("ShowEventsPanel").ToBool() || (!IsCarouselPanelAvailable && !IsPostPanelAvailable))
                     SidePanel.Visibility = Visibility.Collapsed;
-                }
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
                     SocMedPanel.Visibility = Visibility.Collapsed;

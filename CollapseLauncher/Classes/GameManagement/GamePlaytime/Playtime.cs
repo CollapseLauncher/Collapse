@@ -45,7 +45,8 @@ namespace CollapseLauncher.GamePlaytime
                                               gameSettings);
             
             
-            if (DbHandler.IsEnabled && gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+            IGameSettingsUniversal gameSettingsUniversal = gameSettings.AsIGameSettingsUniversal();
+            if (DbHandler.IsEnabled && gameSettingsUniversal.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                 _ = CheckDb();
         }
 #nullable disable
