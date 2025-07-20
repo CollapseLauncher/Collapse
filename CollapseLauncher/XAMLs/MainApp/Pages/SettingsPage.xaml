@@ -2491,8 +2491,10 @@
                         </ItemsRepeater.Resources>
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="plugins:PluginInfo">
+                                <!--
                                 <controls:SettingsExpander Padding="0"
-                                                           HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}">
+                                                           HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
+                                                           Visibility="Collapsed">
                                     <controls:SettingsExpander.Header>
                                         <TextBlock ext:TextBlockExtension.RemoveEmptyRuns="True">
                                             <Run Text="{x:Bind Name, Mode=OneWay}"/>
@@ -2657,6 +2659,88 @@
                                         </controls:SettingsCard>
                                     </controls:SettingsExpander.Items>
                                 </controls:SettingsExpander>
+                                -->
+                                <Button Padding="0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        CornerRadius="8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Width="48"
+                                              Margin="4"
+                                              Height="Auto"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Stretch"
+                                              CornerRadius="4"
+                                              Grid.Column="0">
+                                            <Rectangle Height="Auto"
+                                                       Fill="{ThemeResource SmokeBackgroundBrush}"/>
+                                            <ContentPresenter Content="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
+                                                              CornerRadius="8, 0, 0, 8"
+                                                              HorizontalAlignment="Left"
+                                                              VerticalAlignment="Stretch"/>
+                                        </Grid>
+                                        <Grid Grid.Column="1"
+                                              Margin="8,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock ext:TextBlockExtension.RemoveEmptyRuns="True"
+                                                       Grid.Row="0"
+                                                       VerticalAlignment="Bottom"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis">
+                                                <Run Text="{x:Bind Name, Mode=OneWay}"/>
+                                                <Run Text=" (v" FontSize="10" FontWeight="Bold" ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run Text="{x:Bind Version, Mode=OneWay}" FontSize="10" FontWeight="Bold"/>
+                                                <Run Text=")" FontSize="10" FontWeight="Bold"/>
+                                            </TextBlock>
+                                            <TextBlock Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}"
+                                                       Grid.Row="1"
+                                                       FontSize="12"
+                                                       Opacity="0.75"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                        <Button Grid.Column="1"
+                                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                Padding="8"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Stretch"
+                                                Click="CopyLoadedPluginInformationClick"
+                                                Tag="{x:Bind}">
+                                            <FontIcon Glyph="&#xE8C8;" FontSize="16" />
+                                            <Button.Flyout>
+                                                <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
+                                                    <Grid ColumnSpacing="6"
+                                                          BorderThickness="0"
+                                                          Margin="-16,-32"
+                                                          Padding="12,0"
+                                                          Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon Glyph="&#xEC61;"
+                                                                  Grid.Column="0"
+                                                                  FontSize="16"
+                                                                  VerticalAlignment="Center"
+                                                                  Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}"
+                                                                   Grid.Column="1"
+                                                                   FontWeight="Bold"
+                                                                   Margin="0,-2,0,0"
+                                                                   VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                    </Grid>
+                                </Button>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
