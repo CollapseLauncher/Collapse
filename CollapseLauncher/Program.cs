@@ -67,43 +67,12 @@ namespace CollapseLauncher
         #endif
             try
             {
-                // Extract icons from the executable file
-                string mainModulePath = AppExecutablePath;
-                var    iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
-                if (iconCount > 0)
-                {
-                    var largeIcons = new IntPtr[1];
-                    var smallIcons = new IntPtr[1];
-                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
-                    AppIconLarge = largeIcons[0];
-                    AppIconSmall = smallIcons[0];
-                }
-
-                // Start Updater Hook
-                VelopackLocatorExtension.StartUpdaterHook(AppAumid);
-
-                InitAppPreset();
-                var logPath = AppGameLogsFolder;
-                CurrentLogger = IsConsoleEnabled
-                    ? new LoggerConsole(logPath, Encoding.UTF8)
-                    : new LoggerNull(logPath, Encoding.UTF8);
-
-                if (Directory.GetCurrentDirectory() != AppExecutableDir)
-                {
-                    LogWriteLine(
-                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
-                                 LogType.Warning, true);
-                    Directory.SetCurrentDirectory(AppExecutableDir);
-                }
-
-                InitializeAppSettings();
-
+                // Initialize the Sentry SDK
                 SentryHelper.IsPreview = IsPreview;
             #pragma warning disable CS0618 // Type or member is obsolete
                 SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
                 SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
                 SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
-                SentryHelper.AppCdnOption   = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
             #pragma warning restore CS0618 // Type or member is obsolete
                 if (SentryHelper.IsEnabled)
                 {
@@ -120,6 +89,38 @@ namespace CollapseLauncher
                         LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
                     }
                 }
+                
+                // Extract icons from the executable file
+                string mainModulePath = AppExecutablePath;
+                var    iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                if (iconCount > 0)
+                {
+                    var largeIcons = new IntPtr[1];
+                    var smallIcons = new IntPtr[1];
+                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    AppIconLarge = largeIcons[0];
+                    AppIconSmall = smallIcons[0];
+                }
+
+                InitAppPreset();
+                var logPath = AppGameLogsFolder;
+                CurrentLogger = IsConsoleEnabled
+                    ? new LoggerConsole(logPath, Encoding.UTF8)
+                    : new LoggerNull(logPath, Encoding.UTF8);
+
+                // Start Updater Hook
+                VelopackLocatorExtension.StartUpdaterHook(AppAumid);
+                
+                if (Directory.GetCurrentDirectory() != AppExecutableDir)
+                {
+                    LogWriteLine(
+                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
+                                 LogType.Warning, true);
+                    Directory.SetCurrentDirectory(AppExecutableDir);
+                }
+                
+                InitializeAppSettings();
+                SentryHelper.AppCdnOption = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                                            LauncherUpdateHelper.LauncherCurrentVersionString,
