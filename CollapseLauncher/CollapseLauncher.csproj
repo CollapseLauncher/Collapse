@@ -172,9 +172,9 @@
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.6" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
         <PackageReference Include="Velopack" Version="0.0.1297" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
@@ -200,7 +200,7 @@
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3415-prerelease" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4188" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250702007-experimental4" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
@@ -210,9 +210,9 @@
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta6.25358.103" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta5.25306.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.6" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.6" />
-        <PackageReference Include="System.Text.Json" Version="9.0.6" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.7" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.7" />
+        <PackageReference Include="System.Text.Json" Version="9.0.7" />
     </ItemGroup>
 
     <ItemGroup>
