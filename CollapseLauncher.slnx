@@ -6,94 +6,84 @@
     <Platform Name="x64" />
   </Configurations>
   <Project Path="CollapseLauncher/CollapseLauncher.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <Platform Project="x64" />
+    <Deploy Solution="Release|*" />
   </Project>
   <Project Path="ColorThief/ColorThief/ColorThief.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="H.NotifyIcon/src/libs/H.GeneratedIcons.System.Drawing/H.GeneratedIcons.System.Drawing.csproj">
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="H.NotifyIcon/src/libs/H.NotifyIcon.WinUI/H.NotifyIcon.WinUI.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="H.NotifyIcon/src/libs/H.NotifyIcon/H.NotifyIcon.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.CommunityToolkit/ImageCropper/Hi3Helper.CommunityToolkit.WinUI.Controls.ImageCropper.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.CommunityToolkit/SettingsControls/Hi3Helper.CommunityToolkit.WinUI.Controls.SettingsControls.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.Core/Hi3Helper.Core.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.EncTool.Test/Hi3Helper.EncTool.Test.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+    <Build Solution="Publish|*" Project="false" />
+    <Build Solution="Release|*" Project="false" />
   </Project>
   <Project Path="Hi3Helper.EncTool/Hi3Helper.EncTool.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.Http/Hi3Helper.Http.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Hi3Helper.Plugin.Core/Hi3Helper.Plugin.Core.csproj">
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.SharpDiscordRPC/DiscordRPC/DiscordRPC.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.Sophon/Hi3Helper.Sophon.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.TaskScheduler/Hi3Helper.TaskScheduler.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.Win32/Hi3Helper.Win32.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="Hi3Helper.Win32/WinRT/Hi3Helper.Win32.WinRT.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="ImageEx/ImageEx/ImageEx.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="InnoSetupHelper/InnoSetupHelper.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
   <Project Path="SevenZipExtractor/SevenZipExtractor/SevenZipExtractor.csproj">
-    <Configuration Solution="Debug|x64" Project="Debug|x64" />
-    <Configuration Solution="Publish|x64" Project="Release|x64" />
-    <Configuration Solution="Release|x64" Project="Release|x64" />
+    <BuildType Solution="Publish|*" Project="Release" />
+    <Platform Project="x64" />
   </Project>
 </Solution>
