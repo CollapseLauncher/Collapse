@@ -36,11 +36,11 @@ internal partial class PluginLauncherApiWrapper
         {
             using var entry = entrySpan[i];
 
-            string?               title    = entry.Title;
-            string?               clickUrl = entry.Url;
-            string?               postDate = entry.PostDate;
-            LauncherNewsEntryType newsType = entry.Type;
-            // string? description = entry.Description; // TODO: Add description as tooltip for the news entry on UI level
+            string?               title       = entry.Title;
+            string?               clickUrl    = entry.Url;
+            string?               postDate    = entry.PostDate;
+            LauncherNewsEntryType newsType    = entry.Type;
+            string?               description = entry.Description;
 
             if (string.IsNullOrEmpty(clickUrl) ||
                 string.IsNullOrEmpty(title))
@@ -51,18 +51,19 @@ internal partial class PluginLauncherApiWrapper
             newsData.NewsPost ??= [];
             newsData.NewsPost.Add(new LauncherGameNewsPost
             {
-                PostDate  = postDate,
-                PostId    = Guid.CreateVersion7().ToString(),
-                Title     = title,
-                PostOrder = i,
-                PostUrl   = clickUrl,
-                PostType  = newsType switch
-                            {
-                                LauncherNewsEntryType.Info => LauncherGameNewsPostType.POST_TYPE_INFO,
-                                LauncherNewsEntryType.Notice => LauncherGameNewsPostType.POST_TYPE_ANNOUNCE,
-                                LauncherNewsEntryType.Event => LauncherGameNewsPostType.POST_TYPE_ACTIVITY,
-                                _ => LauncherGameNewsPostType.POST_TYPE_INFO
-                            }
+                PostDate    = postDate,
+                PostId      = Guid.CreateVersion7().ToString(),
+                Title       = title,
+                Description = description,
+                PostOrder   = i,
+                PostUrl     = clickUrl,
+                PostType    = newsType switch
+                              {
+                                  LauncherNewsEntryType.Info => LauncherGameNewsPostType.POST_TYPE_INFO,
+                                  LauncherNewsEntryType.Notice => LauncherGameNewsPostType.POST_TYPE_ANNOUNCE,
+                                  LauncherNewsEntryType.Event => LauncherGameNewsPostType.POST_TYPE_ACTIVITY,
+                                  _ => LauncherGameNewsPostType.POST_TYPE_INFO
+                              }
             });
         }
     }

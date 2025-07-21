@@ -211,7 +211,7 @@ namespace CollapseLauncher.Extension
             IInitializableTask? task = instance.CastComInterfaceAs<T, IInitializableTask>(in iInitGuid);
             if (task == null)
             {
-                throw new InvalidComObjectException("Interface cannot be marshalled!");
+                throw new InvalidComObjectException($"Interface cannot be marshalled! Guid: {iInitGuid}");
             }
 
             return task;

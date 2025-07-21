@@ -683,7 +683,7 @@
                                                               Background="Transparent"
                                                               PointerEntered="HyperLink_OnPointerEntered"
                                                               PointerExited="HyperLink_OnPointerExited"
-                                                              ToolTipService.ToolTip="{x:Bind Title}">
+                                                              ToolTipService.ToolTip="{x:Bind Description}">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
@@ -761,7 +761,7 @@
                                                               Background="Transparent"
                                                               PointerEntered="HyperLink_OnPointerEntered"
                                                               PointerExited="HyperLink_OnPointerExited"
-                                                              ToolTipService.ToolTip="{x:Bind Title}">
+                                                              ToolTipService.ToolTip="{x:Bind Description}">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />
@@ -839,7 +839,7 @@
                                                               Background="Transparent"
                                                               PointerEntered="HyperLink_OnPointerEntered"
                                                               PointerExited="HyperLink_OnPointerExited"
-                                                              ToolTipService.ToolTip="{x:Bind Title}">
+                                                              ToolTipService.ToolTip="{x:Bind Description}">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition />
                                                                 <ColumnDefinition Width="Auto" />

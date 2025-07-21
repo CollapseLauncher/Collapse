@@ -20,6 +20,8 @@ public partial class FullPageOverlay : ContentControl
 
     public FullPageOverlay(FrameworkElement content, XamlRoot xamlRoot, bool alwaysOnTop = false)
     {
+        DefaultStyleKey = typeof(FullPageOverlay);
+
         Content            = content;
         XamlRoot           = xamlRoot;
         _isAlwaysOnTop     = alwaysOnTop;

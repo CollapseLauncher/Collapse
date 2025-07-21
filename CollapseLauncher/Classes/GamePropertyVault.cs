@@ -80,6 +80,8 @@ namespace CollapseLauncher.Statics
                 return;
             }
 
+            // This is disabled due to early Weak Reference by GC, causing the property
+            // (especially the one with background activity) being garbage collected.
             // CleanupUnusedGameProperty();
             if (Vault.TryGetValue(gamePreset.HashID, out GamePresetProperty? value))
             {

@@ -391,35 +391,41 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         }
     }
 
-    public void Flush()
-    {
-        FlushingTrigger?.Invoke(this, EventArgs.Empty);
-    }
+    public void Flush() => FlushingTrigger?.Invoke(this, EventArgs.Empty);
 
+    // TODO:
+    // Implement this after WuWa Plugin implementation is completed
     public ValueTask<bool> IsPreloadCompleted(CancellationToken token = default)
     {
         // NOP
         return new ValueTask<bool>(true);
     }
 
+    // TODO:
+    // Might consider delta-patch to be supported via Plugin. But that's for future.
     public ValueTask<bool> TryShowFailedDeltaPatchState()
     {
         // NOP
         return new ValueTask<bool>(false);
     }
 
+    // Intended to be NOP. The plugin wouldn't have feature to show game conversion failure status.
     public ValueTask<bool> TryShowFailedGameConversionState()
     {
         // NOP
         return new ValueTask<bool>(false);
     }
 
+    // TODO:
+    // Implement this after WuWa Plugin implementation is completed
     public ValueTask CleanUpGameFiles(bool withDialog = true)
     {
         // NOP
         return new ValueTask();
     }
 
+    // TODO:
+    // Implement this after WuWa Plugin implementation is completed
     public void UpdateCompletenessStatus(CompletenessStatus status)
     {
         // NOP

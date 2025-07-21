@@ -355,6 +355,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
             init;
         }
 
+        [JsonIgnore]
+        public string? Description
+        {
+            get => field ?? Title;
+            set;
+        }
+
         // TODO: Make sure that the value always be a number. If yes, then we
         //       will change the type from string? to int?
         [JsonPropertyName("order")]
