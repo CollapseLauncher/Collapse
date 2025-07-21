@@ -40,6 +40,7 @@ internal class PluginInfo : IDisposable
     public PluginPresetConfigWrapper[] PresetConfigs   { get; }
     public ILogger                     PluginLogger    { get; }
     public NameServer[]?               NameServers     { get; private set; }
+    public bool                        IsEnabled       { get; set; } = true;
 
     public string    PluginFilePath { get; }
     public string    PluginFileName { get; }

@@ -2721,7 +2721,7 @@
                                                 Padding="8"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Stretch"
-                                                Click="CopyLoadedPluginInformationClick"
+                                                Click="{x:Bind conv:SettingsPage.CopyLoadedPluginInformationClick}"
                                                 Tag="{x:Bind}">
                                             <FontIcon Glyph="&#xE8C8;" FontSize="16" />
                                             <Button.Flyout>

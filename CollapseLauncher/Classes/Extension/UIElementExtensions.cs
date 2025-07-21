@@ -18,6 +18,7 @@ using System.Linq;
 using System.Numerics;
 using Windows.UI;
 using Windows.UI.Text;
+using WinRT;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable UnusedMember.Global
 
@@ -988,6 +989,37 @@ namespace CollapseLauncher.Extension
         }
 
 #nullable enable
+        public static nint GetPointerFromDependencyObject<T>(this T? element)
+            where T : DependencyObject
+            => element is null ? nint.Zero : MarshalInspectable<T>.FromManaged(element);
+
+        public static T? GetDependencyObjectFromPointer<T>(this nint ptr)
+            where T : DependencyObject
+            => ptr == nint.Zero ? null : MarshalInspectable<T>.FromAbi(ptr);
+
+
+        internal static readonly InputSystemCursor HandCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+
+        internal static void AttachHandCursorRecursiveOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not UIElement element)
+            {
+                return;
+            }
+
+            element.SetAllControlsCursorRecursive(HandCursor);
+        }
+
+        internal static void AttachHandCursorOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not UIElement element)
+            {
+                return;
+            }
+
+            element.SetCursor(HandCursor);
+        }
+
         private static IEnumerable<DependencyObject> VisualTreeHelperGetChildrenEnumerable(FrameworkElement? element)
         {
             if (element is null)

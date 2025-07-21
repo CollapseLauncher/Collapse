@@ -2462,7 +2462,7 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region Plugins
-        private void CopyLoadedPluginInformationClick(object sender, RoutedEventArgs e)
+        internal static void CopyLoadedPluginInformationClick(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -2514,9 +2514,9 @@ namespace CollapseLauncher.Pages
             try
             {
                 asButton.IsEnabled = false;
-                FullPageOverlay overlayMenu = new FullPageOverlay(new SettingsPage(), XamlRoot, true)
+                FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
                 {
-                    Size               = FullPageOverlaySize.FollowContent,
+                    Size               = FullPageOverlaySize.Full,
                     OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle,
                     OverlayTitleIcon   = new FontIconSource
                     {
