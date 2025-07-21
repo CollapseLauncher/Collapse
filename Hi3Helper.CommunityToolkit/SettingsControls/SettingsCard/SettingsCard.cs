@@ -297,14 +297,10 @@ public partial class SettingsCard : ButtonBase
         CheckVerticalSpacingState(e.NewState);
     }
 
-    private void CheckVerticalSpacingState(VisualState s)
+    private void CheckVerticalSpacingState(VisualState? s)
     {
-        #if DEBUG
-        Debug.Assert(s != null);
-        #endif
-
         // On state change, checking if the Content should be wrapped (e.g. when the card is made smaller or the ContentAlignment is set to Vertical). If the Content and the Header or Description are not null, we add spacing between the Content and the Header/Description.
-        if (s.Name is RightWrappedState or RightWrappedNoIconState or VerticalState && (Content != null) && (!IsNullOrEmptyString(Header) || !IsNullOrEmptyString(Description)))
+        if (s?.Name is RightWrappedState or RightWrappedNoIconState or VerticalState && (Content != null) && (!IsNullOrEmptyString(Header) || !IsNullOrEmptyString(Description)))
         {
             VisualStateManager.GoToState(this, ContentSpacingState, true);
         }
