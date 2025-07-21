@@ -44,7 +44,7 @@ namespace CollapseLauncher
 
         private static readonly Lock CriticalOpLock = new();
 
-        private static bool IsIntroEnabled
+        internal static bool IsIntroEnabled
         {
             get => LauncherConfig.IsIntroEnabled;
             set => LauncherConfig.IsIntroEnabled = value;
@@ -363,9 +363,7 @@ namespace CollapseLauncher
             {
                 nonClientInputSrc.ClearAllRegionRects();
                 nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
-                    GetElementPos(currentOverlayCloseButton),
-                    GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
-                    GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
+                    GetElementPos(currentOverlayCloseButton)
                 ]);
             }
 

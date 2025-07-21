@@ -129,6 +129,7 @@ namespace CollapseLauncher.Pages
 
             this.EnableImplicitAnimation(true);
             this.SetAllControlsCursorRecursive(InputSystemCursor.Create(InputSystemCursorShape.Hand));
+            ShareYourFeedbackButton.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             IsInstantRegionChange     = LauncherConfig.IsInstantRegionChange;
@@ -179,8 +180,6 @@ namespace CollapseLauncher.Pages
 
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
-#else
-            ShareYourFeedbackButton.IsEnabled = SentryHelper.IsEnabled;
 #endif
 
             Task.Run(() =>
@@ -479,7 +478,7 @@ namespace CollapseLauncher.Pages
 #nullable restore
         }
 
-        private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
+        private async void ShareYourFeedbackClick(object sender, PointerRoutedEventArgs e)
         {
 #if ENABLEUSERFEEDBACK
             var content = UserFeedbackTemplate.FeedbackTemplate;
@@ -2515,13 +2514,14 @@ namespace CollapseLauncher.Pages
             try
             {
                 asButton.IsEnabled = false;
-                FullPageOverlay overlayMenu = new FullPageOverlay(new SettingsPage(), XamlRoot)
+                FullPageOverlay overlayMenu = new FullPageOverlay(new SettingsPage(), XamlRoot, true)
                 {
-                    Size               = FullPageOverlaySize.Full,
+                    Size               = FullPageOverlaySize.FollowContent,
                     OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle,
                     OverlayTitleIcon   = new FontIconSource
                     {
-                        Glyph = "\uE912"
+                        Glyph = "\uE912",
+                        FontSize = 16
                     }
                 };
 

@@ -2684,8 +2684,6 @@
                         <Setter Property="Background" Value="{ThemeResource WindowCaptionBackground}" />
                         <Setter Property="IsTabStop" Value="False" />
                         <Setter Property="VerticalAlignment" Value="Top" />
-                        <Setter Property="Width" Value="32" />
-                        <Setter Property="Height" Value="32" />
 
                         <Setter Property="Template">
                             <Setter.Value>
@@ -2710,8 +2708,8 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
-                                                                                       Storyboard.TargetProperty="Stroke">
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionForeground}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -2725,8 +2723,8 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
-                                                                                       Storyboard.TargetProperty="Stroke">
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionForegroundDisabled}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -2740,8 +2738,8 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionButtonBackgroundPointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
-                                                                                       Storyboard.TargetProperty="Stroke">
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionButtonStrokePointerOver}" />
                                                         </ObjectAnimationUsingKeyFrames>
@@ -2755,41 +2753,18 @@
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionButtonBackgroundPressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Path"
-                                                                                       Storyboard.TargetProperty="Stroke">
+                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                                       Storyboard.TargetProperty="Foreground">
                                                             <DiscreteObjectKeyFrame KeyTime="0"
                                                                                     Value="{ThemeResource WindowCaptionButtonStrokePressed}" />
                                                         </ObjectAnimationUsingKeyFrames>
                                                     </Storyboard>
                                                 </VisualState>
-
                                             </VisualStateGroup>
-
-                                            <VisualStateGroup x:Name="MinMaxStates">
-                                                <VisualState x:Name="WindowStateNormal">
-                                                    <VisualState.Setters>
-                                                        <Setter Target="Path.Data" Value="M 1.516 -0.001 L 7.451 0.009 C 8.751 0.019 9 1 8.981 1.477 L 9.002 7.558 M 9.002 7.547 C 8.929 8.669 8 9 7.43 9.015 L 1.464 9.005 C 0.374 8.973 0 8 -0.004 7.484 L -0.004 1.477 C 0 1 0.415 0.009 1.527 -0.001" />
-                                                    </VisualState.Setters>
-                                                </VisualState>
-                                                <VisualState x:Name="WindowStateMaximized">
-                                                    <VisualState.Setters>
-                                                        <Setter Target="Path.Data" Value="M 1.516 -0.001 L 7.451 0.009 C 8.751 0.019 9 1 8.981 1.477 L 9.002 7.558 M 11 6 L 11 2 C 11 0 10 -2 8.011 -1.946 L 7.06 -1.969 L 3 -2 M 9.002 7.547 C 8.929 8.669 8 9 7.43 9.015 L 1.464 9.005 C 0.374 8.973 0 8 -0.004 7.484 L -0.004 1.477 C 0 1 0.415 0.009 1.527 -0.001" />
-                                                    </VisualState.Setters>
-                                                </VisualState>
-                                            </VisualStateGroup>
-
                                         </VisualStateManager.VisualStateGroups>
 
-                                        <Path x:Name="Path"
-                                              Width="10"
-                                              Height="10"
-                                              Data="{TemplateBinding Content}"
-                                              Stretch="Fill"
-                                              Stroke="{TemplateBinding Foreground}"
-                                              StrokeEndLineCap="Round"
-                                              StrokeStartLineCap="Round"
-                                              StrokeThickness="{ThemeResource WindowCaptionButtonStrokeWidth}"
-                                              UseLayoutRounding="True" />
+                                        <ContentPresenter x:Name="ContentPresenter"
+                                                          Content="{TemplateBinding Content}"/>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>

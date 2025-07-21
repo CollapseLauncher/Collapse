@@ -74,13 +74,6 @@ public partial class FullPageOverlay : ContentControl
             CurrentlyOpenedOverlays.Add(this);
         }
 
-        await Task.Delay(300);
-
-        using (ThisThreadLock.EnterScope())
-        {
-            ChangeTitleDragArea.Change(ChangeTitleDragArea.CurrentDragAreaType | DragAreaTemplate.OverlayOpened);
-        }
-
         try
         {
             // Wait until close button is invalidating the token.

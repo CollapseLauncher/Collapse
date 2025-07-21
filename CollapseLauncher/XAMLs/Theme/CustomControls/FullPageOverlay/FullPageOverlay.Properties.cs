@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 #nullable enable
 namespace CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
@@ -101,9 +102,20 @@ public partial class FullPageOverlay
     #endregion
 
     #region Callback Methods
-    private static void OnUILayoutLoaded(object sender, RoutedEventArgs e)
+    private static async void OnUILayoutLoaded(object sender, RoutedEventArgs e)
     {
-        // NOP
+        try
+        {
+            await Task.Delay(300);
+            using (ThisThreadLock.EnterScope())
+            {
+                ChangeTitleDragArea.Change(ChangeTitleDragArea.CurrentDragAreaType | DragAreaTemplate.OverlayOpened);
+            }
+        }
+        catch
+        {
+            // Ignored
+        }
     }
 
     private static void OnUILayoutUnloaded(object sender, RoutedEventArgs e)

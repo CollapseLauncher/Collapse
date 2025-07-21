@@ -13,7 +13,6 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:controls="using:Hi3Helper.CommunityToolkit.WinUI.Controls"
       xmlns:plugins="using:CollapseLauncher.Plugins"
       xmlns:imageex="using:ImageEx"
       CacheMode="BitmapCache"
@@ -22,16 +21,14 @@
       Unloaded="Page_Unloaded"
       mc:Ignorable="d">
     <Page.Resources>
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
         <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
         <conv:DoubleFormatter x:Key="DoubleFormatter" />
         <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <conv:GameNameLocaleConverter x:Key="GameNameLocaleConverter" />
-        <conv:GameRegionLocaleConverter x:Key="GameRegionLocaleConverter" />
         <conv:GamePluginIconConverter x:Key="GamePluginIconConverter" />
-        <conv:LocalFullDateTimeConverter x:Key="LocalFullDateTimeConverter" />
         <conv:ByStringConverter x:Key="ByStringConverter" />
         <conv:LocaleCodeToFlagUrlConverter x:Key="LocaleCodeToFlagUrlConverter" />
     </Page.Resources>
@@ -75,7 +72,9 @@
                                                 <Grid VerticalAlignment="Center"
                                                       HorizontalAlignment="Stretch"
                                                       Margin="-2,0,8,0"
-                                                      CornerRadius="4">
+                                                      CornerRadius="4"
+                                                      Shadow="{ThemeResource SharedShadow}"
+                                                      Translation="0,0,12">
                                                     <imageex:ImageEx Source="{x:Bind LangID, Converter={StaticResource LocaleCodeToFlagUrlConverter}}"
                                                                      EnableLazyLoading="True"
                                                                      Height="20"
@@ -1813,6 +1812,15 @@
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}" />
                             </Hyperlink>
                         </TextBlock>
+                        <TextBlock x:Name="ShareYourFeedbackButton"
+                                   Margin="0,8,0,8"
+                                   HorizontalAlignment="Left"
+                                   PointerPressed="ShareYourFeedbackClick"
+                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                   Visibility="{x:Bind ToggleSendRemoteCrashData.IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ShareYourFeedbackBtn}" />
+                        </TextBlock>
                     </StackPanel>
                     <NavigationViewItemSeparator Margin="16,16" />
                     <StackPanel Margin="0,0,0,16">
@@ -2439,13 +2447,13 @@
                     <TextBlock Margin="0,0,0,16"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoTitle}" />
-                    <Button x:Name="ButtonAppActionOpenPluginmanager"
+                    <Button x:Name="ButtonAppActionOpenPluginManager"
                             Margin="0,0,0,8"
                             Padding="12,8"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
                             Click="OpenPluginManagerClick"
-                            CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionClearLogsFolder)}"
+                            CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionOpenPluginManager)}"
                             Style="{ThemeResource AccentButtonStyle}">
                         <Grid Margin="0,-2,0,0"
                               HorizontalAlignment="Stretch">
@@ -2482,6 +2490,7 @@
                         </Grid>
                     </Button>
                     <ItemsRepeater ItemsSource="{x:Bind plugins:PluginManager.PluginInstances.Values, Mode=OneWay}">
+                        <!--
                         <ItemsRepeater.Resources>
                             <x:Double x:Key="SettingsCardMinHeight">52</x:Double>
                             <Thickness x:Key="SettingsCardPadding">16,0,16,0</Thickness>
@@ -2489,6 +2498,7 @@
                             <Thickness x:Key="SettingsCardHeaderIconMargin">-4,0,12,0</Thickness>
                             <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
                         </ItemsRepeater.Resources>
+                        -->
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="plugins:PluginInfo">
                                 <!--
@@ -2744,50 +2754,6 @@
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
-                    <NavigationViewItemSeparator Margin="16,16" />
-                    <Button x:Name="ShareYourFeedbackButton"
-                            Margin="0,0,0,8"
-                            Padding="12,8"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Stretch"
-                            Click="ShareYourFeedbackClick"
-                            CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ShareYourFeedbackButton)}"
-                            IsEnabled="True"
-                            Style="{ThemeResource AccentButtonStyle}">
-                        <Grid Margin="0,-2,0,0"
-                              HorizontalAlignment="Stretch">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid HorizontalAlignment="Left">
-                                <TextBlock HorizontalAlignment="Left"
-                                           VerticalAlignment="Center"
-                                           FontWeight="Medium"
-                                           HorizontalTextAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.ShareYourFeedbackBtn}" />
-                            </Grid>
-                            <Grid Grid.Column="1"
-                                  Margin="4,2,0,0"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  RenderTransformOrigin="0.5, 0.5">
-                                <Grid.RenderTransform>
-                                    <RotateTransform Angle="-90" />
-                                </Grid.RenderTransform>
-                                <AnimatedIcon Width="16"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center">
-                                    <animatedvisuals:AnimatedChevronDownSmallVisualSource />
-                                    <AnimatedIcon.FallbackIconSource>
-                                        <FontIconSource FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                                        Foreground="{ThemeResource ComboBoxDropDownGlyphForeground}"
-                                                        Glyph="&#xE70D;" />
-                                    </AnimatedIcon.FallbackIconSource>
-                                </AnimatedIcon>
-                            </Grid>
-                        </Grid>
-                    </Button>
                     <NavigationViewItemSeparator Margin="16,16" Visibility="Collapsed" x:Name="DebugItemSeparator" />
                     <StackPanel Orientation="Vertical" Spacing="8" Visibility="Collapsed" x:Name="DebugStackPanel">
                         <AutoSuggestBox x:Name="DebugCustomDialogComboBox"
@@ -2840,6 +2806,7 @@
                             </Grid>
                         </Button>
                     </StackPanel>
+                    <NavigationViewItemSeparator Margin="16,16" />
                     <StackPanel HorizontalAlignment="Center"
                                 Orientation="Horizontal">
                         <TextBlock Margin="0,0,6,0"
