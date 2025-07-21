@@ -5,8 +5,6 @@
 // ReSharper disable CommentTypo
 #nullable enable
 
-using System.Diagnostics;
-
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 /// <summary>
