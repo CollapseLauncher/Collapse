@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -331,7 +330,7 @@ namespace CollapseLauncher
                 key = LauncherMetadataHelper.CurrentMasterKey?.Key;
             }
 
-            mhyEncTool saltTool = new mhyEncTool(data, key);
+            MhyEncTool saltTool = new MhyEncTool(data, key);
             return saltTool.GetSalt();
         }
 

@@ -13,7 +13,7 @@ namespace CollapseLauncher
 {
     internal partial class FileMigrationProcess
     {
-        internal static async Task<FileMigrationProcess> CreateJob(string dialogTitle, string inputPath, string outputPath = null, CancellationTokenSource token = default, bool showWarningMessage = true)
+        internal static async Task<FileMigrationProcess> CreateJob(string dialogTitle, string inputPath, string outputPath = null, CancellationTokenSource token = null, bool showWarningMessage = true)
         {
             // Normalize Path (also normalize path from '/' separator)
             inputPath = ConverterTool.NormalizePath(inputPath);
