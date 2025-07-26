@@ -90,7 +90,7 @@ namespace CollapseLauncher
         public static List<StackPanel> BuildGameTitleListUI()
         {
             List<StackPanel> list = [];
-            foreach (string? title in LauncherMetadataHelper.GetGameNameCollection()!)
+            foreach (string title in LauncherMetadataHelper.GetGameNameCollection()!)
             {
                 StackPanel panel              = UIElementExtensions.CreateStackPanel(Orientation.Horizontal);
                 TextBlock  gameTitleTextBlock = panel.AddElementToStackPanel(new TextBlock { Text = title });

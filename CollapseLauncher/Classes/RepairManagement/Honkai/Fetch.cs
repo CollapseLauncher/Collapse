@@ -206,7 +206,7 @@ namespace CollapseLauncher
                 }
 
                 // Assign the URL based on the version
-                GameRepoURL = manifestDict[GameVersion.VersionString!];
+                GameRepoURL = manifestDict[GameVersion.VersionString];
 
                 // Region: XMFAndAssetIndex
                 // Fetch asset index

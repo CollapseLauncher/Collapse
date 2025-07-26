@@ -626,7 +626,7 @@ namespace CollapseLauncher.Helper.Image
             }
         }
         
-        private static ConcurrentDictionary<string, int> UrlRetryCount = new();
+        private static readonly ConcurrentDictionary<string, int> UrlRetryCount = new();
 
         private static async Task<Stream> GetFallbackStreamUrl(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
         {

@@ -236,7 +236,11 @@ namespace Hi3Helper
                 return;
             }
 
-            ConverterTool.SizeSuffixes = sizeSurfixes;
+#if !APPLYUPDATE
+            ConverterTool.SetSizeSuffixes(sizeSurfixes);
+#else
+            UpdateTask.SizeSuffixes = sizeSurfixes;
+#endif
         }
 
         public static Dictionary<string, LangMetadata> LanguageNames   = new();

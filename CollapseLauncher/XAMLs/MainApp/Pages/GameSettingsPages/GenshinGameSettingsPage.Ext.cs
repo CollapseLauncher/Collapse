@@ -21,7 +21,8 @@ namespace CollapseLauncher.Pages
     {
         #region Methods
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+
+        // ReSharper disable once UnusedMember.Local
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             // Raise the PropertyChanged event, passing the name of the property whose value has changed.
