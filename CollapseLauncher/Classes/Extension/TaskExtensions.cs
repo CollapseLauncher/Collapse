@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher.Extension
 {
-    public delegate Task<TResult?> ActionTimeoutTaskCallback<TResult>(CancellationToken token);
     public delegate Task ActionTimeoutTaskCallback(CancellationToken token);
+    public delegate Task<TResult?> ActionTimeoutTaskCallback<TResult>(CancellationToken token);
     public delegate void ActionOnTimeOutRetry(int retryAttemptCount, int retryAttemptTotal, int timeOutSecond, int timeOutStep);
 
-    internal static class TaskExtensions
+    internal static partial class TaskExtensions
     {
         internal const int DefaultTimeoutSec = 10;
         internal const int DefaultRetryAttempt = 5;
@@ -173,9 +173,9 @@ namespace CollapseLauncher.Extension
         {
             Guid guid = Guid.CreateVersion7();
             token.Register(() =>
-            {
-                pluginInstance.CancelAsync(in guid);
-            });
+                           {
+                               pluginInstance.CancelAsync(in guid);
+                           });
 
             return guid;
         }
@@ -207,8 +207,8 @@ namespace CollapseLauncher.Extension
         private static IInitializableTask GetInitializableTask<T>(T instance)
             where T : class
         {
-            Guid iInitGuid = new Guid(ComInterfaceId.ExInitializable);
-            IInitializableTask? task = instance.CastComInterfaceAs<T, IInitializableTask>(in iInitGuid);
+            Guid                iInitGuid = new Guid(ComInterfaceId.ExInitializable);
+            IInitializableTask? task      = instance.CastComInterfaceAs<T, IInitializableTask>(in iInitGuid);
             if (task == null)
             {
                 throw new InvalidComObjectException($"Interface cannot be marshalled! Guid: {iInitGuid}");
