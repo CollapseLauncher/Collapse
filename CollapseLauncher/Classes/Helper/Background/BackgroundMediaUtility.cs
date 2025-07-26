@@ -35,6 +35,7 @@ namespace CollapseLauncher.Helper.Background
         internal enum MediaType
         {
             Media,
+            SequenceImage,
             StillImage,
             Unknown
         }

@@ -8,6 +8,7 @@
     <mapping directory="$PROJECT_DIR$/Hi3Helper.EncTool/Streams/CacheStream" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.EncTool/UABT" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Http" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Hi3Helper.Plugin.Core" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.SharpDiscordRPC" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Sophon" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Hi3Helper.Win32" vcs="Git" />

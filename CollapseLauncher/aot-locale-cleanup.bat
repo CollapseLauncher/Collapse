@@ -92,8 +92,9 @@ goto :EOF
 :deleteDir
 set thePath="%root%\%~n1"
 echo Removing %thePath%
-if /I exist %thePath% (
-    rmdir /S /Q %thePath%
+if /I exist "%thePath%" (
+    rmdir /S /Q "%thePath%"
 )
+goto :EOF
 
 exit /B

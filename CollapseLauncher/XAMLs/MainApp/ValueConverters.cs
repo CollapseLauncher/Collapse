@@ -1,8 +1,14 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Plugins;
+using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
+using System.IO;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable PartialTypeWithSinglePart
 
@@ -144,6 +150,184 @@ namespace CollapseLauncher.Pages
     {
         public object Convert(object value, Type targetType, object parameter, string language)
             => value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameNameLocaleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString)
+            {
+                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientTitles);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameRegionLocaleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString)
+            {
+                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientRegions);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class ByStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString)
+            {
+                return string.Format(Locale.Lang._SettingsPage.Plugin_AuthorBy, asString);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GamePluginIconConverter : IValueConverter
+    {
+#nullable enable
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not PluginInfo asPluginInfo)
+            {
+                return GetDefault();
+            }
+
+            try
+            {
+                IPlugin plugin = asPluginInfo.Instance;
+                plugin.GetPluginAppIconUrl(out string? iconUrl);
+
+                if (string.IsNullOrEmpty(iconUrl))
+                {
+                    return GetDefault();
+                }
+
+                Uri? url;
+                if (PluginLauncherApiWrapper.IsDataActuallyBase64(iconUrl))
+                {
+                    string  spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
+                    string? urlStr       = PluginLauncherApiWrapper.CopyOverEmbeddedData(spriteFolder, iconUrl);
+
+                    if (string.IsNullOrEmpty(urlStr))
+                    {
+                        return GetDefault();
+                    }
+
+                    url = new Uri(urlStr);
+                }
+                else if (!Uri.TryCreate(iconUrl, UriKind.Absolute, out url))
+                {
+                    return GetDefault();
+                }
+
+                return new BitmapIcon
+                {
+                    UriSource = url,
+                    ShowAsMonochrome = false
+                };
+            }
+            catch (Exception ex)
+            {
+                string message = $"[GamePluginIconConverter::Convert()] Cannot get icon from plugin: {asPluginInfo.Name}";
+                Logger.LogWriteLine(message, LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+
+            return GetDefault();
+
+            FontIcon GetDefault() => new()
+            {
+                Glyph = "\uE74C"
+            };
+        }
+#nullable restore
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class LocalFullDateTimeConverter : IValueConverter
+    {
+        public const string FullFormat = "dddd, MMMM dd, yyyy hh:mm tt (zzz)";
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value switch
+                   {
+                       DateTime asDateTime => GetFullFormat(asDateTime.ToLocalTime()),
+                       DateTimeOffset asDateTimeOffset => GetFullFormat(asDateTimeOffset.ToLocalTime()),
+                       _ => value
+                   };
+
+            string GetFullFormat(DateTimeOffset offset) => offset.ToString(FullFormat);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class LocaleCodeToFlagUrlConverter : IValueConverter
+    {
+        private const string Separator = "-_";
+        private const StringSplitOptions Options = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not string asString)
+            {
+                return null;
+            }
+
+            Span<Range>        splitRange = stackalloc Range[2];
+            ReadOnlySpan<char> asSpan     = asString.AsSpan();
+            int                rangeLen   = asSpan.SplitAny(splitRange, Separator, Options);
+
+            if (rangeLen != 2)
+            {
+                return null;
+            }
+
+            ReadOnlySpan<char> countryId = asSpan[splitRange[1]];
+            if (countryId.Equals("419", StringComparison.OrdinalIgnoreCase))
+            {
+                countryId = "es";
+            }
+
+            return $"https://flagcdn.com/{countryId}.svg";
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

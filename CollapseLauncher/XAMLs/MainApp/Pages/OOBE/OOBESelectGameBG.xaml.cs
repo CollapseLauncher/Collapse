@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Microsoft.UI.Xaml;
@@ -10,6 +11,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -24,6 +26,8 @@ namespace CollapseLauncher.Pages.OOBE
 {
     public sealed partial class OOBESelectGameBG
     {
+        internal static bool IsUseBackgroundMask;
+
         public OOBESelectGameBG()
         {
             Loaded += LoadedRoutine;
@@ -33,6 +37,7 @@ namespace CollapseLauncher.Pages.OOBE
         {
             InitializeComponent();
 
+            BackgroundMask.Visibility = IsUseBackgroundMask ? Visibility.Visible : Visibility.Collapsed;
             if (IsAppThemeLight && Resources["DetailsLogoShadowController"] is AttachedDropShadow attachedShadow)
             {
                 attachedShadow.Opacity = 0.75;
@@ -93,6 +98,9 @@ namespace CollapseLauncher.Pages.OOBE
                     return IsSuccess = true;
                 }
 
+                bool isPlugin = config is PluginPresetConfigWrapper;
+                OOBESelectGameBG.IsUseBackgroundMask = isPlugin;
+
                 _gameHomepageLink = config.ZoneURL;
                 _gameDescription = config.ZoneDescription;
                 
@@ -102,12 +110,14 @@ namespace CollapseLauncher.Pages.OOBE
                                     GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_genshin.png"),
                                     GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GamePoster\poster_starrail.png"),
                                     GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GamePoster\poster_zzz.png"),
-                                    _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
+                                    _ => isPlugin ?
+                                    await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), true, CancellationToken.None) :
+                                    BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                                 };
 
                 // TODO: Use FallbackCDNUtil to get the sprites
                 //_gamePosterPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZonePosterURL, "metadata/"), default);
-                _gameLogoPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), default);
+                _gameLogoPath = await ImageLoaderHelper.GetCachedSpritesAsync(FallbackCDNUtil.TryGetAbsoluteToRelativeCDNURL(config.ZoneLogoURL, "metadata/"), isPlugin, CancellationToken.None);
 
                 if (_gameLogoPath == null)
                 {

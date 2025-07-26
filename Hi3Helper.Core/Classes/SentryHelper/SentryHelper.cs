@@ -71,8 +71,14 @@ namespace Hi3Helper.SentryHelper
 
         #region Enable/Disable Sentry
 
-        public static bool IsDisableEnvVarDetected =>
-            Convert.ToBoolean(Environment.GetEnvironmentVariable("DISABLE_SENTRY"));
+        public static bool IsDisableEnvVarDetected
+        {
+            get
+            {
+                string? envVar = Environment.GetEnvironmentVariable("DISABLE_SENTRY");
+                return !string.IsNullOrEmpty(envVar) && ((int.TryParse(envVar, out int isDisabledFromInt) && isDisabledFromInt == 1) || (bool.TryParse(envVar, out bool isDisabledFromBool) && !isDisabledFromBool));
+            }
+        }
 
         private static bool? _isEnabled;
 
@@ -80,14 +86,14 @@ namespace Hi3Helper.SentryHelper
         {
             get
             {
-                if (IsDisableEnvVarDetected)
+                if (!IsDisableEnvVarDetected)
                 {
-                    Logger.LogWriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
-                    LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", false);
-                    return false;
+                    return LauncherConfig.GetAppConfigValue("SendRemoteCrashData");
                 }
 
-                return _isEnabled ??= LauncherConfig.GetAppConfigValue("SendRemoteCrashData").ToBool();
+                Logger.LogWriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
+                LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", false);
+                return false;
             }
             set
             {
@@ -344,6 +350,7 @@ namespace Hi3Helper.SentryHelper
         public static bool   CurrentGameUpdated    { get; set; }
         public static bool   CurrentGameHasPreload { get; set; }
         public static bool   CurrentGameHasDelta   { get; set; }
+        public static bool   CurrentGameIsPlugin   { get; set; }
 
         private static int CpuThreadsTotal => Environment.ProcessorCount;
 
@@ -464,6 +471,7 @@ namespace Hi3Helper.SentryHelper
                 { "Updated", CurrentGameUpdated.ToString() },
                 { "HasPreload", CurrentGameHasPreload.ToString() },
                 { "HasDelta", CurrentGameHasDelta.ToString() },
+                { "IsGameFromPlugin", CurrentGameIsPlugin.ToString() },
                 { "Location", CurrentGameLocation },
                 { "CdnOption", AppCdnOption }
             }, "GameInfo");

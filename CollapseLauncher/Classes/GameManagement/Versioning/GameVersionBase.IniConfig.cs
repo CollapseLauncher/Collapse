@@ -1,12 +1,15 @@
 ﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
+
 // ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
@@ -62,8 +65,8 @@ namespace CollapseLauncher.GameManagement.Versioning
         #region Game Config Properties
         protected virtual IniFile GameIniProfile     { get; } = new();
         protected virtual IniFile GameIniVersion     { get; } = new();
-        public virtual IniSection GameIniVersionSection { get => GameIniVersion[DefaultIniVersionSection]; }
-        public virtual IniSection GameIniProfileSection { get => GameIniProfile[DefaultIniProfileSection]; }
+        public virtual IniSection? GameIniVersionSection { get => GameIniVersion[DefaultIniVersionSection]; }
+        public virtual IniSection  GameIniProfileSection { get => GameIniProfile[DefaultIniProfileSection]; }
         #endregion
 
         #region Game Config Path Properties
@@ -173,9 +176,12 @@ namespace CollapseLauncher.GameManagement.Versioning
 
             string gameIniVersionPath = Path.Combine(GameDirPath, ConfigFileName);
 
-            GameIniVersionSection[channelIdKeyName] = GamePreset.ChannelID ?? 0;
-            GameIniVersionSection[subChannelIdKeyName] = GamePreset.SubChannelID ?? 0;
-            GameIniVersionSection[cpsKeyName] = GamePreset.LauncherCPSType;
+            if (GameIniVersionSection != null)
+            {
+                GameIniVersionSection[channelIdKeyName]    = GamePreset.ChannelID ?? 0;
+                GameIniVersionSection[subChannelIdKeyName] = GamePreset.SubChannelID ?? 0;
+                GameIniVersionSection[cpsKeyName]          = GamePreset.LauncherCPSType;
+            }
 
             SaveGameIni(gameIniVersionPath, GameIniVersion);
         }
@@ -196,7 +202,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Update Game Config Methods
-        public void UpdateGamePath(string? path, bool saveValue = true)
+        public virtual void UpdateGamePath(string? path, bool saveValue = true)
         {
             GameIniProfileSection["game_install_path"] = path?.Replace('\\', '/');
             if (saveValue)
@@ -205,7 +211,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
         }
 
-        public void UpdateGameVersionToLatest(bool saveValue = true)
+        public virtual void UpdateGameVersionToLatest(bool saveValue = true)
         {
             GameVersionInstalled = GameVersionAPI;
             if (!saveValue)
@@ -218,20 +224,12 @@ namespace CollapseLauncher.GameManagement.Versioning
             UpdatePluginVersions(PluginVersionsAPI);
         }
 
-        public void UpdateGameVersion(GameVersion? version, bool saveValue = true)
+        public virtual void UpdateGameVersion(GameVersion? version, bool saveValue = true)
         {
-            GameIniVersionSection["game_version"] = version?.VersionString;
-            if (saveValue)
+            if (GameIniVersionSection != null)
             {
-                SaveGameIni(GameIniVersionPath, GameIniVersion);
+                GameIniVersionSection["game_version"] = version?.VersionString;
             }
-        }
-
-        public void UpdateGameChannels(bool saveValue = true)
-        {
-            GameIniVersionSection["channel"] = DefaultGameChannelID;
-            GameIniVersionSection["sub_channel"] = DefaultGameSubChannelID;
-            GameIniVersionSection["cps"] = DefaultGameCps;
 
             if (saveValue)
             {
@@ -239,7 +237,22 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
         }
 
-        public void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue = true)
+        public virtual void UpdateGameChannels(bool saveValue = true)
+        {
+            if (GameIniVersionSection != null)
+            {
+                GameIniVersionSection["channel"]     = DefaultGameChannelID;
+                GameIniVersionSection["sub_channel"] = DefaultGameSubChannelID;
+                GameIniVersionSection["cps"]         = DefaultGameCps;
+            }
+
+            if (saveValue)
+            {
+                SaveGameIni(GameIniVersionPath, GameIniVersion);
+            }
+        }
+
+        public virtual void UpdatePluginVersions(Dictionary<string, GameVersion> versions, bool saveValue = true)
         {
             // If the plugin is empty, ignore it
             if (versions.Count == 0)
@@ -253,7 +266,10 @@ namespace CollapseLauncher.GameManagement.Versioning
                 string keyName = $"plugin_{version.Key}_version";
 
                 // Set the value
-                GameIniVersionSection[keyName] = version.Value.VersionString;
+                if (GameIniVersionSection != null)
+                {
+                    GameIniVersionSection[keyName] = version.Value.VersionString;
+                }
             }
 
             if (saveValue)
@@ -262,19 +278,22 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
         }
 
-        public void UpdateSdkVersion(GameVersion? version, bool saveValue = true)
+        public virtual void UpdateSdkVersion(GameVersion? version, bool saveValue = true)
         {
             // If the version is null, return
             if (!version.HasValue)
                 return;
 
             // If the sdk is empty, ignore it
-            if (GameApiProp.data?.sdk == null)
+            if (GameApiProp?.data?.sdk == null)
                 return;
 
             // Set the value
             const string keyName = "plugin_sdk_version";
-            GameIniVersionSection[keyName] = version.ToString();
+            if (GameIniVersionSection != null)
+            {
+                GameIniVersionSection[keyName] = version.ToString();
+            }
 
             if (saveValue)
             {
@@ -284,23 +303,24 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Find Game Config Methods
-        public virtual string? FindGameInstallationPath(string path)
-        {
-            // Try to find the base game path from the executable location.
-            string? basePath = TryFindGamePathFromExecutableAndConfig(path, GamePreset.GameExecutableName);
-
-            // If the executable file and version config doesn't exist (null), then return null.
-            if (string.IsNullOrEmpty(basePath))
+        public virtual Task<string?> FindGameInstallationPath(string path)
+            => Task.Factory.StartNew(() =>
             {
-                return null;
-            }
+                // Try to find the base game path from the executable location.
+                string? basePath = TryFindGamePathFromExecutableAndConfig(path, GamePreset.GameExecutableName);
 
-            // Check if the ini file does have the "game_version" value.
-            string iniPath = Path.Combine(basePath, ConfigFileName);
-            return IsTryParseIniVersionExist(iniPath) ? basePath :
-                // If the file doesn't exist, return as null.
-                null;
-        }
+                // If the executable file and version config doesn't exist (null), then return null.
+                if (string.IsNullOrEmpty(basePath))
+                {
+                    return null;
+                }
+
+                // Check if the ini file does have the "game_version" value.
+                string iniPath = Path.Combine(basePath, ConfigFileName);
+                return IsTryParseIniVersionExist(iniPath) ? basePath :
+                    // If the file doesn't exist, return as null.
+                    null;
+            });
 
         protected virtual string? TryFindGamePathFromExecutableAndConfig(string path, string? executableName)
         {

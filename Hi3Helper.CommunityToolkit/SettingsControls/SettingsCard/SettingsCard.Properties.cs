@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-// ReSharper disable RedundantExtendsListEntry
-// ReSharper disable PartialTypeWithSinglePart
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
-public partial class SettingsCard : ButtonBase
+public partial class SettingsCard
 {
     /// <summary>
     /// The backing <see cref="DependencyProperty"/> for the <see cref="Header"/> property.
@@ -154,27 +152,62 @@ public partial class SettingsCard : ButtonBase
         set => SetValue(IsActionIconVisibleProperty, value);
     }
 
-    protected virtual void OnIsClickEnabledPropertyChanged(bool oldValue, bool newValue) => OnIsClickEnabledChanged();
+    /// <summary>
+    /// Called when the IsClickEnabled property changes.
+    /// </summary>
+    protected virtual void OnIsClickEnabledPropertyChanged(bool oldValue, bool newValue)
+    {
+        OnIsClickEnabledChanged();
+    }
 
-    protected virtual void OnHeaderIconPropertyChanged(IconElement oldValue, IconElement newValue) => OnHeaderIconChanged();
+    /// <summary>
+    /// Called when the HeaderIcon property changes.
+    /// </summary>
+    protected virtual void OnHeaderIconPropertyChanged(IconElement oldValue, IconElement newValue)
+    {
+        OnHeaderIconChanged();
+    }
 
-    protected virtual void OnHeaderPropertyChanged(object oldValue, object newValue) => OnHeaderChanged();
+    /// <summary>
+    /// Called when the Header property changes.
+    /// </summary>
+    protected virtual void OnHeaderPropertyChanged(object oldValue, object newValue)
+    {
+        OnHeaderChanged();
+    }
 
-    protected virtual void OnDescriptionPropertyChanged(object oldValue, object newValue) => OnDescriptionChanged();
+    /// <summary>
+    /// Called when the Description property changes.
+    /// </summary>
+    protected virtual void OnDescriptionPropertyChanged(object oldValue, object newValue)
+    {
+        OnDescriptionChanged();
+    }
 
-    protected virtual void OnIsActionIconVisiblePropertyChanged(bool oldValue, bool newValue) => OnActionIconChanged();
+    /// <summary>
+    /// Called when the IsActionIconVisible property changes.
+    /// </summary>
+    protected virtual void OnIsActionIconVisiblePropertyChanged(bool oldValue, bool newValue)
+    {
+        OnActionIconChanged();
+    }
 }
 
+/// <summary>
+/// The alignment of Content.
+/// </summary>
 public enum ContentAlignment
 {
     /// <summary>
     /// The Content is aligned to the right. Default state.
     /// </summary>
     Right,
+
     /// <summary>
     /// The Content is left-aligned while the Header, HeaderIcon and Description are collapsed. This is commonly used for Content types such as CheckBoxes, RadioButtons and custom layouts.
     /// </summary>
     Left,
+
     /// <summary>
     /// The Content is vertically aligned.
     /// </summary>
