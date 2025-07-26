@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -107,6 +108,9 @@ namespace CollapseLauncher
                 CurrentLogger = IsConsoleEnabled
                     ? new LoggerConsole(logPath, Encoding.UTF8)
                     : new LoggerNull(logPath, Encoding.UTF8);
+
+                // Set ILogger for CDNCacheUtil
+                CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");
 
                 // Start Updater Hook
                 VelopackLocatorExtension.StartUpdaterHook(AppAumid);

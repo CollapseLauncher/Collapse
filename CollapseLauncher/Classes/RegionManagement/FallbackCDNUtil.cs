@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
@@ -85,9 +86,9 @@ namespace CollapseLauncher
         public async Task<byte[]> DownloadBytesInner(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
 #endif
         {
-            string relativePath = GetRelativePathOnly(url);
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default, true);
-            byte[] buffer = new byte[stream.Length];
+            string             relativePath = GetRelativePathOnly(url);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, CancellationToken.None, true);
+            byte[]             buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return buffer;
         }
@@ -98,9 +99,9 @@ namespace CollapseLauncher
         public async Task<string> DownloadStringInner(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
 #endif
         {
-            string relativePath = GetRelativePathOnly(url);
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default, true);
-            byte[] buffer = new byte[stream.Length];
+            string             relativePath = GetRelativePathOnly(url);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, CancellationToken.None, true);
+            byte[]             buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return Encoding.UTF8.GetString(buffer);
         }
@@ -293,11 +294,11 @@ namespace CollapseLauncher
             }
         }
 
-        public static async Task<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
+        public static async Task<Stream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
         {
             // Get the preferred CDN first and try to get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
-            BridgedNetworkStream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
+            Stream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
 
             // If successful, then return
             if (contentStream != null) return contentStream;
@@ -332,7 +333,7 @@ namespace CollapseLauncher
             outputStream.Position = 0;
         }
 
-        private static async Task<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
+        private static async Task<Stream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
         {
             try
             {
@@ -604,14 +605,14 @@ namespace CollapseLauncher
         }
 #nullable restore
 
-        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
+        public static async Task<Stream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
             var responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
-        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
-            => await BridgedNetworkStream.CreateStream(responseMsg, token);
+        public static async Task<Stream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
+            => (await responseMsg.TryGetCachedStreamFrom(token)).Stream;
 
         public static async ValueTask<long[]> GetCDNLatencies(CancellationTokenSource tokenSource, int pingCount = 1)
         {

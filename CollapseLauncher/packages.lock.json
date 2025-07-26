@@ -218,9 +218,9 @@
       },
       "System.CommandLine": {
         "type": "Direct",
-        "requested": "[2.0.0-beta5.25306.1, )",
-        "resolved": "2.0.0-beta5.25306.1",
-        "contentHash": "ce0wuowuh13Cd7GXqLCq77/YWlxQMxrVCMIO/2/QUP6CdP/JWnlYSN/N3/55wwGsUwa9CvPuT8ddjgyypUr5ag=="
+        "requested": "[2.0.0-beta6.25358.103, )",
+        "resolved": "2.0.0-beta6.25358.103",
+        "contentHash": "YE8bPzXelsU4Fm4mHIFKwPHYJ1RT0hr1b5+tiyjFk4YYpA+WKzdYxrvdJVJIoC+2vbtffajA928Qe7xUj0WR4g=="
       },
       "System.CommandLine.NamingConventionBinder": {
         "type": "Direct",
@@ -555,7 +555,7 @@
           "Google.Protobuf": "[3.31.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
-          "System.IO.Hashing": "[9.0.6, )"
+          "System.IO.Hashing": "[9.0.7, )"
         }
       },
       "hi3helper.http": {

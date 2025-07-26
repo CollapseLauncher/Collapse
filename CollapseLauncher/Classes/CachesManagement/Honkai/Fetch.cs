@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -143,8 +144,8 @@ namespace CollapseLauncher
 #endif
 
             // Get a direct HTTP Stream
-            await using HttpResponseInputStream remoteStream = await HttpResponseInputStream.CreateStreamAsync(
-                downloadClient.GetHttpClient(), assetIndexURL, null, null, null, null, null, token);
+            await using Stream remoteStream = (await downloadClient.GetHttpClient()
+                                                                   .TryGetCachedStreamFrom(assetIndexURL, token: token)).Stream;
 
             await using XORStream stream = new XORStream(remoteStream);
 

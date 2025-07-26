@@ -1,6 +1,6 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
-using Hi3Helper;
+﻿using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
@@ -140,7 +140,7 @@ namespace CollapseLauncher
         {
             // Get reference stream and reader. Use CopyToStream so the reference data from NetworkStream to FileStream
             // can be copied while being read by the StreamReader.
-            await using Stream networkStream = await FallbackCDNUtil.GetHttpStreamFromResponse(persistentUrls.RefUrl, token);
+            await using Stream networkStream = (await client.TryGetCachedStreamFrom(persistentUrls.RefUrl, token: token)).Stream;
             await using FileStream resStream = File.Create(persistentUrls.RefPath);
             await using CopyToStream bridgeStream = new CopyToStream(networkStream, resStream, persistentProperty.ReadDelegate, true);
             using StreamReader streamReader = new StreamReader(bridgeStream);

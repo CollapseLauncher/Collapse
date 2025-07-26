@@ -1,4 +1,5 @@
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Screen;
 using System;
@@ -263,7 +264,11 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameFolder
         {
             get => GetAppConfigValue("GameFolder").Value ?? "";
-            set => SetAppConfigValue("GameFolder", value);
+            set
+            {
+                SetAppConfigValue("GameFolder", value);
+                AppCDNCacheFolder = Path.Combine(value, "_cdnCache");
+            }
         }
 
         [field: AllowNull, MaybeNull]
@@ -273,6 +278,11 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
         public static string AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
         public static string AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
+        public static string AppCDNCacheFolder
+        {
+            get => CDNCacheUtil.CurrentCacheDir ?? "";
+            set => CDNCacheUtil.CurrentCacheDir = value;
+        }
 
         [field: AllowNull, MaybeNull]
         public static Version AppCurrentVersion

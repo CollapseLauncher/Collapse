@@ -243,7 +243,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (stampLocalStream.Length == 0)
                 {
                     // Get the stream and download the file
-                    await using BridgedNetworkStream stampRemoteStream =
+                    await using Stream stampRemoteStream =
                         await FallbackCDNUtil.TryGetCDNFallbackStream(stampRemoteFilePath);
                     await stampRemoteStream.CopyToAsync(stampLocalStream);
 
@@ -512,7 +512,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (configLocalStream.Length == 0)
                 {
                     // Get the stream and download the file
-                    await using BridgedNetworkStream stampRemoteStream =
+                    await using Stream stampRemoteStream =
                         await FallbackCDNUtil.TryGetCDNFallbackStream(configRemoteFilePath);
                     await stampRemoteStream.CopyToAsync(configLocalStream);
 
@@ -631,7 +631,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 // Get the remote stream
                 string stampRemoteFilePath = LauncherStampRemoteURLPath;
-                await using BridgedNetworkStream stampRemoteStream =
+                await using Stream stampRemoteStream =
                     await FallbackCDNUtil.TryGetCDNFallbackStream(stampRemoteFilePath);
 
                 // Check and throw if the stream returns null or empty
