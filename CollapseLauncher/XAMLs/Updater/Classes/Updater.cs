@@ -260,7 +260,7 @@ public partial class Updater : IDisposable
         string updateFileIndexUrl = CombineURLFromString(preferredCdn.URLPrefix, _channelName.ToLower(), "fileindex.json");
 
         AppUpdateVersionProp updateInfo = await FallbackCDNUtil.DownloadAsJSONType(updateFileIndexUrl,
-                                            AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp, default)!;
+                                            AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp, CancellationToken.None)!;
 
         GameVersion? gameVersion = updateInfo!.Version;
 
@@ -273,7 +273,7 @@ public partial class Updater : IDisposable
                                                          Environment.ProcessorCount > 8
                                                              ? 8
                                                              : Environment.ProcessorCount,
-                                                         $"{_channelName.ToLower()}/ApplyUpdate.exe", default);
+                                                         $"{_channelName.ToLower()}/ApplyUpdate.exe", CancellationToken.None);
         FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
 
         await File.WriteAllTextAsync(Path.Combine(WorkingDir, "..\\", "release"), _channelName.ToLower());

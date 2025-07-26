@@ -232,7 +232,7 @@ public partial class MainPage : Page
             {
                 verString = version.VersionString;
                 SpawnNotificationPush(Lang._Misc.UpdateCompleteTitle,
-                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version.ToString("n", null), IsPreview ? "Preview" : "Stable"),
+                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version.ToString("n"), IsPreview ? "Preview" : "Stable"),
                                       NotifSeverity.Success,
                                       0xAF,
                                       true,

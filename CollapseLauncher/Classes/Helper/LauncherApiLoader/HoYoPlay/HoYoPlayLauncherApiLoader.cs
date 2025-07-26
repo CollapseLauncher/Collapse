@@ -100,7 +100,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
-                ActionTimeoutTaskCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
+                ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherResources?> hypPluginResourceCallback =
                     innerToken => ApiGeneralHttpClient
                                  .GetFromCachedJsonAsync(PresetConfig?.LauncherPluginURL,
                                                          HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
@@ -118,13 +118,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
             {
-                ActionTimeoutTaskCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
-                    innerToken =>
-                        ApiGeneralHttpClient
-                           .GetFromCachedJsonAsync(PresetConfig?.LauncherGameChannelSDKURL,
-                                                   HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
-                                                   innerToken)
-                           .ConfigureAwait(false);
+                ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherResources?> hypSdkResourceCallback =
+                    innerToken => ApiGeneralHttpClient
+                                 .GetFromCachedJsonAsync(PresetConfig?.LauncherGameChannelSDKURL,
+                                                         HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
+                                                         innerToken)
+                                 .ConfigureAwait(false);
 
                 tasks[2] = hypSdkResourceCallback
                     .WaitForRetryAsync(ExecutionTimeout,

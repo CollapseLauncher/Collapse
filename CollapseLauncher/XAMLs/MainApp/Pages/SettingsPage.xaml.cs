@@ -1360,7 +1360,7 @@ namespace CollapseLauncher.Pages
             {
                 if (progressRing != null)
                     progressRing.IsIndeterminate = true;
-                UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode("https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE", default);
+                UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode("https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE", CancellationToken.None);
                 if (!urlStatus.IsSuccessStatusCode)
                 {
                     InvokeError();

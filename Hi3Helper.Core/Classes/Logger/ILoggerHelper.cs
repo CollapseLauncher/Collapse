@@ -38,7 +38,7 @@ namespace Hi3Helper
         private class LoggerWrapper(string prefix = "") : ILogger
         {
             public IDisposable BeginScope<TState>(TState state)
-                where TState : notnull => default!;
+                where TState : notnull => null!;
 
             public bool IsEnabled(LogLevel logLevel) => true;
 
@@ -64,7 +64,7 @@ namespace Hi3Helper
                                     #if DEBUG
                                         LogType.Debug => true,
                                     #else
-                LogType.Debug => false,
+                                        LogType.Debug => false,
                                     #endif
                                         _ => false
                                     };
