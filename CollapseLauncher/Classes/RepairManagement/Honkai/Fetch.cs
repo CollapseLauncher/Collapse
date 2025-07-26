@@ -92,6 +92,13 @@ namespace CollapseLauncher
             // Get the instance of a new DownloadClient
             DownloadClient downloadClient = DownloadClient.CreateInstance(client);
 
+            // Initialize local audio manifest, blocks and patchConfig stream.
+            SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier          = null;
+            SenadinaFileIdentifier? blocksBaseManifestSenadinaFileIdentifier     = null;
+            SenadinaFileIdentifier? blocksPlatformManifestSenadinaFileIdentifier = null;
+            SenadinaFileIdentifier? blocksCurrentManifestSenadinaFileIdentifier  = null;
+            SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier    = null;
+
             try
             {
                 // Subscribe the fetching progress and subscribe cacheUtil progress to adapter
@@ -113,13 +120,6 @@ namespace CollapseLauncher
                 }
 
                 GameRepoURL = gameRepoUrl;
-
-                // Initialize local audio manifest, blocks and patchConfig stream.
-                SenadinaFileIdentifier? audioManifestSenadinaFileIdentifier          = null;
-                SenadinaFileIdentifier? blocksBaseManifestSenadinaFileIdentifier     = null;
-                SenadinaFileIdentifier? blocksPlatformManifestSenadinaFileIdentifier = null;
-                SenadinaFileIdentifier? blocksCurrentManifestSenadinaFileIdentifier  = null;
-                SenadinaFileIdentifier? patchConfigManifestSenadinaFileIdentifier    = null;
                 /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
                 SenadinaFileIdentifier? asbReferenceSenadinaFileIdentifier = null;
                 */
@@ -139,48 +139,48 @@ namespace CollapseLauncher
 
                     // Get the Senadina File Identifier Dictionary and its file references
                     senadinaFileIdentifier = await GetSenadinaIdentifierDictionary(client,
-                                                                                   _primaryMainMetaRepoUrl,
                                                                                    _secondaryMainMetaRepoUrl,
+                                                                                   _primaryMainMetaRepoUrl,
                                                                                    false,
                                                                                    token);
                     audioManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
                                                                                           senadinaFileIdentifier,
                                                                                           SenadinaKind.chiptunesCurrent,
                                                                                           versionArray,
-                                                                                          _primaryMainMetaRepoUrl,
                                                                                           _secondaryMainMetaRepoUrl,
+                                                                                          _primaryMainMetaRepoUrl,
                                                                                           false,
                                                                                           token);
                     blocksPlatformManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
                                                                                                    senadinaFileIdentifier,
                                                                                                    SenadinaKind.platformBase,
                                                                                                    versionArray,
-                                                                                                   _primaryMainMetaRepoUrl,
                                                                                                    _secondaryMainMetaRepoUrl,
+                                                                                                   _primaryMainMetaRepoUrl,
                                                                                                    false,
                                                                                                    token);
                     blocksBaseManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
                                                                                                senadinaFileIdentifier,
                                                                                                SenadinaKind.bricksBase,
                                                                                                versionArray,
-                                                                                               _primaryMainMetaRepoUrl,
                                                                                                _secondaryMainMetaRepoUrl,
+                                                                                               _primaryMainMetaRepoUrl,
                                                                                                false,
                                                                                                token);
                     blocksCurrentManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
                                                                                                   senadinaFileIdentifier,
                                                                                                   SenadinaKind.bricksCurrent,
                                                                                                   versionArray,
-                                                                                                  _primaryMainMetaRepoUrl,
                                                                                                   _secondaryMainMetaRepoUrl,
+                                                                                                  _primaryMainMetaRepoUrl,
                                                                                                   false,
                                                                                                   token);
                     patchConfigManifestSenadinaFileIdentifier = await GetSenadinaIdentifierKind(client,
                                                                                                 senadinaFileIdentifier,
                                                                                                 SenadinaKind.wandCurrent,
                                                                                                 versionArray,
-                                                                                                _primaryMainMetaRepoUrl,
                                                                                                 _secondaryMainMetaRepoUrl,
+                                                                                                _primaryMainMetaRepoUrl,
                                                                                                 true,
                                                                                                 token);
                 /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
@@ -206,7 +206,7 @@ namespace CollapseLauncher
                 }
 
                 // Assign the URL based on the version
-                GameRepoURL = manifestDict[GameVersion.VersionString!];
+                GameRepoURL = manifestDict[GameVersion.VersionString];
 
                 // Region: XMFAndAssetIndex
                 // Fetch asset index
@@ -246,6 +246,12 @@ namespace CollapseLauncher
                 CacheUtil!.ProgressChanged -= _innerObject_ProgressAdapter;
                 CacheUtil.StatusChanged -= _innerObject_StatusAdapter;
                 senadinaFileIdentifier?.Clear();
+
+                audioManifestSenadinaFileIdentifier?.Dispose();
+                blocksBaseManifestSenadinaFileIdentifier?.Dispose();
+                blocksPlatformManifestSenadinaFileIdentifier?.Dispose();
+                blocksCurrentManifestSenadinaFileIdentifier?.Dispose();
+                patchConfigManifestSenadinaFileIdentifier?.Dispose();
             }
         }
 
@@ -478,7 +484,7 @@ namespace CollapseLauncher
             try
             {
                 string identifierUrl = CombineURLFromString(mainUrl, "daftar-pustaka");
-                await using Stream fileIdentifierStream = (await HttpResponseInputStream.CreateStreamAsync(client, identifierUrl, null, null, null, null, null, token))!;
+                await using Stream fileIdentifierStream = (await client.TryGetCachedStreamFrom(identifierUrl, token: token)).Stream;
                 await using Stream fileIdentifierStreamDecoder = new BrotliStream(fileIdentifierStream, CompressionMode.Decompress, true);
 
                 await ThrowIfFileIsNotSenadina(fileIdentifierStream, token);
@@ -531,7 +537,8 @@ namespace CollapseLauncher
                                               "Please contact us in GitHub issues or Discord to let us know about this issue.");
                 }
 
-                Stream networkStream = (await HttpResponseInputStream.CreateStreamAsync(client, fileUrl, null, null, null, null, null, token))!;
+                CDNCacheUtil.CDNCacheResult result        = await client.TryGetCachedStreamFrom(fileUrl, token: token);
+                Stream                      networkStream = result.Stream;
 
                 await ThrowIfFileIsNotSenadina(networkStream, token);
                 identifier.fileStream = SenadinaFileIdentifier.CreateKangBakso(networkStream, identifier.lastIdentifier!, origFileRelativePath, (int)identifier.fileTime);
@@ -546,7 +553,7 @@ namespace CollapseLauncher
                 {
                     throw;
                 }
-                LogWriteLine($"[Senadina::Identifier] Trying to get Senadina's  identifier kind: {kind} from secondary URL: {secondaryUrl}", LogType.Warning, true);
+                LogWriteLine($"[Senadina::Identifier] Trying to get Senadina's identifier kind: {kind} from secondary URL: {secondaryUrl}", LogType.Warning, true);
                 return await GetSenadinaIdentifierKind(client, dict, kind, gameVersion, null, secondaryUrl, true, token);
             }
         }
@@ -642,8 +649,11 @@ namespace CollapseLauncher
             // Get the remote stream and use CacheStream
             await using MemoryStream memoryStream = new MemoryStream();
             ArgumentNullException.ThrowIfNull(cacheAsset);
+
             // Download the cache and store it to MemoryStream
-            await downloadClient.DownloadAsync(cacheAsset.ConcatURL, memoryStream, false, cancelToken: token);
+            var result = await downloadClient.GetHttpClient().TryGetCachedStreamFrom(cacheAsset.ConcatURL, token: token);
+            await using Stream responseStream = result.Stream;
+            await responseStream.CopyToAsync(memoryStream, token);
             memoryStream.Position = 0;
 
             // Use CacheStream to decrypt and read it as Stream
@@ -883,8 +893,9 @@ namespace CollapseLauncher
         // ReSharper disable once UnusedParameter.Local
         private async Task<KianaAudioManifest> TryGetAudioManifest(HttpClient client, SenadinaFileIdentifier senadinaFileIdentifier, string manifestLocal, string manifestRemote, CancellationToken token)
         {
-            await using Stream?    originalFile = await senadinaFileIdentifier.GetOriginalFileStream(client, token);
-            await using FileStream localFile    = new FileStream(EnsureCreationOfDirectory(manifestLocal), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            string originalUrl = senadinaFileIdentifier.GetOriginalFileUrl();
+            await using Stream originalFile = (await client.TryGetCachedStreamFrom(originalUrl, token: token)).Stream;
+            await using FileStream localFile = new FileStream(EnsureCreationOfDirectory(manifestLocal), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             // Start downloading manifest.m
             if (originalFile != null)
@@ -907,7 +918,7 @@ namespace CollapseLauncher
             string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, GameVersionManager!.GamePreset.ProfileName);
 
             // Start downloading metadata using FallbackCDNUtil
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
             return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token) ?? [];
         }
 
@@ -917,7 +928,7 @@ namespace CollapseLauncher
             string urlIndex = string.Format(AppGameRepairIndexURLPrefix, GameVersionManager!.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
 
             // Deserialize asset index and return
             DeserializeAssetIndexV2(stream, assetIndex);
@@ -972,11 +983,11 @@ namespace CollapseLauncher
             BlockPatchManifest? patchConfigInfo = null;
 
             // Set local Senadina identifier variables
-            SenadinaFileIdentifier? xmfPlatformIdentifier = xmfSenadinaProperty.BlockPlatformManifest;
-            SenadinaFileIdentifier? xmfBaseIdentifier = xmfSenadinaProperty.BlockBaseManifest;
-            SenadinaFileIdentifier? xmfCurrentIdentifier = xmfSenadinaProperty.BlockCurrentManifest;
-            SenadinaFileIdentifier? patchConfigIdentifier = xmfSenadinaProperty.PatchConfigManifest;
-            CancellationToken token = xmfSenadinaProperty.CancelToken;
+            using SenadinaFileIdentifier? xmfPlatformIdentifier = xmfSenadinaProperty.BlockPlatformManifest;
+            using SenadinaFileIdentifier? xmfBaseIdentifier     = xmfSenadinaProperty.BlockBaseManifest;
+            using SenadinaFileIdentifier? xmfCurrentIdentifier  = xmfSenadinaProperty.BlockCurrentManifest;
+            using SenadinaFileIdentifier? patchConfigIdentifier = xmfSenadinaProperty.PatchConfigManifest;
+            CancellationToken             token                 = xmfSenadinaProperty.CancelToken;
 
             bool isPlatformXMFStreamExist = xmfPlatformIdentifier != null;
             bool isSecondaryXMFStreamExist = xmfCurrentIdentifier != null;
@@ -987,7 +998,7 @@ namespace CollapseLauncher
             using MemoryStream tempXMFMetaStream = new();
 
             await using Stream? metaBaseXMFStream = !IsOnlyRecoverMain && isPlatformXMFStreamExist ?
-                await xmfPlatformIdentifier!.GetOriginalFileStream(_httpClient, token) :
+                (await (await xmfPlatformIdentifier!.GetOriginalFileHttpResponse(_httpClient, token: token)).TryGetCachedStreamFrom(token)).Stream :
                 null;
             if (xmfPlatformIdentifier != null)
             {
@@ -998,8 +1009,8 @@ namespace CollapseLauncher
                 if (isEitherXMFExist)
                 {
                     await using Stream? baseXMFStream = !IsOnlyRecoverMain && isSecondaryXMFStreamExist ?
-                        await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token) :
-                        await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token);
+                        (await (await xmfCurrentIdentifier!.GetOriginalFileHttpResponse(_httpClient, token: token)).TryGetCachedStreamFrom(token)).Stream :
+                        (await (await xmfBaseIdentifier!.GetOriginalFileHttpResponse(_httpClient, token: token)).TryGetCachedStreamFrom(token)).Stream;
                     if (xmfCurrentIdentifier != null)
                     {
                         await using Stream? dataXMFStream = !IsOnlyRecoverMain ? xmfCurrentIdentifier.fileStream : xmfBaseIdentifier?.fileStream;

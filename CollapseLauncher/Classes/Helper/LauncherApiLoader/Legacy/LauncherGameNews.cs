@@ -154,7 +154,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
                 return;
             }
 
-            foreach (T? propValue in prop)
+            foreach (T propValue in prop)
             {
                 InjectDownloadableItemCancelTokenInner(propValue, launcherApi, token);
             }

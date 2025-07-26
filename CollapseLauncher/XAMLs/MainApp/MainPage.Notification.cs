@@ -69,7 +69,7 @@ public partial class MainPage : Page
             CancellationTokenSource TokenSource = new CancellationTokenSource();
             RunTimeoutCancel(TokenSource);
 
-            await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+            await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
             NotificationData = await networkStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush, token: TokenSource.Token);
             IsLoadNotifComplete = true;
 

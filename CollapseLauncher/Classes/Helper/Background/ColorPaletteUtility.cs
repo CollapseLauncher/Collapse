@@ -237,7 +237,7 @@ namespace CollapseLauncher.Helper.Background
                 Directory.CreateDirectory(cachedPaletteDirPath ?? "");
             }
 
-            if (!ConverterTool.TrySerializeStruct(colors, buffer, out int read))
+            if (!ConverterTool.TrySerializeStruct(buffer, out int read, colors))
             {
                 byte defVal = (byte)(isLight ? 80 : 255);
                 WColor defColor =

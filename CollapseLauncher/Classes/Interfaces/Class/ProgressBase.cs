@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.SentryHelper;
@@ -792,10 +793,10 @@ namespace CollapseLauncher.Interfaces
             string?                          url            = GameVersionManager.GameApiProp.data.sdk.path;
             if (url == null) throw new NullReferenceException();
 
-            HttpResponseMessage httpResponse = await FallbackCDNUtil.GetURLHttpResponse(url, token);
-            await using BridgedNetworkStream httpStream     = await FallbackCDNUtil.GetHttpStreamFromResponse(httpResponse, token);
-            await using MemoryStream         bufferedStream = await BufferSourceStreamToMemoryStream(httpStream, token);
-            using ZipArchive                 zip            = new ZipArchive(bufferedStream, ZipArchiveMode.Read, true);
+            HttpResponseMessage      httpResponse   = await FallbackCDNUtil.GetURLHttpResponse(url, token);
+            await using Stream       httpStream     = (await httpResponse.TryGetCachedStreamFrom(token)).Stream;
+            await using MemoryStream bufferedStream = await BufferSourceStreamToMemoryStream(httpStream, token);
+            using ZipArchive         zip            = new ZipArchive(bufferedStream, ZipArchiveMode.Read, true);
             // Iterate the Zip Entry
             foreach (var entry in zip.Entries)
             {

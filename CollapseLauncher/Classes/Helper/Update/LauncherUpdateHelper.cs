@@ -7,6 +7,7 @@ using Hi3Helper.Shared.Region;
 using System;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 #if !USEVELOPACK
 using Squirrel;
@@ -133,8 +134,8 @@ namespace CollapseLauncher.Helper.Update
 
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)
         {
-            string                           relativePath = updateChannel.CombineURLFromString("fileindex.json");
-            await using BridgedNetworkStream ms           = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
+            string             relativePath = updateChannel.CombineURLFromString("fileindex.json");
+            await using Stream ms           = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath);
             return await ms.DeserializeAsync(AppUpdateVersionPropJsonContext.Default.AppUpdateVersionProp);
         }
     }

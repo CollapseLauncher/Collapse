@@ -587,8 +587,13 @@ public partial class HomePage
             // it impossible to use custom resolution (but since you are using Collapse, it's now
             // possible :teriStare:)
             bool isNeedToResetPos = gameType == GameNameType.StarRail;
-            await Task.Run(() => ResizableWindowHook.StartHook(executableName, height, width, ResizableWindowHookToken.Token,
-                                                               isNeedToResetPos, ILoggerHelper.GetILogger(), gameExecutableDirectory));
+            await Task.Run(() => ResizableWindowHook.StartHook(executableName,
+                                                               height,
+                                                               width,
+                                                               isNeedToResetPos,
+                                                               ILoggerHelper.GetILogger(),
+                                                               gameExecutableDirectory,
+                                                               ResizableWindowHookToken.Token));
         }
         catch (Exception ex)
         {
@@ -597,8 +602,10 @@ public partial class HomePage
         }
     }
 
-    private async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal, int height, int width,
-                                             GamePresetProperty     gameProp)
+    private static async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal,
+                                                    int                    height,
+                                                    int                    width,
+                                                    GamePresetProperty     gameProp)
     {
         // Wait for the game to fully initialize
         await Task.Delay(20000);

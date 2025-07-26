@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
@@ -38,23 +39,27 @@ namespace CollapseLauncher
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
 #else
 #nullable enable
-        private async Task DownloadFileInner(string url,
-                                             string targetFile,
-                                             Action<int> progress,
-                                             string? authorization = null,
-                                             string? accept = null,
-                                             double timeout = 30.0,
-                                             CancellationToken cancelToken = default)
+        private async Task DownloadFileInner(string            url,
+                                             string            targetFile,
+                                             Action<int>       progress,
+                                             string?           authorization = null,
+                                             CancellationToken cancelToken   = default)
 #endif
         {
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig()
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
+            HttpClientBuilder<SocketsHttpHandler> builder = new HttpClientBuilder()
+                                                           .UseLauncherConfig()
+                                                           .SetAllowedDecompression(DecompressionMethods.None);
 
-            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
-            EventHandler<DownloadEvent> progressEvent = (_, b) => progress((int)b.ProgressPercentage);
+            if (!string.IsNullOrEmpty(authorization))
+            {
+                builder.AddHeader("Authorization", authorization);
+            }
+
+            using HttpClient client = builder.Create();
+
+            DownloadClient              downloadClient = DownloadClient.CreateInstance(client);
+            EventHandler<DownloadEvent> progressEvent  = (_, b) => progress((int)b.ProgressPercentage);
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
@@ -85,9 +90,9 @@ namespace CollapseLauncher
         public async Task<byte[]> DownloadBytesInner(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
 #endif
         {
-            string relativePath = GetRelativePathOnly(url);
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default, true);
-            byte[] buffer = new byte[stream.Length];
+            string             relativePath = GetRelativePathOnly(url);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, CancellationToken.None, true);
+            byte[]             buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return buffer;
         }
@@ -98,9 +103,9 @@ namespace CollapseLauncher
         public async Task<string> DownloadStringInner(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
 #endif
         {
-            string relativePath = GetRelativePathOnly(url);
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, default, true);
-            byte[] buffer = new byte[stream.Length];
+            string             relativePath = GetRelativePathOnly(url);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, CancellationToken.None, true);
+            byte[]             buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return Encoding.UTF8.GetString(buffer);
         }
@@ -133,9 +138,12 @@ namespace CollapseLauncher
                                        Action<int>                  progress,
                                        IDictionary<string, string>? headers     = null,
                                        double                       timeout     = 30,
-                                       CancellationToken            cancelToken = new CancellationToken())
-            => await DownloadFileInner(url,  targetFile, progress, headers.TryGetValueIgnoreCase("Authorization"),
-                                       null, timeout,    cancelToken);
+                                       CancellationToken            cancelToken = default)
+            => await DownloadFileInner(url,
+                                       targetFile,
+                                       progress,
+                                       headers.TryGetValueIgnoreCase("Authorization"),
+                                       cancelToken);
 
         public async Task<byte[]> DownloadBytes(string url, IDictionary<string, string>? headers = null, double timeout = 30)
             => await DownloadBytesInner(url, headers.TryGetValueIgnoreCase("Authorization"), null, timeout);
@@ -143,10 +151,12 @@ namespace CollapseLauncher
         public async Task<string> DownloadString(string                       url, 
                                                  IDictionary<string, string>? headers = null,
                                                  double                       timeout = 30)
-            => await DownloadStringInner(url,          headers?.TryGetValueIgnoreCase("Authorization") 
-                                                       ?? null, null, timeout);
+            => await DownloadStringInner(url,
+                                         headers?.TryGetValueIgnoreCase("Authorization"),
+                                         null,
+                                         timeout);
 
-    #endif
+#endif
     }
 
 #if USEVELOPACK
@@ -293,11 +303,11 @@ namespace CollapseLauncher
             }
         }
 
-        public static async Task<BridgedNetworkStream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
+        public static async Task<Stream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
         {
             // Get the preferred CDN first and try to get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
-            BridgedNetworkStream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
+            Stream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
 
             // If successful, then return
             if (contentStream != null) return contentStream;
@@ -332,7 +342,7 @@ namespace CollapseLauncher
             outputStream.Position = 0;
         }
 
-        private static async Task<BridgedNetworkStream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
+        private static async Task<Stream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
         {
             try
             {
@@ -604,14 +614,14 @@ namespace CollapseLauncher
         }
 #nullable restore
 
-        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)
+        public static async Task<Stream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
             var responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 
-        public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
-            => await BridgedNetworkStream.CreateStream(responseMsg, token);
+        public static async Task<Stream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
+            => (await responseMsg.TryGetCachedStreamFrom(token)).Stream;
 
         public static async ValueTask<long[]> GetCDNLatencies(CancellationTokenSource tokenSource, int pingCount = 1)
         {
