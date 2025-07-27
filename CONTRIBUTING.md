@@ -11,7 +11,7 @@
 
 ## Localization Contribution(s)
 You can help us add or proofread localization changes for [Collapse on Transifex!](https://explore.transifex.com/collapse-launcher/collapse-mainapp/)
-If you wish to add new language that isn't yet listed in the Crowdin project, please create an issue either in GitHub or create a discussion through Crowdin itself. We'll do our best to get back to you in a timely manner. 
+If you wish to add new language that isn't yet listed in the Transifex project, please create an issue either in GitHub or create a discussion through Transifex itself. We'll do our best to get back to you in a timely manner. 
 
 ## Tools Needed
 Below is a list of tools needed to contribute to this project:
