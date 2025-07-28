@@ -20,6 +20,7 @@ using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
@@ -1453,7 +1454,6 @@ namespace CollapseLauncher.Pages
             get
             {
                 bool value = LauncherConfig.IsUseDownloadSpeedLimiter;
-                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
                 if (value)
                     NetworkBurstDownloadModeToggle.IsOn = false;
                 NetworkBurstDownloadModeToggle.IsEnabled = !value;
@@ -1461,7 +1461,6 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                NetworkDownloadSpeedLimitGrid.Opacity = value ? 1 : 0.45;
                 if (value)
                     NetworkBurstDownloadModeToggle.IsOn = false;
                 NetworkBurstDownloadModeToggle.IsEnabled = !value;
@@ -1474,7 +1473,6 @@ namespace CollapseLauncher.Pages
             get
             {
                 bool value = LauncherConfig.IsUsePreallocatedDownloader;
-                NetworkDownloadChunkSizeGrid.Opacity = value ? 1 : 0.45;
                 OldDownloadChunksMergingToggle.IsEnabled = !value;
 
                 if (!value)
@@ -1488,7 +1486,6 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                NetworkDownloadChunkSizeGrid.Opacity = value ? 1 : 0.45;
                 OldDownloadChunksMergingToggle.IsEnabled = !value;
 
                 if (!value)
@@ -2454,5 +2451,32 @@ namespace CollapseLauncher.Pages
                 sender.ItemsSource = filtered;
             }
         }
+
+        #region Network Cache
+        private async void NetworkCacheModeClear(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button asButton)
+            {
+                return;
+            }
+
+            try
+            {
+                asButton.IsEnabled = false;
+                CDNCacheUtil.PerformCacheGarbageCollection(CDNCacheUtil.CurrentCacheDir, true);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Cannot clear CDN cache!\r\n{ex}", LogType.Error, true);
+            }
+            finally
+            {
+                NetworkCacheModeClearTextSuccess.Visibility = Visibility.Visible;
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                asButton.IsEnabled                          = true;
+                NetworkCacheModeClearTextSuccess.Visibility = Visibility.Collapsed;
+            }
+        }
+        #endregion
     }
 }

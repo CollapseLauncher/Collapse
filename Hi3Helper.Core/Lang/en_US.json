@@ -694,8 +694,31 @@
     "Database_ValidationChecking": "Validating Settings...",
     "Database_Placeholder_DbUserIdTextBox": "GUID Example: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Enter your authentication token here",
-    
-    "SearchPlaceholder": "Type to search..."
+
+    "SearchPlaceholder": "Type to search...",
+
+    "HttpCache_Title": "HTTP Cache Settings",
+    "HttpCacheModeToggle": "Cache Mode",
+    "HttpCacheModeToggle_Tooltip1": "Whether to use network caching while performing HTTP request onto CDNs. This might reduce loading time on certain functionalities.",
+    "HttpCacheModeToggle_Tooltip2": "When enabled, this feature utilize two methods of caching:",
+    "HttpCacheModeToggle_Tooltip3": "Sidenote:",
+    "HttpCacheModeToggle_Tooltip4": "You might need to clear the cache by clicking",
+    "HttpCacheModeToggle_Tooltip5": "button if you encounter some issues or if the launcher behaves unexpectedly.",
+    "HttpCacheMode_Cat1": "Expire Time-based Caching",
+    "HttpCacheMode_Cat2": "ETag/Hash-based Caching",
+    "HttpCacheAggressiveModeToggle": "Aggressive Cache Mode",
+    "HttpCacheAggressiveModeToggle_Tooltip1": "When enabled, this will allow the launcher to perform caching based on how long the",
+    "HttpCacheAggressiveModeToggle_Tooltip2": "is defined. Both",
+    "HttpCacheAggressiveModeToggle_Tooltip3": "and",
+    "HttpCacheAggressiveModeToggle_Tooltip4": "methods are automatically ignored.",
+    "HttpCacheAggressiveModeToggle_Tooltip5": "To use this feature, you must enable the",
+    "HttpCacheAggressiveModeToggle_Tooltip6": "first.",
+    "HttpCacheMaxExpireTimeBox": "Maximum Expire Time",
+    "HttpCacheMaxExpireTimeBox_TooltipDefaultValue": "10 minutes",
+    "HttpCacheMaxExpireTimeBox_Tooltip1": "Determine how long is the allowed maximum cache time for the response (in minutes).",
+    "HttpCacheMaxExpireTimeBoxMinutes": "minutes",
+    "HttpCacheClearButton": "Clear Network Cache",
+    "HttpCacheClearedText": "Caches have been Cleared!"
   },
 
   "_Misc": {
