@@ -265,6 +265,29 @@ namespace Hi3Helper
                 public string Plugin_PluginInfoNameUnknown { get; set; } = LangFallback?._SettingsPage.Plugin_PluginInfoNameUnknown;
                 public string Plugin_PluginInfoDescUnknown { get; set; } = LangFallback?._SettingsPage.Plugin_PluginInfoDescUnknown;
                 public string Plugin_PluginInfoAuthorUnknown { get; set; } = LangFallback?._SettingsPage.Plugin_PluginInfoAuthorUnknown;
+
+                public string HttpCache_Title { get; set; } = LangFallback?._SettingsPage.HttpCache_Title;
+                public string HttpCacheModeToggle { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle;
+                public string HttpCacheModeToggle_Tooltip1 { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle_Tooltip1;
+                public string HttpCacheModeToggle_Tooltip2 { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle_Tooltip2;
+                public string HttpCacheModeToggle_Tooltip3 { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle_Tooltip3;
+                public string HttpCacheModeToggle_Tooltip4 { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle_Tooltip4;
+                public string HttpCacheModeToggle_Tooltip5 { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle_Tooltip5;
+                public string HttpCacheMode_Cat1 { get; set; } = LangFallback?._SettingsPage.HttpCacheMode_Cat1;
+                public string HttpCacheMode_Cat2 { get; set; } = LangFallback?._SettingsPage.HttpCacheMode_Cat2;
+                public string HttpCacheAggressiveModeToggle { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle;
+                public string HttpCacheAggressiveModeToggle_Tooltip1 { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip1;
+                public string HttpCacheAggressiveModeToggle_Tooltip2 { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip2;
+                public string HttpCacheAggressiveModeToggle_Tooltip3 { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip3;
+                public string HttpCacheAggressiveModeToggle_Tooltip4 { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip4;
+                public string HttpCacheAggressiveModeToggle_Tooltip5 { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip5;
+                public string HttpCacheAggressiveModeToggle_Tooltip6 { get; set; } = LangFallback?._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip6;
+                public string HttpCacheMaxExpireTimeBox { get; set; } = LangFallback?._SettingsPage.HttpCacheMaxExpireTimeBox;
+                public string HttpCacheMaxExpireTimeBox_TooltipDefaultValue { get; set; } = LangFallback?._SettingsPage.HttpCacheMaxExpireTimeBox_TooltipDefaultValue;
+                public string HttpCacheMaxExpireTimeBox_Tooltip1 { get; set; } = LangFallback?._SettingsPage.HttpCacheMaxExpireTimeBox_Tooltip1;
+                public string HttpCacheMaxExpireTimeBoxMinutes { get; set; } = LangFallback?._SettingsPage.HttpCacheMaxExpireTimeBoxMinutes;
+                public string HttpCacheClearButton { get; set; } = LangFallback?._SettingsPage.HttpCacheClearButton;
+                public string HttpCacheClearedText { get; set; } = LangFallback?._SettingsPage.HttpCacheClearedText;
             }
         }
         #endregion
