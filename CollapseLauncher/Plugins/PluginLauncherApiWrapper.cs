@@ -167,8 +167,8 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
         }
 
         // Add dispose for GameManager here
-        _pluginMediaApi.Dispose();
-        _pluginNewsApi.Dispose();
+        _pluginMediaApi.Free();
+        _pluginNewsApi.Free();
     }
 
     ~PluginLauncherApiWrapper() => Dispose(disposing: false);

@@ -24,6 +24,7 @@ namespace CollapseLauncher.Plugins;
 internal static class PluginManager
 {
     private const string PluginDirPrefix = "Hi3Helper.Plugin.*";
+    private const string ManifestPrefix  = "manifest.json";
 
 
     public static readonly Dictionary<string, PluginInfo> PluginInstances = new(StringComparer.OrdinalIgnoreCase);
@@ -42,18 +43,36 @@ internal static class PluginManager
 
         foreach (DirectoryInfo pluginDirInfo in directoryInfo.EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
         {
-            FileInfo pluginFile = new FileInfo(Path.Combine(pluginDirInfo.FullName, "main.dll"));
-            if (!pluginFile.Exists)
-            {
-                Logger.LogWriteLine($"The main.dll doesn't exist in this plugin directory: {pluginDirInfo.FullName}. Skipping!", LogType.Warning, true);
-                continue;
-            }
-
-            AssertIfUpxPacked(pluginFile);
             PluginInfo? pluginInfo = null;
+            FileInfo?   pluginFile = null;
+            FileInfo? manifestFile = pluginDirInfo.EnumerateFiles(ManifestPrefix, SearchOption.TopDirectoryOnly)
+                                                  .FirstOrDefault();
 
             try
             {
+                if (manifestFile == null)
+                {
+                    continue;
+                }
+
+                await using FileStream manifestFileStream = manifestFile.OpenRead();
+                PluginManifest? pluginManifest =
+                    await manifestFileStream.DeserializeAsync(PluginManifestJsonContext.Default.PluginManifest);
+
+                if (pluginManifest == null)
+                {
+                    continue;
+                }
+
+                pluginFile = new FileInfo(Path.Combine(pluginDirInfo.FullName, pluginManifest.MainLibraryName));
+                if (!pluginFile.Exists)
+                {
+                    Logger.LogWriteLine($"The {pluginManifest.MainLibraryName} doesn't exist in this plugin directory: {pluginDirInfo.FullName}. Skipping!", LogType.Warning, true);
+                    continue;
+                }
+
+                AssertIfUpxPacked(pluginFile);
+
                 string pluginDirName = pluginDirInfo.Name;
                 if (PluginInstances.TryGetValue(pluginDirName, out pluginInfo))
                 {
@@ -68,14 +87,14 @@ internal static class PluginManager
             }
             catch (Exception ex)
             {
-                Logger.LogWriteLine($"[PluginManager] Failed to load plugin from file: {pluginFile.FullName} due to error: {ex}", LogType.Error, true);
+                Logger.LogWriteLine($"[PluginManager] Failed to load plugin from file: {pluginFile?.FullName} due to error: {ex}", LogType.Error, true);
                 pluginInfo?.Dispose();
             }
             finally
             {
                 if (pluginInfo != null)
                 {
-                    foreach (var currentConfig in pluginInfo.PresetConfigs)
+                    foreach (PluginPresetConfigWrapper currentConfig in pluginInfo.PresetConfigs)
                     {
                         string gameName = currentConfig.GameName;
                         string gameRegion = currentConfig.ZoneName;
@@ -187,9 +206,10 @@ internal static class PluginManager
                                                      pluginInstance.RegisterCancelToken(cancelToken),
                                                      out nint asyncResult);
 
-            nint                 checkUpdateStatusP   = await asyncResult.AsTask<nint>();
-            SelfUpdateReturnInfo selfUpdateReturnInfo = ReplicateFromPtr(checkUpdateStatusP);
-            SelfUpdateReturnCode checkUpdateStatus    = selfUpdateReturnInfo.ReturnCode;
+            nint                 checkUpdateStatusP      = await asyncResult.AsTask<nint>();
+            SelfUpdateReturnInfo selfUpdateReturnInfo    = ReplicateFromPtr(checkUpdateStatusP);
+            SelfUpdateReturnInfo updateRoutineStatusInfo = default;
+            SelfUpdateReturnCode checkUpdateStatus       = selfUpdateReturnInfo.ReturnCode;
 
             try
             {
@@ -211,9 +231,10 @@ internal static class PluginManager
                                                          pluginInstance.RegisterCancelToken(cancelToken),
                                                          out asyncResult);
 
-                nint                 updateRoutineStatusP    = await asyncResult.AsTask<nint>();
-                SelfUpdateReturnInfo updateRoutineStatusInfo = ReplicateFromPtr(updateRoutineStatusP);
-                SelfUpdateReturnCode updateRoutineStatus     = updateRoutineStatusInfo.ReturnCode;
+                nint updateRoutineStatusP = await asyncResult.AsTask<nint>();
+                updateRoutineStatusInfo = ReplicateFromPtr(updateRoutineStatusP);
+
+                SelfUpdateReturnCode updateRoutineStatus = updateRoutineStatusInfo.ReturnCode;
 
                 // Increase the count if update is successful
                 if (updateRoutineStatus is SelfUpdateReturnCode.UpdateSuccess or SelfUpdateReturnCode.RollingBackSuccess)
@@ -243,6 +264,7 @@ internal static class PluginManager
                 if (isDisposeReturnInfo)
                 {
                     selfUpdateReturnInfo.Dispose();
+                    updateRoutineStatusInfo.Dispose();
                 }
             }
         }
