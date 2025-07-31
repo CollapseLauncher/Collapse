@@ -20,6 +20,11 @@
         <pages:GameNameLocaleConverter x:Key="GameNameLocaleConverter" />
         <pages:GameRegionLocaleConverter x:Key="GameRegionLocaleConverter" />
         <pages:LocalFullDateTimeConverter x:Key="LocalFullDateTimeConverter" />
+        <pages:CountToIsEnabledConverter x:Key="CountToIsEnabledConverter" />
+        <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
+        <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
+        <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <pages:InverseCountToVisibilityConverter x:Key="InverseCountToVisibilityConverter"/>
         <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
     </Page.Resources>
     <Grid ColumnSpacing="0">
@@ -27,10 +32,59 @@
             <ColumnDefinition/>
             <ColumnDefinition Width=".7*"/>
         </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+              RowSpacing="16"
+              Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"
+                       Text="Hey, you have no plugin loaded!"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Style="{ThemeResource TitleTextBlockStyle}"
+                       FontSize="36"/>
+            <Button x:Name="GoToPluginDownloadCatalogButton"
+                    CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GoToPluginDownloadCatalogButton)}"
+                    BorderThickness="1"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center">
+                <Grid Margin="12,4"
+                      ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               FontSize="14"
+                               VerticalAlignment="Center">
+                        <Run Text="Go to"/>
+                        <Run Text="Plugin Download Catalog"
+                             FontWeight="Bold"/>
+                        <Run Text="page"/>
+                    </TextBlock>
+                    <FontIcon Grid.Column="1"
+                              Glyph="&#xE826;"
+                              FontSize="20"/>
+                </Grid>
+            </Button>
+            <Image Grid.Row="2"
+                   Source="ms-appx:///Assets/Images/GameMascot/PaimonThreateningAura.png"
+                   Opacity=".4"
+                   MaxWidth="260"
+                   Margin="0,16,0,0"/>
+        </Grid>
         <Grid x:Name="PluginManagementContainer"
               Grid.Column="0"
               RowSpacing="16"
-              Margin="26,26,8,26">
+              Margin="26,26,8,26"
+              Visibility="{x:Bind pages:PluginManagerPage.Context.PluginCollection.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -41,16 +95,72 @@
                        Text="Loaded Plugin Information"
                        Style="{ThemeResource TitleTextBlockStyle}"
                        FontSize="24"/>
-            <ItemsRepeater Grid.Row="1"
-                           ItemsSource="{x:Bind plugins:PluginManager.PluginInstances.Values, Mode=OneWay}">
-                <ItemsRepeater.ItemTemplate>
+            <ListView x:Name="PluginListView"
+                      Grid.Row="1"
+                      RightTapped="OnListViewRightClickUpdate"
+                      ItemsSource="{x:Bind pages:PluginManagerPage.Context.PluginCollection, Mode=OneWay}"
+                      SelectionMode="Multiple"
+                      Margin="-24,0,0,0">
+                <ListView.ItemTemplate>
                     <DataTemplate x:DataType="plugins:PluginInfo">
                         <controls:SettingsExpander Padding="0"
                                                    HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
                                                    Visibility="Visible"
                                                    HorizontalAlignment="Stretch"
                                                    HorizontalContentAlignment="Stretch"
-                                                   Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}">
+                                                   Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                   Margin="0,2,-8,2">
+                            <controls:SettingsExpander.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Uninstall Selected Plugins"
+                                                    Command="{x:Bind pages:PluginManagerPageContext.OnMarkForDeletionSelectedPluginsCommand}"
+                                                    CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountRestored, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE74D;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Restore Selected Plugins"
+                                                    Command="{x:Bind pages:PluginManagerPageContext.OnRestoreFromDeletionSelectedPluginsCommand}"
+                                                    CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountUninstalled, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE7A7;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Enable Selected Plugins"
+                                                    Command="{x:Bind pages:PluginManagerPageContext.OnEnableSelectedPluginsCommand}"
+                                                    CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountDisabled, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE930;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Disable Selected Plugins"
+                                                    Command="{x:Bind pages:PluginManagerPageContext.OnDisableSelectedPluginsCommand}"
+                                                    CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xEA39;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutSeparator Margin="8,8"/>
+                                    <MenuFlyoutItem Text="Open Current Plugin Folder"
+                                                    Command="{x:Bind pages:PluginManagerPageContext.OnOpenCurrentPluginFolderCommand}"
+                                                    CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xED43;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem Text="Open Collapse Launcher Plugin Folder"
+                                                    Command="{x:Bind pages:PluginManagerPageContext.OnOpenCollapsePluginFolderCommand}"
+                                                    CommandParameter="{x:Bind}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xED25;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                </MenuFlyout>
+                            </controls:SettingsExpander.ContextFlyout>
                             <controls:SettingsExpander.Content>
                                 <Grid ColumnSpacing="12"
                                       Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorRecursiveOnLoaded}">
@@ -60,14 +170,17 @@
                                     </Grid.ColumnDefinitions>
                                     <Button Grid.Column="0"
                                             Padding="0"
-                                            Foreground="{ThemeResource SystemFillColorCritical}">
+                                            Foreground="{ThemeResource SystemFillColorCritical}"
+                                            Click="OnUninstallPlugin"
+                                            Tag="{x:Bind}"
+                                            Visibility="{x:Bind IsMarkedForDeletion, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0"
-                                                       Text="Uninstall"
+                                                       Text="Mark for Uninstall"
                                                        FontSize="12"
                                                        VerticalAlignment="Center"
                                                        Margin="8,0,0,0"/>
@@ -95,6 +208,52 @@
                                                                          Color="#A0FF0000"/>
                                                         <SolidColorBrush x:Key="ButtonBackgroundPressed"
                                                                          Color="#70FF0000"/>
+                                                    </ResourceDictionary>
+                                                    <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
+                                                </ResourceDictionary.ThemeDictionaries>
+                                            </ResourceDictionary>
+                                        </Button.Resources>
+                                    </Button>
+                                    <Button Grid.Column="0"
+                                            Padding="0"
+                                            Click="OnRestoreUninstalledPlugin"
+                                            Tag="{x:Bind}"
+                                            Foreground="{ThemeResource SystemFillColorSuccess}"
+                                            Visibility="{x:Bind IsMarkedForDeletion, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0"
+                                                       Text="Restore"
+                                                       FontSize="12"
+                                                       VerticalAlignment="Center"
+                                                       Margin="8,0,0,0"/>
+                                            <FontIcon Grid.Column="1"
+                                                      Glyph="&#xE7A7;"
+                                                      FontSize="16"
+                                                      Margin="4,4,8,4"/>
+                                        </Grid>
+                                        <Button.Resources>
+                                            <ResourceDictionary>
+                                                <ResourceDictionary.ThemeDictionaries>
+                                                    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+                                                    <ResourceDictionary x:Key="Light">
+                                                        <SolidColorBrush x:Key="ButtonBackground"
+                                                                         Color="#106CCB5F"/>
+                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                         Color="#A06CCB5F"/>
+                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                         Color="#706CCB5F"/>
+                                                    </ResourceDictionary>
+                                                    <ResourceDictionary x:Key="Default">
+                                                        <SolidColorBrush x:Key="ButtonBackground"
+                                                                         Color="#100F7B0F"/>
+                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                         Color="#A00F7B0F"/>
+                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                         Color="#700F7B0F"/>
                                                     </ResourceDictionary>
                                                     <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
                                                 </ResourceDictionary.ThemeDictionaries>
@@ -288,11 +447,23 @@
                             </controls:SettingsExpander.Items>
                         </controls:SettingsExpander>
                     </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
+                </ListView.ItemTemplate>
+            </ListView>
             <Grid Grid.Row="2"
                   HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="You need to restart your launcher in order to apply the changes!"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Left"
+                           TextWrapping="Wrap"
+                           Visibility="{x:Bind RestartLauncherButton.IsEnabled, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"/>
                 <Button x:Name="RestartLauncherButton"
+                        Grid.Column="1"
+                        IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsChanged, Mode=OneWay}"
                         HorizontalAlignment="Right"
                         Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(RestartLauncherButton)}"

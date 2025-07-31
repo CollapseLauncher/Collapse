@@ -157,6 +157,28 @@ namespace CollapseLauncher.Pages
         }
     }
 
+    public partial class InverseCountToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value.Equals(0) ? Visibility.Visible : Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class CountToIsEnabledConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value.Equals(1);
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class GameNameLocaleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -274,7 +296,10 @@ namespace CollapseLauncher.Pages
 
             FontIcon GetDefault() => new()
             {
-                Glyph = "\uE74C"
+                Glyph    = "\uE74C",
+                FontSize = 20,
+                Width    = 20,
+                Height   = 20
             };
         }
 #nullable restore

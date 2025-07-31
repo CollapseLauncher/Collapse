@@ -294,7 +294,7 @@ namespace CollapseLauncher.Helper.Metadata
     [JsonSerializable(typeof(PresetConfig))]
     internal sealed partial class PresetConfigJsonContext : JsonSerializerContext;
 
-    internal class PresetConfig
+    public class PresetConfig
     {
         #region Constants
         // ReSharper disable once UnusedMember.Local

@@ -9,6 +9,8 @@ using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,14 +20,12 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
 using TurnerSoftware.DinoDNS;
-using WinRT;
 // ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-[GeneratedBindableCustomProperty]
-internal partial class PluginInfo : IDisposable
+public class PluginInfo : INotifyPropertyChanged, IDisposable
 {
     internal const string MarkDisabledFileName           = "_markDisabled";
     internal const string MarkPendingDeletionFileName    = "_markPendingDeletion";
@@ -41,6 +41,8 @@ internal partial class PluginInfo : IDisposable
 
     private bool _isDisposed;
 
+    public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+
     public GameVersion                 StandardVersion { get; }
     public GameVersion                 Version         { get; }
     public IPlugin?                    Instance        { get; }
@@ -52,13 +54,21 @@ internal partial class PluginInfo : IDisposable
     public bool IsEnabled
     {
         get => !GetMarkState(PluginDirPath, MarkDisabledFileName);
-        set => SetMarkState(PluginDirPath, MarkDisabledFileName, !value);
+        set
+        {
+            SetMarkState(PluginDirPath, MarkDisabledFileName, !value);
+            OnPropertyChanged();
+        }
     }
 
     public bool IsMarkedForDeletion
     {
-        get => GetMarkState(PluginDirPath, MarkDisabledFileName);
-        set => SetMarkState(PluginDirPath, MarkPendingDeletionFileName, value);
+        get => GetMarkState(PluginDirPath, MarkPendingDeletionFileName);
+        set
+        {
+            SetMarkState(PluginDirPath, MarkPendingDeletionFileName, value);
+            OnPropertyChanged();
+        }
     }
 
     public bool IsLoaded { get; set; }
@@ -414,4 +424,12 @@ internal partial class PluginInfo : IDisposable
 #pragma warning restore CA2254, CS8500
 
     public override string ToString() => $"{Name} (by {Author}) - {Description}";
+
+
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 }

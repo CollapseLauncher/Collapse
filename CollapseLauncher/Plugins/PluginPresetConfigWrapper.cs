@@ -18,7 +18,7 @@ using ILauncherApi = CollapseLauncher.Helper.LauncherApiLoader.ILauncherApi;
 #nullable enable
 namespace CollapseLauncher.Plugins;
 
-internal class PluginPresetConfigWrapper : PresetConfig, IDisposable
+public class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
     public readonly  IPlugin             Plugin;
     private readonly IPluginPresetConfig _config;

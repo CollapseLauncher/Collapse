@@ -42,6 +42,7 @@ internal static partial class PluginManager
             }
 
             manifestFileInfo.TryDeleteFile(isThrowOnFailDelete);
+            markFile.TryDeleteFile();
             pluginDir.DeleteEmptyDirectory(true);
         }
         catch (Exception e)

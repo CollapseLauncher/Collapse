@@ -44,8 +44,8 @@ internal static partial class PluginManager
                                     .EnumerateFiles(ManifestPrefix, SearchOption.TopDirectoryOnly)
                                     .FirstOrDefault();
 
-            FileInfo? markDisabled = pluginDirInfo.
-                                    EnumerateFiles(PluginInfo.MarkDisabledFileName, SearchOption.TopDirectoryOnly)
+            FileInfo? markDisabled = pluginDirInfo
+                                    .EnumerateFiles(PluginInfo.MarkDisabledFileName, SearchOption.TopDirectoryOnly)
                                     .FirstOrDefault();
 
             try

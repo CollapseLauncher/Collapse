@@ -2977,6 +2977,7 @@
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
                                         <Grid Width="48"
+                                              MinHeight="48"
                                               Margin="4"
                                               Height="Auto"
                                               HorizontalAlignment="Left"
@@ -2987,7 +2988,7 @@
                                                        Fill="{ThemeResource SmokeBackgroundBrush}"/>
                                             <ContentPresenter Content="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
                                                               CornerRadius="8, 0, 0, 8"
-                                                              HorizontalAlignment="Left"
+                                                              HorizontalAlignment="Center"
                                                               VerticalAlignment="Stretch"/>
                                         </Grid>
                                         <Grid Grid.Column="1"
