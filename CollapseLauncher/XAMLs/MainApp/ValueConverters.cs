@@ -223,8 +223,16 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                IPlugin plugin = asPluginInfo.Instance;
-                plugin.GetPluginAppIconUrl(out string? iconUrl);
+                string?  iconUrl = null;
+                if (asPluginInfo.Instance is { } pluginInstance)
+                {
+                    pluginInstance.GetPluginAppIconUrl(out iconUrl);
+                }
+
+                if (string.IsNullOrEmpty(iconUrl))
+                {
+                    iconUrl = asPluginInfo.PluginManifest.PluginAlternativeIcon;
+                }
 
                 if (string.IsNullOrEmpty(iconUrl))
                 {
