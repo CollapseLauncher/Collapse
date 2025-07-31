@@ -1,12 +1,7 @@
-﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.Metadata;
-using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
-using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Update;
-using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.ManagedTools;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -21,17 +16,17 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal static class PluginManager
+internal static partial class PluginManager
 {
     private const string PluginDirPrefix = "Hi3Helper.Plugin.*";
     private const string ManifestPrefix  = "manifest.json";
 
-
     public static readonly Dictionary<string, PluginInfo> PluginInstances = new(StringComparer.OrdinalIgnoreCase);
 
-    internal static async Task LoadPlugins(Dictionary<string, Dictionary<string, PresetConfig>?> launcherMetadataConfig,
-                                           Dictionary<string, List<string>?> launcherGameNameRegionCollection,
-                                           Dictionary<string, Stamp> launcherMetadataStampDictionary)
+    internal static async Task LoadPlugins(
+        Dictionary<string, Dictionary<string, PresetConfig>?> launcherMetadataConfig,
+        Dictionary<string, List<string>?>                     launcherGameNameRegionCollection,
+        Dictionary<string, Stamp>                             launcherMetadataStampDictionary)
     {
         DirectoryInfo directoryInfo = new DirectoryInfo(LauncherConfig.AppPluginFolder);
         if (!directoryInfo.Exists)
@@ -39,14 +34,19 @@ internal static class PluginManager
             directoryInfo.Create();
         }
 
-        ApplyPendingUpdateRoutine(directoryInfo);
+        ApplyPendingRoutines(directoryInfo);
 
         foreach (DirectoryInfo pluginDirInfo in directoryInfo.EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
         {
             PluginInfo? pluginInfo = null;
             FileInfo?   pluginFile = null;
-            FileInfo? manifestFile = pluginDirInfo.EnumerateFiles(ManifestPrefix, SearchOption.TopDirectoryOnly)
-                                                  .FirstOrDefault();
+            FileInfo? manifestFile = pluginDirInfo
+                                    .EnumerateFiles(ManifestPrefix, SearchOption.TopDirectoryOnly)
+                                    .FirstOrDefault();
+
+            FileInfo? markDisabled = pluginDirInfo.
+                                    EnumerateFiles(PluginInfo.MarkDisabledFileName, SearchOption.TopDirectoryOnly)
+                                    .FirstOrDefault();
 
             try
             {
@@ -57,7 +57,7 @@ internal static class PluginManager
 
                 await using FileStream manifestFileStream = manifestFile.OpenRead();
                 PluginManifest? pluginManifest =
-                    await manifestFileStream.DeserializeAsync(PluginManifestJsonContext.Default.PluginManifest);
+                    await manifestFileStream.DeserializeAsync(PluginManifestContext.Default.PluginManifest);
 
                 if (pluginManifest == null)
                 {
@@ -80,7 +80,15 @@ internal static class PluginManager
                     continue;
                 }
 
-                pluginInfo = new PluginInfo(pluginFile.FullName);
+                string pluginRelName = Path.Combine(pluginDirInfo.Name, pluginFile.Name);
+                pluginInfo = new PluginInfo(pluginFile.FullName,
+                                            pluginRelName,
+                                            pluginManifest,
+                                            markDisabled is not
+                                            {
+                                                Exists: true
+                                            });
+
                 await pluginInfo.Initialize(CancellationToken.None);
 
                 _ = PluginInstances.TryAdd(pluginDirName, pluginInfo);
@@ -92,7 +100,7 @@ internal static class PluginManager
             }
             finally
             {
-                if (pluginInfo != null)
+                if (pluginInfo is { IsLoaded: true })
                 {
                     foreach (PluginPresetConfigWrapper currentConfig in pluginInfo.PresetConfigs)
                     {
@@ -134,7 +142,7 @@ internal static class PluginManager
     internal static void UnloadPlugins()
     {
         // Dispose all plugin instances before freeing the plugin handles.
-        foreach (var pluginInfo in PluginInstances.Values)
+        foreach (PluginInfo pluginInfo in PluginInstances.Values)
         {
             pluginInfo.Dispose();
         }
@@ -143,214 +151,40 @@ internal static class PluginManager
         PluginInstances.Clear();
     }
 
-    private static bool IsValidReturnCode(SelfUpdateReturnCode retCode)
+    internal static void ApplyPendingRoutines(DirectoryInfo pluginRootDir)
     {
-        uint asUint = (uint)retCode;
-        if (retCode.HasFlag(SelfUpdateReturnCode.Ok) &&
-            asUint is >= 0b_00000001_00000000_00000000_00000000 and <= 0b_10000000_00000000_00000000_00000000)
+        foreach (DirectoryInfo pluginDir in pluginRootDir
+                    .EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
         {
-            return true;
-        }
+            FileInfo markPendingUninstall =
+                new FileInfo(Path.Combine(pluginDir.FullName, PluginInfo.MarkPendingDeletionFileName));
+            FileInfo markPendingApplyUpdate =
+                new FileInfo(Path.Combine(pluginDir.FullName, PluginInfo.MarkPendingUpdateFileName, PluginInfo.MarkPendingUpdateApplyFileName));
 
-        if (retCode.HasFlag(SelfUpdateReturnCode.Error) &&
-            asUint is >= 0b_00000000_00000000_00000001_00000000 and <= 0b_00000000_10000000_00000000_00000000)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static unsafe SelfUpdateReturnInfo ReplicateFromPtr(nint ptr)
-    {
-        // Fallback if the result is actually the enum.
-        SelfUpdateReturnCode asRetCode = (SelfUpdateReturnCode)(uint)ptr;
-        if (IsValidReturnCode(asRetCode))
-        {
-            return new SelfUpdateReturnInfo((SelfUpdateReturnCode)(uint)ptr);
-        }
-
-        // Return the struct if it returns it.
-        SelfUpdateReturnInfo* selfUpdateReturnInfo = ptr.AsPointer<SelfUpdateReturnInfo>();
-        SelfUpdateReturnInfo  ret                  = *selfUpdateReturnInfo; // basically copy the fields.
-
-        // Free the struct from native memory (but not the pointer inside of it since it's already copied above).
-        Mem.Free(selfUpdateReturnInfo);
-        return ret;
-    }
-
-    internal static async Task<(List<(string, SelfUpdateReturnInfo)>, bool)> StartUpdateBackgroundRoutine()
-    {
-        int                                  updated              = 0;
-        string                               rootPluginDir        = LauncherConfig.AppPluginFolder;
-        List<(string, SelfUpdateReturnInfo)> pluginUpdateNameList = [];
-
-        await Parallel.ForEachAsync(PluginInstances, Impl);
-        return (pluginUpdateNameList, updated > 0);
-
-        async ValueTask Impl(KeyValuePair<string, PluginInfo> pluginInfo, CancellationToken cancelToken)
-        {
-            bool isDisposeReturnInfo = true;
-            IPlugin pluginInstance = pluginInfo.Value.Instance;
-            string pluginUpdateOutputPath = Path.Combine(rootPluginDir, pluginInfo.Key, "pendingUpdate");
-
-            pluginInstance.GetPluginSelfUpdater(out IPluginSelfUpdate? selfUpdateInstance);
-            if (selfUpdateInstance == null)
+            if (markPendingUninstall.Exists)
             {
-                return;
+                ApplyPendingUninstallRoutine(pluginDir, markPendingUninstall);
             }
 
-            selfUpdateInstance.TryPerformUpdateAsync(pluginUpdateOutputPath,
-                                                     true,
-                                                     null,
-                                                     pluginInstance.RegisterCancelToken(cancelToken),
-                                                     out nint asyncResult);
-
-            nint                 checkUpdateStatusP      = await asyncResult.AsTask<nint>();
-            SelfUpdateReturnInfo selfUpdateReturnInfo    = ReplicateFromPtr(checkUpdateStatusP);
-            SelfUpdateReturnInfo updateRoutineStatusInfo = default;
-            SelfUpdateReturnCode checkUpdateStatus       = selfUpdateReturnInfo.ReturnCode;
-
-            try
+            markPendingApplyUpdate.Refresh();
+            if (!markPendingApplyUpdate.Exists)
             {
-                if (checkUpdateStatus.HasFlag(SelfUpdateReturnCode.Error))
-                {
-                    Logger.LogWriteLine($"Cannot check update status for plugin: {pluginInfo.Key} due to an error with return code: {checkUpdateStatus}", LogType.Error, true);
-                    return;
-                }
-
-                if (checkUpdateStatus == SelfUpdateReturnCode.NoAvailableUpdate)
-                {
-                    return;
-                }
-                Logger.LogWriteLine($"Update is available for: {pluginInfo.Key}! Starting update routine...", LogType.Default, true);
-
-                selfUpdateInstance.TryPerformUpdateAsync(pluginUpdateOutputPath,
-                                                         false,
-                                                         null,
-                                                         pluginInstance.RegisterCancelToken(cancelToken),
-                                                         out asyncResult);
-
-                nint updateRoutineStatusP = await asyncResult.AsTask<nint>();
-                updateRoutineStatusInfo = ReplicateFromPtr(updateRoutineStatusP);
-
-                SelfUpdateReturnCode updateRoutineStatus = updateRoutineStatusInfo.ReturnCode;
-
-                // Increase the count if update is successful
-                if (updateRoutineStatus is SelfUpdateReturnCode.UpdateSuccess or SelfUpdateReturnCode.RollingBackSuccess)
-                {
-                    Logger.LogWriteLine($"Update for: {pluginInfo.Key} is success! Return code: {updateRoutineStatus}", LogType.Default, true);
-                    string updateCompletedStampPath = Path.Combine(pluginUpdateOutputPath, ".updateCompleted");
-                    await File.WriteAllTextAsync(updateCompletedStampPath, "Update Completed!", cancelToken);
-
-                    lock (pluginUpdateNameList)
-                    {
-                        pluginUpdateNameList.Add((pluginInfo.Key, selfUpdateReturnInfo));
-                    }
-                    Interlocked.Increment(ref updated);
-                    Interlocked.Exchange(ref isDisposeReturnInfo, false);
-                    return;
-                }
-
-                Logger.LogWriteLine($"Failed while trying to update plugin: {pluginInfo.Key}, Rolling Back! Return code: {updateRoutineStatus}", LogType.Error, true);
-                DirectoryInfo dirInfo = new DirectoryInfo(pluginUpdateOutputPath);
-                if (dirInfo.Exists)
-                {
-                    dirInfo.TryDeleteDirectory(true);
-                }
+                continue;
             }
-            finally
-            {
-                if (isDisposeReturnInfo)
-                {
-                    selfUpdateReturnInfo.Dispose();
-                    updateRoutineStatusInfo.Dispose();
-                }
-            }
+
+            ApplyPendingUpdateRoutine(pluginDir);
         }
     }
 
-    internal static void ApplyPendingUpdateRoutine(DirectoryInfo pluginRootDir)
+    internal static void SetPluginLocaleId(string localeId)
     {
-        foreach (DirectoryInfo pluginDir in pluginRootDir.EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))
+        foreach (PluginInfo pluginInfo in PluginInstances.Values)
         {
-            DirectoryInfo  tempUpdateDir   = new DirectoryInfo(Path.Combine(pluginDir.FullName, "pendingUpdate"));
-            DirectoryInfo? targetUpdateDir = tempUpdateDir.Parent;
-
-            FileInfo stampCompletedFileInfo = new FileInfo(Path.Combine(tempUpdateDir.FullName, ".updateCompleted"));
-
-            try
-            {
-                if (targetUpdateDir == null)
-                {
-                    continue;
-                }
-
-                if (!tempUpdateDir.Exists)
-                {
-                    continue;
-                }
-
-                if (!stampCompletedFileInfo.Exists)
-                {
-                    continue;
-                }
-
-                stampCompletedFileInfo.TryDeleteFile();
-
-                // Cleanup old files
-                foreach (FileInfo oldFileInfo in targetUpdateDir
-                    .EnumerateFiles("*", SearchOption.AllDirectories)
-                    .Where(x => x.FullName.IndexOf("pendingUpdate", StringComparison.OrdinalIgnoreCase) < 0))
-                {
-                    oldFileInfo.IsReadOnly = false;
-                    oldFileInfo.TryDeleteFile();
-
-                    string? currentOldFileDir = oldFileInfo.DirectoryName;
-                    if (currentOldFileDir == null)
-                    {
-                        continue;
-                    }
-
-                    FindFiles.TryIsDirectoryEmpty(currentOldFileDir, out bool isDirEmpty);
-                    if (!isDirEmpty)
-                    {
-                        continue;
-                    }
-
-                    oldFileInfo.Refresh();
-                    oldFileInfo.Delete();
-                }
-
-                string tempUpdateDirPath = tempUpdateDir.FullName;
-                string targetUpdateDirPath = targetUpdateDir.FullName;
-
-                foreach (FileInfo tempFileInfo in tempUpdateDir
-                            .EnumerateFiles("*", SearchOption.AllDirectories))
-                {
-                    ReadOnlySpan<char> baseName = tempFileInfo.FullName.AsSpan(tempUpdateDirPath.Length).TrimStart("/\\");
-                    string newFilePath = Path.Combine(targetUpdateDirPath, baseName.ToString());
-                    FileInfo newFileInfo = new FileInfo(newFilePath);
-
-                    newFileInfo.Directory?.Create();
-                    tempFileInfo.TryMoveTo(newFilePath);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWriteLine($"Cannot apply the update to plugin: {pluginDir.Name} due to an error: {ex}", LogType.Error, true);
-            }
-            finally
-            {
-                if (tempUpdateDir.Exists)
-                {
-                    tempUpdateDir.TryDeleteDirectory();
-                }
-            }
+            pluginInfo.SetPluginLocaleId(localeId);
         }
     }
 
-    internal static void AssertIfUpxPacked(FileInfo fileInfo)
+    private static void AssertIfUpxPacked(FileInfo fileInfo)
     {
         ReadOnlySpan<byte> searchValuesPattern1 = "UPX0\0\0\0\0"u8;
         ReadOnlySpan<byte> searchValuesPattern2 = "UPX1\0\0\0\0"u8;
@@ -373,14 +207,6 @@ internal static class PluginManager
         finally
         {
             ArrayPool<byte>.Shared.Return(readHeader);
-        }
-    }
-
-    internal static void SetPluginLocaleId(string localeId)
-    {
-        foreach (var pluginInfo in PluginInstances.Values)
-        {
-            pluginInfo.SetPluginLocaleId(localeId);
         }
     }
 }

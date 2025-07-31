@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
+using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,11 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal class PluginInfo : IDisposable
 {
+    internal const string MarkDisabledFileName           = "_markDisabled";
+    internal const string MarkPendingDeletionFileName    = "_markPendingDeletion";
+    internal const string MarkPendingUpdateFileName      = "_markPendingUpdate";
+    internal const string MarkPendingUpdateApplyFileName = "_markPendingUpdateApply";
+
     internal unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
     internal unsafe delegate GameVersion* DelegateGetPluginVersion();
     internal unsafe delegate void*        DelegateGetPlugin();
@@ -35,21 +41,36 @@ internal class PluginInfo : IDisposable
 
     public GameVersion                 StandardVersion { get; }
     public GameVersion                 Version         { get; }
-    public IPlugin                     Instance        { get; }
+    public IPlugin?                    Instance        { get; }
     public nint                        Handle          { get; }
     public PluginPresetConfigWrapper[] PresetConfigs   { get; }
     public ILogger                     PluginLogger    { get; }
     public NameServer[]?               NameServers     { get; private set; }
-    public bool                        IsEnabled       { get; set; } = true;
 
-    public string    PluginFilePath { get; }
-    public string    PluginFileName { get; }
-    public string?   Name           => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoNameUnknown;
-    public string?   Description    => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoDescUnknown;
-    public string?   Author         => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoAuthorUnknown;
-    public DateTime? CreationDate   => field ?? DateTime.MinValue;
+    public bool IsEnabled
+    {
+        get => !GetMarkState(PluginDirPath, MarkDisabledFileName);
+        set => SetMarkState(PluginDirPath, MarkDisabledFileName, !value);
+    }
 
-    private readonly DelegateSetDnsResolverCallback _setDnsResolverCallback;
+    public bool IsMarkedForDeletion
+    {
+        get => GetMarkState(PluginDirPath, MarkDisabledFileName);
+        set => SetMarkState(PluginDirPath, MarkPendingDeletionFileName, value);
+    }
+
+    public bool IsLoaded { get; set; }
+
+    public string         PluginDirPath  { get; }
+    public string         PluginFilePath { get; }
+    public string         PluginFileName { get; }
+    public PluginManifest PluginManifest { get; set; }
+    public string?        Name           => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoNameUnknown;
+    public string?        Description    => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoDescUnknown;
+    public string?        Author         => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoAuthorUnknown;
+    public DateTime?      CreationDate   => field ?? DateTime.MinValue;
+
+    private readonly DelegateSetDnsResolverCallback? _setDnsResolverCallback;
 
     // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
     // Reason: These fields must be defined in the object's instance to avoid early Garbage Collection to the delegate.
@@ -58,11 +79,32 @@ internal class PluginInfo : IDisposable
     private readonly SharedDnsResolverCallback? _sharedDnsResolverCallback;
     // ReSharper enable PrivateFieldCanBeConvertedToLocalVariable
 
-    public unsafe PluginInfo(string pluginFilePath)
+    public unsafe PluginInfo(string pluginFilePath, string pluginRelName, PluginManifest manifest, bool load = false)
     {
         nint   pluginHandle   = nint.Zero;
         bool   isPluginLoaded = false;
-        string pluginRelName  = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pluginFilePath)) ?? "", Path.GetFileName(pluginFilePath));
+        string pluginBaseDir  = Path.GetDirectoryName(pluginFilePath) ?? "";
+
+        ILogger pluginLogger = ILoggerHelper.GetILogger(pluginRelName);
+
+        if (!load)
+        {
+            PresetConfigs   = [];
+            StandardVersion = manifest.PluginStandardVersion;
+            Version         = manifest.PluginVersion;
+            PluginManifest  = manifest;
+            PluginDirPath   = pluginBaseDir;
+            PluginFilePath  = pluginFilePath;
+            PluginFileName  = manifest.MainLibraryName;
+            Name            = manifest.MainPluginName;
+            Description     = manifest.MainPluginDescription;
+            Author          = manifest.MainPluginAuthor;
+            CreationDate    = manifest.PluginCreationDate.DateTime;
+            PluginLogger    = pluginLogger;
+            IsLoaded        = false;
+
+            return;
+        }
 
         try
         {
@@ -131,19 +173,21 @@ internal class PluginInfo : IDisposable
             pluginInstance.GetPluginDescription(out string? pluginDescription);
             pluginInstance.GetPluginAuthor(out string? pluginAuthor);
             pluginInstance.GetPluginCreationDate(out DateTime* pluginCreationDate);
-            ILogger pluginLogger = ILoggerHelper.GetILogger(pluginRelName);
 
             Instance        = pluginInstance;
             StandardVersion = pluginStandardVersion;
             Version         = pluginVersion;
+            PluginManifest  = manifest;
+            PluginDirPath   = pluginBaseDir;
             PluginFilePath  = pluginFilePath;
-            PluginFileName  = Path.GetFileName(pluginFilePath);
+            PluginFileName  = manifest.MainLibraryName;
             Handle          = libraryHandle;
-            Name            = pluginName;
-            Description     = pluginDescription;
-            Author          = pluginAuthor;
-            CreationDate    = pluginCreationDate == null ? null : *pluginCreationDate;
+            Name            = pluginName ?? manifest.MainPluginName;
+            Description     = pluginDescription ?? manifest.MainPluginDescription;
+            Author          = pluginAuthor ?? manifest.MainPluginAuthor;
+            CreationDate    = pluginCreationDate == null ? manifest.PluginCreationDate.DateTime : *pluginCreationDate;
             PluginLogger    = pluginLogger;
+            IsLoaded        = true;
 
             pluginInstance.SetPluginLocaleId(LauncherConfig.GetAppConfigValue("AppLanguage"));
 
@@ -164,6 +208,11 @@ internal class PluginInfo : IDisposable
 
     internal async Task Initialize(CancellationToken token = default)
     {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
         nint dnsCallback = !LauncherConfig.GetAppConfigValue("IsUseExternalDns") || _sharedDnsResolverCallback == null ?
             nint.Zero :
             Marshal.GetFunctionPointerForDelegate(_sharedDnsResolverCallback);
@@ -191,7 +240,7 @@ internal class PluginInfo : IDisposable
                 if (nameServerList.Count > 0)
                 {
                     NameServers = nameServerList.ToArray();
-                    _setDnsResolverCallback(dnsCallback);
+                    _setDnsResolverCallback?.Invoke(dnsCallback);
                 }
             }
         }
@@ -202,9 +251,9 @@ internal class PluginInfo : IDisposable
         }
     }
 
-    internal void SetPluginLocaleId(string localeId) => Instance.SetPluginLocaleId(localeId);
+    internal void SetPluginLocaleId(string localeId) => Instance?.SetPluginLocaleId(localeId);
 
-    private static unsafe bool TryGetExport<T>(nint handle, string exportName, out T callback)
+    internal static unsafe bool TryGetExport<T>(nint handle, string exportName, out T callback)
         where T : Delegate
     {
         const string tryGetApiExportName = "TryGetApiExport";
@@ -277,7 +326,7 @@ internal class PluginInfo : IDisposable
             }
 
             // If the graceful free function is not available, try to call Dispose method directly.
-            Instance.Free();
+            Instance?.Free();
             Logger.LogWriteLine($"[PluginInfo] Successfully unloaded plugin: {Name} ({Path.GetFileName(PluginFilePath)}@0x{Handle:x8}) using explicit function.", LogType.Debug, true);
 
             // Mark as disposed
@@ -326,6 +375,34 @@ internal class PluginInfo : IDisposable
             ipAsString.CopyTo(new Span<char>(ipResolvedWriteBuffer + offset, ipAsString.Length));
             ipResolvedWriteBuffer[offset += ipAsString.Length] = '\0';
             offset++;
+        }
+    }
+
+    private static bool GetMarkState(string dir, string stateName)
+    {
+        string markPath = Path.Combine(dir, stateName);
+        return File.Exists(markPath);
+    }
+
+    private static void SetMarkState(string dir, string stateName, bool state)
+    {
+        try
+        {
+            string markPath = Path.Combine(dir, stateName);
+            switch (state)
+            {
+                case true when !File.Exists(markPath):
+                    File.WriteAllText(markPath, stateName);
+                    return;
+                case false when File.Exists(markPath):
+                    File.Delete(markPath);
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogWriteLine($"[PluginInfo::SetMarkState()] Failed to set plugin state: {stateName} to {state} due to unexpected error: {e}", LogType.Error, true);
+            throw;
         }
     }
 
