@@ -18,12 +18,14 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
 using TurnerSoftware.DinoDNS;
+using WinRT;
 // ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal class PluginInfo : IDisposable
+[GeneratedBindableCustomProperty]
+internal partial class PluginInfo : IDisposable
 {
     internal const string MarkDisabledFileName           = "_markDisabled";
     internal const string MarkPendingDeletionFileName    = "_markPendingDeletion";
