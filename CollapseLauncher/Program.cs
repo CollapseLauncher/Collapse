@@ -6,8 +6,8 @@ using Hi3Helper;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
-using Hi3Helper.Win32.Native.ManagedTools;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -69,12 +69,14 @@ namespace CollapseLauncher
             {
                 // Extract icons from the executable file
                 string mainModulePath = AppExecutablePath;
-                var    iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
+                uint   iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, nint.Zero, nint.Zero, 0);
                 if (iconCount > 0)
                 {
-                    var largeIcons = new IntPtr[1];
-                    var smallIcons = new IntPtr[1];
-                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
+                    IntPtr[] largeIcons       = new IntPtr[1];
+                    IntPtr[] smallIcons       = new IntPtr[1];
+                    nint     largeIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(largeIcons, 0);
+                    nint     smallIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(smallIcons, 0);
+                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIconsArrayP, smallIconsArrayP, 1);
                     AppIconLarge = largeIcons[0];
                     AppIconSmall = smallIcons[0];
                 }
@@ -83,7 +85,7 @@ namespace CollapseLauncher
                 VelopackLocatorExtension.StartUpdaterHook(AppAumid);
 
                 InitAppPreset();
-                var logPath = AppGameLogsFolder;
+                string logPath = AppGameLogsFolder;
                 CurrentLogger = IsConsoleEnabled
                     ? new LoggerConsole(logPath, Encoding.UTF8)
                     : new LoggerNull(logPath, Encoding.UTF8);
@@ -292,7 +294,7 @@ namespace CollapseLauncher
                               {
                                   DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-                                  var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+                                  DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
                                   SynchronizationContext.SetSynchronizationContext(context);
 
                                   // ReSharper disable once ObjectCreationAsStatement
@@ -305,12 +307,12 @@ namespace CollapseLauncher
 
         private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
         {
-            var severity = e.Severity switch
-                           {
-                               DownloadLogSeverity.Warning => LogType.Warning,
-                               DownloadLogSeverity.Error => LogType.Error,
-                               _ => LogType.Default
-                           };
+            LogType severity = e.Severity switch
+                               {
+                                   DownloadLogSeverity.Warning => LogType.Warning,
+                                   DownloadLogSeverity.Error => LogType.Error,
+                                   _ => LogType.Default
+                               };
 
             LogWriteLine(e.Message, severity, true);
         }
@@ -360,7 +362,7 @@ namespace CollapseLauncher
                 LoadLocale(GetAppConfigValue("AppLanguage").ToString());
             }
 
-            var themeValue = GetAppConfigValue("ThemeMode").ToString();
+            string themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
                 return;
@@ -373,7 +375,7 @@ namespace CollapseLauncher
 
         private static void RunElevateUpdate()
         {
-            var elevatedProc = new Process
+            Process elevatedProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -390,7 +392,7 @@ namespace CollapseLauncher
 
         public static string GetVersionString()
         {
-            var version = Environment.OSVersion.Version;
+            Version version = Environment.OSVersion.Version;
             m_isWindows11 = version.Build >= 22000;
             return m_isWindows11 ? $"Windows 11 (build: {version.Build}.{version.Revision})" : $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
         }
@@ -403,7 +405,7 @@ namespace CollapseLauncher
             }
 
             FileStream stream = File.OpenRead(path);
-            var        hash   = Hash.GetCryptoHash<MD5>(stream);
+            byte[]     hash   = Hash.GetCryptoHash<MD5>(stream);
             stream.Close();
             return Convert.ToHexStringLower(hash);
         }
