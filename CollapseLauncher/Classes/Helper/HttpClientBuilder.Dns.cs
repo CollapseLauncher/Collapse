@@ -33,13 +33,13 @@ namespace CollapseLauncher.Helper
 
     public partial class HttpClientBuilder
     {
-        private static readonly IPAddressEqualityComparer IPAddressComparer = new();
+        internal static readonly IPAddressEqualityComparer IPAddressComparer = new();
 
         public const string DnsHostSeparators = ";:,#/@%";
         public const StringSplitOptions DnsHostSplitOptions = StringSplitOptions.RemoveEmptyEntries |
                                                               StringSplitOptions.TrimEntries;
 
-        private const  string             DnsLoopbackHost          = "localhost";
+        private const           string    DnsLoopbackHost          = "localhost";
         private static readonly IPAddress DnsLoopbackIPAddrv4      = IPAddress.Loopback;
         private static readonly byte[]    DnsLoopbackIPAddrv4Bytes = DnsLoopbackIPAddrv4.GetAddressBytes();
         private static readonly IPAddress DnsLoopbackIPAddrv6      = IPAddress.IPv6Loopback;
@@ -72,7 +72,7 @@ namespace CollapseLauncher.Helper
         private static readonly ConcurrentDictionary<string, DateTimeOffset> DnsClientResolveTtlCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        internal static bool          IsUseExternalDns         => SharedExternalDnsServers is { Length: > 0 };
+        internal static bool          IsUseExternalDns => SharedExternalDnsServers is { Length: > 0 };
         internal static NameServer[]? SharedExternalDnsServers;
 
         /// <summary>
@@ -293,8 +293,8 @@ namespace CollapseLauncher.Helper
                     return recordAddress;
                 }
 
-                uint recordAvgTtl = (uint)addressedTtls.Average(x => x);
-                DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(recordAvgTtl);
+                uint           recordAvgTtl = (uint)addressedTtls.Average(x => x);
+                DateTimeOffset ttlOffset    = DateTimeOffset.Now.AddSeconds(recordAvgTtl);
                 resolveCacheLookup.TryAdd(host, recordAddress);
                 ttlCacheLookup.TryAdd(host, ttlOffset);
 
@@ -330,30 +330,30 @@ namespace CollapseLauncher.Helper
 
             Logger.LogWriteLine("[HttpClientBuilder<T>::ParseDnsSettings] No valid IP addresses has been parsed to be used as the DNS query host, the settings will be reverted", LogType.Warning, true);
             return;
+        }
 
-            static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
+        internal static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
+        {
+            Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> lookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
+
+            foreach (ReadOnlySpan<char> currentHostLocal in input)
             {
-                Dictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> lookup = DnsServerTemplate.GetAlternateLookup<ReadOnlySpan<char>>();
-
-                foreach (ReadOnlySpan<char> currentHostLocal in input)
+                if ('$' == currentHostLocal[0] && lookup.TryGetValue(currentHostLocal[1..], out IPAddress[]? addresses))
                 {
-                    if ('$' == currentHostLocal[0] && lookup.TryGetValue(currentHostLocal[1..], out IPAddress[]? addresses))
+                    foreach (IPAddress ipEntry in addresses)
                     {
-                        foreach (IPAddress ipEntry in addresses)
-                        {
-                            yield return ipEntry;
-                        }
-                        continue;
+                        yield return ipEntry;
                     }
-
-                    if (!IPAddress.TryParse(currentHostLocal, out IPAddress? addressFromString))
-                    {
-                        Logger.LogWriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse string: {currentHostLocal} as it's not a valid IPv4 or IPv6 address format", LogType.Warning, true);
-                        continue;
-                    }
-
-                    yield return addressFromString;
+                    continue;
                 }
+
+                if (!IPAddress.TryParse(currentHostLocal, out IPAddress? addressFromString))
+                {
+                    Logger.LogWriteLine($"[HttpClientBuilder<T>::ParseDnsSettings] Cannot parse string: {currentHostLocal} as it's not a valid IPv4 or IPv6 address format", LogType.Warning, true);
+                    continue;
+                }
+
+                yield return addressFromString;
             }
         }
 
@@ -362,7 +362,6 @@ namespace CollapseLauncher.Helper
         protected static async ValueTask<Stream> ExternalDnsConnectCallback(
             SocketsHttpConnectionContext context, CancellationToken token)
         {
-
             Socket socket = new(SocketType.Stream, ProtocolType.Tcp)
             {
                 NoDelay = true
@@ -370,41 +369,16 @@ namespace CollapseLauncher.Helper
 
             try
             {
-                if (SharedExternalDnsServers == null)
+                if (SharedExternalDnsServers == null || SharedExternalDnsServers.Length == 0)
                 {
                     await socket.ConnectAsync(context.DnsEndPoint, token);
                     return new NetworkStream(socket, ownsSocket: true);
                 }
 
-                string host = context.DnsEndPoint.Host;
+                string      host            = context.DnsEndPoint.Host;
+                IPAddress[] hostIpAddresses = await ResolveHostToIpAsync(host, SharedExternalDnsServers, token);
 
-                if (!TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
-                {
-                    (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
-                        await GetFallbackQuery(host, SharedExternalDnsServers, token);
-
-                    (ResourceRecord record, uint timeToLive)[] recordInfo = recordsIpv4
-                                                                           .MergeWithZigZag(recordsIpv6)
-                                                                           .EnumerateAOrAAAARecordOnly()
-                                                                           .ToArray();
-
-                    cachedIpAddress = recordInfo
-                                     .Select(x => new IPAddress(x.record.Data.Span))
-                                     .ToArray();
-
-                    double avgTtl = recordInfo
-                                   .Select(x => x.timeToLive)
-                                   .Average(x => x);
-
-                    DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(avgTtl);
-                    DnsClientResolveCache.TryAdd(host, cachedIpAddress);
-                    DnsClientResolveTtlCache.TryAdd(host, ttlOffset);
-                }
-
-                if (cachedIpAddress == null || cachedIpAddress.Length == 0)
-                    throw new Exception($"[HttpClientBuilder<T>::ConnectWithExternalDns] Cannot resolve the address of the host: {host}");
-
-                await socket.ConnectAsync(cachedIpAddress, context.DnsEndPoint.Port, token);
+                await socket.ConnectAsync(hostIpAddresses, context.DnsEndPoint.Port, token);
                 return new NetworkStream(socket, ownsSocket: true);
             }
             catch
@@ -414,10 +388,41 @@ namespace CollapseLauncher.Helper
             }
         }
 
+        internal static async Task<IPAddress[]> ResolveHostToIpAsync(string host, NameServer[] dnsNameServers, CancellationToken token)
+        {
+            if (!TryGetCachedIp(host, out IPAddress[]? cachedIpAddress))
+            {
+                (ResourceRecordCollection recordsIpv4, ResourceRecordCollection recordsIpv6) =
+                    await GetFallbackQuery(host, dnsNameServers, token);
+
+                (ResourceRecord record, uint timeToLive)[] recordInfo = recordsIpv4
+                                                                       .MergeWithZigZag(recordsIpv6)
+                                                                       .EnumerateAOrAAAARecordOnly()
+                                                                       .ToArray();
+
+                cachedIpAddress = recordInfo
+                                 .Select(x => new IPAddress(x.record.Data.Span))
+                                 .ToArray();
+
+                double avgTtl = recordInfo
+                               .Select(x => x.timeToLive)
+                               .Average(x => x);
+
+                DateTimeOffset ttlOffset = DateTimeOffset.Now.AddSeconds(avgTtl);
+                DnsClientResolveCache.TryAdd(host, cachedIpAddress);
+                DnsClientResolveTtlCache.TryAdd(host, ttlOffset);
+            }
+
+            if (cachedIpAddress == null || cachedIpAddress.Length == 0)
+                throw new Exception($"[HttpClientBuilder<T>::ConnectWithExternalDns] Cannot resolve the address of the host: {host}");
+
+            return cachedIpAddress;
+        }
+
         private static async ValueTask<(ResourceRecordCollection Ipv4, ResourceRecordCollection Ipv6)>
             GetFallbackQuery(string host, NameServer[] dnsNameServers, CancellationToken token)
         {
-            Exception?                                            lastException = null;
+            Exception? lastException = null;
             (ResourceRecordCollection, ResourceRecordCollection)? returnTuple = await Impl(host, dnsNameServers, token);
 
             if (returnTuple != null)
@@ -467,7 +472,7 @@ namespace CollapseLauncher.Helper
             {
                 try
                 {
-                    if (IsLoopbackOrIPAddr(hostLocal, out(ResourceRecordCollection, ResourceRecordCollection)? fallbackLocalReturn))
+                    if (IsLoopbackOrIPAddr(hostLocal, out (ResourceRecordCollection, ResourceRecordCollection)? fallbackLocalReturn))
                     {
                         return fallbackLocalReturn;
                     }
@@ -512,7 +517,7 @@ namespace CollapseLauncher.Helper
 
                 ResourceRecordCollection ipv4Return;
                 ResourceRecordCollection ipv6Return;
-                byte[]                   address = ipAddress.GetAddressBytes();
+                byte[] address = ipAddress.GetAddressBytes();
 
                 if (ipAddress.AddressFamily.HasFlag(AddressFamily.InterNetworkV6))
                 {
@@ -547,7 +552,7 @@ namespace CollapseLauncher.Helper
             ConcurrentDictionary<string, IPAddress[]>.AlternateLookup<ReadOnlySpan<char>> resolveCacheLookup = DnsClientResolveCache.GetAlternateLookup<ReadOnlySpan<char>>();
             ConcurrentDictionary<string, DateTimeOffset>.AlternateLookup<ReadOnlySpan<char>> ttlCacheLookup = DnsClientResolveTtlCache.GetAlternateLookup<ReadOnlySpan<char>>();
 
-            bool isCached    = resolveCacheLookup.TryGetValue(host, out cachedIpAddress);
+            bool isCached = resolveCacheLookup.TryGetValue(host, out cachedIpAddress);
             bool isTtlCached = ttlCacheLookup.TryGetValue(host, out DateTimeOffset ttlInfo);
 
             if (!(isCached && isTtlCached) || (cachedIpAddress?.Length ?? 0) == 0)
@@ -568,7 +573,7 @@ namespace CollapseLauncher.Helper
             return false;
         }
 
-        private class IPAddressEqualityComparer : IEqualityComparer<IPAddress>
+        internal class IPAddressEqualityComparer : IEqualityComparer<IPAddress>
         {
             public bool Equals(IPAddress? x, IPAddress? y)
             {
@@ -613,7 +618,7 @@ namespace CollapseLauncher.Helper
     internal static class ResourceRecordCollectionExtension
     {
         internal static IEnumerable<ResourceRecord> MergeWithZigZag(this ResourceRecordCollection records,
-                                                                    ResourceRecordCollection      another)
+                                                                    ResourceRecordCollection another)
         {
             ResourceRecordCollection.Enumerator enumeratorOne = records.GetEnumerator();
             ResourceRecordCollection.Enumerator enumeratorTwo = another.GetEnumerator();
