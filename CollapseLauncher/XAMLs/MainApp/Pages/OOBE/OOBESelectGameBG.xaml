@@ -32,6 +32,19 @@
                    HorizontalAlignment="Right"
                    VerticalAlignment="Stretch"
                    Stretch="UniformToFill" />
+            <Grid x:Name="BackgroundMask"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Visibility="Collapsed">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="1,0" EndPoint="0,0" Opacity="0.9">
+                        <GradientStop Offset="0.15" Color="{ThemeResource SystemAccentColorBackgroundMaskTransparent}" />
+                        <GradientStop Offset="0.75" Color="{ThemeResource SystemAccentColorBackgroundMask}" />
+                    </LinearGradientBrush>
+                </Grid.Background>
+            </Grid>
             <StackPanel Grid.Column="1"
                         Margin="32,0,40,110"
                         HorizontalAlignment="Right"
@@ -39,6 +52,7 @@
                 <Grid x:Name="GameDetailsLogoShadow" />
                 <Image x:Name="GameDetailsLogo"
                        Width="220"
+                       MaxHeight="200"
                        Margin="0,0,0,24"
                        HorizontalAlignment="Right"
                        s:Effects.Shadow="{ThemeResource DetailsLogoShadowController}" />

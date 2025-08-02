@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-// ReSharper disable RedundantExtendsListEntry
-// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable GrammarMistakeInComment
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 /// <summary>
@@ -26,12 +25,7 @@ public partial class SettingsCardAutomationPeer : FrameworkElementAutomationPeer
     /// <returns>The control type.</returns>
     protected override AutomationControlType GetAutomationControlTypeCore()
     {
-        if (Owner is SettingsCard settingsCard && settingsCard.IsClickEnabled)
-        {
-            return AutomationControlType.Button;
-        }
-
-        return AutomationControlType.Group;
+        return Owner is SettingsCard { IsClickEnabled: true } ? AutomationControlType.Button : AutomationControlType.Group;
     }
 
     /// <summary>
@@ -44,21 +38,24 @@ public partial class SettingsCardAutomationPeer : FrameworkElementAutomationPeer
         return Owner.GetType().Name;
     }
 
+    /// <inheritdoc/>
     protected override string GetNameCore()
     {
         // We only want to announce the button card name if it is clickable, else it's just a regular card that does not receive focus
-        if (Owner is SettingsCard owner && owner.IsClickEnabled)
+        if (Owner is not SettingsCard { IsClickEnabled: true } owner)
         {
-            string name = AutomationProperties.GetName(owner);
-            if (!string.IsNullOrEmpty(name))
-            {
-                return name;
-            }
+            return base.GetNameCore();
+        }
 
-            if (owner.Header is string headerString && !string.IsNullOrEmpty(headerString))
-            {
-                return headerString;
-            }
+        string name = AutomationProperties.GetName(owner);
+        if (!string.IsNullOrEmpty(name))
+        {
+            return name;
+        }
+
+        if (owner.Header is string headerString && !string.IsNullOrEmpty(headerString))
+        {
+            return headerString;
         }
 
         return base.GetNameCore();

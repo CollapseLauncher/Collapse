@@ -625,7 +625,7 @@ namespace CollapseLauncher.Helper
 
             try
             {
-                Enumerate:
+            Enumerate:
                 bool isGetOne = enumeratorOne.MoveNext();
                 bool isGetTwo = enumeratorTwo.MoveNext();
 

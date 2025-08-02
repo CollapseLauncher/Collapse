@@ -41,6 +41,15 @@ namespace CollapseLauncher.GameSettings.Base
 
         protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;
 
+        public static IGameSettings CreateBaseFrom(IGameVersion gameVersionManager, bool isEnableResizableWindow = false)
+        {
+            SettingsBase settings = new SettingsBase(gameVersionManager);
+            settings.InitializeSettings();
+            settings.SettingsCollapseScreen.UseResizableWindow = isEnableResizableWindow;
+
+            return settings;
+        }
+
         public virtual void InitializeSettings()
         {
             SettingsCustomArgument = CustomArgs.Load();

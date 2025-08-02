@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Copy All to Clipboard",
     "CopyClipboardBtn2": "Copied to Clipboard!",
     "GoBackPageBtn1": "Go Back to Previous Page",
-    
+
     "CustomBackground_NotFound": "Custom background file is missing! Using default image",
     "CustomBackground_RegionalTag": "Region BG",
     "CustomBackground_GlobalTag": "Global BG"
@@ -718,7 +718,25 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "Determine how long is the allowed maximum cache time for the response (in minutes).",
     "HttpCacheMaxExpireTimeBoxMinutes": "minutes",
     "HttpCacheClearButton": "Clear Network Cache",
-    "HttpCacheClearedText": "Caches have been Cleared!"
+    "HttpCacheClearedText": "Caches have been Cleared!",
+
+    "Plugin_LoadedInfoTitle": "Loaded Plugins Information",
+    "Plugin_OpenManagerBtn": "Open Plugin Management Menu",
+    "Plugin_AuthorBy": "by {0}",
+    "Plugin_LoadedInfoDesc": "Description",
+    "Plugin_LoadedInfoPluginVer": "Plugin Version",
+    "Plugin_LoadedInfoInterfaceVer": "Interface Version",
+    "Plugin_LoadedInfoCreationDate": "Creation Date",
+    "Plugin_LoadedInfoMainLibLocation": "Main Library Location",
+    "Plugin_LoadedInfoLoadedPresets": "Loaded Presets",
+    "Plugin_LoadedInfoClipboardCopied": "Information Copied!",
+    "Plugin_PluginInfoNameUnknown": "Unknown",
+    "Plugin_PluginInfoDescUnknown": "No description",
+    "Plugin_PluginInfoAuthorUnknown": "Unknown Author"
+  },
+
+  "_PluginManagementMenuPage": {
+    "PageTitle": "Plugin Management Menu"
   },
 
   "_Misc": {
@@ -741,6 +759,7 @@
     "EverythingIsOkay": "All OK!",
     "Cancel": "Cancel",
     "Close": "Close",
+    "CloseOverlay": "Close Overlay",
     "UseCurrentDir": "Use current directory",
     "UseDefaultDir": "Use default directory",
     "MoveToDifferentDir": "Move to different directory",
@@ -1119,7 +1138,13 @@
     "UserFeedback_SubmitBtn": "Submit your feedback",
     "UserFeedback_SubmitBtn_Processing": "Processing...",
     "UserFeedback_SubmitBtn_Completed": "Completed!",
-    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!"
+    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!",
+
+    "PluginManagerUpdateAvailableTitle": "You have {0} plugin(s) ready to be updated!",
+    "PluginManagerUpdateAvailableSubtitle1": "There are {0} plugin(s) update available. The launcher is required to be restarted in order to apply update to these plugins:",
+    "PluginManagerUpdateAvailableSubtitle2": "Do you wish to restart the launcher?",
+    "PluginManagerUpdateAvailableCancelBtn": "Later",
+    "PluginManagerUpdateAvailableConfirmBtn": "Restart Now!"
   },
 
   "_FileMigrationProcess": {
@@ -1359,7 +1384,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Character Shadow in Map Exploration",
     "Graphics_HalfResTransparent": "Half Resolution Transparency",
-    
+
     "Graphics_DLSS_UHP": "Ultra Performance",
     "Graphics_DLSS_Perf": "Performance",
     "Graphics_DLSS_Balanced": "Balanced",
