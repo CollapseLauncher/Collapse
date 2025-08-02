@@ -5,7 +5,7 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
