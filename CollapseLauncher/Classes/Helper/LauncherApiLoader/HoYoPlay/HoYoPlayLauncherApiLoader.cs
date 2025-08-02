@@ -33,7 +33,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             : base(presetConfig, gameName, gameRegion, true)
         {
             // Set the HttpClientBuilder for HoYoPlay's own General API.
-            HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
+            HttpClientBuilder apiGeneralHttpBuilder = new HttpClientBuilder()
                 .UseLauncherConfig()
                 .AllowUntrustedCert()
                 .SetHttpVersion(HttpVersion.Version30)
@@ -41,7 +41,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 .AddHeader("x-rpc-device_id", GetDeviceId(presetConfig));
 
             // Set the HttpClientBuilder for HoYoPlay's own Resource API.
-            HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
+            HttpClientBuilder apiResourceHttpBuilder = new HttpClientBuilder()
                 .UseLauncherConfig()
                 .AllowUntrustedCert()
                 .SetHttpVersion(HttpVersion.Version30)

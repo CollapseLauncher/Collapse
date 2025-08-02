@@ -68,6 +68,9 @@ namespace CollapseLauncher
         #endif
             try
             {
+                // Add callbacks to apply shared settings
+                ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
+
                 // Initialize the Sentry SDK
                 SentryHelper.IsPreview = IsPreview;
             #pragma warning disable CS0618 // Type or member is obsolete

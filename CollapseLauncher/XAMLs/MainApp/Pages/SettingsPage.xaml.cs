@@ -49,6 +49,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TurnerSoftware.DinoDNS;
 using WinRT;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.Helper.Image.Waifu2X;
@@ -121,7 +122,6 @@ namespace CollapseLauncher.Pages
             InitializeComponent();
 
             _dnsSettingsContext = new DnsSettingsContext(CustomDnsHostTextbox);
-            _dnsSettingsContext.PropertySavedChanged += DnsSettingsChangedNotify;
             DataContext = this;
 
             this.EnableImplicitAnimation(true);
@@ -1547,6 +1547,8 @@ namespace CollapseLauncher.Pages
             }
 
             senderAsButton.IsEnabled = false;
+            NameServer[]? lastDnsSettings = HttpClientBuilder.SharedExternalDnsServers;
+
             try
             {
                 DnsSettingsTestTextChecking.Visibility = Visibility.Visible;
@@ -1555,29 +1557,22 @@ namespace CollapseLauncher.Pages
                 DnsConnectionType connType    = (DnsConnectionType)_dnsSettingsContext.ExternalDnsConnectionType;
                 string            dnsSettings = $"{dnsHost}|{connType}";
 
-                (bool isSuccess, string[]? resultHosts) resultHosts = await Task.Factory.StartNew(() =>
-                {
-                    bool isSuccess =
-                        HttpClientBuilder.TryParseDnsHosts(dnsSettings, true, true,
-                                                           out string[]? resultHosts);
-                    return (isSuccess, resultHosts);
-                }, TaskCreationOptions.DenyChildAttach);
-
-                if (!resultHosts.isSuccess)
+                string[]? resultHosts = await HttpClientBuilder.TryParseDnsHostsAsync(dnsSettings, true, true);
+                if (resultHosts == null)
                 {
                     throw new InvalidOperationException($"The current DNS host string: {dnsSettings} has malformed separator or one of the hostname's IPv4/IPv6 cannot be resolved! " + 
                                                         $"Also, make sure that you use one of these separators: {_dnsSettingsSeparatorList}");
                 }
 
 
-                (bool isSuccess, DnsConnectionType resultConnType) resultConnType = await Task.Factory.StartNew(() =>
+                (bool isSuccess, DnsConnectionType resultConnType) = await Task.Factory.StartNew(() =>
                 {
                     bool isSuccess =
                         HttpClientBuilder.TryParseDnsConnectionType(dnsSettings, out DnsConnectionType resultConnType);
                     return (isSuccess, resultConnType);
                 }, TaskCreationOptions.DenyChildAttach);
 
-                if (!resultConnType.isSuccess)
+                if (!isSuccess)
                 {
                     DnsConnectionType[] types       = Enum.GetValues<DnsConnectionType>();
                     string              typesInList = string.Join(", ", types);
@@ -1588,11 +1583,12 @@ namespace CollapseLauncher.Pages
                 const string testUrl = "https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE";
 
                 TimeSpan timeoutSpan = TimeSpan.FromSeconds(5);
-                using HttpClient httpClientWithCustomDns = new HttpClientBuilder<SocketsHttpHandler>()
-                                                    .UseLauncherConfig(skipDnsInit: true)
-                                                    .UseExternalDns(resultHosts.resultHosts, resultConnType.resultConnType)
-                                                    .SetTimeout(timeoutSpan)
-                                                    .Create();
+                using HttpClient httpClientWithCustomDns = new HttpClientBuilder()
+                                                          .UseLauncherConfig(skipDnsInit: true)
+                                                          .SetTimeout(timeoutSpan)
+                                                          .Create();
+
+                HttpClientBuilder.UseExternalDns(resultHosts, resultConnType);
 
                 using CancellationTokenSource tokenSource = new(timeoutSpan);
                 using HttpResponseMessage responseMessage =
@@ -1613,6 +1609,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
+                Interlocked.Exchange(ref HttpClientBuilder.SharedExternalDnsServers, lastDnsSettings);
                 DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
                 ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
                 await SentryHelper.ExceptionHandlerAsync(ex);
@@ -1627,9 +1624,6 @@ namespace CollapseLauncher.Pages
                 senderAsButton.IsEnabled              = true;
             }
         }
-
-        private void DnsSettingsChangedNotify(object? sender, EventArgs? args)
-            => CustomDnsSettingsChangeWarning.Visibility = Visibility.Visible;
 #nullable restore
 
         #region Database

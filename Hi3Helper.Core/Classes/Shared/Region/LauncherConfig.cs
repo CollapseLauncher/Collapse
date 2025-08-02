@@ -144,6 +144,11 @@ namespace Hi3Helper.Shared.Region
             AppNetworkCacheEnabled               = GetAppConfigValue("IsCDNCacheEnabled");
             AppNetworkCacheAggressiveModeEnabled = GetAppConfigValue("IsCDNCacheAggressiveModeEnabled");
             AppNetworkCacheExpireMinute          = GetAppConfigValue("CDNCacheExpireTimeMinutes");
+
+            foreach (Action callbacks in ApplyExternalConfigCallbackList)
+            {
+                callbacks();
+            }
         }
 
         #endregion
@@ -243,6 +248,8 @@ namespace Hi3Helper.Shared.Region
 
         public static IntPtr AppIconLarge;
         public static IntPtr AppIconSmall;
+
+        public static List<Action> ApplyExternalConfigCallbackList = [];
 
         #endregion
 
