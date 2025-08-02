@@ -4,22 +4,20 @@ using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Update;
+using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
-using TurnerSoftware.DinoDNS;
 // ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
@@ -36,8 +34,7 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
     internal unsafe delegate GameVersion* DelegateGetPluginVersion();
     internal unsafe delegate void*        DelegateGetPlugin();
     internal delegate        void         DelegateFreePlugin();
-    internal delegate        void         DelegateSetLoggerCallback(nint      loggerCallback);
-    internal delegate        void         DelegateSetDnsResolverCallback(nint dnsResolverCallback);
+    internal delegate        void         DelegateSetCallback(nint callbackP);
 
     private bool _isDisposed;
 
@@ -49,7 +46,6 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
     public nint                        Handle          { get; }
     public PluginPresetConfigWrapper[] PresetConfigs   { get; }
     public ILogger                     PluginLogger    { get; }
-    public NameServer[]?               NameServers     { get; private set; }
 
     public bool IsEnabled
     {
@@ -82,20 +78,28 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
     public string?        Author         => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoAuthorUnknown;
     public DateTime?      CreationDate   => field ?? DateTime.MinValue;
 
-    private readonly DelegateSetDnsResolverCallback? _setDnsResolverCallback;
-
-    // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     // Reason: These fields must be defined in the object's instance to avoid early Garbage Collection to the delegate.
     //         Defining it as local variables will cause early Garbage Collection and raise ExecutionEngineException.
-    private readonly SharedLoggerCallback?      _sharedLoggerCallback;
-    private readonly SharedDnsResolverCallback? _sharedDnsResolverCallback;
-    // ReSharper enable PrivateFieldCanBeConvertedToLocalVariable
+    private readonly SharedLoggerCallback _sharedLoggerCallback;
+
+    private static readonly SharedDnsResolverCallback      SharedDnsResolverCallback;
+    private static readonly SharedDnsResolverCallbackAsync SharedDnsResolverCallbackAsync;
+
+    static unsafe PluginInfo()
+    {
+        SharedDnsResolverCallback      = DnsResolverCallback;
+        SharedDnsResolverCallbackAsync = DnsResolverCallbackAsync;
+    }
 
     public unsafe PluginInfo(string pluginFilePath, string pluginRelName, PluginManifest manifest, bool load = false)
     {
-        nint   pluginHandle   = nint.Zero;
-        bool   isPluginLoaded = false;
-        string pluginBaseDir  = Path.GetDirectoryName(pluginFilePath) ?? "";
+        nint                  pluginHandle   = nint.Zero;
+        bool                  isPluginLoaded = false;
+        string                pluginBaseDir  = Path.GetDirectoryName(pluginFilePath) ?? "";
+
+        // Set callback
+        _sharedLoggerCallback = LoggerCallback;
 
         ILogger pluginLogger = ILoggerHelper.GetILogger(pluginRelName);
 
@@ -128,23 +132,16 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             if (!TryGetExport(libraryHandle, "GetPluginStandardVersion", out DelegateGetPluginStandardVersion getPluginStandardVersionHandle) ||
                 !TryGetExport(libraryHandle, "GetPluginVersion", out DelegateGetPluginVersion getPluginVersionHandle) ||
                 !TryGetExport(libraryHandle, "GetPlugin", out DelegateGetPlugin getPluginHandle) ||
-                !TryGetExport(libraryHandle, "SetLoggerCallback", out DelegateSetLoggerCallback setLoggerCallbackHandle) ||
-                !TryGetExport(libraryHandle, "SetDnsResolverCallback", out DelegateSetDnsResolverCallback setDnsResolverCallbackHandle))
+                !TryGetExport(libraryHandle, "SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
             {
                 throw new InvalidOperationException($"Plugin: {Path.GetFileName(pluginFilePath)} is missing some required exports. Plugin won't be loaded!");
             }
-
-            // Set logger and DNS resolver callbacks
-            _sharedLoggerCallback      = LoggerCallback;
-            _sharedDnsResolverCallback = DnsResolverCallback;
 
             nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(_sharedLoggerCallback);
             if (callbackForLogger != nint.Zero)
             {
                 setLoggerCallbackHandle(callbackForLogger);
             }
-
-            _setDnsResolverCallback = setDnsResolverCallbackHandle;
 
             // TODO: Add versioning check.
             GameVersion pluginStandardVersion = *getPluginStandardVersionHandle();
@@ -218,6 +215,52 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
         }
     }
 
+    internal void EnableDnsResolver()
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        if (TryGetExport(Handle,
+                         "SetDnsResolverCallback",
+                         out DelegateSetCallback setDnsResolverCallbackHandle))
+        {
+            nint dnsCallback = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallback);
+            setDnsResolverCallbackHandle(dnsCallback);
+        }
+
+        if (TryGetExport(Handle,
+                         "SetDnsResolverCallbackAsync",
+                         out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        {
+            nint dnsCallbackAsync = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallbackAsync);
+            setDnsResolverCallbackAsyncHandle(dnsCallbackAsync);
+        }
+    }
+
+    internal void DisableDnsResolver()
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        if (TryGetExport(Handle,
+                         "SetDnsResolverCallback",
+                         out DelegateSetCallback setDnsResolverCallbackHandle))
+        {
+            setDnsResolverCallbackHandle(nint.Zero);
+        }
+
+        if (TryGetExport(Handle,
+                         "SetDnsResolverCallbackAsync",
+                         out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        {
+            setDnsResolverCallbackAsyncHandle(nint.Zero);
+        }
+    }
+
     internal async Task Initialize(CancellationToken token = default)
     {
         if (!IsLoaded)
@@ -225,36 +268,9 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             return;
         }
 
-        nint dnsCallback = !LauncherConfig.GetAppConfigValue("IsUseExternalDns") || _sharedDnsResolverCallback == null ?
-            nint.Zero :
-            Marshal.GetFunctionPointerForDelegate(_sharedDnsResolverCallback);
-
-        if (dnsCallback != nint.Zero)
+        if (HttpClientBuilder.SharedExternalDnsServers != null)
         {
-            string? lExternalDnsAddresses = LauncherConfig.GetAppConfigValue("ExternalDnsAddresses");
-            HttpClientBuilder.ParseDnsSettings(lExternalDnsAddresses, out string[]? nameServers, out DnsConnectionType dnsConnectionType);
-
-            if (nameServers != null && nameServers.Length != 0)
-            {
-                List<NameServer> nameServerList = [];
-                foreach (IPAddress currentHost in HttpClientBuilder
-                    .EnumerateHostAsIp(nameServers)
-                    .Distinct(HttpClientBuilder.IPAddressComparer))
-                {
-                    nameServerList.Add(new NameServer(currentHost, dnsConnectionType switch
-                                                                   {
-                                                                       DnsConnectionType.Udp => ConnectionType.Udp,
-                                                                       DnsConnectionType.DoT => ConnectionType.DoT,
-                                                                       _ => ConnectionType.DoH
-                                                                   }));
-                }
-
-                if (nameServerList.Count > 0)
-                {
-                    NameServers = nameServerList.ToArray();
-                    _setDnsResolverCallback?.Invoke(dnsCallback);
-                }
-            }
+            EnableDnsResolver();
         }
 
         foreach (PluginPresetConfigWrapper preset in PresetConfigs)
@@ -278,29 +294,21 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             return false;
         }
 
-        delegate* unmanaged[Cdecl]<char*, void**, int> tryGetApiExportCallback = (delegate* unmanaged[Cdecl]<char*, void**, int>)tryGetApiExportP;
+        delegate* unmanaged[Cdecl]<char*, void**, int> tryGetApiExportCallback =
+            (delegate* unmanaged[Cdecl]<char*, void**, int>)tryGetApiExportP;
 
         nint  exportP     = nint.Zero;
-        char* exportNameP = GetExportPtr();
-        try
-        {
-            int tryResult = tryGetApiExportCallback(exportNameP, (void**)&exportP);
+        char* exportNameP = exportName.GetPinnableStringPointer();
+        int   tryResult   = tryGetApiExportCallback(exportNameP, (void**)&exportP);
 
-            if (tryResult != 0 ||
-                exportP == nint.Zero)
-            {
-                return false;
-            }
-
-            callback = Marshal.GetDelegateForFunctionPointer<T>(exportP);
-            return true;
-        }
-        finally
+        if (tryResult != 0 ||
+            exportP == nint.Zero)
         {
-            Utf16StringMarshaller.Free((ushort*)exportNameP);
+            return false;
         }
 
-        char* GetExportPtr() => (char*)Utf16StringMarshaller.ConvertToUnmanaged(exportName);
+        callback = Marshal.GetDelegateForFunctionPointer<T>(exportP);
+        return true;
     }
 
     public void Dispose()
@@ -313,18 +321,19 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
         try
         {
             // Dispose loaded preset config
-            foreach (var presetConfig in PresetConfigs)
+            foreach (PluginPresetConfigWrapper presetConfig in PresetConfigs)
             {
                 presetConfig.Dispose();
             }
 
-            if (TryGetExport(Handle, "SetLoggerCallback", out DelegateSetLoggerCallback setLoggerCallbackHandle) &&
-                TryGetExport(Handle, "SetDnsResolverCallback", out DelegateSetDnsResolverCallback setDnsResolverCallbackHandle))
+            if (TryGetExport(Handle, "SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
             {
                 setLoggerCallbackHandle(nint.Zero);
-                setDnsResolverCallbackHandle(nint.Zero);
-                Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS and Logger Callbacks have been detached!", LogType.Debug, true);
+                Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
             }
+
+            DisableDnsResolver();
+            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
 
             // Try to dispose the IPlugin instance using the plugin's safe FreePlugin method first.
             if (TryGetExport(Handle, "FreePlugin", out DelegateFreePlugin freePluginCallback))
@@ -354,11 +363,52 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             ComMarshal.FreeInstance(Instance);
             NativeLibrary.Free(Handle);
         }
+        GC.SuppressFinalize(this);
     }
 
-    private unsafe void DnsResolverCallback(char* hostnameP, char* ipResolvedWriteBuffer, int ipResolvedWriteBufferLength, int* ipResolvedWriteCount)
+    private static unsafe nint DnsResolverCallbackAsync(char* hostnameP, void** cancelCallbackP)
     {
-        ArgumentNullException.ThrowIfNull(NameServers, nameof(NameServers));
+        ReadOnlySpan<char> hostname       = Mem.CreateSpanFromNullTerminated<char>(hostnameP);
+        string             hostnameString = hostname.ToString();
+
+        CancellationTokenSource tcs            = new CancellationTokenSource();
+        VoidCallback            cancelCallback = CancelDelegate;
+        GCHandle                handle         = GCHandle.Alloc(cancelCallback); // Lock the callback from getting GCed
+
+        *cancelCallbackP = (void*)Marshal.GetFunctionPointerForDelegate(cancelCallback);
+
+        Task<nint> task = DnsResolverCallbackAsync(hostnameString, tcs.Token);
+        task.GetAwaiter()
+            .OnCompleted(() =>
+                         {
+                             handle.Free(); // Allow the GC to free the callback
+                         });
+
+        return task.AsResult();
+
+        void CancelDelegate()
+        {
+            tcs.Cancel();
+            tcs.Dispose();
+        }
+    }
+
+    private static async Task<nint> DnsResolverCallbackAsync(string hostname, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(HttpClientBuilder.SharedExternalDnsServers, nameof(HttpClientBuilder.SharedExternalDnsServers));
+
+        IPAddress[] resolvedIpAddresses =
+            await HttpClientBuilder.ResolveHostToIpAsync(hostname,
+                                                         HttpClientBuilder.SharedExternalDnsServers,
+                                                         token);
+
+        nint ptr = DnsARecordResult.CreateToIntPtr(resolvedIpAddresses);
+        return ptr;
+    }
+
+    private static unsafe void DnsResolverCallback(char* hostnameP, char* ipResolvedWriteBuffer, int ipResolvedWriteBufferLength, int* ipResolvedWriteCount)
+    {
+        ArgumentNullException.ThrowIfNull(HttpClientBuilder.SharedExternalDnsServers, nameof(HttpClientBuilder.SharedExternalDnsServers));
 
         string hostname = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(hostnameP).ToString();
         if (string.IsNullOrEmpty(hostname))
@@ -368,7 +418,7 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
         }
 
         IPAddress[] resolvedIpAddresses =
-            HttpClientBuilder.ResolveHostToIpAsync(hostname, NameServers, CancellationToken.None)
+            HttpClientBuilder.ResolveHostToIpAsync(hostname, HttpClientBuilder.SharedExternalDnsServers, CancellationToken.None)
             .GetAwaiter()
             .GetResult();
 

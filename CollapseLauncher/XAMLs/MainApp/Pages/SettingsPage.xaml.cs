@@ -1613,7 +1613,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                Interlocked.Exchange(ref HttpClientBuilder.SharedExternalDnsServers, lastDnsSettings);
+                HttpClientBuilder.SharedExternalDnsServers = lastDnsSettings;
                 DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
                 ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
                 await SentryHelper.ExceptionHandlerAsync(ex);
