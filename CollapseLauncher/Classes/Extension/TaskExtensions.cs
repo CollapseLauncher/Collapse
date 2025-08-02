@@ -1,7 +1,7 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Utility;
-using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.ManagedTools;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;

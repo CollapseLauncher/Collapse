@@ -13,7 +13,7 @@ using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

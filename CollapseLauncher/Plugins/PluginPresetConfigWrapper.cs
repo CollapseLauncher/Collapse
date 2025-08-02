@@ -5,7 +5,7 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Utility;
-using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
