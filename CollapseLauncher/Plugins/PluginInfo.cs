@@ -230,13 +230,15 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             setDnsResolverCallbackHandle(dnsCallback);
         }
 
-        if (TryGetExport(Handle,
-                         "SetDnsResolverCallbackAsync",
-                         out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (!TryGetExport(Handle,
+                          "SetDnsResolverCallbackAsync",
+                          out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
         {
-            nint dnsCallbackAsync = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallbackAsync);
-            setDnsResolverCallbackAsyncHandle(dnsCallbackAsync);
+            return;
         }
+
+        nint dnsCallbackAsync = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallbackAsync);
+        setDnsResolverCallbackAsyncHandle(dnsCallbackAsync);
     }
 
     internal void DisableDnsResolver()
@@ -366,10 +368,9 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private static unsafe nint DnsResolverCallbackAsync(char* hostnameP, void** cancelCallbackP)
+    private static unsafe nint DnsResolverCallbackAsync(char* hostnameP, int hostnameLength, void** cancelCallbackP)
     {
-        ReadOnlySpan<char> hostname       = Mem.CreateSpanFromNullTerminated<char>(hostnameP);
-        string             hostnameString = hostname.ToString();
+        string hostnameString = new string(new ReadOnlySpan<char>(hostnameP, hostnameLength));
 
         CancellationTokenSource tcs            = new CancellationTokenSource();
         VoidCallback            cancelCallback = CancelDelegate;
