@@ -13,18 +13,22 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Pages.SettingsContext;
+using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 #if ENABLEUSERFEEDBACK
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -126,6 +130,7 @@ namespace CollapseLauncher.Pages
 
             this.EnableImplicitAnimation(true);
             this.SetAllControlsCursorRecursive(InputSystemCursor.Create(InputSystemCursorShape.Hand));
+            ShareYourFeedbackButton.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
             AboutApp.FindAndSetTextBlockWrapping(TextWrapping.Wrap, HorizontalAlignment.Center, TextAlignment.Center, true);
 
             IsInstantRegionChange     = LauncherConfig.IsInstantRegionChange;
@@ -176,8 +181,6 @@ namespace CollapseLauncher.Pages
 
 #if !ENABLEUSERFEEDBACK
             ShareYourFeedbackButton.Visibility = Visibility.Collapsed;
-#else
-            ShareYourFeedbackButton.IsEnabled = SentryHelper.IsEnabled;
 #endif
 
             Task.Run(() =>
@@ -476,7 +479,7 @@ namespace CollapseLauncher.Pages
 #nullable restore
         }
 
-        private async void ShareYourFeedbackClick(object sender, RoutedEventArgs e)
+        private async void ShareYourFeedbackClick(object sender, PointerRoutedEventArgs e)
         {
 #if ENABLEUSERFEEDBACK
             var content = UserFeedbackTemplate.FeedbackTemplate;
@@ -1019,6 +1022,7 @@ namespace CollapseLauncher.Pages
             SetAndSaveConfigValue("AppLanguage", selectedKey);
             LoadLocale(selectedKey);
             UpdateBindings.Update();
+            PluginManager.SetPluginLocaleId(selectedKey);
 
             foreach (ComboBox comboBoxOthers in this.FindDescendants().OfType<ComboBox>())
             {
@@ -1357,7 +1361,7 @@ namespace CollapseLauncher.Pages
             {
                 if (progressRing != null)
                     progressRing.IsIndeterminate = true;
-                UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode("https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE", default);
+                UrlStatus urlStatus = await FallbackCDNUtil.GetURLStatusCode("https://gitlab.com/bagusnl/CollapseLauncher-ReleaseRepo/-/raw/main/LICENSE", CancellationToken.None);
                 if (!urlStatus.IsSuccessStatusCode)
                 {
                     InvokeError();
@@ -1609,7 +1613,7 @@ namespace CollapseLauncher.Pages
             }
             catch (Exception ex)
             {
-                Interlocked.Exchange(ref HttpClientBuilder.SharedExternalDnsServers, lastDnsSettings);
+                HttpClientBuilder.SharedExternalDnsServers = lastDnsSettings;
                 DnsSettingsTestTextFailed.Visibility = Visibility.Visible;
                 ErrorSender.SendException(new InvalidOperationException("DNS Settings cannot be validated due to these errors.", ex));
                 await SentryHelper.ExceptionHandlerAsync(ex);
@@ -1940,6 +1944,7 @@ namespace CollapseLauncher.Pages
         }
         #endregion
 
+        #region Settings Search
         private void InitializeSettingsSearch()
         {
             // Create brushes for highlighting
@@ -2445,6 +2450,80 @@ namespace CollapseLauncher.Pages
                 sender.ItemsSource = filtered;
             }
         }
+        #endregion
+
+        #region Plugins
+        internal static void CopyLoadedPluginInformationClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is not Button { Tag: PluginInfo asPluginInfo })
+                {
+                    return;
+                }
+
+                string info =
+                    $"""
+                     Name: {asPluginInfo.Name}
+                     Author: {asPluginInfo.Author}
+                     Description:
+                     {asPluginInfo.Description}
+                     
+                     =========
+                     
+                     Plugin Version: {asPluginInfo.Version}
+                     Interface Version: {asPluginInfo.StandardVersion}
+                     Creation Date: {asPluginInfo.CreationDate?.ToString(LocalFullDateTimeConverter.FullFormat)}
+                     Main Library Path: {asPluginInfo.PluginFilePath}
+                     Loaded Presets:
+                     """;
+
+                foreach (PluginPresetConfigWrapper wrapper in asPluginInfo.PresetConfigs)
+                {
+                    string name = wrapper.GameName;
+                    string region = wrapper.ZoneName;
+
+                    info += $"\r\n  • {name} - {region}";
+                }
+
+                Clipboard.CopyStringToClipboard(info);
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"Failed to copy loaded plugin information: {ex}", LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+        }
+
+        private async void OpenPluginManagerClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button asButton)
+            {
+                return;
+            }
+
+            try
+            {
+                asButton.IsEnabled = false;
+                FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
+                {
+                    Size               = FullPageOverlaySize.Full,
+                    OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle,
+                    OverlayTitleIcon   = new FontIconSource
+                    {
+                        Glyph = "\uE912",
+                        FontSize = 16
+                    }
+                };
+
+                await overlayMenu.ShowAsync();
+            }
+            finally
+            {
+                asButton.IsEnabled = true;
+            }
+        }
+        #endregion
 
         #region Network Cache
         private async void NetworkCacheModeClear(object sender, RoutedEventArgs e)

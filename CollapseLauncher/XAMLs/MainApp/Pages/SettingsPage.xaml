@@ -13,6 +13,7 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:plugins="using:CollapseLauncher.Plugins"
       xmlns:imageex="using:ImageEx"
       mc:Ignorable="d"
       CacheMode="BitmapCache"
@@ -20,14 +21,17 @@
       NavigationCacheMode="Enabled"
       Unloaded="Page_Unloaded">
     <Page.Resources>
+        <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
         <conv:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
         <conv:DownloadChunkSizeToStringConverter x:Key="DownloadChunkSizeToStringConverter" />
         <conv:DoubleFormatter x:Key="DoubleFormatter" />
         <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
-        <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
+        <conv:GamePluginIconConverter x:Key="GamePluginIconConverter" />
+        <conv:ByStringConverter x:Key="ByStringConverter" />
         <conv:LocaleCodeToFlagUrlConverter x:Key="LocaleCodeToFlagUrlConverter" />
+        <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
@@ -90,7 +94,7 @@
                                                            Opacity="0.50"
                                                            VerticalAlignment="Center"
                                                            HorizontalAlignment="Right"
-                                                           Text="{x:Bind LangAuthor}" />
+                                                           Text="{x:Bind LangAuthor, Converter={StaticResource ByStringConverter}}" />
                                             </Grid>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
@@ -2105,6 +2109,15 @@
                                 <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ContributePRBtn}" />
                             </Hyperlink>
                         </TextBlock>
+                        <TextBlock x:Name="ShareYourFeedbackButton"
+                                   Margin="0,8,0,8"
+                                   HorizontalAlignment="Left"
+                                   PointerPressed="ShareYourFeedbackClick"
+                                   Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                   Visibility="{x:Bind ToggleSendRemoteCrashData.IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
+                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ShareYourFeedbackBtn}" />
+                        </TextBlock>
                     </StackPanel>
                     <NavigationViewItemSeparator Margin="16,16" />
                     <StackPanel Margin="0,0,0,16">
@@ -2728,14 +2741,16 @@
                         </Grid>
                     </Button>
                     <NavigationViewItemSeparator Margin="16,16" />
-                    <Button x:Name="ShareYourFeedbackButton"
+                    <TextBlock Margin="0,0,0,16"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
+                               Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoTitle}" />
+                    <Button x:Name="ButtonAppActionOpenPluginManager"
                             Margin="0,0,0,8"
                             Padding="12,8"
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            Click="ShareYourFeedbackClick"
-                            CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ShareYourFeedbackButton)}"
-                            IsEnabled="True"
+                            Click="OpenPluginManagerClick"
+                            CornerRadius="{x:Bind ext:UIElementExtensions.AttachRoundedKindCornerRadius(ButtonAppActionOpenPluginManager)}"
                             Style="{ThemeResource AccentButtonStyle}">
                         <Grid Margin="0,-2,0,0"
                               HorizontalAlignment="Stretch">
@@ -2748,7 +2763,7 @@
                                            VerticalAlignment="Center"
                                            FontWeight="Medium"
                                            HorizontalTextAlignment="Left"
-                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.ShareYourFeedbackBtn}" />
+                                           Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_OpenManagerBtn}" />
                             </Grid>
                             <Grid Grid.Column="1"
                                   Margin="4,2,0,0"
@@ -2771,6 +2786,272 @@
                             </Grid>
                         </Grid>
                     </Button>
+                    <ItemsRepeater ItemsSource="{x:Bind plugins:PluginManager.PluginInstances.Values, Mode=OneWay}">
+                        <!--
+                        <ItemsRepeater.Resources>
+                            <x:Double x:Key="SettingsCardMinHeight">52</x:Double>
+                            <Thickness x:Key="SettingsCardPadding">16,0,16,0</Thickness>
+                            <Thickness x:Key="SettingsExpanderHeaderPadding">16,0,4,0</Thickness>
+                            <Thickness x:Key="SettingsCardHeaderIconMargin">-4,0,12,0</Thickness>
+                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
+                        </ItemsRepeater.Resources>
+                        -->
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="plugins:PluginInfo">
+                                <!--
+                                <controls:SettingsExpander Padding="0"
+                                                           HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
+                                                           Visibility="Collapsed">
+                                    <controls:SettingsExpander.Header>
+                                        <TextBlock ext:TextBlockExtension.RemoveEmptyRuns="True">
+                                            <Run Text="{x:Bind Name, Mode=OneWay}"/>
+                                            <Run Text=" (" FontSize="10" FontWeight="Bold" ext:TextBlockExtension.PreserveSpace="True"/>
+                                            <Run Text="{x:Bind PluginFileName, Mode=OneWay}" FontSize="10" FontWeight="Bold"/>
+                                            <Run Text=")" FontSize="10" FontWeight="Bold"/>
+                                        </TextBlock>
+                                    </controls:SettingsExpander.Header>
+                                    <controls:SettingsExpander.Description>
+                                        <TextBlock Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}" />
+                                    </controls:SettingsExpander.Description>
+                                    <controls:SettingsExpander.Items>
+                                        <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                                               ContentAlignment="Left"
+                                                               Padding="16,16,16,16">
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid RowSpacing="4"
+                                                      ColumnSpacing="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition MaxWidth="96"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoDesc}"
+                                                               Grid.Row="0"
+                                                               Grid.Column="0"
+                                                               FontSize="12"
+                                                               Opacity=".75"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Right"
+                                                               TextAlignment="Right"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoPluginVer}"
+                                                               Grid.Row="1"
+                                                               Grid.Column="0"
+                                                               FontSize="12"
+                                                               Opacity=".75"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Right"
+                                                               TextAlignment="Right"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoInterfaceVer}"
+                                                               Grid.Row="2"
+                                                               Grid.Column="0"
+                                                               FontSize="12"
+                                                               Opacity=".75"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Right"
+                                                               TextAlignment="Right"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoCreationDate}"
+                                                               Grid.Row="3"
+                                                               Grid.Column="0"
+                                                               FontSize="12"
+                                                               Opacity=".75"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Right"
+                                                               TextAlignment="Right"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoMainLibLocation}"
+                                                               Grid.Row="4"
+                                                               Grid.Column="0"
+                                                               FontSize="12"
+                                                               Opacity=".75"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Right"
+                                                               TextAlignment="Right"/>
+                                                    <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoLoadedPresets}"
+                                                               Grid.Row="5"
+                                                               Grid.Column="0"
+                                                               FontSize="12"
+                                                               Opacity=".75"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Right"
+                                                               TextAlignment="Right"/>
+
+                                                    <TextBlock Text="{x:Bind Description, Mode=OneWay}"
+                                                               Grid.Row="0"
+                                                               Grid.Column="1"
+                                                               FontSize="12"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Left"/>
+                                                    <TextBlock Text="{x:Bind Version, Mode=OneWay}"
+                                                               Grid.Row="1"
+                                                               Grid.Column="1"
+                                                               FontSize="12"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Left"/>
+                                                    <TextBlock Text="{x:Bind StandardVersion, Mode=OneWay}"
+                                                               Grid.Row="2"
+                                                               Grid.Column="1"
+                                                               FontSize="12"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Left"/>
+                                                    <TextBlock Text="{x:Bind CreationDate, Mode=OneWay, Converter={StaticResource LocalFullDateTimeConverter}}"
+                                                               Grid.Row="3"
+                                                               Grid.Column="1"
+                                                               FontSize="12"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Left"/>
+                                                    <TextBlock Text="{x:Bind PluginFilePath, Mode=OneWay}"
+                                                               Grid.Row="4"
+                                                               Grid.Column="1"
+                                                               FontSize="12"
+                                                               TextWrapping="Wrap"
+                                                               HorizontalAlignment="Left"/>
+                                                    <ItemsRepeater Grid.Row="5"
+                                                                   Grid.Column="1"
+                                                                   ItemsSource="{x:Bind PresetConfigs, Mode=OneWay}">
+                                                        <ItemsRepeater.ItemTemplate>
+                                                            <DataTemplate x:DataType="plugins:PluginPresetConfigWrapper">
+                                                                <TextBlock FontSize="12"
+                                                                           TextWrapping="Wrap"
+                                                                           HorizontalAlignment="Left"
+                                                                           ext:TextBlockExtension.RemoveEmptyRuns="True">
+                                                                    <Run Text="• " ext:TextBlockExtension.PreserveSpace="True"/>
+                                                                    <Run Text="{x:Bind GameName, Mode=OneWay, Converter={StaticResource GameNameLocaleConverter}}"/>
+                                                                    <Run Text=" - " ext:TextBlockExtension.PreserveSpace="True"/>
+                                                                    <Run Text="{x:Bind ZoneName, Mode=OneWay, Converter={StaticResource GameRegionLocaleConverter}}"/>
+                                                                </TextBlock>
+                                                            </DataTemplate>
+                                                        </ItemsRepeater.ItemTemplate>
+                                                    </ItemsRepeater>
+                                                </Grid>
+                                                <Button Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                        Padding="4"
+                                                        Margin="0,0,-12,-8"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Bottom"
+                                                        Click="CopyLoadedPluginInformationClick"
+                                                        Tag="{x:Bind}">
+                                                    <FontIcon Glyph="&#xE8C8;" FontSize="16" />
+                                                    <Button.Flyout>
+                                                        <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
+                                                            <Grid ColumnSpacing="6"
+                                                                  BorderThickness="0"
+                                                                  Margin="-16,-32"
+                                                                  Padding="12,0"
+                                                                  Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <FontIcon Glyph="&#xEC61;"
+                                                                          Grid.Column="0"
+                                                                          FontSize="16"
+                                                                          VerticalAlignment="Center"
+                                                                          Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}"
+                                                                           Grid.Column="1"
+                                                                           FontWeight="Bold"
+                                                                           Margin="0,-2,0,0"
+                                                                           VerticalAlignment="Center" />
+                                                            </Grid>
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                            </Grid>
+                                        </controls:SettingsCard>
+                                    </controls:SettingsExpander.Items>
+                                </controls:SettingsExpander>
+                                -->
+                                <Button Padding="0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        CornerRadius="8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Width="48"
+                                              MinHeight="48"
+                                              Margin="4"
+                                              Height="Auto"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Stretch"
+                                              CornerRadius="4"
+                                              Grid.Column="0">
+                                            <Rectangle Height="Auto"
+                                                       Fill="{ThemeResource SmokeBackgroundBrush}"/>
+                                            <ContentPresenter Content="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
+                                                              CornerRadius="8, 0, 0, 8"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Stretch"/>
+                                        </Grid>
+                                        <Grid Grid.Column="1"
+                                              Margin="8,0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock ext:TextBlockExtension.RemoveEmptyRuns="True"
+                                                       Grid.Row="0"
+                                                       VerticalAlignment="Bottom"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis">
+                                                <Run Text="{x:Bind Name, Mode=OneWay}"/>
+                                                <Run Text=" (v" FontSize="10" FontWeight="Bold" ext:TextBlockExtension.PreserveSpace="True"/>
+                                                <Run Text="{x:Bind Version, Mode=OneWay}" FontSize="10" FontWeight="Bold"/>
+                                                <Run Text=")" FontSize="10" FontWeight="Bold"/>
+                                            </TextBlock>
+                                            <TextBlock Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}"
+                                                       Grid.Row="1"
+                                                       FontSize="12"
+                                                       Opacity="0.75"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                        <Button Grid.Column="1"
+                                                Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                Padding="8"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Stretch"
+                                                Click="{x:Bind conv:SettingsPage.CopyLoadedPluginInformationClick}"
+                                                Tag="{x:Bind}">
+                                            <FontIcon Glyph="&#xE8C8;" FontSize="16" />
+                                            <Button.Flyout>
+                                                <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
+                                                    <Grid ColumnSpacing="6"
+                                                          BorderThickness="0"
+                                                          Margin="-16,-32"
+                                                          Padding="12,0"
+                                                          Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <FontIcon Glyph="&#xEC61;"
+                                                                  Grid.Column="0"
+                                                                  FontSize="16"
+                                                                  VerticalAlignment="Center"
+                                                                  Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}"
+                                                                   Grid.Column="1"
+                                                                   FontWeight="Bold"
+                                                                   Margin="0,-2,0,0"
+                                                                   VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
                     <NavigationViewItemSeparator Margin="16,16" Visibility="Collapsed" x:Name="DebugItemSeparator" />
                     <StackPanel Orientation="Vertical" Spacing="8" Visibility="Collapsed" x:Name="DebugStackPanel">
                         <AutoSuggestBox x:Name="DebugCustomDialogComboBox"
@@ -2823,6 +3104,7 @@
                             </Grid>
                         </Button>
                     </StackPanel>
+                    <NavigationViewItemSeparator Margin="16,16" />
                     <StackPanel HorizontalAlignment="Center"
                                 Orientation="Horizontal">
                         <TextBlock Margin="0,0,6,0"

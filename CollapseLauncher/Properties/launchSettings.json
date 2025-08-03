@@ -2,7 +2,8 @@
   "profiles": {
     "Collapse Launcher": {
       "commandName": "Project",
-      "nativeDebugging": false
+      "nativeDebugging": false,
+      "hotReloadEnabled": true
     },
     "OOBE Setup": {
       "commandName": "Project",
