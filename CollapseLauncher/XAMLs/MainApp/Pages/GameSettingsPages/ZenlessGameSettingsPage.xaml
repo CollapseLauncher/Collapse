@@ -465,7 +465,7 @@
                                     <TextBlock Margin="0,0,8,8"
                                                HorizontalAlignment="Left"
                                                Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._ZenlessGameSettingsPage.Graphics_AnisotropicSampling}"
+                                               Text="{x:Bind helper:Locale.Lang._GenshinGameSettingsPage.Graphics_AnisotropicFiltering}"
                                                TextWrapping="WrapWholeWords" />
                                     <ComboBox x:Name="AnisotropicSamplingSelector"
                                               Margin="0,0,16,8"
