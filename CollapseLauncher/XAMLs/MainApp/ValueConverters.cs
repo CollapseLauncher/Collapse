@@ -2,6 +2,8 @@
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core;
+using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -375,6 +377,33 @@ namespace CollapseLauncher.Pages
 
             return $"https://flagcdn.com/{countryId}.svg";
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class UpdateToVersionStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => string.Format("Update to {0}", value switch
+                                              {
+                                                  PluginManifest asManifest => asManifest.PluginVersion,
+                                                  null => GameVersion.Empty,
+                                                  _ => (GameVersion)value
+                                              });
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class UpdatingPercentageStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => string.Format("Updating ({0}%)...", Math.Round((double)value, 2));
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

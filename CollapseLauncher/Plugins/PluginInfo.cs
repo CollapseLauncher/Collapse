@@ -10,7 +10,6 @@ using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -23,13 +22,14 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-public class PluginInfo : INotifyPropertyChanged, IDisposable
+public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 {
     internal const string MarkDisabledFileName           = "_markDisabled";
     internal const string MarkPendingDeletionFileName    = "_markPendingDeletion";
     internal const string MarkPendingUpdateFileName      = "_markPendingUpdate";
     internal const string MarkPendingUpdateApplyFileName = "_markPendingUpdateApply";
 
+    internal unsafe delegate void         DelegateGetPluginUpdateCdnList(int* count, ushort*** ptr);
     internal unsafe delegate GameVersion* DelegateGetPluginStandardVersion();
     internal unsafe delegate GameVersion* DelegateGetPluginVersion();
     internal unsafe delegate void*        DelegateGetPlugin();
@@ -72,6 +72,7 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
     public string         PluginDirPath  { get; }
     public string         PluginFilePath { get; }
     public string         PluginFileName { get; }
+    public string?        PluginKey      { get; }
     public PluginManifest PluginManifest { get; set; }
     public string?        Name           => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoNameUnknown;
     public string?        Description    => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoDescUnknown;
@@ -112,6 +113,7 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             PluginDirPath   = pluginBaseDir;
             PluginFilePath  = pluginFilePath;
             PluginFileName  = manifest.MainLibraryName;
+            PluginKey       = pluginRelName;
             Name            = manifest.MainPluginName;
             Description     = manifest.MainPluginDescription;
             Author          = manifest.MainPluginAuthor;
@@ -159,6 +161,32 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
                 throw new NullReferenceException($"Plugin's \"GetPlugin\" ({pluginRelName}) export returns an invalid interface contract! Make sure that the plugin returns the valid interface instance!");
             }
 
+            // Get Self Updater
+            pluginInstance.GetPluginSelfUpdater(out IPluginSelfUpdate? selfUpdater);
+            Updater = selfUpdater;
+
+            // Get Managed Update CDN List
+            if (TryGetExport(Handle, "GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
+            {
+                int      pluginCdnListCount = 0;
+                ushort** urlsPtr            = null;
+
+                getPluginUpdateCdnList(&pluginCdnListCount, &urlsPtr);
+
+                if (pluginCdnListCount != 0 && urlsPtr != null)
+                {
+                    string[] urlList = GC.AllocateUninitializedArray<string>(pluginCdnListCount);
+                    for (int i = 0; i < pluginCdnListCount; i++)
+                    {
+                        ushort* ptr = urlsPtr[i];
+                        urlList[i] = Utf16StringMarshaller.ConvertToManaged(ptr) ?? "";
+                        Utf16StringMarshaller.Free(ptr);
+                    }
+
+                    UpdateCdnList = urlList;
+                }
+            }
+
             // Get preset configs
             pluginInstance.GetPresetConfigCount(out int presetConfigCount);
             if (presetConfigCount <= 0)
@@ -190,6 +218,7 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
             PluginDirPath   = pluginBaseDir;
             PluginFilePath  = pluginFilePath;
             PluginFileName  = manifest.MainLibraryName;
+            PluginKey       = pluginRelName;
             Handle          = libraryHandle;
             Name            = pluginName ?? manifest.MainPluginName;
             Description     = pluginDescription ?? manifest.MainPluginDescription;
@@ -476,8 +505,12 @@ public class PluginInfo : INotifyPropertyChanged, IDisposable
 
     public override string ToString() => $"{Name} (by {Author}) - {Description}";
 
+    private T? OnPropertyChangedAndSet<T>(T? value, [CallerMemberName] string? propertyName = null)
+    {
+        OnPropertyChanged(propertyName);
+        return value;
+    }
 
-    [SuppressMessage("ReSharper", "UnusedMember.Local")]
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         // Raise the PropertyChanged event, passing the name of the property whose value has changed.

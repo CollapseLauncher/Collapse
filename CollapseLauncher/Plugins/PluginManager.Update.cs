@@ -27,7 +27,7 @@ internal static partial class PluginManager
 {
     private unsafe delegate void GetPluginUpdateCdnListDelegate(int* count, ushort*** ptr);
 
-    internal static async Task<(List<(string, SelfUpdateReturnInfo)>, bool)> StartUpdateBackgroundRoutine()
+    internal static async Task<(List<(string, SelfUpdateReturnInfo)>, bool)> StartUpdateBackgroundRoutine(bool isForUpdateCheckOnly = false)
     {
         int updated = 0;
         string rootPluginDir = LauncherConfig.AppPluginFolder;

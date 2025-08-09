@@ -64,7 +64,17 @@ namespace Hi3Helper.SentryHelper
             /// <summary>
             /// Use this for exception that is handled directly by the catcher.
             /// </summary>
-            Handled
+            Handled,
+
+            /// <summary>
+            /// Use this enum if an unhandled exception is coming from plugin operations.
+            /// </summary>
+            PluginUnhandled,
+
+            /// <summary>
+            /// Use this enum if the exception is happened to be expected and handled by the launcher.
+            /// </summary>
+            PluginHandled
         }
 
         #endregion
