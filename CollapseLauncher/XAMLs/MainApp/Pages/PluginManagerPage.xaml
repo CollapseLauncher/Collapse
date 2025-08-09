@@ -20,13 +20,16 @@
         <pages:GameNameLocaleConverter x:Key="GameNameLocaleConverter" />
         <pages:GameRegionLocaleConverter x:Key="GameRegionLocaleConverter" />
         <pages:LocalFullDateTimeConverter x:Key="LocalFullDateTimeConverter" />
-        <pages:CountToIsEnabledConverter x:Key="CountToIsEnabledConverter" />
+        <pages:NumberToBoolConverter x:Key="NumberToBoolConverter" />
+        <pages:InverseNumberToBoolConverter x:Key="InverseNumberToBoolConverter" />
         <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <pages:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter"/>
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <pages:InverseCountToVisibilityConverter x:Key="InverseCountToVisibilityConverter"/>
         <pages:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <pages:UpdateToVersionStringConverter x:Key="UpdateToVersionStringConverter"/>
+        <pages:UpdatingPercentageStringConverter x:Key="UpdatingPercentageStringConverter"/>
+        <pages:PluginUpdatedToVersionStringConverter x:Key="PluginUpdatedToVersionStringConverter"/>
         <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
     </Page.Resources>
     <Grid ColumnSpacing="0">
@@ -45,7 +48,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0"
-                       Text="Hey, you have no plugin loaded!"
+                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginTitle}"
                        TextWrapping="Wrap"
                        TextAlignment="Center"
                        HorizontalAlignment="Center"
@@ -66,10 +69,10 @@
                     <TextBlock Grid.Column="0"
                                FontSize="14"
                                VerticalAlignment="Center">
-                        <Run Text="Go to"/>
-                        <Run Text="Plugin Download Catalog"
+                        <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton1}"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton2}"
                              FontWeight="Bold"/>
-                        <Run Text="page"/>
+                        <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelNoPluginButton3}"/>
                     </TextBlock>
                     <FontIcon Grid.Column="1"
                               Glyph="&#xE826;"
@@ -99,29 +102,61 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
                            Margin="8,0"
-                           Text="Loaded Plugin Information"
+                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.LeftPanelListViewTitle}"
                            Style="{ThemeResource TitleTextBlockStyle}"
                            FontSize="24"/>
                 <StackPanel Grid.Column="1">
-                    <Button Padding="2,2"
-                            VerticalAlignment="Bottom"
-                            Style="{ThemeResource TransparentDefaultButtonStyle}">
+                    <SplitButton Padding="2,2"
+                                 VerticalAlignment="Bottom"
+                                 Click="OnClickCheckForUpdatesAllButton"
+                                 Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                 IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}">
+                        <SplitButton.Flyout>
+                            <MenuFlyout Placement="Bottom">
+                                <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton2}"
+                                                Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                Click="OnClickUpdateAndDownloadAllPlugin">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE896;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <ToggleMenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton3}"
+                                                      IsChecked="{x:Bind pages:PluginManagerPage.Context.IsEnableAutoUpdate, Mode=TwoWay}">
+                                    <ToggleMenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE78B;"/>
+                                    </ToggleMenuFlyoutItem.Icon>
+                                </ToggleMenuFlyoutItem>
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
                         <Grid ColumnSpacing="4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
-                                       Text="Check for Updates"
+                                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton1}"
                                        FontSize="12"
                                        VerticalAlignment="Center"
-                                       Margin="8,0,0,0"/>
+                                       Margin="8,0,0,0"
+                                       Visibility="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"/>
                             <FontIcon Grid.Column="1"
                                       Glyph="&#xE895;"
                                       FontSize="16"
-                                      Margin="4,4,8,4"/>
+                                      Margin="4,4,8,4"
+                                      Visibility="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="0"
+                                       Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewMainActionButton1AltChecking}"
+                                       FontSize="12"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0"
+                                       Visibility="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"/>
+                            <ProgressRing Grid.Column="1"
+                                          Width="12"
+                                          Height="12"
+                                          Margin="4,4,8,4"
+                                          Visibility="{x:Bind pages:PluginManagerPage.Context.IsUpdateCheckOnProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"/>
                         </Grid>
-                    </Button>
+                    </SplitButton>
                 </StackPanel>
             </Grid>
             <ListView x:Name="PluginListView"
@@ -132,424 +167,581 @@
                       Margin="-24,0,0,0">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="plugins:PluginInfo">
-                        <controls:SettingsExpander Padding="0"
-                                                   HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
-                                                   Visibility="Visible"
-                                                   HorizontalAlignment="Stretch"
-                                                   HorizontalContentAlignment="Stretch"
-                                                   Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
-                                                   Margin="0,2,-8,2">
-                            <controls:SettingsExpander.ContextFlyout>
+                        <Grid Margin="0,0,-8,0"
+                              Loaded="{x:Bind extension:UIElementExtensions.EnableImplicitAnimationRecursiveOnLoaded}">
+                            <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem Text="Uninstall Selected Plugins"
+                                    <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton1}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnMarkForDeletionSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountRestored, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountRestored, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Restore Selected Plugins"
+                                    <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton2}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnRestoreFromDeletionSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountUninstalled, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountUninstalled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE7A7;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Enable Selected Plugins"
+                                    <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton3}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnEnableSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountDisabled, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountDisabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE930;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Disable Selected Plugins"
+                                    <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton4}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnDisableSelectedPluginsCommand}"
                                                     CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}"
-                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource CountToIsEnabledConverter}, Mode=OneWay}">
+                                                    IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xEA39;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
+                                    <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton5}"
+                                                       IsEnabled="{x:Bind pages:PluginManagerPage.Context.ListViewSelectedItemsCountEnabled, Converter={StaticResource NumberToBoolConverter}, Mode=OneWay}">
+                                        <MenuFlyoutSubItem.Icon>
+                                            <FontIcon Glyph="&#xE895;"/>
+                                        </MenuFlyoutSubItem.Icon>
+                                        <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}"
+                                                        Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateSelectedPluginsCommand}"
+                                                        CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE895;"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}"
+                                                        Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateSelectedPluginsCommand}"
+                                                        CommandParameter="{x:Bind pages:PluginManagerPage.This.PluginListView.SelectedItems}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE896;"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                    </MenuFlyoutSubItem>
                                     <MenuFlyoutSeparator Margin="8,8"/>
-                                    <MenuFlyoutItem Text="Open Current Plugin Folder"
+                                    <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton6}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCurrentPluginFolderCommand}"
                                                     CommandParameter="{x:Bind}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xED43;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Open Collapse Launcher Plugin Folder"
+                                    <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton7}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                                                     Command="{x:Bind plugins:PluginManagerPageContext.OnOpenCollapsePluginFolderCommand}"
                                                     CommandParameter="{x:Bind}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xED25;"/>
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
+                                    <MenuFlyoutSubItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButton8}">
+                                        <MenuFlyoutSubItem.Icon>
+                                            <FontIcon Glyph="&#xE895;"/>
+                                        </MenuFlyoutSubItem.Icon>
+                                        <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckUpdateOnly}"
+                                                        Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckUpdateCurrentPluginCommand}"
+                                                        CommandParameter="{x:Bind}"
+                                                        Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE895;"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonCheckAndDownloadUpdate}"
+                                                        Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnCheckAndDownloadUpdateCurrentPluginCommand}"
+                                                        CommandParameter="{x:Bind}"
+                                                        Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE896;"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContextButtonDownloadUpdate}"
+                                                        Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                        Command="{x:Bind plugins:PluginManagerPageContext.OnDownloadUpdateCurrentPluginCommand}"
+                                                        CommandParameter="{x:Bind}"
+                                                        Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE896;"/>
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                    </MenuFlyoutSubItem>
                                 </MenuFlyout>
-                            </controls:SettingsExpander.ContextFlyout>
-                            <controls:SettingsExpander.Content>
-                                <Grid ColumnSpacing="8"
-                                      Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorRecursiveOnLoaded}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid Grid.Column="0"
-                                          Visibility="{x:Bind IsUpdateCheckInProgress, Converter={StaticResource BooleanVisibilityConverter}}">
+                            </Grid.ContextFlyout>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <controls:SettingsExpander Grid.Row="0"
+                                                       Padding="0"
+                                                       HeaderIcon="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
+                                                       Visibility="Visible"
+                                                       HorizontalAlignment="Stretch"
+                                                       HorizontalContentAlignment="Stretch"
+                                                       Margin="0,2, 0,2"
+                                                       Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}">
+                                <controls:SettingsExpander.Content>
+                                    <Grid ColumnSpacing="8"
+                                          Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorRecursiveOnLoaded}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="1"
+                                                Padding="0"
+                                                Foreground="{ThemeResource SystemFillColorCritical}"
+                                                Click="OnUninstallPlugin"
+                                                Tag="{x:Bind}"
+                                                Visibility="{x:Bind IsMarkedForDeletion, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContentButton1}"
+                                                           FontSize="12"
+                                                           VerticalAlignment="Center"
+                                                           Margin="8,0,0,0"/>
+                                                <FontIcon Grid.Column="1"
+                                                          Glyph="&#xE74D;"
+                                                          FontSize="16"
+                                                          Margin="4,4,8,4"/>
+                                            </Grid>
+                                            <Button.Resources>
+                                                <ResourceDictionary>
+                                                    <ResourceDictionary.ThemeDictionaries>
+                                                        <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+                                                        <ResourceDictionary x:Key="Light">
+                                                            <SolidColorBrush x:Key="ButtonBackground"
+                                                                             Color="#10FF0000"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                             Color="#A0FF0000"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                             Color="#70FF0000"/>
+                                                        </ResourceDictionary>
+                                                        <ResourceDictionary x:Key="Default">
+                                                            <SolidColorBrush x:Key="ButtonBackground"
+                                                                             Color="#10FF0000"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                             Color="#A0FF0000"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                             Color="#70FF0000"/>
+                                                        </ResourceDictionary>
+                                                        <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
+                                                    </ResourceDictionary.ThemeDictionaries>
+                                                </ResourceDictionary>
+                                            </Button.Resources>
+                                        </Button>
+                                        <Button Grid.Column="1"
+                                                Padding="0"
+                                                Click="OnRestoreUninstalledPlugin"
+                                                Tag="{x:Bind}"
+                                                Foreground="{ThemeResource SystemFillColorSuccess}"
+                                                Visibility="{x:Bind IsMarkedForDeletion, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemContentButton2}"
+                                                           FontSize="12"
+                                                           VerticalAlignment="Center"
+                                                           Margin="8,0,0,0"/>
+                                                <FontIcon Grid.Column="1"
+                                                          Glyph="&#xE7A7;"
+                                                          FontSize="16"
+                                                          Margin="4,4,8,4"/>
+                                            </Grid>
+                                            <Button.Resources>
+                                                <ResourceDictionary>
+                                                    <ResourceDictionary.ThemeDictionaries>
+                                                        <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+                                                        <ResourceDictionary x:Key="Light">
+                                                            <SolidColorBrush x:Key="ButtonBackground"
+                                                                             Color="#106CCB5F"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                             Color="#A06CCB5F"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                             Color="#706CCB5F"/>
+                                                        </ResourceDictionary>
+                                                        <ResourceDictionary x:Key="Default">
+                                                            <SolidColorBrush x:Key="ButtonBackground"
+                                                                             Color="#100F7B0F"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                             Color="#A00F7B0F"/>
+                                                            <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                             Color="#700F7B0F"/>
+                                                        </ResourceDictionary>
+                                                        <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
+                                                    </ResourceDictionary.ThemeDictionaries>
+                                                </ResourceDictionary>
+                                            </Button.Resources>
+                                        </Button>
+                                        <ToggleSwitch Grid.Column="2"
+                                                      IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
+                                                      OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
+                                                      OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                      Scale="0.8,0.8,0.8"
+                                                      Margin="0,0,-20,-8"/>
+                                    </Grid>
+                                </controls:SettingsExpander.Content>
+                                <controls:SettingsExpander.Header>
+                                    <TextBlock extension:TextBlockExtension.RemoveEmptyRuns="True"
+                                               TextTrimming="CharacterEllipsis">
+                                        <Run Text="{x:Bind Name, Mode=OneWay}"/>
+                                        <Run Text=" ("
+                                             FontSize="10"
+                                             FontWeight="Bold"
+                                             extension:TextBlockExtension.PreserveSpace="True"/>
+                                        <Run Text="{x:Bind PluginFileName, Mode=OneWay}"
+                                             FontSize="10"
+                                             FontWeight="Bold"/>
+                                        <Run Text=")"
+                                             FontSize="10"
+                                             FontWeight="Bold"/>
+                                    </TextBlock>
+                                </controls:SettingsExpander.Header>
+                                <controls:SettingsExpander.Description>
+                                    <TextBlock Text="{x:Bind Author, Converter={StaticResource ByStringConverter}, Mode=OneWay}"
+                                               TextTrimming="CharacterEllipsis" />
+                                </controls:SettingsExpander.Description>
+                                <controls:SettingsExpander.Items>
+                                    <controls:SettingsCard HorizontalContentAlignment="Stretch"
+                                                           HorizontalAlignment="Stretch"
+                                                           ContentAlignment="Left"
+                                                           Padding="16,16,16,16">
+                                        <Grid HorizontalAlignment="Stretch">
+                                            <Grid RowSpacing="4"
+                                                  ColumnSpacing="8"
+                                                  HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="96"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoDesc}"
+                                                           Grid.Row="0"
+                                                           Grid.Column="0"
+                                                           FontSize="12"
+                                                           Opacity=".75"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Right"
+                                                           TextAlignment="Right"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoPluginVer}"
+                                                           Grid.Row="1"
+                                                           Grid.Column="0"
+                                                           FontSize="12"
+                                                           Opacity=".75"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Right"
+                                                           TextAlignment="Right"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoInterfaceVer}"
+                                                           Grid.Row="2"
+                                                           Grid.Column="0"
+                                                           FontSize="12"
+                                                           Opacity=".75"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Right"
+                                                           TextAlignment="Right"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoCreationDate}"
+                                                           Grid.Row="3"
+                                                           Grid.Column="0"
+                                                           FontSize="12"
+                                                           Opacity=".75"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Right"
+                                                           TextAlignment="Right"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoMainLibLocation}"
+                                                           Grid.Row="4"
+                                                           Grid.Column="0"
+                                                           FontSize="12"
+                                                           Opacity=".75"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Right"
+                                                           TextAlignment="Right"/>
+                                                <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoLoadedPresets}"
+                                                           Grid.Row="5"
+                                                           Grid.Column="0"
+                                                           FontSize="12"
+                                                           Opacity=".75"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Right"
+                                                           TextAlignment="Right"/>
+
+                                                <TextBlock Text="{x:Bind Description, Mode=OneWay}"
+                                                           Grid.Row="0"
+                                                           Grid.Column="1"
+                                                           FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Left"/>
+                                                <TextBlock Text="{x:Bind Version, Mode=OneWay}"
+                                                           Grid.Row="1"
+                                                           Grid.Column="1"
+                                                           FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Left"/>
+                                                <TextBlock Text="{x:Bind StandardVersion, Mode=OneWay}"
+                                                           Grid.Row="2"
+                                                           Grid.Column="1"
+                                                           FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Left"/>
+                                                <TextBlock Text="{x:Bind CreationDate, Converter={StaticResource LocalFullDateTimeConverter}, Mode=OneWay}"
+                                                           Grid.Row="3"
+                                                           Grid.Column="1"
+                                                           FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Left"/>
+                                                <TextBlock Text="{x:Bind PluginFilePath, Mode=OneWay}"
+                                                           Grid.Row="4"
+                                                           Grid.Column="1"
+                                                           FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           HorizontalAlignment="Left"/>
+                                                <ItemsRepeater Grid.Row="5"
+                                                               Grid.Column="1"
+                                                               ItemsSource="{x:Bind PresetConfigs, Mode=OneWay}">
+                                                    <ItemsRepeater.ItemTemplate>
+                                                        <DataTemplate x:DataType="plugins:PluginPresetConfigWrapper">
+                                                            <TextBlock FontSize="12"
+                                                                       TextWrapping="Wrap"
+                                                                       HorizontalAlignment="Left"
+                                                                       extension:TextBlockExtension.RemoveEmptyRuns="True">
+                                                            <Run Text="• "
+                                                                 extension:TextBlockExtension.PreserveSpace="True"/>
+                                                            <Run Text="{x:Bind GameName, Converter={StaticResource GameNameLocaleConverter}, Mode=OneWay}"/>
+                                                            <Run Text=" - "
+                                                                 extension:TextBlockExtension.PreserveSpace="True"/>
+                                                            <Run Text="{x:Bind ZoneName, Converter={StaticResource GameRegionLocaleConverter}, Mode=OneWay}"/>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ItemsRepeater.ItemTemplate>
+                                                </ItemsRepeater>
+                                            </Grid>
+                                            <Button Style="{ThemeResource TransparentDefaultButtonStyle}"
+                                                    Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                                    Click="{x:Bind pages:SettingsPage.CopyLoadedPluginInformationClick}"
+                                                    Padding="4"
+                                                    Margin="0,0,-16,-8"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Bottom"
+                                                    Tag="{x:Bind}">
+                                                <FontIcon Glyph="&#xE8C8;"
+                                                          FontSize="16" />
+                                                <Button.Flyout>
+                                                    <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
+                                                        <Grid ColumnSpacing="6"
+                                                              BorderThickness="0"
+                                                              Margin="-16,-32"
+                                                              Padding="12,0"
+                                                              Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <FontIcon Glyph="&#xEC61;"
+                                                                      Grid.Column="0"
+                                                                      FontSize="16"
+                                                                      VerticalAlignment="Center"
+                                                                      Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied, Mode=OneWay}"
+                                                                       Grid.Column="1"
+                                                                       FontWeight="Bold"
+                                                                       Margin="0,-2,0,0"
+                                                                       VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
+                                    </controls:SettingsCard>
+                                </controls:SettingsExpander.Items>
+                            </controls:SettingsExpander>
+                            <Grid Grid.Row="1"
+                                  Padding="4"
+                                  CornerRadius="4"
+                                  Margin="0,0,0,0"
+                                  Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0"
+                                           Grid.ColumnSpan="3"
+                                           Fill="{ThemeResource InfoBarWarningSeverityBackgroundBrush}"
+                                           Margin="-4"
+                                           Opacity="1"/>
+                                <FontIcon Grid.Column="0"
+                                          Glyph="&#xE895;"
+                                          FontSize="14"
+                                          Margin="4"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailable, Mode=OneWay}"
+                                           FontSize="12"
+                                           Margin="4"
+                                           VerticalAlignment="Center"/>
+                                <Button Grid.Column="2"
+                                        Padding="0"
+                                        Click="OnClickUpdateCurrentPlugin"
+                                        Tag="{x:Bind}"
+                                        Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
+                                        IsEnabled="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
+                                        Foreground="{ThemeResource SystemFillColorSuccess}"
+                                        Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                    <Grid ColumnSpacing="4">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0"
-                                                   Text="Checking updates"
+                                                   Text="{x:Bind NextUpdateManifestInfo, Converter={StaticResource UpdateToVersionStringConverter}, Mode=OneWay}"
+                                                   Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"
                                                    FontSize="12"
-                                                   VerticalAlignment="Center"/>
+                                                   VerticalAlignment="Center"
+                                                   Margin="8,0,0,0"/>
+                                        <FontIcon Grid.Column="1"
+                                                  Glyph="&#xE895;"
+                                                  Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"
+                                                  FontSize="14"
+                                                  Margin="4,4,8,4"/>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{x:Bind UpdateProgress, Converter={StaticResource UpdatingPercentageStringConverter}, Mode=OneWay}"
+                                                   Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"
+                                                   Margin="8,0,0,0"/>
                                         <ProgressRing Grid.Column="1"
+                                                      Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"
                                                       Width="12"
                                                       Height="12"
-                                                      IsIndeterminate="True"/>
+                                                      IsIndeterminate="{x:Bind UpdateProgress, Converter={StaticResource InverseNumberToBoolConverter}, Mode=OneWay}"
+                                                      Maximum="100"
+                                                      Value="{x:Bind UpdateProgress, Mode=OneWay}"
+                                                      Margin="4,4,8,4"/>
                                     </Grid>
-                                    <Button Grid.Column="0"
-                                            Padding="0"
-                                            Tag="{x:Bind}"
-                                            IsEnabled="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
-                                            Foreground="{ThemeResource SystemFillColorSuccess}"
-                                            Visibility="{x:Bind IsUpdateAvailable, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
-                                        <Grid ColumnSpacing="4">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{x:Bind NextUpdateManifestInfo, Converter={StaticResource UpdateToVersionStringConverter}}"
-                                                       Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center"
-                                                       Margin="8,0,0,0"/>
-                                            <FontIcon Grid.Column="1"
-                                                      Glyph="&#xE895;"
-                                                      Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}"
-                                                      FontSize="16"
-                                                      Margin="4,4,8,4"/>
-                                            <TextBlock Grid.Column="0"
-                                                       Text="Updating (0%)"
-                                                       Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center"
-                                                       Margin="8,0,0,0"/>
-                                            <ProgressRing Grid.Column="1"
-                                                          Visibility="{x:Bind IsUpdateInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"
-                                                          Width="12"
-                                                          Height="12"
-                                                          IsIndeterminate="True"/>
-                                        </Grid>
-                                        <Button.Resources>
-                                            <ResourceDictionary>
-                                                <ResourceDictionary.ThemeDictionaries>
-                                                    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
-                                                    <ResourceDictionary x:Key="Light">
-                                                        <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#106CCB5F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A06CCB5F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#706CCB5F"/>
-                                                    </ResourceDictionary>
-                                                    <ResourceDictionary x:Key="Default">
-                                                        <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#100F7B0F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A00F7B0F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#700F7B0F"/>
-                                                    </ResourceDictionary>
-                                                    <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
-                                                </ResourceDictionary.ThemeDictionaries>
-                                            </ResourceDictionary>
-                                        </Button.Resources>
-                                    </Button>
-                                    <Button Grid.Column="1"
-                                            Padding="0"
-                                            Foreground="{ThemeResource SystemFillColorCritical}"
-                                            Click="OnUninstallPlugin"
-                                            Tag="{x:Bind}"
-                                            Visibility="{x:Bind IsMarkedForDeletion, Converter={StaticResource InverseBooleanVisibilityConverter}, Mode=OneWay}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0"
-                                                       Text="Uninstall"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center"
-                                                       Margin="8,0,0,0"/>
-                                            <FontIcon Grid.Column="1"
-                                                      Glyph="&#xE74D;"
-                                                      FontSize="16"
-                                                      Margin="4,4,8,4"/>
-                                        </Grid>
-                                        <Button.Resources>
-                                            <ResourceDictionary>
-                                                <ResourceDictionary.ThemeDictionaries>
-                                                    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
-                                                    <ResourceDictionary x:Key="Light">
-                                                        <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#10FF0000"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A0FF0000"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#70FF0000"/>
-                                                    </ResourceDictionary>
-                                                    <ResourceDictionary x:Key="Default">
-                                                        <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#10FF0000"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A0FF0000"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#70FF0000"/>
-                                                    </ResourceDictionary>
-                                                    <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
-                                                </ResourceDictionary.ThemeDictionaries>
-                                            </ResourceDictionary>
-                                        </Button.Resources>
-                                    </Button>
-                                    <Button Grid.Column="1"
-                                            Padding="0"
-                                            Click="OnRestoreUninstalledPlugin"
-                                            Tag="{x:Bind}"
-                                            Foreground="{ThemeResource SystemFillColorSuccess}"
-                                            Visibility="{x:Bind IsMarkedForDeletion, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Grid.Column="0"
-                                                       Text="Restore"
-                                                       FontSize="12"
-                                                       VerticalAlignment="Center"
-                                                       Margin="8,0,0,0"/>
-                                            <FontIcon Grid.Column="1"
-                                                      Glyph="&#xE7A7;"
-                                                      FontSize="16"
-                                                      Margin="4,4,8,4"/>
-                                        </Grid>
-                                        <Button.Resources>
-                                            <ResourceDictionary>
-                                                <ResourceDictionary.ThemeDictionaries>
-                                                    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
-                                                    <ResourceDictionary x:Key="Light">
-                                                        <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#106CCB5F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A06CCB5F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#706CCB5F"/>
-                                                    </ResourceDictionary>
-                                                    <ResourceDictionary x:Key="Default">
-                                                        <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#100F7B0F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A00F7B0F"/>
-                                                        <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#700F7B0F"/>
-                                                    </ResourceDictionary>
-                                                    <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
-                                                </ResourceDictionary.ThemeDictionaries>
-                                            </ResourceDictionary>
-                                        </Button.Resources>
-                                    </Button>
-                                    <ToggleSwitch Grid.Column="2"
-                                                  IsOn="{x:Bind IsEnabled, Mode=TwoWay}"
-                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}"
-                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
-                                                  Scale="0.8,0.8,0.8"
-                                                  Margin="0,0,-20,-8">
-                                    </ToggleSwitch>
-                                </Grid>
-                            </controls:SettingsExpander.Content>
-                            <controls:SettingsExpander.Header>
-                                <TextBlock extension:TextBlockExtension.RemoveEmptyRuns="True">
-                                    <Run Text="{x:Bind Name, Mode=OneWay}"/>
-                                    <Run Text=" ("
-                                         FontSize="10"
-                                         FontWeight="Bold"
-                                         extension:TextBlockExtension.PreserveSpace="True"/>
-                                    <Run Text="{x:Bind PluginFileName, Mode=OneWay}"
-                                         FontSize="10"
-                                         FontWeight="Bold"/>
-                                    <Run Text=")"
-                                         FontSize="10"
-                                         FontWeight="Bold"/>
-                                </TextBlock>
-                            </controls:SettingsExpander.Header>
-                            <controls:SettingsExpander.Description>
-                                <TextBlock Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}" />
-                            </controls:SettingsExpander.Description>
-                            <controls:SettingsExpander.Items>
-                                <controls:SettingsCard HorizontalContentAlignment="Stretch"
-                                                       HorizontalAlignment="Stretch"
-                                                       ContentAlignment="Left"
-                                                       Padding="16,16,16,16">
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid RowSpacing="4"
-                                              ColumnSpacing="8"
-                                              HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="96"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoDesc}"
-                                                       Grid.Row="0"
-                                                       Grid.Column="0"
-                                                       FontSize="12"
-                                                       Opacity=".75"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Right"
-                                                       TextAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoPluginVer}"
-                                                       Grid.Row="1"
-                                                       Grid.Column="0"
-                                                       FontSize="12"
-                                                       Opacity=".75"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Right"
-                                                       TextAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoInterfaceVer}"
-                                                       Grid.Row="2"
-                                                       Grid.Column="0"
-                                                       FontSize="12"
-                                                       Opacity=".75"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Right"
-                                                       TextAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoCreationDate}"
-                                                       Grid.Row="3"
-                                                       Grid.Column="0"
-                                                       FontSize="12"
-                                                       Opacity=".75"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Right"
-                                                       TextAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoMainLibLocation}"
-                                                       Grid.Row="4"
-                                                       Grid.Column="0"
-                                                       FontSize="12"
-                                                       Opacity=".75"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Right"
-                                                       TextAlignment="Right"/>
-                                            <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoLoadedPresets}"
-                                                       Grid.Row="5"
-                                                       Grid.Column="0"
-                                                       FontSize="12"
-                                                       Opacity=".75"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Right"
-                                                       TextAlignment="Right"/>
-
-                                            <TextBlock Text="{x:Bind Description, Mode=OneWay}"
-                                                       Grid.Row="0"
-                                                       Grid.Column="1"
-                                                       FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind Version, Mode=OneWay}"
-                                                       Grid.Row="1"
-                                                       Grid.Column="1"
-                                                       FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind StandardVersion, Mode=OneWay}"
-                                                       Grid.Row="2"
-                                                       Grid.Column="1"
-                                                       FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind CreationDate, Mode=OneWay, Converter={StaticResource LocalFullDateTimeConverter}}"
-                                                       Grid.Row="3"
-                                                       Grid.Column="1"
-                                                       FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Left"/>
-                                            <TextBlock Text="{x:Bind PluginFilePath, Mode=OneWay}"
-                                                       Grid.Row="4"
-                                                       Grid.Column="1"
-                                                       FontSize="12"
-                                                       TextWrapping="Wrap"
-                                                       HorizontalAlignment="Left"/>
-                                            <ItemsRepeater Grid.Row="5"
-                                                           Grid.Column="1"
-                                                           ItemsSource="{x:Bind PresetConfigs, Mode=OneWay}">
-                                                <ItemsRepeater.ItemTemplate>
-                                                    <DataTemplate x:DataType="plugins:PluginPresetConfigWrapper">
-                                                        <TextBlock FontSize="12"
-                                                                   TextWrapping="Wrap"
-                                                                   HorizontalAlignment="Left"
-                                                                   extension:TextBlockExtension.RemoveEmptyRuns="True">
-                                                            <Run Text="• "
-                                                                 extension:TextBlockExtension.PreserveSpace="True"/>
-                                                            <Run Text="{x:Bind GameName, Mode=OneWay, Converter={StaticResource GameNameLocaleConverter}}"/>
-                                                            <Run Text=" - "
-                                                                 extension:TextBlockExtension.PreserveSpace="True"/>
-                                                            <Run Text="{x:Bind ZoneName, Mode=OneWay, Converter={StaticResource GameRegionLocaleConverter}}"/>
-                                                        </TextBlock>
-                                                    </DataTemplate>
-                                                </ItemsRepeater.ItemTemplate>
-                                            </ItemsRepeater>
-                                        </Grid>
-                                        <Button Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                                Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
-                                                Click="{x:Bind pages:SettingsPage.CopyLoadedPluginInformationClick}"
-                                                Padding="4"
-                                                Margin="0,0,-16,-8"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Bottom"
-                                                Tag="{x:Bind}">
-                                            <FontIcon Glyph="&#xE8C8;"
-                                                      FontSize="16" />
-                                            <Button.Flyout>
-                                                <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
-                                                    <Grid ColumnSpacing="6"
-                                                          BorderThickness="0"
-                                                          Margin="-16,-32"
-                                                          Padding="12,0"
-                                                          Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition/>
-                                                            <ColumnDefinition/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <FontIcon Glyph="&#xEC61;"
-                                                                  Grid.Column="0"
-                                                                  FontSize="16"
-                                                                  VerticalAlignment="Center"
-                                                                  Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}"
-                                                                   Grid.Column="1"
-                                                                   FontWeight="Bold"
-                                                                   Margin="0,-2,0,0"
-                                                                   VerticalAlignment="Center" />
-                                                    </Grid>
-                                                </Flyout>
-                                            </Button.Flyout>
-                                        </Button>
-                                    </Grid>
-                                </controls:SettingsCard>
-                            </controls:SettingsExpander.Items>
-                        </controls:SettingsExpander>
+                                    <Button.Resources>
+                                        <ResourceDictionary>
+                                            <ResourceDictionary.ThemeDictionaries>
+                                                <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+                                                <ResourceDictionary x:Key="Light">
+                                                    <SolidColorBrush x:Key="ButtonBackground"
+                                                                     Color="#106CCB5F"/>
+                                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                     Color="#A06CCB5F"/>
+                                                    <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                     Color="#706CCB5F"/>
+                                                </ResourceDictionary>
+                                                <ResourceDictionary x:Key="Default">
+                                                    <SolidColorBrush x:Key="ButtonBackground"
+                                                                     Color="#100F7B0F"/>
+                                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                     Color="#A00F7B0F"/>
+                                                    <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                     Color="#700F7B0F"/>
+                                                </ResourceDictionary>
+                                                <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
+                                            </ResourceDictionary.ThemeDictionaries>
+                                        </ResourceDictionary>
+                                    </Button.Resources>
+                                </Button>
+                            </Grid>
+                            <Grid Grid.Row="1"
+                                  Padding="4"
+                                  CornerRadius="4"
+                                  Margin="0,0,0,0"
+                                  Visibility="{x:Bind IsUpdateCompleted, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0"
+                                           Grid.ColumnSpan="2"
+                                           Fill="{ThemeResource InfoBarSuccessSeverityBackgroundBrush}"
+                                           Margin="-4"
+                                           Opacity="1"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{x:Bind NextUpdateManifestInfo, Converter={StaticResource PluginUpdatedToVersionStringConverter}, Mode=OneWay}"
+                                           FontSize="12"
+                                           Margin="4"
+                                           VerticalAlignment="Center"/>
+                                <FontIcon Grid.Column="0"
+                                          Glyph="&#xE930;"
+                                          FontSize="16"
+                                          Margin="4"/>
+                            </Grid>
+                            <Grid Grid.Row="1"
+                                  Padding="4"
+                                  CornerRadius="4"
+                                  Margin="0,0,0,0"
+                                  Visibility="{x:Bind IsUpdateCheckInProgress, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0"
+                                           Grid.ColumnSpan="2"
+                                           Fill="{ThemeResource InfoBarInformationalSeverityBackgroundBrush}"
+                                           Margin="-4"
+                                           Opacity=".5"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusChecking}"
+                                           FontSize="12"
+                                           Margin="4"
+                                           VerticalAlignment="Center"/>
+                                <ProgressRing Grid.Column="0"
+                                              IsIndeterminate="True"
+                                              Width="12"
+                                              Height="12"
+                                              Margin="4"/>
+                            </Grid>
+                            <Grid Grid.Row="1"
+                                  Padding="4"
+                                  CornerRadius="4"
+                                  Margin="0,0,0,0"
+                                  Visibility="{x:Bind IsPluginUpToDate, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Column="0"
+                                           Grid.ColumnSpan="2"
+                                           Fill="{ThemeResource InfoBarSuccessSeverityBackgroundBrush}"
+                                           Margin="-4"
+                                           Opacity="1"/>
+                                <TextBlock Grid.Column="1"
+                                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusUpToDate}"
+                                           FontSize="12"
+                                           Margin="4"
+                                           VerticalAlignment="Center"/>
+                                <FontIcon Grid.Column="0"
+                                          Glyph="&#xE930;"
+                                          FontSize="16"
+                                          Margin="4"/>
+                            </Grid>
+                        </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
@@ -560,7 +752,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="You need to restart your launcher in order to apply the changes!"
+                           Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewFooterWarning1}"
                            VerticalAlignment="Bottom"
                            HorizontalAlignment="Left"
                            TextWrapping="Wrap"
@@ -569,6 +761,7 @@
                         Grid.Column="1"
                         IsEnabled="{x:Bind pages:PluginManagerPage.Context.IsChanged, Mode=OneWay}"
                         HorizontalAlignment="Right"
+                        Click="{x:Bind pages:PluginManagerPage.AskLauncherRestart}"
                         Loaded="{x:Bind extension:UIElementExtensions.AttachHandCursorOnLoaded}"
                         CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(RestartLauncherButton)}"
                         Style="{ThemeResource AccentButtonStyle}">
@@ -577,10 +770,11 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <FontIcon Glyph="&#xE777;"
+                        <FontIcon Grid.Column="0"
+                                  Glyph="&#xE777;"
                                   FontSize="16"/>
                         <TextBlock Grid.Column="1"
-                                   Text="Restart the Launcher"
+                                   Text="{x:Bind helper:Locale.Lang._PluginManagerPage.ListViewFooterRestartButton}"
                                    FontSize="14"
                                    Margin="0,-1,0,0"/>
                     </Grid>
@@ -626,7 +820,7 @@
                     <interactivity:EventTriggerBehavior EventName="PointerEntered">
                         <behaviors:StartAnimationAction Animation="{x:Bind ImportBoxPlusGridEnterAnimation}"/>
                     </interactivity:EventTriggerBehavior>
-                    
+
                     <interactivity:EventTriggerBehavior EventName="PointerExited">
                         <behaviors:StartAnimationAction Animation="{x:Bind ImportBoxPlusGridExitAnimation}"/>
                     </interactivity:EventTriggerBehavior>
@@ -639,7 +833,7 @@
                         <behaviors:StartAnimationAction Animation="{x:Bind ImportBoxPlusGridExitAnimation}"/>
                     </interactivity:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
-                
+
                 <Grid VerticalAlignment="Center"
                       HorizontalAlignment="Center"
                       RowSpacing="32">
@@ -662,7 +856,7 @@
                             <media:AttachedCardShadow Offset="0, 2, 0"
                                                       Opacity=".1"
                                                       BlurRadius="8"
-                                                      CornerRadius="{x:Bind ImportBoxPlusGrid.CornerRadius, Mode=OneWay, Converter={StaticResource BottomRightCornerRadiusDoubleValueConverter}}"/>
+                                                      CornerRadius="{x:Bind ImportBoxPlusGrid.CornerRadius, Converter={StaticResource BottomRightCornerRadiusDoubleValueConverter}, Mode=OneWay}"/>
                         </ui:Effects.Shadow>
                         <animations:Explicit.Animations>
                             <animations:AnimationSet x:Name="ImportBoxPlusGridPressedAnimation">
@@ -675,7 +869,7 @@
                                 <animations:OpacityAnimation To=".5"
                                                              Duration="0:0:.25"/>
                             </animations:AnimationSet>
-                            
+
                             <animations:AnimationSet x:Name="ImportBoxPlusGridEnterAnimation">
                                 <animations:OffsetDropShadowAnimation To="0, 8, 0"
                                                                       Duration="0:0:.25"/>
@@ -711,11 +905,11 @@
                                    TextAlignment="Center"
                                    HorizontalTextAlignment="Center"
                                    HorizontalAlignment="Center">
-                            <Run Text="Drag the"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle1}"/>
                             <Run Text=".zip" FontWeight="Bold"/>
-                            <Run Text="or"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle2}"/>
                             <Run Text="manifest.json" FontWeight="Bold"/>
-                            <Run Text="here"/>
+                            <Run Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle3}"/>
                         </TextBlock>
                         <TextBlock FontSize="18"
                                    Margin="16,0"
@@ -725,7 +919,7 @@
                                    TextAlignment="Center"
                                    HorizontalTextAlignment="Center"
                                    HorizontalAlignment="Center"
-                                   Text="or click this box to import the plugin"/>
+                                   Text="{x:Bind helper:Locale.Lang._PluginManagerPage.RightPanelImportTitle4}"/>
                     </StackPanel>
                 </Grid>
             </Button>

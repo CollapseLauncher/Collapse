@@ -17,11 +17,14 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 using System.Threading.Tasks;
+using WinRT;
+
 // ReSharper disable LoopCanBeConvertedToQuery
 
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
+[GeneratedBindableCustomProperty]
 public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 {
     internal const string MarkDisabledFileName           = "_markDisabled";
@@ -52,8 +55,11 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         get => !GetMarkState(PluginDirPath, MarkDisabledFileName);
         set
         {
-            SetMarkState(PluginDirPath, MarkDisabledFileName, !value);
-            OnPropertyChanged();
+            SetMarkState(PluginDirPath, MarkDisabledFileName, !value, out bool isValid);
+            if (isValid)
+            {
+                OnPropertyChanged();
+            }
         }
     }
 
@@ -62,8 +68,11 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         get => GetMarkState(PluginDirPath, MarkPendingDeletionFileName);
         set
         {
-            SetMarkState(PluginDirPath, MarkPendingDeletionFileName, value);
-            OnPropertyChanged();
+            SetMarkState(PluginDirPath, MarkPendingDeletionFileName, value, out bool isValid);
+            if (isValid)
+            {
+                OnPropertyChanged();
+            }
         }
     }
 
@@ -72,7 +81,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     public string         PluginDirPath  { get; }
     public string         PluginFilePath { get; }
     public string         PluginFileName { get; }
-    public string?        PluginKey      { get; }
+    public string         PluginKey      { get; }
     public PluginManifest PluginManifest { get; set; }
     public string?        Name           => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoNameUnknown;
     public string?        Description    => field ?? Locale.Lang._SettingsPage.Plugin_PluginInfoDescUnknown;
@@ -166,7 +175,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             Updater = selfUpdater;
 
             // Get Managed Update CDN List
-            if (TryGetExport(Handle, "GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
+            if (TryGetExport(libraryHandle, "GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
             {
                 int      pluginCdnListCount = 0;
                 ushort** urlsPtr            = null;
@@ -476,17 +485,21 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         return File.Exists(markPath);
     }
 
-    private static void SetMarkState(string dir, string stateName, bool state)
+    private static void SetMarkState(string dir, string stateName, bool state, out bool isValid)
     {
         try
         {
-            string markPath = Path.Combine(dir, stateName);
+            string markPath    = Path.Combine(dir, stateName);
+            bool   isFileExist = File.Exists(markPath);
+
+            isValid = (state && !isFileExist) || (!state && isFileExist);
+
             switch (state)
             {
-                case true when !File.Exists(markPath):
+                case true when !isFileExist:
                     File.WriteAllText(markPath, stateName);
                     return;
-                case false when File.Exists(markPath):
+                case false when isFileExist:
                     File.Delete(markPath);
                     break;
             }
@@ -505,15 +518,12 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     public override string ToString() => $"{Name} (by {Author}) - {Description}";
 
-    private T? OnPropertyChangedAndSet<T>(T? value, [CallerMemberName] string? propertyName = null)
-    {
-        OnPropertyChanged(propertyName);
-        return value;
-    }
-
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        // Raise the PropertyChanged event, passing the name of the property whose value has changed.
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        InnerLauncherConfig
+           .m_mainPage?
+           .DispatcherQueue
+           .TryEnqueue(() => PropertyChanged?
+                          .Invoke(this, new PropertyChangedEventArgs(propertyName)));
     }
 }

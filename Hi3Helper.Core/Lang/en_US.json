@@ -735,8 +735,54 @@
     "Plugin_PluginInfoAuthorUnknown": "Unknown Author"
   },
 
-  "_PluginManagementMenuPage": {
-    "PageTitle": "Plugin Management Menu"
+  "_PluginManagerPage": {
+    "PageTitle": "Plugin Manager Menu",
+
+    "FileDialogTitle": "Import Collapse Launcher Plugin",
+    "FileDialogFileFilter1": "Collapse Launcher Plugin",
+
+    "LeftPanelNoPluginTitle": "Hey, you have no plugin loaded!",
+    "LeftPanelNoPluginButton1": "Go to",
+    "LeftPanelNoPluginButton2": "Plugin Download Catalog",
+    "LeftPanelNoPluginButton3": "page",
+
+    "LeftPanelListViewTitle": "Loaded Plugin Information",
+
+    "ListViewMainActionButton1": "Check Updates for All Plugins",
+    "ListViewMainActionButton1AltChecking": "Checking Updates for All Plugins...",
+    "ListViewMainActionButton2": "Download Updates for All Plugins",
+    "ListViewMainActionButton3": "Enable Plugins Auto-update on Launch",
+
+    "ListViewItemContextButton1": "Uninstall Selected Plugins",
+    "ListViewItemContextButton2": "Restore Selected Plugins",
+    "ListViewItemContextButton3": "Enable Selected Plugins",
+    "ListViewItemContextButton4": "Disable Selected Plugins",
+    "ListViewItemContextButton5": "Update Selected Plugins",
+    "ListViewItemContextButton6": "Open Current Plugin Folder",
+    "ListViewItemContextButton7": "Open Collapse Launcher Plugin Folder",
+    "ListViewItemContextButton8": "Update Current Plugin",
+
+    "ListViewItemContentButton1": "Uninstall Plugin",
+    "ListViewItemContentButton2": "Restore Plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Check Update Only",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Check and Download Update",
+    "ListViewItemContextButtonDownloadUpdate": "Download Update",
+
+    "ListViewItemUpdateStatusAvailable": "Update is Available!",
+    "ListViewItemUpdateStatusAvailableButton": "Update to {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Updating ({0}%)...",
+    "ListViewItemUpdateStatusCompleted": "Your plugin has been updated to {0}. Please restart your launcher to apply the update!",
+    "ListViewItemUpdateStatusChecking": "Checking for Update...",
+    "ListViewItemUpdateStatusUpToDate": "Plugin is Up-to-date!",
+
+    "ListViewFooterWarning1": "You need to restart your launcher in order to apply the changes!",
+    "ListViewFooterRestartButton": "Restart the Launcher",
+
+    "RightPanelImportTitle1": "Drag the",
+    "RightPanelImportTitle2": "or",
+    "RightPanelImportTitle3": "here",
+    "RightPanelImportTitle4": "or click this box to import the plugin"
   },
 
   "_Misc": {
@@ -1144,7 +1190,12 @@
     "PluginManagerUpdateAvailableSubtitle1": "There are {0} plugin(s) update available. The launcher is required to be restarted in order to apply update to these plugins:",
     "PluginManagerUpdateAvailableSubtitle2": "Do you wish to restart the launcher?",
     "PluginManagerUpdateAvailableCancelBtn": "Later",
-    "PluginManagerUpdateAvailableConfirmBtn": "Restart Now!"
+    "PluginManagerUpdateAvailableConfirmBtn": "Restart Now!",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Go to {0}",
+
+    "LauncherRestartTitle": "Restarting Collapse Launcher",
+    "LauncherRestartSubtitle1": "You're about to restart the launcher. Make sure to close or cancel any background activity before restarting your launcher.",
+    "LauncherRestartSubtitle2": "Are you sure to restart the launcher?"
   },
 
   "_FileMigrationProcess": {

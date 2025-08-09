@@ -262,11 +262,8 @@ namespace CollapseLauncher.Pages
                 case ContentDialogResult.Primary:
                     try
                     {
-                        var collapsePath = AppExecutablePath;
-                        if (string.IsNullOrEmpty(collapsePath)) return;
                         Directory.Delete(LauncherMetadataHelper.LauncherMetadataFolder, true);
-                        Process.Start(collapsePath);
-                        (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
+                        MainEntryPoint.ForceRestart();
                     }
                     catch (Exception ex)
                     {
@@ -2508,7 +2505,7 @@ namespace CollapseLauncher.Pages
                 FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
                 {
                     Size               = FullPageOverlaySize.Full,
-                    OverlayTitleSource = () => Lang._PluginManagementMenuPage.PageTitle,
+                    OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
                     OverlayTitleIcon   = new FontIconSource
                     {
                         Glyph = "\uE912",

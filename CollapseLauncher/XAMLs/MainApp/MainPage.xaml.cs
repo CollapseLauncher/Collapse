@@ -10,6 +10,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Plugins;
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
@@ -17,6 +18,8 @@ using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
@@ -24,6 +27,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Principal;
 using System.Text.Json;
 using System.Threading;
@@ -576,7 +580,7 @@ namespace CollapseLauncher
         private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
             bool isMetadataHasUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
-            (List<(string, SelfUpdateReturnInfo)> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
+            (List<(string, PluginManifest)> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
 
             if (!isMetadataHasUpdate && !isPluginHasUpdate)
             {
@@ -585,20 +589,35 @@ namespace CollapseLauncher
 
             if (isPluginHasUpdate)
             {
-                TextBlock textBlock = new TextBlock
+                StartSpawn:
+                Grid textGridBox = UIElementExtensions.CreateGrid()
+                                                      .WithRows(new GridLength(),
+                                                                new GridLength(1, GridUnitType.Auto))
+                                                      .WithRowSpacing(8d);
+
+                TextBlock textBlock = textGridBox.AddElementToGridRow(new TextBlock
                 {
                     TextWrapping = TextWrapping.Wrap
                 }.AddTextBlockLine(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle1, pluginUpdateNameList.Count))
-                .AddTextBlockNewLine(2);
+                 .AddTextBlockNewLine(2), 0);
 
-                foreach ((string, SelfUpdateReturnInfo) pluginUpdateName in pluginUpdateNameList)
+                CheckBox enablePluginAutoUpdateCheck = textGridBox.AddElementToGridRow(new CheckBox(), 1);
+                enablePluginAutoUpdateCheck.Content = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap
+                }.AddTextBlockLine(Lang._PluginManagerPage.ListViewMainActionButton3);
+                enablePluginAutoUpdateCheck.BindProperty(ToggleButton.IsCheckedProperty,
+                                                         PluginManagerPage.Context,
+                                                         nameof(PluginManagerPage.Context.IsEnableAutoUpdate),
+                                                         bindingMode: BindingMode.TwoWay);
+                enablePluginAutoUpdateCheck.Scale  = new Vector3(0.80f);
+                enablePluginAutoUpdateCheck.Margin = new Thickness(0, 0, 0, -16);
+
+                foreach ((string, PluginManifest) pluginUpdateName in pluginUpdateNameList)
                 {
                     try
                     {
                     #nullable enable
-                        // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-                        pluginUpdateName.Item2.Dispose();
-
                         textBlock.AddTextBlockLine($"    • {pluginUpdateName.Item1}", FontWeights.Bold);
                     #nullable restore
                     }
@@ -612,24 +631,39 @@ namespace CollapseLauncher
 
                 ContentDialogResult pluginUpdateConfirm =
                     await SimpleDialogs.SpawnDialog(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableTitle, pluginUpdateNameList.Count),
-                                                    textBlock,
+                                                    textGridBox,
                                                     null,
                                                     Lang._Dialogs.PluginManagerUpdateAvailableCancelBtn,
                                                     Lang._Dialogs.PluginManagerUpdateAvailableConfirmBtn,
-                                                    null,
+                                                    string.Format(Lang._Dialogs.PluginManagerUpdateAvailableToManagerMenuBtn, Lang._PluginManagerPage.PageTitle),
                                                     ContentDialogButton.Primary,
                                                     ContentDialogTheme.Success);
 
-                if (pluginUpdateConfirm != ContentDialogResult.Primary)
+                if (pluginUpdateConfirm == ContentDialogResult.None)
                 {
                     return false;
                 }
 
+                if (pluginUpdateConfirm == ContentDialogResult.Secondary)
+                {
+                    FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
+                    {
+                        Size               = FullPageOverlaySize.Full,
+                        OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
+                        OverlayTitleIcon = new FontIconSource
+                        {
+                            Glyph    = "\uE912",
+                            FontSize = 16
+                        }
+                    };
+
+                    await overlayMenu.ShowAsync();
+                    goto StartSpawn;
+                }
+
                 try
                 {
-                    var collapsePath = AppExecutablePath;
-                    Process.Start(collapsePath);
-                    (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
+                    PluginManagerPage.AskLauncherRestart(null, null);
                     return true;
                 }
                 catch (Exception ex)

@@ -232,6 +232,11 @@ namespace Hi3Helper
                 public string PluginManagerUpdateAvailableSubtitle2 { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableSubtitle2;
                 public string PluginManagerUpdateAvailableCancelBtn { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableCancelBtn;
                 public string PluginManagerUpdateAvailableConfirmBtn { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableConfirmBtn;
+                public string PluginManagerUpdateAvailableToManagerMenuBtn { get; set; } = LangFallback?._Dialogs.PluginManagerUpdateAvailableToManagerMenuBtn;
+
+                public string LauncherRestartTitle { get; set; } = LangFallback?._Dialogs.LauncherRestartTitle;
+                public string LauncherRestartSubtitle1 { get; set; } = LangFallback?._Dialogs.LauncherRestartSubtitle1;
+                public string LauncherRestartSubtitle2 { get; set; } = LangFallback?._Dialogs.LauncherRestartSubtitle2;
             }
         }
         #endregion

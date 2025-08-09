@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.WinUI;
+﻿using CollapseLauncher.Helper.Animation;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
@@ -183,7 +184,7 @@ namespace CollapseLauncher.Extension
             navViewControl.UpdateLayout();
         }
 
-        internal static T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
+        internal static T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay, UpdateSourceTrigger sourceTrigger = UpdateSourceTrigger.Default)
             where T : FrameworkElement
         {
             // Create a new binding instance
@@ -192,7 +193,7 @@ namespace CollapseLauncher.Extension
                 Source = objectToBind,
                 Mode = bindingMode,
                 Path = new PropertyPath(propertyName),
-                UpdateSourceTrigger = UpdateSourceTrigger.Default
+                UpdateSourceTrigger = sourceTrigger
             };
 
             // If the converter is assigned, then add the converter
@@ -1018,6 +1019,16 @@ namespace CollapseLauncher.Extension
             }
 
             element.SetCursor(HandCursor);
+        }
+
+        internal static void EnableImplicitAnimationRecursiveOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not UIElement element)
+            {
+                return;
+            }
+
+            element.EnableImplicitAnimation(true);
         }
 
         private static IEnumerable<DependencyObject> VisualTreeHelperGetChildrenEnumerable(FrameworkElement? element)

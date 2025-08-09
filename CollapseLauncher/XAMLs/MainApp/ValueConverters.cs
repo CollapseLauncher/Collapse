@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.IO;
+using System.Numerics;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable PartialTypeWithSinglePart
 
@@ -38,13 +39,13 @@ namespace CollapseLauncher.Pages
     public partial class BooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => (Visibility)value == Visibility.Visible;
     }
 
     public partial class InverseBooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => !(bool)value ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => (Visibility)value == Visibility.Collapsed;
     }
 
     public partial class DoubleRound2Converter : IValueConverter
@@ -170,12 +171,35 @@ namespace CollapseLauncher.Pages
         }
     }
 
-    public partial class CountToIsEnabledConverter : IValueConverter
+    public partial class InverseNumberToBoolConverter : NumberToBoolConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
-            => value.Equals(1);
+        public override object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return !(bool)base.Convert(value, targetType, parameter, language);
+        }
+    }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+    public partial class NumberToBoolConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value switch
+                   {
+                       double asDouble => asDouble > 0,
+                       float asFloat => asFloat > 0,
+                       long asLong => asLong > 0,
+                       ulong asULong => asULong > 0,
+                       int asInt => asInt > 0,
+                       uint asUInt => asUInt > 0,
+                       short asShort => asShort > 0,
+                       ushort asUShort => asUShort > 0,
+                       byte asByte => asByte > 0,
+                       sbyte asSByte => asSByte > 0,
+                       _ => throw new InvalidDataException()
+                   };
+        }
+
+        public virtual object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
         }
@@ -387,12 +411,13 @@ namespace CollapseLauncher.Pages
     public partial class UpdateToVersionStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format("Update to {0}", value switch
-                                              {
-                                                  PluginManifest asManifest => asManifest.PluginVersion,
-                                                  null => GameVersion.Empty,
-                                                  _ => (GameVersion)value
-                                              });
+            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButton,
+                             value switch
+                             {
+                                 PluginManifest asManifest => asManifest.PluginVersion,
+                                 null => GameVersion.Empty,
+                                 _ => (GameVersion)value
+                             });
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
@@ -403,7 +428,25 @@ namespace CollapseLauncher.Pages
     public partial class UpdatingPercentageStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => string.Format("Updating ({0}%)...", Math.Round((double)value, 2));
+            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButtonUpdating,
+                             Math.Round((double)value, 2));
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class PluginUpdatedToVersionStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusCompleted,
+                             value switch
+                             {
+                                 PluginManifest asManifest => asManifest.PluginVersion,
+                                 null => GameVersion.Empty,
+                                 _ => (GameVersion)value
+                             });
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

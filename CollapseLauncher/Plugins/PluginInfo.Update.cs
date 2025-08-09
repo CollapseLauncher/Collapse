@@ -28,40 +28,74 @@ public partial class PluginInfo
         get => (UpdateCdnList != null && UpdateCdnList.Length != 0) || Updater != null;
     }
 
+    public bool IsPluginUpToDate
+    {
+        get;
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsUpdateAvailable
     {
         get;
-        set => field = OnPropertyChangedAndSet(value);
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public bool IsUpdateCheckInProgress
     {
         get;
-        set => field = OnPropertyChangedAndSet(value);
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public bool IsUpdateInProgress
     {
         get;
-        set => field = OnPropertyChangedAndSet(value);
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public bool IsUpdateCompleted
     {
         get;
-        set => field = OnPropertyChangedAndSet(value);
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public double UpdateProgress
     {
         get;
-        set => field = OnPropertyChangedAndSet(value);
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     public PluginManifest? NextUpdateManifestInfo
     {
         get;
-        set => field = OnPropertyChangedAndSet(value);
+        set
+        {
+            field = value;
+            OnPropertyChanged();
+        }
     }
 
     /// <summary>
@@ -81,7 +115,7 @@ public partial class PluginInfo
         }
 
         // Invalidate if the plugin update is already being run or update check is in progress.
-        if (IsUpdateInProgress || IsUpdateCheckInProgress)
+        if (IsUpdateInProgress || IsUpdateCheckInProgress || IsUpdateCompleted)
         {
             return false;
         }
@@ -96,6 +130,7 @@ public partial class PluginInfo
             UpdateProgress         = 0d;
             NextUpdateManifestInfo = null;
             IsUpdateAvailable      = false;
+            IsPluginUpToDate       = false;
 
             // Try to perform managed update check task. If unavailable, use plugin's own SelfUpdater.
             if (!await RunCheckUpdateTaskCoreManaged(this, token).ConfigureAwait(false))
@@ -157,6 +192,11 @@ public partial class PluginInfo
             };
         }
 
+        if (updateRoutineStatus.PluginVersion == pluginInfo.Version)
+        {
+            pluginInfo.IsPluginUpToDate = true;
+        }
+
         // Throw if an error is occurred
         if (updateRoutineStatus.ReturnCode.HasFlag(SelfUpdateReturnCode.Error))
         {
@@ -179,7 +219,7 @@ public partial class PluginInfo
         // If the manifest version is the same as the plugin version, then ignore while return true as successful operation.
         if (manifest == null ||
             manifest.PluginVersion == GameVersion.Empty ||
-            manifest.PluginVersion == pluginInfo.Version)
+            (pluginInfo.IsPluginUpToDate = manifest.PluginVersion == pluginInfo.Version))
         {
             return true;
         }
@@ -200,12 +240,13 @@ public partial class PluginInfo
             !IsUpdateSupported ||
             IsUpdateInProgress ||
             IsUpdateCheckInProgress ||
-            IsUpdateCompleted)
+            IsUpdateCompleted ||
+            IsPluginUpToDate)
         {
             return;
         }
 
-        string updateOutputDir = Path.Combine(PluginDirPath, MarkPendingUpdateApplyFileName);
+        string updateOutputDir = Path.Combine(PluginDirPath, MarkPendingUpdateFileName);
         try
         {
             UpdateProgress     = 0;
@@ -230,6 +271,7 @@ public partial class PluginInfo
         finally
         {
             IsUpdateInProgress = false;
+            IsUpdateAvailable  = false;
         }
     }
 
@@ -290,12 +332,13 @@ public partial class PluginInfo
                 Directory.CreateDirectory(fileDir);
             }
 
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(256 << 10);
 
             int  retry  = 5;
             MD5? hasher = null;
 
-            long downloadedCurrent = 0;
+            long   downloadedCurrent = 0;
+            byte[] hash              = [];
 
         Download:
             try
@@ -309,7 +352,7 @@ public partial class PluginInfo
                 await using FileStream fileStream     = File.Create(filePath);
 
                 int read;
-                while ((read = await responseStream.ReadAsync(buffer, innerToken)) > 0)
+                while ((read = await responseStream.ReadAtLeastAsync(buffer, buffer.Length, false, innerToken)) > 0)
                 {
                     Interlocked.Add(ref downloadedCurrent, read);
                     UpdateProgress(read);
@@ -318,6 +361,7 @@ public partial class PluginInfo
                 }
 
                 hasher.TransformFinalBlock(buffer, 0, read);
+                hash = hasher.Hash!;
             }
             catch when (retry > 0)
             {
@@ -335,8 +379,6 @@ public partial class PluginInfo
             {
                 return;
             }
-
-            byte[] hash = hasher.Hash!;
 
             if (asset.FileHash.SequenceEqual(hash))
             {

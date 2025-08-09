@@ -1284,6 +1284,27 @@ namespace CollapseLauncher.Dialogs
             }
         }
 
+        public static async Task<ContentDialogResult> Dialog_RestartLauncher()
+        {
+            TextBlock content = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap
+            }.AddTextBlockLine(Lang._Dialogs.LauncherRestartSubtitle1)
+             .AddTextBlockNewLine(2)
+             .AddTextBlockLine(Lang._Dialogs.LauncherRestartSubtitle2);
+
+            ContentDialogResult result = await SpawnDialog(Lang._Dialogs.LauncherRestartTitle,
+                                                           content,
+                                                           null,
+                                                           Lang._Misc.NoCancel,
+                                                           Lang._Misc.YesImReallySure,
+                                                           null,
+                                                           ContentDialogButton.Primary,
+                                                           ContentDialogTheme.Warning);
+
+            return result;
+        }
+
         // ReSharper disable once AsyncVoidMethod
         private static async void SubmitFeedbackButton_Click(object sender, RoutedEventArgs e)
         {

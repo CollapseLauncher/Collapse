@@ -1,11 +1,16 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Dialogs;
+using CollapseLauncher.Extension;
 using CollapseLauncher.Plugins;
+using Hi3Helper;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using InternalExtension = CollapseLauncher.Extension.UIElementExtensions;
@@ -65,11 +70,11 @@ namespace CollapseLauncher.Pages
                 ImportBoxButton.IsEnabled = false;
                 Dictionary<string, string> supportedFiles = new()
                 {
-                    { "Collapse Launcher Plugin", "*.zip;manifest.json" }
+                    { Locale.Lang._PluginManagerPage.FileDialogFileFilter1, "*.zip;manifest.json" }
                 };
 
                 string[] selectedFiles =
-                    await FileDialogNative.GetMultiFilePicker(supportedFiles, "Import Plugin Files");
+                    await FileDialogNative.GetMultiFilePicker(supportedFiles, Locale.Lang._PluginManagerPage.FileDialogTitle);
                 if (selectedFiles.Length == 0)
                 {
                     return;
@@ -109,5 +114,44 @@ namespace CollapseLauncher.Pages
                 ImportBoxButton.IsEnabled = true;
             }
         }
+
+        internal static async void AskLauncherRestart(object? sender, RoutedEventArgs? e)
+        {
+            try
+            {
+                ContentDialogResult pluginUpdateConfirm = await SimpleDialogs.Dialog_RestartLauncher();
+                if (pluginUpdateConfirm != ContentDialogResult.Primary)
+                {
+                    return;
+                }
+
+                MainEntryPoint.ForceRestart();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"An error has occurred while trying to spawn restart dialog\r\n{ex}", LogType.Error, true);
+                await SentryHelper.ExceptionHandlerAsync(ex);
+            }
+        }
+
+#pragma warning disable CA2012
+        private void OnClickCheckForUpdatesAllButton(SplitButton button, SplitButtonClickEventArgs e)
+        {
+            PluginManagerPageContext.CheckUpdateEnumeratePlugins(PluginManager.PluginInstances.Values);
+        }
+
+        private void OnClickUpdateCurrentPlugin(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: PluginInfo asPluginInfo })
+            {
+                _ = asPluginInfo.RunUpdateTask();
+            }
+        }
+
+        private void OnClickUpdateAndDownloadAllPlugin(object sender, RoutedEventArgs e)
+        {
+            PluginManagerPageContext.CheckAndDownloadUpdateEnumeratePlugins(PluginManager.PluginInstances.Values);
+        }
+#pragma warning enable CA2012
     }
 }
