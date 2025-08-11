@@ -116,14 +116,11 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         GameManager.Reinitialize();
 
         // Check if the game is installed after the game manager is reinitialized.
-        if (GameManager.IsGameInstalled())
-        {
+        return GameManager.IsGameInstalled() ?
             // Return as completed and apply the config.
-            return 0;
-        }
-
-        // Return as to continue to the next routine if the game isn't detected.
-        return 1;
+            0 :
+            // Return as to continue to the next routine if the game isn't detected.
+            1;
     }
 
     // Copied from InstallManagerBase
@@ -157,6 +154,8 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
                     break;
                 case ContentDialogResult.None:
                     return null;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

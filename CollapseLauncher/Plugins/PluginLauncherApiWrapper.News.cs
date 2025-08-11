@@ -78,7 +78,7 @@ internal partial class PluginLauncherApiWrapper
             using LauncherCarouselEntry entry = entrySpan[i];
 
             string? imageUrl  = entry.ImageUrl;
-            string? imagePath = await CopyOverUrlData(spriteFolder, imageUrl, token);
+            string? imagePath = await CopyOverUrlData(_plugin, _pluginNewsApi, spriteFolder, imageUrl, token);
             if (string.IsNullOrEmpty(imagePath))
             {
                 continue;
