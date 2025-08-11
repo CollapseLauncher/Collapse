@@ -14,7 +14,6 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
-      xmlns:imageex="using:ImageEx"
       mc:Ignorable="d"
       CacheMode="BitmapCache"
       Loaded="Page_Loaded"
@@ -30,7 +29,6 @@
         <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <conv:GamePluginIconConverter x:Key="GamePluginIconConverter" />
         <conv:ByStringConverter x:Key="ByStringConverter" />
-        <conv:LocaleCodeToFlagUrlConverter x:Key="LocaleCodeToFlagUrlConverter" />
         <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
     </Page.Resources>
     <Grid>
@@ -66,24 +64,29 @@
                                         <DataTemplate x:DataType="helper:LangMetadata">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="36"/>
+                                                    <ColumnDefinition Width="54"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <Grid VerticalAlignment="Center"
+                                                <Grid Grid.Column="0"
+                                                      VerticalAlignment="Center"
                                                       HorizontalAlignment="Stretch"
                                                       Margin="-2,0,8,0"
-                                                      CornerRadius="4"
+                                                      CornerRadius="8"
                                                       Shadow="{ThemeResource SharedShadow}"
+                                                      Background="{ThemeResource NewAccentButtonBackground}"
                                                       Translation="0,0,12">
-                                                    <imageex:ImageEx Source="{x:Bind LangID, Converter={StaticResource LocaleCodeToFlagUrlConverter}}"
-                                                                     EnableLazyLoading="True"
-                                                                     Height="20"
-                                                                     HorizontalAlignment="Stretch"
-                                                                     VerticalAlignment="Stretch"
-                                                                     Stretch="UniformToFill"/>
+                                                    <TextBlock Text="{x:Bind LangID}"
+                                                               HorizontalAlignment="Center"
+                                                               HorizontalTextAlignment="Center"
+                                                               TextAlignment="Center"
+                                                               Margin="6, 2"
+                                                               Foreground="{ThemeResource NewAccentButtonForeground}"
+                                                               FontSize="10"
+                                                               FontWeight="Bold"/>
                                                 </Grid>
                                                 <TextBlock Grid.Column="1"
+                                                           Margin="0,0,4,0"
                                                            x:Name="LanguageName"
                                                            VerticalAlignment="Center"
                                                            Text="{x:Bind LangName}" />
