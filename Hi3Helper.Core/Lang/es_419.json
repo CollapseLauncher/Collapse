@@ -736,7 +736,53 @@
   },
 
   "_PluginManagerPage": {
-    "PageTitle": "Menú de gestión de plugins"
+    "PageTitle": "Menú de gestión de plugins",
+
+    "FileDialogTitle": "Importar Plugin a Collapse Launcher",
+    "FileDialogFileFilter1": "Collapse Launcher Plugin",
+
+    "LeftPanelNoPluginTitle": "¡No tienes cargado ningún plugin!",
+    "LeftPanelNoPluginButton1": "Entra en el",
+    "LeftPanelNoPluginButton2": "Catálogo de Plugin",
+    "LeftPanelNoPluginButton3": " ",
+
+    "LeftPanelListViewTitle": "Información del plugin cargado",
+
+    "ListViewMainActionButton1": "Comprobar actualizaciones de plugins",
+    "ListViewMainActionButton1AltChecking": "Comprobando actualizaciones...",
+    "ListViewMainActionButton2": "Descargar actualizaciones de plugins",
+    "ListViewMainActionButton3": "Habilitar la actualización automática de plugins al iniciar",
+
+    "ListViewItemContextButton1": "Desinstalar plugins seleccionados",
+    "ListViewItemContextButton2": "Restaurar plugin seleccionados",
+    "ListViewItemContextButton3": "Habilitar plugins seleccionados",
+    "ListViewItemContextButton4": "Deshabilitar plugins seleccionados",
+    "ListViewItemContextButton5": "Actualizar plugins seleccionados",
+    "ListViewItemContextButton6": "Abrir carpeta de plugin actual",
+    "ListViewItemContextButton7": "Abrir carpeta de plugins de Collapse Launcher",
+    "ListViewItemContextButton8": "Actualizar plugin actual",
+
+    "ListViewItemContentButton1": "Desinstalar plugin",
+    "ListViewItemContentButton2": "Restaurar plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Comprobar solo actualizaciones",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Comprobar y descargar actualizaciones",
+    "ListViewItemContextButtonDownloadUpdate": "Descargar actualización",
+
+    "ListViewItemUpdateStatusAvailable": "¡Actualización disponible!",
+    "ListViewItemUpdateStatusAvailableButton": "Actualizar a {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Actualizando ({0}%)...",
+    "ListViewItemUpdateStatusCompleted": "Tu plugin fue actualizado a {0}. ¡Por favor reinicia el launcher para aplicar los cambios!",
+    "ListViewItemUpdateStatusChecking": "Buscando actualizaciones...",
+    "ListViewItemUpdateStatusUpToDate": "¡Los plugins están actualizados!",
+
+    "ListViewFooterWarning1": "¡Tienes que reiniciar el launcher para aplicar los cambios!",
+    "ListViewFooterRestartButton": "Reiniciar el Launcher",
+
+    "RightPanelImportTitle1": "Arrastra el",
+    "RightPanelImportTitle2": "o",
+    "RightPanelImportTitle3": "aquí",
+    "RightPanelImportTitle4": "o haga clic en este cuadro para importar el plugin"
   },
 
   "_Misc": {
@@ -1144,7 +1190,12 @@
     "PluginManagerUpdateAvailableSubtitle1": "Hay disponible {0} actualización(es) de plugin(s). Es necesario reiniciar el launcher para aplicar la actualización:",
     "PluginManagerUpdateAvailableSubtitle2": "¿Deseas reiniciar el Launcher?",
     "PluginManagerUpdateAvailableCancelBtn": "Más Tarde",
-    "PluginManagerUpdateAvailableConfirmBtn": "¡Reiniciar Ahora!"
+    "PluginManagerUpdateAvailableConfirmBtn": "¡Reiniciar Ahora!",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Ve a {0}",
+
+    "LauncherRestartTitle": "Reiniciando Collapse Launcher",
+    "LauncherRestartSubtitle1": "El launcher esta a punto de reiniciarse. Asegúrate de cerrar o cancelar cualquier tarea de fondo antes de seguir con el reinicio.",
+    "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?"
   },
 
   "_FileMigrationProcess": {
