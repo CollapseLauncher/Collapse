@@ -338,7 +338,7 @@ public partial class PluginInfo
             MD5? hasher = null;
 
             long   downloadedCurrent = 0;
-            byte[] hash              = [];
+            byte[] hash;
 
         Download:
             try
@@ -347,6 +347,8 @@ public partial class PluginInfo
                 hasher            = MD5.Create();
 
                 using HttpResponseMessage response =
+                    // ReSharper disable once AccessToDisposedClosure
+                    // Reason: The httpClient will never get disposed until the method is done being executed.
                     await httpClient.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead, innerToken);
                 await using Stream     responseStream = await response.Content.ReadAsStreamAsync(innerToken);
                 await using FileStream fileStream     = File.Create(filePath);
@@ -489,13 +491,8 @@ public partial class PluginInfo
             return true;
         }
 
-        if (retCode.HasFlag(SelfUpdateReturnCode.Error) &&
-            asUint is >= 0b_00000000_00000000_00000001_00000000 and <= 0b_00000000_10000000_00000000_00000000)
-        {
-            return true;
-        }
-
-        return false;
+        return retCode.HasFlag(SelfUpdateReturnCode.Error) &&
+               asUint is >= 0b_00000000_00000000_00000001_00000000 and <= 0b_00000000_10000000_00000000_00000000;
     }
 
     private static TItem[] GetRandomItems<TItem>(TItem[] items)

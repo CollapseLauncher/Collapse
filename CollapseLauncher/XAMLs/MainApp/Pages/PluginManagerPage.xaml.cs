@@ -3,17 +3,16 @@ using CollapseLauncher.Extension;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using InternalExtension = CollapseLauncher.Extension.UIElementExtensions;
+// ReSharper disable CheckNamespace
 
 #nullable enable
 namespace CollapseLauncher.Pages

@@ -27,8 +27,8 @@ internal partial class PluginLauncherApiWrapper
         int count = backgroundEntries.Length;
         for (int i = 0; i < count; i++)
         {
-            using var entry = backgroundEntries[i];
-            string?   url   = entry.Path;
+            using LauncherPathEntry entry = backgroundEntries[i];
+            string?                 url   = entry.Path;
             if (string.IsNullOrEmpty(url))
             {
                 continue;

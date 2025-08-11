@@ -22,7 +22,7 @@ using WinRT;
 namespace CollapseLauncher.Plugins;
 
 [GeneratedBindableCustomProperty]
-public partial class PluginManagerPageContext : INotifyPropertyChanged
+public class PluginManagerPageContext : INotifyPropertyChanged
 {
     internal ObservableCollection<PluginInfo> PluginCollection { get; } = CreateNewCollectionFromPluginManager();
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };

@@ -104,9 +104,9 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     public unsafe PluginInfo(string pluginFilePath, string pluginRelName, PluginManifest manifest, bool load = false)
     {
-        nint                  pluginHandle   = nint.Zero;
-        bool                  isPluginLoaded = false;
-        string                pluginBaseDir  = Path.GetDirectoryName(pluginFilePath) ?? "";
+        nint   pluginHandle   = nint.Zero;
+        bool   isPluginLoaded = false;
+        string pluginBaseDir  = Path.GetDirectoryName(pluginFilePath) ?? "";
 
         // Set callback
         _sharedLoggerCallback = LoggerCallback;

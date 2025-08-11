@@ -34,7 +34,7 @@ internal partial class PluginLauncherApiWrapper
         int count = entrySpan.Length;
         for (int i = 0; i < count; i++)
         {
-            using var entry = entrySpan[i];
+            using LauncherNewsEntry entry = entrySpan[i];
 
             string?               title       = entry.Title;
             string?               clickUrl    = entry.Url;
@@ -75,7 +75,7 @@ internal partial class PluginLauncherApiWrapper
         int count = entrySpan.Length;
         for (int i = 0; i < count; i++)
         {
-            using var entry = entrySpan[i];
+            using LauncherCarouselEntry entry = entrySpan[i];
 
             string? imageUrl  = entry.ImageUrl;
             string? imagePath = await CopyOverUrlData(spriteFolder, imageUrl, token);

@@ -35,8 +35,8 @@ internal partial class PluginLauncherApiWrapper
         int count = socialMediaEntry.Length;
         for (int i = 0; i < count; i++)
         {
-            using var                    entry = socialMediaEntry[i];
-            LauncherSocialMediaEntryFlag flags = entry.Flags;
+            using LauncherSocialMediaEntry entry = socialMediaEntry[i];
+            LauncherSocialMediaEntryFlag   flags = entry.Flags;
 
             string? iconTitle          = entry.Description;
             string? iconClickUrl       = entry.ClickUrl;
@@ -46,19 +46,25 @@ internal partial class PluginLauncherApiWrapper
             string? iconHoverDataMarshal = entry.IconHoverPath;
             string? qrImageDataMarshal   = entry.QrPath;
 
-            string? iconUrl = await GetSocialMediaIconFromFlags(flags,
+            string? iconUrl = await GetSocialMediaIconFromFlags(_plugin,
+                                                                _pluginNewsApi,
+                                                                flags,
                                                                 LauncherSocialMediaEntryFlag.IconIsPath,
                                                                 LauncherSocialMediaEntryFlag.IconIsDataBuffer,
                                                                 spriteFolder,
                                                                 iconDataMarshal,
                                                                 token);
-            string? iconHoverUrl = await GetSocialMediaIconFromFlags(flags,
+            string? iconHoverUrl = await GetSocialMediaIconFromFlags(_plugin,
+                                                                     _pluginNewsApi,
+                                                                     flags,
                                                                      LauncherSocialMediaEntryFlag.IconIsPath,
                                                                      LauncherSocialMediaEntryFlag.IconIsDataBuffer,
                                                                      spriteFolder,
                                                                      iconHoverDataMarshal,
                                                                      token);
-            string? qrImageUrl = await GetSocialMediaIconFromFlags(flags,
+            string? qrImageUrl = await GetSocialMediaIconFromFlags(_plugin,
+                                                                   _pluginNewsApi,
+                                                                   flags,
                                                                    LauncherSocialMediaEntryFlag.QrImageIsPath,
                                                                    LauncherSocialMediaEntryFlag.QrImageIsDataBuffer,
                                                                    spriteFolder,
@@ -75,7 +81,7 @@ internal partial class PluginLauncherApiWrapper
                 QrImg              = qrImageUrl,
                 QrTitle            = qrImageDescription,
                 QrLinks            = GetSocialMediaInnerLinks(ref entry.ChildEntryHandle),
-                IsImageUrlHashable = false,
+                IsImageUrlHashable = false
             });
         }
     }
@@ -106,7 +112,7 @@ internal partial class PluginLauncherApiWrapper
                 links.Add(new LauncherGameNewsSocialMediaQrLinks
                 {
                     Title = description,
-                    Url   = descriptionUrl,
+                    Url   = descriptionUrl
                 });
             }
             finally
@@ -118,12 +124,14 @@ internal partial class PluginLauncherApiWrapper
         return links;
     }
 
-    private async Task<string?> GetSocialMediaIconFromFlags(LauncherSocialMediaEntryFlag flags,
-                                                            LauncherSocialMediaEntryFlag flagIfUrl,
-                                                            LauncherSocialMediaEntryFlag flagIfBuffer,
-                                                            string                       outputDir,
-                                                            string?                      embeddedDataOrPath,
-                                                            CancellationToken            token)
+    private static async Task<string?> GetSocialMediaIconFromFlags(IPlugin                      plugin,
+                                                                   ILauncherApiNews             pluginNewsApi,
+                                                                   LauncherSocialMediaEntryFlag flags,
+                                                                   LauncherSocialMediaEntryFlag flagIfUrl,
+                                                                   LauncherSocialMediaEntryFlag flagIfBuffer,
+                                                                   string                       outputDir,
+                                                                   string?                      embeddedDataOrPath,
+                                                                   CancellationToken            token)
     {
         if (string.IsNullOrEmpty(embeddedDataOrPath))
         {
@@ -132,7 +140,7 @@ internal partial class PluginLauncherApiWrapper
 
         if (flags.HasFlag(flagIfUrl))
         {
-            return await CopyOverUrlData(outputDir, embeddedDataOrPath, token);
+            return await CopyOverUrlData(plugin, pluginNewsApi, outputDir, embeddedDataOrPath, token);
         }
 
         if (flags.HasFlag(flagIfBuffer))
@@ -143,9 +151,11 @@ internal partial class PluginLauncherApiWrapper
         return string.Empty;
     }
 
-    private async Task<string?> CopyOverUrlData(string            outputDir,
-                                                string?           dataUrl,
-                                                CancellationToken token)
+    private static async Task<string?> CopyOverUrlData(IPlugin           plugin,
+                                                       ILauncherApiNews  pluginNewsApi,
+                                                       string            outputDir,
+                                                       string?           dataUrl,
+                                                       CancellationToken token)
     {
         if (string.IsNullOrEmpty(dataUrl))
         {
@@ -172,12 +182,12 @@ internal partial class PluginLauncherApiWrapper
 
         await using FileStream fileStream = fileInfo.Create();
 
-        Guid cancelToken = _plugin.RegisterCancelToken(token);
-        _pluginNewsApi.DownloadAssetAsync(dataUrl,
-                                          fileStream.SafeFileHandle.DangerousGetHandle(),
-                                          null,
-                                          in cancelToken,
-                                          out nint asyncDownloadAssetResult);
+        Guid cancelToken = plugin.RegisterCancelToken(token);
+        pluginNewsApi.DownloadAssetAsync(dataUrl,
+                                         fileStream.SafeFileHandle.DangerousGetHandle(),
+                                         null,
+                                         in cancelToken,
+                                         out nint asyncDownloadAssetResult);
         await asyncDownloadAssetResult.AsTask();
 
         SaveFileStamp(fileInfo, fileStream.Length);
