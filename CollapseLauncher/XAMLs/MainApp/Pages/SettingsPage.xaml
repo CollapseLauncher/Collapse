@@ -13,7 +13,6 @@
       xmlns:innerConfig="using:Hi3Helper.Shared.Region"
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:imageex="using:ImageEx"
       mc:Ignorable="d"
       CacheMode="BitmapCache"
       Loaded="Page_Loaded"
@@ -27,7 +26,6 @@
         <conv:DoubleFormatter x:Key="DoubleFormatter" />
         <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
         <conv:BooleanToIsEnabledOpacityConverter x:Key="BooleanToIsEnabledOpacityConverter" />
-        <conv:LocaleCodeToFlagUrlConverter x:Key="LocaleCodeToFlagUrlConverter" />
     </Page.Resources>
     <Grid>
         <ScrollViewer>
