@@ -6,6 +6,7 @@ using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Preset;
 using Hi3Helper.SentryHelper;

@@ -883,7 +883,8 @@ namespace CollapseLauncher
         // ReSharper disable once UnusedParameter.Local
         private async Task<KianaAudioManifest> TryGetAudioManifest(HttpClient client, SenadinaFileIdentifier senadinaFileIdentifier, string manifestLocal, string manifestRemote, CancellationToken token)
         {
-            await using Stream?    originalFile = await senadinaFileIdentifier.GetOriginalFileStream(client, token);
+            string originalUrl = senadinaFileIdentifier.GetOriginalFileUrl();
+            await using Stream?    originalFile = await client.GetStreamAsync(originalUrl, token);
             await using FileStream localFile    = new FileStream(EnsureCreationOfDirectory(manifestLocal), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             // Start downloading manifest.m
@@ -987,7 +988,7 @@ namespace CollapseLauncher
             using MemoryStream tempXMFMetaStream = new();
 
             await using Stream? metaBaseXMFStream = !IsOnlyRecoverMain && isPlatformXMFStreamExist ?
-                await xmfPlatformIdentifier!.GetOriginalFileStream(_httpClient, token) :
+                await _httpClient.GetStreamAsync(xmfPlatformIdentifier!.GetOriginalFileUrl(), token) :
                 null;
             if (xmfPlatformIdentifier != null)
             {
@@ -998,8 +999,8 @@ namespace CollapseLauncher
                 if (isEitherXMFExist)
                 {
                     await using Stream? baseXMFStream = !IsOnlyRecoverMain && isSecondaryXMFStreamExist ?
-                        await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token) :
-                        await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token);
+                        await _httpClient.GetStreamAsync(xmfCurrentIdentifier!.GetOriginalFileUrl(), token) :
+                        await _httpClient.GetStreamAsync(xmfBaseIdentifier!.GetOriginalFileUrl(), token);
                     if (xmfCurrentIdentifier != null)
                     {
                         await using Stream? dataXMFStream = !IsOnlyRecoverMain ? xmfCurrentIdentifier.fileStream : xmfBaseIdentifier?.fileStream;

@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;

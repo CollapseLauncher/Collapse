@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -143,7 +144,7 @@ namespace CollapseLauncher
                 {
                     await using BridgedNetworkStream netStream =
                         await FallbackCDNUtil.TryGetCDNFallbackStream(markdownUriCdn,
-                                                                      new CancellationToken(),
+                                                                      CancellationToken.None,
                                                                       true);
                     var buffer = new byte[netStream.Length];
                     await netStream.ReadExactlyAsync(buffer);

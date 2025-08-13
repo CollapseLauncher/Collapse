@@ -42,7 +42,7 @@ namespace CollapseLauncher
             DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
-            await BuildGameRepoURL(downloadClient, token);
+            await BuildGameRepoURL(downloadClient.GetHttpClient(), token);
 
             // Iterate type and do fetch
             await Parallel.ForEachAsync(
@@ -83,7 +83,7 @@ namespace CollapseLauncher
             return returnAsset;
         }
 
-        private async Task BuildGameRepoURL(DownloadClient downloadClient, CancellationToken token)
+        private async Task BuildGameRepoURL(HttpClient downloadClient, CancellationToken token)
         {
             KianaDispatch dispatch = null;
             Exception lastException = null;
@@ -354,7 +354,7 @@ namespace CollapseLauncher
             List<CacheAsset> returnAsset = [];
 
             // Build _gameRepoURL from loading Dispatcher and Gateway
-            await BuildGameRepoURL(downloadClient, token);
+            await BuildGameRepoURL(downloadClient.GetHttpClient(), token);
 
             // Fetch the progress
             _ = await FetchByType(type, downloadClient, returnAsset, token);

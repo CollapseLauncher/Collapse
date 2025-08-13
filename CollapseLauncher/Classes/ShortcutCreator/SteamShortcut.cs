@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using System;
 using System.Buffers;
 using System.Collections.Generic;

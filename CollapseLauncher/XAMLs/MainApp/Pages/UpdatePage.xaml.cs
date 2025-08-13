@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

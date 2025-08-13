@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;

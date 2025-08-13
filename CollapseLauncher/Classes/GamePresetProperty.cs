@@ -10,6 +10,7 @@ using CollapseLauncher.InstallManager.Honkai;
 using CollapseLauncher.InstallManager.StarRail;
 using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;

@@ -7,6 +7,7 @@ using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
