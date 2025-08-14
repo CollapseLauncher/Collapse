@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Hi3Helper.Win32.ManagedTools;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
 
 #if !APPLYUPDATE
 using Hi3Helper.Shared.Region;
-using Hi3Helper.Win32.Native.ManagedTools;
 // ReSharper disable CheckNamespace
 // ReSharper disable StringLiteralTypo
 #endif

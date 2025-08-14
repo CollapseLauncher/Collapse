@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
@@ -39,23 +40,27 @@ namespace CollapseLauncher
         public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
 #else
 #nullable enable
-        private async Task DownloadFileInner(string url,
-                                             string targetFile,
-                                             Action<int> progress,
-                                             string? authorization = null,
-                                             string? accept = null,
-                                             double timeout = 30.0,
-                                             CancellationToken cancelToken = default)
+        private async Task DownloadFileInner(string            url,
+                                             string            targetFile,
+                                             Action<int>       progress,
+                                             string?           authorization = null,
+                                             CancellationToken cancelToken   = default)
 #endif
         {
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder()
-                .UseLauncherConfig()
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
+            HttpClientBuilder<SocketsHttpHandler> builder = new HttpClientBuilder()
+                                                           .UseLauncherConfig()
+                                                           .SetAllowedDecompression(DecompressionMethods.None);
 
-            DownloadClient downloadClient = DownloadClient.CreateInstance(client);
-            EventHandler<DownloadEvent> progressEvent = (_, b) => progress((int)b.ProgressPercentage);
+            if (!string.IsNullOrEmpty(authorization))
+            {
+                builder.AddHeader("Authorization", authorization);
+            }
+
+            using HttpClient client = builder.Create();
+
+            DownloadClient              downloadClient = DownloadClient.CreateInstance(client);
+            EventHandler<DownloadEvent> progressEvent  = (_, b) => progress((int)b.ProgressPercentage);
             try
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
@@ -134,9 +139,12 @@ namespace CollapseLauncher
                                        Action<int>                  progress,
                                        IDictionary<string, string>? headers     = null,
                                        double                       timeout     = 30,
-                                       CancellationToken            cancelToken = new CancellationToken())
-            => await DownloadFileInner(url,  targetFile, progress, headers.TryGetValueIgnoreCase("Authorization"),
-                                       null, timeout,    cancelToken);
+                                       CancellationToken            cancelToken = default)
+            => await DownloadFileInner(url,
+                                       targetFile,
+                                       progress,
+                                       headers.TryGetValueIgnoreCase("Authorization"),
+                                       cancelToken);
 
         public async Task<byte[]> DownloadBytes(string url, IDictionary<string, string>? headers = null, double timeout = 30)
             => await DownloadBytesInner(url, headers.TryGetValueIgnoreCase("Authorization"), null, timeout);
@@ -144,10 +152,12 @@ namespace CollapseLauncher
         public async Task<string> DownloadString(string                       url, 
                                                  IDictionary<string, string>? headers = null,
                                                  double                       timeout = 30)
-            => await DownloadStringInner(url,          headers?.TryGetValueIgnoreCase("Authorization") 
-                                                       ?? null, null, timeout);
+            => await DownloadStringInner(url,
+                                         headers?.TryGetValueIgnoreCase("Authorization"),
+                                         null,
+                                         timeout);
 
-    #endif
+#endif
     }
 
 #if USEVELOPACK

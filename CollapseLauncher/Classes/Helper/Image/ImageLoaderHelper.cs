@@ -7,6 +7,7 @@ using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -626,7 +627,7 @@ namespace CollapseLauncher.Helper.Image
             }
         }
         
-        private static ConcurrentDictionary<string, int> UrlRetryCount = new();
+        private static readonly ConcurrentDictionary<string, int> UrlRetryCount = new();
 
         private static async Task<Stream> GetFallbackStreamUrl(HttpClient? client, string urlLocal, CancellationToken tokenLocal)
         {

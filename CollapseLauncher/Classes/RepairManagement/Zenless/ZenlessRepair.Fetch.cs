@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.Sleepy;
 using Hi3Helper.Http;

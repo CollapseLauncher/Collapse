@@ -154,7 +154,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
                 return;
             }
 
-            foreach (T? propValue in prop)
+            foreach (T propValue in prop)
             {
                 InjectDownloadableItemCancelTokenInner(propValue, launcherApi, token);
             }
@@ -224,7 +224,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? CarouselImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? CancellationToken.None);
             init;
         }
 
@@ -252,7 +252,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? IconImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? CancellationToken.None);
             init;
         }
 
@@ -260,7 +260,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? IconImgHover
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? CancellationToken.None);
             init;
         }
 
@@ -287,7 +287,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.Legacy
         [JsonConverter(typeof(SanitizeUrlStringConverter))]
         public string? QrImg
         {
-            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? default);
+            get => ImageLoaderHelper.GetCachedSprites(CurrentHttpClient, field, InnerToken ?? CancellationToken.None);
             init;
         }
 

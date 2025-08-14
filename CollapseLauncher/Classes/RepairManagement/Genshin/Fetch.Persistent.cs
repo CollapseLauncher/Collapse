@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
