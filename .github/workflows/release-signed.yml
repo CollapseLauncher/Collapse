@@ -124,7 +124,7 @@ jobs:
           For core maintainers, go to SignPath to sign the build!
 
     - name: Sign Build Artifact with SignPath
-      uses: signpath/github-action-submit-signing-request@v1.1
+      uses: signpath/github-action-submit-signing-request@v1.3
       with:
         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
         organization-id: ${{ secrets.SIGNPATH_ORG_ID }}
@@ -132,6 +132,7 @@ jobs:
         signing-policy-slug: ${{ env.SIGNING_POLICY_SLUG }}
         github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
         wait-for-completion: true
+        wait-for-completion-timeout-in-seconds: 1200
         output-artifact-directory: '/SignedArtifact/'
         artifact-configuration-slug: ${{ env.SIGNPATH_ARTIFACT_SLUG}}
 
