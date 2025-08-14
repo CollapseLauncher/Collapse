@@ -156,7 +156,7 @@ namespace CollapseLauncher
             // Start downloading asset index using FallbackCDNUtil and return its stream
             await Task.Run(async () =>
             {
-                await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+                await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
                 if (stream != null)
                 {
                     // Deserialize asset index and set it to list
@@ -186,7 +186,7 @@ namespace CollapseLauncher
             string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, GameVersionManagerCast!.GamePreset.ProfileName);
 
             // Start downloading metadata using FallbackCDNUtil
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
             return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token);
         }
         #endregion

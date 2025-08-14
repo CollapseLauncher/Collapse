@@ -1,4 +1,5 @@
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.Screen;
 using System;
@@ -58,6 +59,7 @@ namespace Hi3Helper.Shared.Region
 
             // Check and assign default for the null and non-existence values.
             CheckAndSetDefaultConfigValue();
+            ApplyExternalLibraryConfig();
 
             // Set the startup background path and GameFolder to check if user has permission.
             string? gameFolder = GetAppConfigValue("GameFolder").ToString();
@@ -125,13 +127,27 @@ namespace Hi3Helper.Shared.Region
 
         public static void CheckAndSetDefaultConfigValue()
         {
-            foreach (KeyValuePair<string, IniValue> Entry in AppSettingsTemplate)
+            foreach (KeyValuePair<string, IniValue> entry in AppSettingsTemplate)
             {
-                if (!AppConfigProperty.Profile[SectionName].ContainsKey(Entry.Key) ||
-                    AppConfigProperty.Profile[SectionName][Entry.Key].IsEmpty)
+                if (!AppConfigProperty.Profile[SectionName].ContainsKey(entry.Key) ||
+                    AppConfigProperty.Profile[SectionName][entry.Key].IsEmpty)
                 {
-                    SetAppConfigValue(Entry.Key, Entry.Value);
+                    SetAppConfigValue(entry.Key, entry.Value);
                 }
+            }
+        }
+
+        private static void ApplyExternalLibraryConfig()
+        {
+            AppCDNCacheFolder = string.IsNullOrEmpty(AppCDNCacheFolder) ? Path.Combine(AppGameFolder, "_cdnCache") : GetAppConfigValue("CDNCacheDir").Value ?? "";
+
+            AppNetworkCacheEnabled               = GetAppConfigValue("IsCDNCacheEnabled");
+            AppNetworkCacheAggressiveModeEnabled = GetAppConfigValue("IsCDNCacheAggressiveModeEnabled");
+            AppNetworkCacheExpireMinute          = GetAppConfigValue("CDNCacheExpireTimeMinutes");
+
+            foreach (Action callbacks in ApplyExternalConfigCallbackList)
+            {
+                callbacks();
             }
         }
 
@@ -233,6 +249,8 @@ namespace Hi3Helper.Shared.Region
         public static IntPtr AppIconLarge;
         public static IntPtr AppIconSmall;
 
+        public static List<Action> ApplyExternalConfigCallbackList = [];
+
         #endregion
 
         #region App Config Definitions
@@ -273,6 +291,55 @@ namespace Hi3Helper.Shared.Region
         public static string AppGameImgFolder => Path.Combine(AppGameFolder, "_img");
         public static string AppGameImgCachedFolder => Path.Combine(AppGameImgFolder, "cached");
         public static string AppGameLogsFolder => Path.Combine(AppGameFolder, "_logs");
+        public static string AppCDNCacheFolder
+        {
+            get
+            {
+                string? value = GetAppConfigValue("CDNCacheDir").Value;
+                CDNCacheUtil.SetCacheDirSkipGC(value);
+                return value ?? "";
+            }
+            set
+            {
+                CDNCacheUtil.CurrentCacheDir = value;
+                SetAndSaveConfigValue("CDNCacheDir", value);
+            }
+        }
+
+        public static bool AppNetworkCacheEnabled
+        {
+            get => CDNCacheUtil.IsEnabled = GetAppConfigValue("IsCDNCacheEnabled");
+            set
+            {
+                CDNCacheUtil.IsEnabled = value;
+                SetAndSaveConfigValue("IsCDNCacheEnabled", value);
+            }
+        }
+
+        public static bool AppNetworkCacheAggressiveModeEnabled
+        {
+            get => CDNCacheUtil.IsUseAggressiveMode = GetAppConfigValue("IsCDNCacheAggressiveModeEnabled");
+            set
+            {
+                CDNCacheUtil.IsUseAggressiveMode = value;
+                SetAndSaveConfigValue("IsCDNCacheAggressiveModeEnabled", value);
+            }
+        }
+
+        public static double AppNetworkCacheExpireMinute
+        {
+            get
+            {
+                double duration = GetAppConfigValue("CDNCacheExpireTimeMinutes").ToDouble();
+                CDNCacheUtil.MaxAcceptedCacheExpireTime = TimeSpan.FromMinutes(duration);
+                return duration;
+            }
+            set
+            {
+                SetAndSaveConfigValue("CDNCacheExpireTimeMinutes", value);
+                CDNCacheUtil.MaxAcceptedCacheExpireTime = TimeSpan.FromMinutes(value);
+            }
+        }
 
         [field: AllowNull, MaybeNull]
         public static Version AppCurrentVersion
@@ -554,7 +621,12 @@ namespace Hi3Helper.Shared.Region
             { "HttpClientTimeout", 90 },
 
             { "IsUseExternalDns", false },
-            { "ExternalDnsAddresses", string.Empty }
+            { "ExternalDnsAddresses", string.Empty },
+
+            { "IsCDNCacheEnabled", false },
+            { "IsCDNCacheAggressiveModeEnabled", false },
+            { "CDNCacheDir", string.Empty },
+            { "CDNCacheExpireTimeMinutes", 10d }
         };
 
         #endregion

@@ -150,4 +150,54 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+    
+    public partial class BooleanToIsEnabledOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double thisValue = value is not bool boolean || boolean ? 1.0d : 0.25d;
+            return typeof(float) == targetType ? (float)thisValue : thisValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class LocaleCodeToFlagUrlConverter : IValueConverter
+    {
+        private const string Separator = "-_";
+        private const StringSplitOptions Options = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not string asString)
+            {
+                return null;
+            }
+
+            Span<Range>        splitRange = stackalloc Range[2];
+            ReadOnlySpan<char> asSpan     = asString.AsSpan();
+            int                rangeLen   = asSpan.SplitAny(splitRange, Separator, Options);
+
+            if (rangeLen != 2)
+            {
+                return null;
+            }
+
+            ReadOnlySpan<char> countryId = asSpan[splitRange[1]];
+            if (countryId.Equals("419", StringComparison.OrdinalIgnoreCase))
+            {
+                countryId = "es";
+            }
+
+            return $"https://flagcdn.com/{countryId}.svg";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

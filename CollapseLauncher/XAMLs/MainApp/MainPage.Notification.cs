@@ -68,7 +68,7 @@ public partial class MainPage : Page
             CancellationTokenSource TokenSource = new CancellationTokenSource();
             RunTimeoutCancel(TokenSource);
 
-            await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+            await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
             NotificationData = await networkStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush, token: TokenSource.Token);
             IsLoadNotifComplete = true;
 
@@ -229,9 +229,9 @@ public partial class MainPage : Page
             string   verString  = string.Empty;
             if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion? version))
             {
-                verString = version?.VersionString;
+                verString = version.Value.VersionString;
                 SpawnNotificationPush(Lang._Misc.UpdateCompleteTitle,
-                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version?.VersionString, IsPreview ? "Preview" : "Stable"),
+                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version.Value.VersionString, IsPreview ? "Preview" : "Stable"),
                                       NotifSeverity.Success,
                                       0xAF,
                                       true,

@@ -1,5 +1,5 @@
-﻿using Hi3Helper.Win32.Native.LibraryImport;
-using Hi3Helper.Win32.Native.ManagedTools;
+﻿using Hi3Helper.Win32.ManagedTools;
+using Hi3Helper.Win32.Native.LibraryImport;
 using System;
 using System.Text;
 #if !APPLYUPDATE
@@ -93,16 +93,23 @@ namespace Hi3Helper
 
         public static void AllocateConsole(bool isConsoleApp = false)
         {
+            var consoleWindow = PInvoke.GetConsoleWindow();
+            
             if (ConsoleHandle != IntPtr.Zero)
             {
-                IntPtr consoleWindow = PInvoke.GetConsoleWindow();
                 PInvoke.ShowWindow(consoleWindow, 5);
                 return;
             }
+            
+            if (consoleWindow != IntPtr.Zero)
+                isConsoleApp = true;
 
-            if (!isConsoleApp && !PInvoke.AllocConsole())
+            if (!isConsoleApp && !PInvoke.AttachConsole(0xFFFFFFFF))
             {
-                throw new ContextMarshalException($"Failed to allocate console with error code: {Win32Error.GetLastWin32ErrorMessage()}");
+                if (!PInvoke.AllocConsole())
+                {
+                    throw new ContextMarshalException($"Failed to attach or allocate console with error code: {Win32Error.GetLastWin32ErrorMessage()}");
+                }
             }
 
             const uint GENERIC_READ = 0x80000000;
@@ -116,12 +123,6 @@ namespace Hi3Helper
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            var instanceIndicator = "";
-            var instanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
-
-            if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
-            Console.Title = $"Collapse Console{instanceIndicator}";
-
             if (PInvoke.GetConsoleMode(ConsoleHandle, out uint mode))
             {
                 const uint ENABLE_PROCESSED_OUTPUT            = 1;
@@ -133,10 +134,23 @@ namespace Hi3Helper
                     _virtualTerminal = true;
                 }
             }
+            
+            try
+            {
+                var instanceIndicator = "";
+                var instanceCount     = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
-#if !APPLYUPDATE
-            Windowing.SetWindowIcon(PInvoke.GetConsoleWindow(), AppIconLarge, AppIconSmall);
-#endif
+                if (instanceCount > 1) instanceIndicator = $" - #{instanceCount}";
+                Console.Title = $"Collapse Console{instanceIndicator}";
+
+            #if !APPLYUPDATE
+                Windowing.SetWindowIcon(PInvoke.GetConsoleWindow(), AppIconLarge, AppIconSmall);
+            #endif
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] Failed to set console title or icon: \r\n{ex}");
+            }
         }
 #endregion
     }

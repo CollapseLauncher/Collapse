@@ -248,7 +248,7 @@ namespace Hi3Helper
             }
 
 #if !APPLYUPDATE
-            ConverterTool.SizeSuffixes = sizeSurfixes;
+            ConverterTool.SetSizeSuffixes(sizeSurfixes);
 #else
             UpdateTask.SizeSuffixes = sizeSurfixes;
 #endif

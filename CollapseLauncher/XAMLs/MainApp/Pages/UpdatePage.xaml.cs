@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
+using System.IO;
+
 
 #if !USEVELOPACK
 using Squirrel;
@@ -167,7 +169,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await using BridgedNetworkStream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token);
+                await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token);
                 ReleaseNotesBox.Text = await networkStream.ReadAsStringAsync(_tokenSource.Token);
             }
             catch (Exception ex)

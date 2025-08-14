@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Enviar anónimamente informes de errores a los desarrolladores",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "Esta configuración está desactivada debido a que la variable 'DISABLE_SENTRY' está establecida como true.",
     "Debug_MultipleInstance": "Permitir ejecutar múltiples ventanas de Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Generar diálogo personalizado",
 
     "ChangeRegionWarning_Toggle": "Mostrar Advertencia de Cambio de Región",
     "ChangeRegionInstant_Toggle": "Cambio de región instantánea ",
@@ -693,8 +694,31 @@
     "Database_ValidationChecking": "Validando Configuración...",
     "Database_Placeholder_DbUserIdTextBox": "Ejemplo GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Ingresa tu token de autenticación aquí",
-    
-    "SearchPlaceholder": "Escribe para buscar..."
+
+    "SearchPlaceholder": "Escribe para buscar...",
+
+    "HttpCache_Title": "Ajustes de caché HTTP",
+    "HttpCacheModeToggle": "Modo Caché",
+    "HttpCacheModeToggle_Tooltip1": "Si se utiliza la caché de red al realizar peticiones HTTP a CDNs. Esto podría reducir el tiempo de carga de ciertas funciones.",
+    "HttpCacheModeToggle_Tooltip2": "Al habilitarlo, esta función utiliza dos métodos de almacenamiento en caché:",
+    "HttpCacheModeToggle_Tooltip3": "Nota:",
+    "HttpCacheModeToggle_Tooltip4": "Puede que tengas que borrar la caché haciendo clic en el botón",
+    "HttpCacheModeToggle_Tooltip5": "si te encuentras con algún problema o si el launcher funciona incorrectamente.",
+    "HttpCacheMode_Cat1": "Expiración basada en el tiempo",
+    "HttpCacheMode_Cat2": "Almacenamiento basado en ETag/Hash",
+    "HttpCacheAggressiveModeToggle": "Modo agresivo de caché",
+    "HttpCacheAggressiveModeToggle_Tooltip1": "Al habilitarlo, permitira al launcher realizar el almacenamiento en caché basado en el",
+    "HttpCacheAggressiveModeToggle_Tooltip2": ". Los modos",
+    "HttpCacheAggressiveModeToggle_Tooltip3": "y",
+    "HttpCacheAggressiveModeToggle_Tooltip4": "serán ignorados automáticamente",
+    "HttpCacheAggressiveModeToggle_Tooltip5": "Para usar esta función, debes habilitar el ",
+    "HttpCacheAggressiveModeToggle_Tooltip6": "primero.",
+    "HttpCacheMaxExpireTimeBox": "Tiempo máximo de caducidad",
+    "HttpCacheMaxExpireTimeBox_TooltipDefaultValue": "10 minutos",
+    "HttpCacheMaxExpireTimeBox_Tooltip1": "Determina cuanto es el tiempo máximo permitido para la respuesta (en minutos).",
+    "HttpCacheMaxExpireTimeBoxMinutes": "minutos",
+    "HttpCacheClearButton": "Borrar caché de red",
+    "HttpCacheClearedText": "¡Los cachés han sido borrados!"
   },
 
   "_Misc": {

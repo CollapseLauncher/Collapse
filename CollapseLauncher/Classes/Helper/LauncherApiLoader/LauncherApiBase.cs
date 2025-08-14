@@ -87,14 +87,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
 
             // Create generic HttpClientBuilder
-            HttpClientBuilder<SocketsHttpHandler> apiGeneralHttpBuilder = new HttpClientBuilder()
+            HttpClientBuilder apiGeneralHttpBuilder = new HttpClientBuilder()
                                                                          .UseLauncherConfig()
                                                                          .AllowUntrustedCert()
                                                                          .SetAllowedDecompression()
                                                                          .SetHttpVersion(HttpVersion.Version30);
 
             // Create resource HttpClientBuilder
-            HttpClientBuilder<SocketsHttpHandler> apiResourceHttpBuilder = new HttpClientBuilder()
+            HttpClientBuilder apiResourceHttpBuilder = new HttpClientBuilder()
                                                                           .UseLauncherConfig()
                                                                           .AllowUntrustedCert()
                                                                           .SetAllowedDecompression(DecompressionMethods.None)
