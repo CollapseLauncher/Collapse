@@ -133,12 +133,12 @@ jobs:
         github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
         wait-for-completion: true
         wait-for-completion-timeout-in-seconds: 1200
-        output-artifact-directory: '/SignedArtifact/'
+        output-artifact-directory: '${{ runner.temp }}/SignedArtifact/'
         artifact-configuration-slug: ${{ env.SIGNPATH_ARTIFACT_SLUG}}
 
     - name: Process Signed Build
       run: |
-        $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
+        $buildDir = '${{ runner.temp }}\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
         echo "Re-checking build version"
         $versionFinal = ((Get-Item $buildDir\CollapseLauncher.exe).VersionInfo.FileVersion)
         if ($versionFinal.EndsWith(".0")) {
@@ -149,7 +149,7 @@ jobs:
 
     - name: Verify Signed Artifacts
       run: |
-        $buildDir = '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
+        $buildDir = '${{ runner.temp }}\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
         $files = Get-ChildItem -Path "$buildDir" -Recurse -Include "*.exe","*.dll"
         foreach ($file in $files) {
           $signature = Get-AuthenticodeSignature $file.FullName
@@ -163,7 +163,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
           name: SIGNED_collapse-v${{ env.VERSION }}_${{ env.SIGNING_POLICY_SLUG }}-${{ env.CONFIGURATION_STRATEGY }}_${{ env.PUBLISH_PROFILE }}
-          path: ./SignedArtifact
+          path: ${{ runner.temp }}/SignedArtifact
           compression-level: 9
 
     - name: Final Notify Discord
