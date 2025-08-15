@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper.Animation;
-using Hi3Helper.Shared.Region;
+﻿using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
