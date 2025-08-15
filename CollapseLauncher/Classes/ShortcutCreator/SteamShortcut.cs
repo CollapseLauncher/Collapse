@@ -199,7 +199,7 @@ namespace CollapseLauncher.ShortcutUtils
             try
             {
                 // Try to get the remote stream and download the file
-                await using BridgedNetworkStream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
+                await using Stream netStream = await FallbackCDNUtil.GetHttpStreamFromResponse(url, token);
                 await using FileStream outStream = fileInfo.Open(new FileStreamOptions
                 {
                     Access = FileAccess.Write,

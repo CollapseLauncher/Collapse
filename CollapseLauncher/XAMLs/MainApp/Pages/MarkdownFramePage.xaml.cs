@@ -141,7 +141,7 @@ namespace CollapseLauncher
                 }
                 else if (markdownUriCdn != null)
                 {
-                    await using BridgedNetworkStream netStream =
+                    await using Stream netStream =
                         await FallbackCDNUtil.TryGetCDNFallbackStream(markdownUriCdn,
                                                                       new CancellationToken(),
                                                                       true);

@@ -4,7 +4,6 @@ using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
-using Hi3Helper.Win32.Native.ManagedTools;
 using Microsoft.UI.Dispatching;
 using System;
 using System.Collections.Generic;

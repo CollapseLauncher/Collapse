@@ -9,7 +9,7 @@ using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

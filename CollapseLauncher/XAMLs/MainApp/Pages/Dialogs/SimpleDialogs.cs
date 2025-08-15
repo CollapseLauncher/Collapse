@@ -9,7 +9,7 @@ using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Win32.Native.ManagedTools;
+using Hi3Helper.Win32.ManagedTools;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;

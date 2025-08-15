@@ -3,11 +3,12 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
-using Hi3Helper.Win32.Native.ManagedTools;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -67,43 +68,15 @@ namespace CollapseLauncher
         #endif
             try
             {
-                // Extract icons from the executable file
-                string mainModulePath = AppExecutablePath;
-                var    iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, null, null, 0);
-                if (iconCount > 0)
-                {
-                    var largeIcons = new IntPtr[1];
-                    var smallIcons = new IntPtr[1];
-                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIcons, smallIcons, 1);
-                    AppIconLarge = largeIcons[0];
-                    AppIconSmall = smallIcons[0];
-                }
+                // Add callbacks to apply shared settings
+                ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
 
-                // Start Updater Hook
-                VelopackLocatorExtension.StartUpdaterHook(AppAumid);
-
-                InitAppPreset();
-                var logPath = AppGameLogsFolder;
-                CurrentLogger = IsConsoleEnabled
-                    ? new LoggerConsole(logPath, Encoding.UTF8)
-                    : new LoggerNull(logPath, Encoding.UTF8);
-
-                if (Directory.GetCurrentDirectory() != AppExecutableDir)
-                {
-                    LogWriteLine(
-                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
-                                 LogType.Warning, true);
-                    Directory.SetCurrentDirectory(AppExecutableDir);
-                }
-
-                InitializeAppSettings();
-
+                // Initialize the Sentry SDK
                 SentryHelper.IsPreview = IsPreview;
             #pragma warning disable CS0618 // Type or member is obsolete
                 SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
                 SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
                 SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
-                SentryHelper.AppCdnOption   = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
             #pragma warning restore CS0618 // Type or member is obsolete
                 if (SentryHelper.IsEnabled)
                 {
@@ -120,6 +93,43 @@ namespace CollapseLauncher
                         LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
                     }
                 }
+                
+                // Extract icons from the executable file
+                string mainModulePath = AppExecutablePath;
+                uint   iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, nint.Zero, nint.Zero, 0);
+                if (iconCount > 0)
+                {
+                    IntPtr[] largeIcons       = new IntPtr[1];
+                    IntPtr[] smallIcons       = new IntPtr[1];
+                    nint     largeIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(largeIcons, 0);
+                    nint     smallIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(smallIcons, 0);
+                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIconsArrayP, smallIconsArrayP, 1);
+                    AppIconLarge = largeIcons[0];
+                    AppIconSmall = smallIcons[0];
+                }
+
+                InitAppPreset();
+                string logPath = AppGameLogsFolder;
+                CurrentLogger = IsConsoleEnabled
+                    ? new LoggerConsole(logPath, Encoding.UTF8)
+                    : new LoggerNull(logPath, Encoding.UTF8);
+
+                // Set ILogger for CDNCacheUtil
+                CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");
+
+                // Start Updater Hook
+                VelopackLocatorExtension.StartUpdaterHook(AppAumid);
+                
+                if (Directory.GetCurrentDirectory() != AppExecutableDir)
+                {
+                    LogWriteLine(
+                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
+                                 LogType.Warning, true);
+                    Directory.SetCurrentDirectory(AppExecutableDir);
+                }
+                
+                InitializeAppSettings();
+                SentryHelper.AppCdnOption = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
 
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                                            LauncherUpdateHelper.LauncherCurrentVersionString,
@@ -289,7 +299,7 @@ namespace CollapseLauncher
                               {
                                   DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-                                  var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+                                  DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
                                   SynchronizationContext.SetSynchronizationContext(context);
 
                                   // ReSharper disable once ObjectCreationAsStatement
@@ -302,12 +312,12 @@ namespace CollapseLauncher
 
         private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
         {
-            var severity = e.Severity switch
-                           {
-                               DownloadLogSeverity.Warning => LogType.Warning,
-                               DownloadLogSeverity.Error => LogType.Error,
-                               _ => LogType.Default
-                           };
+            LogType severity = e.Severity switch
+                               {
+                                   DownloadLogSeverity.Warning => LogType.Warning,
+                                   DownloadLogSeverity.Error => LogType.Error,
+                                   _ => LogType.Default
+                               };
 
             LogWriteLine(e.Message, severity, true);
         }
@@ -357,7 +367,7 @@ namespace CollapseLauncher
                 LoadLocale(GetAppConfigValue("AppLanguage").ToString());
             }
 
-            var themeValue = GetAppConfigValue("ThemeMode").ToString();
+            string themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
                 return;
@@ -370,7 +380,7 @@ namespace CollapseLauncher
 
         private static void RunElevateUpdate()
         {
-            var elevatedProc = new Process
+            Process elevatedProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -387,7 +397,7 @@ namespace CollapseLauncher
 
         public static string GetVersionString()
         {
-            var version = Environment.OSVersion.Version;
+            Version version = Environment.OSVersion.Version;
             m_isWindows11 = version.Build >= 22000;
             return m_isWindows11 ? $"Windows 11 (build: {version.Build}.{version.Revision})" : $"Windows {version.Major} (build: {version.Build}.{version.Revision})";
         }
@@ -400,7 +410,7 @@ namespace CollapseLauncher
             }
 
             FileStream stream = File.OpenRead(path);
-            var        hash   = Hash.GetCryptoHash<MD5>(stream);
+            byte[]     hash   = Hash.GetCryptoHash<MD5>(stream);
             stream.Close();
             return Convert.ToHexStringLower(hash);
         }

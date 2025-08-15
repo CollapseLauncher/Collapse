@@ -108,7 +108,7 @@ namespace CollapseLauncher.InstallManager.Base
                 SophonDownloadSpeedLimiter.CreateInstance(LauncherConfig.DownloadSpeedLimitCached);
 
             // Get the patch assets to download
-            (List<SophonPatchAsset>, List<SophonChunkManifestInfoPair>) patchAssets =
+            (List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile) patchAssets =
                 await GetAlterSophonPatchAssets(httpClient,
                                                 branchResources.PatchUrl,
                                                 (isPreloadMode ? branchResources.PreloadUrl : branchResources.MainUrl) ?? "",
@@ -120,8 +120,9 @@ namespace CollapseLauncher.InstallManager.Base
             // Start the patch pipeline
             await StartAlterSophonPatch(httpClient,
                                         isPreloadMode,
-                                        patchAssets.Item1,
-                                        patchAssets.Item2,
+                                        patchAssets.AssetList,
+                                        patchAssets.InfoPairs,
+                                        patchAssets.IsAllowRemoveOldFile,
                                         downloadSpeedLimiter,
                                         maxThread,
                                         Token.Token);
@@ -135,7 +136,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             string currentVersion = GameVersion.ToString();
 
-            List<SophonManifestPatchIdentity> otherManifestIdentity = patchManifest.OtherSophonPatchData.ManifestIdentityList
+            List<SophonManifestPatchIdentity> otherManifestIdentity = patchManifest.OtherSophonPatchData!.ManifestIdentityList
                                                                                    .Where(x => !CommonSophonPackageMatchingFields.Contains(x.MatchingField, StringComparer.OrdinalIgnoreCase))
                                                                                    .ToList();
 
@@ -303,7 +304,7 @@ namespace CollapseLauncher.InstallManager.Base
             return confirmAdditionalTag == ContentDialogResult.Primary;
         }
 
-        protected virtual async Task<(List<SophonPatchAsset>, List<SophonChunkManifestInfoPair>)>
+        protected virtual async Task<(List<SophonPatchAsset> AssetList, List<SophonChunkManifestInfoPair> InfoPairs, bool IsAllowRemoveOldFile)>
             GetAlterSophonPatchAssets(HttpClient httpClient,
                                       string manifestUrl,
                                       string downloadOverUrl,
@@ -315,6 +316,7 @@ namespace CollapseLauncher.InstallManager.Base
             SophonChunkManifestInfoPair?      rootPatchManifest = null;
             SophonChunkManifestInfoPair?      rootMainManifest  = null;
             List<(SophonChunkManifestInfoPair Patch, SophonChunkManifestInfoPair Main, bool IsCommon)> patchManifestList = [];
+            bool isAlowRemoveOldFile = true;
 
             // Iterate matching fields and get the patch metadata
             foreach (string matchingField in matchingFields)
@@ -335,9 +337,18 @@ namespace CollapseLauncher.InstallManager.Base
                                                        matchingField: matchingField,
                                                        token: token);
 
+                Logger.LogWriteLine($"Getting diff for matching field: {matchingField}", LogType.Debug, true);
+
                 // Get the manifest pair based on the matching field
-                SophonChunkManifestInfoPair patchManifest = rootPatchManifest
-                    .GetOtherPatchInfoPair(matchingField, updateVersionfrom);
+                if (!rootPatchManifest
+                       .TryGetOtherPatchInfoPair(matchingField, updateVersionfrom, out var patchManifest))
+                {
+                    Logger.LogWriteLine($"[InstallManagerBase::GetAlterSophonPatchAssets] Cannot find past-version patch manifest for matching field: {matchingField}, Skipping!",
+                                        LogType.Warning,
+                                        true);
+                    isAlowRemoveOldFile = false;
+                    continue;
+                }
 
                 // Get the main manifest pair based on the matching field
                 SophonChunkManifestInfoPair mainManifest = rootMainManifest
@@ -362,28 +373,38 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 // Get the asset and add it to the list
                 await foreach (SophonPatchAsset patchAsset in SophonPatch
-                    .EnumerateUpdateAsync(httpClient,
-                                          manifestPair.Patch,
-                                          manifestPair.Main,
-                                          updateVersionfrom,
-                                          downloadLimiter,
-                                          token))
+                                  .EnumerateUpdateAsync(httpClient,
+                                                        manifestPair.Patch,
+                                                        manifestPair.Main,
+                                                        updateVersionfrom,
+                                                        downloadLimiter,
+                                                        token))
                 {
-                    if (!manifestPair.IsCommon)
-                    {
-                        string existingFilePath = Path.Combine(GamePath, patchAsset.TargetFilePath);
-                        if (!File.Exists(existingFilePath))
-                        {
-                            Logger.LogWriteLine($"Patch from matching field: {manifestPair.Main.MatchingField} is discarded: {patchAsset.TargetFilePath}", LogType.Warning, true);
-                            continue;
-                        }
-                    }
-
                     patchAssets.Add(patchAsset);
                 }
             }
 
-            return (patchAssets, patchManifestList.Select(x => x.Patch).ToList());
+            // Find the removable assets and compare with the added list.
+            List<SophonPatchAsset> removableAssets = [];
+            foreach (var manifestPair in patchManifestList)
+            {
+                // Get the asset and add it to the list
+                await foreach (SophonPatchAsset patchAsset in SophonPatch
+                                  .EnumerateRemovableAsync(httpClient,
+                                                           manifestPair.Patch,
+                                                           manifestPair.Main,
+                                                           updateVersionfrom,
+                                                           patchAssets,
+                                                           token))
+                {
+                    removableAssets.Add(patchAsset);
+                }
+            }
+
+            // Add the removable list to patch assets.
+            patchAssets.AddRange(removableAssets);
+
+            return (patchAssets, patchManifestList.Select(x => x.Patch).ToList(), isAlowRemoveOldFile);
         }
 
         protected virtual async Task<List<string>> GetAlterSophonPatchVOMatchingFields(CancellationToken token)
@@ -411,23 +432,26 @@ namespace CollapseLauncher.InstallManager.Base
             return voAudioMatchingFields;
         }
 
-        protected virtual async Task StartAlterSophonPatch(HttpClient httpClient,
-                                                           bool isPreloadMode,
-                                                           List<SophonPatchAsset> patchAssets,
+        protected virtual async Task StartAlterSophonPatch(HttpClient                        httpClient,
+                                                           bool                              isPreloadMode,
+                                                           List<SophonPatchAsset>            patchAssets,
                                                            List<SophonChunkManifestInfoPair> patchManifestInfoPairs,
-                                                           SophonDownloadSpeedLimiter downloadLimiter,
-                                                           int threadNum,
-                                                           CancellationToken token)
+                                                           bool                              isAllowRemoveOldFile,
+                                                           SophonDownloadSpeedLimiter        downloadLimiter,
+                                                           int                               threadNum,
+                                                           CancellationToken                 token)
         {
             Dictionary<string, int> downloadedPatchHashSet = new();
             Lock dictionaryLock = new();
 
-            IEnumerable<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelineDownloadEnumerable = patchAssets
+            List<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelineDownloadEnumerable = patchAssets
                .EnsureOnlyGetDedupPatchAssets()
-               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet));
+               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet))
+               .ToList();
 
-            IEnumerable<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelinePatchEnumerable = patchAssets
-               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet));
+            List<Tuple<SophonPatchAsset, Dictionary<string, int>>> pipelinePatchEnumerable = patchAssets
+               .Select(x => new Tuple<SophonPatchAsset, Dictionary<string, int>>(x, downloadedPatchHashSet))
+               .ToList();
 
             ParallelOptions parallelOptions = new()
             {
@@ -441,7 +465,7 @@ namespace CollapseLauncher.InstallManager.Base
                 parallelOptions.MaxDegreeOfParallelism = Environment.ProcessorCount;
             }
 
-            string patchOutputDir = _gameSophonChunkDir;
+            string patchOutputDir = Path.Combine(GamePath, "ldiff");
 
             // Get download sizes
             long downloadSizeTotalAssetRemote = patchAssets.Where(x => x.PatchMethod != SophonPatchMethod.Remove).Sum(x => x.TargetFileSize);
@@ -449,7 +473,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get download counts
             int downloadCountTotalAssetRemote = patchAssets.Count;
-            int downloadCountPatchOnlyRemote = patchManifestInfoPairs.Sum(x => x.ChunksInfo.ChunksCount);
 
             // Ensure disk space sufficiency
             await EnsureDiskSpaceSufficiencyAsync(downloadSizePatchOnlyRemote,
@@ -478,8 +501,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                   token);
 
             // Assign local download progress
-            ProgressAllCountCurrent          = 1;
-            ProgressAllCountTotal            = downloadCountPatchOnlyRemote;
+            ProgressAllCountCurrent          = 0;
+            ProgressAllCountTotal            = pipelineDownloadEnumerable.Count;
             ProgressPerFileSizeCurrent       = 0;
             ProgressPerFileSizeTotal         = downloadSizePatchOnlyRemote;
             ProgressAllSizeCurrent           = 0;
@@ -496,7 +519,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // If it's not a preload mode (patch mode), then execute the patch pipeline as well
-            ProgressAllCountCurrent          = 1;
+            ProgressAllCountCurrent          = 0;
             ProgressAllCountTotal            = downloadCountTotalAssetRemote;
             ProgressPerFileSizeCurrent       = 0;
             ProgressPerFileSizeTotal         = downloadSizePatchOnlyRemote;
@@ -562,7 +585,7 @@ namespace CollapseLauncher.InstallManager.Base
                 await patchAsset.ApplyPatchUpdateAsync(httpClient,
                                                        GamePath,
                                                        patchOutputDir,
-                                                       true,
+                                                       isAllowRemoveOldFile,
                                                        read =>
                                                        {
                                                            UpdateSophonFileDownloadProgress(0, read);

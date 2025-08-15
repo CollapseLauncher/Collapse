@@ -26,7 +26,7 @@ namespace CollapseLauncher
         private async Task<bool> Update(List<SRAsset> updateAssetIndex, List<SRAsset> assetIndex, CancellationToken token)
         {
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
+            using HttpClient client = new HttpClientBuilder()
                 .UseLauncherConfig(DownloadThreadWithReservedCount)
                 .SetUserAgent(UserAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
