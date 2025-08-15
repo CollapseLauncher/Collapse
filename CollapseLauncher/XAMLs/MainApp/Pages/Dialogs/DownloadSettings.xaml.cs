@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Shared.Region;
+﻿using CollapseLauncher.Helper.Animation;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -11,7 +12,7 @@ namespace CollapseLauncher.Dialogs
         #region Properties
         private GamePresetProperty CurrentGameProperty { get; }
         private PostInstallBehaviour CurrentPostInstallBehaviour =>
-            CurrentGameProperty.GameInstall.PostInstallBehaviour;
+            CurrentGameProperty.GameInstall?.PostInstallBehaviour ?? PostInstallBehaviour.Nothing;
 
         private int PostInstallShutdownTimeout
         {
@@ -72,7 +73,7 @@ namespace CollapseLauncher.Dialogs
 
         private void OnPostInstallBehaviourChange(object sender, SelectionChangedEventArgs e)
         {
-            CurrentGameProperty.GameInstall.PostInstallBehaviour =
+            CurrentGameProperty.GameInstall?.PostInstallBehaviour =
                 (PostInstallBehaviour)PostInstallBox.SelectedIndex;
 
             ShutdownTimeout.Visibility = CurrentPostInstallBehaviour is

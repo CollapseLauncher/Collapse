@@ -558,9 +558,11 @@ public sealed partial class HomePage
 
     private void PostInstallProcedure()
     {
-        if (!CurrentGameProperty.GameVersion.IsGameInstalled()) return;
+        if (CurrentGameProperty.GameVersion == null || 
+            !CurrentGameProperty.GameVersion.IsGameInstalled()) return;
 
-        var behaviour = CurrentGameProperty.GameInstall.PostInstallBehaviour;
+        var behaviour = CurrentGameProperty.GameInstall?.PostInstallBehaviour
+            ?? PostInstallBehaviour.Nothing;
         switch (behaviour)
         {
             case PostInstallBehaviour.Nothing:
@@ -575,7 +577,8 @@ public sealed partial class HomePage
                     UseShellExecute = false,
                 });
                 break;
-            default:
+            case PostInstallBehaviour.Restart:
+            case PostInstallBehaviour.Shutdown:
                 var shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
                 var shutdownType = behaviour switch
                 {
@@ -592,7 +595,7 @@ public sealed partial class HomePage
                 break;
         }
 
-        CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
+        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.Nothing;
     }
     #endregion
 

@@ -163,6 +163,11 @@ namespace CollapseLauncher.Pages
             TimeSpan span = TimeSpan.FromSeconds(asDouble);
             return span.ToString("mm\\:ss");
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
     }
     
     public partial class BooleanToIsEnabledOpacityConverter : IValueConverter

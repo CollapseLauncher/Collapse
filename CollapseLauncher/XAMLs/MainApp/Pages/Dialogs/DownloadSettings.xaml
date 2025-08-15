@@ -22,7 +22,7 @@
                        Style="{ThemeResource SubtitleTextBlockStyle}"
                        Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Title}"
                        Margin="0,0,0,12"/>
-            <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle2}"
+            <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle}"
                     Margin="0,0,0,4"/>
             <ComboBox x:Name="PostInstallBox"
                   Margin="0,8,0,0"
