@@ -736,7 +736,53 @@
   },
 
   "_PluginManagerPage": {
-    "PageTitle": "プラグイン管理メニュー"
+    "PageTitle": "プラグイン管理メニュー",
+
+    "FileDialogTitle": "プラグインをインポート",
+    "FileDialogFileFilter1": "Collapse Launcherプラグイン",
+
+    "LeftPanelNoPluginTitle": "プラグインが入ってないぞ！",
+    "LeftPanelNoPluginButton1": "クリックして",
+    "LeftPanelNoPluginButton2": "プラグイン一覧",
+    "LeftPanelNoPluginButton3": "を見に行く",
+
+    "LeftPanelListViewTitle": "導入中のプラグイン情報",
+
+    "ListViewMainActionButton1": "プラグインの更新を確認",
+    "ListViewMainActionButton1AltChecking": "プラグインの更新を確認しています…",
+    "ListViewMainActionButton2": "更新されたプラグインをダウンロード",
+    "ListViewMainActionButton3": "起動時にプラグインを自動アップデート",
+
+    "ListViewItemContextButton1": "選択したプラグインをアンインストール",
+    "ListViewItemContextButton2": "選択したプラグインを復元",
+    "ListViewItemContextButton3": "選択したプラグインを有効化",
+    "ListViewItemContextButton4": "選択したプラグインを無効化",
+    "ListViewItemContextButton5": "選択したプラグインをアップデート",
+    "ListViewItemContextButton6": "選択したプラグインのフォルダーを開く",
+    "ListViewItemContextButton7": "Collapse Launcherプラグインのフォルダーを開く",
+    "ListViewItemContextButton8": "現在のプラグインをアップデート",
+
+    "ListViewItemContentButton1": "プラグインをアンインストール",
+    "ListViewItemContentButton2": "プラグインを復元",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "更新の確認だけする",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "更新を確認してダウンロード",
+    "ListViewItemContextButtonDownloadUpdate": "更新をダウンロード",
+
+    "ListViewItemUpdateStatusAvailable": "更新できます！",
+    "ListViewItemUpdateStatusAvailableButton": "{0}に更新",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "更新中…（{0}%）",
+    "ListViewItemUpdateStatusCompleted": "プラグインが{0}に更新されました。更新を適用するために、ランチャーを再起動してください！",
+    "ListViewItemUpdateStatusChecking": "アップデート確認中…",
+    "ListViewItemUpdateStatusUpToDate": "プラグインは最新の状態です！",
+
+    "ListViewFooterWarning1": "変更を適用するには、ランチャーを再起動してください！",
+    "ListViewFooterRestartButton": "ランチャーを再起動",
+
+    "RightPanelImportTitle1": "ここに",
+    "RightPanelImportTitle2": "か",
+    "RightPanelImportTitle3": "をドラッグしてください",
+    "RightPanelImportTitle4": "ここをクリックしてもプラグインを読み込めますよ"
   },
 
   "_Misc": {
@@ -1144,7 +1190,12 @@
     "PluginManagerUpdateAvailableSubtitle1": "アップデート可能なプラグインが{0}個あります。以下のプラグインの更新を適用するには、ランチャーの再起動が必要です。",
     "PluginManagerUpdateAvailableSubtitle2": "ランチャーを再起動しますか？",
     "PluginManagerUpdateAvailableCancelBtn": "後でやる",
-    "PluginManagerUpdateAvailableConfirmBtn": "今やる！"
+    "PluginManagerUpdateAvailableConfirmBtn": "今やる！",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "クリックして{0}",
+
+    "LauncherRestartTitle": "Collapse Launcherを再起動",
+    "LauncherRestartSubtitle1": "ランチャーを再起動しようとしています。再起動前にバックグラウンドで実行中の操作が中止・キャンセルされているか確認してください。",
+    "LauncherRestartSubtitle2": "本当にランチャーを再起動しますか？"
   },
 
   "_FileMigrationProcess": {
