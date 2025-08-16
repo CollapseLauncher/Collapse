@@ -52,17 +52,7 @@
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
     </PropertyGroup>
-
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>ThisAssembly.Git.Sha</_Parameter1>
-            <_Parameter2>ThisAssembly.Git.Branch</_Parameter2>
-            <_Parameter3>ThisAssembly.Git.Commit</_Parameter3>
-            <_Parameter4>ThisAssembly.Git.IsDirty</_Parameter4>
-            <_Parameter5>ThisAssembly.Git.RepositoryUrl</_Parameter5>
-        </AssemblyAttribute>
-    </ItemGroup>
-
+    
     <PropertyGroup>
         <NoWarn>$(NoWarn);TA101;TA100</NoWarn>
         <WarningLevel>5</WarningLevel>
