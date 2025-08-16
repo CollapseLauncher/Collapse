@@ -1362,10 +1362,10 @@
                               Glyph="" />
                     <FontIcon x:Name="ProgressStatusIconInternet"
                               Grid.Column="0"
-                              Visibility="Collapsed"
                               FontFamily="{ThemeResource FontAwesomeSolid}"
                               FontSize="12"
-                              Glyph="" />
+                              Glyph=""
+                              Visibility="Collapsed" />
                     <TextBlock x:Name="ProgressStatusFooter"
                                Grid.Column="1"
                                FontSize="10"
@@ -1433,9 +1433,9 @@
                     VerticalAlignment="Stretch"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    Visibility="{x:Bind pages:HomePage.CommunityToolsButtonVisibility}"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(CommunityToolsBtn)}"
-                    Shadow="{ThemeResource SharedShadow}">
+                    Shadow="{ThemeResource SharedShadow}"
+                    Visibility="{x:Bind pages:HomePage.CommunityToolsButtonVisibility}">
                 <Button.Resources>
                     <DataTemplate x:Key="CommunityToolsInnerBtn"
                                   x:DataType="local:CommunityToolsEntry">

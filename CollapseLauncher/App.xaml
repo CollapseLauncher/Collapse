@@ -2764,7 +2764,7 @@
                                         </VisualStateManager.VisualStateGroups>
 
                                         <ContentPresenter x:Name="ContentPresenter"
-                                                          Content="{TemplateBinding Content}"/>
+                                                          Content="{TemplateBinding Content}" />
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>

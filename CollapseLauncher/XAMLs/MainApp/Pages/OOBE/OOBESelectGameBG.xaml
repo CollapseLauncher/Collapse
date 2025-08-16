@@ -39,7 +39,7 @@
                   VerticalAlignment="Stretch"
                   Visibility="Collapsed">
                 <Grid.Background>
-                    <LinearGradientBrush StartPoint="1,0" EndPoint="0,0" Opacity="0.9">
+                    <LinearGradientBrush Opacity="0.9" StartPoint="1,0" EndPoint="0,0">
                         <GradientStop Offset="0.15" Color="{ThemeResource SystemAccentColorBackgroundMaskTransparent}" />
                         <GradientStop Offset="0.75" Color="{ThemeResource SystemAccentColorBackgroundMask}" />
                     </LinearGradientBrush>

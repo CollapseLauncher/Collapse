@@ -73,11 +73,11 @@ namespace CollapseLauncher
 
                 // Initialize the Sentry SDK
                 SentryHelper.IsPreview = IsPreview;
-            #pragma warning disable CS0618 // Type or member is obsolete
-                SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
-                SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
-                SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
-            #pragma warning restore CS0618 // Type or member is obsolete
+            // #pragma warning disable CS0618 // Type or member is obsolete
+            //     SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
+            //     SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
+            //     SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
+            // #pragma warning restore CS0618 // Type or member is obsolete
                 if (SentryHelper.IsEnabled)
                 {
                     try
@@ -144,9 +144,9 @@ namespace CollapseLauncher
             #pragma warning disable CS0618 // Type or member is obsolete
                 LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
                              LogType.Scheme, true);
-                LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
-                             $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
-                             LogType.Scheme, true);
+                // LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
+                //              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
+                //              LogType.Scheme, true);
             #pragma warning restore CS0618 // Type or member is obsolete
 
                 Process.GetCurrentProcess().PriorityBoostEnabled = true;

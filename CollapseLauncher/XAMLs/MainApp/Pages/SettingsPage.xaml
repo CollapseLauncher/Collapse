@@ -14,11 +14,11 @@
       xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:plugins="using:CollapseLauncher.Plugins"
-      mc:Ignorable="d"
       CacheMode="BitmapCache"
       Loaded="Page_Loaded"
       NavigationCacheMode="Enabled"
-      Unloaded="Page_Unloaded">
+      Unloaded="Page_Unloaded"
+      mc:Ignorable="d">
     <Page.Resources>
         <conv:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
         <conv:InverseBooleanVisibilityConverter x:Key="InverseBooleanVisibilityConverter" />
@@ -58,45 +58,45 @@
                                           ItemsSource="{x:Bind LanguageList, Mode=OneWay}"
                                           MaxDropDownHeight="400"
                                           SelectedIndex="{x:Bind LanguageSelectedIndex, Mode=OneWay}"
-                                          SelectionChangedTrigger="Committed"
-                                          SelectionChanged="LanguageSelector_SelectionChanged">
+                                          SelectionChanged="LanguageSelector_SelectionChanged"
+                                          SelectionChangedTrigger="Committed">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate x:DataType="helper:LangMetadata">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="54"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="54" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
                                                 <Grid Grid.Column="0"
-                                                      VerticalAlignment="Center"
-                                                      HorizontalAlignment="Stretch"
                                                       Margin="-2,0,8,0"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Center"
+                                                      Background="{ThemeResource NewAccentButtonBackground}"
                                                       CornerRadius="8"
                                                       Shadow="{ThemeResource SharedShadow}"
-                                                      Background="{ThemeResource NewAccentButtonBackground}"
                                                       Translation="0,0,12">
-                                                    <TextBlock Text="{x:Bind LangID}"
+                                                    <TextBlock Margin="6,2"
                                                                HorizontalAlignment="Center"
-                                                               HorizontalTextAlignment="Center"
-                                                               TextAlignment="Center"
-                                                               Margin="6, 2"
-                                                               Foreground="{ThemeResource NewAccentButtonForeground}"
                                                                FontSize="10"
-                                                               FontWeight="Bold"/>
+                                                               FontWeight="Bold"
+                                                               Foreground="{ThemeResource NewAccentButtonForeground}"
+                                                               HorizontalTextAlignment="Center"
+                                                               Text="{x:Bind LangID}"
+                                                               TextAlignment="Center" />
                                                 </Grid>
-                                                <TextBlock Grid.Column="1"
+                                                <TextBlock x:Name="LanguageName"
+                                                           Grid.Column="1"
                                                            Margin="0,0,4,0"
-                                                           x:Name="LanguageName"
                                                            VerticalAlignment="Center"
                                                            Text="{x:Bind LangName}" />
-                                                <TextBlock Grid.Column="2"
-                                                           x:Name="LanguageAuthor"
+                                                <TextBlock x:Name="LanguageAuthor"
+                                                           Grid.Column="2"
                                                            Margin="6,0,0,0"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Center"
                                                            FontSize="11"
                                                            Opacity="0.50"
-                                                           VerticalAlignment="Center"
-                                                           HorizontalAlignment="Right"
                                                            Text="{x:Bind LangAuthor, Converter={StaticResource ByStringConverter}}" />
                                             </Grid>
                                         </DataTemplate>
@@ -397,19 +397,19 @@
                             <TextBlock Margin="0,16,0,8"
                                        Style="{ThemeResource SubtitleTextBlockStyle}"
                                        Text="{x:Bind helper:Locale.Lang._SettingsPage.NetworkSettings_Title}" />
-                            <StackPanel Orientation="Vertical"
-                                        Spacing="8"
-                                        Margin="0,0,0,16">
-                                <Grid ColumnSpacing="8"
-                                      HorizontalAlignment="Left">
+                            <StackPanel Margin="0,0,0,16"
+                                        Orientation="Vertical"
+                                        Spacing="8">
+                                <Grid HorizontalAlignment="Left"
+                                      ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock FontSize="16"
-                                               Grid.Column="0"
+                                    <TextBlock Grid.Column="0"
+                                               FontSize="16"
                                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCache_Title}"/>
+                                               Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCache_Title}" />
                                     <Button Grid.Column="1"
                                             Width="24"
                                             Height="24"
@@ -427,7 +427,7 @@
                                                             Spacing="8">
                                                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle}"
-                                                               TextWrapping="Wrap"/>
+                                                               TextWrapping="Wrap" />
                                                     <TextBlock Margin="0,4,0,0"
                                                                ext:TextBlockExtension.RemoveEmptyRuns="True"
                                                                TextWrapping="Wrap">
@@ -443,64 +443,64 @@
                                                              Foreground="{ThemeResource AccentColor}"
                                                              Text="]" />
                                                     </TextBlock>
-                                                    <TextBlock TextWrapping="Wrap"
-                                                               Margin="0,-4,0,0"
-                                                               HorizontalTextAlignment="Justify">
+                                                    <TextBlock Margin="0,-4,0,0"
+                                                               HorizontalTextAlignment="Justify"
+                                                               TextWrapping="Wrap">
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip1}" />
                                                     </TextBlock>
-                                                    <TextBlock TextWrapping="Wrap"
-                                                               HorizontalTextAlignment="Justify">
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip2}"/>
-                                                        <LineBreak/>
-                                                        <LineBreak/>
-                                                        <Run Text="  •"/>
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat1}"
-                                                             FontWeight="Bold"/>
-                                                        <LineBreak/>
-                                                        <Run Text="  •"/>
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat2}"
-                                                             FontWeight="Bold"/>
+                                                    <TextBlock HorizontalTextAlignment="Justify"
+                                                               TextWrapping="Wrap">
+                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip2}" />
+                                                        <LineBreak />
+                                                        <LineBreak />
+                                                        <Run Text="  •" />
+                                                        <Run FontWeight="Bold"
+                                                             Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat1}" />
+                                                        <LineBreak />
+                                                        <Run Text="  •" />
+                                                        <Run FontWeight="Bold"
+                                                             Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat2}" />
                                                     </TextBlock>
-                                                    <Grid HorizontalAlignment="Left"
-                                                          Margin="0,8,0,0"
+                                                    <Grid Margin="0,8,0,0"
+                                                          HorizontalAlignment="Left"
                                                           ColumnSpacing="4"
                                                           RowSpacing="8">
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition />
                                                         </Grid.ColumnDefinitions>
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition/>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition />
                                                         </Grid.RowDefinitions>
                                                         <FontIcon Grid.Row="0"
                                                                   Grid.Column="0"
-                                                                  Glyph="&#xE814;"
                                                                   FontSize="16"
-                                                                  Foreground="{ThemeResource AccentColor}"/>
+                                                                  Foreground="{ThemeResource AccentColor}"
+                                                                  Glyph="&#xE814;" />
                                                         <TextBlock Grid.Row="0"
                                                                    Grid.Column="1"
-                                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip3}"
                                                                    Margin="0,0,0,-2"
                                                                    VerticalAlignment="Bottom"
                                                                    FontWeight="Bold"
-                                                                   Foreground="{ThemeResource AccentColor}"/>
-                                                        <TextBlock Grid.Column="0"
-                                                                   Grid.Row="1"
+                                                                   Foreground="{ThemeResource AccentColor}"
+                                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip3}" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Grid.Column="0"
                                                                    Grid.ColumnSpan="2"
-                                                                   TextWrapping="Wrap"
-                                                                   HorizontalTextAlignment="Justify">
-                                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip4}"/>
-                                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheClearButton}"
-                                                                 FontWeight="Bold"
-                                                                 Foreground="{ThemeResource AccentColor}"/>
-                                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip5}"/>
+                                                                   HorizontalTextAlignment="Justify"
+                                                                   TextWrapping="Wrap">
+                                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip4}" />
+                                                            <Run FontWeight="Bold"
+                                                                 Foreground="{ThemeResource AccentColor}"
+                                                                 Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheClearButton}" />
+                                                            <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle_Tooltip5}" />
                                                         </TextBlock>
                                                     </Grid>
-                                                    <MenuFlyoutSeparator Margin="8,8"/>
+                                                    <MenuFlyoutSeparator Margin="8,8" />
                                                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle}"
-                                                               TextWrapping="Wrap"/>
+                                                               TextWrapping="Wrap" />
                                                     <TextBlock Margin="0,4,0,0"
                                                                ext:TextBlockExtension.RemoveEmptyRuns="True"
                                                                TextWrapping="Wrap">
@@ -516,35 +516,35 @@
                                                              Foreground="{ThemeResource AccentColor}"
                                                              Text="]" />
                                                     </TextBlock>
-                                                    <TextBlock TextWrapping="Wrap"
-                                                               Margin="0,-4,0,0"
-                                                               HorizontalTextAlignment="Justify">
+                                                    <TextBlock Margin="0,-4,0,0"
+                                                               HorizontalTextAlignment="Justify"
+                                                               TextWrapping="Wrap">
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip1}" />
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMaxExpireTimeBox}"
-                                                             FontWeight="Bold"
-                                                             Foreground="{ThemeResource AccentColor}"/>
+                                                        <Run FontWeight="Bold"
+                                                             Foreground="{ThemeResource AccentColor}"
+                                                             Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMaxExpireTimeBox}" />
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip2}" />
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat1}"
-                                                             FontWeight="Bold"
-                                                             Foreground="{ThemeResource AccentColor}"/>
+                                                        <Run FontWeight="Bold"
+                                                             Foreground="{ThemeResource AccentColor}"
+                                                             Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat1}" />
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip3}" />
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat2}"
-                                                             FontWeight="Bold"
-                                                             Foreground="{ThemeResource AccentColor}"/>
+                                                        <Run FontWeight="Bold"
+                                                             Foreground="{ThemeResource AccentColor}"
+                                                             Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMode_Cat2}" />
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip4}" />
                                                     </TextBlock>
-                                                    <TextBlock TextWrapping="Wrap"
-                                                               HorizontalTextAlignment="Justify">
+                                                    <TextBlock HorizontalTextAlignment="Justify"
+                                                               TextWrapping="Wrap">
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip5}" />
-                                                        <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle}"
-                                                             FontWeight="Bold"
-                                                             Foreground="{ThemeResource AccentColor}"/>
+                                                        <Run FontWeight="Bold"
+                                                             Foreground="{ThemeResource AccentColor}"
+                                                             Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle}" />
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle_Tooltip6}" />
                                                     </TextBlock>
-                                                    <MenuFlyoutSeparator Margin="8,8"/>
+                                                    <MenuFlyoutSeparator Margin="8,8" />
                                                     <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}"
                                                                Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMaxExpireTimeBox}"
-                                                               TextWrapping="Wrap"/>
+                                                               TextWrapping="Wrap" />
                                                     <TextBlock Margin="0,4,0,0"
                                                                ext:TextBlockExtension.RemoveEmptyRuns="True"
                                                                TextWrapping="Wrap">
@@ -560,9 +560,9 @@
                                                              Foreground="{ThemeResource AccentColor}"
                                                              Text="]" />
                                                     </TextBlock>
-                                                    <TextBlock TextWrapping="Wrap"
-                                                               Margin="0,-4,0,0"
-                                                               HorizontalTextAlignment="Justify">
+                                                    <TextBlock Margin="0,-4,0,0"
+                                                               HorizontalTextAlignment="Justify"
+                                                               TextWrapping="Wrap">
                                                         <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMaxExpireTimeBox_Tooltip1}" />
                                                     </TextBlock>
                                                 </StackPanel>
@@ -571,33 +571,33 @@
                                     </Button>
                                 </Grid>
                                 <ToggleSwitch x:Name="NetworkCacheModeSettingsToggle"
-                                              IsOn="{x:Bind innerConfig:LauncherConfig.AppNetworkCacheEnabled, Mode=TwoWay}"
                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheModeToggle}"
+                                              IsOn="{x:Bind innerConfig:LauncherConfig.AppNetworkCacheEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                 <ToggleSwitch x:Name="NetworkAggressiveCacheModeSettingsToggle"
-                                              IsOn="{x:Bind innerConfig:LauncherConfig.AppNetworkCacheAggressiveModeEnabled, Mode=TwoWay}"
                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheAggressiveModeToggle}"
                                               IsEnabled="{x:Bind NetworkCacheModeSettingsToggle.IsOn, Mode=OneWay}"
+                                              IsOn="{x:Bind innerConfig:LauncherConfig.AppNetworkCacheAggressiveModeEnabled, Mode=TwoWay}"
                                               OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                               OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                 <Grid HorizontalAlignment="Left"
                                       ColumnSpacing="8">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <NumberBox Grid.Column="0"
-                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMaxExpireTimeBox}"
                                                MinWidth="150"
-                                               Value="{x:Bind innerConfig:LauncherConfig.AppNetworkCacheExpireMinute, Mode=TwoWay}"
+                                               HorizontalAlignment="Left"
+                                               Header="{x:Bind helper:Locale.Lang._SettingsPage.HttpCacheMaxExpireTimeBox}"
+                                               IsEnabled="{x:Bind NetworkCacheModeSettingsToggle.IsOn, Mode=OneWay}"
+                                               LargeChange="100"
                                                Maximum="1440"
                                                Minimum="1"
                                                SmallChange="1"
-                                               LargeChange="100"
-                                               HorizontalAlignment="Left"
-                                               IsEnabled="{x:Bind NetworkCacheModeSettingsToggle.IsOn, Mode=OneWay}"
-                                               SpinButtonPlacementMode="Inline"/>
+                                               SpinButtonPlacementMode="Inline"
+                                               Value="{x:Bind innerConfig:LauncherConfig.AppNetworkCacheExpireMinute, Mode=TwoWay}" />
                                     <Grid Grid.Column="1"
                                           Margin="0,0,0,4"
                                           Padding="10,4"
@@ -605,8 +605,8 @@
                                           VerticalAlignment="Bottom"
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Opacity="{x:Bind NetworkCacheModeSettingsToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
+                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -617,8 +617,8 @@
                                     </Grid>
                                 </Grid>
                                 <Button x:Name="NetworkCacheModeClearButton"
-                                        Margin="0,8,0,8"
                                         MinWidth="400"
+                                        Margin="0,8,0,8"
                                         HorizontalAlignment="Left"
                                         HorizontalContentAlignment="Stretch"
                                         Click="NetworkCacheModeClear"
@@ -645,19 +645,19 @@
                                                 <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
                                                 <ResourceDictionary x:Key="Light">
                                                     <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#50FF0000"/>
+                                                                     Color="#50FF0000" />
                                                     <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A0FF0000"/>
+                                                                     Color="#A0FF0000" />
                                                     <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#70FF0000"/>
+                                                                     Color="#70FF0000" />
                                                 </ResourceDictionary>
                                                 <ResourceDictionary x:Key="Default">
                                                     <SolidColorBrush x:Key="ButtonBackground"
-                                                                         Color="#50FF0000"/>
+                                                                     Color="#50FF0000" />
                                                     <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                         Color="#A0FF0000"/>
+                                                                     Color="#A0FF0000" />
                                                     <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                         Color="#70FF0000"/>
+                                                                     Color="#70FF0000" />
                                                 </ResourceDictionary>
                                                 <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
                                             </ResourceDictionary.ThemeDictionaries>
@@ -665,13 +665,13 @@
                                     </Button.Resources>
                                 </Button>
                                 <Grid x:Name="NetworkCacheModeClearTextSuccess"
-                                      Margin="0,-8,0,8"
                                       MinWidth="400"
+                                      Margin="0,-8,0,8"
                                       Padding="12,8"
                                       HorizontalAlignment="Left"
                                       Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
-                                      Visibility="Collapsed"
-                                      CornerRadius="4">
+                                      CornerRadius="4"
+                                      Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
@@ -1362,8 +1362,8 @@
                                           VerticalAlignment="Bottom"
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Opacity="{x:Bind NetworkDownloadSpeedLimitToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
+                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -1417,8 +1417,8 @@
                                           VerticalAlignment="Bottom"
                                           Background="{ThemeResource DefaultBGColorAccentBrush}"
                                           CornerRadius="4"
-                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Opacity="{x:Bind NetworkNewPreallocDownloaderToggle.IsOn, Mode=OneWay, Converter={StaticResource BooleanToIsEnabledOpacityConverter}}"
+                                          Shadow="{ThemeResource FatSliderThumbShadow}"
                                           Translation="0,0,8">
                                         <TextBlock VerticalAlignment="Center"
                                                    FontSize="12"
@@ -1457,24 +1457,24 @@
                                               SelectionChanged="AppCDNSelection_SelectionChanged">
                                     <RadioButtons.ItemTemplate>
                                         <DataTemplate x:DataType="innerConfig:CDNURLProperty">
-                                            <Grid HorizontalAlignment="Stretch"
-                                                  ToolTipService.ToolTip="{x:Bind Description}"
-                                                  MinWidth="110"
-                                                  Margin="0,0,16,0">
+                                            <Grid MinWidth="110"
+                                                  Margin="0,0,16,0"
+                                                  HorizontalAlignment="Stretch"
+                                                  ToolTipService.ToolTip="{x:Bind Description}">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock VerticalAlignment="Center"
-                                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                                               Text="{x:Bind Name}" />
+                                                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                           Text="{x:Bind Name}" />
                                                 <TextBlock Grid.Column="1"
                                                            Margin="8,0,0,0"
-                                                           VerticalAlignment="Center"
                                                            HorizontalAlignment="Right"
-                                                           HorizontalTextAlignment="Right"
+                                                           VerticalAlignment="Center"
                                                            FontFamily="{ThemeResource FontAwesomeSolid}"
                                                            FontSize="16"
+                                                           HorizontalTextAlignment="Right"
                                                            Opacity="0.5"
                                                            Text="&#xf05a;" />
                                             </Grid>
@@ -2115,9 +2115,9 @@
                         <TextBlock x:Name="ShareYourFeedbackButton"
                                    Margin="0,8,0,8"
                                    HorizontalAlignment="Left"
+                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
                                    PointerPressed="ShareYourFeedbackClick"
                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                   Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"
                                    Visibility="{x:Bind ToggleSendRemoteCrashData.IsOn, Mode=OneWay, Converter={StaticResource BooleanVisibilityConverter}}">
                             <Run Text="{x:Bind helper:Locale.Lang._SettingsPage.ShareYourFeedbackBtn}" />
                         </TextBlock>
@@ -2976,76 +2976,84 @@
                                         CornerRadius="8">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Grid Width="48"
+                                        <Grid Grid.Column="0"
+                                              Width="48"
+                                              Height="Auto"
                                               MinHeight="48"
                                               Margin="4"
-                                              Height="Auto"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Stretch"
-                                              CornerRadius="4"
-                                              Grid.Column="0">
+                                              CornerRadius="4">
                                             <Rectangle Height="Auto"
-                                                       Fill="{ThemeResource SmokeBackgroundBrush}"/>
-                                            <ContentPresenter Content="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
-                                                              CornerRadius="8, 0, 0, 8"
-                                                              HorizontalAlignment="Center"
-                                                              VerticalAlignment="Stretch"/>
+                                                       Fill="{ThemeResource SmokeBackgroundBrush}" />
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Stretch"
+                                                              Content="{x:Bind Converter={StaticResource GamePluginIconConverter}}"
+                                                              CornerRadius="8, 0, 0, 8" />
                                         </Grid>
                                         <Grid Grid.Column="1"
                                               Margin="8,0">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
+                                                <RowDefinition />
+                                                <RowDefinition />
                                             </Grid.RowDefinitions>
-                                            <TextBlock ext:TextBlockExtension.RemoveEmptyRuns="True"
-                                                       Grid.Row="0"
+                                            <TextBlock Grid.Row="0"
                                                        VerticalAlignment="Bottom"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis">
-                                                <Run Text="{x:Bind Name, Mode=OneWay}"/>
-                                                <Run Text=" (v" FontSize="10" FontWeight="Bold" ext:TextBlockExtension.PreserveSpace="True"/>
-                                                <Run Text="{x:Bind Version, Mode=OneWay}" FontSize="10" FontWeight="Bold"/>
-                                                <Run Text=")" FontSize="10" FontWeight="Bold"/>
+                                                       ext:TextBlockExtension.RemoveEmptyRuns="True"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       TextWrapping="NoWrap">
+                                                <Run Text="{x:Bind Name, Mode=OneWay}" />
+                                                <Run ext:TextBlockExtension.PreserveSpace="True"
+                                                     FontSize="10"
+                                                     FontWeight="Bold"
+                                                     Text=" (v" />
+                                                <Run FontSize="10"
+                                                     FontWeight="Bold"
+                                                     Text="{x:Bind Version, Mode=OneWay}" />
+                                                <Run FontSize="10"
+                                                     FontWeight="Bold"
+                                                     Text=")" />
                                             </TextBlock>
-                                            <TextBlock Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}"
-                                                       Grid.Row="1"
+                                            <TextBlock Grid.Row="1"
                                                        FontSize="12"
                                                        Opacity="0.75"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"/>
+                                                       Text="{x:Bind Author, Mode=OneWay, Converter={StaticResource ByStringConverter}}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       TextWrapping="NoWrap" />
                                         </Grid>
                                         <Button Grid.Column="1"
-                                                Style="{ThemeResource TransparentDefaultButtonStyle}"
                                                 Padding="8"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Stretch"
                                                 Click="{x:Bind conv:SettingsPage.CopyLoadedPluginInformationClick}"
+                                                Style="{ThemeResource TransparentDefaultButtonStyle}"
                                                 Tag="{x:Bind}">
-                                            <FontIcon Glyph="&#xE8C8;" FontSize="16" />
+                                            <FontIcon FontSize="16"
+                                                      Glyph="&#xE8C8;" />
                                             <Button.Flyout>
                                                 <Flyout ShowMode="TransientWithDismissOnPointerMoveAway">
-                                                    <Grid ColumnSpacing="6"
-                                                          BorderThickness="0"
-                                                          Margin="-16,-32"
+                                                    <Grid Margin="-16,-32"
                                                           Padding="12,0"
-                                                          Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}">
+                                                          Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                                          BorderThickness="0"
+                                                          ColumnSpacing="6">
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition/>
-                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition />
                                                         </Grid.ColumnDefinitions>
-                                                        <FontIcon Glyph="&#xEC61;"
-                                                                  Grid.Column="0"
-                                                                  FontSize="16"
+                                                        <FontIcon Grid.Column="0"
                                                                   VerticalAlignment="Center"
-                                                                  Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                                        <TextBlock Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}"
-                                                                   Grid.Column="1"
-                                                                   FontWeight="Bold"
+                                                                  FontSize="16"
+                                                                  Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                                                  Glyph="&#xEC61;" />
+                                                        <TextBlock Grid.Column="1"
                                                                    Margin="0,-2,0,0"
-                                                                   VerticalAlignment="Center" />
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Text="{x:Bind helper:Locale.Lang._SettingsPage.Plugin_LoadedInfoClipboardCopied}" />
                                                     </Grid>
                                                 </Flyout>
                                             </Button.Flyout>
@@ -3055,14 +3063,19 @@
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
-                    <NavigationViewItemSeparator Margin="16,16" Visibility="Collapsed" x:Name="DebugItemSeparator" />
-                    <StackPanel Orientation="Vertical" Spacing="8" Visibility="Collapsed" x:Name="DebugStackPanel">
+                    <NavigationViewItemSeparator x:Name="DebugItemSeparator"
+                                                 Margin="16,16"
+                                                 Visibility="Collapsed" />
+                    <StackPanel x:Name="DebugStackPanel"
+                                Orientation="Vertical"
+                                Spacing="8"
+                                Visibility="Collapsed">
                         <AutoSuggestBox x:Name="DebugCustomDialogComboBox"
-                                  ItemsSource="{x:Bind DialogMethodNames, Mode=OneWay}"
-                                  Text="{x:Bind SelectedDialogMethodName, Mode=TwoWay}"
-                                  QuerySubmitted="DebugCustomDialogComboBox_OnQuerySubmitted"
-                                  TextChanged="DebugCustomDialogComboBox_OnTextChanged"
-                                  PlaceholderText="Search custom dialog..."/>
+                                        ItemsSource="{x:Bind DialogMethodNames, Mode=OneWay}"
+                                        PlaceholderText="Search custom dialog..."
+                                        QuerySubmitted="DebugCustomDialogComboBox_OnQuerySubmitted"
+                                        Text="{x:Bind SelectedDialogMethodName, Mode=TwoWay}"
+                                        TextChanged="DebugCustomDialogComboBox_OnTextChanged" />
                         <Button x:Name="DebugCustomDialogButton"
                                 Margin="0,0,0,8"
                                 Padding="12,8"
@@ -3163,19 +3176,19 @@
               VerticalAlignment="{x:Bind SettingsSearchBoxGrid.VerticalAlignment, Mode=OneWay}"
               CornerRadius="{x:Bind SettingsSearchBoxGrid.CornerRadius, Mode=OneWay}"
               Shadow="{StaticResource SharedShadow}"
-              Translation="0,0,8"/>
+              Translation="0,0,8" />
         <Grid x:Name="SettingsSearchBoxGrid"
               Width="380"
               Margin="0,0,16,0"
               HorizontalAlignment="Right"
               VerticalAlignment="Top"
-              GettingFocus="SettingsSearchBox_OnGettingFocus"
-              LosingFocus="SettingsSearchBox_OnLosingFocus"
               Background="{ThemeResource DialogAcrylicBrush}"
-              CornerRadius="{x:Bind SettingsSearchBox.CornerRadius}">
+              CornerRadius="{x:Bind SettingsSearchBox.CornerRadius}"
+              GettingFocus="SettingsSearchBox_OnGettingFocus"
+              LosingFocus="SettingsSearchBox_OnLosingFocus">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <AutoSuggestBox x:Name="SettingsSearchBox"
                             Height="40"
@@ -3187,46 +3200,46 @@
                             PlaceholderText="{x:Bind helper:Locale.Lang._SettingsPage.SearchPlaceholder}"
                             QueryIcon="Find"
                             QuerySubmitted="SettingsSearchBox_QuerySubmitted"
-                            TextChanged="SettingsSearchBox_TextChanged"/>
+                            TextChanged="SettingsSearchBox_TextChanged" />
             <Grid Grid.Column="1"
-                  VerticalAlignment="Center"
                   Margin="8,0,8,0"
+                  VerticalAlignment="Center"
                   Visibility="{x:Bind _highlightedControls.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="54"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition MinWidth="54" />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="SettingsSearchHighlightPosText"
-                           Text="4 / 20"
-                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"
                            HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
                            HorizontalTextAlignment="Center"
-                           Margin="0,0,8,0"/>
+                           Text="4 / 20" />
                 <Grid Grid.Column="1"
                       Grid.ColumnSpan="2"
+                      CornerRadius="4"
                       Shadow="{ThemeResource SharedShadow}"
-                      Translation="0,0,16"
-                      CornerRadius="4"/>
+                      Translation="0,0,16" />
                 <Button x:Name="SettingsSearchHighlightPreviousBtn"
                         Grid.Column="1"
                         Padding="8,4,8,4"
+                        Click="SettingsSearchBoxFindSelectPrevious"
                         CornerRadius="4,0,0,4"
                         TabFocusNavigation="Cycle"
-                        TabIndex="99999"
-                        Click="SettingsSearchBoxFindSelectPrevious">
-                    <FontIcon Glyph="&#xE96D;"
-                              FontSize="14"/>
+                        TabIndex="99999">
+                    <FontIcon FontSize="14"
+                              Glyph="&#xE96D;" />
                 </Button>
                 <Button x:Name="SettingsSearchHighlightNextBtn"
                         Grid.Column="2"
                         Padding="8,4,8,4"
+                        Click="SettingsSearchBoxFindSelectNext"
                         CornerRadius="0,4,4,0"
                         TabFocusNavigation="Cycle"
-                        TabIndex="99999"
-                        Click="SettingsSearchBoxFindSelectNext">
-                    <FontIcon Glyph="&#xE96E;"
-                              FontSize="14"/>
+                        TabIndex="99999">
+                    <FontIcon FontSize="14"
+                              Glyph="&#xE96E;" />
                 </Button>
             </Grid>
         </Grid>

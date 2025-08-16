@@ -2,5 +2,6 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/CollapseLauncher/Classes/Helper/HttpClientBuilder.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/CollapseLauncher/XAMLs/MainApp/Pages/SettingsPage.xaml.cs" charset="UTF-16" />
   </component>
 </project>

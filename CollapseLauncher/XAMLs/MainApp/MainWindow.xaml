@@ -111,7 +111,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <!-- ReSharper disable GrammarMistakeInMarkupAttribute -->
+                    <!--  ReSharper disable GrammarMistakeInMarkupAttribute  -->
                     <TextBlock x:Name="LoadingStatusTextTitle"
                                Grid.Column="0"
                                VerticalAlignment="Center"
