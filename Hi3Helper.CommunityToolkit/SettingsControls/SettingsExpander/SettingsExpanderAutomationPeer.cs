@@ -2,8 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-// ReSharper disable RedundantExtendsListEntry
-// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable GrammarMistakeInComment
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
 /// <summary>
@@ -30,7 +29,7 @@ public partial class SettingsExpanderAutomationPeer : FrameworkElementAutomation
     }
 
     /// <summary>
-    /// Called by GetClassName that gets a human-readable name that, in addition to AutomationControlType,
+    /// Called by GetClassName that gets a human readable name that, in addition to AutomationControlType,
     /// differentiates the control represented by this AutomationPeer.
     /// </summary>
     /// <returns>The string that contains the name.</returns>
@@ -39,22 +38,25 @@ public partial class SettingsExpanderAutomationPeer : FrameworkElementAutomation
         return Owner.GetType().Name;
     }
 
+    /// <inheritdoc/>
     protected override string GetNameCore()
     {
         string name = base.GetNameCore();
 
-        if (Owner is SettingsExpander owner)
+        if (Owner is not SettingsExpander owner)
         {
-            if (!string.IsNullOrEmpty(AutomationProperties.GetName(owner)))
+            return name;
+        }
+
+        if (!string.IsNullOrEmpty(AutomationProperties.GetName(owner)))
+        {
+            name = AutomationProperties.GetName(owner);
+        }
+        else
+        {
+            if (owner.Header is string headerString && !string.IsNullOrEmpty(headerString))
             {
-                name = AutomationProperties.GetName(owner);
-            }
-            else
-            {
-                if (owner.Header is string headerString && !string.IsNullOrEmpty(headerString))
-                {
-                    name = headerString;
-                }
+                name = headerString;
             }
         }
         return name;
@@ -71,12 +73,12 @@ public partial class SettingsExpanderAutomationPeer : FrameworkElementAutomation
           ExpandCollapseState.Expanded :
           ExpandCollapseState.Collapsed;
 
-        ExpandCollapseState oldState = newState == ExpandCollapseState.Expanded ?
+        ExpandCollapseState oldState = (newState == ExpandCollapseState.Expanded) ?
           ExpandCollapseState.Collapsed :
           ExpandCollapseState.Expanded;
 
-        #if !HAS_UNO
+#if !HAS_UNO
         RaisePropertyChangedEvent(ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty, oldState, newState);
-        #endif
+#endif
     }
 }

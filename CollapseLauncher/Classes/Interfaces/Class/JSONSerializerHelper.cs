@@ -64,6 +64,34 @@ namespace CollapseLauncher
         internal static JsonNode? DeserializeAsJsonNode(this string data)
             => InnerDeserializeAsJsonNode(data);
 
+        internal static T? DeserializeFromFile<T>(this string      filePath,
+                                                  JsonTypeInfo<T?> typeInfo,
+                                                  T?               defaultType = null)
+            where T : class => DeserializeFromFile(new FileInfo(filePath), typeInfo, defaultType);
+
+        internal static T? DeserializeFromFile<T>(this FileInfo    fileInfo,
+                                                  JsonTypeInfo<T?> typeInfo,
+                                                  T?               defaultType = null)
+            where T : class
+        {
+            using FileStream stream = fileInfo.OpenRead();
+            return InnerDeserializeStream(stream, typeInfo, defaultType);
+        }
+
+        internal static T? DeserializeFromFile<T>(this string      filePath,
+                                                  JsonTypeInfo<T?> typeInfo,
+                                                  T?               defaultType = null)
+            where T : struct => DeserializeFromFile(new FileInfo(filePath), typeInfo, defaultType);
+
+        internal static T? DeserializeFromFile<T>(this FileInfo    fileInfo,
+                                                  JsonTypeInfo<T?> typeInfo,
+                                                  T?               defaultType = null)
+            where T : struct
+        {
+            using FileStream stream = fileInfo.OpenRead();
+            return InnerDeserializeStream(stream, typeInfo, defaultType);
+        }
+
         internal static T? Deserialize<T>(this ReadOnlySpan<char> data, JsonTypeInfo<T?> typeInfo, T? defaultType = null)
             where T : class => InnerDeserialize(data, typeInfo, defaultType);
 

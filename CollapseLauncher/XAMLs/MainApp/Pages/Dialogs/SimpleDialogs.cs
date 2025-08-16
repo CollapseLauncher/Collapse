@@ -838,7 +838,8 @@ namespace CollapseLauncher.Dialogs
             string                  existingGamePath,        string gameTitle, string gameRegion, string launcherName,
             MigrateFromLauncherType migrateFromLauncherType, bool   isHasOnlyMigrateOption)
         {
-            if (migrateFromLauncherType != MigrateFromLauncherType.Official)
+            if (migrateFromLauncherType != MigrateFromLauncherType.Official &&
+                migrateFromLauncherType != MigrateFromLauncherType.Plugin)
             {
                 return migrateFromLauncherType switch
                        {
@@ -1281,6 +1282,27 @@ namespace CollapseLauncher.Dialogs
                     copyButton.Click -= CopyTextToClipboard;
                 }
             }
+        }
+
+        public static async Task<ContentDialogResult> Dialog_RestartLauncher()
+        {
+            TextBlock content = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap
+            }.AddTextBlockLine(Lang._Dialogs.LauncherRestartSubtitle1)
+             .AddTextBlockNewLine(2)
+             .AddTextBlockLine(Lang._Dialogs.LauncherRestartSubtitle2);
+
+            ContentDialogResult result = await SpawnDialog(Lang._Dialogs.LauncherRestartTitle,
+                                                           content,
+                                                           null,
+                                                           Lang._Misc.NoCancel,
+                                                           Lang._Misc.YesImReallySure,
+                                                           null,
+                                                           ContentDialogButton.Primary,
+                                                           ContentDialogTheme.Warning);
+
+            return result;
         }
 
         // ReSharper disable once AsyncVoidMethod

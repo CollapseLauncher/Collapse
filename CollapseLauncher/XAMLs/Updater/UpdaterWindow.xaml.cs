@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Data.ConverterTool;
@@ -87,12 +88,12 @@ public sealed partial class UpdaterWindow
                                                                  ? 8
                                                                  : Environment.ProcessorCount,
                                                              $"{m_arguments.Updater.UpdateChannel.ToString().ToLower()}/ApplyUpdate.exe",
-                                                             default);
+                                                             CancellationToken.None);
             FallbackCDNUtil.DownloadProgress -= FallbackCDNUtil_DownloadProgress;
 
             await File.WriteAllTextAsync(Path.Combine(WorkingDir, "..\\", "release"),
                                          m_arguments.Updater.UpdateChannel.ToString().ToLower());
-            if (updateInfo.Version != null)
+            if (updateInfo.Version.HasValue)
             {
                 var ver = updateInfo.Version.Value;
                 Status.Text = string.Format(Lang._UpdatePage.UpdateStatus5, ver.VersionString);
