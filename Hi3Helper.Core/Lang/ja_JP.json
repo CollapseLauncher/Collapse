@@ -694,7 +694,6 @@
     "Database_ValidationChecking": "設定を検証しています…",
     "Database_Placeholder_DbUserIdTextBox": "GUIDサンプル: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "認証トークンを入力してください",
-
     "SearchPlaceholder": "検索ワードを入力してください…",
 
     "HttpCache_Title": "HTTPキャッシュの設定",
