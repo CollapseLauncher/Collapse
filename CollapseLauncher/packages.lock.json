@@ -314,8 +314,8 @@
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
-        "resolved": "1.6.4",
-        "contentHash": "/0HO97NquyAeu67BznsPG3Bitb2RweDlRd39Dm0N70pIb6ETjsQI/ysnwGrygxrPwwE25oDNoueAaJfOZTrACg=="
+        "resolved": "1.6.5",
+        "contentHash": "0Voe4Vi/kcUR+/33mOIKcJlP73oK9iauA2MuHXB0IHDvrbzT02L/2tfyTe621904LzN2zaML7JGKnOOLzuzmFQ=="
       },
       "Microsoft.CSharp": {
         "type": "Transitive",
@@ -463,8 +463,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.12.0",
-        "contentHash": "m3C9urnnPhvk+Ua+771NF6+qw4mLY9QKBwM9IaJFNvqslh6Yb+EBFckwP0V4jaMHdgyPBAjegcBE1lR9vJ6kAw=="
+        "resolved": "5.14.1",
+        "contentHash": "hB1zDDOAwk9lIDOR5sLS6fNiNDKgFpn/QA9kJyj0p84I38NCn7CDkdDikaDynb1WcYCH2a5c6Ab2/GRVeTuysw=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
@@ -547,7 +547,7 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.250720.1, )",
-          "Sentry": "[5.12.0, )"
+          "Sentry": "[5.14.1, )"
         }
       },
       "hi3helper.enctool": {
