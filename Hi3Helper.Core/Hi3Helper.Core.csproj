@@ -19,6 +19,8 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <IsAotCompatible>true</IsAotCompatible>
+        <DefineConstants>$(DefineConstants);USESENTRYLOGGING</DefineConstants>
+        <NoWarn>$(NoWarn);SENTRY0001</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

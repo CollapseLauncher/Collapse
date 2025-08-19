@@ -131,7 +131,16 @@ namespace Hi3Helper.SentryHelper
 
         #region Initializer/Releaser
 
-        public static  bool         IsPreview { get; set; }
+        public static bool IsPreview { get; set; }
+        
+        public const bool EnableSentryLogging =
+        #if USESENTRYLOGGING
+            true;
+            #else
+            false;
+        #endif
+        
+        
         private static IDisposable? _sentryInstance;
 
         public static void InitializeSentrySdk()
@@ -162,6 +171,7 @@ namespace Hi3Helper.SentryHelper
                                  o.DeduplicateMode   = DeduplicateMode.All;
                                  o.Environment       = Debugger.IsAttached ? "debug" : IsPreview ? "non-debug" : "stable";
                                  o.AddExceptionFilter(new NetworkException());
+                                 o.Experimental.EnableLogs = EnableSentryLogging;
                              });
             SentrySdk.ConfigureScope(s =>
                                      {
