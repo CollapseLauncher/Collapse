@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Hi3Helper.SentryHelper;
+using System.Text;
+
 // ReSharper disable MethodOverloadWithOptionalParameter
 
 namespace Hi3Helper
@@ -14,11 +16,19 @@ namespace Hi3Helper
         public override void LogWriteLine(string line, LogType type) { }
         public override void LogWriteLine(string line, LogType type, bool writeToLog)
         {
+        #if USESENTRYLOGGING
+            SentryLoggerExtension.DetachedIngestion(line, type);
+        #endif
+            
             if (writeToLog) WriteLog(line, type);
         }
 
         public override void LogWrite(string line, LogType type, bool writeToLog, bool resetLinePosition)
         {
+        #if USESENTRYLOGGING
+            SentryLoggerExtension.DetachedIngestion(line, type);
+        #endif
+
             if (writeToLog) WriteLog(line, type);
         }
         #endregion

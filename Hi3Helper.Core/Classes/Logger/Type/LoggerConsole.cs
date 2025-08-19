@@ -1,4 +1,5 @@
-﻿using Hi3Helper.Win32.ManagedTools;
+﻿using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
 using System;
 using System.Text;
@@ -45,6 +46,11 @@ namespace Hi3Helper
                 Console.WriteLine();
                 return;
             }
+            
+        #if USESENTRYLOGGING
+            SentryLoggerExtension.DetachedIngestion(line, type);
+        #endif
+
 
             // Decorate the line
             line = GetLine(line, type, _virtualTerminal, false);
@@ -56,6 +62,10 @@ namespace Hi3Helper
 
         public override async void LogWriteLine(string line, LogType type, bool writeToLog)
         {
+        #if USESENTRYLOGGING
+            SentryLoggerExtension.DetachedIngestion(line, type);
+        #endif
+
             LogWriteLine(line, type);
             if (writeToLog) WriteLog(line, type);
         }
@@ -77,6 +87,10 @@ namespace Hi3Helper
             Console.Write(line);
 
             if (writeToLog) WriteLog(line, type);
+        #if USESENTRYLOGGING
+            SentryLoggerExtension.DetachedIngestion(line, type);
+        #endif
+
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         #endregion
