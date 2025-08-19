@@ -7,10 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
+
+using Timer = System.Timers.Timer;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable AsyncVoidMethod
 
@@ -80,7 +83,7 @@ namespace CollapseLauncher.GamePlaytime
             LogWriteLine($"Playtime counter was reset! (Previous value: {TimeSpanToString(oldTimeSpan)})", writeToLog: true);
         }
 
-        public async void StartSession(Process proc, DateTime? begin = null)
+        public async Task StartSessionFromAwaiter(Func<CancellationToken, Task> awaiterTask, DateTime? begin = null)
         {
             try
             {
@@ -120,7 +123,8 @@ namespace CollapseLauncher.GamePlaytime
                     };
 
                     inGameTimer.Start();
-                    await proc.WaitForExitAsync(_token.Token);
+
+                    await awaiterTask(_token.Token);
                     inGameTimer.Stop();
                 }
 
@@ -147,6 +151,9 @@ namespace CollapseLauncher.GamePlaytime
                 // ignored
             }
         }
+
+        public Task StartSession(Process proc, DateTime? begin = null)
+            => StartSessionFromAwaiter(proc.WaitForExitAsync, begin);
 
         private static string TimeSpanToString(TimeSpan timeSpan) => $"{timeSpan.Days * 24 + timeSpan.Hours}h {timeSpan.Minutes}m";
 

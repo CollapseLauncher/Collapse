@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Metadata;
+using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ILauncherApi = CollapseLauncher.Helper.LauncherApiLoader.ILauncherApi;
@@ -20,28 +22,44 @@ namespace CollapseLauncher.Plugins;
 
 public class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
-    public readonly  IPlugin             Plugin;
-    private readonly IPluginPresetConfig _config;
+    public readonly  GameManagerExtension.RunGameFromGameManagerContext RunGameContext;
+    public readonly  PluginInfo                                         PluginInfo;
+    public readonly  IPlugin                                            Plugin;
+    private readonly IPluginPresetConfig                                _config;
 
-    private PluginPresetConfigWrapper(IPlugin plugin, IPluginPresetConfig config)
+    private unsafe PluginPresetConfigWrapper(PluginInfo pluginInfo, IPluginPresetConfig config)
     {
-        Plugin  = plugin;
-        _config = config;
+        PluginInfo = pluginInfo;
+        Plugin     = pluginInfo.Instance ?? throw new NullReferenceException("IPlugin interface cannot be null!");
+        _config    = config;
+
+        config.comGet_GameManager(out IGameManager? gameManager);
+        PluginGameManager = gameManager ?? throw new NullReferenceException("IGameManager interface cannot be null!");
+
+        RunGameContext = new GameManagerExtension.RunGameFromGameManagerContext
+        {
+            Plugin               = pluginInfo.Instance,
+            PluginHandle         = pluginInfo.Handle,
+            GameManager          = gameManager,
+            PresetConfig         = config,
+            PrintGameLogCallback = PrintGameLogCallback
+        };
     }
 
-    public static PluginPresetConfigWrapper Create(IPlugin plugin, IPluginPresetConfig presetConfig)
-        => new(plugin, presetConfig);
+    public static PluginPresetConfigWrapper Create(PluginInfo pluginInfo, IPluginPresetConfig presetConfig)
+        => new(pluginInfo, presetConfig);
 
-    public static bool TryCreate(IPlugin                                            plugin,
-                                 IPluginPresetConfig                                presetConfig,
-                                 [NotNullWhen(true)] out PluginPresetConfigWrapper? wrapper)
+    public static bool TryCreate(
+        PluginInfo                                         pluginInfo,
+        IPluginPresetConfig                                presetConfig,
+        [NotNullWhen(true)] out PluginPresetConfigWrapper? wrapper)
     {
         Unsafe.SkipInit(out wrapper);
         ArgumentNullException.ThrowIfNull(presetConfig, nameof(presetConfig));
 
         try
         {
-            wrapper = Create(plugin, presetConfig);
+            wrapper = Create(pluginInfo, presetConfig);
             return true;
         }
         catch (Exception ex)
@@ -311,6 +329,20 @@ public class PluginPresetConfigWrapper : PresetConfig, IDisposable
         }
     }
 
+    [field: AllowNull, MaybeNull]
+    private string PrintGameLogName
+    {
+        get
+        {
+            if (field != null)
+            {
+                return field;
+            }
+
+            return field = $"{GameName} - {ZoneName}";
+        }
+    }
+
     public async Task InitializeAsync(CancellationToken token = default)
     {
         _config.InitAsync(Plugin.RegisterCancelToken(token), out nint asyncResult);
@@ -318,6 +350,17 @@ public class PluginPresetConfigWrapper : PresetConfig, IDisposable
         if (returnCode != 0)
         {
             throw new InvalidOperationException($"Failed to initialize IPluginPresetConfig with return code: {returnCode}");
+        }
+    }
+
+    private unsafe void PrintGameLogCallback(char* logString, int logStringLen, int isStringCanFree)
+    {
+        Logger.LogWrite($"[{PrintGameLogName}] ");
+        Console.Out.WriteLine(new ReadOnlySpan<char>(logString, logStringLen));
+
+        if (isStringCanFree == 1)
+        {
+            Marshal.FreeCoTaskMem((nint)logString);
         }
     }
 

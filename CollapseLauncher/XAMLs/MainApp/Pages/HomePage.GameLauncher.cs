@@ -5,9 +5,11 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Plugins;
 using H.NotifyIcon;
 using Hi3Helper;
 using Hi3Helper.EncTool.WindowTool;
+using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Screen;
@@ -46,14 +48,23 @@ public partial class HomePage
 
     private CancellationTokenSource WatchOutputLog = new();
     private CancellationTokenSource ResizableWindowHookToken;
+
+#nullable enable
     private async void StartGame(object sender, RoutedEventArgs e)
     {
         // Initialize values
         IGameSettingsUniversal _Settings   = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
-        PresetConfig           _gamePreset = CurrentGameProperty!.GameVersion!.GamePreset!;
+        PresetConfig           _gamePreset = CurrentGameProperty!.GameVersion!.GamePreset;
 
-        var isGenshin  = CurrentGameProperty!.GameVersion.GameType == GameNameType.Genshin;
-        var giForceHDR = false;
+        bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+
+        bool isGenshin  = CurrentGameProperty!.GameVersion.GameType == GameNameType.Genshin;
+        bool giForceHDR = false;
+
+        // Stop update check
+        IsSkippingUpdateCheck = true;
+        Process? proc           = null;
+        bool     isUseGameBoost = _Settings.SettingsCollapseMisc is { UseGameBoost: true };
 
         try
         {
@@ -67,7 +78,7 @@ public partial class HomePage
 
             if (_Settings is { SettingsCollapseMisc: { UseAdvancedGameSettings: true, UseGamePreLaunchCommand: true } })
             {
-                var delay = _Settings.SettingsCollapseMisc.GameLaunchDelay;
+                int delay = _Settings.SettingsCollapseMisc.GameLaunchDelay;
                 PreLaunchCommand(_Settings);
                 if (delay > 0)
                     await Task.Delay(delay);
@@ -76,45 +87,55 @@ public partial class HomePage
             int height = _Settings.SettingsScreen?.height ?? 0;
             int width  = _Settings.SettingsScreen?.width ?? 0;
 
-            Process proc = new Process();
-            proc.StartInfo.FileName        = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
-            proc.StartInfo.UseShellExecute = true;
-            proc.StartInfo.Arguments       = GetLaunchArguments(_Settings)!;
-            LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-            if (File.Exists(Path.Combine(GameDirPath!, "@AltLaunchMode")))
+            string additionalArguments = GetLaunchArguments(_Settings);
+
+            if (!usePluginGameLaunchApi)
             {
-                LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
-                proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset!.ZoneName == "Bilibili" ||
-                                                   (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
-                    Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
+                proc = new Process();
+                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Arguments = additionalArguments;
+                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
+                if (File.Exists(Path.Combine(GameDirPath!, "@AltLaunchMode")))
+                {
+                    LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
+                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset!.ZoneName == "Bilibili" ||
+                                                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
+                        Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
+                }
+                else
+                {
+                    proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
+                }
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.Verb            = "runas";
+                proc.Start();
             }
             else
             {
-                proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
+                _ = ((PluginPresetConfigWrapper)_gamePreset)
+                   .RunGameContext
+                   .RunGameFromGameManagerAsync(additionalArguments,
+                                                isUseGameBoost,
+                                                isUseGameBoost
+                                                    ? ProcessPriorityClass.AboveNormal
+                                                    : ProcessPriorityClass.Normal);
             }
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.Verb            = "runas";
-            proc.Start();
 
-            if (GetAppConfigValue("EnableConsole").ToBool())
+            if (!usePluginGameLaunchApi)
             {
-                WatchOutputLog = new CancellationTokenSource();
-                ReadOutputLog();
+                if (GetAppConfigValue("EnableConsole").ToBool())
+                {
+                    WatchOutputLog = new CancellationTokenSource();
+                    ReadOutputLog();
+                }
             }
-                
+
             if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
             {
                 SetBackScreenSettings(_Settings, height, width, CurrentGameProperty);
             }
 
-            // Stop update check
-            IsSkippingUpdateCheck = true;
-
-            // Start the resizable window payload (also use the same token as PlaytimeToken)
-            StartResizableWindowPayload(
-                                        _gamePreset.GameExecutableName,
-                                        _Settings,
-                                        _gamePreset.GameType, height, width);
             GameRunningWatcher(_Settings);
                 
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
@@ -132,18 +153,27 @@ public partial class HomePage
                     break;
             }
 
-            CurrentGameProperty.GamePlaytime?.StartSession(proc);
-
-            if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool()) CollapsePrioControl(proc);
+            if (GetAppConfigValue("LowerCollapsePrioOnGameLaunch").ToBool())
+            {
+                if (usePluginGameLaunchApi)
+                {
+                    CollapsePrioControl(((PluginPresetConfigWrapper)_gamePreset)
+                                       .RunGameContext.WaitRunningGameAsync);
+                }
+                else
+                {
+                    CollapsePrioControl(x => proc?.WaitForExitAsync(x) ?? Task.CompletedTask);
+                }
+            }
 
             // Set game process priority to Above Normal when GameBoost is on
-            if (_Settings.SettingsCollapseMisc is { UseGameBoost: true })
-        #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                Task.Run(() => Task.FromResult(_ = GameBoost_Invoke(CurrentGameProperty)));
-        #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            if (isUseGameBoost && !usePluginGameLaunchApi)
+            {
+                _ = Task.FromResult(_ = GameBoost_Invoke(CurrentGameProperty));
+            }
 
             // Run game process watcher
-            CheckRunningGameInstance(PageToken.Token);
+            await CheckRunningGameInstance(_gamePreset, PageToken.Token);
         }
         catch (Win32Exception ex)
         {
@@ -211,11 +241,20 @@ public partial class HomePage
         ArgumentNullException.ThrowIfNull(gamePreset);
         try
         {
-            Process[] gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
-            foreach (var p in gameProcess)
+            if (gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } pluginGamePreset)
             {
-                LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
-                p.Kill();
+                LogWriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
+                pluginGamePreset.RunGameContext.KillRunningGame(out _, out _);
+            }
+            else
+            {
+                Process[] gameProcess = Process.GetProcessesByName(gamePreset.GameExecutableName!.Split('.')[0]);
+                foreach (Process p in gameProcess)
+                {
+                    LogWriteLine($"Trying to stop game process {gamePreset.GameExecutableName.Split('.')[0]} at PID {p.Id}", LogType.Scheme, true);
+                    p.Kill();
+                    p.Dispose();
+                }
             }
         }
         catch (Win32Exception ex)
@@ -224,6 +263,7 @@ public partial class HomePage
             LogWriteLine($"There is a problem while trying to stop Game with Region: {gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
         }
     }
+#nullable restore
     #endregion
 
     #region Game Launch Argument Builder
@@ -787,8 +827,10 @@ public partial class HomePage
     #endregion
 
     #region Game Running State
-    private async void CheckRunningGameInstance(CancellationToken token)
+    private async Task CheckRunningGameInstance(PresetConfig presetConfig, CancellationToken token)
     {
+        bool usePluginGameLaunchApi = presetConfig is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+
         TextBlock startGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
         FontIcon startGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
         Grid startGameBtnAnimatedIconGrid = (StartGameBtn.Content as Grid)!.Children.OfType<Grid>().FirstOrDefault();
@@ -825,33 +867,50 @@ public partial class HomePage
                     PlaytimeIdleStack.Visibility    = Visibility.Collapsed;
                     PlaytimeRunningStack.Visibility = Visibility.Visible;
 
-                    if (CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out var processId, out _))
+                    int processId = 0;
+                    if ((!usePluginGameLaunchApi && CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _)) ||
+                        (usePluginGameLaunchApi && CurrentGameProperty.IsGameRunning))
                     {
-                        using Process currentGameProcess = Process.GetProcessById(processId);
+                        Process currentGameProcess = null!;
+                        if (!usePluginGameLaunchApi)
+                            currentGameProcess = Process.GetProcessById(processId);
 
-                        // HACK: For some reason, the text still unchanged.
-                        //       Make sure the start game button text also changed.
-                        startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                        var fromActivityOffset = currentGameProcess.StartTime;
-                        var gameSettings       = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
-                        var gamePreset         = CurrentGameProperty.GamePreset;
-                            
-                    #if !DISABLEDISCORD
-                        if (ToggleRegionPlayingRpc)
-                            AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
-                    #endif
+                        try
+                        {
+                            // HACK: For some reason, the text still unchanged.
+                            //       Make sure the start game button text also changed.
+                            startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
+                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? DateTime.UtcNow;
+                            IGameSettingsUniversal gameSettings = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
+                            PresetConfig gamePreset = CurrentGameProperty.GamePreset;
 
-                        CurrentGameProperty!.GamePlaytime!.StartSession(currentGameProcess);
+                        #if !DISABLEDISCORD
+                            if (ToggleRegionPlayingRpc)
+                                AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
+                        #endif
 
-                        int height = gameSettings.SettingsScreen?.height ?? 0;
-                        int width  = gameSettings.SettingsScreen?.width ?? 0;
+                            Task ProcessAwaiter(CancellationToken x) =>
+                                // ReSharper disable once AccessToDisposedClosure
+                                currentGameProcess?.WaitForExitAsync(x) ?? (!usePluginGameLaunchApi
+                                    ? Task.CompletedTask
+                                    : ((PluginPresetConfigWrapper)presetConfig).RunGameContext.WaitRunningGameAsync(x));
 
-                        // Start the resizable window payload
-                        StartResizableWindowPayload(gamePreset.GameExecutableName,
-                                                    gameSettings,
-                                                    gamePreset.GameType, height, width);
+                            _ = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
 
-                        await currentGameProcess.WaitForExitAsync(token);
+                            int height = gameSettings.SettingsScreen?.height ?? 0;
+                            int width  = gameSettings.SettingsScreen?.width ?? 0;
+
+                            // Start the resizable window payload
+                            StartResizableWindowPayload(gamePreset.GameExecutableName,
+                                                        gameSettings,
+                                                        gamePreset.GameType, height, width);
+
+                            await ProcessAwaiter(token);
+                        }
+                        finally
+                        {
+                            currentGameProcess?.Dispose();
+                        }
                     }
                 }
 

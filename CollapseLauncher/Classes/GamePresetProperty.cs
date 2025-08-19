@@ -13,6 +13,7 @@ using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
@@ -131,7 +132,16 @@ namespace CollapseLauncher
 
         internal bool IsGameRunning
         {
-            get => ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, GamePropLogger);
+            get
+            {
+                // Try to use plugin's game launch API
+                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.IsGameRunning: true })
+                {
+                    return true;
+                }
+
+                return ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, GamePropLogger);
+            }
         }
 
         internal bool GetIsGameProcessRunning(int processId)

@@ -239,7 +239,7 @@ namespace CollapseLauncher.Pages
 
                 if (CurrentGameProperty.IsGameRunning)
                 {
-                    CheckRunningGameInstance(PageToken.Token);
+                    _ = CheckRunningGameInstance(CurrentGameProperty.GamePreset, PageToken.Token);
                     return;
                 }
 

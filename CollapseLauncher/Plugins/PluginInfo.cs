@@ -140,10 +140,10 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
 
-            if (!TryGetExport(libraryHandle, "GetPluginStandardVersion", out DelegateGetPluginStandardVersion getPluginStandardVersionHandle) ||
-                !TryGetExport(libraryHandle, "GetPluginVersion", out DelegateGetPluginVersion getPluginVersionHandle) ||
-                !TryGetExport(libraryHandle, "GetPlugin", out DelegateGetPlugin getPluginHandle) ||
-                !TryGetExport(libraryHandle, "SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
+            if (!libraryHandle.TryGetExport("GetPluginStandardVersion", out DelegateGetPluginStandardVersion getPluginStandardVersionHandle) ||
+                !libraryHandle.TryGetExport("GetPluginVersion", out DelegateGetPluginVersion getPluginVersionHandle) ||
+                !libraryHandle.TryGetExport("GetPlugin", out DelegateGetPlugin getPluginHandle) ||
+                !libraryHandle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
             {
                 throw new InvalidOperationException($"Plugin: {Path.GetFileName(pluginFilePath)} is missing some required exports. Plugin won't be loaded!");
             }
@@ -175,7 +175,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             Updater = selfUpdater;
 
             // Get Managed Update CDN List
-            if (TryGetExport(libraryHandle, "GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
+            if (libraryHandle.TryGetExport("GetPluginUpdateCdnList", out DelegateGetPluginUpdateCdnList getPluginUpdateCdnList))
             {
                 int      pluginCdnListCount = 0;
                 ushort** urlsPtr            = null;
@@ -201,17 +201,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             if (presetConfigCount <= 0)
             {
                 throw new InvalidOperationException($"Plugin: {pluginRelName} doesn't have IPluginPresetConfig definition!");
-            }
-
-            PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
-            for (int i = 0; i < presetConfigCount; i++)
-            {
-                pluginInstance.GetPresetConfig(i, out IPluginPresetConfig presetConfig);
-                if (!PluginPresetConfigWrapper.TryCreate(pluginInstance, presetConfig, out PluginPresetConfigWrapper? presetConfigWrapper))
-                {
-                    throw new InvalidOperationException($"Plugin: {pluginRelName} returns an invalid IPluginPresetConfig at index {i}!");
-                }
-                PresetConfigs[i] = presetConfigWrapper;
             }
 
             // Set this PluginInfo properties
@@ -240,6 +229,17 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
             Logger.LogWriteLine($"[PluginInfo] Successfully loaded plugin: {Name} from: {pluginRelName}@0x{libraryHandle:x8} with version {Version} and standard version {StandardVersion}.", LogType.Debug, true);
 
+            PresetConfigs = new PluginPresetConfigWrapper[presetConfigCount];
+            for (int i = 0; i < presetConfigCount; i++)
+            {
+                pluginInstance.GetPresetConfig(i, out IPluginPresetConfig presetConfig);
+                if (!PluginPresetConfigWrapper.TryCreate(this, presetConfig, out PluginPresetConfigWrapper? presetConfigWrapper))
+                {
+                    throw new InvalidOperationException($"Plugin: {pluginRelName} returns an invalid IPluginPresetConfig at index {i}!");
+                }
+                PresetConfigs[i] = presetConfigWrapper;
+            }
+
             isPluginLoaded = true;
         }
         catch
@@ -260,17 +260,15 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             return;
         }
 
-        if (TryGetExport(Handle,
-                         "SetDnsResolverCallback",
-                         out DelegateSetCallback setDnsResolverCallbackHandle))
+        if (Handle.TryGetExport("SetDnsResolverCallback",
+                                out DelegateSetCallback setDnsResolverCallbackHandle))
         {
             nint dnsCallback = Marshal.GetFunctionPointerForDelegate(SharedDnsResolverCallback);
             setDnsResolverCallbackHandle(dnsCallback);
         }
 
-        if (!TryGetExport(Handle,
-                          "SetDnsResolverCallbackAsync",
-                          out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (!Handle.TryGetExport("SetDnsResolverCallbackAsync",
+                                 out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
         {
             return;
         }
@@ -286,16 +284,14 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             return;
         }
 
-        if (TryGetExport(Handle,
-                         "SetDnsResolverCallback",
-                         out DelegateSetCallback setDnsResolverCallbackHandle))
+        if (Handle.TryGetExport("SetDnsResolverCallback",
+                                out DelegateSetCallback setDnsResolverCallbackHandle))
         {
             setDnsResolverCallbackHandle(nint.Zero);
         }
 
-        if (TryGetExport(Handle,
-                         "SetDnsResolverCallbackAsync",
-                         out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
+        if (Handle.TryGetExport("SetDnsResolverCallbackAsync",
+                                out DelegateSetCallback setDnsResolverCallbackAsyncHandle))
         {
             setDnsResolverCallbackAsyncHandle(nint.Zero);
         }
@@ -321,36 +317,6 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     internal void SetPluginLocaleId(string localeId) => Instance?.SetPluginLocaleId(localeId);
 
-    internal static unsafe bool TryGetExport<T>(nint handle, string exportName, out T callback)
-        where T : Delegate
-    {
-        const string tryGetApiExportName = "TryGetApiExport";
-
-        Unsafe.SkipInit(out callback);
-
-        if (!NativeLibrary.TryGetExport(handle, tryGetApiExportName, out nint tryGetApiExportP) ||
-            tryGetApiExportP == nint.Zero)
-        {
-            return false;
-        }
-
-        delegate* unmanaged[Cdecl]<char*, void**, int> tryGetApiExportCallback =
-            (delegate* unmanaged[Cdecl]<char*, void**, int>)tryGetApiExportP;
-
-        nint  exportP     = nint.Zero;
-        char* exportNameP = exportName.GetPinnableStringPointer();
-        int   tryResult   = tryGetApiExportCallback(exportNameP, (void**)&exportP);
-
-        if (tryResult != 0 ||
-            exportP == nint.Zero)
-        {
-            return false;
-        }
-
-        callback = Marshal.GetDelegateForFunctionPointer<T>(exportP);
-        return true;
-    }
-
     public void Dispose()
     {
         if (_isDisposed)
@@ -366,7 +332,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 presetConfig.Dispose();
             }
 
-            if (TryGetExport(Handle, "SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
+            if (Handle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
             {
                 setLoggerCallbackHandle(nint.Zero);
                 Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
@@ -376,7 +342,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
 
             // Try to dispose the IPlugin instance using the plugin's safe FreePlugin method first.
-            if (TryGetExport(Handle, "FreePlugin", out DelegateFreePlugin freePluginCallback))
+            if (Handle.TryGetExport("FreePlugin", out DelegateFreePlugin freePluginCallback))
             {
                 // Try call the free function.
                 freePluginCallback();
