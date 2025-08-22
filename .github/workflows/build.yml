@@ -75,6 +75,14 @@ jobs:
           name: collapse_${{ matrix.platform }}-${{ matrix.configuration }}_${{ matrix.framework }}_${{ github.sha }}
           path: ./CollapseLauncher/debug-build/
           compression-level: 9
+          
+    - name: Validate build for Preview
+      run: |
+        dotnet build CollapseLauncher -c Release --verbosity quiet --no-restore
+        
+    - name: Validate build for Stable
+      run: |
+        dotnet build CollapseLauncher -c Publish --verbosity quiet --no-restore
 
   build-nativeaot:
     runs-on: windows-latest
