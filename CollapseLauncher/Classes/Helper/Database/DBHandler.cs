@@ -15,82 +15,77 @@ namespace CollapseLauncher.Helper.Database;
 
 internal static class DbHandler
 {
-    #region Config Properties
-
-    private static bool? _enabled;
-    public static bool IsEnabled
+    #region Config Propertie
+    
+    public static bool? IsEnabled
     {
         get
         {
-            if (_enabled != null) return (bool)_enabled;
+            if (field != null) return (bool)field;
             var c = DbConfig.DbEnabled;
-            _enabled = c;
+            field = c;
             return c;
         }
         set
         {
-            _enabled           = value;
-            DbConfig.DbEnabled = value;
+            field              = value;
+            DbConfig.DbEnabled = value ?? false;
 
             _isFirstInit = true; // Force first init
-            if (!value) Dispose(); // Dispose instance if user disabled database function globally
+            if (!value ?? false) Dispose(); // Dispose instance if user disabled database function globally
         }
     }
         
         
-    private static string? _uri;
-    public static string Uri
+    public static string? Uri
     {
         get
         {
-            if (!string.IsNullOrEmpty(_uri)) return _uri;
+            if (!string.IsNullOrEmpty(field)) return field;
             var c = DbConfig.DbUrl;
-            _uri = c;
+            field = c;
             return c;
         }
         set
         {
-            if (value != _uri) _isFirstInit = true; // Force first init if value changed
+            if (value != field) _isFirstInit = true; // Force first init if value changed
                 
-            _uri           = value;
+            field          = value;
             DbConfig.DbUrl = value;
             _isFirstInit   = true;
         }
     }
         
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private static string? _token;
-        
     [DebuggerHidden]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public static string Token
+    public static string? Token
     {
         get
         {
-            if (!string.IsNullOrEmpty(_token)) return _token;
+            if (!string.IsNullOrEmpty(field)) return field;
             var c = DbConfig.DbToken;
-            _token = c;
+            field = c;
             return c;
         }
         set
         {
-            if (value != _token) _isFirstInit = true; // Force first init if value changed
+            if (value != field) _isFirstInit = true; // Force first init if value changed
                 
-            _token           = value;
+            field            = value;
             DbConfig.DbToken = value;
             _isFirstInit     = true;
         }
     }
         
-    private static string? _userId;
+    //private static string? _userId;
     private static string? _userIdHash;
-    public static string UserId
+    public static string? UserId
     {
         get
         {
-            if (_userId != null) return _userId;
+            if (field != null) return field;
             var c = DbConfig.UserGuid; // Get or create (if not yet has one) GUIDv7
-            _userId     = c;
+            field       = c;
             _userIdHash = Convert.ToHexStringLower(System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(c))); 
             // Get hash for the UserID to be used as SQL table name
             // I know that this is overkill, but I want it to be totally non-identifiable if for some reason someone
@@ -102,11 +97,18 @@ internal static class DbHandler
         }
         set
         {
-            if (value != _userId) _isFirstInit = true; // Force first init if value changed
+            if (value != field) _isFirstInit = true; // Force first init if value changed
                 
-            _userId           = value;
+            field             = value;
             DbConfig.UserGuid = value;
-                
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _userIdHash  = null;
+                _isFirstInit = true;
+                return;
+            }
+            
             var byteUidH = System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(value));
             _userIdHash  = Convert.ToHexStringLower(byteUidH);
             _isFirstInit = true;
@@ -123,7 +125,7 @@ internal static class DbHandler
     {
         DbConfig.Init();
             
-        if (!bypassEnableFlag && !IsEnabled)
+        if (!bypassEnableFlag && !(IsEnabled ?? false))
         {
             LogWriteLine("[DbHandler::Init] Database functionality is disabled!");
             return;
@@ -177,8 +179,8 @@ internal static class DbHandler
         }
         // No need to handle all these error catcher with sentry
         // The error should be handled in the method caller instead
-        catch (LibsqlException e) when (e.Message.Contains("`api error: `{\"error\":\"Unauthorized: `The JWT is invalid`\"}``",
-                                                           StringComparison.InvariantCultureIgnoreCase) && !redirectThrow)
+        catch (LibsqlException e) when (e.Message.Contains("The JWT is invalid", StringComparison.OrdinalIgnoreCase) 
+                                        && !redirectThrow)
         {
             LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
                          LogType.Error, true);
@@ -187,8 +189,7 @@ internal static class DbHandler
         {
             LogWriteLine($"[DBHandler::Init] Error when (re)initializing database system!\r\n{e}", LogType.Error, true);
         }
-        catch (LibsqlException e) when (e.Message.Contains("`api error: `{\"error\":\"Unauthorized: `The JWT is invalid`\"}``",
-                                                           StringComparison.InvariantCultureIgnoreCase))
+        catch (LibsqlException e) when (e.Message.Contains("The JWT is invalid", StringComparison.OrdinalIgnoreCase))
         {
             LogWriteLine($"[DBHandler::Init] Error when connecting to database system! Token invalid!\r\n{e}",
                          LogType.Error, true);
@@ -212,15 +213,16 @@ internal static class DbHandler
     private static void Dispose()
     {
         _database   = null;
-        _token      = null;
-        _uri        = null;
-        _userId     = null;
         _userIdHash = null;
+
+        Token  = null;
+        Uri    = null;
+        UserId = null;
     }
 
     public static async Task<string?> QueryKey(string key, bool redirectThrow = false)
     {
-        if (!IsEnabled) return null;
+        if (!(IsEnabled ?? false)) return null;
     #if DEBUG
         var r   = new Random();
         var sId = Math.Abs(r.Next(0, 1000).ToString().GetHashCode());
@@ -277,7 +279,7 @@ internal static class DbHandler
 
     public static async Task StoreKeyValue(string key, string value, bool redirectThrow = false)
     {
-        if (!IsEnabled) return;
+        if (!(IsEnabled ?? false)) return;
     #if DEBUG
         var t   = Stopwatch.StartNew();
         var r   = new Random();
