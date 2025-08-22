@@ -140,16 +140,15 @@ public partial class HomePage
                 
             switch (GetAppConfigValue("GameLaunchedBehavior").ToString())
             {
-                case "Minimize":
-                    WindowUtility.WindowMinimize();
-                    break;
                 case "ToTray":
                     WindowUtility.ToggleToTray_MainWindow();
                     break;
                 case "Nothing":
                     break;
+                // ReSharper disable once RedundantCaseLabel
+                case "Minimize":
                 default:
-                    WindowUtility.WindowMinimize();
+                    WindowUtility.WindowMinimize(false);
                     break;
             }
 
