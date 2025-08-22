@@ -665,19 +665,27 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
         private static string CreateNewDeviceId()
         {
-            // Define the registry key path for cryptography settings
-            const string regKeyCryptography = @"SOFTWARE\Microsoft\Cryptography";
+            string guid;
+            try
+            {
+                // Define the registry key path for cryptography settings
+                const string regKeyCryptography = @"SOFTWARE\Microsoft\Cryptography";
 
-            // Open the registry key for reading
-            using RegistryKey? rootRegistryKey = Registry.LocalMachine.OpenSubKey(regKeyCryptography, true);
-            // Retrieve the MachineGuid value from the registry, or generate a new GUID if it doesn't exist
-            string guid = ((string?)rootRegistryKey?.GetValue("MachineGuid", null) ??
-                Guid.NewGuid().ToString()).Replace("-", string.Empty);
+                // Open the registry key for reading
+                using var rootRegistryKey = Registry.LocalMachine.OpenSubKey(regKeyCryptography, true);
+                // Retrieve the MachineGuid value from the registry, or generate a new GUID if it doesn't exist
+                guid = ((string?)rootRegistryKey?.GetValue("MachineGuid", null) ??
+                               Guid.NewGuid().ToString()).Replace("-", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[HoYoPlayLauncherApiLoader::CreateNewDeviceId] Failed to retrieve MachineGuid from registry, using a dummy GUID instead" +
+                                    $"\r\n{ex}", LogType.Error, true);
+                guid = Guid.NewGuid().ToString().Replace("-", string.Empty);
+            }
 
             // Append the current Unix timestamp in milliseconds to the GUID
-            string guidWithEpochMs = guid + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            // Return the combined GUID and timestamp
-            return guidWithEpochMs;
+            return guid + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
         #endregion
     }
