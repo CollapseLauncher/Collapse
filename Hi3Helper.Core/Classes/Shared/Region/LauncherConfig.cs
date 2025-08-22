@@ -528,7 +528,7 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
-        public static int PostIntallShutdownTimeout
+        public static int PostInstallShutdownTimeout
         {
             get => GetAppConfigValue("PostInstallShutdownTimeout");
             set => SetAndSaveConfigValue("PostInstallShutdownTimeout", value);

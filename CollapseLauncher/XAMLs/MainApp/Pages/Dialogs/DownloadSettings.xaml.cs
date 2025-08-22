@@ -15,8 +15,8 @@ namespace CollapseLauncher.Dialogs
 
         private int PostInstallShutdownTimeout
         {
-            get => LauncherConfig.PostIntallShutdownTimeout;
-            set => LauncherConfig.PostIntallShutdownTimeout = value;
+            get => LauncherConfig.PostInstallShutdownTimeout;
+            set => LauncherConfig.PostInstallShutdownTimeout = value;
         }
         #endregion
 
