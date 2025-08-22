@@ -1,4 +1,5 @@
 using Hi3Helper;
+using Hi3Helper.SentryHelper;
 using Libsql.Client;
 using System;
 using System.Diagnostics;
@@ -226,70 +227,50 @@ namespace CollapseLauncher.Helper.Database
             LogWriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
             var t = Stopwatch.StartNew();
         #endif
-            const int retryCount = 3;
+            const int retryCount = 5;
             for (var i = 0; i < retryCount; i++)
             {
-                try
+                var retVal = await QueryKeyInternal(key
+                                                #if DEBUG
+                                                    , sId
+                                                #endif
+                                                    );
+                if (retVal.result == 200)
                 {
-                    if (_database == null) await Init(true);
-                    // Get table row for exact key
-                    var rs =
-                        await
-                            _database!
-                               .Execute($"SELECT value FROM \"uid-{_userIdHash}\" WHERE key = ?", key);
-                    if (rs == null)
-                    {
-                        continue;
-                    }
-
-                    // freaking black magic to convert the column row to the value 
-                    var str =
-                        string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
                 #if DEBUG
-                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
-                                 true);
+                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{retVal.returnedValue}",
+                                 LogType.Debug, true);
                 #endif
-                    return str;
+                    return retVal.returnedValue;
                 }
-                // No need to handle all these error catcher with sentry
-                // The error should be handled in the method caller instead
-                catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
-                                                  ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
-                                                  ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)) &&
-                                                 i < retryCount - 1)
-                {
-                    if (i > 0)
-                        LogWriteLine("[DBHandler::QueryKey] Database stream expired, retrying...", LogType.Error, true);
 
-                    await Init();
-                }
-                catch (Exception ex) when (i < retryCount - 1)
+                if (i < retryCount - 1)
                 {
-                    LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! Retrying...\r\n{ex}",
-                                 LogType.Error, true);
-                    
-                    await Task.Delay(500);
+                    LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key}, retrying (try {i + 1} of {retryCount})...\r\n\t" +
+                                 $"Status Code: {retVal.result}", LogType.Error, true);
+                    continue;
                 }
-                catch (Exception ex) when (!redirectThrow)
-                {
-                    LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key} after {retryCount} retries! Returning null...\r\n{ex}",
-                                 LogType.Error, true);
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key} after {retryCount} retries! Returning null...\r\n{ex}",
-                                 LogType.Error, true);
-                    throw;
-                }
-            #if DEBUG
-                finally
-                {
-                    t.Stop();
-                    LogWriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
-                }
-            #endif
+
+                LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key} after {retryCount} tries!\r\n\t" +
+                             $"Status Code: {retVal.result}", LogType.Error, true);
+
+                if (retVal.exceptionValue == null)
+                    return redirectThrow
+                        ? throw new Exception($"DB_005 Failed to get value for key {key} after {retryCount} tries!")
+                        : null;
+                
+                await SentryHelper.ExceptionHandlerAsync(retVal.exceptionValue);
+
+                return redirectThrow
+                    ? throw new
+                        AggregateException($"DB_004 Failed to get value for key {key} after {retryCount} tries!",
+                                           retVal.exceptionValue)
+                    : null;
             }
+        #if DEBUG
+            t.Stop();
+            LogWriteLine($"[DBHandler::QueryKey][{sId}] Operation took {t.ElapsedMilliseconds} ms!", LogType.Debug, true);
+        #endif
 
             return null;
         }
@@ -307,58 +288,137 @@ namespace CollapseLauncher.Helper.Database
             const int retryCount = 5;
             for (var i = 0; i < retryCount; i++)
             {
-                try
+                var retVal = await StoreKeyValueInternal(key, value);
+                if (retVal.result == 200)
                 {
-                    if (_database == null) await Init(true);
-                    
-                    // Create key for storing value, if key already exist, just update the value (key column is set to UNIQUE)
-                    var command = $"INSERT INTO \"uid-{_userIdHash}\" (key, value) VALUES (?, ?) " +
-                                  $"ON CONFLICT(key) DO UPDATE SET value = ?";
-                    var parameters = new object[] { key, value, value };
-                    await _database!.Execute(command, parameters);
-                    break;
-                }
-                catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
-                                                  ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
-                                                  ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)) &&
-                                                 i < retryCount - 1)
-                {
-                    if (i > 0)
-                        LogWriteLine("[DBHandler::StoreKeyValue] Database stream expired, retrying...", LogType.Error,
-                                     true);
-
-                    await Init();
-                }
-                // No need to handle all these error catcher with sentry
-                // The error should be handled in the method caller instead
-                catch (Exception ex) when (i < retryCount - 1)
-                {
-                    LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! Retrying...\r\n{ex}",
-                                 LogType.Error, true);
-                    
-                    await Task.Delay(500);
-                }
-                catch (Exception ex) when (!redirectThrow)
-                {
-                    LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key} after {retryCount} tries!\r\n{ex}",
-                                 LogType.Error, true);
+                #if DEBUG
+                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Saved value!\r\n\tKey: {key}\r\n\tValue: {value}",
+                                 LogType.Debug, true);
+                #endif
                     return;
                 }
-                catch (Exception ex)
+
+                if (i < retryCount - 1)
                 {
-                    LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key} after {retryCount} tries!\r\n{ex}",
-                                 LogType.Error, true);
-                    throw;
+                    LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key}, retrying (try {i + 1} of {retryCount})...\r\n\t" +
+                                 $"Status Code: {retVal.result}", LogType.Error, true);
+                    continue;
                 }
+                
+                LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key} after {retryCount} tries!\r\n\t" +
+                             $"Status Code: {retVal.result}", LogType.Error, true);
+
+                if (retVal.exceptionValue != null)
+                {
+                    await SentryHelper.ExceptionHandlerAsync(retVal.exceptionValue);
+            
+                    if (redirectThrow)
+                    {
+                        throw new AggregateException($"DB_004 Failed to store value for key {key} after {retryCount} tries!",
+                                                     retVal.exceptionValue);
+                    }
+                }
+                else if (redirectThrow)
+                {
+                    throw new Exception($"DB_005 Failed to store value for key {key} after {retryCount} tries!");
+                }
+                break;
+            }
+            
+        #if DEBUG
+            t.Stop();
+            LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
+                         LogType.Debug, true);
+        #endif
+        }
+
+        #region Private Methods
+
+        private static async Task<(int result, string? returnedValue, Exception? exceptionValue)> QueryKeyInternal(string key
+    #if DEBUG
+            , int sId = 0
+    #endif
+            )
+        {
+            try
+            {
+                if (_database == null) await Init(true);
+                // Get table row for exact key
+                var rs =
+                    await
+                        _database!
+                           .Execute($"SELECT value FROM \"uid-{_userIdHash}\" WHERE key = ?", key);
+                if (rs == null)
+                {
+                    return (200, null, null);
+                }
+
+                // freaking black magic to convert the column row to the value 
+                var str =
+                    string.Join("", rs.Rows.Select(row => string.Join("", row.Select(x => x.ToString()))));
             #if DEBUG
-                finally
-                {
-                    t.Stop();
-                    LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Operation took {t.ElapsedMilliseconds} ms!",
-                                 LogType.Debug, true);
-                }
+                LogWriteLine($"[DBHandler::QueryKey][{sId}] Got value!\r\n\tKey: {key}\r\n\tValue:\r\n{str}", LogType.Debug,
+                             true);
             #endif
+                return (200, str, null); // 200: OK, return value
+            }
+            // No need to handle all these error catcher with sentry
+            // The error should be handled in the method caller instead
+            catch (LibsqlException ex) when ((ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
+                                              ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
+                                              ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase)))
+            {
+                LogWriteLine($"[DBHandler::QueryKey] Database stream expired. Reinitializing... ({ex.Message})", LogType.Error, true);
+
+                await Init();
+                return (419, null, ex); // 419: Stream expired
+            }
+            catch (Exception ex)
+            {
+                LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! {ex.Message}",
+                             LogType.Error, true);
+                    
+                await Task.Delay(500);
+                return (500, null, ex); // 500: Internal Server Error
             }
         }
+
+        private static async Task<(int result, Exception? exceptionValue)> StoreKeyValueInternal(string key, string value)
+        {
+            try
+            {
+                if (_database == null) await Init(true);
+                    
+                // Create key for storing value, if key already exist, just update the value (key column is set to UNIQUE)
+                var command = $"INSERT INTO \"uid-{_userIdHash}\" (key, value) VALUES (?, ?) " +
+                              $"ON CONFLICT(key) DO UPDATE SET value = ?";
+                var parameters = new object[] { key, value, value };
+                await _database!.Execute(command, parameters);
+                
+                return (200, null); // 200: OK
+            }
+            catch (LibsqlException ex) when (ex.Message.Contains("STREAM_EXPIRED", StringComparison.OrdinalIgnoreCase) ||
+                                             ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
+                                             ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase))
+            {
+                LogWriteLine($"[DBHandler::StoreKeyValue] Database stream expired, Reinitializing ({ex.Message})", LogType.Error,
+                             true);
+                
+                await Init();
+                return (419, ex); // 419: Stream expired
+            }
+            // No need to handle all these error catcher with sentry
+            // The error should be handled in the method caller instead
+            catch (Exception ex)
+            {
+                LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}!{ex.Message}",
+                             LogType.Error, true);
+                    
+                await Task.Delay(500);
+                return (500, ex); // 500: Internal Server Error
+            }
+        }
+
+        #endregion
     }
 }
