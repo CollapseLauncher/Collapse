@@ -153,14 +153,12 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected bool _isAllowExtractCorruptZip  { get; set; }
         protected UninstallGameProperty? _uninstallGameProperty { get; set; }
-
         #endregion
 
         #region Public Properties
-
         public event EventHandler FlushingTrigger;
-        public virtual bool       StartAfterInstall { get; set; }
         public virtual bool       IsRunning         { get; protected set; }
+        public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersion GameVersionManager)

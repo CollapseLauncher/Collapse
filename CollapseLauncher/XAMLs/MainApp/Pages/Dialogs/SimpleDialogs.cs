@@ -1572,33 +1572,8 @@ namespace CollapseLauncher.Dialogs
 
         internal static Task<ContentDialogResult> Dialog_DownloadSettings(GamePresetProperty currentGameProperty)
         {
-            var gameInstallProp = currentGameProperty.GameInstall;
-            
-            var startAfterInstall = new ToggleSwitch
-            {
-                IsOn       = gameInstallProp?.StartAfterInstall ?? false,
-                OffContent = Lang._Misc.Disabled,
-                OnContent  = Lang._Misc.Enabled
-            };
-            startAfterInstall.Toggled += (_, _) =>
-                                         {
-                                             if (gameInstallProp != null)
-                                             {
-                                                 gameInstallProp.StartAfterInstall =
-                                                     startAfterInstall.IsOn;
-                                             }
-                                         };
-
-            StackPanel panel = CollapseUIExt.CreateStackPanel();
-            panel.AddElementToStackPanel(
-                                         new TextBlock
-                                                 { Text = Lang._Dialogs.DownloadSettingsOption1 }
-                                            .WithMargin(0d, 0d, 0d, 4d),
-                                         startAfterInstall
-                                        );
-
             return SpawnDialog(Lang._Dialogs.DownloadSettingsTitle,
-                               panel,
+                               new DownloadSettings(currentGameProperty),
                                null,
                                Lang._Misc.Close);
         }

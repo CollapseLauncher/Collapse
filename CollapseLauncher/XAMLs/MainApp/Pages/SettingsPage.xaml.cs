@@ -215,11 +215,13 @@ namespace CollapseLauncher.Pages
             BackgroundImgChanger.ToggleBackground(true);
             
             InitializeSettingsSearch();
+            UpdateFileDownloadSettings();
 
 #if !DISABLEDISCORD
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
 #endif
         }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             FallbackCDNUtil.InitializeHttpClient();
@@ -2338,6 +2340,12 @@ namespace CollapseLauncher.Pages
             SettingsSearchHighlightNextBtn.KeyboardAccelerators.Add(nextAccelerator);
         }
 
+        private void UpdateFileDownloadSettings()
+        {
+            NetworkDownloadSpeedLimitToggle.IsOn = IsUseDownloadSpeedLimiter;
+            NetworkDownloadSpeedLimitNumberBox.Value = DownloadSpeedLimit;
+        }
+        
         private async void DebugCustomDialogButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2349,9 +2357,9 @@ namespace CollapseLauncher.Pages
                     return;
                 }
 
-                LogWriteLine($"[DBG-DialogSpawner] Invoking method: {method.Name}",              LogType.Debug);
+                LogWriteLine($"[DBG-DialogSpawner] Invoking method: {method.Name}", LogType.Debug);
                 LogWriteLine($"[DBG-DialogSpawner] Parameters: {method.GetParameters().Length}", LogType.Debug);
-                LogWriteLine($"[DBG-DialogSpawner] Return type: {method.ReturnType}",            LogType.Debug);
+                LogWriteLine($"[DBG-DialogSpawner] Return type: {method.ReturnType}", LogType.Debug);
 
                 var parameters = method.GetParameters();
                 object[]? parameterValues = null;
@@ -2364,7 +2372,7 @@ namespace CollapseLauncher.Pages
                         return;
                     }
                 }
-                LogWriteLine("[DBG-DialogSpawner] Invoking method with parameters: " + 
+                LogWriteLine("[DBG-DialogSpawner] Invoking method with parameters: " +
                              (parameterValues != null ? string.Join(", ", parameterValues) : "None"), LogType.Debug);
                 var result = method.Invoke(null, parameterValues);
                 if (result is Task<ContentDialogResult> task)

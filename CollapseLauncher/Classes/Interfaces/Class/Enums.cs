@@ -44,4 +44,13 @@ namespace CollapseLauncher
         Plugin,
         Utilities
     }
+
+    internal enum PostInstallBehaviour
+    {
+        Nothing,
+        StartGame,
+        Hibernate,
+        Restart,
+        Shutdown
+    }
 }
