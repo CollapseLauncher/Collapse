@@ -21,10 +21,9 @@ internal static class DbHandler
     {
         get
         {
-            if (field != null) return (bool)field;
-            var c = DbConfig.DbEnabled;
-            field = c;
-            return c;
+            if (field != null) return field;
+            field = DbConfig.DbEnabled;
+            return field;
         }
         set
         {
@@ -32,7 +31,7 @@ internal static class DbHandler
             DbConfig.DbEnabled = value ?? false;
 
             _isFirstInit = true; // Force first init
-            if (!value ?? false) Dispose(); // Dispose instance if user disabled database function globally
+            if (!(value ?? false)) Dispose(); // Dispose instance if user disabled database function globally
         }
     }
         
@@ -42,9 +41,8 @@ internal static class DbHandler
         get
         {
             if (!string.IsNullOrEmpty(field)) return field;
-            var c = DbConfig.DbUrl;
-            field = c;
-            return c;
+            field = DbConfig.DbUrl;
+            return field;
         }
         set
         {
@@ -63,9 +61,8 @@ internal static class DbHandler
         get
         {
             if (!string.IsNullOrEmpty(field)) return field;
-            var c = DbConfig.DbToken;
-            field = c;
-            return c;
+            field = DbConfig.DbToken;
+            return field;
         }
         set
         {
@@ -84,16 +81,16 @@ internal static class DbHandler
         get
         {
             if (field != null) return field;
-            var c = DbConfig.UserGuid; // Get or create (if not yet has one) GUIDv7
-            field       = c;
-            _userIdHash = Convert.ToHexStringLower(System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(c))); 
+            field = DbConfig.UserGuid; // Get or create (if not yet has one) GUIDv7
+            
+            _userIdHash = Convert.ToHexStringLower(System.IO.Hashing.XxHash64.Hash(Encoding.ASCII.GetBytes(field))); 
             // Get hash for the UserID to be used as SQL table name
             // I know that this is overkill, but I want it to be totally non-identifiable if for some reason someone
             // has access to their database. It also lowers the amount of query command length to be sent, hopefully
             // reducing access latency.
             // p.s. oh yeah, this is also why user won't be able to get their data back if they lost the GUID,
             // good luck reversing Xxhash64 back to string. Technically possible, but good luck!
-            return c;
+            return field;
         }
         set
         {
