@@ -216,6 +216,8 @@ internal static class DbHandler
         Uri    = null;
         UserId = null;
     }
+    
+    private const int MaxAttempts = 5;
 
     public static async Task<string?> QueryKey(string key, bool redirectThrow = false)
     {
@@ -226,8 +228,7 @@ internal static class DbHandler
         LogWriteLine($"[DBHandler::QueryKey][{sId}] Invoked!\r\n\tKey: {key}", LogType.Debug, true);
         var t = Stopwatch.StartNew();
     #endif
-        const int retryCount = 5;
-        for (var i = 0; i < retryCount; i++)
+        for (var i = 0; i < MaxAttempts; i++)
         {
             var retVal = await QueryKeyInternal(key
                                             #if DEBUG
@@ -243,26 +244,30 @@ internal static class DbHandler
                 return retVal.returnedValue;
             }
 
-            if (i < retryCount - 1)
+            if (i < MaxAttempts - 1)
             {
-                LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key}, retrying (try {i + 1} of {retryCount})...\r\n\t" +
+                var delayTime = (int)Math.Pow(2, i) * 500; // Exponential backoff delay
+                LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key}, retrying after {delayTime}ms (try {i + 1} of {MaxAttempts})...\r\n\t" +
                              $"Status Code: {retVal.result}", LogType.Error, true);
+                
+                await Task.Delay(delayTime);
                 continue;
             }
 
-            LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key} after {retryCount} tries!\r\n\t" +
+            LogWriteLine($"[DBHandler::QueryKey] Failed to get value for key {key} after {MaxAttempts} tries!\r\n\t" +
                          $"Status Code: {retVal.result}", LogType.Error, true);
 
+            // Exception handler when exceptionValue is null does not need to be handled by Sentry.
+            // Technically, this should never happen, but just in case...
             if (retVal.exceptionValue == null)
                 return redirectThrow
-                    ? throw new Exception($"DB_005 Failed to get value for key {key} after {retryCount} tries!")
+                    ? throw new Exception($"DB_005 Failed to get value for key {key} after {MaxAttempts} tries!")
                     : null;
                 
             await SentryHelper.ExceptionHandlerAsync(retVal.exceptionValue);
-
             return redirectThrow
                 ? throw new
-                    AggregateException($"DB_004 Failed to get value for key {key} after {retryCount} tries!",
+                    AggregateException($"DB_004 Failed to get value for key {key} after {MaxAttempts} tries!",
                                        retVal.exceptionValue)
                 : null;
         }
@@ -284,8 +289,7 @@ internal static class DbHandler
         LogWriteLine($"[DBHandler::StoreKeyValue][{sId}] Invoked!\r\n\tKey: {key}\r\n\tValue: {value}", LogType.Debug,
                      true);
     #endif
-        const int retryCount = 5;
-        for (var i = 0; i < retryCount; i++)
+        for (var i = 0; i < MaxAttempts; i++)
         {
             var retVal = await StoreKeyValueInternal(key, value);
             if (retVal.result == 200)
@@ -297,30 +301,33 @@ internal static class DbHandler
                 return;
             }
 
-            if (i < retryCount - 1)
+            if (i < MaxAttempts - 1)
             {
-                LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key}, retrying (try {i + 1} of {retryCount})...\r\n\t" +
+                var delayTime = (int)Math.Pow(2, i) * 500; // Exponential backoff delay
+                LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key}, retrying after {delayTime}ms (try {i + 1} of {MaxAttempts})...\r\n\t" +
                              $"Status Code: {retVal.result}", LogType.Error, true);
+                await Task.Delay(delayTime);
                 continue;
             }
                 
-            LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key} after {retryCount} tries!\r\n\t" +
+            LogWriteLine($"[DBHandler::StoreKeyValue] Failed to store value for key {key} after {MaxAttempts} tries!\r\n\t" +
                          $"Status Code: {retVal.result}", LogType.Error, true);
 
-            if (retVal.exceptionValue != null)
+            // Exception handler when exceptionValue is null does not need to be handled by Sentry.
+            // Technically, this should never happen, but just in case...
+            if (retVal.exceptionValue == null)
             {
-                await SentryHelper.ExceptionHandlerAsync(retVal.exceptionValue);
+                LogWriteLine($"[DBHandler::StoreKeyValue] Failed when trying to store key {key}", LogType.Error,
+                             true);
+                if (redirectThrow) throw new Exception($"DB_005 Failed to get value for key {key} after {MaxAttempts} tries!");
+                return;
+            }
             
-                if (redirectThrow)
-                {
-                    throw new AggregateException($"DB_004 Failed to store value for key {key} after {retryCount} tries!",
-                                                 retVal.exceptionValue);
-                }
-            }
-            else if (redirectThrow)
-            {
-                throw new Exception($"DB_005 Failed to store value for key {key} after {retryCount} tries!");
-            }
+            await SentryHelper.ExceptionHandlerAsync(retVal.exceptionValue);
+            LogWriteLine($"[DBHandler::StoreKeyValue] Exception value is not null, throwing exception!\r\n{retVal.exceptionValue}", LogType.Error, true);
+            if (redirectThrow)
+                throw new AggregateException($"DB_004 Failed to store value for key {key} after {MaxAttempts} tries!",
+                                             retVal.exceptionValue);
         }
             
     #if DEBUG
@@ -366,7 +373,8 @@ internal static class DbHandler
                                          ex.Message.Contains("Received an invalid baton", StringComparison.OrdinalIgnoreCase) || 
                                          ex.Message.Contains("stream not found", StringComparison.OrdinalIgnoreCase))
         {
-            LogWriteLine($"[DBHandler::QueryKey] Database stream expired. Reinitializing... ({ex.Message})", LogType.Error, true);
+            LogWriteLine($"[DBHandler::QueryKey] Database stream expired.",
+                         LogType.Error, true);
 
             await Init();
             return (419, null, ex); // 419: Stream expired
@@ -375,8 +383,6 @@ internal static class DbHandler
         {
             LogWriteLine($"[DBHandler::QueryKey] Failed when getting value for key {key}! {ex.Message}",
                          LogType.Error, true);
-                    
-            await Task.Delay(500);
             return (500, null, ex); // 500: Internal Server Error
         }
     }
@@ -411,8 +417,6 @@ internal static class DbHandler
         {
             LogWriteLine($"[DBHandler::StoreKeyValue] Failed when saving value for key {key}! {ex.Message}",
                          LogType.Error, true);
-                    
-            await Task.Delay(500);
             return (500, ex); // 500: Internal Server Error
         }
     }
