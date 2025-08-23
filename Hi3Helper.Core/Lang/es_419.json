@@ -1186,6 +1186,15 @@
     "UserFeedback_SubmitBtn_Completed": "¡Completado!",
     "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!",
 
+    "PostInstallBehaviour_Title": "Comportamiento tras la instalación/actualización",
+    "PostInstallBehaviour_Subtitle": "Comportamiento tras una instalación/actualización correcta",
+    "PostInstallBehaviour_Subtitle2": "Tiempo antes de reiniciar/apagar",
+    "PostInstallBehaviour_EnumNothing": "No hacer nada",
+    "PostInstallBehaviour_EnumStartGame": "Lanzar Juego",
+    "PostInstallBehaviour_EnumHibernate": "Hibernar",
+    "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
+    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo",
+
     "PluginManagerUpdateAvailableTitle": "¡Tienes {0} Plugin(s) para ser actualizado(s)!",
     "PluginManagerUpdateAvailableSubtitle1": "Hay disponible {0} actualización(es) de plugin(s). Es necesario reiniciar el launcher para aplicar la actualización:",
     "PluginManagerUpdateAvailableSubtitle2": "¿Deseas reiniciar el Launcher?",
