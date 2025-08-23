@@ -108,7 +108,9 @@ namespace Hi3Helper
             {
                 if (!PInvoke.AllocConsole())
                 {
-                    throw new ContextMarshalException($"Failed to attach or allocate console with error code: {Win32Error.GetLastWin32ErrorMessage()}");
+                    // Console allocation failed - return without throwing exception to avoid masking original errors
+                    // This can happen when running as service or when console subsystem is unavailable
+                    return;
                 }
             }
 

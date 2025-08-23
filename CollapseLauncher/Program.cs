@@ -265,32 +265,41 @@ namespace CollapseLauncher
         {
             CurrentAppInstance?.Exit();
             LoggerConsole.AllocateConsole();
-            Console.Error
-                   .WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
-            Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
-                                    "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
-                                    "Press any key to exit or Press 'R' to restart the main thread app...");
-
-        #if !DEBUG
-            if (ConsoleKey.R == Console.ReadKey().Key)
+            
+            try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = AppExecutablePath,
-                    UseShellExecute = false
-                };
+                Console.Error
+                       .WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
+                Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
+                                        "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
+                                        "Press any key to exit or Press 'R' to restart the main thread app...");
 
-                foreach (string arg in AppCurrentArgument)
+            #if !DEBUG
+                if (ConsoleKey.R == Console.ReadKey().Key)
                 {
-                    startInfo.ArgumentList.Add(arg);
+                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    {
+                        FileName = AppExecutablePath,
+                        UseShellExecute = false
+                    };
+
+                    foreach (string arg in AppCurrentArgument)
+                    {
+                        startInfo.ArgumentList.Add(arg);
+                    }
+                    Process process = new Process()
+                    {
+                        StartInfo = startInfo
+                    };
+                    process.Start();
                 }
-                Process process = new Process()
-                {
-                    StartInfo = startInfo
-                };
-                process.Start();
+            #endif
             }
-        #endif
+            catch
+            {
+                // If console operations fail (e.g., when console allocation failed), 
+                // silently continue to avoid masking the original exception
+            }
         }
 
         private static void StartMainApplication()
