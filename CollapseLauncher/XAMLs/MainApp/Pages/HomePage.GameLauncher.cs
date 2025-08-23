@@ -193,8 +193,6 @@ public partial class HomePage
             await Task.Delay(3000);
         }
 
-        LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
-
         if (ResizableWindowHookToken != null)
         {
             await ResizableWindowHookToken.CancelAsync();
@@ -870,6 +868,8 @@ public partial class HomePage
                     if ((!usePluginGameLaunchApi && CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _)) ||
                         (usePluginGameLaunchApi && CurrentGameProperty.IsGameRunning))
                     {
+                        LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
+
                         Process currentGameProcess = null!;
                         if (!usePluginGameLaunchApi)
                             currentGameProcess = Process.GetProcessById(processId);
@@ -905,6 +905,8 @@ public partial class HomePage
                                                         gamePreset.GameType, height, width);
 
                             await ProcessAwaiter(token);
+
+                            LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
                         }
                         finally
                         {
