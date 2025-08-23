@@ -241,7 +241,7 @@ public partial class HomePage
             if (gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } pluginGamePreset)
             {
                 LogWriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
-                pluginGamePreset.RunGameContext.KillRunningGame(out _, out _);
+                pluginGamePreset.RunGameContext.KillRunningGame(out _, out _, out _);
             }
             else
             {
@@ -879,7 +879,7 @@ public partial class HomePage
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
                             startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? DateTime.UtcNow;
+                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? pluginLaunchedGameTime;
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty.GamePreset;
 
