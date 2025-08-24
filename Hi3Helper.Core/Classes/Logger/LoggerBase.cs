@@ -370,7 +370,7 @@ public abstract class LoggerBase : ILog
         len += EncodingUtf8.GetBytes(line, buffer[len..]);
         if (appendNewLine)
         {
-            len += Encoding.UTF8.GetBytes(NewLine, buffer[len..]);
+            len += EncodingUtf8.GetBytes(NewLine, buffer[len..]);
         }
 
         return len;
