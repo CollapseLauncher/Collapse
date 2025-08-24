@@ -206,7 +206,7 @@ public abstract class LoggerBase : ILog
                                                 bool               isWriteTagType   = true,
                                                 bool               isWriteTimestamp = false)
     {
-        int        lineUtf8Len = line.Length + NewLine.Length + 48;
+        int        lineUtf8Len = line.Length * 2 + NewLine.Length + 48;
         byte[]?    buffer      = lineUtf8Len > 512 ? ArrayPool<byte>.Shared.Rent(lineUtf8Len) : null;
         Span<byte> bufferSpan  = buffer ?? stackalloc byte[lineUtf8Len];
 
@@ -281,7 +281,7 @@ public abstract class LoggerBase : ILog
                                                            bool              isWriteTimestamp = false,
                                                            CancellationToken token            = default)
     {
-        int    lineUtf8Len = Math.Max(line.Length * 2 + NewLine.Length + 32, 512);
+        int    lineUtf8Len = Math.Max(line.Length * 2 + NewLine.Length + 48, 512);
         byte[] buffer      = ArrayPool<byte>.Shared.Rent(lineUtf8Len);
 
         try
