@@ -367,13 +367,12 @@ public class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     private unsafe void PrintGameLogCallback(char* logString, int logStringLen, int isStringCanFree)
     {
-        Logger.LogWrite($"[Plugin: {PrintGameLogName}] ", LogType.Game, _isWriteGameLog);
-        Console.Out.WriteLine(new ReadOnlySpan<char>(logString, logStringLen));
-
-        if (_isWriteGameLog)
-        {
-            Logger.CurrentLogger?.LogWriter.WriteLine();
-        }
+        Logger.LogWrite(new ReadOnlySpan<char>(logString, logStringLen),
+                        LogType.Game,
+                        appendNewLine: true,
+                        writeToLog: _isWriteGameLog,
+                        writeTypeTag: true,
+                        writeTimestampOnLogFile: true);
 
         if (isStringCanFree == 1)
         {
