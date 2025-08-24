@@ -19,9 +19,10 @@ namespace Hi3Helper;
 
 public abstract class LoggerBase : ILog
 {
-    protected const           string DateTimeFormat = "HH:mm:ss.fff";
-    protected static readonly string NewLine        = Environment.NewLine;
-    protected static readonly Lock   LockObject     = new();
+    protected const           string       DateTimeFormat = "HH:mm:ss.fff";
+    protected static readonly string       NewLine        = Environment.NewLine;
+    protected static readonly Lock         LockObject     = new();
+    protected static readonly UTF8Encoding EncodingUtf8   = new UTF8Encoding();
 
     public  StreamWriter LogWriter { get; set; } = StreamWriter.Null;
     private string?      LogFolder { get; set; }
@@ -263,6 +264,7 @@ public abstract class LoggerBase : ILog
         }
         finally
         {
+            stream.Flush();
             if (buffer != null)
             {
                 ArrayPool<byte>.Shared.Return(buffer);
@@ -365,7 +367,7 @@ public abstract class LoggerBase : ILog
             }
         }
 
-        len += Encoding.UTF8.GetBytes(line, buffer[len..]);
+        len += EncodingUtf8.GetBytes(line, buffer[len..]);
         if (appendNewLine)
         {
             len += Encoding.UTF8.GetBytes(NewLine, buffer[len..]);
