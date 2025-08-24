@@ -151,6 +151,6 @@ namespace CollapseLauncher.Pages
         {
             PluginManagerPageContext.CheckAndDownloadUpdateEnumeratePlugins(PluginManager.PluginInstances.Values);
         }
-#pragma warning enable CA2012
+#pragma warning restore CA2012
     }
 }
