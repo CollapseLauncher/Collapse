@@ -116,10 +116,10 @@ public class LoggerConsole : LoggerBase
         => Console.WriteLine();
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public sealed override void LogWriteLine(scoped ReadOnlySpan<char> line,
-                                             LogType                   type                    = LogType.Info,
-                                             bool                      writeToLogFile          = false,
-                                             bool                      writeTimestampOnLogFile = true)
+    public sealed override void LogWriteLine(ReadOnlySpan<char> line,
+                                             LogType            type                    = LogType.Info,
+                                             bool               writeToLogFile          = false,
+                                             bool               writeTimestampOnLogFile = true)
     {
         WriteLineToStreamCore(StdOutStream, line, type);
 
