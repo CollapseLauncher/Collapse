@@ -1,8 +1,6 @@
 ﻿using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.LibraryImport;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -22,21 +20,17 @@ namespace Hi3Helper;
 public class LoggerConsole : LoggerBase
 {
     public static   nint ConsoleHandle;
+    public static   nint ConsoleWindow => PInvoke.GetConsoleWindow();
     internal static bool VirtualTerminal;
 
-    [field: AllowNull, MaybeNull]
-    private static Stream StdOutStream => field ??= Console.OpenStandardOutput();
+    private readonly SimpleConsoleWin32OutStream StdOutStream;
 
-    [field: AllowNull, MaybeNull]
-    private static Stream StdErrStream => field ??= Console.OpenStandardError();
-
-    public LoggerConsole(string folderPath, Encoding? encoding, bool isConsoleApp = false)
+    public LoggerConsole(string folderPath, Encoding? encoding)
         : base(folderPath, encoding)
-#if !APPLYUPDATE
-        => AllocateConsole(isConsoleApp);
-#else
-        ;
-#endif
+    {
+        AllocateConsole();
+        StdOutStream = new SimpleConsoleWin32OutStream(ConsoleHandle);
+    }
 
     #region Console Allocation Methods
     public static void DisposeConsole()
@@ -46,24 +40,21 @@ public class LoggerConsole : LoggerBase
             return;
         }
 
-        nint consoleWindow = PInvoke.GetConsoleWindow();
+        nint consoleWindow = ConsoleWindow;
+
+        if (ConsoleWindow == nint.Zero)
+        {
+            return;
+        }
         PInvoke.ShowWindow(consoleWindow, 0);
     }
 
     public static void AllocateConsole(bool isConsoleApp = false)
     {
-        nint consoleWindow = PInvoke.GetConsoleWindow();
-
-        if (ConsoleHandle != nint.Zero)
-        {
-            PInvoke.ShowWindow(consoleWindow, 5);
-            return;
-        }
-
-        if (consoleWindow != nint.Zero)
+        if (ConsoleWindow == nint.Zero)
             isConsoleApp = true;
 
-        if (!isConsoleApp && !PInvoke.AttachConsole(0xFFFFFFFF))
+        if (isConsoleApp && !PInvoke.AttachConsole(0xFFFFFFFF))
         {
             if (!PInvoke.AllocConsole())
             {
@@ -71,10 +62,10 @@ public class LoggerConsole : LoggerBase
             }
         }
 
-        const uint GENERIC_READ = 0x80000000;
-        const uint GENERIC_WRITE = 0x40000000;
+        const uint GENERIC_READ     = 0x80000000;
+        const uint GENERIC_WRITE    = 0x40000000;
         const uint FILE_SHARE_WRITE = 2;
-        const uint OPEN_EXISTING = 3;
+        const uint OPEN_EXISTING    = 3;
         ConsoleHandle = PInvoke.CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE, (uint)0, OPEN_EXISTING, 0, 0);
 
         const int STD_OUTPUT_HANDLE = -11;
@@ -96,6 +87,11 @@ public class LoggerConsole : LoggerBase
 
         try
         {
+            if (ConsoleHandle != nint.Zero)
+            {
+                PInvoke.ShowWindow(ConsoleWindow, 5);
+            }
+
             string instanceIndicator = "";
             int    instanceCount     = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
@@ -113,32 +109,19 @@ public class LoggerConsole : LoggerBase
     }
     #endregion
 
-    #region Util Methods
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Stream GetConsoleTextStreamFromType(LogType type)
-        => type switch
-           {
-               LogType.Error => StdErrStream,
-               _ => StdOutStream
-           };
-    #endregion
-
     #region Logging Methods
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public sealed override void LogWriteLine()
         => Console.WriteLine();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public sealed override void LogWriteLine(ReadOnlySpan<char> line,
-                                             LogType            type                    = LogType.Default,
-                                             bool               writeToLogFile          = false,
-                                             bool               writeTimestampOnLogFile = true)
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public sealed override void LogWriteLine(scoped ReadOnlySpan<char> line,
+                                             LogType                   type                    = LogType.Info,
+                                             bool                      writeToLogFile          = false,
+                                             bool                      writeTimestampOnLogFile = true)
     {
-        Stream consoleStream = GetConsoleTextStreamFromType(type);
-
-        WriteLineToStreamCore(consoleStream, line, type);
+        WriteLineToStreamCore(StdOutStream, line, type);
 
         if (!writeToLogFile)
         {
@@ -152,9 +135,9 @@ public class LoggerConsole : LoggerBase
                               isWriteTimestamp: writeTimestampOnLogFile);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public sealed override void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                             LogType                              type = LogType.Default,
+                                             LogType                              type = LogType.Info,
                                              bool                                 writeToLogFile = false,
                                              bool                                 writeTimestampOnLogFile = true)
     {
@@ -170,17 +153,15 @@ public class LoggerConsole : LoggerBase
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public sealed override void LogWrite(ReadOnlySpan<char> line,
-                                         LogType            type                    = LogType.Default,
+                                         LogType            type                    = LogType.Info,
                                          bool               appendNewLine           = false,
                                          bool               writeToLogFile          = false,
                                          bool               writeTypeTag            = false,
                                          bool               writeTimestampOnLogFile = true)
     {
-        Stream consoleStream = GetConsoleTextStreamFromType(type);
-
-        WriteLineToStreamCore(consoleStream,
+        WriteLineToStreamCore(StdOutStream,
                               line,
                               type,
                               appendNewLine: appendNewLine,
@@ -202,9 +183,9 @@ public class LoggerConsole : LoggerBase
                               isWriteTimestamp: writeTimestampOnLogFile);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
     public sealed override void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
-                                         LogType                              type                    = LogType.Default,
+                                         LogType                              type                    = LogType.Info,
                                          bool                                 appendNewLine           = false,
                                          bool                                 writeToLogFile          = false,
                                          bool                                 writeTypeTag            = false,
@@ -228,13 +209,12 @@ public class LoggerConsole : LoggerBase
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public sealed override async Task LogWriteLineAsync(string            line,
-                                                        LogType           type                    = LogType.Default,
+                                                        LogType           type                    = LogType.Info,
                                                         bool              writeToLogFile          = false,
                                                         bool              writeTimestampOnLogFile = true,
                                                         CancellationToken token                   = default)
     {
-        Stream consoleStream = GetConsoleTextStreamFromType(type);
-        await WriteLineToStreamCoreAsync(consoleStream,
+        await WriteLineToStreamCoreAsync(StdOutStream,
                                          line,
                                          type,
                                          token: token).ConfigureAwait(false);
@@ -253,16 +233,14 @@ public class LoggerConsole : LoggerBase
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     public sealed override async Task LogWriteAsync(string            line,
-                                                    LogType           type                    = LogType.Default,
+                                                    LogType           type                    = LogType.Info,
                                                     bool              appendNewLine           = false,
                                                     bool              writeToLogFile          = false,
                                                     bool              writeTypeTag            = false,
                                                     bool              writeTimestampOnLogFile = true,
                                                     CancellationToken token                   = default)
     {
-        Stream consoleStream = GetConsoleTextStreamFromType(type);
-
-        await WriteLineToStreamCoreAsync(consoleStream,
+        await WriteLineToStreamCoreAsync(StdOutStream,
                                          line,
                                          type,
                                          appendNewLine: appendNewLine,
@@ -286,12 +264,13 @@ public class LoggerConsole : LoggerBase
     }
     #endregion
 
-    public sealed override void Dispose()
+    protected override void DisposeCore(bool onlyReset = false)
     {
         // Dispose console and base if requested.
-        DisposeConsole();
-        base.Dispose();
-
-        GC.SuppressFinalize(this);
+        if (!onlyReset)
+        {
+            DisposeConsole();
+        }
+        base.DisposeCore(onlyReset);
     }
 }

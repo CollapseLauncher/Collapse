@@ -50,12 +50,12 @@ namespace Hi3Helper
                                   {
                                       LogLevel.Trace => LogType.Debug,
                                       LogLevel.Debug => LogType.Debug,
-                                      LogLevel.Information => LogType.Default,
+                                      LogLevel.Information => LogType.Info,
                                       LogLevel.Warning => LogType.Warning,
                                       LogLevel.Error => LogType.Error,
                                       LogLevel.Critical => LogType.Error,
                                       LogLevel.None => LogType.NoTag,
-                                      _ => LogType.Default
+                                      _ => LogType.Info
                                   };
 
                 bool writeToLogFile = logType switch

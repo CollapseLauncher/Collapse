@@ -17,24 +17,24 @@ public interface ILog : IDisposable
     void LogWriteLine();
 
     void LogWriteLine(ReadOnlySpan<char> line,
-                      LogType            type                    = LogType.Default,
+                      LogType            type                    = LogType.Info,
                       bool               writeToLogFile          = false,
                       bool               writeTimestampOnLogFile = true);
 
     void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
-                      LogType                              type                    = LogType.Default,
+                      LogType                              type                    = LogType.Info,
                       bool                                 writeToLogFile          = false,
                       bool                                 writeTimestampOnLogFile = true);
 
     void LogWrite(ReadOnlySpan<char> line,
-                  LogType            type                    = LogType.Default,
+                  LogType            type                    = LogType.Info,
                   bool               appendNewLine           = false,
                   bool               writeToLogFile          = false,
                   bool               writeTypeTag            = false,
                   bool               writeTimestampOnLogFile = true);
 
     void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
-                  LogType                              type                    = LogType.Default,
+                  LogType                              type                    = LogType.Info,
                   bool                                 appendNewLine           = false,
                   bool                                 writeToLogFile          = false,
                   bool                                 writeTypeTag            = false,
@@ -43,13 +43,13 @@ public interface ILog : IDisposable
     Task LogWriteLineAsync(CancellationToken token = default);
 
     Task LogWriteLineAsync(string            line,
-                           LogType           type                    = LogType.Default,
+                           LogType           type                    = LogType.Info,
                            bool              writeToLogFile          = false,
                            bool              writeTimestampOnLogFile = true,
                            CancellationToken token                   = default);
 
     Task LogWriteAsync(string            line,
-                       LogType           type                    = LogType.Default,
+                       LogType           type                    = LogType.Info,
                        bool              appendNewLine           = false,
                        bool              writeToLogFile          = false,
                        bool              writeTypeTag            = false,
