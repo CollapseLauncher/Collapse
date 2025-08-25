@@ -197,7 +197,6 @@ public abstract class LoggerBase : ILog
     #endregion
 
     #region Logging Methods
-
     [MethodImpl(MethodImplOptions.NoInlining)]
     protected static void WriteLineToStreamCore(Stream             stream,
                                                 ReadOnlySpan<char> line,
@@ -272,7 +271,6 @@ public abstract class LoggerBase : ILog
         }
     }
 
-
     [MethodImpl(MethodImplOptions.NoInlining)]
     protected static async Task WriteLineToStreamCoreAsync(Stream            stream,
                                                            string            line,
@@ -298,6 +296,7 @@ public abstract class LoggerBase : ILog
         }
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private static int WriteToBufferCore(ReadOnlySpan<char> line,
                                          Span<byte>         buffer,
                                          LogType            type,
@@ -376,10 +375,10 @@ public abstract class LoggerBase : ILog
         return len;
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void LogWriteLine() { }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void LogWriteLine(ReadOnlySpan<char> line,
                                      LogType            type                    = LogType.Default,
                                      bool               writeToLogFile          = false,
@@ -397,7 +396,7 @@ public abstract class LoggerBase : ILog
                               isWriteTimestamp: writeTimestampOnLogFile);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
                                      LogType                              type                    = LogType.Default,
                                      bool                                 writeToLogFile          = false,
@@ -420,7 +419,7 @@ public abstract class LoggerBase : ILog
         }
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void LogWrite(ReadOnlySpan<char> line,
                                  LogType            type                    = LogType.Default,
                                  bool               appendNewLine           = false,
@@ -442,7 +441,7 @@ public abstract class LoggerBase : ILog
                               isWriteTagType: writeTimestampOnLogFile);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
                                  LogType                              type                    = LogType.Default,
                                  bool                                 appendNewLine           = false,
