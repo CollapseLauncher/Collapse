@@ -73,7 +73,7 @@ namespace Hi3Helper.Shared.Region
                 SetAppConfigValue("GameFolder", AppSettingsTemplate["GameFolder"]);
 
                 // Force enable Console Log and return
-                Logger.CurrentLogger = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                Logger.UseConsoleLog(true);
                 Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
                                     LogType.Error, true);
                 return;
