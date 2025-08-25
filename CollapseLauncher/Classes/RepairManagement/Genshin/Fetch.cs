@@ -331,7 +331,7 @@ namespace CollapseLauncher
                 LogWriteLine(dFormat);
 #endif
                 // Write the decrypted query response in the log (for diagnostic)
-                await CurrentLogger.LogWriter.WriteLineAsync(dFormat);
+                await LogFileWriter.WriteLineAsync(dFormat);
 
                 // Try decrypt the dispatcher, parse it and return it
                 return await TryDecryptAndParseDispatcher(dispatchInfo, dispatchHelper);
@@ -348,7 +348,7 @@ namespace CollapseLauncher
 #if DEBUG
             LogWriteLine(dFormat);
 #endif
-            await CurrentLogger.LogWriter.WriteLineAsync(dFormat);
+            await LogFileWriter.WriteLineAsync(dFormat);
 
             // Parse the dispatcher data in protobuf format and return it as QueryProperty
             await dispatchHelper.LoadDispatch(decryptedData);
