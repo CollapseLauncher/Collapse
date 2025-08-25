@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Plugins;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core;
