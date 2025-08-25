@@ -42,7 +42,7 @@ namespace CollapseLauncher.CustomControls
             nameof(Foreground),
             typeof(Brush),
             typeof(CompressedTextBlock),
-            new PropertyMetadata(default(Brush), OnForegroundChanged));
+            new PropertyMetadata(null, OnForegroundChanged));
 
         public Brush Foreground
         {

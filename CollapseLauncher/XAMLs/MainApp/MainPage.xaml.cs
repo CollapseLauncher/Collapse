@@ -9,23 +9,28 @@ using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
+using CollapseLauncher.Plugins;
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
-using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Principal;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics;
@@ -102,6 +107,8 @@ namespace CollapseLauncher
             _localBackgroundHandler?.Dispose();
             CurrentBackgroundHandler = null;
             _localBackgroundHandler = null;
+
+            Interlocked.Exchange(ref m_mainPage, null);
         }
 
         private async void StartRoutine(object sender, RoutedEventArgs e)
@@ -287,7 +294,7 @@ namespace CollapseLauncher
         #endregion
 
         #region Drag Area
-        private RectInt32[] DragAreaMode_Normal
+        internal RectInt32[] DragAreaMode_Normal
         {
             get
             {
@@ -307,7 +314,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static RectInt32[] DragAreaMode_Full
+        internal static RectInt32[] DragAreaMode_Full
         {
             get
             {
@@ -325,57 +332,10 @@ namespace CollapseLauncher
             }
         }
 
-        private static RectInt32 GetElementPos(FrameworkElement element)
-        {
-            GeneralTransform transformTransform = element.TransformToVisual(null);
-            Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
-            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
-
-            return new RectInt32(
-                _X: (int)Math.Round(bounds.X * scaleFactor),
-                _Y: (int)Math.Round(bounds.Y * scaleFactor),
-                _Width: (int)Math.Round(bounds.Width * scaleFactor),
-                _Height: (int)Math.Round(bounds.Height * scaleFactor)
-            );
-        }
-
         private static void GridBG_RegionGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
         private static void MainPageGrid_SizeChanged(object sender, SizeChangedEventArgs e) => ChangeTitleDragArea.Change(DragAreaTemplate.Default);
 
-        private void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
-        {
-            UpdateLayout();
-
-            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId ?? throw new NullReferenceException());
-            WindowUtility.EnableWindowNonClientArea();
-            WindowUtility.SetWindowTitlebarDragArea(DragAreaMode_Full);
-
-            switch (e.Template)
-            {
-                case DragAreaTemplate.None:
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
-                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
-                    ]);
-                    break;
-                case DragAreaTemplate.Full:
-                    nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
-                    break;
-                case DragAreaTemplate.Default:
-                    nonClientInputSrc.ClearAllRegionRects();
-                    nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
-                        GetElementPos(GridBG_RegionGrid),
-                        GetElementPos(GridBG_IconGrid),
-                        GetElementPos(GridBG_NotifBtn),
-                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
-                        GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
-                    ]);
-                    break;
-            }
-
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
-            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
-        }
         #endregion
 
         #region Admin Checks
@@ -459,7 +419,6 @@ namespace CollapseLauncher
             BackgroundImgChangerInvoker.IsImageHide += BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent += SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent += ShowLoadingPageInvoker_PageEvent;
-            ChangeTitleDragAreaInvoker.TitleBarEvent += ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             KeyboardShortcutsEvent += SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents += UpdateBindingsEvent;
@@ -476,7 +435,6 @@ namespace CollapseLauncher
             BackgroundImgChangerInvoker.IsImageHide -= BackgroundImg_IsImageHideEvent;
             SpawnWebView2Invoker.SpawnEvent -= SpawnWebView2Invoker_SpawnEvent;
             ShowLoadingPageInvoker.PageEvent -= ShowLoadingPageInvoker_PageEvent;
-            ChangeTitleDragAreaInvoker.TitleBarEvent -= ChangeTitleDragAreaInvoker_TitleBarEvent;
             SettingsPage.KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             KeyboardShortcutsEvent -= SettingsPage_KeyboardShortcutsEvent;
             UpdateBindingsInvoker.UpdateEvents -= UpdateBindingsEvent;
@@ -594,11 +552,11 @@ namespace CollapseLauncher
             string region = GetComboBoxGameRegionValue(selValue);
             PresetConfig preset = await LauncherMetadataHelper.GetMetadataConfig(category, region);
             
-            ChangeRegionWarningText.Text = preset!.Channel != GameChannel.Stable
-                ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.Channel)
+            ChangeRegionWarningText.Text = preset!.GameChannel != GameChannel.Stable
+                ? string.Format(Lang._MainPage.RegionChangeWarnExper1, preset.GameChannel)
                 : string.Empty;
             ChangeRegionWarning.Visibility =
-                preset.Channel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
+                preset.GameChannel != GameChannel.Stable ? Visibility.Visible : Visibility.Collapsed;
             
             ChangeRegionConfirmBtn.IsEnabled          = !LockRegionChangeBtn;
             ChangeRegionConfirmBtnNoWarning.IsEnabled = !LockRegionChangeBtn;
@@ -621,9 +579,99 @@ namespace CollapseLauncher
         #region Metadata Update Method
         private async ValueTask<bool> CheckMetadataUpdateInBackground()
         {
-            bool IsUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
-            if (!IsUpdate)
+            bool isMetadataHasUpdate = await LauncherMetadataHelper.IsMetadataHasUpdate();
+            (List<(string, PluginManifest)> pluginUpdateNameList, bool isPluginHasUpdate) = await PluginManager.StartUpdateBackgroundRoutine();
+
+            if (!isMetadataHasUpdate && !isPluginHasUpdate)
             {
+                return false;
+            }
+
+            if (isPluginHasUpdate)
+            {
+                StartSpawn:
+                Grid textGridBox = UIElementExtensions.CreateGrid()
+                                                      .WithRows(new GridLength(),
+                                                                new GridLength(1, GridUnitType.Auto))
+                                                      .WithRowSpacing(8d);
+
+                TextBlock textBlock = textGridBox.AddElementToGridRow(new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap
+                }.AddTextBlockLine(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle1, pluginUpdateNameList.Count))
+                 .AddTextBlockNewLine(2), 0);
+
+                CheckBox enablePluginAutoUpdateCheck = textGridBox.AddElementToGridRow(new CheckBox(), 1);
+                enablePluginAutoUpdateCheck.Content = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap
+                }.AddTextBlockLine(Lang._PluginManagerPage.ListViewMainActionButton3);
+                enablePluginAutoUpdateCheck.BindProperty(ToggleButton.IsCheckedProperty,
+                                                         PluginManagerPage.Context,
+                                                         nameof(PluginManagerPage.Context.IsEnableAutoUpdate),
+                                                         bindingMode: BindingMode.TwoWay);
+                enablePluginAutoUpdateCheck.Scale  = new Vector3(0.80f);
+                enablePluginAutoUpdateCheck.Margin = new Thickness(0, 0, 0, -16);
+
+                foreach ((string, PluginManifest) pluginUpdateName in pluginUpdateNameList)
+                {
+                    try
+                    {
+                    #nullable enable
+                        textBlock.AddTextBlockLine($"    • {pluginUpdateName.Item1}", FontWeights.Bold);
+                    #nullable restore
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+                textBlock.AddTextBlockNewLine(2)
+                    .AddTextBlockLine(Lang._Dialogs.PluginManagerUpdateAvailableSubtitle2);
+
+                ContentDialogResult pluginUpdateConfirm =
+                    await SimpleDialogs.SpawnDialog(string.Format(Lang._Dialogs.PluginManagerUpdateAvailableTitle, pluginUpdateNameList.Count),
+                                                    textGridBox,
+                                                    null,
+                                                    Lang._Dialogs.PluginManagerUpdateAvailableCancelBtn,
+                                                    Lang._Dialogs.PluginManagerUpdateAvailableConfirmBtn,
+                                                    string.Format(Lang._Dialogs.PluginManagerUpdateAvailableToManagerMenuBtn, Lang._PluginManagerPage.PageTitle),
+                                                    ContentDialogButton.Primary,
+                                                    ContentDialogTheme.Success);
+
+                if (pluginUpdateConfirm == ContentDialogResult.None)
+                {
+                    return false;
+                }
+
+                if (pluginUpdateConfirm == ContentDialogResult.Secondary)
+                {
+                    FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
+                    {
+                        Size               = FullPageOverlaySize.Full,
+                        OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
+                        OverlayTitleIcon = new FontIconSource
+                        {
+                            Glyph    = "\uE912",
+                            FontSize = 16
+                        }
+                    };
+
+                    await overlayMenu.ShowAsync();
+                    goto StartSpawn;
+                }
+
+                try
+                {
+                    PluginManagerPage.AskLauncherRestart(null, null);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Error has occured while updating metadata!\r\n{ex}", LogType.Error, true);
+                    ErrorSender.SendException(ex);
+                }
+
                 return false;
             }
 

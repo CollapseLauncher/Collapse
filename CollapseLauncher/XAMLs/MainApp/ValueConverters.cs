@@ -1,8 +1,17 @@
-﻿using Hi3Helper;
+using CollapseLauncher.Plugins;
+using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core;
+using Hi3Helper.Plugin.Core.Management;
+using Hi3Helper.Plugin.Core.Update;
+using Hi3Helper.SentryHelper;
+using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
+using System.IO;
+using System.Numerics;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable PartialTypeWithSinglePart
 
@@ -30,13 +39,13 @@ namespace CollapseLauncher.Pages
     public partial class BooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => (bool)value ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => (Visibility)value == Visibility.Visible;
     }
 
     public partial class InverseBooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string input) => !(bool)value ? Visibility.Visible : Visibility.Collapsed;
-        public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, string input) => (Visibility)value == Visibility.Collapsed;
     }
 
     public partial class DoubleRound2Converter : IValueConverter
@@ -151,6 +160,204 @@ namespace CollapseLauncher.Pages
         }
     }
 
+    public partial class InverseCountToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value.Equals(0) ? Visibility.Visible : Visibility.Collapsed;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class InverseNumberToBoolConverter : NumberToBoolConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return !(bool)base.Convert(value, targetType, parameter, language);
+        }
+    }
+
+    public partial class NumberToBoolConverter : IValueConverter
+    {
+        public virtual object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value switch
+                   {
+                       double asDouble => asDouble > 0,
+                       float asFloat => asFloat > 0,
+                       long asLong => asLong > 0,
+                       ulong asULong => asULong > 0,
+                       int asInt => asInt > 0,
+                       uint asUInt => asUInt > 0,
+                       short asShort => asShort > 0,
+                       ushort asUShort => asUShort > 0,
+                       byte asByte => asByte > 0,
+                       sbyte asSByte => asSByte > 0,
+                       _ => throw new InvalidDataException()
+                   };
+        }
+
+        public virtual object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameNameLocaleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString)
+            {
+                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientTitles);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GameRegionLocaleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString)
+            {
+                return InnerLauncherConfig.GetGameTitleRegionTranslationString(asString, Locale.Lang._GameClientRegions);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class ByStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string asString)
+            {
+                return string.Format(Locale.Lang._SettingsPage.Plugin_AuthorBy, asString);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GamePluginIconConverter : IValueConverter
+    {
+#nullable enable
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not PluginInfo asPluginInfo)
+            {
+                return GetDefault();
+            }
+
+            try
+            {
+                string?  iconUrl = null;
+                if (asPluginInfo.Instance is { } pluginInstance)
+                {
+                    pluginInstance.GetPluginAppIconUrl(out iconUrl);
+                }
+
+                if (string.IsNullOrEmpty(iconUrl))
+                {
+                    iconUrl = asPluginInfo.PluginManifest.PluginAlternativeIcon;
+                }
+
+                if (string.IsNullOrEmpty(iconUrl))
+                {
+                    return GetDefault();
+                }
+
+                Uri? url;
+                if (PluginLauncherApiWrapper.IsDataActuallyBase64(iconUrl))
+                {
+                    string  spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
+                    string? urlStr       = PluginLauncherApiWrapper.CopyOverEmbeddedData(spriteFolder, iconUrl);
+
+                    if (string.IsNullOrEmpty(urlStr))
+                    {
+                        return GetDefault();
+                    }
+
+                    url = new Uri(urlStr);
+                }
+                else if (!Uri.TryCreate(iconUrl, UriKind.Absolute, out url))
+                {
+                    return GetDefault();
+                }
+
+                return new BitmapIcon
+                {
+                    UriSource = url,
+                    ShowAsMonochrome = false
+                };
+            }
+            catch (Exception ex)
+            {
+                string message = $"[GamePluginIconConverter::Convert()] Cannot get icon from plugin: {asPluginInfo.Name}";
+                Logger.LogWriteLine(message, LogType.Error, true);
+                SentryHelper.ExceptionHandler(ex);
+            }
+
+            return GetDefault();
+
+            FontIcon GetDefault() => new()
+            {
+                Glyph    = "\uE74C",
+                FontSize = 20,
+                Width    = 20,
+                Height   = 20
+            };
+        }
+#nullable restore
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class LocalFullDateTimeConverter : IValueConverter
+    {
+        public const string FullFormat = "dddd, MMMM dd, yyyy hh:mm tt (zzz)";
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value switch
+                   {
+                       DateTime asDateTime => GetFullFormat(asDateTime.ToLocalTime()),
+                       DateTimeOffset asDateTimeOffset => GetFullFormat(asDateTimeOffset.ToLocalTime()),
+                       _ => value
+                   };
+
+            string GetFullFormat(DateTimeOffset offset) => offset.ToString(FullFormat);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class TimeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -169,7 +376,7 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
-    
+
     public partial class BooleanToIsEnabledOpacityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -213,6 +420,52 @@ namespace CollapseLauncher.Pages
 
             return $"https://flagcdn.com/{countryId}.svg";
         }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class UpdateToVersionStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButton,
+                             value switch
+                             {
+                                 PluginManifest asManifest => asManifest.PluginVersion,
+                                 null => GameVersion.Empty,
+                                 _ => (GameVersion)value
+                             });
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class UpdatingPercentageStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusAvailableButtonUpdating,
+                             Math.Round((double)value, 2));
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class PluginUpdatedToVersionStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => string.Format(Locale.Lang._PluginManagerPage.ListViewItemUpdateStatusCompleted,
+                             value switch
+                             {
+                                 PluginManifest asManifest => asManifest.PluginVersion,
+                                 null => GameVersion.Empty,
+                                 _ => (GameVersion)value
+                             });
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

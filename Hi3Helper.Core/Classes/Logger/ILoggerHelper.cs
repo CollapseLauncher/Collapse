@@ -65,7 +65,7 @@ namespace Hi3Helper
                                     #if DEBUG
                                         LogType.Debug => true,
                                     #else
-                LogType.Debug => false,
+                                        LogType.Debug => false,
                                     #endif
                                         _ => false
                                     };

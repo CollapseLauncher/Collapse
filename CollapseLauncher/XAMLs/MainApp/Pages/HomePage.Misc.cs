@@ -12,6 +12,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Data.ConverterTool;
@@ -49,7 +50,7 @@ public partial class HomePage
         }
     }
     
-    private async void CollapsePrioControl(Process proc)
+    private async void CollapsePrioControl(Func<CancellationToken, Task> processAwaiter)
     {
         try
         {
@@ -62,7 +63,7 @@ public partial class HomePage
             }
 
             await CarouselStopScroll();
-            await proc.WaitForExitAsync();
+            await processAwaiter(CancellationToken.None);
 
             using (Process collapseProcess = Process.GetCurrentProcess())
             {
