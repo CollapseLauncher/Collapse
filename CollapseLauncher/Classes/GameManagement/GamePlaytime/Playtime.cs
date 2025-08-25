@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Logger;
 
@@ -49,7 +48,7 @@ namespace CollapseLauncher.GamePlaytime
             
             
             IGameSettingsUniversal gameSettingsUniversal = gameSettings.AsIGameSettingsUniversal();
-            if (DbHandler.IsEnabled && gameSettingsUniversal.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
+            if ((DbHandler.IsEnabled ?? false) && gameSettingsUniversal.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                 _ = CheckDb();
         }
 #nullable disable
