@@ -1195,7 +1195,16 @@
 
     "LauncherRestartTitle": "Reiniciando Collapse Launcher",
     "LauncherRestartSubtitle1": "El launcher esta a punto de reiniciarse. Asegúrate de cerrar o cancelar cualquier tarea de fondo antes de seguir con el reinicio.",
-    "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?"
+    "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?",
+
+    "PostInstallBehaviour_Title": "Comportamiento tras la instalación/actualización",
+    "PostInstallBehaviour_Subtitle": "Comportamiento tras una instalación/actualización correcta",
+    "PostInstallBehaviour_Subtitle2": "Tiempo antes de reiniciar/apagar",
+    "PostInstallBehaviour_EnumNothing": "No hacer nada",
+    "PostInstallBehaviour_EnumStartGame": "Lanzar Juego",
+    "PostInstallBehaviour_EnumHibernate": "Hibernar",
+    "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
+    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo"
   },
 
   "_FileMigrationProcess": {

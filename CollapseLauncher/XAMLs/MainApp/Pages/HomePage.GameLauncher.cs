@@ -96,10 +96,10 @@ public partial class HomePage
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Arguments = additionalArguments;
                 LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-                if (File.Exists(Path.Combine(GameDirPath!, "@AltLaunchMode")))
+                if (File.Exists(Path.Combine(GameDirPath, "@AltLaunchMode")))
                 {
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
-                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset!.ZoneName == "Bilibili" ||
+                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
                                                        (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
                         Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
                 }
@@ -114,7 +114,7 @@ public partial class HomePage
             else
             {
                 _ = ((PluginPresetConfigWrapper)_gamePreset)
-                   .RunGameContext
+                   .UseToggledGameLaunchContext()
                    .RunGameFromGameManagerAsync(additionalArguments,
                                                 isUseGameBoost,
                                                 isUseGameBoost
@@ -193,8 +193,6 @@ public partial class HomePage
             await Task.Delay(3000);
         }
 
-        LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
-
         if (ResizableWindowHookToken != null)
         {
             await ResizableWindowHookToken.CancelAsync();
@@ -243,7 +241,7 @@ public partial class HomePage
             if (gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } pluginGamePreset)
             {
                 LogWriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
-                pluginGamePreset.RunGameContext.KillRunningGame(out _, out _);
+                pluginGamePreset.RunGameContext.KillRunningGame(out _, out _, out _);
             }
             else
             {
@@ -513,8 +511,6 @@ public partial class HomePage
         // Sentry issue ref : COLLAPSE-LAUNCHER-55; Event ID: 13059407
         if (int.IsNegative(barWidth)) barWidth = 30;
             
-        LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning,
-                     true);
         LogWriteLine($"Are Game logs getting saved to Collapse logs: {saveGameLog}", LogType.Scheme, true);
             
         try
@@ -829,6 +825,8 @@ public partial class HomePage
     private async Task CheckRunningGameInstance(PresetConfig presetConfig, CancellationToken token)
     {
         bool usePluginGameLaunchApi = presetConfig is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+        DateTime pluginLaunchedGameTime =
+            (presetConfig as PluginPresetConfigWrapper)?.RunGameContext.GameLaunchStartTime ?? default;
 
         TextBlock startGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
         FontIcon startGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
@@ -870,6 +868,8 @@ public partial class HomePage
                     if ((!usePluginGameLaunchApi && CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _)) ||
                         (usePluginGameLaunchApi && CurrentGameProperty.IsGameRunning))
                     {
+                        LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
+
                         Process currentGameProcess = null!;
                         if (!usePluginGameLaunchApi)
                             currentGameProcess = Process.GetProcessById(processId);
@@ -879,7 +879,7 @@ public partial class HomePage
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
                             startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? DateTime.UtcNow;
+                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? pluginLaunchedGameTime;
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty.GamePreset;
 
@@ -905,6 +905,8 @@ public partial class HomePage
                                                         gamePreset.GameType, height, width);
 
                             await ProcessAwaiter(token);
+
+                            LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
                         }
                         finally
                         {

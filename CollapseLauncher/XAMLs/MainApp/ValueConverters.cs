@@ -1,4 +1,4 @@
-﻿using CollapseLauncher.Plugins;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core;
@@ -350,6 +350,25 @@ namespace CollapseLauncher.Pages
                    };
 
             string GetFullFormat(DateTimeOffset offset) => offset.ToString(FullFormat);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class TimeToStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not double asDouble)
+            {
+                return Locale.Lang._Misc.IsBytesNotANumber;
+            }
+
+            TimeSpan span = TimeSpan.FromSeconds(asDouble);
+            return span.ToString("mm\\:ss");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+// ReSharper disable CheckNamespace
 
 namespace Hi3Helper
 {
@@ -23,7 +24,7 @@ namespace Hi3Helper
             lock (ILoggerCache)
             {
                 // Use TryGetValue for thread-safe read operation
-                if (ILoggerCache.TryGetValue(prefix, out var logger))
+                if (ILoggerCache.TryGetValue(prefix, out ILogger? logger))
                 {
                     return logger; // Return the cached logger instance if it exists
                 }
@@ -57,7 +58,7 @@ namespace Hi3Helper
                                       _ => LogType.Default
                                   };
 
-                bool isWriteToLog = logType switch
+                bool writeToLogFile = logType switch
                                     {
                                         LogType.Error => true,
                                         LogType.Warning => true,
@@ -71,7 +72,7 @@ namespace Hi3Helper
 
                 string message = formatter(state, exception);
                 Logger.LogWriteLine($"{(!string.IsNullOrEmpty(prefix) ? $"[{prefix}] " : "")}{message}", logType,
-                                    isWriteToLog);
+                                    writeToLogFile);
             }
         }
     }

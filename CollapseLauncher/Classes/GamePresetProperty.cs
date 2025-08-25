@@ -135,9 +135,9 @@ namespace CollapseLauncher
             get
             {
                 // Try to use plugin's game launch API
-                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.IsGameRunning: true })
+                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } asPluginPresetConfig)
                 {
-                    return true;
+                    return asPluginPresetConfig.RunGameContext.IsGameRunning;
                 }
 
                 return ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, GamePropLogger);

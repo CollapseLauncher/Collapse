@@ -430,6 +430,7 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
         // NOP
     }
 
-    public bool StartAfterInstall { get; set; }
-    public bool IsUseSophon => false;
+    public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
+    public bool                 StartAfterInstall    { get; set; }
+    public bool                 IsUseSophon          => false;
 }

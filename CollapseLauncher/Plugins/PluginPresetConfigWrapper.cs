@@ -6,6 +6,7 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
 using Hi3Helper.Plugin.Core.Utility;
+using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,10 +23,12 @@ namespace CollapseLauncher.Plugins;
 
 public class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
-    public readonly  GameManagerExtension.RunGameFromGameManagerContext RunGameContext;
+    public GameManagerExtension.RunGameFromGameManagerContext RunGameContext { get; }
     public readonly  PluginInfo                                         PluginInfo;
     public readonly  IPlugin                                            Plugin;
     private readonly IPluginPresetConfig                                _config;
+
+    private bool _isWriteGameLog = true;
 
     private unsafe PluginPresetConfigWrapper(PluginInfo pluginInfo, IPluginPresetConfig config)
     {
@@ -44,6 +47,15 @@ public class PluginPresetConfigWrapper : PresetConfig, IDisposable
             PresetConfig         = config,
             PrintGameLogCallback = PrintGameLogCallback
         };
+    }
+
+    public unsafe GameManagerExtension.RunGameFromGameManagerContext UseToggledGameLaunchContext()
+    {
+        bool isUseConsole = LauncherConfig.GetAppConfigValue("EnableConsole");
+        RunGameContext.PrintGameLogCallback = isUseConsole ? PrintGameLogCallback : null!;
+
+        _isWriteGameLog = LauncherConfig.GetAppConfigValue("IncludeGameLogs");
+        return RunGameContext;
     }
 
     public static PluginPresetConfigWrapper Create(PluginInfo pluginInfo, IPluginPresetConfig presetConfig)
@@ -355,8 +367,12 @@ public class PluginPresetConfigWrapper : PresetConfig, IDisposable
 
     private unsafe void PrintGameLogCallback(char* logString, int logStringLen, int isStringCanFree)
     {
-        Logger.LogWrite($"[{PrintGameLogName}] ");
-        Console.Out.WriteLine(new ReadOnlySpan<char>(logString, logStringLen));
+        Logger.LogWrite(new ReadOnlySpan<char>(logString, logStringLen),
+                        LogType.Game,
+                        appendNewLine: true,
+                        writeToLog: _isWriteGameLog,
+                        writeTypeTag: true,
+                        writeTimestampOnLogFile: true);
 
         if (isStringCanFree == 1)
         {

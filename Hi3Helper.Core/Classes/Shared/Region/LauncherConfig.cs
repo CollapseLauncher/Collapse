@@ -246,8 +246,8 @@ namespace Hi3Helper.Shared.Region
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
         public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
 
-        public static IntPtr AppIconLarge;
-        public static IntPtr AppIconSmall;
+        public static nint AppIconLarge;
+        public static nint AppIconSmall;
 
         public static List<Action> ApplyExternalConfigCallbackList = [];
 
@@ -529,6 +529,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
+        public static int PostInstallShutdownTimeout
+        {
+            get => GetAppConfigValue("PostInstallShutdownTimeout");
+            set => SetAndSaveConfigValue("PostInstallShutdownTimeout", value);
+        }
+
         public static bool                 ForceInvokeUpdate     = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
@@ -624,6 +630,8 @@ namespace Hi3Helper.Shared.Region
             { "IsUseExternalDns", false },
             { "ExternalDnsAddresses", string.Empty },
 
+            { "PostInstallShutdownTimeout", 60 },
+            
             { "IsCDNCacheEnabled", false },
             { "IsCDNCacheAggressiveModeEnabled", false },
             { "CDNCacheDir", string.Empty },

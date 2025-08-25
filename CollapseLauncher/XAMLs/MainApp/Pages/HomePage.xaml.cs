@@ -291,7 +291,7 @@ namespace CollapseLauncher.Pages
 
                 if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
                 {
-                    CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
+                    CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                     return;
                 }
 
@@ -305,7 +305,7 @@ namespace CollapseLauncher.Pages
                     case GameInstallStateEnum.NeedsUpdate:
                         if (CurrentGameProperty.GameInstall != null)
                         {
-                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                         }
                         UpdateGameDialog(null, null);
                         break;
@@ -313,7 +313,7 @@ namespace CollapseLauncher.Pages
                     case GameInstallStateEnum.GameBroken:
                         if (CurrentGameProperty.GameInstall != null)
                         {
-                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                         }
                         InstallGameDialog(null, null);
                         break;
