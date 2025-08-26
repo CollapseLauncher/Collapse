@@ -109,10 +109,7 @@ namespace CollapseLauncher
                 }
 
                 InitAppPreset();
-                string logPath = AppGameLogsFolder;
-                CurrentLogger = IsConsoleEnabled
-                    ? new LoggerConsole(logPath, Encoding.UTF8)
-                    : new LoggerNull(logPath, Encoding.UTF8);
+                UseConsoleLog(IsConsoleEnabled);
 
                 // Set ILogger for CDNCacheUtil
                 CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");

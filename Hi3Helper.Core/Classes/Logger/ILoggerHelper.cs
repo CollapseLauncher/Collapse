@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+// ReSharper disable CheckNamespace
 
 namespace Hi3Helper
 {
@@ -23,7 +24,7 @@ namespace Hi3Helper
             lock (ILoggerCache)
             {
                 // Use TryGetValue for thread-safe read operation
-                if (ILoggerCache.TryGetValue(prefix, out var logger))
+                if (ILoggerCache.TryGetValue(prefix, out ILogger? logger))
                 {
                     return logger; // Return the cached logger instance if it exists
                 }
@@ -38,7 +39,7 @@ namespace Hi3Helper
         private class LoggerWrapper(string prefix = "") : ILogger
         {
             public IDisposable BeginScope<TState>(TState state)
-                where TState : notnull => default!;
+                where TState : notnull => null!;
 
             public bool IsEnabled(LogLevel logLevel) => true;
 
@@ -49,15 +50,15 @@ namespace Hi3Helper
                                   {
                                       LogLevel.Trace => LogType.Debug,
                                       LogLevel.Debug => LogType.Debug,
-                                      LogLevel.Information => LogType.Default,
+                                      LogLevel.Information => LogType.Info,
                                       LogLevel.Warning => LogType.Warning,
                                       LogLevel.Error => LogType.Error,
                                       LogLevel.Critical => LogType.Error,
                                       LogLevel.None => LogType.NoTag,
-                                      _ => LogType.Default
+                                      _ => LogType.Info
                                   };
 
-                bool isWriteToLog = logType switch
+                bool writeToLogFile = logType switch
                                     {
                                         LogType.Error => true,
                                         LogType.Warning => true,
@@ -71,7 +72,7 @@ namespace Hi3Helper
 
                 string message = formatter(state, exception);
                 Logger.LogWriteLine($"{(!string.IsNullOrEmpty(prefix) ? $"[{prefix}] " : "")}{message}", logType,
-                                    isWriteToLog);
+                                    writeToLogFile);
             }
         }
     }

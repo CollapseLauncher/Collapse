@@ -1119,7 +1119,16 @@
     "UserFeedback_SubmitBtn": "提交您的反馈",
     "UserFeedback_SubmitBtn_Processing": "处理中…",
     "UserFeedback_SubmitBtn_Completed": "完成！",
-    "UserFeedback_SubmitBtn_Cancelled": "已取消！"
+    "UserFeedback_SubmitBtn_Cancelled": "已取消！",
+
+    "PostInstallBehaviour_Title": "安装/更新后行为",
+    "PostInstallBehaviour_Subtitle": "成功安装/更新后的行为",
+    "PostInstallBehaviour_Subtitle2": "重启/关机前等待时间",
+    "PostInstallBehaviour_EnumNothing": "什么也不做",
+    "PostInstallBehaviour_EnumStartGame": "开始游戏",
+    "PostInstallBehaviour_EnumHibernate": "休眠",
+    "PostInstallBehaviour_EnumRestart": "重启电脑",
+    "PostInstallBehaviour_EnumShutdown": "关闭电脑"
   },
 
   "_FileMigrationProcess": {

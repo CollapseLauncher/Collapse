@@ -73,7 +73,7 @@ namespace Hi3Helper.Shared.Region
                 SetAppConfigValue("GameFolder", AppSettingsTemplate["GameFolder"]);
 
                 // Force enable Console Log and return
-                Logger.CurrentLogger = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                Logger.UseConsoleLog(true);
                 Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
                                     LogType.Error, true);
                 return;
@@ -246,8 +246,8 @@ namespace Hi3Helper.Shared.Region
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
         public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
 
-        public static IntPtr AppIconLarge;
-        public static IntPtr AppIconSmall;
+        public static nint AppIconLarge;
+        public static nint AppIconSmall;
 
         public static List<Action> ApplyExternalConfigCallbackList = [];
 

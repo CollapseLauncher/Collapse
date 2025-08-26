@@ -690,18 +690,9 @@ namespace CollapseLauncher.Pages
             }
             set
             {
-                CurrentLogger.Dispose();
-                if (value)
-                {
-                    CurrentLogger                    = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
-                    ToggleIncludeGameLogs.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    CurrentLogger                    = new LoggerNull(AppGameLogsFolder, Encoding.UTF8);
-                    ToggleIncludeGameLogs.Visibility = Visibility.Collapsed;
-                }
+                ToggleIncludeGameLogs.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
                 SetAndSaveConfigValue("EnableConsole", value);
+                UseConsoleLog(value);
             }
         }
 

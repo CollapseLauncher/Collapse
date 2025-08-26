@@ -1119,7 +1119,16 @@
     "UserFeedback_SubmitBtn": "Compártenos tus comentarios",
     "UserFeedback_SubmitBtn_Processing": "Procesando...",
     "UserFeedback_SubmitBtn_Completed": "¡Completado!",
-    "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!"
+    "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!",
+
+    "PostInstallBehaviour_Title": "Comportamiento tras la instalación/actualización",
+    "PostInstallBehaviour_Subtitle": "Comportamiento tras una instalación/actualización correcta",
+    "PostInstallBehaviour_Subtitle2": "Tiempo antes de reiniciar/apagar",
+    "PostInstallBehaviour_EnumNothing": "No hacer nada",
+    "PostInstallBehaviour_EnumStartGame": "Lanzar Juego",
+    "PostInstallBehaviour_EnumHibernate": "Hibernar",
+    "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
+    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo"
   },
 
   "_FileMigrationProcess": {
