@@ -1140,6 +1140,15 @@
     "UserFeedback_SubmitBtn_Completed": "完成！",
     "UserFeedback_SubmitBtn_Cancelled": "已取消！",
 
+    "PostInstallBehaviour_Title": "安装/更新后行为",
+    "PostInstallBehaviour_Subtitle": "成功安装/更新后的行为",
+    "PostInstallBehaviour_Subtitle2": "重启/关机前等待时间",
+    "PostInstallBehaviour_EnumNothing": "什么也不做",
+    "PostInstallBehaviour_EnumStartGame": "开始游戏",
+    "PostInstallBehaviour_EnumHibernate": "休眠",
+    "PostInstallBehaviour_EnumRestart": "重启电脑",
+    "PostInstallBehaviour_EnumShutdown": "关闭电脑",
+
     "PluginManagerUpdateAvailableTitle": "您有 {0} 个插件已准备好更新！",
     "PluginManagerUpdateAvailableSubtitle1": "目前有 {0} 个插件可更新。启动器需要重新启动以应用这些插件的更新：",
     "PluginManagerUpdateAvailableSubtitle2": "您希望重新启动启动器吗？",
