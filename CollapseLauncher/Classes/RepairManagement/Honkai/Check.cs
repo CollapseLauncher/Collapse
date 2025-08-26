@@ -819,7 +819,8 @@ namespace CollapseLauncher
             try
             {
                 int read;
-                while ((read = await stream.ReadAtLeastAsync(buffer, buffer.Length, false, token)) > 0)
+                while ((read = await stream.ReadAtLeastAsync(buffer, buffer.Length, false, token)
+                                           .ConfigureAwait(false)) > 0)
                 {
                     UpdateHashReadProgress(read, updateProgress, updateTotalProgress);
                     murmurHashProvider.Append(buffer[..read]);
