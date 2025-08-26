@@ -292,10 +292,14 @@ namespace CollapseLauncher
                 }
             #endif
             }
-            catch
+            catch (IOException)
             {
                 // If console operations fail (e.g., when console allocation failed), 
                 // silently continue to avoid masking the original exception
+            }
+            catch (System.ContextMarshalException)
+            {
+                // If marshaling the console context fails, silently continue
             }
         }
 
