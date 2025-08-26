@@ -3,6 +3,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Utility;
@@ -327,7 +328,7 @@ internal partial class PluginLauncherApiWrapper
 
     private static string GetHashString(ReadOnlySpan<byte> headerData)
     {
-        byte[] data = Hash.GetHashFromBytes<XxHash64>(headerData);
+        byte[] data       = HashUtility<XxHash64>.Shared.GetHashFromBytes(headerData);
         string hashString = HexTool.BytesToHexUnsafe(data)!;
         return hashString;
     }

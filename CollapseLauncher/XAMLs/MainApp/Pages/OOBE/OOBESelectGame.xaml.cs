@@ -3,6 +3,8 @@ using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using Microsoft.UI.Xaml;
@@ -163,7 +165,8 @@ namespace CollapseLauncher.Pages.OOBE
                 ReadOnlySpan<char> urlAsSpan = url;
 
                 string tempDirPath      = Path.GetTempPath();
-                string tempFileNameBase = Hash.GetHashStringFromString<XxHash128>(urlAsSpan.Length > 32 ? urlAsSpan[..^32] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 32)]);
+                byte[] tempFileNameHash = HashUtility<XxHash128>.Shared.GetHashFromString(urlAsSpan.Length > 32 ? urlAsSpan[..^32] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 32)]);
+                string tempFileNameBase = HexTool.BytesToHexUnsafe(tempFileNameHash)!;
                 string tempFilePath     = Path.Combine(tempDirPath, tempFileNameBase);
 
                 string? existingFilePath = Directory
