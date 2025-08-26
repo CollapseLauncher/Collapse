@@ -8,6 +8,7 @@ using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -326,7 +327,7 @@ namespace CollapseLauncher.Helper.Image
 
         internal static FileInfo GetCacheFileInfo(string filePath)
         {
-            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(filePath);
+            string cachedFileHash = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(filePath))!;
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder!, cachedFileHash!);
             if (IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";

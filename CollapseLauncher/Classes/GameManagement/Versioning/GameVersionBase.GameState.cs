@@ -5,6 +5,7 @@ using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -415,9 +416,9 @@ namespace CollapseLauncher.GameManagement.Versioning
                     if (!File.Exists(filePath))
                         return false;
 
-                    await using FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                    byte[] hashArray = await Hash.GetCryptoHashAsync<MD5>(fs);
-                    string md5 = Convert.ToHexStringLower(hashArray);
+                    await using FileStream fs        = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    byte[]                 hashArray = await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(fs);
+                    string                 md5       = Convert.ToHexStringLower(hashArray);
                     if (!md5.Equals(pkgVersion.md5, StringComparison.OrdinalIgnoreCase))
                         return false;
                 }

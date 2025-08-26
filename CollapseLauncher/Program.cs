@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -407,7 +408,7 @@ namespace CollapseLauncher
             }
 
             FileStream stream = File.OpenRead(path);
-            byte[]     hash   = Hash.GetCryptoHash<MD5>(stream);
+            byte[]     hash   = CryptoHashUtility<MD5>.Shared.GetHashFromStream(stream);
             stream.Close();
             return Convert.ToHexStringLower(hash);
         }

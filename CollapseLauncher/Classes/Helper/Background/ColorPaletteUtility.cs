@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
@@ -97,7 +98,7 @@ namespace CollapseLauncher.Helper.Background
             }
 
             string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
-            string cachedFileHash    = Hash.GetHashStringFromString<Crc32>(cachedPalettePath);
+            string cachedFileHash    = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(cachedPalettePath))!;
             cachedPalettePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, cachedFileHash);
 
             if (!File.Exists(cachedPalettePath) || forceCreateNewCache)

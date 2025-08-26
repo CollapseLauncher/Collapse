@@ -6,6 +6,7 @@ using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
@@ -274,8 +275,8 @@ namespace CollapseLauncher
             if (fileInfo.Exists)
             {
                 await using FileStream resVersionStream = fileInfo.OpenRead();
-                byte[] hashBytes = Hash.GetCryptoHash<MD5>(resVersionStream, token: token);
-                string hash = Convert.ToHexStringLower(hashBytes);
+                byte[]                 hashBytes        = await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(resVersionStream, token: token);
+                string                 hash             = Convert.ToHexStringLower(hashBytes);
 
                 // Get base_res_version_hash content
                 await File.WriteAllTextAsync(persistentPath + "\\base_res_version_hash", hash, token);

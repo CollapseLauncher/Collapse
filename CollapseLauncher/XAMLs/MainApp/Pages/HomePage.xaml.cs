@@ -13,6 +13,8 @@ using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -369,7 +371,7 @@ namespace CollapseLauncher.Pages
             }
 
             // Get the cached filename and path
-            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(featuredEventIconImg);
+            string cachedFileHash = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(featuredEventIconImg))!;
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
             if (ImageLoaderHelper.IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";
