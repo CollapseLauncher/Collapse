@@ -6,6 +6,7 @@ using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.Region;
 using System;
@@ -562,8 +563,8 @@ namespace CollapseLauncher.Helper.Metadata
 
                             // Generate HashID and GameName
                             string hashComposition = $"{stamp.LastUpdated} - {stamp.GameName} - {stamp.GameRegion}";
-                            byte[] hashBytes = Hash.GetHashFromString<Crc32>(hashComposition);
-                            int hashID = BitConverter.ToInt32(hashBytes);
+                            byte[] hashBytes       = HashUtility<Crc32>.ThreadSafe.GetHashFromString(hashComposition);
+                            int    hashID          = BitConverter.ToInt32(hashBytes);
 
                             presetConfig.HashID = hashID;
                             presetConfig.GameName = stamp.GameName;
