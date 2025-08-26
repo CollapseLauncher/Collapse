@@ -815,7 +815,7 @@ namespace CollapseLauncher
             // Create the Hasher provider by explicitly specify the length of the stream.
             MhyMurmurHash264B murmurHashProvider = MhyMurmurHash264B.CreateForStream(stream, 0, stream.Length);
 
-            byte[] buffer = ArrayPool<byte>.Shared.Rent(16 << 10);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(512 << 10);
             try
             {
                 int read;
