@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 using PhotoSauce.MagicScaler;
 using PhotoSauce.NativeCodecs.Libwebp;
 using System;
+using System.Diagnostics;
 using Windows.UI;
 using static CollapseLauncher.InnerLauncherConfig;
 using static Hi3Helper.Logger;
@@ -42,7 +43,7 @@ namespace CollapseLauncher
 #endif
                 DebugSettings.XamlResourceReferenceFailed += static (sender, args) =>
                 {
-                    LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    LogWriteLine($"[XAML_RES_REFERENCE] Sender: {sender}\r\n{args!.Message}\r\n{new StackTrace()}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
@@ -51,7 +52,7 @@ namespace CollapseLauncher
                 };
                 DebugSettings.BindingFailed += static (sender, args) =>
                 {
-                    LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}", LogType.Error, true);
+                    LogWriteLine($"[XAML_BINDING] Sender: {sender}\r\n{args!.Message}\r\n{new StackTrace()}", LogType.Error, true);
                     SentryHelper.ExceptionHandler(new Exception($"{args.Message}"), SentryHelper.ExceptionType.UnhandledXaml);
                 #if !DEBUG
                     MainEntryPoint.SpawnFatalErrorConsole(new Exception(args!.Message));
@@ -59,7 +60,7 @@ namespace CollapseLauncher
                 };
                 UnhandledException += static (sender, e) =>
                 {
-                    LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}", LogType.Error, true);
+                    LogWriteLine($"[XAML_OTHER] Sender: {sender}\r\n{e!.Exception} {e.Exception!.InnerException}\r\nCurrent Stacktrace: {new StackTrace()}", LogType.Error, true);
                     var ex = e.Exception;
                     if (ex != null)
                     {

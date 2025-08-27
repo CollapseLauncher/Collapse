@@ -13,6 +13,26 @@ namespace CollapseLauncher
 {
     internal static partial class JsonSerializerHelper
     {
+        internal static Task<T?> DeserializeFromFileAsync<T>(this string filePath, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
+            where T : class => DeserializeFromFileAsync(new FileInfo(filePath), typeInfo, defaultType, token);
+
+        internal static Task<T?> DeserializeFromFileAsync<T>(this string filePath, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
+            where T : struct => DeserializeFromFileAsync(new FileInfo(filePath), typeInfo, defaultType, token);
+
+        internal static async Task<T?> DeserializeFromFileAsync<T>(this FileInfo fileInfo, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
+            where T : class
+        {
+            await using FileStream fileStream = fileInfo.OpenRead();
+            return await InnerDeserializeStreamAsync(fileStream, typeInfo, defaultType, token);
+        }
+
+        internal static async Task<T?> DeserializeFromFileAsync<T>(this FileInfo fileInfo, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
+            where T : struct
+        {
+            await using FileStream fileStream = fileInfo.OpenRead();
+            return await InnerDeserializeStreamAsync(fileStream, typeInfo, defaultType, token);
+        }
+
         internal static async Task<T?> DeserializeAsync<T>(this Stream data, JsonTypeInfo<T?> typeInfo, T? defaultType = null, CancellationToken token = default)
             where T : class => await InnerDeserializeStreamAsync(data, typeInfo, defaultType, token);
 

@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.ManagedTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,18 +54,20 @@ namespace CollapseLauncher.Helper.StreamUtility
 
         internal static FileInfo EnsureNoReadOnly(this FileInfo fileInfo, out bool isFileExist)
         {
+            isFileExist = fileInfo.Exists;
+            if (!isFileExist || !fileInfo.IsReadOnly) return fileInfo;
+            
             try
             {
-                if (!(isFileExist = fileInfo.Exists))
-                    return fileInfo;
-
                 fileInfo.IsReadOnly = false;
+                fileInfo.Refresh();
 
                 return fileInfo;
             }
-            finally
+            catch (Exception ex)
             {
-                fileInfo.Refresh();
+                throw new AggregateException($"[StreamExtension::EnsureNoReadOnly] Failed to remove ReadOnly attribute from file: {fileInfo.FullName}",
+                                             ex);
             }
         }
         
@@ -165,6 +168,25 @@ namespace CollapseLauncher.Helper.StreamUtility
                     throw;
 
                 Logger.LogWriteLine($"Failed to delete file: {filePath.FullName}\r\n{ex}", LogType.Error, true);
+                return false;
+            }
+        }
+
+        internal static bool TryDeleteDirectory(this DirectoryInfo directoryPath, bool isRecursive = false, bool throwIfFailed = false)
+        {
+            try
+            {
+                if (directoryPath.Exists)
+                    directoryPath.Delete(isRecursive);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (throwIfFailed)
+                    throw;
+
+                Logger.LogWriteLine($"Failed to delete directory: {directoryPath.FullName}\r\n{ex}", LogType.Error, true);
                 return false;
             }
         }
@@ -281,6 +303,36 @@ namespace CollapseLauncher.Helper.StreamUtility
                                     LogType.Error, true);
                 SentryHelper.ExceptionHandler(ex);
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Deletes the directory if it is empty.
+        /// </summary>
+        /// <param name="dir">The directory to remove.</param>
+        /// <param name="recursive">Whether to remove all possibly empty directories recursively.</param>
+        public static void DeleteEmptyDirectory(this string dir, bool recursive = false)
+            => new DirectoryInfo(dir).DeleteEmptyDirectory(recursive);
+
+        /// <summary>
+        /// Deletes the directory if it is empty.
+        /// </summary>
+        /// <param name="dir">The directory to remove.</param>
+        /// <param name="recursive">Whether to remove all possibly empty directories recursively.</param>
+        public static void DeleteEmptyDirectory(this DirectoryInfo dir, bool recursive = false)
+        {
+            if (recursive)
+            {
+                foreach (DirectoryInfo childDir in dir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                {
+                    DeleteEmptyDirectory(childDir);
+                }
+            }
+
+            FindFiles.TryIsDirectoryEmpty(dir.FullName, out bool isEmpty);
+            if (isEmpty)
+            {
+                dir.Delete(true);
             }
         }
     }

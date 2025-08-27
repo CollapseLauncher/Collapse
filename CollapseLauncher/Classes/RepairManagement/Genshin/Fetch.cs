@@ -107,7 +107,7 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
         {
-            GameVersionManager.GameApiProp.data!.plugins?.ForEach(plugin =>
+            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
                {
                    if (plugin.package?.validate == null) return;
 
