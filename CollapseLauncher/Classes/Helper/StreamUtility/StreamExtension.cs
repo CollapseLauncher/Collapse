@@ -54,18 +54,20 @@ namespace CollapseLauncher.Helper.StreamUtility
 
         internal static FileInfo EnsureNoReadOnly(this FileInfo fileInfo, out bool isFileExist)
         {
+            isFileExist = fileInfo.Exists;
+            if (!isFileExist || !fileInfo.IsReadOnly) return fileInfo;
+            
             try
             {
-                if (!(isFileExist = fileInfo.Exists))
-                    return fileInfo;
-
                 fileInfo.IsReadOnly = false;
+                fileInfo.Refresh();
 
                 return fileInfo;
             }
-            finally
+            catch (Exception ex)
             {
-                fileInfo.Refresh();
+                throw new AggregateException($"[StreamExtension::EnsureNoReadOnly] Failed to remove ReadOnly attribute from file: {fileInfo.FullName}",
+                                             ex);
             }
         }
         
