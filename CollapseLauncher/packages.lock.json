@@ -218,17 +218,17 @@
       },
       "System.CommandLine": {
         "type": "Direct",
-        "requested": "[2.0.0-beta6.25358.103, )",
-        "resolved": "2.0.0-beta6.25358.103",
-        "contentHash": "YE8bPzXelsU4Fm4mHIFKwPHYJ1RT0hr1b5+tiyjFk4YYpA+WKzdYxrvdJVJIoC+2vbtffajA928Qe7xUj0WR4g=="
+        "requested": "[2.0.0-beta4.22272.1, )",
+        "resolved": "2.0.0-beta4.22272.1",
+        "contentHash": "1uqED/q2H0kKoLJ4+hI2iPSBSEdTuhfCYADeJrAqERmiGQ2NNacYKRNEQ+gFbU4glgVyK8rxI+ZOe1onEtr/Pg=="
       },
       "System.CommandLine.NamingConventionBinder": {
         "type": "Direct",
-        "requested": "[2.0.0-beta5.25306.1, )",
-        "resolved": "2.0.0-beta5.25306.1",
-        "contentHash": "hEz+l/35lDcDuGg6wpTQNYwAQ6D4Nw5jFzGJu7C2sNFMkKgncGppjyH4jmWrdIuSi3GXOy4Jm+t5UwJAaxJdFQ==",
+        "requested": "[2.0.0-beta4.22272.1, )",
+        "resolved": "2.0.0-beta4.22272.1",
+        "contentHash": "ux2eUA/syF+JtlpMDc/Lsd6PBIBuwjH3AvHnestoh5uD0WKT5b+wkQxDWVCqp9qgVjMBTLNhX19ZYFtenunt9A==",
         "dependencies": {
-          "System.CommandLine": "2.0.0-beta5.25306.1"
+          "System.CommandLine": "2.0.0-beta4.22272.1"
         }
       },
       "System.Security.AccessControl": {
