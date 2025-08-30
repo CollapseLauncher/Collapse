@@ -271,25 +271,24 @@ namespace Hi3Helper.SentryHelper
             await Task.Run(async () => await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10)));
         }
 
-        private static Exception?              _exHLoopLastEx;
-        private static CancellationTokenSource _loopToken = new();
+        private static readonly Lock                    _lockObject = new();
+        private static          string?                 _lastExceptionKey;
+        private static          CancellationTokenSource _loopToken = new();
 
         // ReSharper disable once AsyncVoidMethod
         /// <summary>
         /// Clean loop last exception data to be cleaned after 20s so the exception data will be sent to Dsn again.
         /// </summary>
-        private static async void ExHLoopLastEx_AutoClean()
+        private static async void ExHLoopLastEx_AutoClean(CancellationToken ct)
         {
             // if (loopToken.Token.IsCancellationRequested) return;
             try
             {
-                var t = _loopToken.Token;
-                await Task.Delay(20000, t);
-                if (_exHLoopLastEx == null) return;
+                await Task.Delay(20000, ct); // 20s delay
 
-                lock (_exHLoopLastEx)
+                lock (_lockObject)
                 {
-                    _exHLoopLastEx = null;
+                    _lastExceptionKey = null;
                 }
             }
             catch (Exception)
@@ -315,30 +314,50 @@ namespace Hi3Helper.SentryHelper
         public static async Task<Guid> ExceptionHandler_ForLoopAsync(Exception     ex,
                                                                      ExceptionType exT = ExceptionType.Handled)
         {
-            if (!IsEnabled) return Guid.Empty;
-            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
-            if (ex is TaskCanceledException or OperationCanceledException)
+            try
             {
-                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
-                                    LogType.Sentry);
+                if (!IsEnabled) return Guid.Empty;
+                if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
+                if (ex is TaskCanceledException or OperationCanceledException)
+                {
+                    Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                        LogType.Sentry);
+                    return Guid.Empty;
+                }
+
+                var exKey    = $"{ex.GetType().Name}:{ex.Message}:{ex.StackTrace?.GetHashCode()}";
+                var sentryId = Guid.Empty;
+            
+                lock (_lockObject)
+                {
+                    if (exKey == _lastExceptionKey) return Guid.Empty;
+
+                    var oldToken = _loopToken;
+                    _loopToken        = new CancellationTokenSource();
+                    _lastExceptionKey = exKey;
+                    ExHLoopLastEx_AutoClean(_loopToken.Token); // Start auto clean loop
+
+                    Task.Run(async () =>
+                             {
+                                 await oldToken.CancelAsync();
+                                 oldToken.Dispose();
+                             }, oldToken.Token);
+                }
+            
+                await Task.Run(() =>
+                               {
+                                   var id = ExceptionHandlerInner(ex, exT);
+                                   Guid.TryParse(id.ToString(), out sentryId);
+                               });
+
+                return sentryId;
+            }
+            catch (Exception err)
+            {
+                Logger.LogWriteLine($"[SentryHelper::ExceptionHandler_ForLoopAsync] Failed to send exception!\r\n{err}",
+                                    LogType.Error, true);
                 return Guid.Empty;
             }
-
-            if (ex == _exHLoopLastEx) return Guid.Empty; // If exception pointer is the same as the last one, ignore it.
-            await _loopToken.CancelAsync(); // Cancel the previous loop
-            _loopToken.Dispose();
-            _loopToken     = new CancellationTokenSource(); // Create new token
-            _exHLoopLastEx = ex;
-            ExHLoopLastEx_AutoClean(); // Start auto clean loop
-
-            Guid sentryId = Guid.Empty;
-            await Task.Run(() =>
-                           {
-                               var id = ExceptionHandlerInner(ex, exT);
-                               Guid.TryParse(id.ToString(), out sentryId);
-                           });
-
-            return sentryId;
         }
 
         #region Breadcrumbs Data
@@ -437,37 +456,31 @@ namespace Hi3Helper.SentryHelper
 
         private static Breadcrumb? _buildInfo;
 
-        private static Breadcrumb BuildInfo
-        {
-            get => _buildInfo ??= new("Build Info", "commit", new Dictionary<string, string>
+        private static Breadcrumb BuildInfo =>
+            _buildInfo ??= new("Build Info", "commit", new Dictionary<string, string>
             {
                 { "Branch", AppBuildBranch },
                 { "Commit", AppBuildCommit },
                 { "Repository", AppBuildRepo },
                 { "IsPreview", IsPreview.ToString() }
             }, "BuildInfo");
-        }
 
         private static Breadcrumb? _cpuInfo;
 
-        private static Breadcrumb CpuInfo
-        {
-            get => _cpuInfo ??= new("CPU Info", "system.cpu", new Dictionary<string, string>
+        private static Breadcrumb CpuInfo =>
+            _cpuInfo ??= new("CPU Info", "system.cpu", new Dictionary<string, string>
             {
                 { "CPU Name", CpuName },
                 { "Total Thread", CpuThreadsTotal.ToString() }
             }, "CPUInfo");
-        }
 
         private static Breadcrumb? _gpuInfo;
 
-        private static Breadcrumb GpuInfo
-        {
-            get => _gpuInfo ??= new("GPU Info", "system.gpu",
-                                    GetGpuInfo.ToDictionary(item => item.GpuName,
-                                                            item => item.DriverVersion),
-                                    "GPUInfo");
-        }
+        private static Breadcrumb GpuInfo =>
+            _gpuInfo ??= new("GPU Info", "system.gpu",
+                             GetGpuInfo.ToDictionary(item => item.GpuName,
+                                                     item => item.DriverVersion),
+                             "GPUInfo");
 
         private static Breadcrumb GameInfo =>
             new("Current Loaded Game Info", "game", new Dictionary<string, string>
