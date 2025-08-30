@@ -545,12 +545,11 @@ namespace Hi3Helper.SentryHelper
                     //var logStream = File.ReadLines(logPath).Tail(100).ToMemoryStream();
                     return SentrySdk.CaptureException(ex, s =>
                                                           {
-                                                              s.AddAttachment(logStream, Path.GetFileName(logPath),
+                                                              s.AddAttachment(logStream,
+                                                                              Path.GetFileName(logPath),
                                                                               AttachmentType.Default, "text/plain");
                                                           });
-                    logStream.Dispose();
                 }
-
             }
             else
             {
@@ -603,16 +602,17 @@ namespace Hi3Helper.SentryHelper
 
         private static unsafe string[] GetLastLinesWithBuffer(string filePath, int maxLines)
         {
-            const int bufferSize = 4096;
-            var       lines      = new string[maxLines];
-            var       lineIndex  = 0;
-            var       totalLines = 0;
+            const int bufferSize     = 8192; // 8 KB buffer
+            const int lineBufferSize = bufferSize / 2;
+            var       lines          = new string[maxLines];
+            var       lineIndex      = 0;
+            var       totalLines     = 0;
 
             using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
                                                   bufferSize, FileOptions.SequentialScan);
 
             var buffer     = stackalloc byte[bufferSize];
-            var lineBuffer = stackalloc char[2048]; // Max line length buffer
+            var lineBuffer = stackalloc char[lineBufferSize]; // Max line length buffer
             var lineLength = 0;
 
             int bytesRead;
@@ -645,7 +645,7 @@ namespace Hi3Helper.SentryHelper
                     }
                     else if (b != '\r') // Skip \r characters
                     {
-                        if (lineLength < 8191) // Prevent buffer overflow
+                        if (lineLength < lineBufferSize - 1) // Prevent buffer overflow
                         {
                             lineBuffer[lineLength++] = (char)b;
                         }
