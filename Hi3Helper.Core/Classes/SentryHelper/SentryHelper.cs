@@ -1,10 +1,8 @@
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
 using Sentry;
-using Sentry.Infrastructure;
 using Sentry.Protocol;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -86,7 +84,9 @@ namespace Hi3Helper.SentryHelper
             get
             {
                 string? envVar = Environment.GetEnvironmentVariable("DISABLE_SENTRY");
-                return !string.IsNullOrEmpty(envVar) && ((int.TryParse(envVar, out int isDisabledFromInt) && isDisabledFromInt == 1) || (bool.TryParse(envVar, out bool isDisabledFromBool) && !isDisabledFromBool));
+                return !string.IsNullOrEmpty(envVar) &&
+                       ((int.TryParse(envVar, out int isDisabledFromInt) && isDisabledFromInt == 1) ||
+                        (bool.TryParse(envVar, out bool isDisabledFromBool) && !isDisabledFromBool));
             }
         }
 
@@ -131,38 +131,34 @@ namespace Hi3Helper.SentryHelper
 
         #region Initializer/Releaser
 
-        public static  bool         IsPreview { get; set; }
+        public static bool IsPreview { get; set; }
+        
         private static IDisposable? _sentryInstance;
 
         public static void InitializeSentrySdk()
         {
-        #if DEBUG
-            _isEnabled = false;
-            return;
-        #pragma warning disable CS0162 // Unreachable code detected
-        #endif
             _sentryInstance =
                 SentrySdk.Init(o =>
-                             {
-                                 o.Dsn = SentryDsn;
-                                 o.AddEventProcessor(new SentryEventProcessor());
-                                 o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-                                 o.Debug              = IsDebugSentry;
-                                 o.DiagnosticLogger = IsDebugSentry
-                                     ? new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug) : null;
-                                 o.DiagnosticLevel     = IsDebugSentry ? SentryLevel.Debug : SentryLevel.Error;
-                                 o.AutoSessionTracking = true;
-                                 o.StackTraceMode      = StackTraceMode.Enhanced;
-                                 o.DisableSystemDiagnosticsMetricsIntegration();
-                                 o.IsGlobalModeEnabled = true;
-                                 o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
-                                 o.StackTraceMode    = StackTraceMode.Enhanced;
-                                 o.SendDefaultPii    = false;
-                                 o.MaxAttachmentSize = SentryMaxAttachmentSize;
-                                 o.DeduplicateMode   = DeduplicateMode.All;
-                                 o.Environment       = Debugger.IsAttached ? "debug" : IsPreview ? "non-debug" : "stable";
-                                 o.AddExceptionFilter(new NetworkException());
-                             });
+                               {
+                                   o.Dsn = SentryDsn;
+                                   o.AddEventProcessor(new SentryEventProcessor());
+                                   o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
+                                   o.Debug              = IsDebugSentry;
+                                   o.DiagnosticLogger =
+                                       new CollapseLogger(IsDebugSentry ? SentryLevel.Debug : SentryLevel.Warning);
+                                   o.DiagnosticLevel     = IsDebugSentry ? SentryLevel.Debug : SentryLevel.Warning;
+                                   o.AutoSessionTracking = true;
+                                   o.StackTraceMode      = StackTraceMode.Enhanced;
+                                   o.DisableSystemDiagnosticsMetricsIntegration();
+                                   o.IsGlobalModeEnabled = true;
+                                   o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
+                                   o.StackTraceMode = StackTraceMode.Enhanced;
+                                   o.SendDefaultPii = false;
+                                   o.MaxAttachmentSize = SentryMaxAttachmentSize;
+                                   o.DeduplicateMode = DeduplicateMode.All;
+                                   o.Environment = Debugger.IsAttached ? "debug" : IsPreview ? "non-debug" : "stable";
+                                   o.AddExceptionFilter(new NetworkException());
+                               });
             SentrySdk.ConfigureScope(s =>
                                      {
                                          s.User = new SentryUser
@@ -172,9 +168,6 @@ namespace Hi3Helper.SentryHelper
                                              IpAddress = null
                                          };
                                      });
-        #if DEBUG
-        #pragma warning restore CS0162 // Unreachable code detected
-        #endif
         }
 
         /// <summary>
@@ -319,7 +312,8 @@ namespace Hi3Helper.SentryHelper
         /// </summary>
         /// <param name="ex">Exception data</param>
         /// <param name="exT">Exception type, default to ExceptionType.Handled</param>
-        public static async Task<Guid> ExceptionHandler_ForLoopAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        public static async Task<Guid> ExceptionHandler_ForLoopAsync(Exception     ex,
+                                                                     ExceptionType exT = ExceptionType.Handled)
         {
             if (!IsEnabled) return Guid.Empty;
             if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
@@ -336,7 +330,7 @@ namespace Hi3Helper.SentryHelper
             _loopToken     = new CancellationTokenSource(); // Create new token
             _exHLoopLastEx = ex;
             ExHLoopLastEx_AutoClean(); // Start auto clean loop
-            
+
             Guid sentryId = Guid.Empty;
             await Task.Run(() =>
                            {
@@ -442,6 +436,7 @@ namespace Hi3Helper.SentryHelper
         }
 
         private static Breadcrumb? _buildInfo;
+
         private static Breadcrumb BuildInfo
         {
             get => _buildInfo ??= new("Build Info", "commit", new Dictionary<string, string>
@@ -452,8 +447,9 @@ namespace Hi3Helper.SentryHelper
                 { "IsPreview", IsPreview.ToString() }
             }, "BuildInfo");
         }
-        
+
         private static Breadcrumb? _cpuInfo;
+
         private static Breadcrumb CpuInfo
         {
             get => _cpuInfo ??= new("CPU Info", "system.cpu", new Dictionary<string, string>
@@ -464,14 +460,15 @@ namespace Hi3Helper.SentryHelper
         }
 
         private static Breadcrumb? _gpuInfo;
+
         private static Breadcrumb GpuInfo
         {
             get => _gpuInfo ??= new("GPU Info", "system.gpu",
-                                     GetGpuInfo.ToDictionary(item => item.GpuName,
-                                                             item => item.DriverVersion),
-                                     "GPUInfo");
+                                    GetGpuInfo.ToDictionary(item => item.GpuName,
+                                                            item => item.DriverVersion),
+                                    "GPUInfo");
         }
-        
+
         private static Breadcrumb GameInfo =>
             new("Current Loaded Game Info", "game", new Dictionary<string, string>
             {
@@ -487,7 +484,7 @@ namespace Hi3Helper.SentryHelper
             }, "GameInfo");
 
         #endregion
-        
+
         private static SentryId ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             SentrySdk.AddBreadcrumb(BuildInfo);
@@ -495,61 +492,52 @@ namespace Hi3Helper.SentryHelper
             SentrySdk.AddBreadcrumb(CpuInfo);
             SentrySdk.AddBreadcrumb(GpuInfo);
 
-            var loadedModules = Process.GetCurrentProcess().Modules;
-            var modulesInfo   = new ConcurrentDictionary<string, string>();
-
-            Parallel.ForEach(loadedModules.Cast<ProcessModule>(), module =>
-            {
-                try
-                {
-                    var name = module.ModuleName;
-                    var ver  = module.FileVersionInfo.FileVersion;
-                    var path = module.FileName;
-                    _ = modulesInfo.TryAdd(name, $"{ver} ({path})");
-                }
-                catch (Exception exI)
-                {
-                    Logger.LogWriteLine($"Failed to get module info: {exI.Message}", LogType.Error, true);
-                }
-            });
-
-            var sbModulesInfo = new StringBuilder();
-            foreach (var (key, value) in modulesInfo)
-            {
-                sbModulesInfo.AppendLine($"{key}: {value}");
-            }
-            
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 
             string? methodName = null;
-            var    st = ex.StackTrace;
+            var     st         = ex.StackTrace;
             if (st != null)
             {
-                var          m   = ExceptionFrame().Match(st);
+                var m = ExceptionFrame().Match(st);
                 methodName = m.Success ? m.Value : null;
             }
 
             ex.Data[Mechanism.MechanismKey] ??= exT switch
-                                              {
-                                                  ExceptionType.UnhandledXaml => "Application.XamlUnhandledException",
-                                                  ExceptionType.UnhandledOther => methodName ?? ex.Source ?? "Application.UnhandledException",
-                                                  _ => methodName ?? ex.Source ?? "Application.HandledException"
-                                              };
-            
+                                                {
+                                                    ExceptionType.UnhandledXaml => "Application.XamlUnhandledException",
+                                                    ExceptionType.UnhandledOther => methodName ??
+                                                        ex.Source ?? "Application.UnhandledException",
+                                                    _ => methodName ?? ex.Source ?? "Application.HandledException"
+                                                };
+
         #pragma warning disable CS0162 // Unreachable code detected
-            if (SentryUploadLog) // Upload log file if enabled
+            var logPath = LoggerBase.LogPath;
+            if (logPath != null && SentryUploadLog) // Upload log file if enabled
                 // ReSharper disable once HeuristicUnreachableCode
             {
                 if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
                     return SentrySdk.CaptureException(ex);
                 else
+                {
+                    // Trim to the last 100 lines of log
+                    var logLines = GetLastLinesWithBuffer(logPath, 100);
+                    var logStream = new MemoryStream();
+
+                    using (var writer = new StreamWriter(logStream, Encoding.UTF8, leaveOpen: true)) // Write lines to memory stream
+                    {
+                        foreach (var line in logLines) writer.WriteLine(line);
+                    }
+                    logStream.Position = 0; // Reset stream position to the beginning
+                    
+                    //var logStream = File.ReadLines(logPath).Tail(100).ToMemoryStream();
                     return SentrySdk.CaptureException(ex, s =>
-                                                   {
-                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                                                       s.AddAttachment(new MemoryStream(Encoding.UTF8.GetBytes(sbModulesInfo.ToString())),
-                                                                       "LoadedModules.txt", AttachmentType.Default,
-                                                                       "text/plain");
-                                                   });
+                                                          {
+                                                              s.AddAttachment(logStream, Path.GetFileName(logPath),
+                                                                              AttachmentType.Default, "text/plain");
+                                                          });
+                    logStream.Dispose();
+                }
+
             }
             else
             {
@@ -557,12 +545,13 @@ namespace Hi3Helper.SentryHelper
             }
         #pragma warning restore CS0162 // Unreachable code detected
         }
-        
+
         public static bool SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
         {
             if (sentryId == Guid.Empty)
             {
-                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!", LogType.Error,
+                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!",
+                                    LogType.Error,
                                     true);
                 return false;
             }
@@ -574,11 +563,11 @@ namespace Hi3Helper.SentryHelper
                 return false;
             }
 
-            var sId       = new SentryId(sentryId);
+            var sId = new SentryId(sentryId);
             SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
             return true;
         }
-        
+
         public static bool SendGenericFeedback(string feedback, string userEmail, string user)
         {
             if (!IsEnabled)
@@ -587,14 +576,90 @@ namespace Hi3Helper.SentryHelper
                                     LogType.Error, true);
                 return false;
             }
-            
+
             SentrySdk.CaptureFeedback(feedback, userEmail, user);
             return true;
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]
         private static partial Regex ExceptionFrame();
-    }
 
         #endregion
+
+        #region Private Tools
+
+        private static unsafe string[] GetLastLinesWithBuffer(string filePath, int maxLines)
+        {
+            const int bufferSize = 4096;
+            var       lines      = new string[maxLines];
+            var       lineIndex  = 0;
+            var       totalLines = 0;
+
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
+                                                  bufferSize, FileOptions.SequentialScan);
+
+            var buffer     = stackalloc byte[bufferSize];
+            var lineBuffer = stackalloc char[2048]; // Max line length buffer
+            var lineLength = 0;
+
+            int bytesRead;
+
+            while ((bytesRead = fileStream.Read(new Span<byte>(buffer, bufferSize))) > 0)
+            {
+                for (var i = 0; i < bytesRead; i++)
+                {
+                    var b = buffer[i];
+
+                    if (b == '\n')
+                    {
+                        // Convert accumulated bytes to string
+                        if (lineLength > 0)
+                        {
+                            // Handle potential \r\n by removing trailing \r
+                            if (lineBuffer[lineLength - 1] == '\r')
+                                lineLength--;
+
+                            lines[lineIndex] = new string(lineBuffer, 0, lineLength);
+                        }
+                        else
+                        {
+                            lines[lineIndex] = string.Empty;
+                        }
+
+                        lineIndex = (lineIndex + 1) % maxLines;
+                        totalLines++;
+                        lineLength = 0;
+                    }
+                    else if (b != '\r') // Skip \r characters
+                    {
+                        if (lineLength < 8191) // Prevent buffer overflow
+                        {
+                            lineBuffer[lineLength++] = (char)b;
+                        }
+                    }
+                }
+            }
+
+            // Handle last line if file doesn't end with newline
+            if (lineLength > 0)
+            {
+                lines[lineIndex] = new string(lineBuffer, 0, lineLength);
+                totalLines++;
+            }
+
+            // Extract lines in correct order
+            var resultCount = Math.Min(totalLines, maxLines);
+            var result      = new string[resultCount];
+            var startIndex  = totalLines > maxLines ? lineIndex : 0;
+
+            for (var i = 0; i < resultCount; i++)
+            {
+                result[i] = lines[(startIndex + i) % maxLines];
+            }
+
+            return result;
+        }
+
+        #endregion
+    }
 }
