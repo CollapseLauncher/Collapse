@@ -630,7 +630,8 @@ namespace Hi3Helper.Shared.Region
             { "CDNCacheExpireTimeMinutes", 10d },
 
             // TEMPORARY
-            { "Enable20250827CrisisIntro", true }
+            { "Enable20250827CrisisIntro", true },
+            { "Enable20250827CrisisIntroDialog", true }
         };
 
         #endregion

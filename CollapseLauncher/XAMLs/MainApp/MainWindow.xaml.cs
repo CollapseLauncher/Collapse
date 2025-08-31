@@ -1,4 +1,6 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
+using CollapseLauncher.CustomControls;
+using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -122,8 +124,29 @@ namespace CollapseLauncher
             set => SetAndSaveConfigValue("Enable20250827CrisisIntro", value);
         }
 
+        public bool IsShownCrisisIntroDialog
+        {
+            get => GetAppConfigValue("Enable20250827CrisisIntroDialog");
+            set => SetAndSaveConfigValue("Enable20250827CrisisIntroDialog", value);
+        }
+
+        // Starts the intro at 08:00 AM Jakarta Time - September 1st -> 08:00 AM Jakarta Time - September 6th.
+        private readonly DateTimeOffset _dateTimeCrisisOffsetStart
+            = new DateTimeOffset(2025, 9, 1, 0, 0, 0, TimeSpan.FromHours(7))
+               .ToUniversalTime();
+        private readonly DateTimeOffset _dateTimeCrisisOffsetEnd
+            = new DateTimeOffset(2025, 9, 6, 8, 0, 0, TimeSpan.FromHours(7))
+               .ToUniversalTime();
+
         private bool IsCrisisIntroEnabled()
         {
+            DateTimeOffset nowDateTimeOffset = DateTimeOffset.UtcNow;
+            if (nowDateTimeOffset < _dateTimeCrisisOffsetStart ||
+                nowDateTimeOffset > _dateTimeCrisisOffsetEnd)
+            {
+                return false;
+            }
+
             if (_isForceDisableIntro || !IsEnableCrisisIntro)
             {
                 return false;
@@ -170,36 +193,82 @@ namespace CollapseLauncher
             RootFrameGrid.Opacity = 0;
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
 
-            IntroAnimation.Source = new TempResetIndonesiaTaglineCrisis(); // Directly create new instance and so it triggers SetSource early.
+            try
             {
-                IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
-                if (IsAppThemeLight)
+                if (IsShownCrisisIntroDialog)
                 {
-                    ((TempResetIndonesiaTaglineCrisis)IntroAnimation.Source).Color_FFFFFF = Color.FromArgb(255, 30, 30, 30);
+                    while (m_mainPage is null)
+                    {
+                        await Task.Delay(250);
+                    }
+
+                    TextBlock textBlock = new TextBlock
+                    {
+                        TextWrapping = TextWrapping.Wrap
+                    }.AddTextBlockLine("Hi there, it's neon-nyan. Sorry to interrupt you here bu we have some important announcement we would like to share with you regarding the current situation in Indonesia. Though, you can skip this announcement and use your launcher normally.")
+                         .AddTextBlockNewLine(2)
+                         .AddTextBlockLine("Would you like to read the announcement? (Duration: ~60 seconds)");
+
+                    ContentDialogResult result =
+                        await SpawnDialog("[English] Important Announcement",
+                                          textBlock,
+                                          closeText: "No, Skip it",
+                                          primaryText: "Yes, I would like to read it",
+                                          dialogTheme: ContentDialogTheme.Warning,
+                                          defaultButton: ContentDialogButton.Close);
+
+                    if (result == ContentDialogResult.None)
+                    {
+                        IsEnableCrisisIntro = false;
+                        return;
+                    }
                 }
 
-                await IntroAnimation.PlayAsync(0, 400d / 450d, false);
-                await Task.Delay(2500);
-                await IntroAnimation.PlayAsync(400d / 450d, 450d / 450d, false);
-                IntroAnimation.Stop();
+                // in frames
+                const double animAnnounceStart = 0d;
+                const double animIntroStart    = 3150d;
+                const double animIntroPause    = 3540d;
+                const double animIntroDur      = 3600d;
+
+                IntroAnimation.Source = new TempResetIndonesiaTaglineCrisis(); // Directly create new instance and so it triggers SetSource early.
+                {
+                    IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
+                    if (IsAppThemeLight)
+                    {
+                        ((TempResetIndonesiaTaglineCrisis)IntroAnimation.Source).Color_FFFFFF = Color.FromArgb(255, 30, 30, 30);
+                    }
+
+                    if (IsShownCrisisIntroDialog)
+                    {
+                        await IntroAnimation.PlayAsync(animAnnounceStart / animIntroDur, animIntroStart / animIntroDur, false);
+                        IsShownCrisisIntroDialog = false;
+                    }
+
+                    await IntroAnimation.PlayAsync(animIntroStart / animIntroDur, animIntroPause / animIntroDur, false);
+                    await Task.Delay(2500);
+                    await IntroAnimation.PlayAsync(animIntroPause / animIntroDur, animIntroDur / animIntroDur, false);
+                    IntroAnimation.Stop();
+                }
+                IntroAnimation.Source = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
-            IntroAnimation.Source = null;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            finally
+            {
+                Task rootFrameAnimTask = RootFrameGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
+                                                                      RootFrameGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)
+                                                                     );
+                Task introFrameAnimTask = IntroAnimationGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
+                                                                            IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
+                                                                           );
 
-            Task rootFrameAnimTask = RootFrameGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
-                                                                  RootFrameGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)
-                                                                 );
-            Task introFrameAnimTask = IntroAnimationGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
-                                                                        IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
-                                                                       );
+                await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+                WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
 
-            await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
-            WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
-
-            _isForceDisableIntro           = true;
-            IntroSequenceToggle.Visibility = Visibility.Collapsed;
-            IntroAnimationGrid.Visibility  = Visibility.Collapsed;
+                _isForceDisableIntro           = true;
+                IntroSequenceToggle.Visibility = Visibility.Collapsed;
+                IntroAnimationGrid.Visibility  = Visibility.Collapsed;
+            }
         }
         #endregion
 

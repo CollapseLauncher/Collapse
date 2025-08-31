@@ -1596,6 +1596,12 @@ namespace CollapseLauncher.Dialogs
 
             return _sharedDispatcherQueue?.EnqueueAsync(async () =>
                                                         {
+                                                            XamlRoot? xamlRoot =
+                                                                WindowUtility.CurrentWindow is MainWindow
+                                                                    mainWindow
+                                                                    ? mainWindow.Content.XamlRoot
+                                                                    : parentUI?.XamlRoot;
+
                                                             // Create a new instance of dialog
                                                             ContentDialogCollapse dialog =
                                                                 new ContentDialogCollapse(dialogTheme)
@@ -1610,11 +1616,7 @@ namespace CollapseLauncher.Dialogs
                                                                         CollapseUIExt
                                                                            .GetApplicationResource<
                                                                                 Style>("CollapseContentDialogStyle"),
-                                                                    XamlRoot =
-                                                                        WindowUtility.CurrentWindow is MainWindow
-                                                                            mainWindow
-                                                                            ? mainWindow.Content.XamlRoot
-                                                                            : parentUI?.XamlRoot
+                                                                    XamlRoot = xamlRoot
                                                                 };
 
                                                             try
