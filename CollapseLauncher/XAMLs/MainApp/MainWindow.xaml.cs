@@ -205,7 +205,7 @@ namespace CollapseLauncher
                     TextBlock textBlock = new TextBlock
                     {
                         TextWrapping = TextWrapping.Wrap
-                    }.AddTextBlockLine("Hi there, it's neon-nyan. Sorry to interrupt you here bu we have some important announcement we would like to share with you regarding the current situation in Indonesia. Though, you can skip this announcement and use your launcher normally.")
+                    }.AddTextBlockLine("Hi there, it's neon-nyan. Sorry to interrupt you here but we have some important announcement we would like to share with you regarding the current situation in Indonesia. Though, you can skip this announcement and use your launcher normally.")
                          .AddTextBlockNewLine(2)
                          .AddTextBlockLine("Would you like to read the announcement? (Duration: ~60 seconds)");
 
