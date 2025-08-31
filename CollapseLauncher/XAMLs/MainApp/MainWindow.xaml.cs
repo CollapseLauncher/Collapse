@@ -20,6 +20,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI;
@@ -99,10 +102,108 @@ namespace CollapseLauncher
         public void StartMainPage()
         {
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
-            
-            RunIntroSequence();
+
+            if (IsCrisisIntroEnabled())
+            {
+                RunCrisisIntroSequence();
+            }
+            else
+            {
+                RunIntroSequence();
+            }
+
             RootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
+
+        #region TEMPORARY: August 27th, 2025 Temporary Intro due to current Indonesian's crisis
+        public bool IsEnableCrisisIntro
+        {
+            get => GetAppConfigValue("Enable20250827CrisisIntro");
+            set => SetAndSaveConfigValue("Enable20250827CrisisIntro", value);
+        }
+
+        private bool IsCrisisIntroEnabled()
+        {
+            if (_isForceDisableIntro || !IsEnableCrisisIntro)
+            {
+                return false;
+            }
+
+            // Try to disable the intro if the user is using certain region/CultureInfo in their system.
+            (string langId, string countryId)[] disabledLocale = [
+                ("zh", "cn")
+                ];
+            string currentCulture = CultureInfo.CurrentUICulture.Name;
+
+
+            return !disabledLocale.Any(x => currentCulture.StartsWith(x.langId, StringComparison.OrdinalIgnoreCase) &&
+                                            currentCulture.EndsWith(x.countryId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void Temporary20250827CrisisIntroButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            string[] articles = [
+                "https://www.aljazeera.com/news/2025/8/30/three-killed-in-fire-at-indonesian-government-building-blamed-on-protesters",
+                "https://www.aljazeera.com/news/2025/8/26/indonesian-police-clash-with-students-protesting-lawmakers-salaries",
+                "https://www.aljazeera.com/video/inside-story/2025/8/30/whats-behind-widespread-unrest-in-indonesia"
+            ];
+
+            foreach (string article in articles)
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName        = article,
+                    UseShellExecute = true
+                });
+            }
+        }
+
+        private async void RunCrisisIntroSequence()
+        {
+            Temporary20250827CrisisIntro.Visibility = Visibility.Visible;
+            IntroSequenceToggle.Visibility          = Visibility.Collapsed;
+            IntroAnimation.Visibility               = Visibility.Visible;
+
+            InputSystemCursor cursorType = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            Temporary20250827CrisisIntro.SetAllControlsCursorRecursive(cursorType);
+
+            RootFrameGrid.Opacity = 0;
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
+
+            IAnimatedVisualSource2 animation = new TempResetIndonesiaTaglineCrisis();
+            {
+                IntroAnimation.Source                = animation;
+                IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
+
+                if (IsAppThemeLight)
+                {
+                    ((TempResetIndonesiaTaglineCrisis)animation).Color_FFFFFF = Color.FromArgb(255, 30, 30, 30);
+                }
+
+                await IntroAnimation.PlayAsync(0, 400d / 450d, false);
+                await Task.Delay(2500);
+                await IntroAnimation.PlayAsync(400d / 450d, 450d / 450d, false);
+                IntroAnimation.Stop();
+            }
+            IntroAnimation.Source = null;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Task rootFrameAnimTask = RootFrameGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
+                                                                  RootFrameGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)
+                                                                 );
+            Task introFrameAnimTask = IntroAnimationGrid.StartAnimation(TimeSpan.FromSeconds(0.75),
+                                                                        IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
+                                                                       );
+
+            await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+            WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
+
+            _isForceDisableIntro           = true;
+            IntroSequenceToggle.Visibility = Visibility.Collapsed;
+            IntroAnimationGrid.Visibility  = Visibility.Collapsed;
+        }
+        #endregion
 
         private async void RunIntroSequence()
         {
@@ -314,7 +415,7 @@ namespace CollapseLauncher
         {
             Compositor curCompositor = Compositor;
             UIElement element = sender as UIElement;
-            element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
+            element.StartAnimationDetached(TimeSpan.FromSeconds(0.50),
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 1f)
                 );
         }
@@ -323,7 +424,7 @@ namespace CollapseLauncher
         {
             Compositor curCompositor = Compositor;
             UIElement element = sender as UIElement;
-            element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
+            element.StartAnimationDetached(TimeSpan.FromSeconds(0.50),
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 0.25f)
                 );
         }
