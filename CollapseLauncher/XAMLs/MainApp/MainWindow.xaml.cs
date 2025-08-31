@@ -130,12 +130,12 @@ namespace CollapseLauncher
             set => SetAndSaveConfigValue("Enable20250827CrisisIntroDialog", value);
         }
 
-        // Starts the intro at 08:00 AM Jakarta Time - September 1st -> 08:00 AM Jakarta Time - September 6th.
+        // Starts the intro at 00:00 AM Jakarta Time - September 1st -> 00:00 AM Jakarta Time - September 8th.
         private readonly DateTimeOffset _dateTimeCrisisOffsetStart
             = new DateTimeOffset(2025, 9, 1, 0, 0, 0, TimeSpan.FromHours(7))
                .ToUniversalTime();
         private readonly DateTimeOffset _dateTimeCrisisOffsetEnd
-            = new DateTimeOffset(2025, 9, 6, 8, 0, 0, TimeSpan.FromHours(7))
+            = new DateTimeOffset(2025, 9, 8, 0, 0, 0, TimeSpan.FromHours(7))
                .ToUniversalTime();
 
         private bool IsCrisisIntroEnabled()
