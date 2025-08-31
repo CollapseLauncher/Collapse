@@ -634,7 +634,10 @@ namespace Hi3Helper.Shared.Region
             { "IsCDNCacheEnabled", false },
             { "IsCDNCacheAggressiveModeEnabled", false },
             { "CDNCacheDir", string.Empty },
-            { "CDNCacheExpireTimeMinutes", 10d }
+            { "CDNCacheExpireTimeMinutes", 10d },
+
+            // TEMPORARY
+            { "Enable20250827CrisisIntro", true }
         };
 
         #endregion
