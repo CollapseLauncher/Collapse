@@ -211,13 +211,6 @@ namespace Hi3Helper.Shared.Region
 
             new()
             {
-                Name        = "Coding" + $" [{Lang._Misc.Tag_Deprecated}]",
-                URLPrefix   = "https://ohly-generic.pkg.coding.net/collapse/release/",
-                Description = Lang._Misc!.CDNDescription_Coding
-            },
-
-            new()
-            {
                 Name        = "CNB",
                 URLPrefix   = "https://cnb.cool/CollapseLauncher/ReleaseRepo/-/git/raw/main/",
                 Description = Lang._Misc!.CDNDescription_CNB

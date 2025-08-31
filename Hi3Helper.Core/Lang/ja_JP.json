@@ -817,7 +817,6 @@
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
-    "CDNDescription_Coding": "Codingが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_CNB": "CNBが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",

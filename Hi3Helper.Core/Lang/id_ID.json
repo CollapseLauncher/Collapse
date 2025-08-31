@@ -816,7 +816,6 @@
     "CDNDescription_Cloudflare": "Mirror dari repositori resmi (main) yang dihost dalam bucket Cloudflare R2.",
     "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket,",
     "CDNDescription_GitLab": "Mirror dari repositori resmi (main) yang dihost dalam GitLab.",
-    "CDNDescription_Coding": "Mirror dari repositori resmi (main) yang dihost dalam Coding.",
 
     "LocateExecutable": "Pilih Executable",
     "OpenDownloadPage": "Buka Halaman Unduhan",
