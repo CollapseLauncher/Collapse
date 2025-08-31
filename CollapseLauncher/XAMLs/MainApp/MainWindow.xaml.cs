@@ -131,18 +131,16 @@ namespace CollapseLauncher
         }
 
         // Starts the intro at 00:00 AM Jakarta Time - September 1st -> 00:00 AM Jakarta Time - September 8th.
-        private readonly DateTimeOffset _dateTimeCrisisOffsetStart
-            = new DateTimeOffset(2025, 9, 1, 0, 0, 0, TimeSpan.FromHours(7))
-               .ToUniversalTime();
-        private readonly DateTimeOffset _dateTimeCrisisOffsetEnd
-            = new DateTimeOffset(2025, 9, 8, 0, 0, 0, TimeSpan.FromHours(7))
-               .ToUniversalTime();
+        private readonly DateTime _dateTimeCrisisOffsetStart
+            = new DateTimeOffset(2025, 9, 1, 0, 0, 0, TimeSpan.FromHours(7)).UtcDateTime;
+        private readonly DateTime _dateTimeCrisisOffsetEnd
+            = new DateTimeOffset(2025, 9, 8, 0, 0, 0, TimeSpan.FromHours(7)).UtcDateTime;
 
         private bool IsCrisisIntroEnabled()
         {
-            DateTimeOffset nowDateTimeOffset = DateTimeOffset.UtcNow;
+            DateTime nowDateTimeOffset = DateTime.UtcNow;
             if (nowDateTimeOffset < _dateTimeCrisisOffsetStart ||
-                nowDateTimeOffset > _dateTimeCrisisOffsetEnd)
+                nowDateTimeOffset >= _dateTimeCrisisOffsetEnd)
             {
                 return false;
             }
