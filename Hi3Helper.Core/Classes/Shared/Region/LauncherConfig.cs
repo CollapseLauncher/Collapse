@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Numerics;
-using System.Text;
 using static Hi3Helper.Locale;
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -634,10 +633,7 @@ namespace Hi3Helper.Shared.Region
             { "IsCDNCacheEnabled", false },
             { "IsCDNCacheAggressiveModeEnabled", false },
             { "CDNCacheDir", string.Empty },
-            { "CDNCacheExpireTimeMinutes", 10d },
-
-            // TEMPORARY
-            { "Enable20250827CrisisIntro", true }
+            { "CDNCacheExpireTimeMinutes", 10d }
         };
 
         #endregion
