@@ -66,7 +66,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
     // | #FF0000        | Color_FF0000 | Color |  #FFFF0000 Red  |
     // | #FFFFFF        | Color_FFFFFF | Color | #FFFFFFFF White |
     // -----------------------------------------------------------
-    public sealed class TempResetIndonesiaTaglineCrisis
+    public sealed partial class TempResetIndonesiaTaglineCrisis
         : Microsoft.UI.Xaml.Controls.IAnimatedVisualSource
         , Microsoft.UI.Xaml.Controls.IAnimatedVisualSource2
     {
@@ -230,7 +230,7 @@ namespace CollapseLauncher.AnimatedVisuals.Lottie
         {
         }
 
-        sealed class TempResetIndonesiaTaglineCrisis_AnimatedVisual
+        sealed partial class TempResetIndonesiaTaglineCrisis_AnimatedVisual
             : Microsoft.UI.Xaml.Controls.IAnimatedVisual
             , Microsoft.UI.Xaml.Controls.IAnimatedVisual2
         {

@@ -170,14 +170,12 @@ namespace CollapseLauncher
             RootFrameGrid.Opacity = 0;
             WindowUtility.SetWindowBackdrop(WindowBackdropKind.Mica);
 
-            IAnimatedVisualSource2 animation = new TempResetIndonesiaTaglineCrisis();
+            IntroAnimation.Source = new TempResetIndonesiaTaglineCrisis(); // Directly create new instance and so it triggers SetSource early.
             {
-                IntroAnimation.Source                = animation;
                 IntroAnimation.AnimationOptimization = PlayerAnimationOptimization.Resources;
-
                 if (IsAppThemeLight)
                 {
-                    ((TempResetIndonesiaTaglineCrisis)animation).Color_FFFFFF = Color.FromArgb(255, 30, 30, 30);
+                    ((TempResetIndonesiaTaglineCrisis)IntroAnimation.Source).Color_FFFFFF = Color.FromArgb(255, 30, 30, 30);
                 }
 
                 await IntroAnimation.PlayAsync(0, 400d / 450d, false);
