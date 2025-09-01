@@ -117,7 +117,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                 downloadSpeedLimiter,
                                                 Token.Token);
 
-            // Filter asset list based on 
+            // Filter asset list
             await FilterSophonPatchAssetList(patchAssets.AssetList, Token.Token);
 
             // Start the patch pipeline
