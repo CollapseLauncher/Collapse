@@ -793,6 +793,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                                downloadSpeedLimiter);
                 }
 
+                // Filter asset list
+                await FilterSophonPatchAssetList(sophonUpdateAssetList, Token.Token);
+
                 // Get the remote chunk size
                 ProgressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
                 ProgressPerFileSizeCurrent = 0;
@@ -926,6 +929,12 @@ namespace CollapseLauncher.InstallManager.Base
                 string dxSetupDir = Path.Combine(GamePath, "DXSETUP");
                 TryDeleteReadOnlyDir(dxSetupDir);
             }
+        }
+
+        protected virtual Task FilterSophonPatchAssetList(List<SophonAsset> itemList, CancellationToken token)
+        {
+            // NOP
+            return Task.CompletedTask;
         }
 
         private ValueTask RunSophonAssetDownloadThread(HttpClient      client,

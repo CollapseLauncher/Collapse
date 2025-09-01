@@ -175,6 +175,7 @@ namespace CollapseLauncher
         private void Temporary20250827CrisisIntroButton_OnClick(object sender, RoutedEventArgs e)
         {
             string[] articles = [
+                "https://www.thejakartapost.com/indonesia/2025/08/31/five-things-to-know-about-indonesias-deadly-unrest.html",
                 "https://www.aljazeera.com/news/2025/8/30/three-killed-in-fire-at-indonesian-government-building-blamed-on-protesters",
                 "https://www.aljazeera.com/news/2025/8/26/indonesian-police-clash-with-students-protesting-lawmakers-salaries",
                 "https://www.aljazeera.com/video/inside-story/2025/8/30/whats-behind-widespread-unrest-in-indonesia"
@@ -216,10 +217,10 @@ namespace CollapseLauncher
                         TextWrapping = TextWrapping.Wrap
                     }.AddTextBlockLine("Hi there, it's neon-nyan. Sorry to interrupt you here but we have some important announcement we would like to share with you regarding the current situation in Indonesia. Though, you can skip this announcement and use your launcher normally.")
                          .AddTextBlockNewLine(2)
-                         .AddTextBlockLine("Would you like to read the announcement? (Duration: ~60 seconds)");
+                         .AddTextBlockLine("Would you like to read the announcement? (Duration: ~1 minute 20 seconds)");
 
                     ContentDialogResult result =
-                        await SpawnDialog("[English] Important Announcement",
+                        await SpawnDialog("[EN] Important Announcement",
                                           textBlock,
                                           closeText: "No, Skip it",
                                           primaryText: "Yes, I would like to read it",
@@ -235,9 +236,9 @@ namespace CollapseLauncher
 
                 // in frames
                 const double animAnnounceStart = 0d;
-                const double animIntroStart    = 3150d;
-                const double animIntroPause    = 3540d;
-                const double animIntroDur      = 3600d;
+                const double animIntroStart    = 4350d;
+                const double animIntroPause    = 4740d;
+                const double animIntroDur      = 4800d;
 
                 IntroAnimation.Source = new TempResetIndonesiaTaglineCrisis(); // Directly create new instance and so it triggers SetSource early.
                 {
