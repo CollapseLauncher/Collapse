@@ -14,6 +14,8 @@ namespace CollapseLauncher.InstallManager.Zenless
 {
     internal partial class ZenlessInstall
     {
+        internal const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+
         // ReSharper disable once StringLiteralTypo
         [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "<SophonChunksInfo>k__BackingField")]
         private static extern ref SophonChunksInfo GetChunkAssetChunksInfo(SophonAsset element);
@@ -24,8 +26,17 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         protected override async Task FilterSophonPatchAssetList(List<SophonPatchAsset> itemList, CancellationToken token)
         {
-            const StringSplitOptions splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+            HashSet<int> exceptMatchFieldHashSet = await GetExceptMatchFieldHashSet(token);
+            if (exceptMatchFieldHashSet.Count == 0)
+            {
+                return;
+            }
 
+            FilterSophonAsset(itemList, x => x.MainAssetInfo, exceptMatchFieldHashSet, token);
+        }
+
+        private async Task<HashSet<int>> GetExceptMatchFieldHashSet(CancellationToken token)
+        {
             string gameExecDataName =
                 Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
             string gameExecDataPath         = $"{gameExecDataName}_Data";
@@ -34,105 +45,103 @@ namespace CollapseLauncher.InstallManager.Zenless
 
             if (!File.Exists(gameExceptMatchFieldFile))
             {
-                return;
+                return [];
             }
 
-            string          exceptMatchFieldContent = await File.ReadAllTextAsync(gameExceptMatchFieldFile, token);
-            HashSet<string> exceptMatchFieldHashSet = CreateHashSet();
+            string       exceptMatchFieldContent = await File.ReadAllTextAsync(gameExceptMatchFieldFile, token);
+            HashSet<int> exceptMatchFieldHashSet = CreateExceptMatchFieldHashSet<int>(exceptMatchFieldContent);
 
-            if (exceptMatchFieldHashSet.Count == 0)
+            return exceptMatchFieldHashSet;
+        }
+
+        // ReSharper disable once IdentifierTypo
+        private static void FilterSophonAsset<T>(List<T> itemList, Func<T, SophonAsset?> assetSelector, HashSet<int> exceptMatchFieldHashSet, CancellationToken token)
+        {
+            const string       separators    = "/\\";
+            scoped Span<Range> urlPathRanges = stackalloc Range[32];
+
+            List<T> filteredList = [];
+            foreach (T asset in itemList)
             {
-                return;
-            }
+                SophonAsset? assetSelected = assetSelector(asset);
 
-            FilterAsset();
+                token.ThrowIfCancellationRequested();
+                ref SophonChunksInfo chunkInfo = ref assetSelected == null
+                    ? ref Unsafe.NullRef<SophonChunksInfo>()
+                    : ref GetChunkAssetChunksInfo(assetSelected);
 
-            return;
-
-            void FilterAsset()
-            {
-                const string       separators    = "/\\";
-                scoped Span<Range> urlPathRanges = stackalloc Range[32];
-
-                HashSet<string>.AlternateLookup<ReadOnlySpan<char>> alternateLookup =
-                    exceptMatchFieldHashSet.GetAlternateLookup<ReadOnlySpan<char>>();
-
-                List<SophonPatchAsset> filteredList = [];
-                foreach (SophonPatchAsset asset in itemList)
+                if (assetSelected != null && Unsafe.IsNullRef(ref chunkInfo))
                 {
-                    token.ThrowIfCancellationRequested();
-                    ref SophonChunksInfo chunkInfo = ref asset.MainAssetInfo == null
-                        ? ref Unsafe.NullRef<SophonChunksInfo>()
-                        : ref GetChunkAssetChunksInfo(asset.MainAssetInfo);
+                    chunkInfo = ref GetChunkAssetChunksInfoAlt(assetSelected);
+                }
 
-                    if (asset.MainAssetInfo != null && Unsafe.IsNullRef(ref chunkInfo))
-                    {
-                        chunkInfo = ref GetChunkAssetChunksInfoAlt(asset.MainAssetInfo);
-                    }
-
-                    if (Unsafe.IsNullRef(ref chunkInfo))
-                    {
-                        filteredList.Add(asset);
-                        continue;
-                    }
-
-                    ReadOnlySpan<char> manifestUrl = chunkInfo.ChunksBaseUrl;
-                    int                rangeLen    = manifestUrl.SplitAny(urlPathRanges, separators, splitOptions);
-
-                    if (rangeLen <= 0)
-                    {
-                        continue;
-                    }
-
-                    ReadOnlySpan<char> manifestStr = manifestUrl[urlPathRanges[rangeLen - 1]];
-                    if (alternateLookup.Contains(manifestStr))
-                    {
-                        continue;
-                    }
-
+                if (Unsafe.IsNullRef(ref chunkInfo))
+                {
                     filteredList.Add(asset);
+                    continue;
                 }
 
-                if (filteredList.Count == 0)
+                ReadOnlySpan<char> manifestUrl = chunkInfo.ChunksBaseUrl;
+                int                rangeLen    = manifestUrl.SplitAny(urlPathRanges, separators, SplitOptions);
+
+                if (rangeLen <= 0)
                 {
-                    return;
+                    continue;
                 }
 
-                itemList.Clear();
-                itemList.AddRange(filteredList);
+                ReadOnlySpan<char> manifestStr = manifestUrl[urlPathRanges[rangeLen - 1]];
+                if (int.TryParse(manifestStr, null, out int lookupNumber) &&
+                    exceptMatchFieldHashSet.Contains(lookupNumber))
+                {
+                    continue;
+                }
+
+                filteredList.Add(asset);
             }
 
-            HashSet<string> CreateHashSet()
+            if (filteredList.Count == 0)
             {
-                const string       lineFeedSeparators = "\r\n";
-                HashSet<string>    hashSetReturn      = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                scoped Span<Range> contentLineRange   = stackalloc Range[2];
+                return;
+            }
 
-                ReadOnlySpan<char> contentSpan = exceptMatchFieldContent.AsSpan();
-                int contentLineLen = contentSpan.SplitAny(contentLineRange, lineFeedSeparators, splitOptions);
+            itemList.Clear();
+            itemList.AddRange(filteredList);
+        }
 
-                if (contentLineLen == 0)
-                {
-                    return hashSetReturn;
-                }
+        internal static HashSet<T> CreateExceptMatchFieldHashSet<T>(string exceptMatchFieldContent)
+            where T : ISpanParsable<T>
+        {
+            const string       lineFeedSeparators = "\r\n";
+            HashSet<T>         hashSetReturn      = [];
+            scoped Span<Range> contentLineRange   = stackalloc Range[2];
 
-                contentSpan = contentSpan[contentLineRange[0]];
-                const string       separatorsChars = "|;,$#@+ ";
-                SearchValues<char> separators      = SearchValues.Create(separatorsChars);
+            ReadOnlySpan<char> contentSpan = exceptMatchFieldContent.AsSpan();
+            int contentLineLen = contentSpan.SplitAny(contentLineRange, lineFeedSeparators, SplitOptions);
 
-                foreach (Range contentMatchRange in contentSpan.SplitAny(separators))
-                {
-                    if (contentMatchRange.End.Value - contentMatchRange.Start.Value <= 0)
-                    {
-                        continue;
-                    }
-
-                    ReadOnlySpan<char> contentMatch = contentSpan[contentMatchRange].Trim(separatorsChars);
-                    hashSetReturn.Add(contentMatch.ToString());
-                }
-
+            if (contentLineLen == 0)
+            {
                 return hashSetReturn;
             }
+
+            contentSpan = contentSpan[contentLineRange[0]];
+            const string       separatorsChars = "|;,$#@+ ";
+            SearchValues<char> separators      = SearchValues.Create(separatorsChars);
+
+            foreach (Range contentMatchRange in contentSpan.SplitAny(separators))
+            {
+                if (contentMatchRange.End.Value - contentMatchRange.Start.Value <= 0)
+                {
+                    continue;
+                }
+
+                ReadOnlySpan<char> contentMatch = contentSpan[contentMatchRange].Trim(separatorsChars);
+                if (T.TryParse(contentMatch, null, out T? result))
+                {
+                    hashSetReturn.Add(result);
+                }
+            }
+
+            return hashSetReturn;
         }
     }
 }
