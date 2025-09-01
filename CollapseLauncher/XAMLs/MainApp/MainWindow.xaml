@@ -53,6 +53,47 @@
             <AnimatedVisualPlayer x:Name="IntroAnimation"
                                   AutoPlay="False"
                                   Visibility="Collapsed" />
+            <Grid x:Name="Temporary20250827CrisisIntro"
+                  Visibility="Collapsed"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Bottom"
+                  Margin="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ToggleSwitch Grid.Column="1"
+                              IsOn="{x:Bind IsEnableCrisisIntro, Mode=TwoWay}"
+                              OnContent="Disable this Crisis Intro Animation"
+                              OffContent="Enable this Crisis Intro Animation"
+                              HorizontalAlignment="Right"/>
+                <Button Grid.Column="0"
+                        PointerEntered="IntroSequenceToggle_PointerEntered"
+                        PointerExited="IntroSequenceToggle_PointerExited"
+                        Margin="0, 0, 32, 0"
+                        Opacity=".5"
+                        Style="{ThemeResource TransparentDefaultButtonStyle}"
+                        Click="Temporary20250827CrisisIntroButton_OnClick">
+                    <Grid Margin="0,0"
+                          ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"
+                                   Text="Learn more about &quot;Indonesian Government's Brutality on Democracy and Social Unfairness&quot; Crisis (by Al Jazeera)"/>
+                        <FontIcon Grid.Column="0"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"
+                                  FontSize="18"
+                                  Glyph="&#xE946;" />
+                    </Grid>
+                </Button>
+            </Grid>
             <CheckBox x:Name="IntroSequenceToggle"
                       Margin="32,32,16,24"
                       HorizontalAlignment="Right"

@@ -422,12 +422,13 @@ namespace CollapseLauncher.InstallManager.Base
                         // Remove sophon verified files
                         CleanupTempSophonVerifiedFiles();
 
+                        // ReSharper disable AccessToDisposedClosure
                         // Declare the download delegate
-                        ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
-                        // ReSharper disable once AccessToDisposedClosure
-                        {
-                            return RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
-                        }
+                        ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _) =>
+                            gameState == GameInstallStateEnum.NeedsUpdate
+                                ? RunSophonAssetUpdateThread(httpClient, asset, parallelChunksOptions)
+                                : RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
+                        // ReSharper enable AccessToDisposedClosure
 
                         // Declare the rename temp file delegate
                         async ValueTask DelegateAssetRenameTempFile(SophonAsset asset, CancellationToken token)
@@ -927,7 +928,8 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private ValueTask RunSophonAssetDownloadThread(HttpClient      client, SophonAsset asset,
+        private ValueTask RunSophonAssetDownloadThread(HttpClient      client,
+                                                       SophonAsset     asset,
                                                        ParallelOptions parallelOptions)
         {
             // If the asset is a dictionary, then return
@@ -937,11 +939,43 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Get the file path and start the write process
-            var assetName = asset.AssetName;
-            var filePath  = EnsureCreationOfDirectory(Path.Combine(GamePath, assetName));
+            string? assetName = asset.AssetName;
+            string  filePath  = EnsureCreationOfDirectory(Path.Combine(GamePath, assetName));
+
+            if (File.Exists(filePath + "_tempSophon")) // Fallback to legacy behaviour
+            {
+                return RunSophonAssetUpdateThread(client, asset, parallelOptions);
+            }
 
             // Get the target and temp file info
-            FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly(out bool isExistingFileInfoExist);
+            FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly();
+
+            return asset.WriteToStreamAsync(client,
+                                            () => existingFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite),
+                                            parallelOptions,
+                                            UpdateSophonFileTotalProgress,
+                                            UpdateSophonFileDownloadProgress,
+                                            UpdateSophonDownloadStatus
+                                           );
+        }
+
+        private ValueTask RunSophonAssetUpdateThread(HttpClient      client,
+                                                     SophonAsset     asset,
+                                                     ParallelOptions parallelOptions)
+        {
+            // If the asset is a dictionary, then return
+            if (asset.IsDirectory)
+            {
+                return ValueTask.CompletedTask;
+            }
+
+            // Get the file path and start the write process
+            string? assetName = asset.AssetName;
+            string  filePath  = EnsureCreationOfDirectory(Path.Combine(GamePath, assetName));
+
+            // Get the target and temp file info
+            FileInfo existingFileInfo =
+                new FileInfo(filePath).EnsureNoReadOnly(out bool isExistingFileInfoExist);
             FileInfo sophonFileInfo =
                 new FileInfo(filePath + "_tempSophon").EnsureNoReadOnly(out bool isSophonFileInfoExist);
 
