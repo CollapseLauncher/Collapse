@@ -62,6 +62,7 @@
                     Grid.Row="1"
                     HorizontalAlignment="Center"
                     BorderThickness="1"
+                    Click="OnClickGoToPluginDownloadCatalogButton"
                     CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(GoToPluginDownloadCatalogButton)}">
                 <Grid Margin="12,4"
                       ColumnSpacing="12">
