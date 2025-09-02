@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+// ReSharper disable CheckNamespace
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode
 // ReSharper disable RedundantIfElseBlock
@@ -216,8 +217,8 @@ namespace Hi3Helper.SentryHelper
         {
             // Handle any unhandled errors in app domain
             // https://learn.microsoft.com/en-us/dotnet/api/system.appdomain?view=net-9.0
-            var ex = a.ExceptionObject as Exception;
-            if (ex == null) return;
+            if (a.ExceptionObject is not Exception ex) return;
+
             ex.Data[Mechanism.HandledKey]   = false;
             ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             ExceptionHandler(ex, ExceptionType.UnhandledOther);
@@ -245,9 +246,10 @@ namespace Hi3Helper.SentryHelper
                 return Guid.Empty;
             }
 
-            var id = ExceptionHandlerInner(ex, exT);
-            Guid.TryParse(id.ToString(), out var guid);
-            return guid;
+            SentryId id = ExceptionHandlerInner(ex, exT);
+            return Guid.TryParse(id.ToString(), out Guid guid)
+                ? guid
+                : Guid.Empty;
         }
 
         /// <summary>
@@ -271,7 +273,7 @@ namespace Hi3Helper.SentryHelper
             await Task.Run(async () => await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10)));
         }
 
-        private static readonly Lock                    _lockObject = new();
+        private static readonly SemaphoreSlim           AsyncSemaphore = new SemaphoreSlim(1, 1);
         private static          string?                 _lastExceptionKey;
         private static          CancellationTokenSource _loopToken = new();
 
@@ -286,10 +288,8 @@ namespace Hi3Helper.SentryHelper
             {
                 await Task.Delay(20000, ct); // 20s delay
 
-                lock (_lockObject)
-                {
-                    _lastExceptionKey = null;
-                }
+                // Use atomic exchange. This has the same approach by using LockObject.
+                Interlocked.Exchange(ref _lastExceptionKey, null);
             }
             catch (Exception)
             {
@@ -325,38 +325,46 @@ namespace Hi3Helper.SentryHelper
                     return Guid.Empty;
                 }
 
-                var exKey    = $"{ex.GetType().Name}:{ex.Message}:{ex.StackTrace?.GetHashCode()}";
-                var sentryId = Guid.Empty;
-            
-                lock (_lockObject)
-                {
-                    if (exKey == _lastExceptionKey) return Guid.Empty;
+                string exKey = $"{ex.GetType().Name}:{ex.Message}:{ex.StackTrace?.GetHashCode()}";
 
-                    var oldToken = _loopToken;
-                    _loopToken        = new CancellationTokenSource();
-                    _lastExceptionKey = exKey;
-                    ExHLoopLastEx_AutoClean(_loopToken.Token); // Start auto clean loop
+                // Use semaphore to lock and wait until the previous operation is done on the same thread.
+                // Note from neon:
+                // The reason why I changed it with SemaphoreSlim is that Lock is synchronous and may cause deadlock.
+                await AsyncSemaphore.WaitAsync();
+                if (exKey == _lastExceptionKey) return Guid.Empty;
 
-                    Task.Run(async () =>
+                CancellationTokenSource oldToken = _loopToken;
+
+                _loopToken        = new CancellationTokenSource();
+                _lastExceptionKey = exKey;
+                ExHLoopLastEx_AutoClean(_loopToken.Token); // Start auto clean loop
+
+                // Detach and create a new thread.
+                _ = Task.Run(async () =>
                              {
                                  await oldToken.CancelAsync();
                                  oldToken.Dispose();
                              }, oldToken.Token);
-                }
-            
-                await Task.Run(() =>
-                               {
-                                   var id = ExceptionHandlerInner(ex, exT);
-                                   Guid.TryParse(id.ToString(), out sentryId);
-                               });
 
-                return sentryId;
+                // ReSharper disable once MethodSupportsCancellation
+                return await Task.Run(() =>
+                                      {
+                                          SentryId id = ExceptionHandlerInner(ex, exT);
+                                          return Guid.TryParse(id.ToString(), out Guid sentryId)
+                                              ? sentryId
+                                              : Guid.Empty;
+                                      });
             }
             catch (Exception err)
             {
                 Logger.LogWriteLine($"[SentryHelper::ExceptionHandler_ForLoopAsync] Failed to send exception!\r\n{err}",
                                     LogType.Error, true);
                 return Guid.Empty;
+            }
+            finally
+            {
+                // After the operation is done, release the semaphore.
+                AsyncSemaphore.Release();
             }
         }
 
@@ -384,9 +392,9 @@ namespace Hi3Helper.SentryHelper
                 try
                 {
                     string cpuName;
-                    var    env = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "Unknown CPU";
-                    var reg =
-                        Registry.GetValue("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\SYSTEM\\CentralProcessor\\0",
+                    string    env = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "Unknown CPU";
+                    object? reg =
+                        Registry.GetValue(@"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\SYSTEM\CentralProcessor\0",
                                           "ProcessorNameString", null);
                     if (reg != null)
                     {
@@ -417,16 +425,16 @@ namespace Hi3Helper.SentryHelper
                                 .OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\");
                     if (baseKey != null)
                     {
-                        foreach (var subKeyName in baseKey.GetSubKeyNames())
+                        foreach (string subKeyName in baseKey.GetSubKeyNames())
                         {
                             if (!int.TryParse(subKeyName, out int subKeyInt) || subKeyInt < 0 || subKeyInt > 9999)
                                 continue;
 
-                            var gpuName       = "Unknown GPU";
-                            var driverVersion = "Unknown Driver Version";
+                            string? gpuName       = "Unknown GPU";
+                            string? driverVersion = "Unknown Driver Version";
                             try
                             {
-                                using var subKey = baseKey.OpenSubKey(subKeyName);
+                                using RegistryKey? subKey = baseKey.OpenSubKey(subKeyName);
                                 if (subKey == null) continue;
 
                                 gpuName       = subKey.GetValue("DriverDesc") as string;
@@ -457,7 +465,7 @@ namespace Hi3Helper.SentryHelper
         private static Breadcrumb? _buildInfo;
 
         private static Breadcrumb BuildInfo =>
-            _buildInfo ??= new("Build Info", "commit", new Dictionary<string, string>
+            _buildInfo ??= new Breadcrumb("Build Info", "commit", new Dictionary<string, string>
             {
                 { "Branch", AppBuildBranch },
                 { "Commit", AppBuildCommit },
@@ -468,7 +476,7 @@ namespace Hi3Helper.SentryHelper
         private static Breadcrumb? _cpuInfo;
 
         private static Breadcrumb CpuInfo =>
-            _cpuInfo ??= new("CPU Info", "system.cpu", new Dictionary<string, string>
+            _cpuInfo ??= new Breadcrumb("CPU Info", "system.cpu", new Dictionary<string, string>
             {
                 { "CPU Name", CpuName },
                 { "Total Thread", CpuThreadsTotal.ToString() }
@@ -477,10 +485,10 @@ namespace Hi3Helper.SentryHelper
         private static Breadcrumb? _gpuInfo;
 
         private static Breadcrumb GpuInfo =>
-            _gpuInfo ??= new("GPU Info", "system.gpu",
-                             GetGpuInfo.ToDictionary(item => item.GpuName,
-                                                     item => item.DriverVersion),
-                             "GPUInfo");
+            _gpuInfo ??= new Breadcrumb("GPU Info", "system.gpu",
+                                        GetGpuInfo.ToDictionary(item => item.GpuName,
+                                                                item => item.DriverVersion),
+                                        "GPUInfo");
 
         private static Breadcrumb GameInfo =>
             new("Current Loaded Game Info", "game", new Dictionary<string, string>
@@ -508,10 +516,10 @@ namespace Hi3Helper.SentryHelper
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 
             string? methodName = null;
-            var     st         = ex.StackTrace;
+            string? st         = ex.StackTrace;
             if (st != null)
             {
-                var m = ExceptionFrame().Match(st);
+                Match m = ExceptionFrame().Match(st);
                 methodName = m.Success ? m.Value : null;
             }
 
@@ -524,7 +532,7 @@ namespace Hi3Helper.SentryHelper
                                                 };
 
         #pragma warning disable CS0162 // Unreachable code detected
-            var logPath = LoggerBase.LogPath;
+            string? logPath = LoggerBase.LogPath;
             if (logPath != null && SentryUploadLog) // Upload log file if enabled
                 // ReSharper disable once HeuristicUnreachableCode
             {
@@ -533,12 +541,12 @@ namespace Hi3Helper.SentryHelper
                 else
                 {
                     // Trim to the last 100 lines of log
-                    var logLines = GetLastLinesWithBuffer(logPath, 100);
-                    var logStream = new MemoryStream();
+                    string[] logLines = GetLastLinesWithBuffer(logPath, 100);
+                    MemoryStream logStream = new MemoryStream();
 
-                    using (var writer = new StreamWriter(logStream, Encoding.UTF8, leaveOpen: true)) // Write lines to memory stream
+                    using (StreamWriter writer = new StreamWriter(logStream, Encoding.UTF8, leaveOpen: true)) // Write lines to memory stream
                     {
-                        foreach (var line in logLines) writer.WriteLine(line);
+                        foreach (string line in logLines) writer.WriteLine(line);
                     }
                     logStream.Position = 0; // Reset stream position to the beginning
                     
@@ -575,7 +583,7 @@ namespace Hi3Helper.SentryHelper
                 return false;
             }
 
-            var sId = new SentryId(sentryId);
+            SentryId sId = new SentryId(sentryId);
             SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
             return true;
         }
@@ -599,29 +607,28 @@ namespace Hi3Helper.SentryHelper
         #endregion
 
         #region Private Tools
-
         private static unsafe string[] GetLastLinesWithBuffer(string filePath, int maxLines)
         {
             const int bufferSize     = 8192; // 8 KB buffer
             const int lineBufferSize = bufferSize / 2;
-            var       lines          = new string[maxLines];
-            var       lineIndex      = 0;
-            var       totalLines     = 0;
+            string[]  lines          = new string[maxLines];
+            int       lineIndex      = 0;
+            int       totalLines     = 0;
 
-            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
-                                                  bufferSize, FileOptions.SequentialScan);
+            using FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
+                                                         bufferSize, FileOptions.SequentialScan);
 
-            var buffer     = stackalloc byte[bufferSize];
-            var lineBuffer = stackalloc char[lineBufferSize]; // Max line length buffer
-            var lineLength = 0;
+            byte* buffer     = stackalloc byte[bufferSize];
+            char* lineBuffer = stackalloc char[lineBufferSize]; // Max line length buffer
+            int   lineLength = 0;
 
             int bytesRead;
 
             while ((bytesRead = fileStream.Read(new Span<byte>(buffer, bufferSize))) > 0)
             {
-                for (var i = 0; i < bytesRead; i++)
+                for (int i = 0; i < bytesRead; i++)
                 {
-                    var b = buffer[i];
+                    byte b = buffer[i];
 
                     if (b == '\n')
                     {
@@ -661,11 +668,11 @@ namespace Hi3Helper.SentryHelper
             }
 
             // Extract lines in correct order
-            var resultCount = Math.Min(totalLines, maxLines);
-            var result      = new string[resultCount];
-            var startIndex  = totalLines > maxLines ? lineIndex : 0;
+            int      resultCount = Math.Min(totalLines, maxLines);
+            string[] result      = new string[resultCount];
+            int      startIndex  = totalLines > maxLines ? lineIndex : 0;
 
-            for (var i = 0; i < resultCount; i++)
+            for (int i = 0; i < resultCount; i++)
             {
                 result[i] = lines[(startIndex + i) % maxLines];
             }
