@@ -3,8 +3,9 @@ using Sentry;
 using Sentry.Extensibility;
 using Sentry.Infrastructure;
 using System;
-using System.Text;
+using System.Buffers;
 using static Hi3Helper.Logger;
+// ReSharper disable CheckNamespace
 
 namespace Hi3Helper.SentryHelper;
 
@@ -33,10 +34,10 @@ public abstract class LogToNativeLogger : IDiagnosticLogger
 
         // Important: Only format the string if there are args passed.
         // Otherwise, a pre-formatted string that contains braces can cause a FormatException.
-        var text = args.Length == 0 ? message : string.Format(message, args);
-        var formattedMessage = ScrubNewlines(text);
+        string text = args.Length == 0 ? message : string.Format(message, args);
+        string formattedMessage = ScrubNewlines(text);
 
-        var completeMessage = exception == null
+        string completeMessage = exception == null
             ? $"{formattedMessage}"
             : $"{formattedMessage}{Environment.NewLine}{exception}";
 
@@ -50,41 +51,66 @@ public abstract class LogToNativeLogger : IDiagnosticLogger
     /// <param name="logLevel">The level of the log.</param>
     protected abstract void LogMessage(string message, SentryLevel logLevel);
 
+    private static readonly SearchValues<char> NewLineFeed = SearchValues.Create("\r\n");
+
     private static string ScrubNewlines(string s)
     {
-        // Replaces "\r", "\n", or "\r\n" with a single space in one pass (and trims the end result)
-
-        var sb = new StringBuilder(s.Length);
-
-        for (var i = 0; i < s.Length; i++)
+        if (s.Length == 0)
         {
-            var c = s[i];
-            switch (c)
+            return s;
+        }
+
+        const int  maxStackallocBufferSize = 1 << 10;
+        const char spaceChar               = ' ';
+
+        char[]? poolBuffer = s.Length > maxStackallocBufferSize ? ArrayPool<char>.Shared.Rent(s.Length) : null;
+        scoped Span<char> buffer = poolBuffer ?? stackalloc char[s.Length];
+
+        try
+        {
+            int                written = 0;
+            ReadOnlySpan<char> sAsSpan = s;
+
+            // Remove line feed characters: "\r", "\n" or both by using SplitAny extension.
+            foreach (Range newLineFeed in sAsSpan.SplitAny(NewLineFeed))
             {
-                case '\r':
-                    sb.Append(' ');
-                    if (i < s.Length - 1 && s[i + 1] == '\n')
-                    {
-                        i++; // to prevent two consecutive spaces from "\r\n"
-                    }
-                    break;
-                case '\n':
-                    sb.Append(' ');
-                    break;
-                default:
-                    sb.Append(c);
-                    break;
+                ReadOnlySpan<char> curSpan = sAsSpan[newLineFeed];
+
+                // To prevent two consecutive spaces. In this way, we don't need to check "\r\n" as
+                // it's already trimmed by the SplitAny extension.
+                if (curSpan.IsEmpty)
+                {
+                    continue;
+                }
+
+                curSpan.CopyTo(buffer[written..]);   // Do block copy instead of appending characters one by one.
+                written           += curSpan.Length; // Advance the length of the buffer to write into.
+                buffer[written++] =  spaceChar;      // Append space and advance the length.
+            }
+
+            // If length is 0, then return an empty string.
+            if (written == 0)
+            {
+                return string.Empty;
+            }
+
+            // Trim trailing space character by subtracting the length.
+            while (written > 0 &&
+                   buffer[written - 1] == spaceChar)
+            {
+                --written;
+            }
+
+            // Write string from the buffer with specified length.
+            return new string(buffer[..written]);
+        }
+        finally
+        {
+            if (poolBuffer != null)
+            {
+                ArrayPool<char>.Shared.Return(poolBuffer);
             }
         }
-
-        // trim end and return
-        var len = sb.Length;
-        while (sb[len - 1] == ' ')
-        {
-            len--;
-        }
-
-        return sb.ToString(0, len);
     }
 }
 
