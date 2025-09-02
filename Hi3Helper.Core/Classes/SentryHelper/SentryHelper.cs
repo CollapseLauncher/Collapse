@@ -545,15 +545,24 @@ namespace Hi3Helper.SentryHelper
                     using FileStream logFileStream =
                         new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-                    TailLinesFromStream(logFileStream, logStream, 100);
-                    logStream.Position = 0; // Reset stream position to the beginning
-
-                    return SentrySdk.CaptureException(ex, s =>
+                    bool isSuccessTailing = TryTailLinesFromStream(logFileStream, logStream, 100);
+                    if (!isSuccessTailing)
+                    {
+                        // Send only the exception without providing attachment if fails on tailing.
+                        logStream.Dispose();
+                        return SentrySdk.CaptureException(ex);
+                    }
+                    else
+                    {
+                        logStream.Position = 0; // Reset stream position to the beginning
+                        return SentrySdk.CaptureException(ex,
+                                                          s =>
                                                           {
                                                               s.AddAttachment(logStream,
                                                                               Path.GetFileName(logPath),
                                                                               AttachmentType.Default, "text/plain");
                                                           });
+                    }
                 }
             }
             else
@@ -604,7 +613,7 @@ namespace Hi3Helper.SentryHelper
         #endregion
 
         #region Private Tools
-        private static unsafe void TailLinesFromStream(Stream sourceStream, Stream targetStream, int maxLines, int bufferSize = 8 << 10) // == 8K buffer
+        private static unsafe bool TryTailLinesFromStream(Stream sourceStream, Stream targetStream, int maxLines, int bufferSize = 8 << 10) // == 8K buffer
         {
             // This approach reads the stream from the end backwards to find the last `maxLines` lines.
 
@@ -624,85 +633,96 @@ namespace Hi3Helper.SentryHelper
             sourceStream.Seek(0, SeekOrigin.End);
 
             // Automatic buffer rent or allocating from stack
-            byte[]? poolBuffer = bufferSize > 8 << 10 ? ArrayPool<byte>.Shared.Rent(bufferSize) : null;
-            scoped Span<byte> buffer = poolBuffer ?? stackalloc byte[bufferSize];
+            byte[]?           poolBuffer = bufferSize > 8 << 10 ? ArrayPool<byte>.Shared.Rent(bufferSize) : null;
+            scoped Span<byte> buffer     = poolBuffer ?? stackalloc byte[bufferSize];
 
-            // Do the do
-            do
+            try
             {
-                // Get the minimum bytes to read, just in case if the file is smaller than buffer size
-                int toRead = (int)Math.Min(bufferSize, currentPos);
-                if (toRead == 0)
+                // Do the do
+                do
                 {
-                    break;
-                }
-
-                // Seek to the position - buffer to read
-                sourceStream.Position = currentPos - toRead;
-                int readBytes = sourceStream.ReadAtLeast(buffer[..toRead], toRead, false);
-                currentPos -= readBytes;
-
-                Span<byte> readData = buffer[..readBytes];
-                int        offset   = readData.Length;
-
-                // Scan character backwards
-                while (offset > 0)
-                {
-                    // Not new line feed? Skip
-                    if (readData[--offset] != lineFeedByteChar)
+                    // Get the minimum bytes to read, just in case if the file is smaller than buffer size
+                    int toRead = (int)Math.Min(bufferSize, currentPos);
+                    if (toRead == 0)
                     {
-                        continue;
+                        break;
                     }
 
-                    // Try skip trailing chars (including return char)
-                    if (isFirst)
+                    // Seek to the position - buffer to read
+                    sourceStream.Position = currentPos - toRead;
+                    int readBytes = sourceStream.ReadAtLeast(buffer[..toRead], toRead, false);
+                    currentPos -= readBytes;
+
+                    Span<byte> readData = buffer[..readBytes];
+                    int        offset   = readData.Length;
+
+                    // Scan character backwards
+                    while (offset > 0)
                     {
-                        --endWriteFromPos;
-                        while (offset > 0 &&
-                               (readData[offset - 1] == returnByteChar ||
-                                readData[offset - 1] == lineFeedByteChar))
+                        // Not new line feed? Skip
+                        if (readData[--offset] != lineFeedByteChar)
                         {
-                            --endWriteFromPos;
-                            --offset;
+                            continue;
                         }
 
-                        isFirst = false;
-                        continue;
+                        // Try skip trailing chars (including return char)
+                        if (isFirst)
+                        {
+                            --endWriteFromPos;
+                            while (offset > 0 &&
+                                   (readData[offset - 1] == returnByteChar ||
+                                    readData[offset - 1] == lineFeedByteChar))
+                            {
+                                --endWriteFromPos;
+                                --offset;
+                            }
+
+                            isFirst = false;
+                            continue;
+                        }
+
+                        // Found a new line feed, count down
+                        --maxLines;
+                        if (maxLines != 0)
+                        {
+                            continue;
+                        }
+
+                        // Set the current stream position for the next read scan
+                        currentPos = currentPos + offset + 1;
+                        break;
                     }
 
-                    // Found a new line feed, count down
-                    --maxLines;
-                    if (maxLines != 0)
-                    {
-                        continue;
-                    }
+                    // Set the position to write from
+                    startWriteFromPos = currentPos;
+                } while (maxLines > 0);
 
-                    // Set the current stream position for the next read scan
-                    currentPos = currentPos + offset + 1;
-                    break;
+                sourceStream.Position = startWriteFromPos;
+
+                // Now copy the data to the target stream.
+                long remainedBytes = endWriteFromPos - startWriteFromPos;
+                while (remainedBytes != 0)
+                {
+                    int toWrite = (int)Math.Min(bufferSize, remainedBytes);
+                    int read    = sourceStream.Read(buffer[..toWrite]);
+                    if (read == 0) break;
+
+                    targetStream.Write(buffer[..read]);
+                    remainedBytes -= read;
                 }
 
-                // Set the position to write from
-                startWriteFromPos = currentPos;
-            } while (maxLines > 0);
-
-            sourceStream.Position = startWriteFromPos;
-
-            // Now copy the data to the target stream.
-            long remainedBytes = endWriteFromPos - startWriteFromPos;
-            while (remainedBytes != 0)
-            {
-                int toWrite = (int)Math.Min(bufferSize, remainedBytes);
-                int read = sourceStream.Read(buffer[..toWrite]);
-                if (read == 0) break;
-
-                targetStream.Write(buffer[..read]);
-                remainedBytes -= read;
+                return true;
             }
-
-            if (poolBuffer != null)
+            catch
             {
-                ArrayPool<byte>.Shared.Return(poolBuffer);
+                return false;
+            }
+            finally
+            {
+                if (poolBuffer != null)
+                {
+                    ArrayPool<byte>.Shared.Return(poolBuffer);
+                }
             }
         }
         #endregion
