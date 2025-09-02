@@ -3,11 +3,11 @@ using Microsoft.Win32;
 using Sentry;
 using Sentry.Protocol;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -540,17 +540,14 @@ namespace Hi3Helper.SentryHelper
                     return SentrySdk.CaptureException(ex);
                 else
                 {
-                    // Trim to the last 100 lines of log
-                    string[] logLines = GetLastLinesWithBuffer(logPath, 100);
+                    // Tail to the last 100 lines of log
                     MemoryStream logStream = new MemoryStream();
+                    using FileStream logFileStream =
+                        new FileStream(logPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
 
-                    using (StreamWriter writer = new StreamWriter(logStream, Encoding.UTF8, leaveOpen: true)) // Write lines to memory stream
-                    {
-                        foreach (string line in logLines) writer.WriteLine(line);
-                    }
+                    TailLinesFromStream(logFileStream, logStream, 100);
                     logStream.Position = 0; // Reset stream position to the beginning
-                    
-                    //var logStream = File.ReadLines(logPath).Tail(100).ToMemoryStream();
+
                     return SentrySdk.CaptureException(ex, s =>
                                                           {
                                                               s.AddAttachment(logStream,
@@ -607,79 +604,107 @@ namespace Hi3Helper.SentryHelper
         #endregion
 
         #region Private Tools
-        private static unsafe string[] GetLastLinesWithBuffer(string filePath, int maxLines)
+        private static unsafe void TailLinesFromStream(Stream sourceStream, Stream targetStream, int maxLines, int bufferSize = 8 << 10) // == 8K buffer
         {
-            const int bufferSize     = 8192; // 8 KB buffer
-            const int lineBufferSize = bufferSize / 2;
-            string[]  lines          = new string[maxLines];
-            int       lineIndex      = 0;
-            int       totalLines     = 0;
+            // This approach reads the stream from the end backwards to find the last `maxLines` lines.
 
-            using FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
-                                                         bufferSize, FileOptions.SequentialScan);
+            if (!sourceStream.CanSeek)
+                throw new ArgumentException("Source stream must support seeking.", nameof(sourceStream));
 
-            byte* buffer     = stackalloc byte[bufferSize];
-            char* lineBuffer = stackalloc char[lineBufferSize]; // Max line length buffer
-            int   lineLength = 0;
+            const byte returnByteChar   = (byte)'\r';
+            const byte lineFeedByteChar = (byte)'\n';
 
-            int bytesRead;
+            long currentPos        = sourceStream.Length;
+            long endWriteFromPos   = currentPos;
+            long startWriteFromPos = 0;
 
-            while ((bytesRead = fileStream.Read(new Span<byte>(buffer, bufferSize))) > 0)
+            bool isFirst = true;
+
+            // Seek to the end
+            sourceStream.Seek(0, SeekOrigin.End);
+
+            // Automatic buffer rent or allocating from stack
+            byte[]? poolBuffer = bufferSize > 8 << 10 ? ArrayPool<byte>.Shared.Rent(bufferSize) : null;
+            scoped Span<byte> buffer = poolBuffer ?? stackalloc byte[bufferSize];
+
+            // Do the do
+            do
             {
-                for (int i = 0; i < bytesRead; i++)
+                // Get the minimum bytes to read, just in case if the file is smaller than buffer size
+                int toRead = (int)Math.Min(bufferSize, currentPos);
+                if (toRead == 0)
                 {
-                    byte b = buffer[i];
-
-                    if (b == '\n')
-                    {
-                        // Convert accumulated bytes to string
-                        if (lineLength > 0)
-                        {
-                            // Handle potential \r\n by removing trailing \r
-                            if (lineBuffer[lineLength - 1] == '\r')
-                                lineLength--;
-
-                            lines[lineIndex] = new string(lineBuffer, 0, lineLength);
-                        }
-                        else
-                        {
-                            lines[lineIndex] = string.Empty;
-                        }
-
-                        lineIndex = (lineIndex + 1) % maxLines;
-                        totalLines++;
-                        lineLength = 0;
-                    }
-                    else if (b != '\r') // Skip \r characters
-                    {
-                        if (lineLength < lineBufferSize - 1) // Prevent buffer overflow
-                        {
-                            lineBuffer[lineLength++] = (char)b;
-                        }
-                    }
+                    break;
                 }
-            }
 
-            // Handle last line if file doesn't end with newline
-            if (lineLength > 0)
+                // Seek to the position - buffer to read
+                sourceStream.Position = currentPos - toRead;
+                int readBytes = sourceStream.ReadAtLeast(buffer[..toRead], toRead, false);
+                currentPos -= readBytes;
+
+                Span<byte> readData = buffer[..readBytes];
+                int        offset   = readData.Length;
+
+                // Scan character backwards
+                while (offset > 0)
+                {
+                    // Not new line feed? Skip
+                    if (readData[--offset] != lineFeedByteChar)
+                    {
+                        continue;
+                    }
+
+                    // Try skip trailing chars (including return char)
+                    if (isFirst)
+                    {
+                        --endWriteFromPos;
+                        while (offset > 0 &&
+                               (readData[offset - 1] == returnByteChar ||
+                                readData[offset - 1] == lineFeedByteChar))
+                        {
+                            --endWriteFromPos;
+                            --offset;
+                        }
+
+                        isFirst = false;
+                        continue;
+                    }
+
+                    // Found a new line feed, count down
+                    --maxLines;
+                    if (maxLines != 0)
+                    {
+                        continue;
+                    }
+
+                    // Set the current stream position for the next read scan
+                    currentPos = currentPos + offset + 1;
+                    break;
+                }
+
+                // Set the position to write from
+                startWriteFromPos = currentPos;
+            } while (maxLines > 0);
+
+            sourceStream.Position = startWriteFromPos;
+
+            // Now copy the data to the target stream.
+            long remainedBytes = endWriteFromPos - startWriteFromPos;
+            while (remainedBytes != 0)
             {
-                lines[lineIndex] = new string(lineBuffer, 0, lineLength);
-                totalLines++;
+                int toWrite = (int)Math.Min(bufferSize, remainedBytes);
+                int read = sourceStream.Read(buffer[..toWrite]);
+                if (read == 0) break;
+
+                targetStream.Write(buffer[..read]);
+                remainedBytes -= read;
             }
 
-            // Extract lines in correct order
-            int      resultCount = Math.Min(totalLines, maxLines);
-            string[] result      = new string[resultCount];
-            int      startIndex  = totalLines > maxLines ? lineIndex : 0;
-
-            for (int i = 0; i < resultCount; i++)
+            if (poolBuffer != null)
             {
-                result[i] = lines[(startIndex + i) % maxLines];
+                ArrayPool<byte>.Shared.Return(poolBuffer);
             }
-
-            return result;
         }
-
         #endregion
     }
 }
