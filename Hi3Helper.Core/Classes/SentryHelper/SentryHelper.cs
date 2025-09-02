@@ -543,7 +543,7 @@ namespace Hi3Helper.SentryHelper
                     // Tail to the last 100 lines of log
                     MemoryStream logStream = new MemoryStream();
                     using FileStream logFileStream =
-                        new FileStream(logPath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                        new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
                     TailLinesFromStream(logFileStream, logStream, 100);
                     logStream.Position = 0; // Reset stream position to the beginning
