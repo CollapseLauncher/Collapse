@@ -26,14 +26,7 @@ While Collapse itself does not collect the information outlined above, we utiliz
 - Purpose: Main Content Delivery Network (CDN) Provider
 - Information collected: IP address, country, city, and internet service provider (ISP) used to access the service.
 - Privacy policies: 
-  https://www.cloudflare.com/privacypolicy/; https://www.cloudflare.com/trust-hub/gdpr/; 
-
-#### Service Provider: CODING; Tencent Cloud Computing (Beijing) Co., Ltd.
-- Purpose: Content Delivery Network (CDN) Provider
-- Information collected: Monitoring Log (URL access path, IP address, user agent of the browser (OS type and version, CPU type, browser type and version, browser rendering engine, browser language and plug-in))
-- Privacy policies:
-  https://www.tencentcloud.com/document/product/1133/45791
-- Opt-out: You can change the CDN provider by going to the application settings.
+  https://www.cloudflare.com/privacypolicy/; https://www.cloudflare.com/trust-hub/gdpr/;
 
 #### Service Provider: CNB; Tencent Cloud Computing (Beijing) Co., Ltd.
 - Purpose: Content Delivery Network (CDN) Provider

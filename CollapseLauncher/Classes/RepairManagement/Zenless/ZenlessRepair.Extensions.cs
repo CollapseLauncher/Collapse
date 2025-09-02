@@ -84,7 +84,8 @@ namespace CollapseLauncher
                     isForceStoreInPersistent = manifest.IsPersistentFile,
                     isPatch = manifest.IsPersistentFile,
                     md5 = Convert.ToHexStringLower(manifest.Xxh64Hash),
-                    remoteName = manifest.FileRelativePath
+                    remoteName = manifest.FileRelativePath,
+                    associatedObject = manifest
                 };
             }
         }
@@ -143,6 +144,7 @@ namespace CollapseLauncher
                     asset.fileSize,
                     asset.md5,
                     FileType.Generic,
+                    asset.associatedObject,
                     asset.isPatch);
 
             ReadOnlySpan<char> relTypeRelativePath = asRemoteProperty.GetAssetRelativePath(out RepairAssetType assetType);
@@ -189,6 +191,7 @@ namespace CollapseLauncher
                                                                                long fileSize,
                                                                                string hash,
                                                                                FileType type = FileType.Generic,
+                                                                               object associatedObject = null!,
                                                                                bool isPatchApplicable = false)
         {
             string remoteAbsolutePath = type switch
@@ -205,7 +208,8 @@ namespace CollapseLauncher
                 S = fileSize,
                 N = localAbsolutePath,
                 RN = remoteAbsolutePath,
-                IsPatchApplicable = isPatchApplicable
+                IsPatchApplicable = isPatchApplicable,
+                AssociatedObject = associatedObject
             };
         }
 

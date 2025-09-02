@@ -4,6 +4,7 @@ using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using H.NotifyIcon;
@@ -600,28 +601,41 @@ public partial class HomePage
     #endregion
 
     #region Game Resizable Window Payload
-    private async void StartResizableWindowPayload(string       executableName, IGameSettingsUniversal settings,
-                                                   GameNameType gameType,       int? height, int? width)
+    private async void StartResizableWindowPayload(string                 executableName,
+                                                   IGameSettingsUniversal settings,
+                                                   PresetConfig           gamePreset,
+                                                   int?                   height,
+                                                   int?                   width)
     {
         try
         {
+            GameNameType gameType = gamePreset.GameType;
+
             // Check if the game is using Resizable Window settings
             if (!settings.SettingsCollapseScreen.UseResizableWindow) return;
             ResizableWindowHookToken = new CancellationTokenSource();
 
-            executableName = Path.GetFileNameWithoutExtension(executableName);
-            var gameExecutableDirectory = CurrentGameProperty.GameVersion?.GameDirPath;
+            while (!ResizableWindowHookToken.IsCancellationRequested &&
+                   !CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out _, out _))
+            {
+                await Task.Delay(200, ResizableWindowHookToken.Token);
+            }
+
+            string gameExecutablePath = Path.Combine(CurrentGameProperty.GameVersion?.GameDirPath.NormalizePath() ?? "",
+                                                     executableName.NormalizePath());
+            executableName = Path.GetFileNameWithoutExtension(gameExecutablePath);
+            var gameExecutableDirectory = Path.GetDirectoryName(gameExecutablePath);
             if (string.IsNullOrEmpty(gameExecutableDirectory))
             {
                 LogWriteLine("Game executable directory is not set! Cannot start Resizable Window payload!", LogType.Error);
                 return;
             }
 
-            // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
-            // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
+            // Set the pos + size reinitialization to true if the game is Honkai: Star Rail or ZZZ
+            // This is required for Honkai: Star Rail or ZZZ since the game will reset its pos + size. Making
             // it impossible to use custom resolution (but since you are using Collapse, it's now
             // possible :teriStare:)
-            bool isNeedToResetPos = gameType == GameNameType.StarRail;
+            bool isNeedToResetPos = gameType is GameNameType.StarRail or GameNameType.Zenless;
             await Task.Run(() => ResizableWindowHook.StartHook(executableName,
                                                                height,
                                                                width,
@@ -888,6 +902,16 @@ public partial class HomePage
                                 AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
                         #endif
 
+                            int height = gameSettings.SettingsScreen?.height ?? 0;
+                            int width  = gameSettings.SettingsScreen?.width ?? 0;
+
+                            // Start the resizable window payload
+                            StartResizableWindowPayload(gamePreset.GameExecutableName,
+                                                        gameSettings,
+                                                        gamePreset,
+                                                        height,
+                                                        width);
+
                             Task ProcessAwaiter(CancellationToken x) =>
                                 // ReSharper disable once AccessToDisposedClosure
                                 currentGameProcess?.WaitForExitAsync(x) ?? (!usePluginGameLaunchApi
@@ -895,14 +919,6 @@ public partial class HomePage
                                     : ((PluginPresetConfigWrapper)presetConfig).RunGameContext.WaitRunningGameAsync(x));
 
                             _ = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
-
-                            int height = gameSettings.SettingsScreen?.height ?? 0;
-                            int width  = gameSettings.SettingsScreen?.width ?? 0;
-
-                            // Start the resizable window payload
-                            StartResizableWindowPayload(gamePreset.GameExecutableName,
-                                                        gameSettings,
-                                                        gamePreset.GameType, height, width);
 
                             await ProcessAwaiter(token);
 

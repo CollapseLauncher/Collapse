@@ -882,7 +882,6 @@
     "CDNDescription_Cloudflare": "Cloudflare R2が提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_Bitbucket": "Bitbucketが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_GitLab": "GitLabが提供する公式(メイン)リポジトリのミラー。",
-    "CDNDescription_Coding": "Codingが提供する公式(メイン)リポジトリのミラー。",
     "CDNDescription_CNB": "CNBが提供する公式(メイン)リポジトリのミラー。",
 
     "LocateExecutable": "プログラムを紐づけ",
@@ -1185,15 +1184,6 @@
     "UserFeedback_SubmitBtn_Processing": "送信中…",
     "UserFeedback_SubmitBtn_Completed": "送信完了！",
     "UserFeedback_SubmitBtn_Cancelled": "キャンセルしました！",
-
-    "PostInstallBehaviour_Title": "インストール/アップデート後の挙動",
-    "PostInstallBehaviour_Subtitle": "インストール/アップデートが完了した時、",
-    "PostInstallBehaviour_Subtitle2": "再起動/シャットダウンする前の待機時間",
-    "PostInstallBehaviour_EnumNothing": "何もしない",
-    "PostInstallBehaviour_EnumStartGame": "ゲームを起動",
-    "PostInstallBehaviour_EnumHibernate": "スリープ",
-    "PostInstallBehaviour_EnumRestart": "PCを再起動",
-    "PostInstallBehaviour_EnumShutdown": "PCをシャットダウン",
 
     "PluginManagerUpdateAvailableTitle": " {0}個のプラグインをアップデートできます！",
     "PluginManagerUpdateAvailableSubtitle1": "アップデート可能なプラグインが{0}個あります。以下のプラグインの更新を適用するには、ランチャーの再起動が必要です。",
