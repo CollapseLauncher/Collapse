@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Copiar Todo al Portapapeles",
     "CopyClipboardBtn2": "¡Copiado al Portapapeles!",
     "GoBackPageBtn1": "Volver a la Página Anterior",
-    
+
     "CustomBackground_NotFound": "¡No se encontró el archivo de fondo personalizado! Se usara la imagen por defecto",
     "CustomBackground_RegionalTag": "Fondo Región",
     "CustomBackground_GlobalTag": "Fondo Global"
@@ -718,7 +718,71 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "Determina cuanto es el tiempo máximo permitido para la respuesta (en minutos).",
     "HttpCacheMaxExpireTimeBoxMinutes": "minutos",
     "HttpCacheClearButton": "Borrar caché de red",
-    "HttpCacheClearedText": "¡Los cachés han sido borrados!"
+    "HttpCacheClearedText": "¡Los cachés han sido borrados!",
+
+    "Plugin_LoadedInfoTitle": "Información de los plugins cargados",
+    "Plugin_OpenManagerBtn": "Abrir menú de gestión de plugins",
+    "Plugin_AuthorBy": "por {0}",
+    "Plugin_LoadedInfoDesc": "Descripción",
+    "Plugin_LoadedInfoPluginVer": "Versión de Plugin",
+    "Plugin_LoadedInfoInterfaceVer": "Versión de interfaz",
+    "Plugin_LoadedInfoCreationDate": "Fecha de creación",
+    "Plugin_LoadedInfoMainLibLocation": "Ubicación biblioteca principal",
+    "Plugin_LoadedInfoLoadedPresets": "Preajustes cargados",
+    "Plugin_LoadedInfoClipboardCopied": "¡Información copiada!",
+    "Plugin_PluginInfoNameUnknown": "Desconocido",
+    "Plugin_PluginInfoDescUnknown": "Sin Descripción",
+    "Plugin_PluginInfoAuthorUnknown": "Autor Desconocido"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "Menú de gestión de plugins",
+
+    "FileDialogTitle": "Importar Plugin a Collapse Launcher",
+    "FileDialogFileFilter1": "Collapse Launcher Plugin",
+
+    "LeftPanelNoPluginTitle": "¡No tienes cargado ningún plugin!",
+    "LeftPanelNoPluginButton1": "Entra en el",
+    "LeftPanelNoPluginButton2": "Catálogo de Plugin",
+    "LeftPanelNoPluginButton3": " ",
+
+    "LeftPanelListViewTitle": "Información del plugin cargado",
+
+    "ListViewMainActionButton1": "Comprobar actualizaciones de plugins",
+    "ListViewMainActionButton1AltChecking": "Comprobando actualizaciones...",
+    "ListViewMainActionButton2": "Descargar actualizaciones de plugins",
+    "ListViewMainActionButton3": "Habilitar la actualización automática de plugins al iniciar",
+
+    "ListViewItemContextButton1": "Desinstalar plugins seleccionados",
+    "ListViewItemContextButton2": "Restaurar plugin seleccionados",
+    "ListViewItemContextButton3": "Habilitar plugins seleccionados",
+    "ListViewItemContextButton4": "Deshabilitar plugins seleccionados",
+    "ListViewItemContextButton5": "Actualizar plugins seleccionados",
+    "ListViewItemContextButton6": "Abrir carpeta de plugin actual",
+    "ListViewItemContextButton7": "Abrir carpeta de plugins de Collapse Launcher",
+    "ListViewItemContextButton8": "Actualizar plugin actual",
+
+    "ListViewItemContentButton1": "Desinstalar plugin",
+    "ListViewItemContentButton2": "Restaurar plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Comprobar solo actualizaciones",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Comprobar y descargar actualizaciones",
+    "ListViewItemContextButtonDownloadUpdate": "Descargar actualización",
+
+    "ListViewItemUpdateStatusAvailable": "¡Actualización disponible!",
+    "ListViewItemUpdateStatusAvailableButton": "Actualizar a {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Actualizando ({0}%)...",
+    "ListViewItemUpdateStatusCompleted": "Tu plugin fue actualizado a {0}. ¡Por favor reinicia el launcher para aplicar los cambios!",
+    "ListViewItemUpdateStatusChecking": "Buscando actualizaciones...",
+    "ListViewItemUpdateStatusUpToDate": "¡Los plugins están actualizados!",
+
+    "ListViewFooterWarning1": "¡Tienes que reiniciar el launcher para aplicar los cambios!",
+    "ListViewFooterRestartButton": "Reiniciar el Launcher",
+
+    "RightPanelImportTitle1": "Arrastra el",
+    "RightPanelImportTitle2": "o",
+    "RightPanelImportTitle3": "aquí",
+    "RightPanelImportTitle4": "o haga clic en este cuadro para importar el plugin"
   },
 
   "_Misc": {
@@ -741,6 +805,7 @@
     "EverythingIsOkay": "¡Todo Bien!",
     "Cancel": "Cancelar",
     "Close": "Cerrar",
+    "CloseOverlay": "Cerrar Superposición (Overlay)",
     "UseCurrentDir": "Usar directorio actual",
     "UseDefaultDir": "Usar directorio predeterminado",
     "MoveToDifferentDir": "Mover a otra ubicación ",
@@ -1120,6 +1185,17 @@
     "UserFeedback_SubmitBtn_Completed": "¡Completado!",
     "UserFeedback_SubmitBtn_Cancelled": "¡Cancelado!",
 
+    "PluginManagerUpdateAvailableTitle": "¡Tienes {0} Plugin(s) para ser actualizado(s)!",
+    "PluginManagerUpdateAvailableSubtitle1": "Hay disponible {0} actualización(es) de plugin(s). Es necesario reiniciar el launcher para aplicar la actualización:",
+    "PluginManagerUpdateAvailableSubtitle2": "¿Deseas reiniciar el Launcher?",
+    "PluginManagerUpdateAvailableCancelBtn": "Más Tarde",
+    "PluginManagerUpdateAvailableConfirmBtn": "¡Reiniciar Ahora!",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Ve a {0}",
+
+    "LauncherRestartTitle": "Reiniciando Collapse Launcher",
+    "LauncherRestartSubtitle1": "El launcher esta a punto de reiniciarse. Asegúrate de cerrar o cancelar cualquier tarea de fondo antes de seguir con el reinicio.",
+    "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?",
+
     "PostInstallBehaviour_Title": "Comportamiento tras la instalación/actualización",
     "PostInstallBehaviour_Subtitle": "Comportamiento tras una instalación/actualización correcta",
     "PostInstallBehaviour_Subtitle2": "Tiempo antes de reiniciar/apagar",
@@ -1367,7 +1443,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Sombra de personaje en mundo abierto",
     "Graphics_HalfResTransparent": "Resolución media en transparencia ",
-    
+
     "Graphics_DLSS_UHP": "Ultra Rendimiento",
     "Graphics_DLSS_Perf": "Rendimiento",
     "Graphics_DLSS_Balanced": "Balanceado",

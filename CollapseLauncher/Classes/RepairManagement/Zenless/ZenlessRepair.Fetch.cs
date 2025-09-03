@@ -468,7 +468,7 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            GameVersionManager.GameApiProp.data!.plugins?.ForEach(plugin =>
+            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
                   assetIndex.RemoveAll(asset =>

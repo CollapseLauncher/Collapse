@@ -7,7 +7,7 @@
       mc:Ignorable="d">
     <Page.Resources>
         <ThemeShadow x:Name="SharedShadow" />
-        <!-- ReSharper disable once Xaml.RedundantResource -->
+        <!--  ReSharper disable once Xaml.RedundantResource  -->
         <Thickness x:Key="NavigationViewBorderThickness">0</Thickness>
     </Page.Resources>
     <Grid x:Name="MainPageGrid">
@@ -74,7 +74,7 @@
                 </StackPanel>
             </NavigationView.PaneFooter>
             <Grid HorizontalAlignment="Left">
-                <!-- ReSharper disable once Xaml.PathError -->
+                <!--  ReSharper disable once Xaml.PathError  -->
                 <Image x:Name="BackgroundBack"
                        Margin="-2,0,0,0"
                        HorizontalAlignment="Left"

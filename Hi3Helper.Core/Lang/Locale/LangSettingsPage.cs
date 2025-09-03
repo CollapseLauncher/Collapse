@@ -251,6 +251,20 @@ namespace Hi3Helper
                 public string Database_Placeholder_DbTokenPasswordBox   { get; set; } = LangFallback?._SettingsPage.Database_Placeholder_DbTokenPasswordBox;
 
                 public string SearchPlaceholder { get; set; } = LangFallback?._SettingsPage.SearchPlaceholder;
+                
+                public string Plugin_LoadedInfoTitle { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoTitle;
+                public string Plugin_OpenManagerBtn { get; set; } = LangFallback?._SettingsPage.Plugin_OpenManagerBtn;
+                public string Plugin_AuthorBy { get; set; } = LangFallback?._SettingsPage.Plugin_AuthorBy;
+                public string Plugin_LoadedInfoDesc { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoDesc;
+                public string Plugin_LoadedInfoPluginVer { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoPluginVer;
+                public string Plugin_LoadedInfoInterfaceVer { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoInterfaceVer;
+                public string Plugin_LoadedInfoCreationDate { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoCreationDate;
+                public string Plugin_LoadedInfoMainLibLocation { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoMainLibLocation;
+                public string Plugin_LoadedInfoLoadedPresets { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoLoadedPresets;
+                public string Plugin_LoadedInfoClipboardCopied { get; set; } = LangFallback?._SettingsPage.Plugin_LoadedInfoClipboardCopied;
+                public string Plugin_PluginInfoNameUnknown { get; set; } = LangFallback?._SettingsPage.Plugin_PluginInfoNameUnknown;
+                public string Plugin_PluginInfoDescUnknown { get; set; } = LangFallback?._SettingsPage.Plugin_PluginInfoDescUnknown;
+                public string Plugin_PluginInfoAuthorUnknown { get; set; } = LangFallback?._SettingsPage.Plugin_PluginInfoAuthorUnknown;
 
                 public string HttpCache_Title { get; set; } = LangFallback?._SettingsPage.HttpCache_Title;
                 public string HttpCacheModeToggle { get; set; } = LangFallback?._SettingsPage.HttpCacheModeToggle;

@@ -10,15 +10,15 @@
       },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
-        "requested": "[2.2.0, )",
-        "resolved": "2.2.0",
-        "contentHash": "R8MDVawukHrKgYCFgYaoLfbAna/FrImEFRxDK9k8ITbrXv3KLE5uN6tRqrNV83H4MFdqJ/uiA/hg1cSsXkl0vw=="
+        "requested": "[2.3.0-prerelease.250720.1, )",
+        "resolved": "2.3.0-prerelease.250720.1",
+        "contentHash": "2Anaw2yEhLgBXt5Uif3HWuqC+VfjEgnUNlQ9aLKPJcyLGQseB7Nk/TTRt+c6Jv4ud7Ss9Q9pGsFIdnpU2jc3iw=="
       },
       "Sentry": {
         "type": "Direct",
-        "requested": "[5.12.0, )",
-        "resolved": "5.12.0",
-        "contentHash": "m3C9urnnPhvk+Ua+771NF6+qw4mLY9QKBwM9IaJFNvqslh6Yb+EBFckwP0V4jaMHdgyPBAjegcBE1lR9vJ6kAw=="
+        "requested": "[5.14.1, )",
+        "resolved": "5.14.1",
+        "contentHash": "hB1zDDOAwk9lIDOR5sLS6fNiNDKgFpn/QA9kJyj0p84I38NCn7CDkdDikaDynb1WcYCH2a5c6Ab2/GRVeTuysw=="
       },
       "Google.Protobuf": {
         "type": "Transitive",

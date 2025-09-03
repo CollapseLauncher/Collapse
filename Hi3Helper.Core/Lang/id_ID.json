@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Salin Semua ke Clipboard",
     "CopyClipboardBtn2": "Telah Tersalin ke Clipboard!",
     "GoBackPageBtn1": "Kembali ke Halaman Sebelumnya",
-    
+
     "CustomBackground_NotFound": "File latar belakang kustom hilang! Kembali menggunakan gambar bawaan",
     "CustomBackground_RegionalTag": "Latar Belakang Region",
     "CustomBackground_GlobalTag": "Latar Belakang Keseluruhan"
@@ -717,7 +717,71 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "Menentukan berapa lama waktu maksimum yang diperbolehkan untuk cache dapat disimpan pada response (dalam menit).",
     "HttpCacheMaxExpireTimeBoxMinutes": "menit",
     "HttpCacheClearButton": "Bersikan Cache Network",
-    "HttpCacheClearedText": "Cache telah Dibersikan!"
+    "HttpCacheClearedText": "Cache telah Dibersikan!",
+
+    "Plugin_LoadedInfoTitle": "Informasi Plugin",
+    "Plugin_OpenManagerBtn": "Buka Menu Manajemen Plugin",
+    "Plugin_AuthorBy": "oleh {0}",
+    "Plugin_LoadedInfoDesc": "Deskripsi",
+    "Plugin_LoadedInfoPluginVer": "Versi Plugin",
+    "Plugin_LoadedInfoInterfaceVer": "Versi Antarmuka (API)",
+    "Plugin_LoadedInfoCreationDate": "Tanggal Dibuat",
+    "Plugin_LoadedInfoMainLibLocation": "Lokasi Librari Utama",
+    "Plugin_LoadedInfoLoadedPresets": "Preset yang Dimuat",
+    "Plugin_LoadedInfoClipboardCopied": "Informasi Telah Disalin!",
+    "Plugin_PluginInfoNameUnknown": "Tidak diketahui",
+    "Plugin_PluginInfoDescUnknown": "Tidak ada deskripsi",
+    "Plugin_PluginInfoAuthorUnknown": "Pembuat Tidak Dikenal"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "Menu Manajemen Plugin",
+
+    "FileDialogTitle": "Impor Plugin Collapse Launcher",
+    "FileDialogFileFilter1": "Format Plugin Collapse Launcher",
+
+    "LeftPanelNoPluginTitle": "Weh, kamu belum punya plugin!",
+    "LeftPanelNoPluginButton1": "Menuju ke",
+    "LeftPanelNoPluginButton2": "Katalog Unduhan Plugin",
+    "LeftPanelNoPluginButton3": "",
+
+    "LeftPanelListViewTitle": "Informasi Muatan Plugin",
+
+    "ListViewMainActionButton1": "Cek Pembaruan untuk Semua Plugin",
+    "ListViewMainActionButton1AltChecking": "Memeriksa Pembaruan untuk Semua Plugin...",
+    "ListViewMainActionButton2": "Unduh Pembaruan untuk Semua Plugin",
+    "ListViewMainActionButton3": "Nyalakan Pembaruan Otomatis Plugin saat Pemulaian",
+
+    "ListViewItemContextButton1": "Copot Plugin yang Dipilih",
+    "ListViewItemContextButton2": "Kembalikan Plugin yang Dipilih",
+    "ListViewItemContextButton3": "Nyalakan Plugin yang Dipilih",
+    "ListViewItemContextButton4": "Matikan Plugin yang Dipilih",
+    "ListViewItemContextButton5": "Perbarui Plugin yang Dipilih",
+    "ListViewItemContextButton6": "Buka Folder Plugin Ini",
+    "ListViewItemContextButton7": "Buka Folder Plugin Collapse Launcher",
+    "ListViewItemContextButton8": "Perbarui Plugin Ini",
+
+    "ListViewItemContentButton1": "Copot Plugin",
+    "ListViewItemContentButton2": "Kembalikan Plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Cek Pembaruan Saja",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Cek dan Unduh Pembaruan",
+    "ListViewItemContextButtonDownloadUpdate": "Unduh Pembaruan",
+
+    "ListViewItemUpdateStatusAvailable": "Pembaruan Tersedia!",
+    "ListViewItemUpdateStatusAvailableButton": "Perbarui ke {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Memperbarui ({0}%)...",
+    "ListViewItemUpdateStatusCompleted": "Plugin kamu sudah diperbarui ke {0}. Silahkan restart launcher kamu untuk menerapkan pembaruan!",
+    "ListViewItemUpdateStatusChecking": "Memeriksa Pembaruan...",
+    "ListViewItemUpdateStatusUpToDate": "Plugin sudah paling baru!",
+
+    "ListViewFooterWarning1": "Kamu perlu restart launcher kamu untuk menerapkan perubahan!",
+    "ListViewFooterRestartButton": "Restart Launcher",
+
+    "RightPanelImportTitle1": "Drag file",
+    "RightPanelImportTitle2": "atau",
+    "RightPanelImportTitle3": "ke sini",
+    "RightPanelImportTitle4": "atau klik kotak ini untuk impor plugin"
   },
 
   "_Misc": {
@@ -740,6 +804,7 @@
     "EverythingIsOkay": "Semuanya Berhasil!",
     "Cancel": "Batal",
     "Close": "Tutup",
+    "CloseOverlay": "Tutup Overlay",
     "UseCurrentDir": "Pakai lokasi saat ini",
     "UseDefaultDir": "Pakai lokasi bawaan",
     "MoveToDifferentDir": "Pindah ke direktori lain",
@@ -811,10 +876,10 @@
     "BuildChannelPreview": "Preview",
     "BuildChannelStable": "Stable",
 
-    "CDNDescription_Github": "Repositori resmi (utama) untuk launcher.",
+    "CDNDescription_Github": "Repositori resmi (utama) untuk launcher",
     "CDNDescription_DigitalOcean": "Mirror dari repositori resmi (main) yang dihost dalam DigitalOcean.",
     "CDNDescription_Cloudflare": "Mirror dari repositori resmi (main) yang dihost dalam bucket Cloudflare R2.",
-    "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket,",
+    "CDNDescription_Bitbucket": "Mirror dari repositori resmi (main) yang dihost dalam Bitbucket.",
     "CDNDescription_GitLab": "Mirror dari repositori resmi (main) yang dihost dalam GitLab.",
 
     "LocateExecutable": "Pilih Executable",
@@ -854,14 +919,14 @@
     "IsBytesNotANumber": "= Bukan Nomor",
 
     "MissingVcRedist": "Visual C/C++ Redistributable Tidak Terpasang",
-    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka window browser menuju file yang perlu kamu unduh dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue ke kami.",
+    "MissingVcRedistSubtitle": "Kamu perlu memasang Visual C/C++ Redistributable terlebih dahulu untuk menggunakan fungsi ini. Mau unduh sekarang?\r\nCatatan: Proses ini akan membuka browser untuk mengunduh file yang diperlukan dari Microsoft. Perlu diingat bahwa kamu perlu me-restart Collapse setelah memasangnya.\r\nApabila kamu sudah memasangnya tapi error ini masih muncul, silahkan kirimkan tiket issue kepada kami.",
     "ExceptionFeedbackBtn": "Kasih tahu kami dong",
     "ExceptionFeedbackBtn_Unavailable": "Laporan crash tidak tersedia atau dimatikan",
     "ExceptionFeedbackBtn_FeedbackSent": "Umpan-Balikmu sudah dikirim!",
-    "ExceptionFeedbackTitle": "Apa yang terjadi?:",
+    "ExceptionFeedbackTitle": "Beritahu kami apa yang terjadi:",
     "ExceptionFeedbackTemplate_User": "Username (Opsional):",
     "ExceptionFeedbackTemplate_Email": "Email (Opsional):",
-    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini: (Kamu tidak perlu lampirkan pesan error karena akan langsung disisipkan)",
+    "ExceptionFeedbackTemplate_Message": "Masukan Umpan-Balikmu setelah garis ini: (Kamu tidak perlu melampirkan pesan error, app akan langsung melampirkannya otomatis!)",
 
     "Feedback": "Umpan Balik Pengguna",
     "FeedbackSending": "Mengirimkan umpan balikmu...",
@@ -1018,7 +1083,7 @@
     "StopGameTitle": "Tutup Paksa Game",
     "StopGameSubtitle": "Apakah anda yakin ingin menutup game yang sedang berjalan?\nAnda akan kehilangan progress di dalam game.",
 
-    "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Ditemukan!",
+    "MeteredConnectionWarningTitle": "Koneksi Internet Berbayar Terdeteksi!",
     "MeteredConnectionWarningSubtitle": "Koneksi internet anda saat ini terdeteksi sebagai koneksi \"berbayar\"! Melanjutkan proses update dapat menambah tagihan internet dari penyedia layanan internet. Apakah kamu ingin melanjutkan aksi ini?",
 
     "ResetKbShortcutsTitle": "Apa kamu yakin untuk mengatur ulang semua pintasan?",
@@ -1035,7 +1100,7 @@
     "OperationWarningNotCancellableMsg5": "\" untuk membatalkan.",
 
     "GenericWarningExceptionTitle": "Peringatan",
-    "GenericWarningExceptionSubtitle": "Kami mau beritahu kamu (namun sebenarnya tidak terlalu penting)",
+    "GenericWarningExceptionSubtitle": "Kami memberitahukan (namun sebenarnya tidak terlalu penting) bahwa:",
 
     "ShortcutCreationConfirmTitle": "Apakah kamu yakin ingin melanjutkan?",
     "ShortcutCreationConfirmSubtitle1": "Pintasan akan dibuat pada tempat ini:",
@@ -1102,7 +1167,7 @@
     "UACWarningDontShowAgain": "Jangan Munculkan Lagi",
 
     "EnsureExitTitle": "Keluar dari Aplikasii",
-    "EnsureExitSubtitle": "Ada aktivitas kritikal yang sedang berjalan di latar belakang.",
+    "EnsureExitSubtitle": "Ada beberapa aktivitas kritikal yang sedang berjalan di belakang.",
     "EnsureExitSubtitle2": "Yakin ingin keluar?",
 
     "UserFeedback_DialogTitle": "Bagikan Pendapatmu",
@@ -1116,7 +1181,18 @@
     "UserFeedback_SubmitBtn": "Kirim Umpan-Balikmu",
     "UserFeedback_SubmitBtn_Processing": "Memproses...",
     "UserFeedback_SubmitBtn_Completed": "Selesai!",
-    "UserFeedback_SubmitBtn_Cancelled": "Dibatalkan!"
+    "UserFeedback_SubmitBtn_Cancelled": "Dibatalkan!",
+
+    "PluginManagerUpdateAvailableTitle": "Kamu punya {0} plugin yang siap untuk diperbarui!",
+    "PluginManagerUpdateAvailableSubtitle1": "Ada {0} plugin yang memiliki pembaruan. Launcher perlu direstart untuk menerapkan pembaruan untuk plugin-plugin ini:",
+    "PluginManagerUpdateAvailableSubtitle2": "Yakin ingin me-restart launcher sekarang?",
+    "PluginManagerUpdateAvailableCancelBtn": "Nanti Saja",
+    "PluginManagerUpdateAvailableConfirmBtn": "Restart Sekarang!",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Masuk ke {0}",
+
+    "LauncherRestartTitle": "Merestart Collapse Launcher",
+    "LauncherRestartSubtitle1": "Kamu akan merestart launcher ini. Pastikan untuk tutup atau batalkan aktivitas yang berjalan sebelum merestart launchermu.",
+    "LauncherRestartSubtitle2": "Yakin mau merestart launcher?"
   },
 
   "_FileMigrationProcess": {
@@ -1356,7 +1432,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Bayangan Karakter di Map Eksplorasi",
     "Graphics_HalfResTransparent": "Transparan Setengah Resolusi",
-    
+
     "Graphics_DLSS_UHP": "Performa Ultra",
     "Graphics_DLSS_Perf": "Performa",
     "Graphics_DLSS_Balanced": "Seimbang",

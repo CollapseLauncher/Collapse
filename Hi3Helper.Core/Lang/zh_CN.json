@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页",
-    
+
     "CustomBackground_NotFound": "自定义背景文件丢失！将使用默认图像",
     "CustomBackground_RegionalTag": "区服背景",
     "CustomBackground_GlobalTag": "全局背景"
@@ -718,7 +718,25 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "确定响应允许的最大缓存时间（分钟）。",
     "HttpCacheMaxExpireTimeBoxMinutes": "分钟",
     "HttpCacheClearButton": "清除网络缓存",
-    "HttpCacheClearedText": "缓存已清除！"
+    "HttpCacheClearedText": "缓存已清除！",
+
+    "Plugin_LoadedInfoTitle": "已加载的插件信息",
+    "Plugin_OpenManagerBtn": "打开插件管理菜单",
+    "Plugin_AuthorBy": "作者 {0}",
+    "Plugin_LoadedInfoDesc": "描述",
+    "Plugin_LoadedInfoPluginVer": "插件版本",
+    "Plugin_LoadedInfoInterfaceVer": "接口版本",
+    "Plugin_LoadedInfoCreationDate": "创建日期",
+    "Plugin_LoadedInfoMainLibLocation": "主程序库位置",
+    "Plugin_LoadedInfoLoadedPresets": "加载的预设",
+    "Plugin_LoadedInfoClipboardCopied": "信息已复制！",
+    "Plugin_PluginInfoNameUnknown": "未知",
+    "Plugin_PluginInfoDescUnknown": "无描述",
+    "Plugin_PluginInfoAuthorUnknown": "未知作者"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "插件管理菜单"
   },
 
   "_Misc": {
@@ -741,6 +759,7 @@
     "EverythingIsOkay": "一切正常！",
     "Cancel": "取消",
     "Close": "关闭",
+    "CloseOverlay": "关闭叠加层",
     "UseCurrentDir": "使用当前目录",
     "UseDefaultDir": "使用默认目录",
     "MoveToDifferentDir": "移动到不同的目录",
@@ -1127,7 +1146,13 @@
     "PostInstallBehaviour_EnumStartGame": "开始游戏",
     "PostInstallBehaviour_EnumHibernate": "休眠",
     "PostInstallBehaviour_EnumRestart": "重启电脑",
-    "PostInstallBehaviour_EnumShutdown": "关闭电脑"
+    "PostInstallBehaviour_EnumShutdown": "关闭电脑",
+
+    "PluginManagerUpdateAvailableTitle": "您有 {0} 个插件已准备好更新！",
+    "PluginManagerUpdateAvailableSubtitle1": "目前有 {0} 个插件可更新。启动器需要重新启动以应用这些插件的更新：",
+    "PluginManagerUpdateAvailableSubtitle2": "您希望重新启动启动器吗？",
+    "PluginManagerUpdateAvailableCancelBtn": "稍后",
+    "PluginManagerUpdateAvailableConfirmBtn": "现在就重启！"
   },
 
   "_FileMigrationProcess": {
@@ -1367,7 +1392,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "地图探索中角色实时阴影",
     "Graphics_HalfResTransparent": "半分辨率透明",
-    
+
     "Graphics_DLSS_UHP": "超高性能",
     "Graphics_DLSS_Perf": "性能",
     "Graphics_DLSS_Balanced": "平衡",

@@ -19,10 +19,8 @@ jobs:
     env:
       Configuration: ${{ matrix.configuration }}
       Platform: ${{ matrix.platform }}
-      DOTNET_INSTALL_DIR: '.\.dotnet' 
-      DOTNET_VERSION: '9.0.3xx'
-      DOTNET_QUALITY: 'ga'
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+      
     permissions:
       actions: read
       contents: write
@@ -34,18 +32,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           submodules: recursive # many many submodules
-      # - name: Install winget
-      #   uses: Cyberboss/install-winget@v1
-      # - name: Install Qodana CLI
-      #   uses: crazy-max/ghaction-chocolatey@v3
-      #   with:
-      #     args: install qodana --pre --confirm
-      
-      # - name: Verify Qodana
-      #   run: |
-      #     Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
-      #     refreshenv
-      #     qodana --version
+          
+      - name: 'Preparing Environment Variables'
+        if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
+        run: |
+          $env = Get-Content env.json | ConvertFrom-Json
+          foreach ($prop in $env.PSObject.Properties) {
+            echo "$($prop.Name)=$($prop.Value)" >> $env:GITHUB_ENV
+          }
+
       - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:

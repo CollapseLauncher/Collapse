@@ -2,9 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+// ReSharper disable InconsistentNaming
 #nullable enable
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
+/// <summary>
+///  The SettingsExpander is a collapsable control to host multiple SettingsCards.
+/// </summary>
 //// Note: ItemsRepeater will request all the available horizontal space: https://github.com/microsoft/microsoft-ui-xaml/issues/3842
 [TemplatePart(Name = PART_ItemsRepeater, Type = typeof(ItemsRepeater))]
 public partial class SettingsExpander : Control
@@ -18,7 +22,7 @@ public partial class SettingsExpander : Control
     /// </summary>
     public SettingsExpander()
     {
-        this.DefaultStyleKey = typeof(SettingsExpander);
+        DefaultStyleKey = typeof(SettingsExpander);
         Items = new List<object>();
     }
 
@@ -30,28 +34,32 @@ public partial class SettingsExpander : Control
 
         if (_itemsRepeater != null)
         {
-            _itemsRepeater.ElementPrepared -= this.ItemsRepeater_ElementPrepared;
+            _itemsRepeater.ElementPrepared -= ItemsRepeater_ElementPrepared;
         }
 
         _itemsRepeater = GetTemplateChild(PART_ItemsRepeater) as ItemsRepeater;
 
-        if (_itemsRepeater != null)
+        if (_itemsRepeater == null)
         {
-            _itemsRepeater.ElementPrepared += this.ItemsRepeater_ElementPrepared;
-
-            // Update it's source based on our current items properties.
-            OnItemsConnectedPropertyChanged(this, null!); // Can't get it to accept type here? (DependencyPropertyChangedEventArgs)EventArgs.Empty
+            return;
         }
+
+        _itemsRepeater.ElementPrepared += ItemsRepeater_ElementPrepared;
+
+        // Update it's source based on our current items properties.
+        OnItemsConnectedPropertyChanged(this, null!); // Can't get it to accept type here? (DependencyPropertyChangedEventArgs)EventArgs.Empty
     }
 
     private void SetAccessibleName()
     {
-        if (string.IsNullOrEmpty(AutomationProperties.GetName(this)))
+        if (!string.IsNullOrEmpty(AutomationProperties.GetName(this)))
         {
-            if (Header is string headerString && !string.IsNullOrEmpty(headerString))
-            {
-                AutomationProperties.SetName(this, headerString);
-            }
+            return;
+        }
+
+        if (Header is string headerString && !string.IsNullOrEmpty(headerString))
+        {
+            AutomationProperties.SetName(this, headerString);
         }
     }
 
@@ -63,7 +71,7 @@ public partial class SettingsExpander : Control
     {
         return new SettingsExpanderAutomationPeer(this);
     }
-    
+
     private void OnIsExpandedChanged(bool oldValue, bool newValue)
     {
         var peer = FrameworkElementAutomationPeer.FromElement(this) as SettingsExpanderAutomationPeer;

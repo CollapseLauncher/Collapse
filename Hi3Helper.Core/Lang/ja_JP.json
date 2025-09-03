@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "すべてをクリップボードにコピー",
     "CopyClipboardBtn2": "クリップボードにコピーしました！",
     "GoBackPageBtn1": "前のページに戻る",
-    
+
     "CustomBackground_NotFound": "カスタム背景のファイルが見つかりません！デフォルトの画像を使用します",
     "CustomBackground_RegionalTag": "サーバー別背景",
     "CustomBackground_GlobalTag": "共通背景"
@@ -718,7 +718,71 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "レスポンスで許容する最大キャッシュ時間の長さを決定します。（分単位）",
     "HttpCacheMaxExpireTimeBoxMinutes": "分",
     "HttpCacheClearButton": "ネットワークキャッシュをクリア",
-    "HttpCacheClearedText": "キャッシュがクリアされました！"
+    "HttpCacheClearedText": "キャッシュがクリアされました！",
+
+    "Plugin_LoadedInfoTitle": "導入中のプラグイン情報",
+    "Plugin_OpenManagerBtn": "プラグイン管理メニューを開く",
+    "Plugin_AuthorBy": "（{0} 制作）",
+    "Plugin_LoadedInfoDesc": "説明",
+    "Plugin_LoadedInfoPluginVer": "プラグインバージョン",
+    "Plugin_LoadedInfoInterfaceVer": "インターフェースバージョン",
+    "Plugin_LoadedInfoCreationDate": "作成日時",
+    "Plugin_LoadedInfoMainLibLocation": "メインライブラリの位置",
+    "Plugin_LoadedInfoLoadedPresets": "ローディングプリセット",
+    "Plugin_LoadedInfoClipboardCopied": "情報をコピーしました！",
+    "Plugin_PluginInfoNameUnknown": "不明",
+    "Plugin_PluginInfoDescUnknown": "説明文なし",
+    "Plugin_PluginInfoAuthorUnknown": "作者不明"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "プラグイン管理メニュー",
+
+    "FileDialogTitle": "プラグインをインポート",
+    "FileDialogFileFilter1": "Collapse Launcherプラグイン",
+
+    "LeftPanelNoPluginTitle": "プラグインが入ってないぞ！",
+    "LeftPanelNoPluginButton1": "クリックして",
+    "LeftPanelNoPluginButton2": "プラグイン一覧",
+    "LeftPanelNoPluginButton3": "を見に行く",
+
+    "LeftPanelListViewTitle": "導入中のプラグイン情報",
+
+    "ListViewMainActionButton1": "プラグインの更新を確認",
+    "ListViewMainActionButton1AltChecking": "プラグインの更新を確認しています…",
+    "ListViewMainActionButton2": "更新されたプラグインをダウンロード",
+    "ListViewMainActionButton3": "起動時にプラグインを自動アップデート",
+
+    "ListViewItemContextButton1": "選択したプラグインをアンインストール",
+    "ListViewItemContextButton2": "選択したプラグインを復元",
+    "ListViewItemContextButton3": "選択したプラグインを有効化",
+    "ListViewItemContextButton4": "選択したプラグインを無効化",
+    "ListViewItemContextButton5": "選択したプラグインをアップデート",
+    "ListViewItemContextButton6": "選択したプラグインのフォルダーを開く",
+    "ListViewItemContextButton7": "Collapse Launcherプラグインのフォルダーを開く",
+    "ListViewItemContextButton8": "現在のプラグインをアップデート",
+
+    "ListViewItemContentButton1": "プラグインをアンインストール",
+    "ListViewItemContentButton2": "プラグインを復元",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "更新の確認だけする",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "更新を確認してダウンロード",
+    "ListViewItemContextButtonDownloadUpdate": "更新をダウンロード",
+
+    "ListViewItemUpdateStatusAvailable": "更新できます！",
+    "ListViewItemUpdateStatusAvailableButton": "{0}に更新",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "更新中…（{0}%）",
+    "ListViewItemUpdateStatusCompleted": "プラグインが{0}に更新されました。更新を適用するために、ランチャーを再起動してください！",
+    "ListViewItemUpdateStatusChecking": "アップデート確認中…",
+    "ListViewItemUpdateStatusUpToDate": "プラグインは最新の状態です！",
+
+    "ListViewFooterWarning1": "変更を適用するには、ランチャーを再起動してください！",
+    "ListViewFooterRestartButton": "ランチャーを再起動",
+
+    "RightPanelImportTitle1": "ここに",
+    "RightPanelImportTitle2": "か",
+    "RightPanelImportTitle3": "をドラッグしてください",
+    "RightPanelImportTitle4": "ここをクリックしてもプラグインを読み込めますよ"
   },
 
   "_Misc": {
@@ -741,6 +805,7 @@
     "EverythingIsOkay": "これでヨシ！",
     "Cancel": "キャンセル",
     "Close": "閉じる",
+    "CloseOverlay": "閉じる",
     "UseCurrentDir": "現在のディレクトリを使用",
     "UseDefaultDir": "既定のディレクトリを使用",
     "MoveToDifferentDir": "別のディレクトリへ移動",
@@ -1120,6 +1185,17 @@
     "UserFeedback_SubmitBtn_Completed": "送信完了！",
     "UserFeedback_SubmitBtn_Cancelled": "キャンセルしました！",
 
+    "PluginManagerUpdateAvailableTitle": " {0}個のプラグインをアップデートできます！",
+    "PluginManagerUpdateAvailableSubtitle1": "アップデート可能なプラグインが{0}個あります。以下のプラグインの更新を適用するには、ランチャーの再起動が必要です。",
+    "PluginManagerUpdateAvailableSubtitle2": "ランチャーを再起動しますか？",
+    "PluginManagerUpdateAvailableCancelBtn": "後でやる",
+    "PluginManagerUpdateAvailableConfirmBtn": "今やる！",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "クリックして{0}",
+
+    "LauncherRestartTitle": "Collapse Launcherを再起動",
+    "LauncherRestartSubtitle1": "ランチャーを再起動しようとしています。再起動前にバックグラウンドで実行中の操作が中止・キャンセルされているか確認してください。",
+    "LauncherRestartSubtitle2": "本当にランチャーを再起動しますか？",
+
     "PostInstallBehaviour_Title": "インストール/アップデート後の挙動",
     "PostInstallBehaviour_Subtitle": "インストール/アップデートが完了した時、",
     "PostInstallBehaviour_Subtitle2": "再起動/シャットダウンする前の待機時間",
@@ -1367,7 +1443,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "マップ探索内のキャラのリアルタイムシャドウ",
     "Graphics_HalfResTransparent": "透明オブジェクトのハーフ解像度",
-    
+
     "Graphics_DLSS_UHP": "ウルトラパフォーマンス",
     "Graphics_DLSS_Perf": "パフォーマンス",
     "Graphics_DLSS_Balanced": "バランス",

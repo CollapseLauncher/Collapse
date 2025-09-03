@@ -26,6 +26,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         LauncherGameNews?      LauncherGameNews        { get; }
         HttpClient?            ApiGeneralHttpClient    { get; }
         HttpClient?            ApiResourceHttpClient   { get; }
+        bool                   IsPlugin                { get; }
         Task<bool> LoadAsync(OnLoadTaskAction? beforeLoadRoutine = null, OnLoadTaskAction? afterLoadRoutine = null,
                              ActionOnTimeOutRetry? onTimeoutRoutine = null, ErrorLoadRoutineDelegate? errorLoadRoutine = null,
                              CancellationToken token = default);

@@ -164,7 +164,7 @@ namespace CollapseLauncher.GamePlaytime
                 if (lastPlayed != null)
                     _registryRoot.SetValue(LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
                 
-                if (DbHandler.IsEnabled && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
+                if ((DbHandler.IsEnabled ?? false) && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
                     ((DateTime.Now - LastDbUpdate).TotalMinutes >= 5 || forceUpdateDb)) // Sync only every 5 minutes to reduce database usage
                 {
                     _ = UpdatePlaytime_Database_Push(data, TotalPlaytime.TotalSeconds, lastPlayed);

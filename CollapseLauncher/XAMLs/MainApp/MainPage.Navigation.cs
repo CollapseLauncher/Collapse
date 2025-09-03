@@ -361,17 +361,18 @@ public partial class MainPage : Page
         LauncherFrame.GoBack();
         if (PreviousTagString.Count < 1) return;
 
-        string lastPreviousTag          = PreviousTagString[^1];
-        string currentNavigationItemTag = (string)((NavigationViewItem)sender.SelectedItem).Tag;
+        var lastPreviousTag          = PreviousTagString[^1];
+        var currentNavigationItemTag = (string)((NavigationViewItem)sender.SelectedItem).Tag;
 
         if (!string.Equals(lastPreviousTag, currentNavigationItemTag, StringComparison.CurrentCultureIgnoreCase))
         {
             return;
         }
 
-        string goLastPreviousTag = PreviousTagString[^2];
-
     #nullable enable
+        string? goLastPreviousTag;
+        goLastPreviousTag = PreviousTagString.Count < 2 ? PreviousTagString[^2] : lastPreviousTag;
+        
         NavigationViewItem? goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => goLastPreviousTag == (string)x.Tag);
         goPreviousNavigationItem ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => goLastPreviousTag == (string)x.Tag);
     #nullable restore

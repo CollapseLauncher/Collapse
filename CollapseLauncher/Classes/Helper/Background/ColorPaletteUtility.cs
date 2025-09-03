@@ -120,14 +120,59 @@ namespace CollapseLauncher.Helper.Background
         {
             if (!palette.HasValue) return;
 
+            WColor maskTransparentPalette = new WColor
+            {
+                A = 0,
+                R = palette.Value.R,
+                G = palette.Value.G,
+                B = palette.Value.B
+            };
+            maskTransparentPalette = ChangeColorBrightness(maskTransparentPalette, !InnerLauncherConfig.IsAppThemeLight ? -0.75f : 0.85f);
+
+            WColor maskPalette = new WColor
+            {
+                A = 255,
+                R = palette.Value.R,
+                G = palette.Value.G,
+                B = palette.Value.B
+            };
+            maskPalette = ChangeColorBrightness(maskPalette, !InnerLauncherConfig.IsAppThemeLight ? -0.75f : 0.85f);
+
             string dictColorNameTheme = InnerLauncherConfig.IsAppThemeLight ? "Dark" : "Light";
             UIElementExtensions.SetApplicationResource("SystemAccentColor", palette);
             UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}1", palette);
             UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}2", palette);
             UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}3", palette);
+            UIElementExtensions.SetApplicationResource("SystemAccentColorBackgroundMask", maskPalette);
+            UIElementExtensions.SetApplicationResource("SystemAccentColorBackgroundMaskTransparent", maskTransparentPalette);
             UIElementExtensions.SetApplicationResource("AccentColor", new SolidColorBrush(palette.Value));
 
             ReloadPageTheme(page, ConvertAppThemeToElementTheme(InnerLauncherConfig.CurrentAppTheme));
+        }
+
+        // Credit:
+        // https://gist.github.com/zihotki/09fc41d52981fb6f93a81ebf20b35cd5
+        public static WColor ChangeColorBrightness(WColor color, float correctionFactor)
+        {
+            float red   = color.R;
+            float green = color.G;
+            float blue  = color.B;
+
+            if (correctionFactor < 0)
+            {
+                correctionFactor =  1 + correctionFactor;
+                red              *= correctionFactor;
+                green            *= correctionFactor;
+                blue             *= correctionFactor;
+            }
+            else
+            {
+                red   = (255 - red) * correctionFactor + red;
+                green = (255 - green) * correctionFactor + green;
+                blue  = (255 - blue) * correctionFactor + blue;
+            }
+
+            return WColor.FromArgb(color.A, (byte)red, (byte)green, (byte)blue);
         }
 
         internal static void ReloadPageTheme(FrameworkElement page, AppThemeMode startTheme)

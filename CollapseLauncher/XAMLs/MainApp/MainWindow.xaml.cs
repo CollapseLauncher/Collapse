@@ -9,6 +9,7 @@ using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Pages.OOBE;
 using CollapseLauncher.Statics;
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -20,6 +21,7 @@ using Microsoft.UI.Input;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.Diagnostics;
@@ -27,6 +29,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Graphics;
 using Windows.UI;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -43,6 +47,13 @@ namespace CollapseLauncher
         private static bool _isForceDisableIntro;
 
         private static readonly Lock CriticalOpLock = new();
+
+        internal static bool IsIntroEnabled
+        {
+            get => LauncherConfig.IsIntroEnabled;
+            set => LauncherConfig.IsIntroEnabled = value;
+        }
+
         public static bool IsCriticalOpInProgress
         {
             get;
@@ -397,9 +408,10 @@ namespace CollapseLauncher
                 }
             }
 
-            MainFrameChangerInvoker.WindowFrameEvent += MainFrameChangerInvoker_WindowFrameEvent;
+            MainFrameChangerInvoker.WindowFrameEvent       += MainFrameChangerInvoker_WindowFrameEvent;
             MainFrameChangerInvoker.WindowFrameGoBackEvent += MainFrameChangerInvoker_WindowFrameGoBackEvent;
-            LauncherUpdateInvoker.UpdateEvent += LauncherUpdateInvoker_UpdateEvent;
+            LauncherUpdateInvoker.UpdateEvent              += LauncherUpdateInvoker_UpdateEvent;
+            ChangeTitleDragAreaInvoker.TitleBarEvent       += ChangeTitleDragAreaInvoker_TitleBarEvent;
 
             m_consoleCtrlHandler += ConsoleCtrlHandler;
             if (m_consoleCtrlHandler != null)
@@ -451,6 +463,11 @@ namespace CollapseLauncher
         /// </summary>
         public async Task CloseApp()
         {
+            MainFrameChangerInvoker.WindowFrameEvent       -= MainFrameChangerInvoker_WindowFrameEvent;
+            MainFrameChangerInvoker.WindowFrameGoBackEvent -= MainFrameChangerInvoker_WindowFrameGoBackEvent;
+            LauncherUpdateInvoker.UpdateEvent              -= LauncherUpdateInvoker_UpdateEvent;
+            ChangeTitleDragAreaInvoker.TitleBarEvent       -= ChangeTitleDragAreaInvoker_TitleBarEvent;
+
             if (IsCriticalOpInProgress)
             {
                 WindowUtility.WindowRestore();
@@ -471,10 +488,67 @@ namespace CollapseLauncher
             WindowUtility.EnableWindowNonClientArea();
         }
 
-        private static bool IsIntroEnabled
+        private static void ChangeTitleDragAreaInvoker_TitleBarEvent(object sender, ChangeTitleDragAreaProperty e)
         {
-            get => LauncherConfig.IsIntroEnabled;
-            set => LauncherConfig.IsIntroEnabled = value;
+            m_mainPage?.UpdateLayout();
+
+            InputNonClientPointerSource nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(WindowUtility.CurrentWindowId ?? throw new NullReferenceException());
+            WindowUtility.EnableWindowNonClientArea();
+            WindowUtility.SetWindowTitlebarDragArea(MainPage.DragAreaMode_Full);
+
+            if (!e.Template.HasFlag(DragAreaTemplate.OverlayOpened) ||
+                FullPageOverlay.CurrentlyOpenedOverlays.LastOrDefault() is not { LayoutCloseButton: { } currentOverlayCloseButton })
+            {
+                switch (e.Template)
+                {
+                    case DragAreaTemplate.None:
+                        nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
+                            GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.AppTitleBar)
+                        ]);
+                        break;
+                    case DragAreaTemplate.Full:
+                        nonClientInputSrc.ClearRegionRects(NonClientRegionKind.Passthrough);
+                        break;
+                    case DragAreaTemplate.Default:
+                        nonClientInputSrc.ClearAllRegionRects();
+                        RectInt32[] rects = m_mainPage != null ? [
+                            GetElementPos(m_mainPage.GridBG_RegionGrid),
+                            GetElementPos(m_mainPage.GridBG_IconGrid),
+                            GetElementPos(m_mainPage.GridBG_NotifBtn),
+                            GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
+                            GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
+                        ] : [
+                            GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.MinimizeButton),
+                            GetElementPos((WindowUtility.CurrentWindow as MainWindow)?.CloseButton)
+                        ];
+                        nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rects);
+                        break;
+                }
+            }
+            else
+            {
+                nonClientInputSrc.ClearAllRegionRects();
+                nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, [
+                    GetElementPos(currentOverlayCloseButton)
+                ]);
+            }
+
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Close, null);
+            nonClientInputSrc.SetRegionRects(NonClientRegionKind.Minimize, null);
+        }
+
+        private static RectInt32 GetElementPos(FrameworkElement element)
+        {
+            GeneralTransform transformTransform = element.TransformToVisual(null);
+            Rect bounds = transformTransform.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight));
+            double scaleFactor = WindowUtility.CurrentWindowMonitorScaleFactor;
+
+            return new RectInt32(
+                                 _X: (int)Math.Round(bounds.X * scaleFactor),
+                                 _Y: (int)Math.Round(bounds.Y * scaleFactor),
+                                 _Width: (int)Math.Round(bounds.Width * scaleFactor),
+                                 _Height: (int)Math.Round(bounds.Height * scaleFactor)
+                                );
         }
 
         private void IntroSequenceToggle_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)

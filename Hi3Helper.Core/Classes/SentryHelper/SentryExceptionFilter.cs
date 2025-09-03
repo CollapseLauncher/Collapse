@@ -52,7 +52,8 @@ namespace Hi3Helper.SentryHelper
         [
             "DB_001", // DB Uri not set
             "DB_002", // DB Token not set
-            "DB_003"  // Invalid token
+            "DB_003", // Invalid token
+            "DB_005"  // DB error without message
         ];
 
         public bool Filter(Exception ex)

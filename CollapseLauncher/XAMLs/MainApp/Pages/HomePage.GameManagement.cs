@@ -439,7 +439,7 @@ public sealed partial class HomePage
         }
         finally
         {
-            IsSkippingUpdateCheck                             = false;
+            IsSkippingUpdateCheck = false;
             if (CurrentGameProperty.GameInstall != null)
             {
                 CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;

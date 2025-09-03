@@ -52,6 +52,11 @@ namespace CollapseLauncher.Helper
                    + $"WinAppSDK/{LauncherConfig.WindowsAppSdkVersion}";
         }
 
+        public static HttpClient CreateDefaultClient(int maxConnection = 32, bool isSkipDnsInit = false)
+            => new HttpClientBuilder()
+              .UseLauncherConfig()
+              .Create();
+
         public HttpClientBuilder UseProxy(bool isUseSystemProxy = true)
         {
             IsUseProxy       = true;
