@@ -91,7 +91,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     // Reason: These fields must be defined in the object's instance to avoid early Garbage Collection to the delegate.
     //         Defining it as local variables will cause early Garbage Collection and raise ExecutionEngineException.
-    private readonly SharedLoggerCallback _sharedLoggerCallback;
+    private SharedLoggerCallback? _sharedLoggerCallback;
+    private GCHandle              _sharedLoggerCallbackGcHandle;
 
     private static readonly SharedDnsResolverCallback      SharedDnsResolverCallback;
     private static readonly SharedDnsResolverCallbackAsync SharedDnsResolverCallbackAsync;
@@ -148,6 +149,7 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
                 throw new InvalidOperationException($"Plugin: {Path.GetFileName(pluginFilePath)} is missing some required exports. Plugin won't be loaded!");
             }
 
+            _sharedLoggerCallbackGcHandle = GCHandle.Alloc(_sharedLoggerCallback); // Prevent the delegate from getting GCed
             nint callbackForLogger = Marshal.GetFunctionPointerForDelegate(_sharedLoggerCallback);
             if (callbackForLogger != nint.Zero)
             {
@@ -368,6 +370,10 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
             // Free the plugin handle and remove it from the dictionary.
             ComMarshal.FreeInstance(Instance);
             NativeLibrary.Free(Handle);
+
+            // Free GCHandle and nullify the delegate.
+            _sharedLoggerCallbackGcHandle.Free();
+            Interlocked.Exchange(ref _sharedLoggerCallback, null);
         }
         GC.SuppressFinalize(this);
     }
