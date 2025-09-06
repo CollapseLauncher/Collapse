@@ -107,7 +107,7 @@ namespace CollapseLauncher.Pages
                     $"{imported} plugin(s) have been imported! But some error has occurred while importing other plugins:" :
                     "No plugin has been imported due to following error:";
 
-                ErrorSender.SendException(new UnknownPluginException(messageHead, ex));
+                ErrorSender.SendException(ex.WrapPluginException(messageHead));
             }
             finally
             {
