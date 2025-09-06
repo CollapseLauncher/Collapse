@@ -9,10 +9,10 @@ env:
  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
- SIGNPATH_ARTIFACT_SLUG: 'initial' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
- BUILD_PROFILE_PREVIEW: 'Publish-PreviewRelease'
- BUILD_PROFILE_STABLE: 'Publish-StableRelease'
- BUILD_PROFILE_DEBUG: 'Publish-DebugCIRelease'
+ SIGNPATH_ARTIFACT_SLUG: 'aot-release' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
+ BUILD_PROFILE_PREVIEW: 'Publish-PreviewReleaseAOT'
+ BUILD_PROFILE_STABLE: 'Publish-StableReleaseAOT'
+ BUILD_PROFILE_DEBUG: 'Publish-DebugCIReleaseAOT'
 
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday

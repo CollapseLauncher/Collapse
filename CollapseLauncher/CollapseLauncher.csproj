@@ -31,7 +31,7 @@
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
         <!-- AoT Configs -->
-        <PublishAot>false</PublishAot>
+        <PublishAot>true</PublishAot>
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -72,6 +72,7 @@
         <!-- Security thingymajig -->
         <ControlFlowGuard>Guard</ControlFlowGuard>
         <CetCompat>true</CetCompat>
+        <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
     </PropertyGroup>
 
 <!--
@@ -97,7 +98,6 @@
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
         <TrimMode>full</TrimMode>
-        <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <!-- !! IMPORTANT !!-->
