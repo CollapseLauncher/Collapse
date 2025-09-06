@@ -322,11 +322,11 @@ namespace CollapseLauncher
 
                 if (NotificationData.RegionPush == null) return;
                 
-                var regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
+                List<NotificationProp> regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
 
-                foreach (var Entry in regionPushCopy)
+                foreach (NotificationProp Entry in regionPushCopy)
                 {
-                    var toEntry = new NotificationInvokerProp
+                    NotificationInvokerProp toEntry = new NotificationInvokerProp
                     {
                         CloseAction = null,
                         IsAppNotif = false,
@@ -339,8 +339,8 @@ namespace CollapseLauncher
                         toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
                     }
 
-                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
-                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow;
+                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove;
 
                     if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
                             || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow

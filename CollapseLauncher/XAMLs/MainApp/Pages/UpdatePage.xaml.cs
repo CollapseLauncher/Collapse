@@ -54,7 +54,6 @@ namespace CollapseLauncher.Pages
             if (LauncherUpdateHelper.AppUpdateVersionProp.Version.HasValue)
             {
                     GameVersion newUpdateVersion = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value;
-
                     NewVersionLabel.Text = newUpdateVersion.VersionString;
             }
 
@@ -211,13 +210,8 @@ namespace CollapseLauncher.Pages
             DispatcherQueue?.TryEnqueue(() =>
             {
                 Status.Text = e.Status;
-                if (string.IsNullOrEmpty(e.Newver))
-                {
-                    return;
-                }
-
-                GameVersion version = new GameVersion(e.Newver);
-                NewVersionLabel.Text = version.VersionString;
+                GameVersion? version = e.Newver;
+                NewVersionLabel.Text = version?.ToString();
             });
         }
 

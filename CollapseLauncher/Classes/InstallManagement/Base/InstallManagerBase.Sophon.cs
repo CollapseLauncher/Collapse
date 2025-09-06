@@ -233,7 +233,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                     } ?? GameVersionManager!.GetGameVersionApi();
 
                     // Add the tag query to the Url
-                    requestedUrl += $"&tag={requestedVersion.ToString()}";
+                    requestedUrl += $"&tag={requestedVersion}";
 #endif
 
                     try

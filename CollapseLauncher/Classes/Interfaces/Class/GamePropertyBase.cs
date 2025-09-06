@@ -28,7 +28,7 @@ namespace CollapseLauncher.Interfaces
             // If the version override is not null, then assign the override value
             if (IsVersionOverride)
             {
-                GameVersionOverride = new GameVersion(versionOverride);
+                GameVersionOverride = versionOverride;
             }
 
             AssetEntry = [];
