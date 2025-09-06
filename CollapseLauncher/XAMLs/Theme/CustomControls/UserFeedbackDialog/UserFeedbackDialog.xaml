@@ -7,45 +7,44 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:animatedVisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-                    xmlns:controls="using:CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog"
-                    xmlns:helper="using:Hi3Helper">
+                    xmlns:controls="using:CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog">
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
             <AcrylicBrush x:Key="AcrylicTitleGridBackground"
+                          FallbackColor="{ThemeResource SystemAccentColor}"
                           TintColor="{ThemeResource SystemAccentColor}"
                           TintLuminosityOpacity="0.8"
-                          TintOpacity="0.9"
-                          FallbackColor="{ThemeResource SystemAccentColor}"/>
+                          TintOpacity="0.9" />
             <AcrylicBrush x:Key="AcrylicInputGridBackground"
+                          FallbackColor="{ThemeResource SolidBackgroundFillColorBase}"
                           TintColor="{ThemeResource SolidBackgroundFillColorBase}"
                           TintLuminosityOpacity="0.9"
-                          TintOpacity="0.4"
-                          FallbackColor="{ThemeResource SolidBackgroundFillColorBase}"/>
+                          TintOpacity="0.4" />
             <AcrylicBrush x:Key="AcrylicConfirmationGridBackground"
+                          FallbackColor="{ThemeResource SystemAccentColor}"
                           TintColor="{ThemeResource SystemAccentColor}"
                           TintLuminosityOpacity="0.0"
-                          TintOpacity="0.8"
-                          FallbackColor="{ThemeResource SystemAccentColor}"/>
+                          TintOpacity="0.8" />
             <StaticResource x:Key="SmokeGridOverlayBackground"
                             ResourceKey="SmokeFillColorCollapseBrush" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
             <AcrylicBrush x:Key="AcrylicTitleGridBackground"
+                          FallbackColor="{ThemeResource SystemAccentColor}"
                           TintColor="{ThemeResource SystemAccentColor}"
                           TintLuminosityOpacity="0.9"
-                          TintOpacity="0.9"
-                          FallbackColor="{ThemeResource SystemAccentColor}"/>
+                          TintOpacity="0.9" />
             <AcrylicBrush x:Key="AcrylicInputGridBackground"
+                          FallbackColor="{ThemeResource SolidBackgroundFillColorBase}"
                           TintColor="{ThemeResource SolidBackgroundFillColorBase}"
                           TintLuminosityOpacity="0.9"
-                          TintOpacity="0.8" 
-                          FallbackColor="{ThemeResource SolidBackgroundFillColorBase}"/>
+                          TintOpacity="0.8" />
             <AcrylicBrush x:Key="AcrylicConfirmationGridBackground"
+                          FallbackColor="{ThemeResource SolidBackgroundFillColorBase}"
                           TintColor="{ThemeResource SystemAccentColor}"
                           TintLuminosityOpacity="0.0"
-                          TintOpacity="0.9" 
-                          FallbackColor="{ThemeResource SolidBackgroundFillColorBase}"/>
+                          TintOpacity="0.9" />
             <StaticResource x:Key="SmokeGridOverlayBackground"
                             ResourceKey="SmokeFillColorCollapseBrush" />
         </ResourceDictionary>
@@ -175,7 +174,8 @@
                                         <Setter Target="PrimaryButton.IsTabStop" Value="True" />
                                         <Setter Target="CloseButton.IsTabStop" Value="True" />
                                         <Setter Target="LayoutRoot.Visibility" Value="Visible" />
-                                        <Setter Target="LayoutRoot.Background" Value="{x:Null}" />
+                                        <Setter Target="BackgroundElement.TabFocusNavigation" Value="Cycle" />
+                                        <Setter Target="SmokeLayerBackground.Fill" Value="{x:Null}" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -214,7 +214,7 @@
                                            Grid.Column="0"
                                            Grid.ColumnSpan="2"
                                            Height="Auto"
-                                           Margin="0, 0, -16, 0"
+                                           Margin="0,0,-16,0"
                                            HorizontalAlignment="Center"
                                            Opacity="1"
                                            Source="/Assets/Images/GamePoster/headerposter_genshin.png"
@@ -255,16 +255,16 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <TextBox x:Name="FeedbackTitleInput"
+                                                 Margin="0,0,0,16"
                                                  HorizontalAlignment="Stretch"
                                                  HorizontalContentAlignment="Stretch"
                                                  FontSize="24"
                                                  IsReadOnly="{TemplateBinding IsTitleReadOnly}"
                                                  IsSpellCheckEnabled="False"
                                                  IsTextPredictionEnabled="False"
-                                                 Margin="0,0,0,16"
                                                  Text="{TemplateBinding Title}">
                                             <TextBox.Header>
-                                                <TextBlock FontSize="14"/>
+                                                <TextBlock FontSize="14" />
                                             </TextBox.Header>
                                         </TextBox>
                                         <TextBox x:Name="FeedbackMessageInput"
@@ -281,7 +281,7 @@
                                                  Text="{TemplateBinding Message}"
                                                  TextWrapping="Wrap">
                                             <TextBox.Header>
-                                                <TextBlock/>
+                                                <TextBlock />
                                             </TextBox.Header>
                                         </TextBox>
                                     </Grid>
@@ -331,15 +331,15 @@
                                                            VerticalAlignment="Center"
                                                            FontWeight="SemiBold" />
                                                 <ProgressRing Grid.Column="1"
+                                                              Width="16"
+                                                              Height="16"
+                                                              Margin="8,0,0,0"
                                                               HorizontalAlignment="Center"
                                                               VerticalAlignment="Center"
-                                                              Margin="8,0,0,0"
+                                                              Maximum="100"
                                                               Opacity="0"
                                                               Visibility="Collapsed"
-                                                              Maximum="100"
-                                                              Value="100"
-                                                              Width="16"
-                                                              Height="16"/>
+                                                              Value="100" />
                                                 <Grid Grid.Column="1"
                                                       Margin="4,0,0,0"
                                                       HorizontalAlignment="Center"

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <!-- General Properties -->
         <OutputType>WinExe</OutputType>
@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.8</Version>
+        <Version>1.83.9</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -31,7 +31,7 @@
         <DebugType>portable</DebugType>
         <GitVersion>false</GitVersion>
         <!-- AoT Configs -->
-        <PublishAot>false</PublishAot>
+        <PublishAot>true</PublishAot>
         <!-- WinUI Properties -->
         <UseWinUI>true</UseWinUI>
         <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
@@ -52,7 +52,7 @@
         <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
         <WebView2EnableCsWinRTProjection>true</WebView2EnableCsWinRTProjection>
     </PropertyGroup>
-
+    
     <PropertyGroup>
         <NoWarn>$(NoWarn);TA101;TA100</NoWarn>
         <WarningLevel>5</WarningLevel>
@@ -72,6 +72,7 @@
         <!-- Security thingymajig -->
         <ControlFlowGuard>Guard</ControlFlowGuard>
         <CetCompat>true</CetCompat>
+        <CsWinRTAotOptimizerEnabled>true</CsWinRTAotOptimizerEnabled>
     </PropertyGroup>
 
 <!--
@@ -97,7 +98,6 @@
         <!-- DO NOT FORGET TO UPDATE THE DEFINECONSTANTS IN THE PUBLISH PROFILE(S) AS WELL   -->
         <DefineConstants>DISABLE_XAML_GENERATED_MAIN;ENABLEUSERFEEDBACK;USEVELOPACK;USENEWZIPDECOMPRESS;ENABLEHTTPREPAIR;DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION;PREVIEW;DUMPGIJSON;SIMULATEGIHDR;GSPBYPASSGAMERUNNING;MHYPLUGINSUPPORT</DefineConstants>
         <TrimMode>full</TrimMode>
-        <CsWinRTAotOptimizerEnabled>false</CsWinRTAotOptimizerEnabled>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <!-- !! IMPORTANT !!-->
@@ -172,9 +172,13 @@
         <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+        <PackageReference Include="ThisAssembly.Constants" Version="2.0.14">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
         <PackageReference Include="Velopack" Version="0.0.1298" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
 
@@ -198,26 +202,27 @@
         <PackageReference Include="Markdig.Signed" Version="0.41.3" />
         <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
         <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3415-prerelease" />
-        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250702007-experimental4" />
+        <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3477-prerelease" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250814004-preview" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
         <PackageReference Include="PhotoSauce.MagicScaler" Version="0.15.0" />
         <PackageReference Include="PhotoSauce.NativeCodecs.Libwebp" Version="*-*" />
         <PackageReference Include="Roman-Numerals" Version="2.0.1" />
         <PackageReference Include="SharpCompress" Version="0.40.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta6.25358.103" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta7.25380.108" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta5.25306.1" />
         <PackageReference Include="System.Security.AccessControl" Version="6.0.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.7" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.7" />
-        <PackageReference Include="System.Text.Json" Version="9.0.7" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.8" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.8" />
+        <PackageReference Include="System.Text.Json" Version="9.0.8" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\ColorThief\ColorThief\ColorThief.csproj" />
         <ProjectReference Include="..\H.NotifyIcon\src\libs\H.NotifyIcon.WinUI\H.NotifyIcon.WinUI.csproj" />
+        <ProjectReference Include="..\Hi3Helper.Plugin.Core\Hi3Helper.Plugin.Core.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\Hi3Helper.Win32.csproj" />
         <ProjectReference Include="..\Hi3Helper.Win32\WinRT\Hi3Helper.Win32.WinRT.csproj" />
         <ProjectReference Include="..\SevenZipExtractor\SevenZipExtractor\SevenZipExtractor.csproj" />
@@ -337,6 +342,7 @@
 
             <!-- Descriptor for all classes that cannot be trimmed -->
             <TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
+            <TrimmerRootAssembly Include="CollapseLauncher" />
 
             <!--
             <TrimmerRootAssembly Include="CommunityToolkit.WinUI" />

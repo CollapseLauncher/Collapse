@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Update;
 using CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -50,10 +51,9 @@ namespace CollapseLauncher.Pages
             if (LauncherUpdateHelper.AppUpdateVersionProp == null)
                 throw new NullReferenceException("New version property in LauncherUpdateHelper.AppUpdateVersionProp should haven't be null!");
 
-            if (LauncherUpdateHelper.AppUpdateVersionProp.Version != null)
+            if (LauncherUpdateHelper.AppUpdateVersionProp.Version.HasValue)
             {
                     GameVersion newUpdateVersion = LauncherUpdateHelper.AppUpdateVersionProp.Version.Value;
-
                     NewVersionLabel.Text = newUpdateVersion.VersionString;
             }
 
@@ -210,13 +210,8 @@ namespace CollapseLauncher.Pages
             DispatcherQueue?.TryEnqueue(() =>
             {
                 Status.Text = e.Status;
-                if (string.IsNullOrEmpty(e.Newver))
-                {
-                    return;
-                }
-
-                GameVersion version = new GameVersion(e.Newver);
-                NewVersionLabel.Text = version.VersionString;
+                GameVersion? version = e.Newver;
+                NewVersionLabel.Text = version?.ToString();
             });
         }
 

@@ -791,7 +791,6 @@
     "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Bitbucket.",
     "CDNDescription_GitLab": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên GitLab",
-    "CDNDescription_Coding": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Coding",
 
     "LocateExecutable": "Vị trí thực thi",
     "OpenDownloadPage": "Mở trang Tải xuống",

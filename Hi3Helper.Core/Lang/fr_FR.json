@@ -793,7 +793,6 @@
     "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) propulsé par le seau Cloudflare R2",
     "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) propulsé par BitBucket",
     "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) propulsé par GitLab",
-    "CDNDescription_Coding": "Un miroir du dépôt officiel (principal) propulsé par Coding",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",

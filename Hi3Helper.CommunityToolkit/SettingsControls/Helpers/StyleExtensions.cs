@@ -5,33 +5,49 @@
 // ReSharper disable PartialTypeWithSinglePart
 namespace Hi3Helper.CommunityToolkit.WinUI.Controls;
 
-// Adapted from https://github.com/rudyhuyn/XamlPlus
+/// <summary>
+/// Helper class for setting a ResourceDictionary on a Style.
+/// </summary>
+/// <remarks>
+/// Adapted from https://github.com/rudyhuyn/XamlPlus
+/// </remarks>
 public static partial class StyleExtensions
 {
     // Used to distinct normal ResourceDictionary and the one we add.
-    private sealed partial class StyleExtensionResourceDictionary : ResourceDictionary;
+    private sealed partial class StyleExtensionResourceDictionary : ResourceDictionary
+    {
+    }
 
+    /// <summary>
+    /// Get a ResourceDictionary from a Style.
+    /// </summary>
     public static ResourceDictionary GetResources(Style obj)
     {
         return (ResourceDictionary)obj.GetValue(ResourcesProperty);
     }
 
+    /// <summary>
+    /// Set the <see cref="ResourcesProperty"/> on a Style to a ResourceDictionary value.
+    /// </summary>
     public static void SetResources(Style obj, ResourceDictionary value)
     {
         obj.SetValue(ResourcesProperty, value);
     }
 
+    /// <summary>
+    /// Attached property to set a Style to a ResourceDictionary value.
+    /// </summary>
     public static readonly DependencyProperty ResourcesProperty =
         DependencyProperty.RegisterAttached("Resources", typeof(ResourceDictionary), typeof(StyleExtensions), new PropertyMetadata(null, ResourcesChanged));
 
     private static void ResourcesChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        if (!(sender is FrameworkElement frameworkElement))
+        if (sender is not FrameworkElement frameworkElement)
         {
             return;
         }
 
-        var mergedDictionaries = frameworkElement.Resources?.MergedDictionaries;
+        IList<ResourceDictionary> mergedDictionaries = frameworkElement.Resources?.MergedDictionaries;
         if (mergedDictionaries == null)
         {
             return;

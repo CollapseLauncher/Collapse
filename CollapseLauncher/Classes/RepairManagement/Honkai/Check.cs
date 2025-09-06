@@ -785,11 +785,11 @@ namespace CollapseLauncher
 
         #region Override Methods
         protected override ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
-            Stream stream,
-            byte[]? hmacKey = null,
-            bool updateProgress = true,
-            bool updateTotalProgress = true,
-            CancellationToken token = default)
+            Stream            stream,
+            byte[]?           hmacKey             = null,
+            bool              updateProgress      = true,
+            bool              updateTotalProgress = true,
+            CancellationToken token               = default)
         {
             // If the game version is >= 8.2.0 and the T is MD5, switch to MhyMurmurHash2 implementation.
             if (!_isGame820PostVersion || typeof(T) != typeof(MD5))
@@ -801,17 +801,37 @@ namespace CollapseLauncher
                                                   token);
             }
 
+            // Use Murmur implementation for latest version.
+            return GetCryptoHashAsyncMurmur(stream, updateProgress, updateTotalProgress, token)
+               .ConfigureAwait(false);
+        }
+
+        private async Task<byte[]> GetCryptoHashAsyncMurmur(
+            Stream            stream,
+            bool              updateProgress      = true,
+            bool              updateTotalProgress = true,
+            CancellationToken token               = default)
+        {
             // Create the Hasher provider by explicitly specify the length of the stream.
             MhyMurmurHash264B murmurHashProvider = MhyMurmurHash264B.CreateForStream(stream, 0, stream.Length);
 
-            // Pass the provider and return the task
-            return Hash.GetHashAsync(stream,
-                                     murmurHashProvider,
-                                     read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                     stream is { Length: > 1024 << 20 },
-                                     token);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(512 << 10);
+            try
+            {
+                int read;
+                while ((read = await stream.ReadAtLeastAsync(buffer, buffer.Length, false, token)
+                                           .ConfigureAwait(false)) > 0)
+                {
+                    UpdateHashReadProgress(read, updateProgress, updateTotalProgress);
+                    murmurHashProvider.Append(buffer[..read]);
+                }
 
-            // Otherwise, fallback to the default implementation.
+                return murmurHashProvider.GetHashAndReset();
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
         #endregion
     }

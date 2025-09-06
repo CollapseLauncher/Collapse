@@ -53,6 +53,47 @@
             <AnimatedVisualPlayer x:Name="IntroAnimation"
                                   AutoPlay="False"
                                   Visibility="Collapsed" />
+            <Grid x:Name="Temporary20250827CrisisIntro"
+                  Margin="32"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Bottom"
+                  Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ToggleSwitch Grid.Column="1"
+                              HorizontalAlignment="Right"
+                              IsOn="{x:Bind IsEnableCrisisIntro, Mode=TwoWay}"
+                              OffContent="Disable this Crisis Intro Animation"
+                              OnContent="Enable this Crisis Intro Animation" />
+                <Button Grid.Column="0"
+                        Margin="0,0,32,0"
+                        Click="Temporary20250827CrisisIntroButton_OnClick"
+                        Opacity=".5"
+                        PointerEntered="IntroSequenceToggle_PointerEntered"
+                        PointerExited="IntroSequenceToggle_PointerExited"
+                        Style="{ThemeResource TransparentDefaultButtonStyle}">
+                    <Grid Margin="0,0"
+                          ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   Text="Learn more about &quot;Indonesian Government Untrust Protest&quot; Crisis (by The Jakarta Post &amp; Al Jazeera)"
+                                   TextWrapping="Wrap" />
+                        <FontIcon Grid.Column="0"
+                                  HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"
+                                  FontSize="18"
+                                  Glyph="&#xE946;" />
+                    </Grid>
+                </Button>
+            </Grid>
             <CheckBox x:Name="IntroSequenceToggle"
                       Margin="32,32,16,24"
                       HorizontalAlignment="Right"
@@ -111,7 +152,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <!-- ReSharper disable GrammarMistakeInMarkupAttribute -->
+                    <!--  ReSharper disable GrammarMistakeInMarkupAttribute  -->
                     <TextBlock x:Name="LoadingStatusTextTitle"
                                Grid.Column="0"
                                VerticalAlignment="Center"
@@ -192,23 +233,42 @@
                     <Button x:Name="MinimizeButton"
                             Grid.Column="0"
                             Width="40"
+                            Height="32"
                             x:FieldModifier="internal"
                             Click="MinimizeButton_Click"
-                            Content="M 0 0 H 10"
                             CornerRadius="8,0,0,8"
                             Loaded="SetWindowCaptionLoadedCursor"
-                            Style="{ThemeResource WindowCaptionButton}" />
+                            Style="{ThemeResource WindowCaptionButton}">
+                        <Path Width="10"
+                              Height="10"
+                              Data="M 0 0 H 10"
+                              Stretch="Fill"
+                              Stroke="{ThemeResource ButtonForegroundThemeBrush}"
+                              StrokeEndLineCap="Round"
+                              StrokeStartLineCap="Round"
+                              StrokeThickness="{ThemeResource WindowCaptionButtonStrokeWidth}"
+                              UseLayoutRounding="True" />
+                    </Button>
                     <Button x:Name="CloseButton"
                             Grid.Column="1"
                             Width="40"
+                            Height="32"
                             HorizontalAlignment="Right"
                             x:FieldModifier="internal"
                             Background="{ThemeResource WindowCaptionBackgroundClose}"
                             Click="CloseButton_Click"
-                            Content="M 0 0 L 10 10 M 10 0 L 0 10"
                             CornerRadius="0,8,8,0"
                             Loaded="SetWindowCaptionLoadedCursor"
                             Style="{ThemeResource WindowCaptionButton}">
+                        <Path Width="10"
+                              Height="10"
+                              Data="M 0 0 L 10 10 M 10 0 L 0 10"
+                              Stretch="Fill"
+                              Stroke="{ThemeResource ButtonForegroundThemeBrush}"
+                              StrokeEndLineCap="Round"
+                              StrokeStartLineCap="Round"
+                              StrokeThickness="{ThemeResource WindowCaptionButtonStrokeWidth}"
+                              UseLayoutRounding="True" />
                         <Button.Resources>
                             <ResourceDictionary>
                                 <ResourceDictionary.ThemeDictionaries>

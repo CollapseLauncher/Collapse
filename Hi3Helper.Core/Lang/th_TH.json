@@ -591,7 +591,6 @@
     "CDNDescription_Cloudflare": "สำเนาของคลังเก็บทางการ (หลัก) ที่ถูกโฮสต์ใน Cloudflare R2 bucket",
     "CDNDescription_Bitbucket": "สำเนาของคลังเก็บทางการ (หลัก) ที่ถูกโฮสต์ใน Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "ค้นหาไฟล์โปรแกรม",
     "OpenDownloadPage": "เปิดหน้าดาวน์โหลด",

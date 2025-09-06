@@ -791,7 +791,6 @@
     "CDNDescription_Cloudflare": "Uma cópia do repositório oficial (principal) hospedada no serviço Cloudflare R2.",
     "CDNDescription_Bitbucket": "Uma cópia do repositório oficial (principal) hospedada no Bitbucket.",
     "CDNDescription_GitLab": "Uma cópia do repositório oficial (principal) hospedada no GitLab.",
-    "CDNDescription_Coding": "Uma cópia do repositório oficial (principal) hospedada no Coding.",
 
     "LocateExecutable": "Selecionar Executável",
     "OpenDownloadPage": "Abrir Página de Download",

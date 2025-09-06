@@ -41,15 +41,19 @@ namespace CollapseLauncher.CustomControls
         }
 
         public new IAsyncOperation<ContentDialogResult> ShowAsync()
+            => ShowAsync(ContentDialogPlacement.Popup);
+
+        public new IAsyncOperation<ContentDialogResult> ShowAsync(
+            ContentDialogPlacement placement)
         {
             if (Title is string titleString && Theme != ContentDialogTheme.Informational)
             {
                 Grid titleStack = UIElementExtensions.CreateIconTextGrid(
-                        text: titleString,
-                        iconGlyph: ThemeTitleGlyph,
-                        iconSize: 20,
-                        iconFontFamily: "FontAwesomeSolid"
-                    ).WithPadding(-8d, 0d, 0d, 0d);
+                                                                         text: titleString,
+                                                                         iconGlyph: ThemeTitleGlyph,
+                                                                         iconSize: 20,
+                                                                         iconFontFamily: "FontAwesomeSolid"
+                                                                        ).WithPadding(-8d, 0d, 0d, 0d);
                 Title = titleStack;
             }
             return base.ShowAsync();

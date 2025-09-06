@@ -153,7 +153,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         public async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
         {
             // Find an overlay grid where the UI element will be spawn to
-            _parentOverlayGrid = FindOverlayGrid(XamlRoot, _isAlwaysOnTop);
+            _parentOverlayGrid = XamlRoot.FindOverlayGrid(_isAlwaysOnTop);
             // Get the count of the Rows and Column so it can be spanned across the grid.
             int parentGridRowCount = _parentOverlayGrid?.RowDefinitions.Count ?? 1;
             int parentGridColumnCount = _parentOverlayGrid?.ColumnDefinitions.Count ?? 1;
@@ -329,77 +329,14 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
             try
             {
                 // Perform a loop while waiting for the tokenSource to be invalidated.
-                while (true)
-                {
-                    tokenSource.Token.ThrowIfCancellationRequested();
-                    await Task.Delay(1000, tokenSource.Token);
-                }
+                tokenSource.Token.ThrowIfCancellationRequested();
+                await Task.Delay(Timeout.InfiniteTimeSpan, tokenSource.Token);
             }
             // Ignore the cancellation (invalidation) exception
             catch (OperationCanceledException)
             {
                 // ignored
             }
-        }
-
-        private static Grid FindOverlayGrid([NotNull] XamlRoot? root, bool isAlwaysOnTop)
-        {
-            // XAML root cannot be empty or null!
-            ArgumentNullException.ThrowIfNull(root);
-
-            // If alwaysOnTop is not preferred, find for a grid called "OverlayRootGrid" under the XamlRoot's Content.
-            if (!isAlwaysOnTop)
-            {
-                FrameworkElement? parent = root.Content.FindDescendant("OverlayRootGrid", StringComparison.OrdinalIgnoreCase);
-                if (parent is not Grid parentAsGrid)
-                {
-                    //If the "OverlayRootGrid" doesn't exist, start searching for any last grid existed.
-                    goto FindAnyLastGrid;
-                }
-
-                // Otherwise, return the "OverlayRootGrid"
-                return parentAsGrid;
-            }
-        
-            FindAnyLastGrid:
-            // Assign the XamlRoot's Content as grid. If it's not a grid, find any last child grid
-            // on the XamlRoot's VisualTree children.
-            Grid? topGrid = root.Content as Grid;
-            topGrid ??= FindLastChildGrid(root.Content);
-
-            // If it still cannot find any grid, throw.
-            if (topGrid is null)
-            {
-                throw new InvalidOperationException("Cannot find any or the last grid in your XAML layout!");
-            }
-
-            // Otherwise, any grid that have been found.
-            return topGrid;
-        }
-
-        private static Grid? FindLastChildGrid(DependencyObject? element)
-        {
-            // Get count of any children existed under the element's VisualTree
-            int visualTreeCount = VisualTreeHelper.GetChildrenCount(element);
-            if (visualTreeCount == 0)
-            {
-                // If none is found, return null.
-                return null;
-            }
-
-            // Find the last grid to be found under the element's VisualTree
-            Grid? lastGrid = null;
-            for (int i = 0; i < visualTreeCount; i++)
-            {
-                DependencyObject currentObject = VisualTreeHelper.GetChild(element, i);
-                if (currentObject is Grid asGrid)
-                {
-                    lastGrid = asGrid;
-                }
-            }
-
-            // Return the result (whether if it's not found/as null, or any last grid)
-            return lastGrid;
         }
         #endregion
     }
