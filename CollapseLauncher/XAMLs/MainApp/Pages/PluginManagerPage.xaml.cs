@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using InternalExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable CheckNamespace
 
@@ -156,11 +157,14 @@ namespace CollapseLauncher.Pages
 
         private void OnClickGoToPluginDownloadCatalogButton(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName        = "https://plugin.collapselauncher.com",
-                UseShellExecute = true
-            });
+            Task.Run(() =>
+                     {
+                         Process.Start(new ProcessStartInfo
+                         {
+                             FileName        = "https://collapselauncher.com/plugin/catalog.html",
+                             UseShellExecute = true
+                         });
+                     });
         }
     }
 }
