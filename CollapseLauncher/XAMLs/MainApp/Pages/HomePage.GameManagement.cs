@@ -568,7 +568,7 @@ public sealed partial class HomePage
             case PostInstallBehaviour.Nothing:
                 break;
             case PostInstallBehaviour.StartGame:
-                StartGame(null, null);
+                StartGame(null!, null!);
                 break;
             case PostInstallBehaviour.Hibernate:
                 Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", "/h")
