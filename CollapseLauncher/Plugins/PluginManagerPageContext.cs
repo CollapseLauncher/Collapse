@@ -298,7 +298,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            ErrorSender.SendException(new UnknownPluginException(null, ex));
+            ErrorSender.SendException(ex.WrapPluginException());
         }
     }
 
@@ -315,7 +315,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            ErrorSender.SendException(new UnknownPluginException(null, ex));
+            ErrorSender.SendException(ex.WrapPluginException());
         }
     }
 
@@ -335,7 +335,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         }
         catch (Exception ex)
         {
-            ErrorSender.SendException(new UnknownPluginException(null, ex));
+            ErrorSender.SendException(ex.WrapPluginException());
         }
     }
 
