@@ -1,6 +1,5 @@
 using CollapseLauncher.AnimatedVisuals.Lottie;
 using CollapseLauncher.CustomControls;
-using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;

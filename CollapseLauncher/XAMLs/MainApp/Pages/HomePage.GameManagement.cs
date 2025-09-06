@@ -571,7 +571,7 @@ public sealed partial class HomePage
                 StartGame(null, null);
                 break;
             case PostInstallBehaviour.Hibernate:
-                Process.Start(new ProcessStartInfo("C:\\Windows\\System32\\shutdown.exe", "/h")
+                Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", "/h")
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
@@ -584,10 +584,11 @@ public sealed partial class HomePage
                 {
                     PostInstallBehaviour.Restart => "/r",
                     PostInstallBehaviour.Shutdown => "/s",
+                    // ReSharper disable once UnreachableSwitchArmDueToIntegerAnalysis
                     _ => "/a"
                 };
 
-                Process.Start(new ProcessStartInfo("C:\\Windows\\System32\\shutdown.exe", $"{shutdownType} /t {shutdownTimeout}")
+                Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", $"{shutdownType} /t {shutdownTimeout}")
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
@@ -595,7 +596,10 @@ public sealed partial class HomePage
                 break;
         }
 
-        CurrentGameProperty.GameInstall?.PostInstallBehaviour = PostInstallBehaviour.Nothing;
+        if (CurrentGameProperty.GameInstall != null)
+        {
+            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
+        }
     }
     #endregion
 

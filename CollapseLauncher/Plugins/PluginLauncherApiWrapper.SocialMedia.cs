@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.Data;

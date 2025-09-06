@@ -21,7 +21,7 @@ using ILauncherApi = CollapseLauncher.Helper.LauncherApiLoader.ILauncherApi;
 #nullable enable
 namespace CollapseLauncher.Plugins;
 
-public class PluginPresetConfigWrapper : PresetConfig, IDisposable
+public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
     public GameManagerExtension.RunGameFromGameManagerContext RunGameContext { get; }
     public readonly  PluginInfo                                         PluginInfo;

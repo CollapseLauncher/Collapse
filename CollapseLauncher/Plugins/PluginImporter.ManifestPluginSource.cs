@@ -9,7 +9,7 @@ namespace CollapseLauncher.Plugins;
 
 internal static partial class PluginImporter
 {
-    private class ManifestPluginSource(PluginManifest manifest, string baseDir)
+    private partial class ManifestPluginSource(PluginManifest manifest, string baseDir)
         : IPluginSource<ManifestPluginSource>, IPluginSource
     {
         public  PluginManifest Manifest { get; } = manifest;

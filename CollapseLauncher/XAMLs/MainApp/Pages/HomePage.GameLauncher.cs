@@ -51,7 +51,7 @@ public partial class HomePage
     private CancellationTokenSource ResizableWindowHookToken;
 
 #nullable enable
-    private async void StartGame(object sender, RoutedEventArgs e)
+    private async void StartGame(object? sender, RoutedEventArgs? e)
     {
         // Initialize values
         IGameSettingsUniversal _Settings   = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();

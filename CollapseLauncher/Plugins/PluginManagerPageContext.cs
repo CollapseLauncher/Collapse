@@ -285,7 +285,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         CheckAndDownloadUpdateEnumeratePlugins(obj.OfType<PluginInfo>().ToList());
     }
 
-    internal static async void CheckUpdateEnumeratePlugins(IEnumerable<PluginInfo> pluginInfos)
+    internal static async void CheckUpdateEnumeratePlugins(ICollection<PluginInfo> pluginInfos)
     {
         try
         {

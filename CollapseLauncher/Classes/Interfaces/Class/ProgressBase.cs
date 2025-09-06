@@ -15,7 +15,6 @@ using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Helper;
 using Hi3Helper.Win32.TaskbarListCOM;
-using Libsql.Client;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
