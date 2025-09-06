@@ -12,7 +12,7 @@ namespace CollapseLauncher.Plugins;
 
 internal static partial class PluginImporter
 {
-    private class ZipPluginSource
+    private partial class ZipPluginSource
         : IPluginSource<ZipPluginSource>, IPluginSource
     {
         private const string CompressionExt = ".br";

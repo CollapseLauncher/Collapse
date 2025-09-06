@@ -30,7 +30,7 @@ namespace CollapseLauncher.Helper.Update
         internal static AppUpdateVersionProp? AppUpdateVersionProp;
         internal static bool IsLauncherUpdateAvailable;
 
-        internal static GameVersion? LauncherCurrentVersion => field ??= new GameVersion(LauncherConfig.AppCurrentVersionString);
+        internal static GameVersion? LauncherCurrentVersion => field ??= LauncherConfig.AppCurrentVersionString;
 
         [field: AllowNull, MaybeNull]
         internal static string LauncherCurrentVersionString => field = LauncherConfig.AppCurrentVersionString;
@@ -96,7 +96,7 @@ namespace CollapseLauncher.Helper.Update
             }
 
             // If there's an update, then get the update metadata
-            GameVersion? updateVersion = new GameVersion(updateInfo.TargetFullRelease.Version.ToString());
+            GameVersion updateVersion = updateInfo.TargetFullRelease.Version.ToString();
             AppUpdateVersionProp = await GetUpdateMetadata(updateChannel);
             if (AppUpdateVersionProp == null)
             {

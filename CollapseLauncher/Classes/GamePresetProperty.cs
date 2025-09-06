@@ -13,8 +13,6 @@ using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
-using Hi3Helper.Plugin.Core.Utility;
-using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Extensions.Logging;

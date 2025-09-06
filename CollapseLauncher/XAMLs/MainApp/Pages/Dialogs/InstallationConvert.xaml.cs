@@ -217,13 +217,14 @@ namespace CollapseLauncher.Dialogs
 
                 // Check if the version value exist and matches
                 if (!(sourceIniVersionFile.ContainsKey("General") && sourceIniVersionFile["General"].ContainsKey("game_version"))) return false;
-                string localVersionString = sourceIniVersionFile["General"]["game_version"].ToString();
-                if (string.IsNullOrEmpty(localVersionString)) return false;
-                GameVersion localVersion = new GameVersion(localVersionString);
+                string       localVersionString = sourceIniVersionFile["General"]["game_version"].ToString();
+                GameVersion? localVersion       = localVersionString;
+                if (!localVersion.HasValue) return false;
+
                 GameVersion? remoteVersion = CurrentGameProperty.GameVersion?.GetGameVersionApi();
                 if (localVersion != remoteVersion) return false;
 
-                var execPath = Path.Combine(gamePath, profile.GameExecutableName ?? "");
+                string execPath = Path.Combine(gamePath, profile.GameExecutableName ?? "");
                 if (!File.Exists(execPath))
                     return false;
             }

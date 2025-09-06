@@ -404,11 +404,9 @@ namespace CollapseLauncher.Pages
                 LauncherUpdateWatcher.GetStatus(new LauncherUpdateProperty
                 {
                     IsUpdateAvailable = isUpdateAvailable, 
-                    // ReSharper disable PossibleInvalidOperationException
-                    NewVersionName = (GameVersion)(isUpdateAvailable
-                        ? LauncherUpdateHelper.AppUpdateVersionProp.Version.Value
-                        : LauncherUpdateHelper.LauncherCurrentVersion)
-                    // ReSharper restore PossibleInvalidOperationException
+                    NewVersionName = (isUpdateAvailable
+                        ? LauncherUpdateHelper.AppUpdateVersionProp.Version
+                        : LauncherUpdateHelper.LauncherCurrentVersion) ?? GameVersion.Empty
                 });
             }
             catch (Exception ex)

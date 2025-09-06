@@ -36,43 +36,11 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Game Version API Properties
-        protected virtual GameVersion? SdkVersionAPI
-        {
-            get
-            {
-                // Return null if the plugin is not exist
-                if (GameApiProp?.data?.sdk == null)
-                    return null;
+        protected virtual GameVersion? SdkVersionAPI => GameApiProp?.data?.sdk?.version;
 
-                // If the version provided by the SDK API, return the result
-                return GameVersion.TryParse(GameApiProp.data?.sdk?.version, null, out GameVersion result) ? result :
-                    // Otherwise, return null
-                    null;
-            }
-        }
+        protected virtual GameVersion? GameVersionAPI => GameApiProp?.data?.game?.latest?.version;
 
-        protected virtual GameVersion? GameVersionAPI
-        {
-            get => GameVersion.TryParse(GameApiProp?.data?.game?.latest?.version, out GameVersion version) ? version : null;
-        }
-
-        protected virtual GameVersion? GameVersionAPIPreload
-        {
-            get
-            {
-                GameVersion? currentInstalled = GameVersionInstalled;
-
-                // If no installation installed, then return null
-                if (!currentInstalled.HasValue)
-                    return null;
-
-                // Check if the pre_download_game property has value. If not, then return null
-                if (string.IsNullOrEmpty(GameApiProp?.data?.pre_download_game?.latest?.version))
-                    return null;
-
-                return new GameVersion(GameApiProp.data.pre_download_game.latest.version);
-            }
-        }
+        protected virtual GameVersion? GameVersionAPIPreload => GameVersionInstalled ?? GameApiProp?.data?.pre_download_game?.latest?.version;
 
         protected virtual Dictionary<string, GameVersion> PluginVersionsAPI
         {
@@ -88,7 +56,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 }
 
                 // Get the version and convert it into GameVersion
-                foreach (var plugin in GameApiProp.data.plugins
+                foreach ((string? plugin_id, string? version) plugin in GameApiProp.data.plugins
                                                   .Where(plugin => plugin.plugin_id != null)
                                                   .Select(plugin => (plugin.plugin_id, plugin.version)))
                 {
@@ -96,7 +64,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     {
                         continue;
                     }
-                    value.TryAdd(plugin.plugin_id, new GameVersion(plugin.version));
+                    value.TryAdd(plugin.plugin_id, plugin.version);
                 }
 
                 return value;
@@ -117,14 +85,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                 // Get the game version
                 string? val = gameVersion;
 
-                // If not, then return as null
-                if (string.IsNullOrEmpty(val))
-                {
-                    return null;
-                }
-
                 // Otherwise, return the game version
-                return new GameVersion(val);
+                return val;
             }
             set
             {
@@ -147,7 +109,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 }
 
                 // Get the version and convert it into GameVersion
-                foreach (var plugin in GameApiProp?.data?.plugins!)
+                foreach (RegionResourcePlugin plugin in GameApiProp?.data?.plugins!)
                 {
                     // Check if the INI has plugin_ID_version key...
                     string keyName = $"plugin_{plugin.plugin_id}_version";
@@ -157,14 +119,9 @@ namespace CollapseLauncher.GameManagement.Versioning
                     }
 
                     string? val = getPluginVersion;
-                    if (string.IsNullOrEmpty(val))
-                    {
-                        continue;
-                    }
-
                     if (plugin.plugin_id != null)
                     {
-                        _ = value.TryAdd(plugin.plugin_id, new GameVersion(val));
+                        _ = value.TryAdd(plugin.plugin_id, val);
                     }
                 }
 
@@ -184,15 +141,9 @@ namespace CollapseLauncher.GameManagement.Versioning
 
                 // Check if it has no value, then return null
                 string? versionName = pluginSdkVersion;
-                if (string.IsNullOrEmpty(versionName))
-                    return null;
 
                 // Try parse the version.
-                return !GameVersion.TryParse(versionName, out GameVersion result) ?
-                    // If it's not valid, then return null
-                    null :
-                    // Otherwise, return the result
-                    result;
+                return versionName;
             }
             set => UpdateSdkVersion(value ?? SdkVersionAPI);
         }

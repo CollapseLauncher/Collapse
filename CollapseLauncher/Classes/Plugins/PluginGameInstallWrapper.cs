@@ -26,12 +26,11 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IGameInstallManager
+internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IGameInstallManager
 {
     public event EventHandler? FlushingTrigger;
 
     public bool            IsRunning       { get; private set; }
-    public DispatcherQueue DispatcherQueue { get; }
 
     private readonly IPlugin                   _plugin;
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
@@ -45,7 +44,6 @@ internal class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IG
     {
         ParentUI        = parentUi ?? throw new ArgumentNullException(nameof(parentUi));
         IsRunning       = false;
-        DispatcherQueue = ParentUI.DispatcherQueue;
 
         _pluginPresetConfig = pluginPresetConfig ?? throw new ArgumentNullException(nameof(pluginPresetConfig));
         _plugin             = pluginPresetConfig.Plugin ?? throw new ArgumentNullException(nameof(pluginPresetConfig));

@@ -156,7 +156,6 @@ internal class PluginGameVersionWrapper : GameVersionBase, IGameVersion
     public override GameVersion? GetGameVersionApiPreload()
     {
         _pluginGameManager.GetApiPreloadGameVersion(out GameVersion gameVersion);
-
         if (gameVersion == GameVersion.Empty)
         {
             return null;

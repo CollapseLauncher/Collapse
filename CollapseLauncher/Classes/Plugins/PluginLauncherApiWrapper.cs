@@ -45,8 +45,11 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
 
     public string  GameBackgroundImg           { get; private set; } = string.Empty;
     public string? GameBackgroundImgLocal      { get; set; }
-    public int     GameBackgroundSequenceCount { get; private set; } = 1;
-    public float   GameBackgroundSequenceFps   { get; private set; }
+
+    // ReSharper disable UnusedAutoPropertyAccessor.Global
+    public int   GameBackgroundSequenceCount { get; private set; } = 1;
+    public float GameBackgroundSequenceFps   { get; private set; }
+    // ReSharper enable UnusedAutoPropertyAccessor.Global
 
     public string GameName              => _pluginPresetConfig.GameName;
     public string GameRegion            => _pluginPresetConfig.ZoneName;
