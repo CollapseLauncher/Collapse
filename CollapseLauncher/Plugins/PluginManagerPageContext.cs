@@ -231,7 +231,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
             return;
         }
 
-        CheckUpdateEnumeratePlugins([plugin]);
+        CheckUpdateEnumeratePlugins(plugin);
     }
 
     public static ICommand OnCheckAndDownloadUpdateCurrentPluginCommand { get; } = new RelayCommand<PluginInfo>(OnCheckAndDownloadUpdateCurrentPlugin);
@@ -283,6 +283,23 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
         }
 
         CheckAndDownloadUpdateEnumeratePlugins(obj.OfType<PluginInfo>().ToList());
+    }
+
+    internal static async void CheckUpdateEnumeratePlugins(params PluginInfo[] pluginInfos)
+    {
+        try
+        {
+            await Parallel.ForEachAsync(pluginInfos, Impl);
+
+            async ValueTask Impl(PluginInfo plugin, CancellationToken token)
+            {
+                await plugin.RunCheckUpdateTask(token);
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorSender.SendException(new UnknownPluginException(null, ex));
+        }
     }
 
     internal static async void CheckUpdateEnumeratePlugins(ICollection<PluginInfo> pluginInfos)
