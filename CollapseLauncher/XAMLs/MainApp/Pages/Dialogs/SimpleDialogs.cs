@@ -1661,18 +1661,20 @@ namespace CollapseLauncher.Dialogs
         {
             // Wait until the SharedXamlRoot OR dialog.XamlRoot is not null
             // Prevent crash on startup where the UI is not ready yet
-            var timeout = TimeSpan.FromSeconds(20);
+            var timeout = TimeSpan.FromSeconds(10);
             var actStart = DateTime.Now;
-            while ((SharedXamlRoot is null || dialog.XamlRoot is null) && DateTime.Now - actStart < timeout)
+            while (SharedXamlRoot is null && dialog.XamlRoot is null && DateTime.Now - actStart < timeout)
             {
                 await Task.Delay(200);
             }
 
-            if (SharedXamlRoot is null || dialog.XamlRoot is null)
+            if (SharedXamlRoot is null && dialog.XamlRoot is null)
             {
-                Logger.LogWriteLine($"[SimpleDialogs::QueueAndSpawnDialog] Failed to spawn dialog {dialog.Title} " +
-                                    $"due to XamlRoot is null after waiting for {timeout.TotalSeconds} seconds",
-                                    LogType.Warning, true);
+                var msg = $"[SimpleDialogs::QueueAndSpawnDialog] Failed to spawn dialog {dialog.Title} " +
+                          $"due to XamlRoot is null after waiting for {timeout.TotalSeconds} seconds";
+                Logger.LogWriteLine(msg, LogType.Warning, true);
+                SentryHelper.ExceptionHandler(new TimeoutException(msg));
+                return ContentDialogResult.None;
             }
             
             // If a dialog is currently spawned, then wait until the task is completed
