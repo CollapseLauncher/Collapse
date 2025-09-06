@@ -54,26 +54,26 @@
                                   AutoPlay="False"
                                   Visibility="Collapsed" />
             <Grid x:Name="Temporary20250827CrisisIntro"
-                  Visibility="Collapsed"
+                  Margin="32"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Bottom"
-                  Margin="32">
+                  Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ToggleSwitch Grid.Column="1"
+                              HorizontalAlignment="Right"
                               IsOn="{x:Bind IsEnableCrisisIntro, Mode=TwoWay}"
-                              OnContent="Disable this Crisis Intro Animation"
-                              OffContent="Enable this Crisis Intro Animation"
-                              HorizontalAlignment="Right"/>
+                              OffContent="Disable this Crisis Intro Animation"
+                              OnContent="Enable this Crisis Intro Animation" />
                 <Button Grid.Column="0"
+                        Margin="0,0,32,0"
+                        Click="Temporary20250827CrisisIntroButton_OnClick"
+                        Opacity=".5"
                         PointerEntered="IntroSequenceToggle_PointerEntered"
                         PointerExited="IntroSequenceToggle_PointerExited"
-                        Margin="0, 0, 32, 0"
-                        Opacity=".5"
-                        Style="{ThemeResource TransparentDefaultButtonStyle}"
-                        Click="Temporary20250827CrisisIntroButton_OnClick">
+                        Style="{ThemeResource TransparentDefaultButtonStyle}">
                     <Grid Margin="0,0"
                           ColumnSpacing="8">
                         <Grid.ColumnDefinitions>
@@ -84,8 +84,8 @@
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
                                    FontWeight="SemiBold"
-                                   TextWrapping="Wrap"
-                                   Text="Learn more about &quot;Indonesian Government Untrust Protest&quot; Crisis (by The Jakarta Post &amp; Al Jazeera)"/>
+                                   Text="Learn more about &quot;Indonesian Government Untrust Protest&quot; Crisis (by The Jakarta Post &amp; Al Jazeera)"
+                                   TextWrapping="Wrap" />
                         <FontIcon Grid.Column="0"
                                   HorizontalAlignment="Right"
                                   VerticalAlignment="Center"
