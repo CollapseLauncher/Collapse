@@ -21,7 +21,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WinRT;
@@ -71,7 +70,9 @@ namespace CollapseLauncher
             {
                 // Add callbacks to apply shared settings
                 ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
-
+                
+                InitAppPreset();
+                UseConsoleLog(IsConsoleEnabled);
                 // Initialize the Sentry SDK
                 SentryHelper.IsPreview = IsPreview;
             #pragma warning disable CS0618 // Type or member is obsolete
@@ -108,9 +109,6 @@ namespace CollapseLauncher
                     AppIconLarge = largeIcons[0];
                     AppIconSmall = smallIcons[0];
                 }
-
-                InitAppPreset();
-                UseConsoleLog(IsConsoleEnabled);
 
                 // Set ILogger for CDNCacheUtil
                 CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");
@@ -293,6 +291,21 @@ namespace CollapseLauncher
 
         private static void StartMainApplication()
         {
+            // Reload Sentry
+            if (SentryHelper.IsEnabled)
+            {
+                try
+                {
+                    // Sentry SDK Entry
+                    SentryHelper.InitializeSentrySdk();
+                    SentryHelper.InitializeExceptionRedirect();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                }
+            }
+            
             Application.Start(_ =>
                               {
                                   DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();

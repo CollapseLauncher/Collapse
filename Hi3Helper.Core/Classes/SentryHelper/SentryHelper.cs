@@ -138,7 +138,7 @@ namespace Hi3Helper.SentryHelper
 
         public static void InitializeSentrySdk()
         {
-            _sentryInstance =
+            _sentryInstance ??=
                 SentrySdk.Init(o =>
                                {
                                    o.Dsn = SentryDsn;
@@ -193,6 +193,7 @@ namespace Hi3Helper.SentryHelper
                              finally
                              {
                                  _sentryInstance?.Dispose();
+                                 _sentryInstance = null;
                              }
                          });
         }

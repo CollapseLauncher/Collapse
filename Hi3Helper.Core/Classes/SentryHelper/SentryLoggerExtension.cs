@@ -63,8 +63,8 @@ public abstract class LogToNativeLogger : IDiagnosticLogger
         const int  maxStackallocBufferSize = 1 << 10;
         const char spaceChar               = ' ';
 
-        char[]? poolBuffer = s.Length > maxStackallocBufferSize ? ArrayPool<char>.Shared.Rent(s.Length) : null;
-        scoped Span<char> buffer = poolBuffer ?? stackalloc char[s.Length];
+        char[]? poolBuffer = s.Length > maxStackallocBufferSize ? ArrayPool<char>.Shared.Rent(s.Length + 1) : null;
+        scoped Span<char> buffer = poolBuffer ?? stackalloc char[s.Length + 1];
 
         try
         {
