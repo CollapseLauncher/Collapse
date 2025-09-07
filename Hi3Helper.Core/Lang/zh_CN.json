@@ -736,7 +736,53 @@
   },
 
   "_PluginManagerPage": {
-    "PageTitle": "插件管理菜单"
+    "PageTitle": "插件管理菜单",
+
+    "FileDialogTitle": "导入 Collapse 启动器插件",
+    "FileDialogFileFilter1": "Collapse 启动器插件",
+
+    "LeftPanelNoPluginTitle": "嘿，你还没加载插件！",
+    "LeftPanelNoPluginButton1": "转到",
+    "LeftPanelNoPluginButton2": "插件下载目录",
+    "LeftPanelNoPluginButton3": "页",
+
+    "LeftPanelListViewTitle": "加载插件信息",
+
+    "ListViewMainActionButton1": "检查所有插件的更新",
+    "ListViewMainActionButton1AltChecking": "检查所有插件的更新中……",
+    "ListViewMainActionButton2": "下载所有插件的更新",
+    "ListViewMainActionButton3": "启动时自动更新",
+
+    "ListViewItemContextButton1": "卸载选定的插件",
+    "ListViewItemContextButton2": "重置选定的插件",
+    "ListViewItemContextButton3": "启用选定的插件",
+    "ListViewItemContextButton4": "禁用选定的插件",
+    "ListViewItemContextButton5": "更新选定的插件",
+    "ListViewItemContextButton6": "打开当前插件的文件夹",
+    "ListViewItemContextButton7": "打开 Collapse 启动器插件文件夹",
+    "ListViewItemContextButton8": "更新当前插件",
+
+    "ListViewItemContentButton1": "卸载插件",
+    "ListViewItemContentButton2": "重置插件",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "仅检查更新",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "检查并下载更新",
+    "ListViewItemContextButtonDownloadUpdate": "下载更新",
+
+    "ListViewItemUpdateStatusAvailable": "新更新可用！",
+    "ListViewItemUpdateStatusAvailableButton": "更新至 {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "更新中（{0}%）……",
+    "ListViewItemUpdateStatusCompleted": "您的插件已被更新至{0}，请重启您的启动器以应用更新！",
+    "ListViewItemUpdateStatusChecking": "检查更新中……",
+    "ListViewItemUpdateStatusUpToDate": "插件已是最新！",
+
+    "ListViewFooterWarning1": "您需要重启您的启动器以应用更新！",
+    "ListViewFooterRestartButton": "重启启动器",
+
+    "RightPanelImportTitle1": "拖动",
+    "RightPanelImportTitle2": "或",
+    "RightPanelImportTitle3": "这里",
+    "RightPanelImportTitle4": "或者点击这个框以导入插件"
   },
 
   "_Misc": {
@@ -1139,6 +1185,17 @@
     "UserFeedback_SubmitBtn_Completed": "完成！",
     "UserFeedback_SubmitBtn_Cancelled": "已取消！",
 
+    "PluginManagerUpdateAvailableTitle": "您有 {0} 个插件已准备好更新！",
+    "PluginManagerUpdateAvailableSubtitle1": "目前有 {0} 个插件可更新。启动器需要重新启动以应用这些插件的更新：",
+    "PluginManagerUpdateAvailableSubtitle2": "您希望重新启动启动器吗？",
+    "PluginManagerUpdateAvailableCancelBtn": "稍后",
+    "PluginManagerUpdateAvailableConfirmBtn": "现在就重启！",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "转到 {0}",
+
+    "LauncherRestartTitle": "重启 Collapse启动器",
+    "LauncherRestartSubtitle1": "您需要重新启动启动器。请确保在重启前关闭或者取消了所有后台活动。",
+    "LauncherRestartSubtitle2": "您希望重新启动启动器吗？",
+
     "PostInstallBehaviour_Title": "安装/更新后行为",
     "PostInstallBehaviour_Subtitle": "成功安装/更新后的行为",
     "PostInstallBehaviour_Subtitle2": "重启/关机前等待时间",
@@ -1146,13 +1203,7 @@
     "PostInstallBehaviour_EnumStartGame": "开始游戏",
     "PostInstallBehaviour_EnumHibernate": "休眠",
     "PostInstallBehaviour_EnumRestart": "重启电脑",
-    "PostInstallBehaviour_EnumShutdown": "关闭电脑",
-
-    "PluginManagerUpdateAvailableTitle": "您有 {0} 个插件已准备好更新！",
-    "PluginManagerUpdateAvailableSubtitle1": "目前有 {0} 个插件可更新。启动器需要重新启动以应用这些插件的更新：",
-    "PluginManagerUpdateAvailableSubtitle2": "您希望重新启动启动器吗？",
-    "PluginManagerUpdateAvailableCancelBtn": "稍后",
-    "PluginManagerUpdateAvailableConfirmBtn": "现在就重启！"
+    "PostInstallBehaviour_EnumShutdown": "关闭电脑"
   },
 
   "_FileMigrationProcess": {
