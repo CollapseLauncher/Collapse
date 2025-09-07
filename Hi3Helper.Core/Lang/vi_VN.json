@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Sao chép tất cả vào khe nhớ tạm",
     "CopyClipboardBtn2": "Đã sao chép thành công!",
     "GoBackPageBtn1": "Trở lại trang trước",
-    
+
     "CustomBackground_NotFound": "Tệp nền tùy chỉnh bị thiếu! Sử dụng hình ảnh mặc định",
     "CustomBackground_RegionalTag": "Ảnh Nền Vùng",
     "CustomBackground_GlobalTag": "Ảnh Nền Toàn Cầu"
@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Gửi báo cáo sự cố ẩn danh cho nhà phát triển",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "Cài đặt này bị tắt do biến môi trường 'DISABLE_SENTRY' được đặt thành true.",
     "Debug_MultipleInstance": "Cho phép chạy nhiều phiên bản Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Hiển thị hộp thoại tùy chỉnh",
 
     "ChangeRegionWarning_Toggle": "Hiển thị thông báo thay đổi vùng",
     "ChangeRegionInstant_Toggle": "Thay đổi vùng được chọn ngay lập tức",
@@ -584,6 +585,7 @@
     "Waifu2X_Warning_D3DMappingLayers": "CẢNH BÁO: Hệ thống của bạn có cài đặt \"Gói tương thích OpenCL™, OpenGL®, và Vulkan®\". Nó được cho là không tương thích với Vulkan Loader và sẽ crash trên một số GPU. Vui lòng gỡ bỏ gói này để bật chế độ GPU.",
     "Waifu2X_Error_Loader": "LỖI: Khởi tạo Vulkan Loader thất bại. Đảm bảo rằng GPU của bạn tương thích với Vulkan và đã cài đặt driver GPU cần thiết.",
     "Waifu2X_Error_Output": "LỖI: Không vượt qua bài tự kiểm tra Waifu2X, nhận ảnh đầu ra rỗng.",
+    "Waifu2X_Initializing": "Đang khởi tạo Waifu2X, vui lòng chờ trong giây lát.",
 
     "NetworkSettings_Title": "Cài đặt mạng",
     "NetworkSettings_Proxy_Title": "Cài đặt proxy",
@@ -692,8 +694,95 @@
     "Database_ValidationChecking": "Xác thực cài đặt",
     "Database_Placeholder_DbUserIdTextBox": "Ví dụ về GUID: ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Nhập token của trình xác thực tại đây",
-    
-    "SearchPlaceholder": "Nhập để tìm kiếm"
+
+    "SearchPlaceholder": "Nhập để tìm kiếm",
+
+    "HttpCache_Title": "Cài đặt cache HTTP",
+    "HttpCacheModeToggle": "Chế độ bộ nhớ đệm",
+    "HttpCacheModeToggle_Tooltip1": "Bật/tắt việc sử dụng bộ nhớ đệm mạng (network caching) khi gửi yêu cầu HTTP lên CDN. Bật tính năng này có thể giúp giảm thời gian tải ở một số chức năng nhất định.",
+    "HttpCacheModeToggle_Tooltip2": "Khi bật, tính năng này tận dụng hai phương thức caching:",
+    "HttpCacheModeToggle_Tooltip3": "Ghi chú:",
+    "HttpCacheModeToggle_Tooltip4": "Bạn có thể cần xóa bộ nhớ đệm bằng cách nhấn",
+    "HttpCacheModeToggle_Tooltip5": "nếu bạn gặp phải một số vấn đề hoặc launcher hoạt động không như mong đợi.",
+    "HttpCacheMode_Cat1": "Caching dựa trên thời gian hết hạn",
+    "HttpCacheMode_Cat2": "Caching dựa trên ETag/Hash",
+    "HttpCacheAggressiveModeToggle": "Chế độ bộ nhớ đệm tăng cường",
+    "HttpCacheAggressiveModeToggle_Tooltip1": "Khi bật sẽ cho phép launcher thực hiện caching dựa trên",
+    "HttpCacheAggressiveModeToggle_Tooltip2": "đã nhập. Cả hai phương thức",
+    "HttpCacheAggressiveModeToggle_Tooltip3": "và",
+    "HttpCacheAggressiveModeToggle_Tooltip4": "sẽ tự động bị bỏ qua.",
+    "HttpCacheAggressiveModeToggle_Tooltip5": "Để sử dụng tính năng này, bạn đầu tiên phải bật",
+    "HttpCacheAggressiveModeToggle_Tooltip6": ".",
+    "HttpCacheMaxExpireTimeBox": "Thời gian hết hạn tối đa",
+    "HttpCacheMaxExpireTimeBox_TooltipDefaultValue": "10 phút",
+    "HttpCacheMaxExpireTimeBox_Tooltip1": "Xác định thời gian lưu trữ bộ nhớ đệm tối đa được phép cho phản hồi (tính bằng phút).",
+    "HttpCacheMaxExpireTimeBoxMinutes": "phút",
+    "HttpCacheClearButton": "Dọn bộ nhớ đệm mạng",
+    "HttpCacheClearedText": "Đã dọn bộ nhớ đệm!",
+
+    "Plugin_LoadedInfoTitle": "Thông tin về các Plugin đã tải",
+    "Plugin_OpenManagerBtn": "Mở menu Quản Lý Plugin",
+    "Plugin_AuthorBy": "bởi {0}",
+    "Plugin_LoadedInfoDesc": "Mô tả",
+    "Plugin_LoadedInfoPluginVer": "Phiên bản Plugin",
+    "Plugin_LoadedInfoInterfaceVer": "Phiên bản Giao diện",
+    "Plugin_LoadedInfoCreationDate": "Ngày tạo",
+    "Plugin_LoadedInfoMainLibLocation": "Vị trí Thư viện Chính",
+    "Plugin_LoadedInfoLoadedPresets": "Cài đặt trước đã tải",
+    "Plugin_LoadedInfoClipboardCopied": "Thông tin được sao chép!",
+    "Plugin_PluginInfoNameUnknown": "Không rõ",
+    "Plugin_PluginInfoDescUnknown": "Không có mô tả",
+    "Plugin_PluginInfoAuthorUnknown": "Không rõ người tạo"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "Menu Quản Lý Plugin",
+
+    "FileDialogTitle": "Nhập Plugin trình khởi chạy Collapse",
+    "FileDialogFileFilter1": "Plugin trình khởi chạy Collapse",
+
+    "LeftPanelNoPluginTitle": "Này, bạn không có plugin nào tải xuống!",
+    "LeftPanelNoPluginButton1": "Truy cập",
+    "LeftPanelNoPluginButton2": "Danh mục tải Plugin",
+    "LeftPanelNoPluginButton3": "trang",
+
+    "LeftPanelListViewTitle": "Thông tin về Plugin đã tải",
+
+    "ListViewMainActionButton1": "Kiểm tra cập nhật cho tất cả plugin",
+    "ListViewMainActionButton1AltChecking": "Đang kiểm tra cập nhật cho tất cả plugin",
+    "ListViewMainActionButton2": "Tải bản cập nhật cho tất cả plugin",
+    "ListViewMainActionButton3": "Bật Tự động cập nhật Plugin khi mở",
+
+    "ListViewItemContextButton1": "Xóa Plugin được chọn",
+    "ListViewItemContextButton2": "Khôi phục Plugin được chọn",
+    "ListViewItemContextButton3": "Bật Plugin được chọn",
+    "ListViewItemContextButton4": "Tắt Plugin được chọn",
+    "ListViewItemContextButton5": "Cập nhật Plugin được chọn",
+    "ListViewItemContextButton6": "Mở thư mục Plugin hiện tại",
+    "ListViewItemContextButton7": "Mở thư mục Plugin trình khởi chạy Collapse",
+    "ListViewItemContextButton8": "Cập nhật Plugin hiện tại",
+
+    "ListViewItemContentButton1": "Xóa Plugin",
+    "ListViewItemContentButton2": "Khôi phục Plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Chỉ kiểm tra bản cập nhật",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Kiểm tra và tải bản cập nhật",
+    "ListViewItemContextButtonDownloadUpdate": "Tải bản cập nhật",
+
+    "ListViewItemUpdateStatusAvailable": "Cập nhật đã có sẵn",
+    "ListViewItemUpdateStatusAvailableButton": "Cập nhật lên {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Đang cập nhật ({0}%)...",
+    "ListViewItemUpdateStatusCompleted": "Plugin của bạn đã được cập nhật lên {0}. Vui lòng khởi động lại trình khởi chạy để áp dụng bản cập nhật đó!",
+    "ListViewItemUpdateStatusChecking": "Đang kiểm tra cập nhật...",
+    "ListViewItemUpdateStatusUpToDate": "Plugin của bạn đã được cập nhật!",
+
+    "ListViewFooterWarning1": "Bạn cần khởi động lại trình khởi chạy để áp dụng thay đổi đó!",
+    "ListViewFooterRestartButton": "Khởi động lại trình khởi chạy",
+
+    "RightPanelImportTitle1": "Kéo thả",
+    "RightPanelImportTitle2": "hoặc",
+    "RightPanelImportTitle3": "vào đây",
+    "RightPanelImportTitle4": "hoặc nhấn vào hộp thoại này để thêm plugin"
   },
 
   "_Misc": {
@@ -716,6 +805,7 @@
     "EverythingIsOkay": "Tất cả OK!",
     "Cancel": "Huỷ",
     "Close": "Đóng",
+    "CloseOverlay": "Đóng cửa sổ phủ",
     "UseCurrentDir": "Dùng thư mục hiện tại",
     "UseDefaultDir": "Dùng thư mục mặc định",
     "MoveToDifferentDir": "Chuyển vào vị trí thư mục khác",
@@ -787,10 +877,12 @@
     "BuildChannelPreview": "Xem trước",
     "BuildChannelStable": "Ổn định",
 
-    "CDNDescription_Github": "Kho lưu trữ chính thức của trình khởi động.",
-    "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Cloudflare R2 bucket.",
-    "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên Bitbucket.",
-    "CDNDescription_GitLab": "Bản sao của kho lưu trữ chính thức (main) được lưu trữ trên GitLab",
+    "CDNDescription_Github": "Kho lưu trữ tệp chính thức của launcher.",
+    "CDNDescription_DigitalOcean": "Bản sao của kho lưu trữ tệp chính thức được đặt trên DigitalOcean.",
+    "CDNDescription_Cloudflare": "Bản sao của kho lưu trữ tệp chính thức được đặt trên bucket R2 Cloudflare.",
+    "CDNDescription_Bitbucket": "Bản sao của kho lưu trữ tệp chính thức được đặt trên Bitbucket.",
+    "CDNDescription_GitLab": "Bản sao của kho lưu trữ tệp chính thức được đặt trên GitLab.",
+    "CDNDescription_CNB": "Bản sao của kho lưu trữ tệp chính thức được đặt trên CNB.",
 
     "LocateExecutable": "Vị trí thực thi",
     "OpenDownloadPage": "Mở trang Tải xuống",
@@ -836,13 +928,13 @@
     "ExceptionFeedbackTitle": "Hãy cho chúng tôi biết chuyện gì đã xảy ra",
     "ExceptionFeedbackTemplate_User": "Tên Người Dùng (Không Bắt Buộc)",
     "ExceptionFeedbackTemplate_Email": "Email (Không Bắt Buộc)",
-    "ExceptionFeedbackTemplate_Message": "Chèn phản hồi của bạn sau dòng này",
-    
+    "ExceptionFeedbackTemplate_Message": "Hãy cho chúng tôi biết chuyện gì đã xảy ra sau dòng này: (bạn không cần ghi cả thông báo lỗi đâu, chúng tôi đã đính kèm sẵn rồi!)",
+
     "Feedback": "Phản hồi của bạn",
     "FeedbackSending": "Đang gửi phản hồi...",
     "FeedbackSent": "Phản hồi đã gửi!",
     "FeedbackSendFailure": "Không gửi được phản hồi! Kiểm tra nhật ký/console (cmd) để biết thêm thông tin.",
-    
+
     "Tag_Deprecated": "Đã lỗi thời",
     "Generic_GameFeatureDeprecation": "Do những thay đổi không lường trước của trò chơi, tính năng này đã bị loại bỏ và sẽ bị xóa trong tương lai. Sử dụng tính năng này có thể gây ra một số lỗi không mong muốn."
   },
@@ -1055,13 +1147,30 @@
     "SophonIncrementUpdateUnavailSubtitle3": " và bản cập nhật cho phiên bản của bạn không khả dụng. Tuy nhiên, bạn vẫn có thể cập nhật trò chơi của mình bằng cách tải lại toàn bộ trò chơi từ đầu.",
     "SophonIncrementUpdateUnavailSubtitle4": "Nhấp vào \"{0}\" để tiếp tục cập nhật toàn bộ hoặc nhấp vào \"{1}\" để hủy quy trình",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "Có thể cập nhật gói bổ sung!",
+    "SophonAdditionalPkgAvailableDownloadTitle": "Có thể tải gói bổ sung!",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "Game của bạn có nội dung tải thêm. Dung lượng của gói tải thêm này là:",
+    "SophonAdditionalPkgAvailableSubtitle2": ". Nếu bạn chọn tải thêm gói bổ sung này thì tổng dung lượng cần tải sẽ là:",
+    "SophonAdditionalPkgAvailableSubtitle3": ".",
+    "SophonAdditionalPkgAvailableSubtitle4": "Nhấn",
+    "SophonAdditionalPkgAvailableSubtitle5": "nếu bạn muốn tải gói bổ sung hoặc nhấn",
+    "SophonAdditionalPkgAvailableSubtitle6": "nếu bạn chỉ muốn tải tệp cơ bản với tổng dung lượng:",
+    "SophonAdditionalPkgAvailableSubtitle7": ".",
+    "SophonAdditionalPkgAvailableFootnote1": "Lưu ý:",
+    "SophonAdditionalPkgAvailableFootnote2": "Bạn có thể vẫn sẽ phải tải gói bổ sung ở trong game nếu bây giờ bạn chọn chỉ tải gói cơ bản.",
+    "SophonAdditionalPkgSeeDetailsBtn": "Xem chi tiết gói bổ sung",
+    "SophonAdditionalConfirmYesBtn": "Tải toàn bộ",
+    "SophonAdditionalConfirmNoBtn": "Chỉ tải gói cơ bản",
+
     "UACWarningTitle": "Cảnh báo: Phát hiện vô hiệu hóa UAC",
     "UACWarningContent": "Vô hiệu hoá Kiểm Soát Tài Khoản Người Dùng (UAC hoặc User Account Control) không bao giờ là một ý tưởng hay.\nBảo mật của hệ điều hành sẽ bị xâm phạm và trò chơi có thể không chạy đúng cách.\nChọn nút “Tìm hiểu thêm ”để tìm hiểu cách bật UAC.\nMục nhập liên quan là: “Run all administrators in Admin Approval Mode.” (Tiếng Anh)",
     "UACWarningLearnMore": "Tìm hiểu thêm",
     "UACWarningDontShowAgain": "Đừng hiển thị lại nữa",
 
     "EnsureExitTitle": "Đang thoát ứng dụng",
-    "EnsureExitSubtitle": "Có những tác vụ quan trọng đang chạy ngầm. Bạn có chắc chắn muốn thoát không?",
+    "EnsureExitSubtitle": "Đang có tác vụ quan trọng đang chạy ngầm.",
+    "EnsureExitSubtitle2": "Bạn có chắc chắn muôn thoát không?",
 
     "UserFeedback_DialogTitle": "Chia sẻ suy nghĩ của bạn",
     "UserFeedback_TextFieldTitleHeader": "Tiêu Đề Phản Hồi",
@@ -1074,7 +1183,27 @@
     "UserFeedback_SubmitBtn": "Gửi Phản Hồi",
     "UserFeedback_SubmitBtn_Processing": "Đang xử lý…",
     "UserFeedback_SubmitBtn_Completed": "Đã gữi!",
-    "UserFeedback_SubmitBtn_Cancelled": "Đã huỷ!"
+    "UserFeedback_SubmitBtn_Cancelled": "Đã huỷ!",
+
+    "PluginManagerUpdateAvailableTitle": "Bạn hiện có {0} plugin sẵn sàng để cập nhật!",
+    "PluginManagerUpdateAvailableSubtitle1": "Hiện đang có {0} plugin cần được cập nhật, Trình khởi chạy sẽ cần khởi động lại để có thể áp dụng các bản cập nhật cho các plugin sau:",
+    "PluginManagerUpdateAvailableSubtitle2": "Bạn có muốn khởi động lại trình khởi chạy không?",
+    "PluginManagerUpdateAvailableCancelBtn": "Lát nữa",
+    "PluginManagerUpdateAvailableConfirmBtn": "Khởi động ngay!",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Truy cập {0}",
+
+    "LauncherRestartTitle": "Đang khởi động lại trình khởi chạy Collapse",
+    "LauncherRestartSubtitle1": "Bạn đang chuẩn bị khởi động lại trình khởi chạy. Hãy đảm bảo đóng hoặc hủy mọi hoạt động nền trước khi khởi động lại trình khởi chạy.",
+    "LauncherRestartSubtitle2": "Bạn có muốn khởi động lại trình khởi chạy không?",
+
+    "PostInstallBehaviour_Title": "Hành vi sau khi cài đặt/cập nhật",
+    "PostInstallBehaviour_Subtitle": "Hành vi sau khi cài đặt/cập nhật thành công",
+    "PostInstallBehaviour_Subtitle2": "Độ trễ thời gian trước khi tắt máy/khởi động lại",
+    "PostInstallBehaviour_EnumNothing": "Không làm gì hết",
+    "PostInstallBehaviour_EnumStartGame": "Bắt đầu game",
+    "PostInstallBehaviour_EnumHibernate": "Ngủ đông",
+    "PostInstallBehaviour_EnumRestart": "Khởi động lại",
+    "PostInstallBehaviour_EnumShutdown": "Tắt máy"
   },
 
   "_FileMigrationProcess": {
@@ -1314,7 +1443,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Bóng nhân vật trong bản đồ",
     "Graphics_HalfResTransparent": "Độ Phân Giải Một Nữa Trong Suốt",
-    
+
     "Graphics_DLSS_UHP": "Siêu Hiệu Năng",
     "Graphics_DLSS_Perf": "Hiệu Năng",
     "Graphics_DLSS_Balanced": "Cân Bằng",
@@ -1611,7 +1740,8 @@
     "Audio_PlaybackDev": "Thiết bị phát",
     "Audio_PlaybackDev_Headphones": "Tai Nghe",
     "Audio_PlaybackDev_Speakers": "Loa",
-    "Audio_PlaybackDev_TV": "TV"
+    "Audio_PlaybackDev_TV": "TV",
+    "Audio_Ambient": "Âm lượng môi trường"
   },
 
   "_NotificationToast": {
