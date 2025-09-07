@@ -54,7 +54,7 @@ namespace CollapseLauncher.ShortcutUtils
             AppID = GenerateAppId(Exe, appNameInternal);
 
             var gridPath = Path.Combine(_path!, "grid");
-            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
+            var iconName = ShortcutCreator.GetIconName(_preset);
             Icon = Path.Combine(gridPath, iconName);
 
             LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
