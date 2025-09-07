@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Microsoft.Win32;
 using System.Collections.Generic;
@@ -27,6 +28,20 @@ namespace CollapseLauncher.ShortcutUtils
             };
         }
 
+        public static string GetIconPath(PresetConfig preset)
+        {
+            var appPath = Path.GetDirectoryName(AppExecutablePath)!;
+            var iconPath = Path.Combine(appPath, $"Assets\\Images\\GameIcon");
+
+            var icon = Path.Combine(iconPath, GetIconName(preset.GameType));
+            if (preset is PluginPresetConfigWrapper)
+            {
+                return Path.Combine(appPath, "icon.ico");
+            }
+
+            return icon;
+        }
+
         internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
             var translatedGameTitle =
@@ -40,8 +55,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (play) url += " -p";
 
-            var icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!,
-                                    $"Assets/Images/GameIcon/{GetIconName(preset.GameType)}");
+            var icon = GetIconPath(preset);
 
             var fullPath = Path.Combine(path, shortcutName);
 
