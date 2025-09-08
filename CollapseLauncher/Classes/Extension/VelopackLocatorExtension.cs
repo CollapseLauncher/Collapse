@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Velopack;
 using Velopack.Locators;
+using Velopack.Logging;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -29,59 +30,35 @@ namespace CollapseLauncher.Extension
 
         internal static void StartUpdaterHook(string aumid)
         {
-#if !USEVELOPACK
-        // Add Squirrel Hooks
-        SquirrelAwareApp.HandleEvents(
-                                      // Add shortcut and uninstaller entry on first start-up
-                                      // ReSharper disable UnusedParameter.Local
-                                      (_, sqr) =>
-                                      {
-                                          Console
-                                             .WriteLine("Please do not close this console window while Collapse is preparing the installation via Squirrel...");
-                                      },
-                                      (_, sqr) =>
-                                      {
-                                          Console
-                                             .WriteLine("Please do not close this console window while Collapse is updating via Squirrel...");
-                                      },
-                                      onAppUninstall: (_, sqr) =>
-                                      {
-                                          Console
-                                             .WriteLine("Uninstalling Collapse via Squirrel...\r\n" +
-                                                        "Please do not close this console window while action is being performed!");
-                                      },
-                                      // ReSharper restore UnusedParameter.Local
-                                      onEveryRun: (_, _, _) => { }
-                                     );
-#else
             // Allocate the Velopack locator manually to avoid Velopack from re-assigning
             // its custom AUMID
-            var logger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
+            IVelopackLogger? logger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
 
-            var currentProcess = Process.GetCurrentProcess();
+            Process currentProcess = Process.GetCurrentProcess();
 
-            var locator =
-                new WindowsVelopackLocator(currentProcess.MainModule!.FileName,
-                                           (uint)currentProcess.Id,
-                                           logger);
+            WindowsVelopackLocator locator =
+                new(currentProcess.MainModule!.FileName,
+                    (uint)currentProcess.Id,
+                    logger);
             // HACK: Always ensure to set the AUMID field null so it won't
             //       set the AUMID to its own.
             locator.GetLocatorAumidField() = null;
 
-            var velopackBuilder = VelopackApp.Build()
-                                             .OnRestarted(TryCleanupFallbackUpdate)
-                                             .OnAfterUpdateFastCallback(TryCleanupFallbackUpdate)
-                                             .OnFirstRun(TryCleanupFallbackUpdate)
-                                             .SetLocator(locator)
-                                             .SetLogger(logger);
+            VelopackApp velopackBuilder = VelopackApp.Build()
+                                                     .OnRestarted(TryCleanupFallbackUpdate)
+                                                     .OnAfterUpdateFastCallback(TryCleanupFallbackUpdate)
+                                                     .OnFirstRun(TryCleanupFallbackUpdate)
+                                                     .SetLocator(locator)
+                                                     .SetLogger(logger);
 
             velopackBuilder.Run();
 
             _ = Task.Run(DeleteVelopackLock);
 
             GenerateVelopackMetadata(aumid);
+            return;
 
-            void DeleteVelopackLock()
+            static void DeleteVelopackLock()
             {
                 // Get the current application directory
                 string currentAppDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -102,10 +79,8 @@ namespace CollapseLauncher.Extension
                 File.Delete(velopackLockPath);
                 Logger.LogWriteLine(".velopack_lock file deleted successfully.");
             }
-#endif
         }
 
-#if USEVELOPACK
         public static void TryCleanupFallbackUpdate(SemanticVersion newVersion)
         {
             string currentExecutedAppFolder = LauncherConfig.AppExecutableDir.TrimEnd('\\');
@@ -126,7 +101,7 @@ namespace CollapseLauncher.Extension
                 string? currentExecutedParentFolder = Path.GetDirectoryName(currentExecutedAppFolder);
                 if (currentExecutedParentFolder != null)
                 {
-                    DirectoryInfo directoryInfo = new DirectoryInfo(currentExecutedParentFolder);
+                    DirectoryInfo directoryInfo = new(currentExecutedParentFolder);
                     foreach (DirectoryInfo childLegacyAppSemVerFolder in
                              directoryInfo.EnumerateDirectories("app-*", SearchOption.TopDirectoryOnly))
                     {
@@ -138,7 +113,7 @@ namespace CollapseLauncher.Extension
 
                     // Try to remove squirrel temp clowd folder
                     string squirrelTempPackagesFolder = Path.Combine(currentExecutedParentFolder, "SquirrelClowdTemp");
-                    DirectoryInfo squirrelTempPackagesFolderInfo = new DirectoryInfo(squirrelTempPackagesFolder);
+                    DirectoryInfo squirrelTempPackagesFolderInfo = new(squirrelTempPackagesFolder);
                     if (squirrelTempPackagesFolderInfo.Exists)
                     {
                         squirrelTempPackagesFolderInfo.Delete(true);
@@ -193,7 +168,7 @@ namespace CollapseLauncher.Extension
 
                     // Try open the shortcut and check whether this shortcut is actually pointing to
                     // CollapseLauncher.exe file
-                    using ShellLink shellLink = new ShellLink(thisUserStartMenuShortcut);
+                    using ShellLink shellLink = new(thisUserStartMenuShortcut);
                     // Try to get the target path and its filename
                     string shortcutTargetPath = shellLink.Target;
                     if (!shortcutTargetPath.Equals(currentExecutedPath, StringComparison.OrdinalIgnoreCase))
@@ -219,7 +194,7 @@ namespace CollapseLauncher.Extension
 
             return;
 
-            void RemoveSquirrelFilePath(string filePath)
+            static void RemoveSquirrelFilePath(string filePath)
             {
                 if (!File.Exists(filePath))
                 {
@@ -231,22 +206,19 @@ namespace CollapseLauncher.Extension
                                     LogType.Default, true);
             }
         }
-#endif
 
         public static string FindCollapseStubPath()
         {
-            var collapseMainPath = LauncherConfig.AppExecutablePath;
+            string collapseMainPath = LauncherConfig.AppExecutablePath;
 
-        #if USEVELOPACK
             const string collapseExecName = "CollapseLauncher.exe";
-            var collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
-                                                collapseExecName);
+            string collapseStubPath = Path.Combine(Directory.GetParent(Path.GetDirectoryName(collapseMainPath)!)!.FullName,
+                                                   collapseExecName);
             if (File.Exists(collapseStubPath))
             {
                 Logger.LogWriteLine($"Found stub at {collapseStubPath}", LogType.Default, true);
                 return collapseStubPath;
             }
-        #endif
 
             Logger.LogWriteLine($"Collapse stub is not used anymore, returning current executable path!\r\n\t{collapseMainPath}",
                                 LogType.Default, true);
@@ -274,16 +246,16 @@ namespace CollapseLauncher.Extension
                                        </metadata>
                                        </package>
                                        """; // Adding shortcutAumid for future use, since they typo-ed the XML tag LMAO
-            var currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
-            var xmlPath        = Path.Combine(LauncherConfig.AppExecutableDir, "sq.version");
-            var xmlContent = string.Format(xmlTemplate, currentVersion, LauncherConfig.IsPreview ? "preview" : "stable",
-                                           aumid).ReplaceLineEndings("\n");
+            string currentVersion = LauncherUpdateHelper.LauncherCurrentVersionString;
+            string xmlPath        = Path.Combine(LauncherConfig.AppExecutableDir, "sq.version");
+            string xmlContent = string.Format(xmlTemplate, currentVersion, LauncherConfig.IsPreview ? "preview" : "stable",
+                                              aumid).ReplaceLineEndings("\n");
             
             // Check if file exist
             if (File.Exists(xmlPath))
             {
                 // Check if the content is the same
-                var existingContent = File.ReadAllText(xmlPath);
+                string existingContent = File.ReadAllText(xmlPath);
                 if (existingContent.ReplaceLineEndings("\n").Equals(xmlContent, StringComparison.Ordinal))
                 {
                     Logger.LogWriteLine("Velopack metadata is already up-to-date, skipping write operation.", LogType.Default, true);

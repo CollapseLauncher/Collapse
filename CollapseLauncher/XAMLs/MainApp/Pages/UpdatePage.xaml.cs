@@ -7,19 +7,13 @@ using Hi3Helper.SentryHelper;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Velopack;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Shared.Region.LauncherConfig;
-using System.IO;
-
-
-#if !USEVELOPACK
-using Squirrel;
-#else
-using Velopack;
-#endif
 
 // ReSharper disable RedundantExtendsListEntry
 // ReSharper disable AsyncVoidMethod
@@ -169,7 +163,7 @@ namespace CollapseLauncher.Pages
 
             try
             {
-                await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", _tokenSource.Token);
+                await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream($"changelog_{(IsPreview ? "preview" : "stable")}.md", token: _tokenSource.Token);
                 ReleaseNotesBox.Text = await networkStream.ReadAsStringAsync(_tokenSource.Token);
             }
             catch (Exception ex)

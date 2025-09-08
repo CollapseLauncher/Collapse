@@ -8,17 +8,11 @@ using System;
 using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-
-#if !USEVELOPACK
-using Squirrel;
-using Squirrel.Sources;
-#else
 using Velopack;
 using Velopack.Locators;
+using Velopack.Logging;
 using Velopack.Sources;
 // ReSharper disable UnusedMember.Global
-#endif
-
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
 
@@ -57,23 +51,17 @@ namespace CollapseLauncher.Helper.Update
             string updateChannel = LauncherConfig.IsPreview ? "preview" : "stable";
 
             CDNURLProperty launcherUpdatePreferredCdn = FallbackCDNUtil.GetPreferredCDN();
-            string launcherUpdateManagerBaseUrl = launcherUpdatePreferredCdn.URLPrefix.CombineURLFromString(
-                                                                                                        #if USEVELOPACK
-                "velopack",
-                updateChannel
-#else
-                "squirrel",
-                updateChannel
-#endif
-                );
+            string launcherUpdateManagerBaseUrl =
+                launcherUpdatePreferredCdn
+                   .URLPrefix
+                   .CombineURLFromString("velopack", updateChannel);
 
             // Register the update manager adapter
             IFileDownloader updateManagerHttpAdapter = new UpdateManagerHttpAdapter();
-#if USEVELOPACK
             // Initialize update manager logger, locator and options
-            var velopackLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
-            var updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(velopackLogger);
-            UpdateOptions updateManagerOptions = new UpdateOptions
+            IVelopackLogger? velopackLogger = ILoggerHelper.GetILogger("Velopack").ToVelopackLogger();
+            IVelopackLocator updateManagerLocator = VelopackLocator.CreateDefaultForPlatform(velopackLogger);
+            UpdateOptions updateManagerOptions = new()
             {
                 AllowVersionDowngrade = true,
                 ExplicitChannel = updateChannel
@@ -83,10 +71,9 @@ namespace CollapseLauncher.Helper.Update
             IUpdateSource updateSource = new SimpleWebSource(launcherUpdateManagerBaseUrl, updateManagerHttpAdapter);
 
             // Initialize the update manager
-            UpdateManager updateManager = new UpdateManager(
-                updateSource,
-                updateManagerOptions,
-                updateManagerLocator);
+            UpdateManager updateManager = new(updateSource,
+                                              updateManagerOptions,
+                                              updateManagerLocator);
 
             // Get the update info. If it's null, then return false (no update)
             UpdateInfo? updateInfo = await updateManager.CheckForUpdatesAsync();
@@ -111,25 +98,6 @@ namespace CollapseLauncher.Helper.Update
             bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !AppUpdateVersionProp.IsForceUpdate;
 
             return IsLauncherUpdateAvailable && !isUpdateRoutineSkipped;
-#else
-            using (UpdateManager updateManager = new UpdateManager(launcherUpdateManagerBaseUrl, null, null, updateManagerHttpAdapter))
-            {
-                UpdateInfo info = await updateManager.CheckForUpdate();
-                if (info == null) return false;
-
-                GameVersion remoteVersion = new GameVersion(info.FutureReleaseEntry.Version.Version);
-
-                AppUpdateVersionProp = await GetUpdateMetadata(updateChannel);
-                if (AppUpdateVersionProp == null) return false;
-
-                IsLauncherUpdateAvailable = LauncherCurrentVersion.Compare(remoteVersion);
-
-                bool isUserIgnoreUpdate = (LauncherConfig.GetAppConfigValue("DontAskUpdate").ToBoolNullable() ?? false) && !isForceCheckUpdate;
-                bool isUpdateRoutineSkipped = isUserIgnoreUpdate && !AppUpdateVersionProp.IsForceUpdate;
-
-                return IsLauncherUpdateAvailable && !isUpdateRoutineSkipped;
-            }
-#endif
         }
 
         private static async ValueTask<AppUpdateVersionProp?> GetUpdateMetadata(string updateChannel)

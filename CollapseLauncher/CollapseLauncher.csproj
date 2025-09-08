@@ -82,7 +82,6 @@
         - USEFFMPEGFORVIDEOBG : Use FFmpeg to decode video background content.
                                 This decoder supports lots of newest format, including AV1, HEVC and MPEG-DASH Contained video.
         - USENEWZIPDECOMPRESS : Use sharpcompress for decompressing .zip game package files
-        - USEVELOPACK : Use Velopack as the update manager
         - ENABLEUSERFEEDBACK : Enable user feedback feature
 -->
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -213,10 +212,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!--
-        Use Velopack if "USEVELOPACK" constant is used. Otherwise, use Squirrel.
-        -->
-        <PackageReference Include="Clowd.Squirrel" Version="2.11.1" Condition="!$(DefineConstants.Contains('USEVELOPACK'))" />
         <PackageReference Include="Libsql.Client" Version="0.5.0" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
@@ -227,7 +222,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="TurnerSoftware.DinoDNS" Version="0.3.0" />
-        <PackageReference Include="Velopack" Version="0.0.1298" Condition="$(DefineConstants.Contains('USEVELOPACK'))" />
+        <PackageReference Include="Velopack" Version="0.0.1298" />
 
         <PackageReference Include="CommunityToolkit.Common" Version="8.4.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -320,7 +315,7 @@
     <Target Name="ConfigureTrimming" BeforeTargets="PrepareForILLink">
         <ItemGroup>
             <!-- Descriptor for all classes that cannot be trimmed -->
-            <!-- We used to have bunch of entries listed here. But due to some issues that might caused by unwanted trimming behavior, we decided to
+            <!-- We used to have a bunch of entries listed here. But due to some issues that might be caused by unwanted trimming behavior, we decided to
                  just leave the TrimmerRootDescriptor applied.
             -->
             <TrimmerRootDescriptor Include="NonTrimmableRoots.xml" />
