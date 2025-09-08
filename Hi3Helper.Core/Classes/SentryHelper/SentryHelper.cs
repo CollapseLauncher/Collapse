@@ -370,11 +370,12 @@ namespace Hi3Helper.SentryHelper
         }
 
         #region Breadcrumbs Data
+        public static Func<string>? AppCdnOptionGetter { get; set; } = null;
 
         public static string AppBuildCommit        { get; set; } = "";
         public static string AppBuildBranch        { get; set; } = "";
         public static string AppBuildRepo          { get; set; } = "";
-        public static string AppCdnOption          { get; set; } = "";
+        public static string AppCdnOption          { get => AppCdnOptionGetter?.Invoke() ?? field; } = "";
         public static string CurrentGameCategory   { get; set; } = "";
         public static string CurrentGameRegion     { get; set; } = "";
         public static string CurrentGameLocation   { get; set; } = "";

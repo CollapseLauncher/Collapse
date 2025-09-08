@@ -415,7 +415,6 @@ namespace CollapseLauncher
 
             try
             {
-                SentryHelper.AppCdnOption = cdnProp.URLPrefix;
                 // Get the URL Status then return boolean and URLStatus
                 (bool, string) urlStatus = await TryGetURLStatus(cdnProp, downloadClient, relativeURL, token);
 
