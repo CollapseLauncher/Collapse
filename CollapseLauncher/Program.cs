@@ -13,6 +13,9 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32;
+using Microsoft.Windows.ApplicationModel.WindowsAppRuntime;
+using SharpCompress.Common;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -23,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Velopack;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -37,37 +41,44 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher
 {
-    public static partial class MainEntryPointExtension
-    {
-        [LibraryImport("Microsoft.ui.xaml.dll", EntryPoint = "XamlCheckProcessRequirements")]
-        public static partial void XamlCheckProcessRequirements();
-    }
-
     public static class MainEntryPoint
     {
         // Decide AUMID string
         public const string AppAumid = "Collapse";
-#nullable enable
+    #nullable enable
         public static int  InstanceCount      { get; set; }
         public static App? CurrentAppInstance { get; set; }
     #nullable restore
 
         [STAThread]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Main(params string[] args)
         {
-            // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
-            // But due to AOT build uses Static Library in favor of Shared ones (that comes
-            // with .dll files), the check will be ignored.
-        #if AOT
-            ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
-        #endif
-
-            AppCurrentArgument = args.ToList();
-        #if PREVIEW
-            IsPreview = true;
-        #endif
             try
             {
+                // Force WinRT's COM Wrappers to be initialized early.
+                // The method which this calls placed must not be inlined.
+                // So the Main() above has MethodImplOptions.NoInlining applied.
+                // 
+                // This is a workaround to fix COM 0x80040154 error code under Windows 10 1809 build.
+                ComWrappersSupport.InitializeComWrappers(new DefaultComWrappers());
+
+                AppActivation.Enable();
+                if (AppActivation.DecideRedirection())
+                {
+                    return;
+                }
+
+                // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
+                // But due to AOT build uses Static Library in favor of Shared ones (that comes
+                // with .dll files), the check will be ignored.
+                ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
+
+                AppCurrentArgument = args.ToList();
+#if PREVIEW
+                IsPreview = true;
+#endif
+
                 // Add callbacks to apply shared settings
                 ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
                 
@@ -95,7 +106,7 @@ namespace CollapseLauncher
                         LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
                     }
                 }
-                
+
                 // Extract icons from the executable file
                 string mainModulePath = AppExecutablePath;
                 uint   iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, nint.Zero, nint.Zero, 0);
@@ -133,7 +144,7 @@ namespace CollapseLauncher
                                        #if DEBUG
                                            Environment.UserName,
                                        #else
-                "[REDACTED]",
+                                           "[REDACTED]",
                                        #endif
                                            IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
@@ -198,24 +209,42 @@ namespace CollapseLauncher
 
                 InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
 
-                AppActivation.Enable();
-                if (AppActivation.DecideRedirection())
+                // Reload Sentry
+                if (SentryHelper.IsEnabled)
                 {
-                    return;
+                    try
+                    {
+                        // Sentry SDK Entry
+                        SentryHelper.InitializeSentrySdk();
+                        SentryHelper.InitializeExceptionRedirect();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                    }
                 }
 
-                MainEntryPointExtension.XamlCheckProcessRequirements();
-                ComWrappersSupport.InitializeComWrappers();
+                Application.Start(pContext =>
+                {
+                    DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-                StartMainApplication();
+                    DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+                    SynchronizationContext.SetSynchronizationContext(context);
+
+                    // ReSharper disable once ObjectCreationAsStatement
+                    CurrentAppInstance = new App
+                    {
+                        HighContrastAdjustment = ApplicationHighContrastAdjustment.None
+                    };
+                });
             }
-        #if !DEBUG
-        catch (Exception ex)
-        {
-            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            SpawnFatalErrorConsole(ex);
-        }
-        #else
+            #if !DEBUG
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                SpawnFatalErrorConsole(ex);
+            }
+            #else
             // ReSharper disable once RedundantCatchClause
             // Reason: warning shaddap-er
             catch (Exception ex)
@@ -260,14 +289,22 @@ namespace CollapseLauncher
         public static void SpawnFatalErrorConsole(Exception ex)
         {
             CurrentAppInstance?.Exit();
-            LoggerConsole.AllocateConsole();
-            Console.Error
-                   .WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
-            Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
-                                    "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
-                                    "Press any key to exit or Press 'R' to restart the main thread app...");
 
-        #if !DEBUG
+            UseConsoleLog(false);
+            LoggerConsole.AllocateConsole();
+            Console.Error.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
+            Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
+                                    "please report it to: https://github.com/CollapseLauncher/Collapse/issues");
+
+            ShowAdditionalInfoIfComExceptionNotInstalled(ex);
+
+            Console.Error.WriteLine();
+            Console.Error.WriteLine("Activity: Checking for possible fallback/recovery update...");
+            Console.Error.WriteLine("Press any key to exit or Press 'R' to restart the main thread app...");
+
+            using CancellationTokenSource tokenSource = new CancellationTokenSource();
+            _ = RunCheckForPossibleRecoveryOrFallbackUpdate(tokenSource.Token);
+
             if (ConsoleKey.R == Console.ReadKey().Key)
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo
@@ -286,39 +323,154 @@ namespace CollapseLauncher
                 };
                 process.Start();
             }
-        #endif
+
+            tokenSource.Cancel();
         }
 
-        private static void StartMainApplication()
+        private static async Task RunCheckForPossibleRecoveryOrFallbackUpdate(CancellationToken token)
         {
-            // Reload Sentry
-            if (SentryHelper.IsEnabled)
+            Console.CursorTop--;
+            Console.CursorTop--;
+            int posV = Console.CursorTop;
+
+            Updater updater = new Updater(IsPreview ? "preview" : "stable");
+            if (await TryRunUpdateCheck() is not UpdateInfo updateInfo ||
+                !IsCurrentUpToDate(updateInfo.TargetFullRelease.Version.ToString()))
+            {
+                PrintAndFlush(Console.Out, "Activity: Fallback/Recovery update is currently not available.");
+                return;
+            }
+
+            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+            PrintAndFlush(Console.Out, "Activity: Fallback/Recovery detected! Recovering...");
+
+            await updater.StartUpdate(updateInfo, token);
+            PrintAndFlush(Console.Out, "Activity: Fallback/Recovery finished!\r\n");
+
+            int seconds = 5;
+            posV = Console.CursorTop;
+            while (seconds > 0)
+            {
+                PrintAndFlush(Console.Out, $"Launcher will be restarted in {seconds}...");
+                await Task.Delay(1000);
+                seconds--;
+            }
+
+            await updater.FinishUpdate();
+
+            return;
+
+            static bool IsCurrentUpToDate(string versionString)
+            {
+                string filePath = AppExecutablePath;
+                if (!File.Exists(filePath))
+                {
+                    return true;
+                }
+
+                // Try to get the version info and if the version info is null, return false
+                FileVersionInfo toCheckVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
+
+                if (!Version.TryParse(versionString, out Version latestVersion))
+                {
+                    return true;
+                }
+
+                // Otherwise, try compare the version info.
+                if (!Version.TryParse(toCheckVersionInfo.FileVersion, out Version currentVersion))
+                {
+                    return true;
+                }
+
+                // Try compare. If currentVersion is more or equal to latestVersion, return true. 
+                // Otherwise, return false.
+                return latestVersion > currentVersion;
+            }
+
+            async Task<UpdateInfo> TryRunUpdateCheck()
             {
                 try
                 {
-                    // Sentry SDK Entry
-                    SentryHelper.InitializeSentrySdk();
-                    SentryHelper.InitializeExceptionRedirect();
+                    return await updater.StartCheck();
                 }
                 catch (Exception ex)
                 {
-                    LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                    return null;
                 }
             }
-            
-            Application.Start(_ =>
-                              {
-                                  DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-                                  DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
-                                  SynchronizationContext.SetSynchronizationContext(context);
+            void PrintAndFlush(TextWriter writer, string message)
+            {
+                Console.CursorTop = posV;
+                int buffSize = Console.BufferWidth - 1;
 
-                                  // ReSharper disable once ObjectCreationAsStatement
-                                  CurrentAppInstance = new App
-                                  {
-                                      HighContrastAdjustment = ApplicationHighContrastAdjustment.None
-                                  };
-                              });
+                if (buffSize > 0)
+                {
+                    writer.Write("\r" + new string(' ', buffSize));
+                    writer.Write("\r" + message);
+                }
+            }
+
+            void Updater_UpdaterProgressChanged(object sender, Updater.UpdaterProgress e)
+            {
+                PrintAndFlush(Console.Out, $"Activity: Fallback/Recovery detected! Recovering ({e.ProgressPercentage}%)...");
+            }
+        }
+
+        private static void ShowAdditionalInfoIfComExceptionNotInstalled(Exception? ex)
+        {
+            if (ex is not COMException exAsComEx ||
+                ex.HResult != unchecked((int)0x80040154))
+            {
+                return;
+            }
+
+            bool isLtsc = IsWindowsLTSC();
+            bool isRedstone5Update = Environment.OSVersion.Version.Build == 17763;
+
+            if (isRedstone5Update)
+            {
+                string windowsName = isLtsc
+                    ? "Windows 10 Enterprise LTSC Redstone 5 Update (Build 1809)"
+                    : "Windows 10 Redstone 5 Update (Build 1809)";
+
+                string recommendedWindowsName = isLtsc
+                    ? "Windows 10 Enterprise LTSC November 2021 update (Build 21H2)"
+                    : "Windows 10 May 2019 Update (Build 19H1)";
+
+                Console.Error.WriteLine();
+                Console.Error.WriteLine("\e[42;1mAdditional Note:\e[0m");
+                Console.Error.Write($"We have detected that you're trying to run this launcher under {windowsName}. ");
+                Console.Error.WriteLine("This error is expected to happen due to lack of Windows Runtime support for WinUI 3 apps compiled using NativeAOT.\r\n");
+                Console.Error.WriteLine($"We are recommending you to update your Windows to at least {recommendedWindowsName} or newer in order to use this launcher.\r\n");
+                Console.Error.WriteLine("We apologize for this inconvenience. We will try our best to get our launcher run across any Windows 10 (1809 LTSC/GAC or above) editions or newer in the future.\r\n");
+
+                Console.Error.WriteLine($"Error: {ex}");
+            }
+
+            static bool IsWindowsLTSC()
+            {
+                RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion");
+                if (key == null)
+                {
+                    return false;
+                }
+
+                if (key.GetValue("EditionID", null) is string editionId &&
+                    editionId.StartsWith("Enterprise", StringComparison.OrdinalIgnoreCase) &&
+                    editionId.EndsWith("S", StringComparison.OrdinalIgnoreCase)) 
+                {
+                    return true;
+                }
+
+                if (key.GetValue("ProductName", null) is string productName &&
+                    productName.Contains("LTSC", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)

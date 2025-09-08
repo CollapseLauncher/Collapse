@@ -285,7 +285,7 @@ public partial class Updater : IDisposable
         UpdateProgress();
     }
 
-    private bool IsCurrentHasLatestVersion(string latestVersionString)
+    internal static bool IsCurrentHasLatestVersion(string latestVersionString)
     {
         // Check legacy version first
         var filePath = Path.Combine(AppExecutableDir, $@"..\app-{latestVersionString}\{Path.GetFileName(AppExecutablePath)}");

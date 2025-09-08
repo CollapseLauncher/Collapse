@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <!-- Platform Properties -->
         <Platforms>x64</Platforms>
         <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
-		<WindowsSdkPackageVersion>10.0.26100.57</WindowsSdkPackageVersion>
         <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
@@ -38,24 +37,24 @@
         <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3477-prerelease" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
         <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250814004-preview" />
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.250720.1" />
     </ItemGroup>
 
     <ItemGroup>
         <Using Include="Microsoft.UI.Composition" />
         <Using Include="Microsoft.UI.Input" />
         <Using Include="Microsoft.UI.Xaml" />
-		<Using Include="Microsoft.UI.Xaml.Automation" />
-		<Using Include="Microsoft.UI.Xaml.Automation.Peers" />
-		<Using Include="Microsoft.UI.Xaml.Controls" />
-		<Using Include="Microsoft.UI.Xaml.Controls.Primitives" />
-		<Using Include="Microsoft.UI.Xaml.Data" />
-		<Using Include="Microsoft.UI.Xaml.Hosting" />
-		<Using Include="Microsoft.UI.Xaml.Input" />
-		<Using Include="Microsoft.UI.Xaml.Markup" />
-		<Using Include="Microsoft.UI.Xaml.Media" />
-		<Using Include="Microsoft.UI.Xaml.Media.Animation" />
-		<Using Include="Microsoft.UI.Xaml.Media.Imaging" />
+        <Using Include="Microsoft.UI.Xaml.Automation" />
+        <Using Include="Microsoft.UI.Xaml.Automation.Peers" />
+        <Using Include="Microsoft.UI.Xaml.Controls" />
+        <Using Include="Microsoft.UI.Xaml.Controls.Primitives" />
+        <Using Include="Microsoft.UI.Xaml.Data" />
+        <Using Include="Microsoft.UI.Xaml.Hosting" />
+        <Using Include="Microsoft.UI.Xaml.Input" />
+        <Using Include="Microsoft.UI.Xaml.Markup" />
+        <Using Include="Microsoft.UI.Xaml.Media" />
+        <Using Include="Microsoft.UI.Xaml.Media.Animation" />
+        <Using Include="Microsoft.UI.Xaml.Media.Imaging" />
         <Using Include="System.Diagnostics.Contracts" />
         <Using Include="System.Numerics" />
         <Using Include="System.Runtime.CompilerServices" />
