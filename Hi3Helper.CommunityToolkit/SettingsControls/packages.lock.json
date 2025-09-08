@@ -18,12 +18,6 @@
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
       },
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.8, )",
-        "resolved": "9.0.8",
-        "contentHash": "cMwVh5hsxAhv+oMHQdgcXodt2kDpfviofBO4IXupSAHJW2vZOZOOIhvPWRGO6NeGcP8SR4OpSwktRqb0i79KFA=="
-      },
       "Microsoft.NET.ILLink.Tasks": {
         "type": "Direct",
         "requested": "[9.0.8, )",
@@ -160,15 +154,6 @@
       }
     },
     "net9.0-windows10.0.26100/win-x64": {
-      "Microsoft.DotNet.ILCompiler": {
-        "type": "Direct",
-        "requested": "[9.0.8, )",
-        "resolved": "9.0.8",
-        "contentHash": "cMwVh5hsxAhv+oMHQdgcXodt2kDpfviofBO4IXupSAHJW2vZOZOOIhvPWRGO6NeGcP8SR4OpSwktRqb0i79KFA==",
-        "dependencies": {
-          "runtime.win-x64.Microsoft.DotNet.ILCompiler": "9.0.8"
-        }
-      },
       "Microsoft.Web.WebView2": {
         "type": "Direct",
         "requested": "[1.0.3477-prerelease, )",
@@ -183,11 +168,6 @@
           "Microsoft.WindowsAppSDK.Base": "1.8.250730001-preview",
           "Microsoft.WindowsAppSDK.InteractiveExperiences": "1.8.250801002-preview"
         }
-      },
-      "runtime.win-x64.Microsoft.DotNet.ILCompiler": {
-        "type": "Transitive",
-        "resolved": "9.0.8",
-        "contentHash": "VnA7D8XxNK1cNc2wlHCkdgDiTzCktzIixNYw0kyG7cy7fxXA07vkdLFXP72Cct4/7c7i8PL6JK3eTDqK/x6quQ=="
       }
     }
   }
