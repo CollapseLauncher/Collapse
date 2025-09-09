@@ -932,7 +932,7 @@ namespace CollapseLauncher
             string urlMetadata = string.Format(AppGameRepoIndexURLPrefix, GameVersionManager!.GamePreset.ProfileName);
 
             // Start downloading metadata using FallbackCDNUtil
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token: token);
             return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token) ?? [];
         }
 
@@ -942,7 +942,7 @@ namespace CollapseLauncher
             string urlIndex = string.Format(AppGameRepairIndexURLPrefix, GameVersionManager!.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token: token);
 
             // Deserialize asset index and return
             DeserializeAssetIndexV2(stream, assetIndex);

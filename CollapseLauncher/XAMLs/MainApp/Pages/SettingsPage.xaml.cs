@@ -224,6 +224,7 @@ namespace CollapseLauncher.Pages
             AppDiscordPresence.SetActivity(ActivityType.AppSettings);
 #endif
         }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             FallbackCDNUtil.InitializeHttpClient();

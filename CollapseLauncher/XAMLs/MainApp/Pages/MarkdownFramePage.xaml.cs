@@ -143,8 +143,8 @@ namespace CollapseLauncher
                 {
                     await using Stream netStream =
                         await FallbackCDNUtil.TryGetCDNFallbackStream(markdownUriCdn,
-                                                                      CancellationToken.None,
-                                                                      true);
+                                                                      true,
+                                                                      CancellationToken.None);
                     var buffer = new byte[netStream.Length];
                     await netStream.ReadExactlyAsync(buffer);
 
