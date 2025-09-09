@@ -174,12 +174,21 @@ namespace CollapseLauncher
 
     internal static class FallbackCDNUtil
     {
-        private static readonly HttpClient _client;
+        private static HttpClient _client;
 
-        private static readonly HttpClient _clientNoCompression;
+        private static HttpClient _clientNoCompression;
 
         // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
+    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         static FallbackCDNUtil()
+        {
+            InitializeHttpClient();
+        }
+    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        public static void InitializeHttpClient()
         {
             _client?.Dispose();
             _clientNoCompression?.Dispose();
@@ -195,6 +204,8 @@ namespace CollapseLauncher
 
             LogWriteLine("[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
         }
+        // ReSharper enable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        // ReSharper enable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
         public static event EventHandler<DownloadEvent>? DownloadProgress;
 
