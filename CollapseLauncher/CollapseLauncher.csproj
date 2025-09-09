@@ -167,48 +167,50 @@
         
         <!-- Region: Libsql.Client -->
         <DirectPInvoke Include="csharp_bindings" />
-        <NativeLibrary Include="StaticLib\csharp_bindings_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\csharp_bindings.lib" />
         <!--
         These libraries are required by csharp_bindings to resolve calls to:
             - GetUserProfileDirectoryW function from Win32's userenv.dll
             - SHGetKnownFolderPath function from Win32's shell32.dll
+        
+        The rest of the entries are dependent from the Hi3Helper.Win32 submodule and
+        internal .NET imports
         -->
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\UserEnv.lib" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\shell32.lib" />
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
-        <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan-static_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\waifu2x-ncnn-vulkan-static.lib" />
         <!--
         These libraries are required by waifu2x-ncnn-vulkan to resolve external calls.
         -->
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\ncnn.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\SPIRV.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\glslang.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\glslang-default-resource-limits.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\OGLCompiler.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\MachineIndependent.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\GenericCodeGen.lib" />
-        <NativeLibrary Include="StaticLib\Waifu2x_msvc-ucrt\OSDependent.lib" />
-        <NativeLibrary Include="StaticLib\libomp_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\ncnn.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\SPIRV.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\glslang.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\OGLCompiler.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\MachineIndependent.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\GenericCodeGen.lib" />
+        <NativeLibrary Include="StaticLib\Waifu2x\OSDependent.lib" />
+        <NativeLibrary Include="StaticLib\libomp.lib" />
         
         <!-- Region: webp -->
         <DirectPInvoke Include="webp" />
-        <NativeLibrary Include="StaticLib\libwebp_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\libwebp.lib" />
         <DirectPInvoke Include="webpdemux" />
-        <NativeLibrary Include="StaticLib\libwebpdemux_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\libwebpdemux.lib" />
         <DirectPInvoke Include="webpmux" />
-        <NativeLibrary Include="StaticLib\libwebpmux_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\libwebpmux.lib" />
 
         <!-- Region: zstd (Decompressor only) -->
         <DirectPInvoke Include="libzstd" />
-        <NativeLibrary Include="StaticLib\libzstd-static_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\libzstd_static.lib" />
 
         <!--
         These libraries are required by libwebp to resolve external calls.
         -->
-        <NativeLibrary Include="StaticLib\libsharpyuv_msvc-ucrt.lib" />
-        <NativeLibrary Include="StaticLib\libwebpdecoder_msvc-ucrt.lib" />
+        <NativeLibrary Include="StaticLib\libsharpyuv.lib" />
+        <NativeLibrary Include="StaticLib\libwebpdecoder.lib" />
     </ItemGroup>
 
     <ItemGroup>
