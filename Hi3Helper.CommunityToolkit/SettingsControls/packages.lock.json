@@ -24,12 +24,6 @@
         "resolved": "9.0.8",
         "contentHash": "rd1CbIsMtVPtZNTIVD6Xydue//klYOOQIDpRgu3BHtv17AlpRs74/6QFbcYgMm/jL+naVU2T3OFLxVSLV5lQLQ=="
       },
-      "Microsoft.Web.WebView2": {
-        "type": "Direct",
-        "requested": "[1.0.3477-prerelease, )",
-        "resolved": "1.0.3477-prerelease",
-        "contentHash": "DhNaJxaGEpz4IKycu8zHjCLaODteJdQPj6tA5anYsMHt2JrA5wedI+QC+MxDItbp/ljAfP2cInlinbMmkhrCfg=="
-      },
       "Microsoft.Windows.CsWinRT": {
         "type": "Direct",
         "requested": "[2.3.0-prerelease.250720.1, )",
@@ -76,6 +70,11 @@
           "CommunityToolkit.WinUI.Extensions": "8.2.250402",
           "Microsoft.WindowsAppSDK": "1.6.250108002"
         }
+      },
+      "Microsoft.Web.WebView2": {
+        "type": "Transitive",
+        "resolved": "1.0.3179.45",
+        "contentHash": "3pokSH5CnN0G6rGhGFo1y87inxYhNxBQ2Vdf0wlvBj99KHxQJormjDACmqRnFeUsmuNFIhWwfAL1ztq7wD5qRA=="
       },
       "Microsoft.Windows.SDK.BuildTools.MSIX": {
         "type": "Transitive",
@@ -155,10 +154,9 @@
     },
     "net9.0-windows10.0.26100/win-x64": {
       "Microsoft.Web.WebView2": {
-        "type": "Direct",
-        "requested": "[1.0.3477-prerelease, )",
-        "resolved": "1.0.3477-prerelease",
-        "contentHash": "DhNaJxaGEpz4IKycu8zHjCLaODteJdQPj6tA5anYsMHt2JrA5wedI+QC+MxDItbp/ljAfP2cInlinbMmkhrCfg=="
+        "type": "Transitive",
+        "resolved": "1.0.3179.45",
+        "contentHash": "3pokSH5CnN0G6rGhGFo1y87inxYhNxBQ2Vdf0wlvBj99KHxQJormjDACmqRnFeUsmuNFIhWwfAL1ztq7wD5qRA=="
       },
       "Microsoft.WindowsAppSDK.Foundation": {
         "type": "Transitive",
