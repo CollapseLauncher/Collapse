@@ -179,8 +179,46 @@
         The rest of the entries are dependent from the Hi3Helper.Win32 submodule and
         internal .NET imports
         -->
-        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\UserEnv.lib" />
+        <DirectPInvoke Include="advapi32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\AdvAPI32.lib" />
+        <DirectPInvoke Include="bcrypt" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\bcrypt.lib" />
+        <DirectPInvoke Include="crypt32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Crypt32.lib" />
+        <DirectPInvoke Include="dbghelp" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\DbgHelp.lib" />
+        <DirectPInvoke Include="dnsapi" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\DnsAPI.lib" />
+        <DirectPInvoke Include="dwmapi" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\dwmapi.lib" />
+        <DirectPInvoke Include="gdi32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Gdi32.lib" />
+        <DirectPInvoke Include="iphlpapi" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\iphlpapi.lib" />
+        <DirectPInvoke Include="kernel32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\kernel32.lib" />
+        <DirectPInvoke Include="ncrypt" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\ncrypt.lib" />
+        <DirectPInvoke Include="ntdll" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\ntdll.lib" />
+        <DirectPInvoke Include="ole32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Ole32.lib" />
+        <DirectPInvoke Include="oleaut32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\OleAut32.lib" />
+        <DirectPInvoke Include="secur32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Secur32.lib" />
+        <DirectPInvoke Include="Shcore" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\shcore.lib" />
+        <DirectPInvoke Include="shell32" />
         <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\shell32.lib" />
+        <DirectPInvoke Include="user32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\User32.lib" />
+        <DirectPInvoke Include="userenv" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\UserEnv.lib" />
+        <DirectPInvoke Include="version" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\Version.lib" />
+        <DirectPInvoke Include="ws2_32" />
+        <NativeLibrary Include="StaticLib\WindowsKits\10.0.26100.0_um_x64\WS2_32.lib" />
         
         <!-- Region: waifu2x-ncnn-vulkan -->
         <DirectPInvoke Include="Lib\waifu2x-ncnn-vulkan.dll" />
