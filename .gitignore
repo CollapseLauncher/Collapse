@@ -8,6 +8,8 @@ packages/*
 CollapseLauncher/Deps/*
 CollapseLauncher/StaticLib/*.lib
 CollapseLauncher/StaticLib/**/*.lib
+CollapseLauncher/StaticLib/*.pdb
+CollapseLauncher/StaticLib/**/*.pdb
 CollapseLauncher/Invoker/*
 **/Generated Files/**
 *.psd
