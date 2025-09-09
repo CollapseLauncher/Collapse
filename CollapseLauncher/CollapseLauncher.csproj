@@ -156,8 +156,11 @@
         <IlcInstructionSet>x86-x64-v2</IlcInstructionSet>
         
         <!-- Security thingymajig -->
+        <!-- Disabling CFG for now due to stupid rust(y) libs which depends on CC compiler that don't even support CFG
+             (csharp_bindings)
         <ControlFlowGuard>Guard</ControlFlowGuard>
         <CetCompat>true</CetCompat>
+        -->
     </PropertyGroup>
     
     <ItemGroup Condition="'$(PublishAot)' == 'true'">
