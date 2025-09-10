@@ -466,8 +466,7 @@ namespace CollapseLauncher.InstallManager.Base
             ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = threadNum,
-                CancellationToken      = token,
-                TaskScheduler          = TaskScheduler.Default
+                CancellationToken      = token
             };
             
             if (LauncherConfig.GetAppConfigValue("SophonPreloadApplyPerfMode"))

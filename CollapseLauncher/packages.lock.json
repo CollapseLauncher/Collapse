@@ -445,11 +445,11 @@
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
-        "resolved": "2.3.3",
-        "contentHash": "KQK+381J3Y2MjxwoG63vvPkDFReN03fp6tCVE6OCctZSgxXhQ0pXCpruX5xyhstx/I6yGPVBejmAyodaSK4tGQ==",
+        "resolved": "2.3.4",
+        "contentHash": "Id0lCnBTvvFRUQl6EArE449RmPh/hqjxnhDxQLUgIMMad2nF2ryY7Hh1oKazumgk0Ov7c5/aLiAA6lYCfv1mMw==",
         "dependencies": {
-          "Hi3Helper.ZstdNet": "1.6.4",
-          "ZstdSharp.Port": "0.8.5"
+          "Hi3Helper.ZstdNet": "1.6.5",
+          "ZstdSharp.Port": "0.8.6"
         }
       },
       "System.Buffers": {
@@ -487,8 +487,8 @@
       },
       "ZstdSharp.Port": {
         "type": "Transitive",
-        "resolved": "0.8.5",
-        "contentHash": "TR4j17WeVSEb3ncgL2NqlXEqcy04I+Kk9CaebNDplUeL8XOgjkZ7fP4Wg4grBdPLIqsV86p2QaXTkZoRMVOsew=="
+        "resolved": "0.8.6",
+        "contentHash": "iP4jVLQoQmUjMU88g1WObiNr6YKZGvh4aOXn3yOJsHqZsflwRsxZPcIBvNXgjXO3vQKSLctXGLTpcBPLnWPS8A=="
       },
       "colorthief": {
         "type": "Project",
