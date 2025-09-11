@@ -775,6 +775,7 @@ namespace CollapseLauncher.Helper
                         mainWindow._TrayIcon.ToggleAllVisibility();
                     }
                     else TrayNullHandler("WindowUtility.MainWndProc");
+                    return; // Early return to prevent double minimize call
                 }
             }
 
