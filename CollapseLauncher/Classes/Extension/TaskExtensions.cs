@@ -204,17 +204,19 @@ namespace CollapseLauncher.Extension
             throw new COMException($"Initialization for {nameof(T)} has failed with return code: {returnCode}", initTask.Exception);
         }
 
+        private static readonly Guid IInitializableIid = new(ComInterfaceId.ExInitializable);
         private static IInitializableTask GetInitializableTask<T>(T instance)
             where T : class
         {
-            Guid                iInitGuid = new Guid(ComInterfaceId.ExInitializable);
-            IInitializableTask? task      = instance.CastComInterfaceAs<T, IInitializableTask>(in iInitGuid);
-            if (task == null)
+            if (!ComMarshal<T>.TryCastComObjectAs(instance,
+                                                  in IInitializableIid,
+                                                  out IInitializableTask? initTask,
+                                                  out Exception? ex))
             {
-                throw new InvalidComObjectException($"Interface cannot be marshalled! Guid: {iInitGuid}");
+                throw ex;
             }
 
-            return task;
+            return initTask;
         }
     }
 }

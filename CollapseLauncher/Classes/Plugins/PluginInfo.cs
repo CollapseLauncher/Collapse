@@ -368,13 +368,18 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         finally
         {
             // Free the plugin handle and remove it from the dictionary.
-            ComMarshal.FreeInstance(Instance);
+            if (!ComMarshal<IPlugin>.TryReleaseComObject(Instance, out Exception? ex))
+            {
+                Logger.LogWriteLine($"[PluginInfo] Cannot release COM Object reference for IPlugin instance due to unexpected error: {ex}", LogType.Error, true);
+            }
+
             NativeLibrary.Free(Handle);
 
             // Free GCHandle and nullify the delegate.
             _sharedLoggerCallbackGcHandle.Free();
             Interlocked.Exchange(ref _sharedLoggerCallback, null);
         }
+
         GC.SuppressFinalize(this);
     }
 
