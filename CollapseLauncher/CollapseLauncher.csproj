@@ -108,7 +108,7 @@
 
     <PropertyGroup Condition="'$(PublishAot)' != 'true'">
         <!--
-        CET isn't working properly while debugging .NET 9 apps on Windows 19.
+        CET isn't working properly while debugging .NET 9 apps on Windows 10.
         So, we need to disable the CetCompat globally and only use it on AOT (defined on its Publish Profiles).
         -->
         <CetCompat>false</CetCompat>
