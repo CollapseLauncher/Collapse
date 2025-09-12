@@ -13,7 +13,7 @@
         <conv:DownloadSpeedLimitToStringConverter x:Key="DownloadSpeedLimitToStringConverter" />
         <conv:DoubleFormatter x:Key="DoubleFormatter" />
     </UserControl.Resources>
-    <ScrollViewer MaxHeight="250">
+    <ScrollViewer>
         <ScrollViewer.KeyboardAccelerators>
             <KeyboardAccelerator Key="Enter" Invoked="IgnoreInput"/>
         </ScrollViewer.KeyboardAccelerators>
