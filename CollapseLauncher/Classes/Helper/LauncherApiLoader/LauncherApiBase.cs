@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.Plugin.Core.Management;
 using Microsoft.Win32;
 using System;
@@ -154,8 +155,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             // 2025-05-05: As per now, the Sophon resource information requires to be fetched first.
             //             This is mandatory due to latest Genshin Impact changes which removes zip
             //             packages and also version infos.
-            await LoadLauncherGameResourceSophon(onTimeoutRoutine, token);
-            await Task.WhenAll(LoadLauncherGameResource(onTimeoutRoutine, token),
+            await Task.WhenAll(LoadLauncherGameResourceSophon(onTimeoutRoutine, token),
+                               LoadLauncherGameResource(onTimeoutRoutine, token),
                                LoadLauncherNews(onTimeoutRoutine, token),
                                LoadLauncherGameInfo(onTimeoutRoutine, token));
 
@@ -221,7 +222,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             }
         }
 
-        protected virtual async Task LoadLauncherGameResourceSophon(ActionOnTimeOutRetry? onTimeoutRoutine,
+        protected virtual Task LoadLauncherGameResourceSophon(ActionOnTimeOutRetry? onTimeoutRoutine,
                                                                     CancellationToken     token)
         {
             EnsurePresetConfigNotNull();
@@ -229,7 +230,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
             SophonChunkUrls? sophonUrls = PresetConfig?.LauncherResourceChunksURL;
             if (sophonUrls == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             string? sophonBranchUrl = sophonUrls.BranchUrl;
@@ -238,25 +239,33 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                 Logger.LogWriteLine("This game/region doesn't have Sophon->BranchUrl or PresetConfig->LauncherBizName property defined! This might cause the launcher inaccurately check the version if Zip download is unavailable", LogType.Warning, true);
             }
 
-            await sophonUrls.EnsureReassociated(ApiGeneralHttpClient,
-                                                sophonBranchUrl,
-                                                PresetConfig.LauncherBizName!,
-                                                false,
-                                                token);
-            sophonUrls.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
+            return sophonUrls
+                  .EnsureReassociated(ApiGeneralHttpClient,
+                                      sophonBranchUrl,
+                                      PresetConfig.LauncherBizName!,
+                                      false,
+                                      token)
+                  .ContinueWith(async _ =>
+                                {
+                                    sophonUrls.ResetAssociation(); // Reset association so it won't conflict with preload/update/install activity
 
-            ActionTimeoutTaskCallback<HoYoPlayLauncherGameInfo?> launcherSophonBranchCallback =
-                innerToken =>
-                    ApiGeneralHttpClient.GetFromJsonAsync(PresetConfig.LauncherResourceChunksURL?.BranchUrl,
-                                                          HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
-                                                          innerToken);
+                                    ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> launcherSophonBranchCallback =
+                                        innerToken =>
+                                            ApiGeneralHttpClient
+                                               .GetFromCachedJsonAsync(PresetConfig.LauncherResourceChunksURL?.BranchUrl,
+                                                                       HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
+                                                                       null,
+                                                                       innerToken)
+                                               .ConfigureAwait(false);
 
-            LauncherGameResourceSophon = await launcherSophonBranchCallback
-               .WaitForRetryAsync(ExecutionTimeout,
-                                  ExecutionTimeoutStep,
-                                  ExecutionTimeoutAttempt,
-                                  onTimeoutRoutine,
-                                  token);
+                                    await launcherSophonBranchCallback
+                                       .WaitForRetryAsync(ExecutionTimeout,
+                                                          ExecutionTimeoutStep,
+                                                          ExecutionTimeoutAttempt,
+                                                          onTimeoutRoutine,
+                                                          result => LauncherGameResourceSophon = result,
+                                                          token);
+                                }, token);
         }
 
         protected virtual Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine,
