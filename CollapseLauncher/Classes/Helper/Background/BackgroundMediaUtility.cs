@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable PartialTypeWithSinglePart
@@ -74,20 +75,34 @@ namespace CollapseLauncher.Helper.Background
         private delegate  ValueTask AssignDefaultAction<in T>(T    element) where T : class;
         internal delegate void      ThrowExceptionAction(Exception element);
 
-        private static bool _isOnQueue;
-        internal static async void RunQueuedTask(Task task)
-        {
-            while (_isOnQueue)
-            {
-                await Task.Delay(100);
-            }
+        private static readonly Channel<Task> QueuedTaskChannel;
 
-            Interlocked.Exchange(ref _isOnQueue, true);
-            await task;
-            Interlocked.Exchange(ref _isOnQueue, false);
+        static BackgroundMediaUtility()
+        {
+            QueuedTaskChannel = Channel.CreateBounded<Task>(new BoundedChannelOptions(1)
+            {
+                AllowSynchronousContinuations = true,
+                FullMode                      = BoundedChannelFullMode.Wait,
+                SingleReader                  = true,
+                SingleWriter                  = true
+            });
+
+            _ = RunAsyncTaskFromChannel();
         }
 
-        internal static void RunQueuedTask(Action action) => RunQueuedTask(Task.Factory.StartNew(action));
+        private static async Task RunAsyncTaskFromChannel()
+        {
+            while (await QueuedTaskChannel.Reader.ReadAsync() is { } asTask)
+            {
+                await asTask;
+            }
+        }
+
+        internal static async void RunQueuedTask(Task task)
+        {
+            await QueuedTaskChannel.Writer.WaitToWriteAsync();
+            await QueuedTaskChannel.Writer.WriteAsync(task);
+        }
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
