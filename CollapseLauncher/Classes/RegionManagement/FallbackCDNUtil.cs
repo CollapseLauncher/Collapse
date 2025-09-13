@@ -581,11 +581,16 @@ namespace CollapseLauncher
             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
         }
 
-        public static async Task<T?> DownloadAsJSONType<T>(string? URL, JsonTypeInfo<T?> typeInfo, CancellationToken token)
-            => await _client.GetFromJsonAsync(URL, typeInfo, token);
+        public static async Task<T?> DownloadAsJSONType<T>(string?           url,
+                                                           JsonTypeInfo<T?>  typeInfo,
+                                                           CancellationToken token)
+            where T : class
+        {
+            return await _client.GetFromCachedJsonAsync(url, typeInfo, null, token);
+        }
 
-        public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
-             => await _client.GetURLStatusCode(URL, token);
+        public static async ValueTask<UrlStatus> GetURLStatusCode(string url, CancellationToken token)
+             => await _client.GetURLStatusCode(url, token);
 
         public static async ValueTask<UrlStatus> GetURLStatusCode(this HttpClient client, string url, CancellationToken token = default)
         {
