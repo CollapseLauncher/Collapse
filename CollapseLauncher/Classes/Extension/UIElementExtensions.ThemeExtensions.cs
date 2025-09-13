@@ -1,5 +1,6 @@
 ﻿using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
 #pragma warning disable IDE0130
@@ -23,7 +24,7 @@ namespace CollapseLauncher.Extension
             string searchKey2        = $"{searchKeyMain}{searchReversedKey}2";
             string searchKey3        = $"{searchKeyMain}{searchReversedKey}3";
 
-            SetApplicationResource(searchKeyAccentColor,     accentColor);
+            SetApplicationResource(searchKeyAccentColor,     new SolidColorBrush(accentColor));
             SetApplicationResource(searchKeyMain,            accentColor);
             SetApplicationResource(searchKey1,               accentColor);
             SetApplicationResource(searchKey2,               accentColor);
