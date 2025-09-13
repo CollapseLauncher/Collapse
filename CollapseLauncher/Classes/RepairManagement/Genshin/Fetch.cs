@@ -113,9 +113,9 @@ namespace CollapseLauncher
 
                    assetIndex.RemoveAll(asset =>
                     {
-                        var r = plugin.package.validate.Any(validate => validate.path != null &&
-                                                    (asset.localName.Contains(validate.path) ||
-                                                    asset.remoteName.Contains(validate.path)));
+                        bool r = plugin.package.validate.Any(validate => validate.path != null &&
+                                                                         (asset.localName?.Contains(validate.path) ??
+                                                                          asset.remoteName.Contains(validate.path)));
                         if (r)
                         {
                             LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
