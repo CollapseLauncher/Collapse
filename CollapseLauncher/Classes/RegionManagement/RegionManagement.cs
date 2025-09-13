@@ -211,11 +211,11 @@ namespace CollapseLauncher
             var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
             if (isDownloaded)
             {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                            {
-                                                                                IsFirstStartup = false;
-                                                                                ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                            }, false, false, true);
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
+                                                      () => IsFirstStartup = false,
+                                                      false,
+                                                      false,
+                                                      true);
                 return;
             }
 
@@ -244,22 +244,22 @@ namespace CollapseLauncher
                               GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
                               _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                           };
-            BackgroundImgChanger.ChangeBackground(tempImage, () =>
-                                                             {
-                                                                 IsFirstStartup = false;
-                                                                 ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                             }, false, false, true);
+            BackgroundImgChanger.ChangeBackground(tempImage,
+                                                  () => IsFirstStartup = false,
+                                                  false,
+                                                  false,
+                                                  true);
             if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
                                                                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
                                                                        imgFileInfo,
                                                                        false,
                                                                        token))
             {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                            {
-                                                                                IsFirstStartup = false;
-                                                                                ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                            }, false, true, true);
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
+                                                      () => IsFirstStartup = false,
+                                                      false,
+                                                      true,
+                                                      true);
                 SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
             }
         #nullable restore
