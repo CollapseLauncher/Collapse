@@ -101,7 +101,14 @@ namespace Hi3Helper.Data
 
         #region Load and Save Methods
         public void Save(string filePath)
-            => Save(new FileInfo(filePath));
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return;
+            }
+
+            Save(new FileInfo(filePath));
+        }
 
         public void Save(FileInfo fileInfo)
         {

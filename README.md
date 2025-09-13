@@ -15,7 +15,7 @@
 [![ru](https://img.shields.io/badge/README-ru-red.svg)](Docs/README.localized/README.ru-ru.md)
 [![zh](https://img.shields.io/badge/README-zh-red.svg)](Docs/README.localized/README.zh-cn.md)
 
-**Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games**.
+**Collapse** was originally designed for **Honkai Impact 3rd**. However, as the project evolved, this launcher is now a game client for all currently released **miHoYo Games** and even external games through its plugin system!
 
 [![Build-Canary](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/CollapseLauncher/Collapse/actions/workflows/build.yml)
 [![Qodana](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml/badge.svg)](https://github.com/CollapseLauncher/Collapse/actions/workflows/qodana-scan.yml)
@@ -62,180 +62,14 @@ Not only that, this launcher also has some advanced features for **Genshin Impac
 * Repair the game files including Game Caches, Cutscenes, Audio Pack & persistent files outside of the game.
 
 # Supported Features 
-> Features marked with a :warning: are scheduled for removal and/or are no longer supported by the Collapse development team.
-
-<table>
-  <thead>
-    <tr>
-      <th rowspan="2">Game Title</th>
-      <th rowspan="2">Region</th>
-      <th colspan="7">Features</th>
-    </tr>
-    <tr>
-      <th>Install</th>
-      <th>Pre-load</th>
-      <th>Update</th>
-      <th>Game Repair</th>
-      <th>Cache Update</th>
-      <th>Game Settings</th>
-      <th>Game Region Convert</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td rowspan="6">Honkai Impact 3rd</td>
-      <td>Southeast Asia</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:warning: <br> (From SEA -&gt; Global) </td>
-    </tr>
-    <tr>
-      <td>Global</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark: (Normal and Delta-patch updates are available)</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:warning: <br> (From Steam -&gt; Global) <br> (From Global -&gt; SEA) </td>
-    </tr>
-    <tr>
-      <td>Mainland China</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>TW/HK/MO</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Japan</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Korea</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td rowspan="4">Genshin Impact</td>
-      <td>Global</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Mainland China</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Bilibili</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Google Play (Global)</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td rowspan="3">Honkai: Star Rail</td>
-      <td>Global</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Mainland China</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Bilibili</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-    </tr>
-   <tr>
-      <td rowspan="2">Zenless Zone Zero</td>
-      <td>Global</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>:white_check_mark:</td>
-    </tr>
-    <tr>
-      <td>Mainland China</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>:white_check_mark:</td>
-      <td>N/A</td>
-      <td>N/A</td>
-      <td>:white_check_mark:</td>
-    </tr>
-  </tbody>
-</table>
-
-> **Note**:
-> The table above serves to illustrate the features Collapse currently support. This list will continuously get updated as new features get added to Collapse and new games get released. If you have any issues with any supported features above, checks our GitHub issue tab, report if no active issues for it is found.
-> > Please keep in mind that the Game Conversion feature is currently only available for Honkai Impact: 3rd. Other miHoYo/Cognosphere Pte. Ltd. games are currently not planned for game conversion. 
+> ### You can find the list of features on our [new website](https://collapselauncher.com/features.html)!
 
 # Download Ready-To-Use Builds
-[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.30/CollapseLauncher-stable-Setup.exe)
-> **Note**: The version for this build is `1.82.30` (Released on: July 18th, 2025).
+[<img src="https://user-images.githubusercontent.com/30566970/172445052-b0e62327-1d2e-4663-bc0f-af50c7f23615.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.82.31/CollapseLauncher-stable-Setup.exe)
+> **Note**: The version for this build is `1.82.31` (Released on: August 14th, 2025).
 
-[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.83.7-pre/CollapseLauncher-preview-Setup.exe)
-> **Note**: The version for this build is `1.83.7` (Released on: July 18th, 2025).
+[<img src="https://user-images.githubusercontent.com/30566970/172445153-d098de0d-1236-4124-8e13-05000b374eb6.svg" width="320"/>](https://github.com/CollapseLauncher/Collapse/releases/download/CL-v1.83.8-pre/CollapseLauncher-preview-Setup.exe)
+> **Note**: The version for this build is `1.83.8` (Released on: August 14th, 2025).
 
 To view all releases, [**click here**](https://github.com/neon-nyan/CollapseLauncher/releases).
 

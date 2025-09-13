@@ -54,7 +54,7 @@ namespace CollapseLauncher.ShortcutUtils
             AppID = GenerateAppId(Exe, appNameInternal);
 
             var gridPath = Path.Combine(_path!, "grid");
-            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
+            var iconName = ShortcutCreator.GetIconName(_preset);
             Icon = Path.Combine(gridPath, iconName);
 
             LaunchOptions = $"open -g \"{preset.GameName}\" -r \"{preset.ZoneName}\"";
@@ -78,8 +78,7 @@ namespace CollapseLauncher.ShortcutUtils
             var gridPath = Path.Combine(_path!, "grid");
             if (!Directory.Exists(gridPath)) Directory.CreateDirectory(gridPath);
 
-            var iconName = ShortcutCreator.GetIconName(_preset.GameType);
-            var iconAssetPath = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!, @"Assets\Images\GameIcon\" + iconName);
+            var iconAssetPath = ShortcutCreator.GetIconPath(_preset);
 
             if (!Path.Exists(Icon) && Path.Exists(iconAssetPath))
             {
@@ -121,7 +120,7 @@ namespace CollapseLauncher.ShortcutUtils
         private async Task CacheImages(CancellationToken token)
         {
             Dictionary<string, SteamGameProp> assets = _preset.ZoneSteamAssets;
-            if (assets == null) return;
+            if (assets == null || assets.Count == 0) return;
 
             (string, string)[] images =
             [

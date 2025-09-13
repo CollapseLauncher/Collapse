@@ -7,6 +7,7 @@ using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages;
 using CollapseLauncher.Statics;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
@@ -117,7 +118,7 @@ namespace CollapseLauncher
                     }
                     
                     LogWriteLine($"Game: {regionToChangeName} has been completely initialized!", LogType.Scheme, true);
-                    await FinalizeLoadRegion(gameName, gameRegion);
+                    await FinalizeLoadRegion(gameName, gameRegion, token);
                     _ = ChangeBackgroundImageAsRegionAsync();
                     IsLoadRegionComplete = true;
 
@@ -184,14 +185,21 @@ namespace CollapseLauncher
             });
         }
 
-        private async Task DownloadBackgroundImage(CancellationToken Token)
+        private async Task DownloadBackgroundImage(CancellationToken token)
         {
+            var currentProperty = GamePropertyVault.GetCurrentGameProperty();
             // Get and set the current path of the image
             string backgroundFolder = Path.Combine(AppGameImgFolder, "bg");
             string backgroundFileName = Path.GetFileName(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg);
-            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal =  Path.Combine(backgroundFolder, backgroundFileName);
+            LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = Path.Combine(backgroundFolder, backgroundFileName);
             SetAndSaveConfigValue("CurrentBackground", LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal);
+            await DownloadNonPluginBackgroundImage(backgroundFolder, currentProperty, token);
+        }
 
+        private async Task DownloadNonPluginBackgroundImage(string             backgroundFolder,
+                                                            GamePresetProperty currentProperty,
+                                                            CancellationToken  token)
+        {
             // Check if the background folder exist
             if (!Directory.Exists(backgroundFolder))
                 Directory.CreateDirectory(backgroundFolder);
@@ -201,22 +209,21 @@ namespace CollapseLauncher
 
             // Start downloading the background image
             var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
-
             if (isDownloaded)
             {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                 {
-                                                                     IsFirstStartup = false;
-                                                                     ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                 }, false, false, true);
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
+                                                      () => IsFirstStartup = false,
+                                                      false,
+                                                      false,
+                                                      true);
                 return;
             }
-            
+
         #nullable enable
             string? tempImage = null;
             var lastBgCfg = "lastBg-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameName +
-                               "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
-            
+                            "-" + LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameRegion;
+
             // Check if the last background image exist, then use that temporarily instead
             var lastGameBackground = GetAppConfigValue(lastBgCfg).ToString();
             if (!string.IsNullOrEmpty(lastGameBackground))
@@ -226,38 +233,39 @@ namespace CollapseLauncher
                     tempImage = lastGameBackground;
                 }
             }
-            
+
             // If the file is not downloaded, use template image first, then download the image
-            GameNameType? currentGameType = GamePropertyVault.GetCurrentGameProperty().GameVersion?.GameType;
+            GameNameType? currentGameType = currentProperty.GameVersion?.GameType;
             tempImage ??= currentGameType switch
-            {
-                GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
-                GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
-                GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
-                GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
-                _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
-            };
-            BackgroundImgChanger.ChangeBackground(tempImage, () =>
-                                                             {
-                                                                 IsFirstStartup = false;
-                                                                 ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                             }, false, false, true);
+                          {
+                              GameNameType.Honkai => Path.Combine(AppExecutableDir,   @"Assets\Images\GameBackground\honkai.webp"),
+                              GameNameType.Genshin => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\genshin.webp"),
+                              GameNameType.StarRail => Path.Combine(AppExecutableDir, @"Assets\Images\GameBackground\starrail.webp"),
+                              GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
+                              _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
+                          };
+            BackgroundImgChanger.ChangeBackground(tempImage,
+                                                  () => IsFirstStartup = false,
+                                                  false,
+                                                  false,
+                                                  true);
             if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
                                                                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
                                                                        imgFileInfo,
-                                                                       Token))
+                                                                       false,
+                                                                       token))
             {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                {
-                    IsFirstStartup = false;
-                    ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                }, false, true, true);
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
+                                                      () => IsFirstStartup = false,
+                                                      false,
+                                                      true,
+                                                      true);
                 SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
             }
-        #nullable disable
+        #nullable restore
         }
 
-        private async Task FinalizeLoadRegion(string gameName, string gameRegion)
+        private async Task FinalizeLoadRegion(string gameName, string gameRegion, CancellationToken token)
         {
             PresetConfig preset = LauncherMetadataHelper.LauncherMetadataConfig[gameName][gameRegion];
 
@@ -265,21 +273,24 @@ namespace CollapseLauncher
             LogWriteLine($"Initializing Region {preset.ZoneFullname} Done!", LogType.Scheme, true);
 
             // Initializing Game Statics
-            await LoadGameStaticsByGameType(preset, gameName, gameRegion);
+            await LoadGameStaticsByGameType(preset, gameName, gameRegion, token);
             CurrentGameProperty = GamePropertyVault.GetCurrentGameProperty();
 
             // Init NavigationPanel Items
-            await Task.Run(() => InitializeNavigationItems());
+            await Task.Run(() => InitializeNavigationItems(), token);
         }
 
-        private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion)
+        private async Task LoadGameStaticsByGameType(PresetConfig preset, string gameName, string gameRegion, CancellationToken token)
         {
             // Attach notification for the current game and dispose statics
             await GamePropertyVault.AttachNotificationForCurrentGame();
-            await Task.Run(DisposeAllPageStatics);
+            await Task.Run(DisposeAllPageStatics, token);
 
             // Load region property (and potentially, cached one)
-            await GamePropertyVault.LoadGameProperty(this, preset.GameLauncherApi.LauncherGameResource, gameName, gameRegion);
+            GamePropertyVault.LoadGameProperty(this,
+                                                     preset.GameType == GameNameType.Plugin ? null : preset.GameLauncherApi.LauncherGameResource,
+                                                     gameName,
+                                                     gameRegion);
 
             // Spawn Region Notification
             _ = SpawnRegionNotification(preset.ProfileName);
@@ -311,11 +322,11 @@ namespace CollapseLauncher
 
                 if (NotificationData.RegionPush == null) return;
                 
-                var regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
+                List<NotificationProp> regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
 
-                foreach (var Entry in regionPushCopy)
+                foreach (NotificationProp Entry in regionPushCopy)
                 {
-                    var toEntry = new NotificationInvokerProp
+                    NotificationInvokerProp toEntry = new NotificationInvokerProp
                     {
                         CloseAction = null,
                         IsAppNotif = false,
@@ -328,13 +339,13 @@ namespace CollapseLauncher
                         toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
                     }
 
-                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
-                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow;
+                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove;
 
                     if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
-                            || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
-                                && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
-                            || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)))
+                            || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow
+                                && ValidForVerAbove < LauncherUpdateHelper.LauncherCurrentVersion)
+                            || LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow))
                     {
                         NotificationSender.SendNotification(toEntry);
                     }

@@ -13,6 +13,8 @@ using CollapseLauncher.Statics;
 using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.FileDialogCOM;
@@ -166,10 +168,8 @@ namespace CollapseLauncher.Pages
 
                 await GetCurrentGameState();
 
-                if (!GetAppConfigValue("ShowEventsPanel").ToBool())
-                {
+                if (!GetAppConfigValue("ShowEventsPanel").ToBool() || (!IsCarouselPanelAvailable && !IsPostPanelAvailable))
                     SidePanel.Visibility = Visibility.Collapsed;
-                }
 
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
                     SocMedPanel.Visibility = Visibility.Collapsed;
@@ -241,7 +241,7 @@ namespace CollapseLauncher.Pages
 
                 if (CurrentGameProperty.IsGameRunning)
                 {
-                    CheckRunningGameInstance(PageToken.Token);
+                    _ = CheckRunningGameInstance(CurrentGameProperty.GamePreset, PageToken.Token);
                     return;
                 }
 
@@ -293,7 +293,7 @@ namespace CollapseLauncher.Pages
 
                 if (CurrentGameProperty.GameInstall?.IsRunning ?? false)
                 {
-                    CurrentGameProperty.GameInstall.StartAfterInstall = CurrentGameProperty.GameInstall.IsRunning;
+                    CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                     return;
                 }
 
@@ -307,7 +307,7 @@ namespace CollapseLauncher.Pages
                     case GameInstallStateEnum.NeedsUpdate:
                         if (CurrentGameProperty.GameInstall != null)
                         {
-                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                         }
                         UpdateGameDialog(null, null);
                         break;
@@ -315,7 +315,7 @@ namespace CollapseLauncher.Pages
                     case GameInstallStateEnum.GameBroken:
                         if (CurrentGameProperty.GameInstall != null)
                         {
-                            CurrentGameProperty.GameInstall.StartAfterInstall = true;
+                            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.StartGame;
                         }
                         InstallGameDialog(null, null);
                         break;
@@ -369,7 +369,7 @@ namespace CollapseLauncher.Pages
             }
 
             // Get the cached filename and path
-            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(featuredEventIconImg);
+            string cachedFileHash = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(featuredEventIconImg))!;
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder, cachedFileHash);
             if (ImageLoaderHelper.IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";

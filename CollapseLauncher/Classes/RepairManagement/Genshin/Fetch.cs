@@ -6,6 +6,7 @@ using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.YSDispatchHelper;
 using Hi3Helper.Http;
@@ -106,15 +107,15 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
         {
-            GameVersionManager.GameApiProp.data!.plugins?.ForEach(plugin =>
+            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
                {
                    if (plugin.package?.validate == null) return;
 
                    assetIndex.RemoveAll(asset =>
                     {
-                        var r = plugin.package.validate.Any(validate => validate.path != null &&
-                                                    (asset.localName.Contains(validate.path) ||
-                                                    asset.remoteName.Contains(validate.path)));
+                        bool r = plugin.package.validate.Any(validate => validate.path != null &&
+                                                                         (asset.localName?.Contains(validate.path) ??
+                                                                          asset.remoteName.Contains(validate.path)));
                         if (r)
                         {
                             LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
@@ -274,8 +275,8 @@ namespace CollapseLauncher
             if (fileInfo.Exists)
             {
                 await using FileStream resVersionStream = fileInfo.OpenRead();
-                byte[] hashBytes = Hash.GetCryptoHash<MD5>(resVersionStream, token: token);
-                string hash = Convert.ToHexStringLower(hashBytes);
+                byte[]                 hashBytes        = await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(resVersionStream, token: token);
+                string                 hash             = Convert.ToHexStringLower(hashBytes);
 
                 // Get base_res_version_hash content
                 await File.WriteAllTextAsync(persistentPath + "\\base_res_version_hash", hash, token);
@@ -331,7 +332,7 @@ namespace CollapseLauncher
                 LogWriteLine(dFormat);
 #endif
                 // Write the decrypted query response in the log (for diagnostic)
-                WriteLog(dFormat);
+                await LogFileWriter.WriteLineAsync(dFormat);
 
                 // Try decrypt the dispatcher, parse it and return it
                 return await TryDecryptAndParseDispatcher(dispatchInfo, dispatchHelper);
@@ -348,7 +349,7 @@ namespace CollapseLauncher
 #if DEBUG
             LogWriteLine(dFormat);
 #endif
-            WriteLog(dFormat);
+            await LogFileWriter.WriteLineAsync(dFormat);
 
             // Parse the dispatcher data in protobuf format and return it as QueryProperty
             await dispatchHelper.LoadDispatch(decryptedData);

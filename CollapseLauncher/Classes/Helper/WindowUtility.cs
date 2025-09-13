@@ -510,18 +510,6 @@ namespace CollapseLauncher.Helper
                             case SC_MINIMIZE:
                                 {
                                     MainPage.CurrentBackgroundHandler?.WindowUnfocused();
-                                    if (LauncherConfig.GetAppConfigValue("MinimizeToTray").ToBool())
-                                    {
-                                        // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
-                                        if (CurrentWindow is MainWindow mainWindow && mainWindow._TrayIcon != null)
-                                        {
-                                            mainWindow._TrayIcon.ToggleAllVisibility();
-                                        }
-                                        else TrayNullHandler("WindowUtility.MainWndProc");
-
-                                        return 0;
-                                    }
-
                                     InnerLauncherConfig.m_homePage?.CarouselStopScroll();
                                     break;
                                 }
@@ -768,15 +756,31 @@ namespace CollapseLauncher.Helper
             { Height = lastWindowHeight, Width = lastWindowWidth, X = xOff, Y = yOff };
         }
 
-        internal static void WindowMinimize()
+        internal static void WindowMinimize(bool sendToTray = true)
         {
             if (CurrentWindowPtr == nint.Zero)
             {
                 return;
             }
 
+            if (LauncherConfig.GetAppConfigValue("MinimizeToTray").ToBool() && sendToTray)
+            {
+                // If minimize to tray is enabled, toggle the tray icon visibility
+                // This will also handle the carousel visibility
+                // If the tray icon is not initialized, call the null handler
+                {
+                    // Carousel is handled inside WM_SHOWWINDOW message for minimize to tray
+                    if (CurrentWindow is MainWindow mainWindow && mainWindow._TrayIcon != null)
+                    {
+                        mainWindow._TrayIcon.ToggleAllVisibility();
+                    }
+                    else TrayNullHandler("WindowUtility.MainWndProc");
+                    return; // Early return to prevent double minimize call
+                }
+            }
+
             const uint WM_SYSCOMMAND = 0x0112;
-            const uint SC_MINIMIZE = 0xF020;
+            const uint SC_MINIMIZE   = 0xF020;
             PInvoke.SendMessage(CurrentWindowPtr, WM_SYSCOMMAND, SC_MINIMIZE, 0);
         }
 

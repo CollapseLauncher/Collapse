@@ -92,9 +92,9 @@ namespace CollapseLauncher.Helper.Loading
             }
         }
 
-        private static async Task ShowLoadingFrameInner()
+        private static Task ShowLoadingFrameInner()
         {
-            if (IsCurrentlyShow) return;
+            if (IsCurrentlyShow) return Task.CompletedTask;
 
             IsCurrentlyShow                                            = true;
             CurrentMainWindow.LoadingStatusGrid.Visibility           = Visibility.Visible;
@@ -102,8 +102,7 @@ namespace CollapseLauncher.Helper.Loading
 
             TimeSpan duration = TimeSpan.FromSeconds(0.25);
 
-            await Task.WhenAll(
-                               CurrentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
+            return Task.WhenAll(CurrentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
                                                                                             CurrentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 1, 0)),
                                CurrentMainWindow.LoadingStatusGrid.StartAnimation(duration,
                                                                                   CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, 0, CurrentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, (float)(CurrentMainWindow.LoadingStatusGrid.ActualHeight + 16), CurrentMainWindow.LoadingStatusGrid.Translation.Z)),
@@ -132,24 +131,27 @@ namespace CollapseLauncher.Helper.Loading
             }
         }
 
-        private static async Task HideLoadingFrameInner()
+        private static Task HideLoadingFrameInner()
         {
-            if (!IsCurrentlyShow) return;
+            if (!IsCurrentlyShow) return Task.CompletedTask;
 
             IsCurrentlyShow = false;
 
             TimeSpan duration = TimeSpan.FromSeconds(0.25);
-            await Task.WhenAll(
-                               CurrentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
-                                                                                            CurrentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
-                               CurrentMainWindow.LoadingStatusGrid.StartAnimation(duration,
-                                                                                  CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(CurrentMainWindow.LoadingStatusGrid.ActualHeight + 16), CurrentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, 0, CurrentMainWindow.LoadingStatusGrid.Translation.Z)),
-                                                                                  CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1))
-                              );
-
-            CurrentMainWindow.LoadingStatusGrid.Visibility           = Visibility.Collapsed;
-            CurrentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Collapsed;
-            HideActionButton();
+            return Task.WhenAll(CurrentMainWindow.LoadingStatusBackgroundGrid.StartAnimation(duration,
+                                    CurrentMainWindow.LoadingStatusBackgroundGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)),
+                                CurrentMainWindow.LoadingStatusGrid.StartAnimation(duration,
+                                    CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateVector3KeyFrameAnimation("Translation", new Vector3(0, (float)(CurrentMainWindow.LoadingStatusGrid.ActualHeight + 16), CurrentMainWindow.LoadingStatusGrid.Translation.Z), new Vector3(0, 0, CurrentMainWindow.LoadingStatusGrid.Translation.Z)),
+                                    CurrentMainWindow.LoadingStatusGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1))
+                               ).ContinueWith((_, _) =>
+                                              {
+                                                  CurrentMainWindow.DispatcherQueue.TryEnqueue(() =>
+                                                  {
+                                                      CurrentMainWindow.LoadingStatusGrid.Visibility = Visibility.Collapsed;
+                                                      CurrentMainWindow.LoadingStatusBackgroundGrid.Visibility = Visibility.Collapsed;
+                                                      HideActionButton();
+                                                  });
+                                              }, null);
         }
 
         /// <summary>

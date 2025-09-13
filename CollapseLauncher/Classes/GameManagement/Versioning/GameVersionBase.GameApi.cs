@@ -1,4 +1,5 @@
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace CollapseLauncher.GameManagement.Versioning
     internal partial class GameVersionBase
     {
         #region Game Region Resource Prop
-        public RegionResourceProp GameApiProp { get; set; }
+        public virtual RegionResourceProp? GameApiProp { get; set; }
 
         // Assign for the Game Delta-Patch properties (if any).
         // If there's no Delta-Patch, then set it to null.
@@ -35,43 +36,11 @@ namespace CollapseLauncher.GameManagement.Versioning
         #endregion
 
         #region Game Version API Properties
-        protected virtual GameVersion? SdkVersionAPI
-        {
-            get
-            {
-                // Return null if the plugin is not exist
-                if (GameApiProp.data?.sdk == null)
-                    return null;
+        protected virtual GameVersion? SdkVersionAPI => GameApiProp?.data?.sdk?.version;
 
-                // If the version provided by the SDK API, return the result
-                return GameVersion.TryParse(GameApiProp.data?.sdk?.version, out GameVersion? result) ? result :
-                    // Otherwise, return null
-                    null;
-            }
-        }
+        protected virtual GameVersion? GameVersionAPI => GameApiProp?.data?.game?.latest?.version;
 
-        protected virtual GameVersion? GameVersionAPI
-        {
-            get => GameVersion.TryParse(GameApiProp.data?.game?.latest?.version, out GameVersion? version) ? version : null;
-        }
-
-        protected virtual GameVersion? GameVersionAPIPreload
-        {
-            get
-            {
-                GameVersion? currentInstalled = GameVersionInstalled;
-
-                // If no installation installed, then return null
-                if (currentInstalled == null)
-                    return null;
-
-                // Check if the pre_download_game property has value. If not, then return null
-                if (string.IsNullOrEmpty(GameApiProp.data?.pre_download_game?.latest?.version))
-                    return null;
-
-                return new GameVersion(GameApiProp.data.pre_download_game.latest.version);
-            }
-        }
+        protected virtual GameVersion? GameVersionAPIPreload => GameVersionInstalled ?? GameApiProp?.data?.pre_download_game?.latest?.version;
 
         protected virtual Dictionary<string, GameVersion> PluginVersionsAPI
         {
@@ -81,13 +50,13 @@ namespace CollapseLauncher.GameManagement.Versioning
                 Dictionary<string, GameVersion> value = new();
 
                 // Return empty if the plugin is not exist
-                if (GameApiProp.data?.plugins == null || GameApiProp.data.plugins.Count == 0)
+                if (GameApiProp?.data?.plugins == null || GameApiProp.data.plugins.Count == 0)
                 {
                     return value;
                 }
 
                 // Get the version and convert it into GameVersion
-                foreach (var plugin in GameApiProp.data.plugins
+                foreach ((string? plugin_id, string? version) plugin in GameApiProp.data.plugins
                                                   .Where(plugin => plugin.plugin_id != null)
                                                   .Select(plugin => (plugin.plugin_id, plugin.version)))
                 {
@@ -95,7 +64,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     {
                         continue;
                     }
-                    value.TryAdd(plugin.plugin_id, new GameVersion(plugin.version));
+                    value.TryAdd(plugin.plugin_id, plugin.version);
                 }
 
                 return value;
@@ -116,14 +85,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                 // Get the game version
                 string? val = gameVersion;
 
-                // If not, then return as null
-                if (string.IsNullOrEmpty(val))
-                {
-                    return null;
-                }
-
                 // Otherwise, return the game version
-                return new GameVersion(val);
+                return val;
             }
             set
             {
@@ -140,13 +103,13 @@ namespace CollapseLauncher.GameManagement.Versioning
                 Dictionary<string, GameVersion> value = new();
 
                 // Return empty if the plugin is not exist
-                if (GameApiProp.data?.plugins == null || GameApiProp.data?.plugins?.Count == 0)
+                if (GameApiProp?.data?.plugins == null || GameApiProp.data?.plugins?.Count == 0)
                 {
                     return value;
                 }
 
                 // Get the version and convert it into GameVersion
-                foreach (var plugin in GameApiProp.data?.plugins!)
+                foreach (RegionResourcePlugin plugin in GameApiProp?.data?.plugins!)
                 {
                     // Check if the INI has plugin_ID_version key...
                     string keyName = $"plugin_{plugin.plugin_id}_version";
@@ -156,14 +119,9 @@ namespace CollapseLauncher.GameManagement.Versioning
                     }
 
                     string? val = getPluginVersion;
-                    if (string.IsNullOrEmpty(val))
-                    {
-                        continue;
-                    }
-
                     if (plugin.plugin_id != null)
                     {
-                        _ = value.TryAdd(plugin.plugin_id, new GameVersion(val));
+                        _ = value.TryAdd(plugin.plugin_id, val);
                     }
                 }
 
@@ -183,26 +141,20 @@ namespace CollapseLauncher.GameManagement.Versioning
 
                 // Check if it has no value, then return null
                 string? versionName = pluginSdkVersion;
-                if (string.IsNullOrEmpty(versionName))
-                    return null;
 
                 // Try parse the version.
-                return !GameVersion.TryParse(versionName, out GameVersion? result) ?
-                    // If it's not valid, then return null
-                    null :
-                    // Otherwise, return the result
-                    result;
+                return versionName;
             }
             set => UpdateSdkVersion(value ?? SdkVersionAPI);
         }
         #endregion
 
         #region Game Version API Methods
-        public GameVersion? GetGameExistingVersion() => GameVersionInstalled;
+        public virtual GameVersion? GetGameExistingVersion() => GameVersionInstalled;
 
-        public GameVersion? GetGameVersionApi() => GameVersionAPI;
+        public virtual GameVersion? GetGameVersionApi() => GameVersionAPI;
 
-        public GameVersion? GetGameVersionApiPreload() => GameVersionAPIPreload;
+        public virtual GameVersion? GetGameVersionApiPreload() => GameVersionAPIPreload;
         #endregion
 
         #region Game Info Methods
@@ -212,7 +164,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             // Initialize the return list
             List<RegionResourceVersion> returnList                 = [];
-            RegionResourceVersion?      currentLatestRegionPackage = GameApiProp.data?.game?.latest;
+            RegionResourceVersion?      currentLatestRegionPackage = GameApiProp?.data?.game?.latest;
 
             // If the current latest region package is null, then throw
             if (currentLatestRegionPackage == null)
@@ -230,7 +182,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
 
             // Try to get the diff file  by the first or default (null)
-            if (GameApiProp.data?.game?.diffs == null)
+            if (GameApiProp?.data?.game?.diffs == null)
             {
                 return returnList;
             }
@@ -250,7 +202,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             List<RegionResourceVersion> returnList = [];
 
             // If the preload is not exist, then return null
-            if (GameApiProp.data?.pre_download_game == null
+            if (GameApiProp?.data?.pre_download_game == null
                 || (GameApiProp.data?.pre_download_game?.diffs?.Count ?? 0) == 0
                 && GameApiProp.data?.pre_download_game?.latest == null)
             {
@@ -273,8 +225,8 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual List<RegionResourcePlugin>? GetGamePluginZip()
         {
             // Check if the plugin is not empty, then add it
-            if ((GameApiProp.data?.plugins?.Count ?? 0) != 0)
-                return [.. GameApiProp.data?.plugins!];
+            if ((GameApiProp?.data?.plugins?.Count ?? 0) != 0)
+                return [.. GameApiProp?.data?.plugins!];
 
             // Return null if plugin is unavailable
             return null;
@@ -283,7 +235,7 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual List<RegionResourcePlugin>? GetGameSdkZip()
         {
             // Check if the sdk is not empty, then add it
-            if (GameApiProp.data?.sdk == null)
+            if (GameApiProp?.data?.sdk == null)
             {
                 return null;
             }

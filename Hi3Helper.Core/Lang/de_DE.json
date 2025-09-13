@@ -674,7 +674,6 @@
     "CDNDescription_Cloudflare": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in Cloudflare R2 Bucket.",
     "CDNDescription_Bitbucket": "Ein Spiegel des offiziellen (Haupt-)Repository, gehostet in Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Locate Executable",
     "OpenDownloadPage": "Downloadseite öffnen",

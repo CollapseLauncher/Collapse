@@ -790,7 +790,6 @@
     "CDNDescription_Cloudflare": "Зеркало официального (основного) репозитория, развернутое на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Зеркало официального (основного) репозитория, развернутое на Bitbucket.",
     "CDNDescription_GitLab": "Зеркало официального (основного) репозитория, размещенного в GitLab.",
-    "CDNDescription_Coding": "Зеркало официального (основного) репозитория, размещенного в Coding.",
 
     "LocateExecutable": "Найти исполняемый файл",
     "OpenDownloadPage": "Открыть страницу загрузки",

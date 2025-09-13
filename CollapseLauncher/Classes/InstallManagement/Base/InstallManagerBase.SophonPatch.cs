@@ -13,6 +13,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Sophon;
 using Hi3Helper.Sophon.Structs;
@@ -117,6 +118,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                 downloadSpeedLimiter,
                                                 Token.Token);
 
+            // Filter asset list
+            await FilterSophonPatchAssetList(patchAssets.AssetList, Token.Token);
+
             // Start the patch pipeline
             await StartAlterSophonPatch(httpClient,
                                         isPreloadMode,
@@ -128,6 +132,12 @@ namespace CollapseLauncher.InstallManager.Base
                                         Token.Token);
 
             return true;
+        }
+
+        protected virtual Task FilterSophonPatchAssetList(List<SophonPatchAsset> itemList, CancellationToken token)
+        {
+            // NOP
+            return Task.CompletedTask;
         }
 
         protected virtual async Task ConfirmAdditionalPatchDataPackageFiles(SophonChunkManifestInfoPair patchManifest,
@@ -456,8 +466,7 @@ namespace CollapseLauncher.InstallManager.Base
             ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = threadNum,
-                CancellationToken      = token,
-                TaskScheduler          = TaskScheduler.Default
+                CancellationToken      = token
             };
             
             if (LauncherConfig.GetAppConfigValue("SophonPreloadApplyPerfMode"))

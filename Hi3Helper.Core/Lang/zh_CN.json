@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "复制全部到剪贴板",
     "CopyClipboardBtn2": "已复制到剪贴板！",
     "GoBackPageBtn1": "返回上一页",
-    
+
     "CustomBackground_NotFound": "自定义背景文件丢失！将使用默认图像",
     "CustomBackground_RegionalTag": "区服背景",
     "CustomBackground_GlobalTag": "全局背景"
@@ -718,7 +718,71 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "确定响应允许的最大缓存时间（分钟）。",
     "HttpCacheMaxExpireTimeBoxMinutes": "分钟",
     "HttpCacheClearButton": "清除网络缓存",
-    "HttpCacheClearedText": "缓存已清除！"
+    "HttpCacheClearedText": "缓存已清除！",
+
+    "Plugin_LoadedInfoTitle": "已加载的插件信息",
+    "Plugin_OpenManagerBtn": "打开插件管理菜单",
+    "Plugin_AuthorBy": "作者 {0}",
+    "Plugin_LoadedInfoDesc": "描述",
+    "Plugin_LoadedInfoPluginVer": "插件版本",
+    "Plugin_LoadedInfoInterfaceVer": "接口版本",
+    "Plugin_LoadedInfoCreationDate": "创建日期",
+    "Plugin_LoadedInfoMainLibLocation": "主程序库位置",
+    "Plugin_LoadedInfoLoadedPresets": "加载的预设",
+    "Plugin_LoadedInfoClipboardCopied": "信息已复制！",
+    "Plugin_PluginInfoNameUnknown": "未知",
+    "Plugin_PluginInfoDescUnknown": "无描述",
+    "Plugin_PluginInfoAuthorUnknown": "未知作者"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "插件管理菜单",
+
+    "FileDialogTitle": "导入 Collapse 启动器插件",
+    "FileDialogFileFilter1": "Collapse 启动器插件",
+
+    "LeftPanelNoPluginTitle": "嘿，你还没加载插件！",
+    "LeftPanelNoPluginButton1": "转到",
+    "LeftPanelNoPluginButton2": "插件下载目录",
+    "LeftPanelNoPluginButton3": "页",
+
+    "LeftPanelListViewTitle": "加载插件信息",
+
+    "ListViewMainActionButton1": "检查所有插件的更新",
+    "ListViewMainActionButton1AltChecking": "检查所有插件的更新中……",
+    "ListViewMainActionButton2": "下载所有插件的更新",
+    "ListViewMainActionButton3": "启动时自动更新",
+
+    "ListViewItemContextButton1": "卸载选定的插件",
+    "ListViewItemContextButton2": "重置选定的插件",
+    "ListViewItemContextButton3": "启用选定的插件",
+    "ListViewItemContextButton4": "禁用选定的插件",
+    "ListViewItemContextButton5": "更新选定的插件",
+    "ListViewItemContextButton6": "打开当前插件的文件夹",
+    "ListViewItemContextButton7": "打开 Collapse 启动器插件文件夹",
+    "ListViewItemContextButton8": "更新当前插件",
+
+    "ListViewItemContentButton1": "卸载插件",
+    "ListViewItemContentButton2": "重置插件",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "仅检查更新",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "检查并下载更新",
+    "ListViewItemContextButtonDownloadUpdate": "下载更新",
+
+    "ListViewItemUpdateStatusAvailable": "新更新可用！",
+    "ListViewItemUpdateStatusAvailableButton": "更新至 {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "更新中（{0}%）……",
+    "ListViewItemUpdateStatusCompleted": "您的插件已被更新至{0}，请重启您的启动器以应用更新！",
+    "ListViewItemUpdateStatusChecking": "检查更新中……",
+    "ListViewItemUpdateStatusUpToDate": "插件已是最新！",
+
+    "ListViewFooterWarning1": "您需要重启您的启动器以应用更新！",
+    "ListViewFooterRestartButton": "重启启动器",
+
+    "RightPanelImportTitle1": "拖动",
+    "RightPanelImportTitle2": "或",
+    "RightPanelImportTitle3": "这里",
+    "RightPanelImportTitle4": "或者点击这个框以导入插件"
   },
 
   "_Misc": {
@@ -741,6 +805,7 @@
     "EverythingIsOkay": "一切正常！",
     "Cancel": "取消",
     "Close": "关闭",
+    "CloseOverlay": "关闭叠加层",
     "UseCurrentDir": "使用当前目录",
     "UseDefaultDir": "使用默认目录",
     "MoveToDifferentDir": "移动到不同的目录",
@@ -817,7 +882,6 @@
     "CDNDescription_Cloudflare": "由 Cloudflare R2 存储桶提供支持的官方（主）仓库镜像。",
     "CDNDescription_Bitbucket": "由 Bitbucket 提供支持的官方（主）仓库镜像。",
     "CDNDescription_GitLab": "由 GitLab 提供支持的官方（主）仓库镜像。",
-    "CDNDescription_Coding": "由 Coding 提供支持的官方（主）仓库镜像。",
     "CDNDescription_CNB": "由 CNB 提供支持的官方（主）仓库镜像。",
 
     "LocateExecutable": "定位可执行文件",
@@ -1119,7 +1183,27 @@
     "UserFeedback_SubmitBtn": "提交您的反馈",
     "UserFeedback_SubmitBtn_Processing": "处理中…",
     "UserFeedback_SubmitBtn_Completed": "完成！",
-    "UserFeedback_SubmitBtn_Cancelled": "已取消！"
+    "UserFeedback_SubmitBtn_Cancelled": "已取消！",
+
+    "PluginManagerUpdateAvailableTitle": "您有 {0} 个插件已准备好更新！",
+    "PluginManagerUpdateAvailableSubtitle1": "目前有 {0} 个插件可更新。启动器需要重新启动以应用这些插件的更新：",
+    "PluginManagerUpdateAvailableSubtitle2": "您希望重新启动启动器吗？",
+    "PluginManagerUpdateAvailableCancelBtn": "稍后",
+    "PluginManagerUpdateAvailableConfirmBtn": "现在就重启！",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "转到 {0}",
+
+    "LauncherRestartTitle": "重启 Collapse启动器",
+    "LauncherRestartSubtitle1": "您需要重新启动启动器。请确保在重启前关闭或者取消了所有后台活动。",
+    "LauncherRestartSubtitle2": "您希望重新启动启动器吗？",
+
+    "PostInstallBehaviour_Title": "安装/更新后行为",
+    "PostInstallBehaviour_Subtitle": "成功安装/更新后的行为",
+    "PostInstallBehaviour_Subtitle2": "重启/关机前等待时间",
+    "PostInstallBehaviour_EnumNothing": "什么也不做",
+    "PostInstallBehaviour_EnumStartGame": "开始游戏",
+    "PostInstallBehaviour_EnumHibernate": "休眠",
+    "PostInstallBehaviour_EnumRestart": "重启电脑",
+    "PostInstallBehaviour_EnumShutdown": "关闭电脑"
   },
 
   "_FileMigrationProcess": {
@@ -1359,7 +1443,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "地图探索中角色实时阴影",
     "Graphics_HalfResTransparent": "半分辨率透明",
-    
+
     "Graphics_DLSS_UHP": "超高性能",
     "Graphics_DLSS_Perf": "性能",
     "Graphics_DLSS_Balanced": "平衡",

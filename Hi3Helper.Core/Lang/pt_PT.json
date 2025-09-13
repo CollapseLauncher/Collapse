@@ -674,7 +674,6 @@
     "CDNDescription_Cloudflare": "Uma cópia do repositório (principal) oficial hospedado dentro de um bucket R2 da Cloudflare.",
     "CDNDescription_Bitbucket": "Uma cópia do repositório (principal) oficial hospedado no Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository hosted in GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository hosted in Coding.",
 
     "LocateExecutable": "Localizar executável",
     "OpenDownloadPage": "Abrir página de download",

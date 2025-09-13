@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Copy All to Clipboard",
     "CopyClipboardBtn2": "Copied to Clipboard!",
     "GoBackPageBtn1": "Go Back to Previous Page",
-    
+
     "CustomBackground_NotFound": "Custom background file is missing! Using default image",
     "CustomBackground_RegionalTag": "Region BG",
     "CustomBackground_GlobalTag": "Global BG"
@@ -718,7 +718,71 @@
     "HttpCacheMaxExpireTimeBox_Tooltip1": "Determine how long is the allowed maximum cache time for the response (in minutes).",
     "HttpCacheMaxExpireTimeBoxMinutes": "minutes",
     "HttpCacheClearButton": "Clear Network Cache",
-    "HttpCacheClearedText": "Caches have been Cleared!"
+    "HttpCacheClearedText": "Caches have been Cleared!",
+
+    "Plugin_LoadedInfoTitle": "Loaded Plugins Information",
+    "Plugin_OpenManagerBtn": "Open Plugin Management Menu",
+    "Plugin_AuthorBy": "by {0}",
+    "Plugin_LoadedInfoDesc": "Description",
+    "Plugin_LoadedInfoPluginVer": "Plugin Version",
+    "Plugin_LoadedInfoInterfaceVer": "Interface Version",
+    "Plugin_LoadedInfoCreationDate": "Creation Date",
+    "Plugin_LoadedInfoMainLibLocation": "Main Library Location",
+    "Plugin_LoadedInfoLoadedPresets": "Loaded Presets",
+    "Plugin_LoadedInfoClipboardCopied": "Information Copied!",
+    "Plugin_PluginInfoNameUnknown": "Unknown",
+    "Plugin_PluginInfoDescUnknown": "No description",
+    "Plugin_PluginInfoAuthorUnknown": "Unknown Author"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "Plugin Manager Menu",
+
+    "FileDialogTitle": "Import Collapse Launcher Plugin",
+    "FileDialogFileFilter1": "Collapse Launcher Plugin",
+
+    "LeftPanelNoPluginTitle": "Hey, you have no plugin loaded!",
+    "LeftPanelNoPluginButton1": "Go to",
+    "LeftPanelNoPluginButton2": "Plugin Download Catalog",
+    "LeftPanelNoPluginButton3": "page",
+
+    "LeftPanelListViewTitle": "Loaded Plugin Information",
+
+    "ListViewMainActionButton1": "Check Updates for All Plugins",
+    "ListViewMainActionButton1AltChecking": "Checking Updates for All Plugins...",
+    "ListViewMainActionButton2": "Download Updates for All Plugins",
+    "ListViewMainActionButton3": "Enable Plugins Auto-update on Launch",
+
+    "ListViewItemContextButton1": "Uninstall Selected Plugins",
+    "ListViewItemContextButton2": "Restore Selected Plugins",
+    "ListViewItemContextButton3": "Enable Selected Plugins",
+    "ListViewItemContextButton4": "Disable Selected Plugins",
+    "ListViewItemContextButton5": "Update Selected Plugins",
+    "ListViewItemContextButton6": "Open Current Plugin Folder",
+    "ListViewItemContextButton7": "Open Collapse Launcher Plugin Folder",
+    "ListViewItemContextButton8": "Update Current Plugin",
+
+    "ListViewItemContentButton1": "Uninstall Plugin",
+    "ListViewItemContentButton2": "Restore Plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Check Update Only",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Check and Download Update",
+    "ListViewItemContextButtonDownloadUpdate": "Download Update",
+
+    "ListViewItemUpdateStatusAvailable": "Update is Available!",
+    "ListViewItemUpdateStatusAvailableButton": "Update to {0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Updating ({0}%)...",
+    "ListViewItemUpdateStatusCompleted": "Your plugin has been updated to {0}. Please restart your launcher to apply the update!",
+    "ListViewItemUpdateStatusChecking": "Checking for Update...",
+    "ListViewItemUpdateStatusUpToDate": "Plugin is Up-to-date!",
+
+    "ListViewFooterWarning1": "You need to restart your launcher in order to apply the changes!",
+    "ListViewFooterRestartButton": "Restart the Launcher",
+
+    "RightPanelImportTitle1": "Drag the",
+    "RightPanelImportTitle2": "or",
+    "RightPanelImportTitle3": "here",
+    "RightPanelImportTitle4": "or click this box to import the plugin"
   },
 
   "_Misc": {
@@ -741,6 +805,7 @@
     "EverythingIsOkay": "All OK!",
     "Cancel": "Cancel",
     "Close": "Close",
+    "CloseOverlay": "Close Overlay",
     "UseCurrentDir": "Use current directory",
     "UseDefaultDir": "Use default directory",
     "MoveToDifferentDir": "Move to different directory",
@@ -817,7 +882,6 @@
     "CDNDescription_Cloudflare": "A mirror of the official (main) repository powered by Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository powered by Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository powered by GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository powered by Coding.",
     "CDNDescription_CNB": "A mirror of the official (main) repository powered by CNB.",
 
     "LocateExecutable": "Locate Executable",
@@ -1119,7 +1183,27 @@
     "UserFeedback_SubmitBtn": "Submit your feedback",
     "UserFeedback_SubmitBtn_Processing": "Processing...",
     "UserFeedback_SubmitBtn_Completed": "Completed!",
-    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!"
+    "UserFeedback_SubmitBtn_Cancelled": "Cancelled!",
+
+    "PluginManagerUpdateAvailableTitle": "You have {0} plugin(s) ready to be updated!",
+    "PluginManagerUpdateAvailableSubtitle1": "There are {0} plugin(s) update available. The launcher is required to be restarted in order to apply update to these plugins:",
+    "PluginManagerUpdateAvailableSubtitle2": "Do you wish to restart the launcher?",
+    "PluginManagerUpdateAvailableCancelBtn": "Later",
+    "PluginManagerUpdateAvailableConfirmBtn": "Restart Now!",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Go to {0}",
+
+    "LauncherRestartTitle": "Restarting Collapse Launcher",
+    "LauncherRestartSubtitle1": "You're about to restart the launcher. Make sure to close or cancel any background activity before restarting your launcher.",
+    "LauncherRestartSubtitle2": "Are you sure to restart the launcher?",
+
+    "PostInstallBehaviour_Title": "Post Install/Update Behaviour",
+    "PostInstallBehaviour_Subtitle": "Behaviour after successful install/update",
+    "PostInstallBehaviour_Subtitle2": "Timeout before restart/shutdown",
+    "PostInstallBehaviour_EnumNothing": "Do Nothing",
+    "PostInstallBehaviour_EnumStartGame": "Start Game",
+    "PostInstallBehaviour_EnumHibernate": "Hibernate",
+    "PostInstallBehaviour_EnumRestart": "Restart Computer",
+    "PostInstallBehaviour_EnumShutdown": "Shutdown Computer"
   },
 
   "_FileMigrationProcess": {
@@ -1359,7 +1443,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Character Shadow in Map Exploration",
     "Graphics_HalfResTransparent": "Half Resolution Transparency",
-    
+
     "Graphics_DLSS_UHP": "Ultra Performance",
     "Graphics_DLSS_Perf": "Performance",
     "Graphics_DLSS_Balanced": "Balanced",

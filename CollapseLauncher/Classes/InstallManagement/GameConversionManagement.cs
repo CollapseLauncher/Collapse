@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
+using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.Preset;
@@ -168,7 +170,7 @@ namespace CollapseLauncher
             _convertStatus = Lang._InstallConvert.Step3Title2;
             foreach (FileProperties entry in fileManifest)
             {
-                var               outputPath = Path.Combine(gamePath, entry.FileName);
+                var outputPath = Path.Combine(gamePath, entry.FileName);
                 _convertDetail =
                     $"{Lang._Misc.CheckingFile}: {string.Format(Lang._Misc.PerFromTo, entry.FileName, entry.FileSizeStr)}";
                 UpdateProgress(curRead, totalSize, 1, 1, _convertSw.Elapsed, _convertStatus, _convertDetail);
@@ -176,9 +178,10 @@ namespace CollapseLauncher
                 {
                     await using FileStream fs = new FileStream(outputPath, FileMode.Open, FileAccess.Read);
                     byte[] hashBytes = entry.CurrCRC.Length > 8 ?
-                        await Hash.GetCryptoHashAsync<MD5>(fs, null, null, _token) :
-                        await Hash.GetHashAsync<Crc32>(fs, null, _token);
-                    var               localHash = Convert.ToHexStringLower(hashBytes);
+                        await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(fs, token: _token) :
+                        await HashUtility<Crc32>.ThreadSafe.GetHashFromStreamAsync(fs, token: _token);
+
+                    var localHash = HexTool.BytesToHexUnsafe(hashBytes);
 
                     _token.ThrowIfCancellationRequested();
                     if (localHash != entry.CurrCRC)
