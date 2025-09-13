@@ -101,9 +101,9 @@
       },
       "Markdig.Signed": {
         "type": "Direct",
-        "requested": "[0.41.3, )",
-        "resolved": "0.41.3",
-        "contentHash": "BB+2H62tQNcLU4depukiuok96UMqV4zOAtSGPM4UiO1OKbgEnpmIscHVJ4qir1LWjWzODLugfD8qs2RWxmA9JA=="
+        "requested": "[0.42.0, )",
+        "resolved": "0.42.0",
+        "contentHash": "3jWKp1NO5Rlk2NrS6iBZvZ0iEysZ1rmyPSWYyLoorynRM0Euw7XBEE9cGHkI+5yds8KhitiSI+W0CLHnTrSW0Q=="
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Direct",
@@ -308,8 +308,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.32.0",
-        "contentHash": "fsKxV5bhcvXmZi+cUo5+IxzRMBHwHeFO8G5utNa9f+Mu37kmfy8JcUVvWPt4cX7EuQWAjjHUjZqVl7nGSTRHRg=="
+        "resolved": "3.32.1",
+        "contentHash": "HbFFRNU46e1E+qhGvwCDAO2EZ80WADqlkNqlOBYvGi7SNxwMPkTrReZgCg9/TrXwLO/n0za+AIiT2IplzqrjZw=="
       },
       "Hi3Helper.ZstdNet": {
         "type": "Transitive",
@@ -440,8 +440,8 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "5.14.1",
-        "contentHash": "hB1zDDOAwk9lIDOR5sLS6fNiNDKgFpn/QA9kJyj0p84I38NCn7CDkdDikaDynb1WcYCH2a5c6Ab2/GRVeTuysw=="
+        "resolved": "5.15.0",
+        "contentHash": "JWJxQHYx6JadoQwyoPg/vNgfWJRIN+EaRpko9va5hDQ8QdkXnxz5CINnL/us8JLC5s7JHIFFfk6nDEGCCC6noQ=="
       },
       "SharpHDiffPatch.Core": {
         "type": "Transitive",
@@ -531,13 +531,13 @@
           "Hi3Helper.EncTool": "[1.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "Microsoft.Windows.CsWinRT": "[2.3.0-prerelease.250720.1, )",
-          "Sentry": "[5.14.1, )"
+          "Sentry": "[5.15.0, )"
         }
       },
       "hi3helper.enctool": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.32.0, )",
+          "Google.Protobuf": "[3.32.1, )",
           "Hi3Helper.Http": "[2.0.0, )",
           "Hi3Helper.Win32": "[1.0.0, )",
           "System.IO.Hashing": "[9.0.9, )"
@@ -550,13 +550,13 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.9, )",
-          "Microsoft.NET.ILLink.Tasks": "[9.0.8, )"
+          "Microsoft.NET.ILLink.Tasks": "[9.0.9, )"
         }
       },
       "hi3helper.sophon": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "[3.32.0, )",
+          "Google.Protobuf": "[3.32.1, )",
           "Hi3Helper.ZstdNet": "[*, )",
           "SharpHDiffPatch.Core": "[*, )",
           "System.IO.Hashing": "[*, )"
