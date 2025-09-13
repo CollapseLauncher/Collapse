@@ -5,10 +5,8 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -36,8 +34,11 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class ColorPaletteUtility
     {
-        internal static async Task ApplyAccentColor<T>(T    page, IRandomAccessStream stream, string filePath,
-                                                       bool isImageLoadForFirstTime, bool isContinuousGeneration)
+        internal static async Task ApplyAccentColor<T>(T                   page,
+                                                       IRandomAccessStream stream,
+                                                       string              filePath,
+                                                       bool                isImageLoadForFirstTime,
+                                                       bool                isContinuousGeneration)
             where T : FrameworkElement
         {
             using Bitmap bitmapAccentColor = await Task.Run(() => ImageLoaderHelper.Stream2Bitmap(stream));
@@ -65,7 +66,10 @@ namespace CollapseLauncher.Helper.Background
                     Channel = bitmapChannelCount
                 };
 
-                await ApplyAccentColor(page, bitmapInputStruct, filePath, isImageLoadForFirstTime,
+                await ApplyAccentColor(page,
+                                       bitmapInputStruct,
+                                       filePath,
+                                       isImageLoadForFirstTime,
                                        isContinuousGeneration);
             }
             finally
@@ -77,9 +81,11 @@ namespace CollapseLauncher.Helper.Background
             }
         }
 
-        internal static async Task ApplyAccentColor<T>(T    page, BitmapInputStruct bitmapInput, string bitmapPath,
-                                                       bool forceCreateNewCache    = false,
-                                                       bool isContinuousGeneration = false)
+        internal static async Task ApplyAccentColor<T>(T                 page,
+                                                       BitmapInputStruct bitmapInput,
+                                                       string            bitmapPath,
+                                                       bool              forceCreateNewCache    = false,
+                                                       bool              isContinuousGeneration = false)
             where T : FrameworkElement
         {
             bool isLight = InnerLauncherConfig.IsAppThemeLight;
