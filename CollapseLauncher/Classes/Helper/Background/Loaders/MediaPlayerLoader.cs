@@ -427,15 +427,15 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void Undimm() => BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(false));
 
-        private async Task ToggleImageVisibility(bool hideImage)
+        private Task ToggleImageVisibility(bool hideImage)
         {
-            if (IsBackgroundDimm == hideImage) return;
+            if (IsBackgroundDimm == hideImage) return Task.CompletedTask;
             IsBackgroundDimm = hideImage;
 
             TimeSpan duration = TimeSpan.FromSeconds(hideImage
                                                          ? BackgroundMediaUtility.TransitionDuration
                                                          : BackgroundMediaUtility.TransitionDurationSlow);
-            await Task.WhenAll(
+            return Task.WhenAll(
                 AcrylicMask.StartAnimation(
                     duration,
                     CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity",
@@ -453,9 +453,9 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void Show(bool isForceShow = false) => BackgroundMediaUtility.RunQueuedTask(ShowInner());
 
-        private async Task ShowInner()
+        private Task ShowInner()
         {
-            if (_currentMediaPlayerFrameParentGrid.Opacity > 0f) return;
+            if (_currentMediaPlayerFrameParentGrid.Opacity > 0f) return Task.CompletedTask;
 
             if (!IsUseVideoBgDynamicColorUpdate)
             {
@@ -463,7 +463,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
             TimeSpan duration = TimeSpan.FromSeconds(BackgroundMediaUtility.TransitionDuration);
 
-            await _currentMediaPlayerFrameParentGrid
+            return _currentMediaPlayerFrameParentGrid
                .StartAnimation(duration,
                                CurrentCompositor
                                   .CreateScalarKeyFrameAnimation("Opacity", 1f, 0f)

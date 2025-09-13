@@ -271,7 +271,7 @@ namespace CollapseLauncher
                                                                             IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
                                                                            );
 
-                await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+                _ = Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
                 WindowUtility.SetWindowBackdrop(WindowBackdropKind.None);
 
                 _isForceDisableIntro           = true;
@@ -312,7 +312,7 @@ namespace CollapseLauncher
                     IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
                     );
 
-                await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+                _ = Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
             }
             else
             {
