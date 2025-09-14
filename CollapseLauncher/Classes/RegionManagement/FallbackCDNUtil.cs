@@ -327,14 +327,16 @@ namespace CollapseLauncher
         {
             try
             {
-                // Get the URL Status then return boolean and URLStatus
-                CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(cdnProp, relativeURL, token, isForceUncompressRequest);
+                HttpClient clientToUse = isForceUncompressRequest
+                    ? _clientNoCompression
+                    : _client;
 
-                // If URL status is false, then return null
-                if (urlStatus.IsInitializationError || !urlStatus.IsSuccessStatusCode) return null;
+                CDNCacheResult result = await clientToUse
+                   .TryGetCachedStreamFrom(cdnProp.URLPrefix.CombineURLFromString(relativeURL),
+                                           HttpMethod.Get,
+                                           token);
 
-                // Continue to get the content and return the stream if successful
-                return await GetHttpStreamFromResponse(urlStatus.Message, token);
+                return result.Stream;
             }
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
