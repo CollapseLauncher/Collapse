@@ -960,7 +960,13 @@ namespace CollapseLauncher.InstallManager.Base
             FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly();
 
             return asset.WriteToStreamAsync(client,
-                                            () => existingFileInfo.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite),
+                                            assetSize => existingFileInfo.Open(new FileStreamOptions
+                                            {
+                                                Mode       = FileMode.OpenOrCreate,
+                                                Access     = FileAccess.ReadWrite,
+                                                Share      = FileShare.ReadWrite,
+                                                BufferSize = assetSize.GetFileStreamBufferSize()
+                                            }),
                                             parallelOptions,
                                             UpdateSophonFileTotalProgress,
                                             UpdateSophonFileDownloadProgress,
@@ -1002,10 +1008,12 @@ namespace CollapseLauncher.InstallManager.Base
                 sophonFileInfo.Delete();
             }
 
-            return asset.WriteToStreamAsync(
-                                            client,
-                                            () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                                                                 FileShare.ReadWrite),
+            return asset.WriteToStreamAsync(client,
+                                            assetSize => new FileStream(filePath,
+                                                                        FileMode.OpenOrCreate,
+                                                                        FileAccess.ReadWrite,
+                                                                        FileShare.ReadWrite,
+                                                                        assetSize.GetFileStreamBufferSize()),
                                             parallelOptions,
                                             UpdateSophonFileTotalProgress,
                                             UpdateSophonFileDownloadProgress,
