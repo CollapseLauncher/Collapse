@@ -263,15 +263,9 @@ namespace CollapseLauncher.GameManagement.Versioning
         {
             try
             {
-                ReadOnlySpan<char> pathRoot = Path.GetPathRoot(path);
-                if (pathRoot.IsEmpty)
-                {
-                    return false;
-                }
-
-                string pathRootStr = pathRoot.ToString();
-                // Return from Directory.Exists() since the IsReady property use the same method.
-                return Directory.Exists(pathRootStr);
+                var pathRoot = Path.GetPathRoot(path);
+                return !string.IsNullOrEmpty(pathRoot) && Directory.Exists(pathRoot);
+                       // Return from Directory.Exists() since the IsReady property use the same method.
             }
             catch (Exception)
             {
