@@ -50,7 +50,7 @@ jobs:
           echo "SIGNING_POLICY_SLUG=release-signing" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         } elseif ($branch -eq "github-signpath-test") {
           echo "CONFIGURATION_STRATEGY=Debug" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PUBLISH_PROFILE=${{ env.BUILD_PROFILE_DEBUG }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PUBLISH_PROFILE=${{ env.BUILD_PROFILE_PREVIEW }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "SIGNING_POLICY_SLUG=test-signing-ci" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         } else {
           Write-Error "Unknown branch or input: $branch"
