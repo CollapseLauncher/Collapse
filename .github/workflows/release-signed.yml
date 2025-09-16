@@ -206,7 +206,7 @@ jobs:
       run: |
             $exePath = "${{ runner.temp }}\SignedArtifact\BuildArtifact-${{ env.VERSION }}\CollapseLauncher.exe"
             if (Test-Path $exePath) {
-                $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($exePath).ProductVersion
+                $version = "CollapseLauncher@" + ([System.Diagnostics.FileVersionInfo]::GetVersionInfo("./CollapseLauncher.exe").ProductVersion)
                 if ($version) {
                     sentry-cli releases new --org collapse --project collapse-launcher $version
                     sentry-cli releases set-commits --auto $version
