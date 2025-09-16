@@ -145,6 +145,7 @@ namespace CollapseLauncher
         {
             var oInput = new Option<string>("--input-path")
             {
+                Aliases = { "--input", "-i" },
                 Description = "Output path for the output file",
                 Required    = true
             };

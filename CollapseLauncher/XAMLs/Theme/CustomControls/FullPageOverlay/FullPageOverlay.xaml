@@ -1,0 +1,313 @@
+﻿<!--  ReSharper disable UnusedMember.Local  -->
+<!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Default">
+            <SolidColorBrush x:Key="SmokeBackgroundBrush"
+                             Color="{ThemeResource SmokeFillColorDefault}" />
+            <AcrylicBrush x:Key="ContentBackgroundAcrylicBrush"
+                          FallbackColor="#F0222222"
+                          TintColor="{ThemeResource SmokeFillColorDefault}"
+                          TintLuminosityOpacity="0"
+                          TintOpacity="1" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="SmokeBackgroundBrush"
+                             Opacity="1"
+                             Color="{ThemeResource CardBackgroundFillColorSecondary}" />
+            <AcrylicBrush x:Key="ContentBackgroundAcrylicBrush"
+                          FallbackColor="#F0FFFFFF"
+                          TintColor="{ThemeResource ControlFillColorDefault}"
+                          TintLuminosityOpacity="0.8"
+                          TintOpacity="0.0" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <StaticResource x:Key="BackgroundBrush"
+                    ResourceKey="CardBackgroundFillColorDefaultBrush" />
+    <StaticResource x:Key="StrokeColorBrush"
+                    ResourceKey="CardStrokeColorDefaultBrush" />
+    <StaticResource x:Key="ContentDialogSmokeFill"
+                    ResourceKey="SmokeFillColorCollapseBrush" />
+
+    <ThemeShadow x:Key="SharedShadow" />
+
+    <Style TargetType="controls:FullPageOverlay">
+        <Setter Property="Size" Value="Full" />
+        <Setter Property="Background" Value="{StaticResource SmokeBackgroundBrush}" />
+        <Setter Property="ContentBackground" Value="{StaticResource ContentBackgroundAcrylicBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:FullPageOverlay">
+                    <Border x:Name="Container">
+
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="OverlayShowingStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition To="OverlayHidden">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                           Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0"
+                                                                        Value="Visible" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                           Storyboard.TargetProperty="IsHitTestVisible">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0"
+                                                                        Value="False" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                           Storyboard.TargetProperty="ScaleX">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="1.0" />
+                                                <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                      KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                      Value="1.05" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                           Storyboard.TargetProperty="ScaleY">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="1.0" />
+                                                <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                      KeyTime="{StaticResource ControlFastAnimationDuration}"
+                                                                      Value="1.05" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="1.0" />
+                                                <LinearDoubleKeyFrame KeyTime="{StaticResource ControlFasterAnimationDuration}"
+                                                                      Value="0.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CloseButtonGrid"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="1.0" />
+                                                <LinearDoubleKeyFrame KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                                      Value="0.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CloseButtonTranslateTransform"
+                                                                           Storyboard.TargetProperty="X">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="0" />
+                                                <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                      KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                                      Value="32" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualTransition>
+                                    <VisualTransition To="OverlayShowing">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                           Storyboard.TargetProperty="Visibility">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0"
+                                                                        Value="Visible" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                           Storyboard.TargetProperty="ScaleX">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="1.05" />
+                                                <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                      KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                                      Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ScaleTransform"
+                                                                           Storyboard.TargetProperty="ScaleY">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="1.05" />
+                                                <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                      KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                                      Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="0.0" />
+                                                <LinearDoubleKeyFrame KeyTime="{StaticResource ControlFasterAnimationDuration}"
+                                                                      Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CloseButtonGrid"
+                                                                           Storyboard.TargetProperty="Opacity">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="0.0" />
+                                                <LinearDoubleKeyFrame KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                                      Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CloseButtonTranslateTransform"
+                                                                           Storyboard.TargetProperty="X">
+                                                <DiscreteDoubleKeyFrame KeyTime="0:0:0"
+                                                                        Value="32" />
+                                                <SplineDoubleKeyFrame KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                                      KeyTime="{StaticResource ControlNormalAnimationDuration}"
+                                                                      Value="0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualTransition>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="OverlayHidden" />
+                                <VisualState x:Name="OverlayShowing">
+                                    <VisualState.Setters>
+                                        <Setter Target="LayoutRoot.Visibility" Value="Visible" />
+                                        <Setter Target="Presenter.TabFocusNavigation" Value="Cycle" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="OverlaySizeStates">
+                                <!--  Size-specific states  -->
+                                <VisualState x:Name="OverlaySizeFull">
+                                    <VisualState.Setters>
+                                        <Setter Target="SmokeLayerBackground.Visibility" Value="Visible" />
+                                        <Setter Target="PresenterContainer.HorizontalAlignment" Value="Stretch" />
+                                        <Setter Target="PresenterContainer.VerticalAlignment" Value="Stretch" />
+                                        <Setter Target="Presenter.Margin" Value="16, 64, 16, 16" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="OverlaySizeFullNoGap">
+                                    <VisualState.Setters>
+                                        <Setter Target="SmokeLayerBackground.Visibility" Value="Collapsed" />
+                                        <Setter Target="PresenterContainer.HorizontalAlignment" Value="Stretch" />
+                                        <Setter Target="PresenterContainer.VerticalAlignment" Value="Stretch" />
+                                        <Setter Target="Presenter.Margin" Value="0" />
+                                        <Setter Target="OverlayTitleGrid.Margin" Value="16" />
+                                        <Setter Target="CloseButtonGrid.Margin" Value="16" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="OverlaySizeFollowContent">
+                                    <VisualState.Setters>
+                                        <Setter Target="SmokeLayerBackground.Visibility" Value="Visible" />
+                                        <Setter Target="PresenterContainer.HorizontalAlignment" Value="Center" />
+                                        <Setter Target="PresenterContainer.VerticalAlignment" Value="Center" />
+                                        <Setter Target="Presenter.Margin" Value="16, 64, 16, 16" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid x:Name="LayoutRoot">
+                            <Rectangle x:Name="SmokeLayerBackground"
+                                       Fill="{TemplateBinding Background}" />
+
+                            <Grid x:Name="PresenterContainer"
+                                  RenderTransformOrigin="0.5,0.5">
+                                <Grid.RenderTransform>
+                                    <ScaleTransform x:Name="ScaleTransform" />
+                                </Grid.RenderTransform>
+
+                                <ContentPresenter x:Name="Presenter"
+                                                  Background="{TemplateBinding ContentBackground}"
+                                                  Content="{TemplateBinding Content}"
+                                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                                  Shadow="{StaticResource SharedShadow}"
+                                                  Translation="0,0,64" />
+
+                                <Grid x:Name="OverlayTitleGrid"
+                                      Margin="16,16,16,0"
+                                      Padding="12,8"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Top"
+                                      Background="{ThemeResource AccentAAFillColorDefaultBrush}"
+                                      ColumnSpacing="8"
+                                      CornerRadius="8"
+                                      Shadow="{ThemeResource SharedShadow}"
+                                      Translation="0,0,32">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0"
+                                          MaxWidth="24"
+                                          MaxHeight="24"
+                                          CornerRadius="4">
+                                        <IconSourceElement HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Foreground="{ThemeResource TextFillColorInverseBrush}"
+                                                           IconSource="{TemplateBinding OverlayTitleIcon}" />
+                                    </Grid>
+                                    <TextBlock Grid.Column="1"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Center"
+                                               FontSize="14"
+                                               Foreground="{ThemeResource TextFillColorInverseBrush}"
+                                               Text="{TemplateBinding OverlayTitle}" />
+                                </Grid>
+                                <Grid x:Name="CloseButtonGrid"
+                                      Margin="16,16,16,0"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Top"
+                                      Background="{ThemeResource WindowCaptionBackgroundAcrylicLight}"
+                                      CornerRadius="8"
+                                      Shadow="{ThemeResource SharedShadow}"
+                                      Translation="0,0,32"
+                                      Visibility="{TemplateBinding CloseButtonVisibility}">
+                                    <Grid.RenderTransform>
+                                        <TranslateTransform x:Name="CloseButtonTranslateTransform" />
+                                    </Grid.RenderTransform>
+                                    <Button x:Name="CloseButton"
+                                            Height="36"
+                                            Style="{ThemeResource WindowCaptionButton}">
+                                        <Grid ColumnSpacing="8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0"
+                                                       Margin="0,0,0,1"
+                                                       VerticalAlignment="Center"
+                                                       FontWeight="Bold"
+                                                       Text="Close Overlay" />
+                                            <Path Grid.Column="1"
+                                                  Width="10"
+                                                  Height="10"
+                                                  VerticalAlignment="Center"
+                                                  Data="M 0 0 L 10 10 M 10 0 L 0 10"
+                                                  Stretch="Fill"
+                                                  Stroke="{ThemeResource ButtonForegroundThemeBrush}"
+                                                  StrokeEndLineCap="Round"
+                                                  StrokeStartLineCap="Round"
+                                                  StrokeThickness="2"
+                                                  UseLayoutRounding="True" />
+                                        </Grid>
+                                        <Button.Resources>
+                                            <ResourceDictionary>
+                                                <ResourceDictionary.ThemeDictionaries>
+                                                    <!--  ReSharper disable Xaml.StaticResourceNotResolved  -->
+                                                    <ResourceDictionary x:Key="Light">
+                                                        <StaticResource x:Key="WindowCaptionBackground"
+                                                                        ResourceKey="WindowCaptionBackgroundClosePressed" />
+                                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                                                        ResourceKey="WindowCaptionBackgroundClosePointerOver" />
+                                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
+                                                                        ResourceKey="WindowCaptionBackgroundClosePressed" />
+                                                        <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
+                                                                        ResourceKey="CloseButtonStrokePointerOver" />
+                                                        <StaticResource x:Key="WindowCaptionButtonStrokePressed"
+                                                                        ResourceKey="CloseButtonStrokePressed" />
+                                                    </ResourceDictionary>
+                                                    <ResourceDictionary x:Key="Default">
+                                                        <StaticResource x:Key="WindowCaptionBackground"
+                                                                        ResourceKey="WindowCaptionBackgroundClosePressed" />
+                                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPointerOver"
+                                                                        ResourceKey="WindowCaptionBackgroundClosePointerOver" />
+                                                        <StaticResource x:Key="WindowCaptionButtonBackgroundPressed"
+                                                                        ResourceKey="WindowCaptionBackgroundClosePressed" />
+                                                        <StaticResource x:Key="WindowCaptionButtonStrokePointerOver"
+                                                                        ResourceKey="CloseButtonStrokePointerOver" />
+                                                        <StaticResource x:Key="WindowCaptionButtonStrokePressed"
+                                                                        ResourceKey="CloseButtonStrokePressed" />
+                                                    </ResourceDictionary>
+                                                    <!--  ReSharper restore Xaml.StaticResourceNotResolved  -->
+                                                </ResourceDictionary.ThemeDictionaries>
+                                            </ResourceDictionary>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

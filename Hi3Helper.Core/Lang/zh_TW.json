@@ -674,7 +674,6 @@
     "CDNDescription_Cloudflare": "在 Cloudflare R2 Bucket 上托管的官方（主要）儲存庫的鏡像。",
     "CDNDescription_Bitbucket": "在 Bitbucket 上托管的官方（主要）儲存庫的鏡像。",
     "CDNDescription_GitLab": "託管在 GitLab 的官方（主）倉庫鏡像。",
-    "CDNDescription_Coding": "託管在 Coding 的官方（主）倉庫鏡像。",
 
     "LocateExecutable": "定位執行檔",
     "OpenDownloadPage": "開啟下載頁面",

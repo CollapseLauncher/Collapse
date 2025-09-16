@@ -82,21 +82,23 @@
             </Grid.ColumnDefinitions>
             <Grid x:Name="GridBG_IconGrid"
                   Grid.Column="0"
-                  Grid.ColumnSpan="2" />
+                  Grid.ColumnSpan="2"
+                  x:FieldModifier="internal" />
             <Grid x:Name="TitleBarDrag1"
                   Grid.Column="1"
                   Grid.ColumnSpan="2" />
             <Grid x:Name="TitleBarDrag2"
                   Grid.Column="4"
                   Grid.ColumnSpan="2" />
-            <Grid Name="GridBG_RegionGrid"
+            <Grid x:Name="GridBG_RegionGrid"
                   Grid.Column="2"
                   Grid.ColumnSpan="3"
                   Height="47"
                   Margin="0,1,0,0"
                   HorizontalAlignment="Center"
-                  VerticalAlignment="Center">
-                <StackPanel Name="GridBG_RegionInner"
+                  VerticalAlignment="Center"
+                  x:FieldModifier="internal">
+                <StackPanel x:Name="GridBG_RegionInner"
                             Grid.Column="0"
                             Margin="0,0"
                             VerticalAlignment="Center"
@@ -303,13 +305,14 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid Name="GridBG_NotifBtn"
+            <Grid x:Name="GridBG_NotifBtn"
                   Grid.Column="6"
                   Width="32"
                   Height="32"
                   Margin="0,1,0,0"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Stretch"
+                  x:FieldModifier="internal"
                   CornerRadius="0,0,0,0">
                 <ToggleButton x:Name="ToggleNotificationPanelBtn"
                               Padding="0"
@@ -330,7 +333,7 @@
                            Visibility="Collapsed"
                            Value="0" />
             </Grid>
-            <Grid Name="GridBG_WindowBtn"
+            <Grid x:Name="GridBG_WindowBtn"
                   Grid.Column="7"
                   Height="31"
                   HorizontalAlignment="Stretch"

@@ -73,10 +73,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         protected override Task LoadLauncherGameResource(ActionOnTimeOutRetry? onTimeoutRoutine, CancellationToken token)
         {
             ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherResources?> hypResourceResponseCallback =
-                innerToken => ApiGeneralHttpClient.GetFromCachedJsonAsync(PresetConfig?.LauncherResourceURL,
-                                                                          HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
-                                                                          token: innerToken)
-                                                  .ConfigureAwait(false);
+                innerToken => ApiGeneralHttpClient
+                             .GetFromCachedJsonAsync(PresetConfig?.LauncherResourceURL,
+                                                     HoYoPlayLauncherResourcesJsonContext.Default.HoYoPlayLauncherResources,
+                                                     token: innerToken)
+                             .ConfigureAwait(false);
 
             // Assign as 3 Task array
             Task[] tasks = [
@@ -95,8 +96,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                    ExecutionTimeoutStep,
                                    ExecutionTimeoutAttempt,
                                    onTimeoutRoutine,
-                                   token)
-                .ContinueWith(async result => hypResourceResponse = await result, token);
+                                   result => hypResourceResponse = result,
+                                   token);
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherPluginURL) && (PresetConfig.IsPluginUpdateEnabled ?? false))
             {
@@ -112,8 +113,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                        ExecutionTimeoutStep,
                                        ExecutionTimeoutAttempt,
                                        onTimeoutRoutine,
-                                       token)
-                    .ContinueWith(async result => hypPluginResource = await result, token);
+                                       result => hypPluginResource = result,
+                                       token);
             }
 
             if (!string.IsNullOrEmpty(PresetConfig?.LauncherGameChannelSDKURL))
@@ -126,12 +127,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                  .ConfigureAwait(false);
 
                 tasks[2] = hypSdkResourceCallback
-                    .WaitForRetryAsync(ExecutionTimeout,
-                                       ExecutionTimeoutStep,
-                                       ExecutionTimeoutAttempt,
-                                       onTimeoutRoutine,
-                                       token)
-                    .ContinueWith(async result => hypSdkResource = await result, token);
+                   .WaitForRetryAsync(ExecutionTimeout,
+                                      ExecutionTimeoutStep,
+                                      ExecutionTimeoutAttempt,
+                                      onTimeoutRoutine,
+                                      result => hypSdkResource = result,
+                                      token);
             }
 
             RegionResourceLatest sophonResourceCurrentPackage = new RegionResourceLatest();
@@ -146,10 +147,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             };
 
             // Await all callbacks
-            return Task.WhenAll(tasks)
-                .ContinueWith(AfterExecute, token);
+            Task waitAllTask = Task.WhenAll(tasks);
+            waitAllTask.GetAwaiter().OnCompleted(AfterExecute);
 
-            void AfterExecute(Task action)
+            return waitAllTask;
+
+            void AfterExecute()
             {
                 ConvertPluginResources(ref sophonResourceData, hypPluginResource);
                 ConvertSdkResources(ref sophonResourceData, hypSdkResource);
@@ -393,17 +396,21 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherNews?> hypLauncherBackgroundCallback =
                 innerToken =>
-                    ApiResourceHttpClient.GetFromJsonAsync(launcherSpriteUrl,
-                                                           HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
-                                                           innerToken)
-                                         .ConfigureAwait(false);
+                    ApiResourceHttpClient
+                       .GetFromCachedJsonAsync(launcherSpriteUrl,
+                                               HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
+                                               null,
+                                               innerToken)
+                       .ConfigureAwait(false);
 
             ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherNews?> hypLauncherNewsCallback =
                 innerToken =>
-                    ApiResourceHttpClient.GetFromJsonAsync(launcherNewsUrl,
-                                                           HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
-                                                           innerToken)
-                                         .ConfigureAwait(false);
+                    ApiResourceHttpClient
+                       .GetFromCachedJsonAsync(launcherNewsUrl,
+                                               HoYoPlayLauncherNewsJsonContext.Default.HoYoPlayLauncherNews,
+                                               null,
+                                               innerToken)
+                       .ConfigureAwait(false);
 
             HoYoPlayLauncherNews? hypLauncherBackground = null;
             HoYoPlayLauncherNews? hypLauncherNews = null;
@@ -415,26 +422,24 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                        ExecutionTimeoutStep,
                                        ExecutionTimeoutAttempt,
                                        onTimeoutRoutine,
-                                       token)
-                    .ContinueWith(async result => hypLauncherBackground = await result, token),
+                                       result => hypLauncherBackground = result,
+                                       token),
                 hypLauncherNewsCallback
                     .WaitForRetryAsync(ExecutionTimeout,
                                        ExecutionTimeoutStep,
                                        ExecutionTimeoutAttempt,
                                        onTimeoutRoutine,
+                                       result => hypLauncherNews = result,
                                        token)
-                    .ContinueWith(async result => hypLauncherNews = await result, token)
                 ];
 
             // Await the result
-            return Task.WhenAll(tasks)
-                .ContinueWith(AfterExecute, token);
+            Task waitAllTask = Task.WhenAll(tasks);
+            waitAllTask.GetAwaiter().OnCompleted(AfterExecute);
+            return waitAllTask;
 
-            async Task AfterExecute(Task action)
+            void AfterExecute()
             {
-                // Run action
-                await action.ConfigureAwait(false);
-
                 // Merge background image
                 if (hypLauncherBackground?.Data?.GameInfoList != null && hypLauncherNews?.Data != null)
                     hypLauncherNews.Data.GameInfoList = hypLauncherBackground.Data?.GameInfoList;
@@ -561,29 +566,30 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
             ActionTimeoutTaskAwaitableCallback<HoYoPlayLauncherGameInfo?> hypLauncherGameInfoCallback =
                 innerToken =>
-                    ApiResourceHttpClient.GetFromJsonAsync(launcherGameInfoUrl,
-                                                           HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
-                                                           innerToken)
-                                         .ConfigureAwait(false);
+                    ApiResourceHttpClient
+                       .GetFromCachedJsonAsync(launcherGameInfoUrl,
+                                               HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
+                                               null,
+                                               innerToken)
+                       .ConfigureAwait(false);
 
             return hypLauncherGameInfoCallback
                   .WaitForRetryAsync(ExecutionTimeout,
                                      ExecutionTimeoutStep,
                                      ExecutionTimeoutAttempt,
                                      onTimeoutRoutine,
-                                     token)
-                  .ContinueWith(async action =>
-                                {
-                                    HoYoPlayLauncherGameInfo? hypLauncherGameInfo = await action;
+                                     action =>
+                                     {
+                                         HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
+                                         if (action == null)
+                                         {
+                                             return;
+                                         }
 
-                                    HoYoPlayGameInfoField? sophonLauncherGameInfoRoot = new HoYoPlayGameInfoField();
-                                    if (hypLauncherGameInfo != null)
-                                    {
-                                        ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, hypLauncherGameInfo.GameInfoData);
-
-                                        LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
-                                    }
-                                }, token);
+                                         ConvertGameInfoResources(ref sophonLauncherGameInfoRoot, action.GameInfoData);
+                                         LauncherGameInfoField = sophonLauncherGameInfoRoot ?? new HoYoPlayGameInfoField();
+                                     },
+                                     token);
         }
 
         #region Convert Game Info Resources
@@ -668,19 +674,27 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
         private static string CreateNewDeviceId()
         {
-            // Define the registry key path for cryptography settings
-            const string regKeyCryptography = @"SOFTWARE\Microsoft\Cryptography";
+            string guid;
+            try
+            {
+                // Define the registry key path for cryptography settings
+                const string regKeyCryptography = @"SOFTWARE\Microsoft\Cryptography";
 
-            // Open the registry key for reading
-            using RegistryKey? rootRegistryKey = Registry.LocalMachine.OpenSubKey(regKeyCryptography, true);
-            // Retrieve the MachineGuid value from the registry, or generate a new GUID if it doesn't exist
-            string guid = ((string?)rootRegistryKey?.GetValue("MachineGuid", null) ??
-                Guid.NewGuid().ToString()).Replace("-", string.Empty);
+                // Open the registry key for reading
+                using var rootRegistryKey = Registry.LocalMachine.OpenSubKey(regKeyCryptography, true);
+                // Retrieve the MachineGuid value from the registry, or generate a new GUID if it doesn't exist
+                guid = ((string?)rootRegistryKey?.GetValue("MachineGuid", null) ??
+                               Guid.NewGuid().ToString()).Replace("-", string.Empty);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWriteLine($"[HoYoPlayLauncherApiLoader::CreateNewDeviceId] Failed to retrieve MachineGuid from registry, using a dummy GUID instead" +
+                                    $"\r\n{ex}", LogType.Error, true);
+                guid = Guid.NewGuid().ToString().Replace("-", string.Empty);
+            }
 
             // Append the current Unix timestamp in milliseconds to the GUID
-            string guidWithEpochMs = guid + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            // Return the combined GUID and timestamp
-            return guidWithEpochMs;
+            return guid + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Plugins;
+using Hi3Helper;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.Native.Structs.Dns.RecordDataType;
 using System;
@@ -72,8 +73,29 @@ namespace CollapseLauncher.Helper
         private static readonly ConcurrentDictionary<string, DateTimeOffset> DnsClientResolveTtlCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        internal static bool          IsUseExternalDns => SharedExternalDnsServers is { Length: > 0 };
-        internal static NameServer[]? SharedExternalDnsServers;
+        internal static bool IsUseExternalDns => SharedExternalDnsServers is { Length: > 0 };
+        internal static NameServer[]? SharedExternalDnsServers
+        {
+            get;
+            set
+            {
+                field = value;
+                if (field == null || field.Length == 0)
+                {
+                    foreach (PluginInfo pluginInfo in PluginManager.PluginInstances.Values)
+                    {
+                        pluginInfo.DisableDnsResolver();
+                    }
+                }
+                else
+                {
+                    foreach (PluginInfo pluginInfo in PluginManager.PluginInstances.Values)
+                    {
+                        pluginInfo.EnableDnsResolver();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Supported input format:<br/>
@@ -329,7 +351,6 @@ namespace CollapseLauncher.Helper
             }
 
             Logger.LogWriteLine("[HttpClientBuilder<T>::ParseDnsSettings] No valid IP addresses has been parsed to be used as the DNS query host, the settings will be reverted", LogType.Warning, true);
-            return;
         }
 
         internal static IEnumerable<IPAddress> EnumerateHostAsIp(IEnumerable<string> input)
@@ -357,7 +378,7 @@ namespace CollapseLauncher.Helper
             }
         }
 
-        internal static void UseExternalDns(NameServer[]? nameServers = null) => Interlocked.Exchange(ref SharedExternalDnsServers, nameServers);
+        internal static void UseExternalDns(NameServer[]? nameServers = null) => SharedExternalDnsServers = nameServers;
 
         protected static async ValueTask<Stream> ExternalDnsConnectCallback(
             SocketsHttpConnectionContext context, CancellationToken token)
@@ -625,7 +646,7 @@ namespace CollapseLauncher.Helper
 
             try
             {
-                Enumerate:
+            Enumerate:
                 bool isGetOne = enumeratorOne.MoveNext();
                 bool isGetTwo = enumeratorTwo.MoveNext();
 

@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Background;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
@@ -104,6 +106,16 @@ namespace CollapseLauncher.Pages.OOBE
         {
             if (gamePresetConfig == null) // If config is null, return
                 return (null, null);
+
+            if (gamePresetConfig is PluginPresetConfigWrapper pluginPresetConfig)
+            {
+                pluginPresetConfig.Plugin.GetPluginAppIconUrl(out string? iconUrl);
+                pluginPresetConfig.Plugin.GetNotificationPosterUrl(out string? posterUrl);
+                string? appIconUrl   = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl);
+                string? appPosterUrl = ImageLoaderHelper.CopyToLocalIfBase64(posterUrl);
+
+                return (appIconUrl ?? @"Assets\CollapseLauncherLogoSmall.png", appPosterUrl ?? @"Assets\Images\PageBackground\StartupBackground2.png");
+            }
 
             // Get logo name and poster name
             (string logoName, string posterName) = gamePresetConfig.GameType switch

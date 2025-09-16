@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using Hi3Helper.Plugin.Core.Management;
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace CollapseLauncher.Interfaces
             // If the version override is not null, then assign the override value
             if (IsVersionOverride)
             {
-                GameVersionOverride = new GameVersion(versionOverride);
+                GameVersionOverride = versionOverride;
             }
 
             AssetEntry = [];
@@ -67,7 +68,7 @@ namespace CollapseLauncher.Interfaces
         [field: MaybeNull, AllowNull]
         protected string GameRepoURL
         {
-            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp.data?.game?.latest?.decompressed_path : field;
+            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp?.data?.game?.latest?.decompressed_path : field;
             set;
         }
 

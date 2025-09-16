@@ -43,10 +43,10 @@ namespace Hi3Helper.Shared.Region
             AppConfigProperty.ProfilePath = AppConfigFile;
 
             // Set user permission check to its default and check for the existence of config file.
-            bool IsConfigFileExist = File.Exists(AppConfigProperty.ProfilePath);
+            bool isConfigFileExist = File.Exists(AppConfigProperty.ProfilePath);
 
             // If the config file is exist, then continue to load the file
-            if (IsConfigFileExist)
+            if (isConfigFileExist)
             {
                 LoadAppConfig();
             }
@@ -73,17 +73,17 @@ namespace Hi3Helper.Shared.Region
                 SetAppConfigValue("GameFolder", AppSettingsTemplate["GameFolder"]);
 
                 // Force enable Console Log and return
-                Logger.CurrentLogger = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                Logger.UseConsoleLog(true);
                 Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
                                     LogType.Error, true);
                 return;
             }
 
             // Check if user has permission
-            bool IsUserHasPermission = ConverterTool.IsUserHasPermission(gameFolder);
+            bool isUserHasPermission = ConverterTool.IsUserHasPermission(gameFolder);
 
             // Assign boolean if IsConfigFileExist and IsUserHasPermission.
-            IsFirstInstall = !(IsConfigFileExist && IsUserHasPermission);
+            IsFirstInstall = !(isConfigFileExist && isUserHasPermission);
 
             // Initialize the DownloadClient speed at start.
             // ignored
@@ -212,13 +212,6 @@ namespace Hi3Helper.Shared.Region
 
             new()
             {
-                Name        = "Coding" + $" [{Lang._Misc.Tag_Deprecated}]",
-                URLPrefix   = "https://ohly-generic.pkg.coding.net/collapse/release/",
-                Description = Lang._Misc!.CDNDescription_Coding
-            },
-
-            new()
-            {
                 Name        = "CNB",
                 URLPrefix   = "https://cnb.cool/CollapseLauncher/ReleaseRepo/-/git/raw/main/",
                 Description = Lang._Misc!.CDNDescription_CNB
@@ -246,8 +239,8 @@ namespace Hi3Helper.Shared.Region
         public const long AppDiscordApplicationID_HSR = 1124153902959431780;
         public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
 
-        public static IntPtr AppIconLarge;
-        public static IntPtr AppIconSmall;
+        public static nint AppIconLarge;
+        public static nint AppIconSmall;
 
         public static List<Action> ApplyExternalConfigCallbackList = [];
 
@@ -259,8 +252,9 @@ namespace Hi3Helper.Shared.Region
 
         [field: AllowNull, MaybeNull]
         public static Process AppCurrentProcess           { get => field ??= Process.GetCurrentProcess(); }
-        public static int     AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
-        public static string  AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+        public static int    AppCurrentDownloadThread    => GetAppConfigValue("DownloadThread");
+        public static string AppGameConfigMetadataFolder => Path.Combine(AppGameFolder, "_metadatav3");
+        public static string AppPluginFolder             => Path.Combine(AppGameFolder, "_plugins");
 
 
         [field: AllowNull, MaybeNull]
@@ -528,6 +522,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
+        public static int PostInstallShutdownTimeout
+        {
+            get => GetAppConfigValue("PostInstallShutdownTimeout");
+            set => SetAndSaveConfigValue("PostInstallShutdownTimeout", value);
+        }
+
         public static bool                 ForceInvokeUpdate     = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
@@ -623,12 +623,19 @@ namespace Hi3Helper.Shared.Region
             { "IsUseExternalDns", false },
             { "ExternalDnsAddresses", string.Empty },
 
+            { "PostInstallShutdownTimeout", 60 },
+            
             { "IsCDNCacheEnabled", false },
             { "IsCDNCacheAggressiveModeEnabled", false },
             { "CDNCacheDir", string.Empty },
-            { "CDNCacheExpireTimeMinutes", 10d }
-        };
+            { "CDNCacheExpireTimeMinutes", 10d },
 
+            { "IsEnablePluginAutoUpdate", true },
+
+            // TEMPORARY
+            { "Enable20250827CrisisIntro", true },
+            { "Enable20250827CrisisIntroDialog", true }
+        };
         #endregion
     }
 }

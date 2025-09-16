@@ -3,6 +3,12 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Buffers;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 #if !APPLYUPDATE
 using Hi3Helper.Shared.Region;
@@ -10,282 +16,636 @@ using Hi3Helper.Shared.Region;
 // ReSharper disable StringLiteralTypo
 #endif
 
-namespace Hi3Helper
-{
-    public abstract class LoggerBase
-    {
-        #region Properties
-        private          FileStream    LogStream         { get; set; }
-        private          StreamWriter  LogWriter         { get; set; }
-        private          bool          IsWriterOnDispose { get; set; }
-        private readonly Lock          _lockObject = new();
-        private          StringBuilder StringBuilder { get; }
-        private          string        LogFolder     { get; set; }
-#if !APPLYUPDATE
-        public static string LogPath { get; set; }
-#endif
-        #endregion
-
-        #region Statics
-        public static string GetCurrentTime(string format) => DateTime.Now.ToLocalTime().ToString(format);
-        #endregion
-
-        protected LoggerBase(string logFolder, Encoding logEncoding)
-        {
-            // Initialize the writer and _stringBuilder
-            StringBuilder = new StringBuilder();
-            SetFolderPathAndInitialize(logFolder, logEncoding);
-        }
-
-        #region Methods
-        public void SetFolderPathAndInitialize(string folderPath, Encoding logEncoding)
-        {
-            // Set the folder path of the stored log
-            LogFolder = folderPath;
-
-#if !APPLYUPDATE
-            // Check if the directory exist. If not, then create.
-            if (!string.IsNullOrEmpty(LogFolder) && !Directory.Exists(LogFolder))
-            {
-                Directory.CreateDirectory(LogFolder);
-            }
-#endif
-
-            using (_lockObject.EnterScope())
-            {
-                // Try dispose the _logWriter even though it's not initialized.
-                // This will be used if the program need to change the log folder to another location.
-                DisposeBase();
-
-#if !APPLYUPDATE
-                try
-                {
-                    // Initialize writer and the path of the log file.
-                    InitializeWriter(false, logEncoding);
-                }
-                catch (Exception ex)
-                {
-                    SentryHelper.SentryHelper.ExceptionHandler(ex);
-                    // If the initialization above fails, then use fallback.
-                    InitializeWriter(true, logEncoding);
-                }
-#endif
-            }
-        }
-
 #nullable enable
-        public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
-        {
-            using (_lockObject.EnterScope())
-            {
-                DisposeBase();
+namespace Hi3Helper;
 
-                if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
-                    DeleteLogFilesInner(LogFolder);
+public abstract class LoggerBase : ILog
+{
+    protected const          string   DateTimeFormat = "HH:mm:ss.fff";
+    protected readonly       Encoding Encoding;
+    internal static readonly Lock     LockObject = new();
 
-                if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
-                    Directory.CreateDirectory(reloadToPath);
+    /// <summary>
+    /// NOTE FOR COLLAPSE DEVELOPER:<br/>
+    /// Edit this dictionary to map the color of the log type tag.<br/>
+    /// If the enum isn't defined, then it will use the default (non-colored) tag.
+    /// </summary>
+    private static readonly Dictionary<LogType, string> ConsoleColorMap = new()
+    {
+        { LogType.Info, "\e[32;1m" },
+        { LogType.Warning, "\e[33;1m" },
+        { LogType.Error, "\e[31;1m" },
+        { LogType.Scheme, "\e[34;1m" },
+        { LogType.Game, "\e[35;1m" },
+        { LogType.Debug, "\e[36;1m" },
+        { LogType.GLC, "\e[91;1m" },
+        { LogType.Sentry, "\e[42;1m" }
+    };
 
-                if (!string.IsNullOrEmpty(reloadToPath))
-                    LogFolder = reloadToPath;
+    protected static               ReadOnlySpan<byte> NewLineBytes => "\r\n"u8;
+    private static readonly unsafe byte*              NewLineBytesP    = GetSpanPointer(NewLineBytes);
+    private static readonly        uint               NewLineBytesPLen = (uint)NewLineBytes.Length;
 
-                encoding ??= Encoding.UTF8;
+    protected StreamWriter LogWriterField = StreamWriter.Null;
+    public    StreamWriter LogWriter => LogWriterField;
+    private   string?      LogFolder { get; set; }
 
-                SetFolderPathAndInitialize(LogFolder, encoding);
-            }
-        }
-
-        private void DeleteLogFilesInner(string folderPath)
-        {
-            DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
-            foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("log-*-id*.log", SearchOption.TopDirectoryOnly))
-            {
-                try
-                {
-                    fileInfo.Delete();
-                    LogWriteLine($"Removed log file: {fileInfo.FullName}", LogType.Default);
-                }
-                catch (Exception ex)
-                {
-                    SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
-                    LogWriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
-                }
-            }
-        }
-#nullable restore
-
-        public abstract void LogWriteLine();
-        // ReSharper disable MethodOverloadWithOptionalParameter
-        public abstract void LogWriteLine(string line = null);
-        // ReSharper restore MethodOverloadWithOptionalParameter
-        public abstract void LogWriteLine(string line, LogType type);
-        public abstract void LogWriteLine(string line, LogType type, bool writeToLog);
-        public abstract void LogWrite(string     line, LogType type, bool writeToLog, bool fromStart);
-        public void WriteLog(string line, LogType type)
-        {
-            // Always seek to the end of the file.
-            lock(_lockObject)
-            {
-                try
-                {
-                    if (IsWriterOnDispose) return;
-
-                    LogWriter?.BaseStream.Seek(0, SeekOrigin.End);
-                    LogWriter?.WriteLine(GetLine(line, type, false, true));
-                }
-                catch (IOException ex) when (ex.HResult == unchecked((int)0x80070070)) // Disk full? Delete all logs <:
-                {
-                #nullable enable
-                    Console.WriteLine("Disk is full.. Resetting log files!");
-                    // Rewrite log
-                    try
-                    {
-                        Logger.CurrentLogger?.ResetLogFiles(LauncherConfig.AppGameLogsFolder, Encoding.UTF8);
-                        // Attempt to write the log again after resetting
-                        LogWriter?.BaseStream.Seek(0, SeekOrigin.End);
-                        LogWriter?.WriteLine(GetLine(line, type, false, true));
-                    }
-                    catch (Exception retryEx)
-                    {
-                        SentryHelper.SentryHelper.ExceptionHandler(retryEx, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
-                        Console.WriteLine($"Error while writing log file after reset!\r\n{retryEx}");
-                    }
-                #nullable restore
-                }
-                catch (Exception ex)
-                {
-                    SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
-                    Console.WriteLine($"Error while writing log file!\r\n{ex}");
-                }
-            }
-        }
-#endregion
-
-        #region ProtectedMethods
-        /// <summary>
-        /// Get the line for displaying or writing into the log based on their type
-        /// </summary>
-        /// <param name="line">Line for the log you want to return</param>
-        /// <param name="type">Type of the log. The type will be added in the return</param>
-        /// <param name="coloredType">Whether to colorize the type string, typically used for displaying</param>
-        /// <param name="withTimeStamp">Whether to append a timestamp after log type</param>
-        /// <returns>Decorated line with colored type or timestamp according to the parameters</returns>
-        protected string GetLine(string line, LogType type, bool coloredType, bool withTimeStamp)
-        {
-            lock (StringBuilder)
-            {
-                // Clear the _stringBuilder
-                StringBuilder.Clear();
-
-                // Colorize the log type
-                if (coloredType)
-                {
-                    StringBuilder.Append(GetColorizedString(type) + GetLabelString(type) + "\e[0m");
-                }
-                else
-                {
-                    StringBuilder.Append(GetLabelString(type));
-                }
-
-                // Append timestamp
-                if (withTimeStamp)
-                {
-                    if (type != LogType.NoTag)
-                    {
-                        StringBuilder.Append($" [{GetCurrentTime("HH:mm:ss.fff")}]");
-                    }
-                    else
-                    {
-                        StringBuilder.Append(new string(' ', 15));
-                    }
-                }
-
-                // Append spaces between labels and text
-                StringBuilder.Append("  ");
-                StringBuilder.Append(line);
-
-                return StringBuilder.ToString();
-            }
-        }
-
-        protected void DisposeBase()
-        {
-            IsWriterOnDispose = true;
-            LogWriter?.Dispose();
-            LogStream?.Dispose();
-        }
-        #endregion
-
-        #region PrivateMethods
 #if !APPLYUPDATE
-        private void InitializeWriter(bool isFallback, Encoding logEncoding)
+    public static string? LogPath { get; set; }
+#endif
+
+    #region Static Class Constructor
+    static unsafe LoggerBase()
+    {
+        HashSet<int> distinctIndex = [];
+        foreach (LogType logType in Enum.GetValues<LogType>())
         {
+            distinctIndex.Add((int)logType);
+        }
+
+        int maxCharInTag = distinctIndex
+                          .Select(x => (LogType)x)
+                          .Max(x => x.ToString().Length) + 3;
+        string defaultEmptyTag = new string(' ', maxCharInTag);
+
+        List<string> colorCodes = [];
+        List<string> tagTypes   = [];
+        foreach (int index in distinctIndex)
+        {
+            LogType type      = (LogType)index;
+            string  colorCode = ConsoleColorMap.GetValueOrDefault(type, DefaultEmptyColor);
+
+            colorCodes.Add(colorCode);
+            tagTypes.Add(type == LogType.NoTag ? defaultEmptyTag : $"[{type}] ");
+        }
+
+        int maxLen     = tagTypes.Max(x => x.Length);
+        int elementLen = tagTypes.Count;
+
+        nint[] logTagTypePArray    = new nint[elementLen];
+        uint[] logTagTypePLenArray = new uint[elementLen];
+        nint[] logColorPArray      = new nint[elementLen];
+        uint[] logColorPLenArray   = new uint[elementLen];
+
+        for (int i = 0; i < elementLen; i++)
+        {
+            byte* allocTag = (byte*)NativeMemory.Alloc((nuint)maxLen);
+
+            // Write tag type
+            ReadOnlySpan<char> tagChar    = tagTypes[i].AsSpan();
+            int                tagCharLen = tagChar.Length;
+            char*              tagCharPtr = (char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(tagChar));
+            new Span<byte>(allocTag, maxLen).Fill((byte)' ');
+
+            logTagTypePArray[i]    = (nint)allocTag;
+            logTagTypePLenArray[i] = (uint)maxLen;
+            _                      = Encoding.UTF8.GetBytes(tagCharPtr, tagCharLen, allocTag, maxLen);
+
+            // Write color code
+            ReadOnlySpan<char> colorChar    = colorCodes[i];
+            int                colorCharLen = colorChar.Length;
+            char*              colorCharPtr = (char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(colorChar));
+            byte*              allocColor   = (byte*)NativeMemory.Alloc((nuint)colorCharLen);
+
+            logColorPArray[i]    = (nint)allocColor;
+            logColorPLenArray[i] = (uint)Encoding.UTF8.GetBytes(colorCharPtr, colorCharLen, allocColor, colorCharLen);
+        }
+
+        // Alloc and pin array to GC
+        GCHandle logColorPArrayGc      = GCHandle.Alloc(logColorPArray,      GCHandleType.Pinned);
+        GCHandle logColorPLenArrayGc   = GCHandle.Alloc(logColorPLenArray,   GCHandleType.Pinned);
+        GCHandle logTagTypePArrayGc    = GCHandle.Alloc(logTagTypePArray,    GCHandleType.Pinned);
+        GCHandle logTagTypePLenArrayGc = GCHandle.Alloc(logTagTypePLenArray, GCHandleType.Pinned);
+
+        LogColorP    = (byte**)logColorPArrayGc.AddrOfPinnedObject();
+        LogColorPLen = (uint*)logColorPLenArrayGc.AddrOfPinnedObject();
+
+        LogTagTypeP    = (byte**)logTagTypePArrayGc.AddrOfPinnedObject();
+        LogTagTypePLen = (uint*)logTagTypePLenArrayGc.AddrOfPinnedObject();
+
+        // Create empty color code
+        int   colorEmptyLen = DefaultEmptyColor.Length;
+        char* colorEmptyPtr = (char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(DefaultEmptyColor.AsSpan()));
+
+        LogColorEmptyP    = (byte*)NativeMemory.Alloc((nuint)DefaultEmptyColor.Length);
+        LogColorEmptyPLen = (uint)Encoding.UTF8.GetBytes(colorEmptyPtr, colorEmptyLen, LogColorEmptyP, colorEmptyLen);
+
+        // Create no tag no timestamp
+        int noTagNoTimestampLen = maxCharInTag + DateTimeFormat.Length + 2;
+        NoTagNoTimestampPaddingP    = (byte*)NativeMemory.Alloc((nuint)noTagNoTimestampLen);
+        NoTagNoTimestampPaddingPLen = (uint)noTagNoTimestampLen;
+        new Span<byte>(NoTagNoTimestampPaddingP, noTagNoTimestampLen).Fill((byte)' ');
+    }
+    #endregion
+
+    #region Auto-generated Properties (by Static Class Constructor)
+    private const                  string DefaultEmptyColor = "\e[0m";
+    private static readonly unsafe byte*  NoTagNoTimestampPaddingP;
+    private static readonly        uint   NoTagNoTimestampPaddingPLen;
+
+    private static readonly unsafe byte** LogColorP;
+    private static readonly unsafe uint*  LogColorPLen;
+    private static readonly unsafe byte*  LogColorEmptyP;
+    private static readonly        uint   LogColorEmptyPLen;
+
+    private static readonly unsafe byte** LogTagTypeP;
+    private static readonly unsafe uint*  LogTagTypePLen;
+    #endregion
+
+    #region De/Constructors
+    ~LoggerBase()
+    {
+        LogWriterField.Flush();
+    }
+
+    protected LoggerBase()
+    {
+        Encoding = Encoding.UTF8;
+    }
+
+    protected LoggerBase(string logFolder, Encoding? logEncoding)
+    {
+        Encoding = logEncoding ?? Encoding.UTF8;
+
+        // Initialize the writer
+        SetFolderPathAndInitialize(logFolder, logEncoding);
+    }
+    #endregion
+
+    #region Public Methods
+    public void SetFolderPathAndInitialize(string folderPath, Encoding? logEncoding)
+    {
+        // Set the folder path of the stored log
+        LogFolder = folderPath;
+
+    #if !APPLYUPDATE
+        // Check if the directory exist. If not, then create.
+        if (!string.IsNullOrEmpty(LogFolder) && !Directory.Exists(LogFolder))
+        {
+            Directory.CreateDirectory(LogFolder);
+        }
+
+        // Reset state
+        DisposeCore(true);
+
+        try
+        {
+            // Initialize writer and the path of the log file.
+            InitializeWriter(false, logEncoding);
+        }
+        catch (Exception ex)
+        {
+            SentryHelper.SentryHelper.ExceptionHandler(ex);
+            // If the initialization above fails, then use fallback.
+            InitializeWriter(true, logEncoding);
+        }
+    #endif
+    }
+
+    public void ResetLogFiles(string? reloadToPath, Encoding? encoding = null)
+    {
+        using (LockObject.EnterScope())
+        {
+            DisposeCore(true);
+
+            if (!string.IsNullOrEmpty(LogFolder) && Directory.Exists(LogFolder))
+            {
+                DeleteLogFilesInner(LogFolder);
+            }
+
+            if (!string.IsNullOrEmpty(reloadToPath) && !Directory.Exists(reloadToPath))
+            {
+                Directory.CreateDirectory(reloadToPath);
+            }
+
+            if (!string.IsNullOrEmpty(reloadToPath))
+            {
+                LogFolder = reloadToPath;
+            }
+
+            encoding ??= Encoding.UTF8;
+            SetFolderPathAndInitialize(LogFolder ?? "", encoding);
+        }
+    }
+    #endregion
+
+    #region Private Methods
+#if !APPLYUPDATE
+    private void InitializeWriter(bool isFallback, Encoding? logEncoding)
+    {
+        using (LockObject.EnterScope())
+        {
+            DateTime dateTimeNow = DateTime.Now;
+
             // Initialize _logPath and get fallback string at the end of the filename if true or none if false.
-            string fallbackString = isFallback ? ("-f" + Path.GetFileNameWithoutExtension(Path.GetTempFileName())) : string.Empty;
-            string dateString = GetCurrentTime("yyyy-MM-dd");
+            string fallbackString = isFallback ? "-f" + Path.GetFileNameWithoutExtension(Path.GetTempFileName()) : string.Empty;
+            string dateString = dateTimeNow.ToString("yyyy-MM-dd");
+
             // Append the build name
             fallbackString += LauncherConfig.IsPreview ? "-pre" : "-sta";
-            // Append current app version
             fallbackString += LauncherConfig.AppCurrentVersionString;
+
             // Append the current instance number
-            fallbackString += $"-id{GetTotalInstance()}";
-            LogPath = Path.Combine(LogFolder, $"log-{dateString + fallbackString}-{GetCurrentTime("HH-mm-ss")}.log");
+            int numOfInstance = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
+            fallbackString += $"-id{numOfInstance}";
+            LogPath = Path.Combine(LogFolder ?? "", $"log-{dateString + fallbackString}-{dateTimeNow:HH-mm-ss}.log");
             Console.WriteLine("\e[37;44m[LOGGER]\e[0m Log will be written to: " + LogPath);
 
             // Initialize _logWriter to the given _logPath.
             // The FileShare.ReadWrite is still being used to avoid potential conflict if the launcher needs
             // to warm-restart itself in rare occasion (like update mechanism with Squirrel).
-            LogStream = new FileStream(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+            FileStream fileStream = new FileStream(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             // Seek the file to the EOF
-            LogStream.Seek(0, SeekOrigin.End);
+            fileStream.Seek(0, SeekOrigin.End);
 
             // Initialize the StreamWriter
-            LogWriter         = new StreamWriter(LogStream, logEncoding) { AutoFlush = true };
-            IsWriterOnDispose = false;
+            LogWriterField = new StreamWriter(fileStream, logEncoding ?? Encoding.UTF8, 16 << 10, false);
         }
+    }
 
-        private static int GetTotalInstance() => ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
+    private static void DeleteLogFilesInner(string folderPath)
+    {
+        DirectoryInfo dirInfo = new DirectoryInfo(folderPath);
+        foreach (FileInfo fileInfo in dirInfo.EnumerateFiles("log-*-id*.log", SearchOption.TopDirectoryOnly))
+        {
+            try
+            {
+                fileInfo.Delete();
+                Logger.LogWriteLine($"Removed log file: {fileInfo.FullName}");
+            }
+            catch (Exception ex)
+            {
+                SentryHelper.SentryHelper.ExceptionHandler(ex, SentryHelper.SentryHelper.ExceptionType.UnhandledOther);
+                Logger.LogWriteLine($"Cannot remove log file: {fileInfo.FullName}\r\n{ex}", LogType.Error);
+            }
+        }
+    }
 #endif
 
-        private static ArgumentException ThrowInvalidType() => new ArgumentException("Type must be Default, Error, Warning, Scheme, Game, Debug, GLC, Remote or Empty!");
-
-        /// <summary>
-        /// Get the ASCII color in string form.
-        /// </summary>
-        /// <param name="type">The type of the log</param>
-        /// <returns>A string of the ASCII color</returns>
-        private static string GetColorizedString(LogType type) => type switch
-                                                                  {
-                                                                      LogType.Default => "\e[32;1m",
-                                                                      LogType.Error => "\e[31;1m",
-                                                                      LogType.Warning => "\e[33;1m",
-                                                                      LogType.Scheme => "\e[34;1m",
-                                                                      LogType.Game => "\e[35;1m",
-                                                                      LogType.Debug => "\e[36;1m",
-                                                                      LogType.GLC => "\e[91;1m",
-                                                                      LogType.Sentry => "\e[42;1m",
-                                                                      _ => string.Empty
-                                                                  };
-
-        /// <summary>
-        /// Get the label string based on log type.
-        /// </summary>
-        /// <param name="type">The type of the log</param>
-        /// <returns>A string of the label based on type</returns>
-        /// <exception cref="ArgumentException"></exception>
-        private static string GetLabelString(LogType type) => type switch
-                                                              {
-                                                                  LogType.Default => "[Info]  ",
-                                                                  LogType.Error   => "[Erro]  ",
-                                                                  LogType.Warning => "[Warn]  ",
-                                                                  LogType.Scheme  => "[Schm]  ",
-                                                                  LogType.Game    => "[Game]  ",
-                                                                  LogType.Debug   => "[DBG]   ",
-                                                                  LogType.GLC     => "[GLC]   ",
-                                                                  LogType.Sentry   => "[Sentry]  ",
-                                                                  LogType.NoTag   => "      ",
-                                                                  _ => throw ThrowInvalidType()
-                                                              };
-#endregion
+    protected virtual void DisposeCore(bool onlyReset = false)
+    {
+        LogWriter.Dispose(); // Automatically dispose the FileStream inside
+        Interlocked.Exchange(ref LogWriterField, StreamWriter.Null);
     }
+    #endregion
+
+    #region Util Methods
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    protected static unsafe uint CopyToBuffer(void* destination, void* source, uint len)
+    {
+        Unsafe.CopyBlock(destination, source, len);
+        return len;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    protected static unsafe T* GetSpanPointer<T>(ReadOnlySpan<T> span)
+        where T : unmanaged => (T*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Text")]
+    protected static extern ReadOnlySpan<char> GetInterpolateStringSpan(ref DefaultInterpolatedStringHandler element);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "Clear")]
+    protected static extern void ClearInterpolateString(ref DefaultInterpolatedStringHandler element);
+    #endregion
+
+    #region Logging Methods
+    private readonly ArrayPool<byte> _logBufferPool = ArrayPool<byte>.Create();
+    private          byte[]          _buffer        = [];
+
+    protected bool IsBufferBudgetSufficient(int requestedSize)
+        => _buffer.Length >= requestedSize;
+
+    protected void ResizeBuffer(int requestedSize)
+    {
+        if (_buffer.Length == 0)
+        {
+            _buffer = _logBufferPool.Rent(requestedSize);
+            return;
+        }
+
+        _logBufferPool.Return(_buffer);
+        _buffer = _logBufferPool.Rent(requestedSize);
+    }
+
+    protected unsafe void WriteLineToStreamCore(Stream             stream,
+                                                ReadOnlySpan<char> line,
+                                                LogType            type             = LogType.Info,
+                                                bool               appendNewLine    = true,
+                                                bool               isWriteColor     = true,
+                                                bool               isWriteTagType   = true,
+                                                bool               isWriteTimestamp = false)
+    {
+        using (LockObject.EnterScope())
+        {
+            int  lineUtf8Len   = Encoding.GetMaxByteCount(line.Length + 48);
+            bool useStackalloc = lineUtf8Len <= 512;
+            if (!useStackalloc && !IsBufferBudgetSufficient(lineUtf8Len))
+            {
+                ResizeBuffer(lineUtf8Len);
+            }
+
+            scoped Span<byte> buffer = useStackalloc ? stackalloc byte[lineUtf8Len] : _buffer;
+
+            int len = isWriteTagType ?
+                WriteToBufferWithIndentCore(line,
+                                            buffer,
+                                            type,
+                                            appendNewLine,
+                                            isWriteColor,
+                                            isWriteTagType,
+                                            isWriteTimestamp) :
+                WriteToBufferCore(line,
+                                  buffer,
+                                  type,
+                                  appendNewLine,
+                                  isWriteColor,
+                                  isWriteTagType,
+                                  isWriteTimestamp,
+                                  false);
+
+            stream.Write(buffer[..len]);
+            stream.Flush();
+        }
+    }
+
+    private static ReadOnlySpan<char> GetCurrentSplitLine(in Range           range,
+                                                          ReadOnlySpan<char> line,
+                                                          ref LogType        type,
+                                                          ref int            iteration)
+    {
+        ReadOnlySpan<char> currentLine = line[range];
+
+        if (currentLine.Length != 0 &&
+            currentLine[^1] == '\r')
+        {
+            currentLine = currentLine[..^1];
+        }
+
+        if (type != LogType.Game ||
+            currentLine.Length == 0 ||
+            (currentLine[0] != ' ' &&
+             currentLine[0] != '\t'))
+        {
+            return currentLine;
+        }
+
+        type = LogType.NoTag;
+        ++iteration;
+
+        return currentLine;
+    }
+
+    private int WriteToBufferWithIndentCore(ReadOnlySpan<char> line,
+                                            Span<byte>         bufferSpan,
+                                            LogType            type,
+                                            bool               appendNewLine,
+                                            bool               isWriteColor,
+                                            bool               isWriteTagType,
+                                            bool               isWriteTimestamp)
+    {
+        int written = 0;
+        int iteration = 0;
+
+        foreach (Range range in line.SplitAny('\n'))
+        {
+            ReadOnlySpan<char> currentLine = GetCurrentSplitLine(in range, line, ref type, ref iteration);
+            written += WriteToBufferCore(currentLine,
+                                         bufferSpan[written..],
+                                         type,
+                                         appendNewLine,
+                                         isWriteColor,
+                                         isWriteTagType,
+                                         isWriteTimestamp,
+                                         iteration > 0 && isWriteTimestamp);
+
+            type = LogType.NoTag;
+            iteration++;
+        }
+
+        return written;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private unsafe int WriteToBufferCore(ReadOnlySpan<char> line,
+                                         Span<byte>         buffer,
+                                         LogType            type,
+                                         bool               appendNewLine,
+                                         bool               isWriteColor,
+                                         bool               isWriteTagType,
+                                         bool               isWriteTimestamp,
+                                         bool               isWriteTimeTagPadding)
+    {
+        const byte squareBracketOpen  = 0x5B; // [
+        const byte squareBracketClose = 0x5D; // ]
+
+        char* lineP        = GetSpanPointer(line);
+        byte* bufferP      = GetSpanPointer(buffer);
+        byte* bufferPStart = bufferP;
+
+        int   typeIndex    = (int)type;
+        byte* tagColorP    = *(LogColorP + typeIndex);
+        uint  tagColorPLen = *(LogColorPLen + typeIndex);
+        byte* tagTypeP     = *(LogTagTypeP + typeIndex);
+        uint  tagTypePLen  = *(LogTagTypePLen + typeIndex);
+
+        if (isWriteTimeTagPadding && isWriteTimestamp)
+        {
+            bufferP += CopyToBuffer(bufferP, NoTagNoTimestampPaddingP, NoTagNoTimestampPaddingPLen);
+        }
+
+        if (!isWriteTimeTagPadding && isWriteTagType)
+        {
+            if (isWriteTimestamp)
+            {
+                DateTimeOffset offsetNow = DateTimeOffset.Now;
+                *bufferP++ = squareBracketOpen;
+                if (offsetNow.TryFormat(new Span<byte>(bufferP, 16), out int dateTimeFormatWritten, DateTimeFormat))
+                {
+                    bufferP += dateTimeFormatWritten;
+                }
+                *bufferP++ = squareBracketClose;
+            }
+
+            if (isWriteColor)
+            {
+                bufferP += CopyToBuffer(bufferP, tagColorP,      tagColorPLen);
+                bufferP += CopyToBuffer(bufferP, tagTypeP,       tagTypePLen);
+                bufferP += CopyToBuffer(bufferP, LogColorEmptyP, LogColorEmptyPLen);
+            }
+            else
+            {
+                bufferP += CopyToBuffer(bufferP, tagTypeP, tagTypePLen);
+            }
+        }
+
+        int bufferSpaceLeft = buffer.Length - (int)(bufferP - bufferPStart);
+        bufferP += Encoding.GetBytes(lineP, line.Length, bufferP, bufferSpaceLeft);
+        if (appendNewLine)
+        {
+            bufferP += CopyToBuffer(bufferP, NewLineBytesP, NewLineBytesPLen);
+        }
+
+        return (int)(bufferP - bufferPStart);
+    }
+
+
+    protected async Task WriteLineToStreamCoreAsync(Stream            stream,
+                                                    string            line,
+                                                    LogType           type             = LogType.Info,
+                                                    bool              appendNewLine    = true,
+                                                    bool              isWriteColor     = true,
+                                                    bool              isWriteTagType   = true,
+                                                    bool              isWriteTimestamp = false,
+                                                    CancellationToken token            = default)
+    {
+        int    lineUtf8Len = Encoding.GetMaxByteCount(line.Length);
+        byte[] buffer      = _logBufferPool.Rent(lineUtf8Len);
+
+        try
+        {
+            int len = WriteToBufferCore(line,
+                                        buffer,
+                                        type,
+                                        appendNewLine,
+                                        isWriteColor,
+                                        isWriteTagType,
+                                        isWriteTimestamp,
+                                        false);
+            await stream.WriteAsync(buffer.AsMemory(0, len), token);
+        }
+        finally
+        {
+            await stream.FlushAsync(token);
+            _logBufferPool.Return(buffer);
+        }
+    }
+
+    public virtual void LogWriteLine() { }
+
+    public virtual void LogWriteLine(ReadOnlySpan<char> line,
+                                     LogType            type                    = LogType.Info,
+                                     bool               writeToLogFile          = false,
+                                     bool               writeTimestampOnLogFile = true)
+    {
+        if (!writeToLogFile)
+        {
+            return;
+        }
+
+        WriteLineToStreamCore(LogWriter.BaseStream,
+                              line,
+                              type,
+                              isWriteColor: false,
+                              isWriteTimestamp: writeTimestampOnLogFile);
+    }
+
+    public virtual void LogWriteLine(ref DefaultInterpolatedStringHandler interpolatedLine,
+                                     LogType                              type                    = LogType.Info,
+                                     bool                                 writeToLogFile          = false,
+                                     bool                                 writeTimestampOnLogFile = true)
+    {
+        ReadOnlySpan<char> line = GetInterpolateStringSpan(ref interpolatedLine);
+
+        try
+        {
+            if (!writeToLogFile)
+            {
+                return;
+            }
+
+            LogWriteLine(line, type, writeToLogFile, writeTimestampOnLogFile);
+        }
+        finally
+        {
+            ClearInterpolateString(ref interpolatedLine);
+        }
+    }
+
+    public virtual void LogWrite(ReadOnlySpan<char> line,
+                                 LogType            type                    = LogType.Info,
+                                 bool               appendNewLine           = false,
+                                 bool               writeToLogFile          = false,
+                                 bool               writeTypeTag            = false,
+                                 bool               writeTimestampOnLogFile = true)
+    {
+        if (!writeToLogFile)
+        {
+            return;
+        }
+
+        WriteLineToStreamCore(LogWriter.BaseStream,
+                              line,
+                              type,
+                              appendNewLine: appendNewLine,
+                              isWriteColor: false,
+                              isWriteTimestamp: writeTimestampOnLogFile,
+                              isWriteTagType: writeTimestampOnLogFile);
+    }
+
+    public virtual void LogWrite(ref DefaultInterpolatedStringHandler interpolatedLine,
+                                 LogType                              type                    = LogType.Info,
+                                 bool                                 appendNewLine           = false,
+                                 bool                                 writeToLogFile          = false,
+                                 bool                                 writeTypeTag            = false,
+                                 bool                                 writeTimestampOnLogFile = true)
+    {
+
+        ReadOnlySpan<char> line = GetInterpolateStringSpan(ref interpolatedLine);
+
+        try
+        {
+            if (!writeToLogFile)
+            {
+                return;
+            }
+
+            LogWrite(line, type, appendNewLine, writeToLogFile, writeTypeTag, writeTimestampOnLogFile);
+        }
+        finally
+        {
+            ClearInterpolateString(ref interpolatedLine);
+        }
+    }
+
+    public virtual Task LogWriteLineAsync(CancellationToken token = default)
+        => Task.CompletedTask;
+
+    public virtual Task LogWriteLineAsync(string            line,
+                                          LogType           type                    = LogType.Info,
+                                          bool              writeToLogFile          = false,
+                                          bool              writeTimestampOnLogFile = true,
+                                          CancellationToken token                   = default)
+        => !writeToLogFile ?
+            Task.CompletedTask :
+            WriteLineToStreamCoreAsync(LogWriter.BaseStream,
+                                       line,
+                                       type,
+                                       isWriteColor: false,
+                                       isWriteTimestamp: writeTimestampOnLogFile,
+                                       token: token);
+
+    public virtual Task LogWriteAsync(string            line,
+                                      LogType           type                    = LogType.Info,
+                                      bool              appendNewLine           = false,
+                                      bool              writeToLogFile          = false,
+                                      bool              writeTypeTag            = false,
+                                      bool              writeTimestampOnLogFile = true,
+                                      CancellationToken token                   = default)
+        => !writeToLogFile ?
+            Task.CompletedTask :
+            WriteLineToStreamCoreAsync(LogWriter.BaseStream,
+                                       line,
+                                       type,
+                                       appendNewLine: appendNewLine,
+                                       isWriteColor: false,
+                                       isWriteTimestamp: writeTimestampOnLogFile,
+                                       isWriteTagType: writeTimestampOnLogFile,
+                                       token: token);
+
+    public void Dispose()
+    {
+        DisposeCore();
+        GC.SuppressFinalize(this);
+    }
+    #endregion
 }

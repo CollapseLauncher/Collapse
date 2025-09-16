@@ -3,11 +3,10 @@ using CollapseLauncher.Helper.Image;
 using ColorThiefDotNet;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
-using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -35,8 +34,11 @@ namespace CollapseLauncher.Helper.Background
     [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     internal static class ColorPaletteUtility
     {
-        internal static async Task ApplyAccentColor<T>(T    page, IRandomAccessStream stream, string filePath,
-                                                       bool isImageLoadForFirstTime, bool isContinuousGeneration)
+        internal static async Task ApplyAccentColor<T>(T                   page,
+                                                       IRandomAccessStream stream,
+                                                       string              filePath,
+                                                       bool                isImageLoadForFirstTime,
+                                                       bool                isContinuousGeneration)
             where T : FrameworkElement
         {
             using Bitmap bitmapAccentColor = await Task.Run(() => ImageLoaderHelper.Stream2Bitmap(stream));
@@ -64,7 +66,10 @@ namespace CollapseLauncher.Helper.Background
                     Channel = bitmapChannelCount
                 };
 
-                await ApplyAccentColor(page, bitmapInputStruct, filePath, isImageLoadForFirstTime,
+                await ApplyAccentColor(page,
+                                       bitmapInputStruct,
+                                       filePath,
+                                       isImageLoadForFirstTime,
                                        isContinuousGeneration);
             }
             finally
@@ -76,9 +81,11 @@ namespace CollapseLauncher.Helper.Background
             }
         }
 
-        internal static async Task ApplyAccentColor<T>(T    page, BitmapInputStruct bitmapInput, string bitmapPath,
-                                                       bool forceCreateNewCache    = false,
-                                                       bool isContinuousGeneration = false)
+        internal static async Task ApplyAccentColor<T>(T                 page,
+                                                       BitmapInputStruct bitmapInput,
+                                                       string            bitmapPath,
+                                                       bool              forceCreateNewCache    = false,
+                                                       bool              isContinuousGeneration = false)
             where T : FrameworkElement
         {
             bool isLight = InnerLauncherConfig.IsAppThemeLight;
@@ -97,7 +104,7 @@ namespace CollapseLauncher.Helper.Background
             }
 
             string cachedPalettePath = bitmapPath + $".palette{(isLight ? "Light" : "Dark")}";
-            string cachedFileHash    = Hash.GetHashStringFromString<Crc32>(cachedPalettePath);
+            string cachedFileHash    = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(cachedPalettePath))!;
             cachedPalettePath = Path.Combine(LauncherConfig.AppGameImgCachedFolder, cachedFileHash);
 
             if (!File.Exists(cachedPalettePath) || forceCreateNewCache)
@@ -119,58 +126,50 @@ namespace CollapseLauncher.Helper.Background
         {
             if (!palette.HasValue) return;
 
-            string dictColorNameTheme = InnerLauncherConfig.IsAppThemeLight ? "Dark" : "Light";
-            UIElementExtensions.SetApplicationResource("SystemAccentColor", palette);
-            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}1", palette);
-            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}2", palette);
-            UIElementExtensions.SetApplicationResource($"SystemAccentColor{dictColorNameTheme}3", palette);
-            UIElementExtensions.SetApplicationResource("AccentColor", new SolidColorBrush(palette.Value));
-
-            ReloadPageTheme(page, ConvertAppThemeToElementTheme(InnerLauncherConfig.CurrentAppTheme));
-        }
-
-        internal static void ReloadPageTheme(FrameworkElement page, AppThemeMode startTheme)
-        {
-            ReloadPageTheme(page, ConvertAppThemeToElementTheme(startTheme));
-        }
-
-        internal static void ReloadPageTheme(FrameworkElement page, ElementTheme startTheme)
-        {
-            bool isComplete = false;
-            while (!isComplete)
+            WColor maskTransparentPalette = new()
             {
-                try
-                {
-                    page.RequestedTheme = page.RequestedTheme switch
-                                          {
-                                              ElementTheme.Dark => ElementTheme.Light,
-                                              ElementTheme.Light => ElementTheme.Default,
-                                              ElementTheme.Default => ElementTheme.Dark,
-                                              _ => page.RequestedTheme
-                                          };
+                A = 0,
+                R = palette.Value.R,
+                G = palette.Value.G,
+                B = palette.Value.B
+            };
+            maskTransparentPalette = ChangeColorBrightness(maskTransparentPalette, !InnerLauncherConfig.IsAppThemeLight ? -0.75f : 0.85f);
 
-                    if (page.RequestedTheme != startTheme)
-                    {
-                        ReloadPageTheme(page, startTheme);
-                    }
+            WColor maskPalette = new()
+            {
+                A = 255,
+                R = palette.Value.R,
+                G = palette.Value.G,
+                B = palette.Value.B
+            };
+            maskPalette = ChangeColorBrightness(maskPalette, !InnerLauncherConfig.IsAppThemeLight ? -0.75f : 0.85f);
 
-                    isComplete = true;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+            page.ChangeAccentColor(palette.Value, maskPalette, maskTransparentPalette);
         }
 
-        public static ElementTheme ConvertAppThemeToElementTheme(AppThemeMode theme)
+        // Credit:
+        // https://gist.github.com/zihotki/09fc41d52981fb6f93a81ebf20b35cd5
+        public static WColor ChangeColorBrightness(WColor color, float correctionFactor)
         {
-            return theme switch
-                   {
-                       AppThemeMode.Dark => ElementTheme.Dark,
-                       AppThemeMode.Light => ElementTheme.Light,
-                       _ => ElementTheme.Default
-                   };
+            float red   = color.R;
+            float green = color.G;
+            float blue  = color.B;
+
+            if (correctionFactor < 0)
+            {
+                correctionFactor =  1 + correctionFactor;
+                red              *= correctionFactor;
+                green            *= correctionFactor;
+                blue             *= correctionFactor;
+            }
+            else
+            {
+                red   = (255 - red) * correctionFactor + red;
+                green = (255 - green) * correctionFactor + green;
+                blue  = (255 - blue) * correctionFactor + blue;
+            }
+
+            return WColor.FromArgb(color.A, (byte)red, (byte)green, (byte)blue);
         }
 
         private static async ValueTask<WColor[]> TryGenerateNewCachedPalette(BitmapInputStruct bitmapInput,

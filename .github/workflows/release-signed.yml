@@ -8,14 +8,11 @@ on:
 env:
  BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
- DOTNET_INSTALL_DIR: '.\.dotnet' 
- DOTNET_VERSION: '9.0.3xx'
- DOTNET_QUALITY: 'ga'
  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
- SIGNPATH_ARTIFACT_SLUG: 'initial' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
- BUILD_PROFILE_PREVIEW: 'Publish-PreviewRelease'
- BUILD_PROFILE_STABLE: 'Publish-StableRelease'
- BUILD_PROFILE_DEBUG: 'Publish-DebugCIRelease'
+ SIGNPATH_ARTIFACT_SLUG: 'aot-release' # change this to 'aot-release' when releasing with AOT or 'initial' for normal release
+ BUILD_PROFILE_PREVIEW: 'Publish-PreviewReleaseAOT'
+ BUILD_PROFILE_STABLE: 'Publish-StableReleaseAOT'
+ BUILD_PROFILE_DEBUG: 'Publish-DebugCIReleaseAOT'
 
 #  schedule:
 #    - cron: '0 0 * * 0' # At 00:00 on Sunday
@@ -33,6 +30,7 @@ jobs:
       PUBLISH_PROFILE: ""
       SIGNING_POLICY_SLUG: ""
       VERSION: ""
+      PRODUCT_VERSION: ""
       Platform: ${{ matrix.platform }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
@@ -51,8 +49,8 @@ jobs:
           echo "PUBLISH_PROFILE=${{ env.BUILD_PROFILE_STABLE }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "SIGNING_POLICY_SLUG=release-signing" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         } elseif ($branch -eq "github-signpath-test") {
-          echo "CONFIGURATION_STRATEGY=Debug" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PUBLISH_PROFILE=${{ env.BUILD_PROFILE_DEBUG }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "CONFIGURATION_STRATEGY=Release" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "PUBLISH_PROFILE=${{ env.BUILD_PROFILE_PREVIEW }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo "SIGNING_POLICY_SLUG=test-signing-ci" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         } else {
           Write-Error "Unknown branch or input: $branch"
@@ -69,6 +67,14 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: recursive
+        
+    - name: 'Preparing Environment Variables'
+      if: ${{ github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name }}
+      run: |
+        $env = Get-Content env.json | ConvertFrom-Json
+        foreach ($prop in $env.PSObject.Properties) {
+          echo "$($prop.Name)=$($prop.Value)" >> $env:GITHUB_ENV
+        }
 
     - name: Install .NET
       uses: actions/setup-dotnet@v4
@@ -156,7 +162,9 @@ jobs:
           if ($signature.Status -ne "Valid") {
             echo "::error::Invalid signature on $($file.Name): $($signature.Status)"
           }
-          echo "✓ $($file.Name): $($signature.SignerCertificate.Subject)"
+          else {
+            echo "::notice::✓ $($file.Name): $($signature.SignerCertificate.Subject)"
+          }
         }
 
     - name: Re-upload Signed Artifact to GitHub
@@ -187,6 +195,27 @@ jobs:
         apps: sentry-cli
 
     - name: Upload Debug artifact to Sentry
+      continue-on-error: true
+      shell: pwsh
       run: |
-        sentry-cli debug-files upload --org collapse --project collapse-launcher --include-sources '.\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
-
+        sentry-cli debug-files upload --org collapse --project collapse-launcher --include-sources '${{ runner.temp }}\SignedArtifact\BuildArtifact-${{ env.VERSION }}'
+        
+    - name: Set release version in Sentry
+      shell: pwsh
+      continue-on-error: true
+      run: |
+            $exePath = "${{ runner.temp }}\SignedArtifact\BuildArtifact-${{ env.VERSION }}\CollapseLauncher.exe"
+            if (Test-Path $exePath) {
+                $version = "CollapseLauncher@" + ([System.Diagnostics.FileVersionInfo]::GetVersionInfo("./CollapseLauncher.exe").ProductVersion)
+                if ($version) {
+                    sentry-cli releases new --org collapse --project collapse-launcher $version
+                    sentry-cli releases set-commits --auto $version
+                    sentry-cli releases finalize $version
+                }
+                else {
+                    Write-Warning "No product version found in $exePath"
+                }
+            }
+            else {
+                Write-Error "File not found: $exePath"
+            }

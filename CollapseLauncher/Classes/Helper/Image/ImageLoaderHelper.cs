@@ -3,11 +3,13 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -18,6 +20,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Buffers;
+using System.Buffers.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
@@ -25,7 +28,10 @@ using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -326,7 +332,7 @@ namespace CollapseLauncher.Helper.Image
 
         internal static FileInfo GetCacheFileInfo(string filePath)
         {
-            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(filePath);
+            string cachedFileHash = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(filePath))!;
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder!, cachedFileHash!);
             if (IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";
@@ -500,11 +506,11 @@ namespace CollapseLauncher.Helper.Image
         private static readonly HashSet<FileInfo> ProcessingFiles = [];
         private static readonly HashSet<string>   ProcessingUrls  = [];
 
-        public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
+        public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, bool isSkipCheck, CancellationToken token)
         {
             try
             {
-                _ = await TryDownloadToCompletenessAsync(url, useHttpClient, fileInfo, token);
+                _ = await TryDownloadToCompletenessAsync(url, useHttpClient, fileInfo, isSkipCheck, token);
             }
             catch
             {
@@ -512,12 +518,14 @@ namespace CollapseLauncher.Helper.Image
             }
         }
 
-        public static async Task<bool> TryDownloadToCompletenessAsync(string? url, HttpClient? useHttpClient, FileInfo fileInfo, CancellationToken token)
+        public static async Task<bool> TryDownloadToCompletenessAsync(string? url, HttpClient? useHttpClient, FileInfo fileInfo, bool isSkipCheck, CancellationToken token)
         {
             if (string.IsNullOrEmpty(url))
             {
                 return false;
             }
+
+            fileInfo.EnsureCreationOfDirectory().EnsureNoReadOnly();
 
             if (ProcessingFiles.Contains(fileInfo) || ProcessingUrls.Contains(url))
             {
@@ -531,7 +539,9 @@ namespace CollapseLauncher.Helper.Image
                 ProcessingFiles.Add(fileInfo);
                 ProcessingUrls.Add(url);
                 // Initialize file temporary name
-                FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp");
+                FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp")
+                    .EnsureCreationOfDirectory()
+                    .EnsureNoReadOnly();
 
                 Logger.LogWriteLine($"Start downloading resource from: {url}", LogType.Default, true);
 
@@ -553,8 +563,8 @@ namespace CollapseLauncher.Helper.Image
                             fileLength = netStream.Length;
 
                             // Create the prop file for download completeness checking
-                            string? outputParentPath = Path.GetDirectoryName(fileInfoTemp.FullName);
-                            string outputFilename = Path.GetFileName(fileInfoTemp.FullName);
+                            string? outputParentPath = Path.GetDirectoryName(fileInfo.FullName);
+                            string  outputFilename   = Path.GetFileName(fileInfo.FullName);
                             if (outputParentPath != null)
                             {
                                 string propFilePath = Path.Combine(outputParentPath, $"{outputFilename}#{netStream.Length}");
@@ -571,15 +581,16 @@ namespace CollapseLauncher.Helper.Image
                         }
                     }
 
-                    if (await IsFileCompletelyDownloadedAsync(fileInfoTemp, true))
+                    Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
+                                        + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
+
+                    // Move to its original filename
+                    fileInfoTemp.Refresh();
+                    fileInfoTemp.MoveTo(fileInfo.FullName, true);
+                    fileInfo.Refresh();
+
+                    if (isSkipCheck || await IsFileCompletelyDownloadedAsync(fileInfo, true))
                     {
-                        // Move to its original filename
-                        fileInfoTemp.Refresh();
-                        fileInfoTemp.MoveTo(fileInfo.FullName, true);
-
-                        Logger.LogWriteLine($"Resource download from: {url} has been completed and stored locally into:"
-                            + $"\"{fileInfo.FullName}\" with size: {ConverterTool.SummarizeSizeSimple(fileLength)} ({fileLength} bytes)", LogType.Default, true);
-
                         // Break from the loop and return true
                         return true;
                     }
@@ -668,7 +679,7 @@ namespace CollapseLauncher.Helper.Image
                                                            tokenLocal);
         }
 
-        public static string? GetCachedSprites(HttpClient? httpClient, string? url, CancellationToken token)
+        public static string? GetCachedSprites(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
             if (string.IsNullOrEmpty(url) || token.IsCancellationRequested) return url;
 
@@ -677,20 +688,20 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (IsFileCompletelyDownloaded(fInfo, true))
+            if (IsFileCompletelyDownloaded(fInfo, !isSkipHashCheck))
             {
                 return cachePath;
             }
 
-            TryDownloadToCompletenessDetached(url, httpClient, fInfo, token);
+            TryDownloadToCompletenessDetached(url, httpClient, fInfo, isSkipHashCheck, token);
             return url;
 
         }
 
-        public static async Task<string?> GetCachedSpritesAsync(string? url, CancellationToken token)
-            => await GetCachedSpritesAsync(null, url, token);
+        public static async Task<string?> GetCachedSpritesAsync(string? url, bool isSkipHashCheck, CancellationToken token)
+            => await GetCachedSpritesAsync(null, url, isSkipHashCheck, token);
 
-        public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, CancellationToken token)
+        public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
             if (string.IsNullOrEmpty(url)) return url;
 
@@ -699,16 +710,136 @@ namespace CollapseLauncher.Helper.Image
                 Directory.CreateDirectory(AppGameImgCachedFolder);
 
             FileInfo fInfo = new FileInfo(cachePath);
-            if (await IsFileCompletelyDownloadedAsync(fInfo, true))
+            if (await IsFileCompletelyDownloadedAsync(fInfo, !isSkipHashCheck))
             {
                 return cachePath;
             }
 
-            if (!await TryDownloadToCompletenessAsync(url, httpClient, fInfo, token))
+            if (!await TryDownloadToCompletenessAsync(url, httpClient, fInfo, isSkipHashCheck, token))
             {
                 return url;
             }
             return cachePath;
+        }
+
+        private delegate bool WriteEmbeddedBase64DataToBuffer(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded);
+
+        public static string? CopyToLocalIfBase64(string? url, string? dirPath = null)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+
+            WriteEmbeddedBase64DataToBuffer writeToDelegate;
+            if (Base64Url.IsValid(url, out int bufferLen))
+            {
+                writeToDelegate = WriteBufferFromBase64Url;
+            }
+            else if (Base64.IsValid(url, out bufferLen))
+            {
+                writeToDelegate = WriteBufferFromBase64Raw;
+            }
+            else
+            {
+                return url;
+            }
+
+            ReadOnlySpan<char> urlAsSpan = url;
+
+            dirPath ??= Path.GetTempPath();
+            byte[] fileNameHash = HashUtility<XxHash128>.Shared.GetHashFromString(urlAsSpan.Length > 32 ? urlAsSpan[..^32] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 32)]);
+            string fileNameBase = HexTool.BytesToHexUnsafe(fileNameHash)!;
+            string filePath = Path.Combine(dirPath, fileNameBase);
+
+            string? existingFilePath = Directory
+                .EnumerateFiles(dirPath, fileNameBase + ".*", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(existingFilePath))
+            {
+                return existingFilePath;
+            }
+
+            byte[] decodedBuffer = ArrayPool<byte>.Shared.Rent(bufferLen);
+            try
+            {
+                if (!writeToDelegate(url, decodedBuffer, out int writtenToBuffer))
+                {
+                    return null;
+                }
+
+                string fileExt = PluginLauncherApiWrapper.DecideEmbeddedDataExtension(decodedBuffer);
+                filePath += fileExt;
+
+                using UnmanagedMemoryStream bufferStream = ToStream(new Span<byte>(decodedBuffer, 0, writtenToBuffer));
+                using FileStream fileStream = File.Create(filePath);
+                bufferStream.CopyTo(fileStream);
+
+                return filePath;
+            }
+            catch
+#if DEBUG
+            (Exception ex)
+#endif
+            {
+#if DEBUG
+                Logger.LogWriteLine($"An error has occurred while writing Base64 URL to local file.\r\n{ex}", LogType.Error, true);
+#endif
+                return null;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(decodedBuffer);
+            }
+
+            unsafe UnmanagedMemoryStream ToStream(Span<byte> buffer)
+            {
+                ref byte dataRef = ref MemoryMarshal.AsRef<byte>(buffer);
+                return new UnmanagedMemoryStream((byte*)Unsafe.AsPointer(ref dataRef), buffer.Length);
+            }
+
+            bool WriteBufferFromBase64Url(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            {
+                if (Base64Url.TryDecodeFromChars(chars, buffer, out dataDecoded))
+                {
+                    return true;
+                }
+
+                dataDecoded = 0;
+                return false;
+            }
+
+            bool WriteBufferFromBase64Raw(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            {
+                int tempBufferToUtf8Len = Encoding.UTF8.GetByteCount(chars);
+                byte[] tempBufferToUtf8 = ArrayPool<byte>.Shared.Rent(tempBufferToUtf8Len);
+                try
+                {
+                    if (!Encoding.UTF8.TryGetBytes(chars, tempBufferToUtf8, out int utf8StrWritten))
+                    {
+                        dataDecoded = 0;
+                        return false;
+                    }
+
+                    OperationStatus decodeStatus = Base64.DecodeFromUtf8(tempBufferToUtf8.AsSpan(0, utf8StrWritten), buffer, out _, out dataDecoded);
+                    if (decodeStatus == OperationStatus.Done)
+                    {
+                        return true;
+                    }
+
+                    dataDecoded = 0;
+#if DEBUG
+                    throw new InvalidOperationException($"Cannot decode data string from Base64 as it returns with status: {decodeStatus}");
+#else
+                    return false;
+#endif
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(tempBufferToUtf8);
+                }
+            }
         }
     }
 }

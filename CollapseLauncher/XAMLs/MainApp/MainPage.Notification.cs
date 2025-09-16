@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper.Update;
 using CollapseLauncher.Pages.OOBE;
 using Hi3Helper;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
@@ -68,7 +69,7 @@ public partial class MainPage : Page
             CancellationTokenSource TokenSource = new CancellationTokenSource();
             RunTimeoutCancel(TokenSource);
 
-            await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+            await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), token: TokenSource.Token);
             NotificationData = await networkStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush, token: TokenSource.Token);
             IsLoadNotifComplete = true;
 
@@ -163,13 +164,13 @@ public partial class MainPage : Page
                                                                       _ => null
                                                                   };
 
-            GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
-            GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+            GameVersion? ValidForVerBelow = Entry.ValidForVerBelow;
+            GameVersion? ValidForVerAbove = Entry.ValidForVerAbove;
 
             if (Entry.ValidForVerBelow == null && IsNotificationTimestampValid(Entry)
-                || (LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow)
-                    && ValidForVerAbove.Compare(LauncherUpdateHelper.LauncherCurrentVersion))
-                || LauncherUpdateHelper.LauncherCurrentVersion.Compare(ValidForVerBelow))
+                || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow
+                    && ValidForVerAbove < LauncherUpdateHelper.LauncherCurrentVersion)
+                || LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow)
             {
                 if (Entry.ActionProperty != null)
                 {
@@ -227,11 +228,11 @@ public partial class MainPage : Page
 
             string[] verStrings = await File.ReadAllLinesAsync(updateNotifFile.FullName);
             string   verString  = string.Empty;
-            if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion? version))
+            if (verStrings.Length > 0 && GameVersion.TryParse(verStrings[0], out GameVersion version))
             {
-                verString = version.Value.VersionString;
+                verString = version.VersionString;
                 SpawnNotificationPush(Lang._Misc.UpdateCompleteTitle,
-                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version.Value.VersionString, IsPreview ? "Preview" : "Stable"),
+                                      string.Format(Lang._Misc.UpdateCompleteSubtitle, version.ToString("n"), IsPreview ? "Preview" : "Stable"),
                                       NotifSeverity.Success,
                                       0xAF,
                                       true,

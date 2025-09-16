@@ -1,19 +1,18 @@
 using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
 using Sentry;
-using Sentry.Infrastructure;
 using Sentry.Protocol;
 using System;
-using System.Collections.Concurrent;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+// ReSharper disable CheckNamespace
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable HeuristicUnreachableCode
 // ReSharper disable RedundantIfElseBlock
@@ -64,15 +63,33 @@ namespace Hi3Helper.SentryHelper
             /// <summary>
             /// Use this for exception that is handled directly by the catcher.
             /// </summary>
-            Handled
+            Handled,
+
+            /// <summary>
+            /// Use this enum if an unhandled exception is coming from plugin operations.
+            /// </summary>
+            PluginUnhandled,
+
+            /// <summary>
+            /// Use this enum if the exception is happened to be expected and handled by the launcher.
+            /// </summary>
+            PluginHandled
         }
 
         #endregion
 
         #region Enable/Disable Sentry
 
-        public static bool IsDisableEnvVarDetected =>
-            Convert.ToBoolean(Environment.GetEnvironmentVariable("DISABLE_SENTRY"));
+        public static bool IsDisableEnvVarDetected
+        {
+            get
+            {
+                string? envVar = Environment.GetEnvironmentVariable("DISABLE_SENTRY");
+                return !string.IsNullOrEmpty(envVar) &&
+                       ((int.TryParse(envVar, out int isDisabledFromInt) && isDisabledFromInt == 1) ||
+                        (bool.TryParse(envVar, out bool isDisabledFromBool) && !isDisabledFromBool));
+            }
+        }
 
         private static bool? _isEnabled;
 
@@ -80,14 +97,14 @@ namespace Hi3Helper.SentryHelper
         {
             get
             {
-                if (IsDisableEnvVarDetected)
+                if (!IsDisableEnvVarDetected)
                 {
-                    Logger.LogWriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
-                    LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", false);
-                    return false;
+                    return LauncherConfig.GetAppConfigValue("SendRemoteCrashData");
                 }
 
-                return _isEnabled ??= LauncherConfig.GetAppConfigValue("SendRemoteCrashData").ToBool();
+                Logger.LogWriteLine("Detected 'DISABLE_SENTRY' environment variable! Disabling crash data reporter...");
+                LauncherConfig.SetAndSaveConfigValue("SendRemoteCrashData", false);
+                return false;
             }
             set
             {
@@ -115,38 +132,34 @@ namespace Hi3Helper.SentryHelper
 
         #region Initializer/Releaser
 
-        public static  bool         IsPreview { get; set; }
+        public static bool IsPreview { get; set; }
+        
         private static IDisposable? _sentryInstance;
 
         public static void InitializeSentrySdk()
         {
-        #if DEBUG
-            _isEnabled = false;
-            return;
-        #pragma warning disable CS0162 // Unreachable code detected
-        #endif
-            _sentryInstance =
+            _sentryInstance ??=
                 SentrySdk.Init(o =>
-                             {
-                                 o.Dsn = SentryDsn;
-                                 o.AddEventProcessor(new SentryEventProcessor());
-                                 o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
-                                 o.Debug              = IsDebugSentry;
-                                 o.DiagnosticLogger = IsDebugSentry
-                                     ? new ConsoleAndTraceDiagnosticLogger(SentryLevel.Debug) : null;
-                                 o.DiagnosticLevel     = IsDebugSentry ? SentryLevel.Debug : SentryLevel.Error;
-                                 o.AutoSessionTracking = true;
-                                 o.StackTraceMode      = StackTraceMode.Enhanced;
-                                 o.DisableSystemDiagnosticsMetricsIntegration();
-                                 o.IsGlobalModeEnabled = true;
-                                 o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
-                                 o.StackTraceMode    = StackTraceMode.Enhanced;
-                                 o.SendDefaultPii    = false;
-                                 o.MaxAttachmentSize = SentryMaxAttachmentSize;
-                                 o.DeduplicateMode   = DeduplicateMode.All;
-                                 o.Environment       = Debugger.IsAttached ? "debug" : IsPreview ? "non-debug" : "stable";
-                                 o.AddExceptionFilter(new NetworkException());
-                             });
+                               {
+                                   o.Dsn = SentryDsn;
+                                   o.AddEventProcessor(new SentryEventProcessor());
+                                   o.CacheDirectoryPath = LauncherConfig.AppDataFolder;
+                                   o.Debug              = IsDebugSentry;
+                                   o.DiagnosticLogger =
+                                       new CollapseLogger(IsDebugSentry ? SentryLevel.Debug : SentryLevel.Warning);
+                                   o.DiagnosticLevel     = IsDebugSentry ? SentryLevel.Debug : SentryLevel.Warning;
+                                   o.AutoSessionTracking = true;
+                                   o.StackTraceMode      = StackTraceMode.Enhanced;
+                                   o.DisableSystemDiagnosticsMetricsIntegration();
+                                   o.IsGlobalModeEnabled = true;
+                                   o.DisableWinUiUnhandledExceptionIntegration(); // Use this for trimmed/NativeAOT published app
+                                   o.StackTraceMode = StackTraceMode.Enhanced;
+                                   o.SendDefaultPii = false;
+                                   o.MaxAttachmentSize = SentryMaxAttachmentSize;
+                                   o.DeduplicateMode = DeduplicateMode.All;
+                                   o.Environment = Debugger.IsAttached ? "debug" : IsPreview ? "non-debug" : "stable";
+                                   o.AddExceptionFilter(new NetworkException());
+                               });
             SentrySdk.ConfigureScope(s =>
                                      {
                                          s.User = new SentryUser
@@ -156,9 +169,6 @@ namespace Hi3Helper.SentryHelper
                                              IpAddress = null
                                          };
                                      });
-        #if DEBUG
-        #pragma warning restore CS0162 // Unreachable code detected
-        #endif
         }
 
         /// <summary>
@@ -183,6 +193,7 @@ namespace Hi3Helper.SentryHelper
                              finally
                              {
                                  _sentryInstance?.Dispose();
+                                 _sentryInstance = null;
                              }
                          });
         }
@@ -207,8 +218,8 @@ namespace Hi3Helper.SentryHelper
         {
             // Handle any unhandled errors in app domain
             // https://learn.microsoft.com/en-us/dotnet/api/system.appdomain?view=net-9.0
-            var ex = a.ExceptionObject as Exception;
-            if (ex == null) return;
+            if (a.ExceptionObject is not Exception ex) return;
+
             ex.Data[Mechanism.HandledKey]   = false;
             ex.Data[Mechanism.MechanismKey] = "Application.UnhandledException";
             ExceptionHandler(ex, ExceptionType.UnhandledOther);
@@ -236,9 +247,10 @@ namespace Hi3Helper.SentryHelper
                 return Guid.Empty;
             }
 
-            var id = ExceptionHandlerInner(ex, exT);
-            Guid.TryParse(id.ToString(), out var guid);
-            return guid;
+            SentryId id = ExceptionHandlerInner(ex, exT);
+            return Guid.TryParse(id.ToString(), out Guid guid)
+                ? guid
+                : Guid.Empty;
         }
 
         /// <summary>
@@ -262,26 +274,23 @@ namespace Hi3Helper.SentryHelper
             await Task.Run(async () => await SentrySdk.FlushAsync(TimeSpan.FromSeconds(10)));
         }
 
-        private static Exception?              _exHLoopLastEx;
-        private static CancellationTokenSource _loopToken = new();
+        private static readonly SemaphoreSlim           AsyncSemaphore = new SemaphoreSlim(1, 1);
+        private static          string?                 _lastExceptionKey;
+        private static          CancellationTokenSource _loopToken = new();
 
         // ReSharper disable once AsyncVoidMethod
         /// <summary>
         /// Clean loop last exception data to be cleaned after 20s so the exception data will be sent to Dsn again.
         /// </summary>
-        private static async void ExHLoopLastEx_AutoClean()
+        private static async void ExHLoopLastEx_AutoClean(CancellationToken ct)
         {
             // if (loopToken.Token.IsCancellationRequested) return;
             try
             {
-                var t = _loopToken.Token;
-                await Task.Delay(20000, t);
-                if (_exHLoopLastEx == null) return;
+                await Task.Delay(20000, ct); // 20s delay
 
-                lock (_exHLoopLastEx)
-                {
-                    _exHLoopLastEx = null;
-                }
+                // Use atomic exchange. This has the same approach by using LockObject.
+                Interlocked.Exchange(ref _lastExceptionKey, null);
             }
             catch (Exception)
             {
@@ -303,40 +312,70 @@ namespace Hi3Helper.SentryHelper
         /// </summary>
         /// <param name="ex">Exception data</param>
         /// <param name="exT">Exception type, default to ExceptionType.Handled</param>
-        public static async Task<Guid> ExceptionHandler_ForLoopAsync(Exception ex, ExceptionType exT = ExceptionType.Handled)
+        public static async Task<Guid> ExceptionHandler_ForLoopAsync(Exception     ex,
+                                                                     ExceptionType exT = ExceptionType.Handled)
         {
-            if (!IsEnabled) return Guid.Empty;
-            if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
-            if (ex is TaskCanceledException or OperationCanceledException)
+            try
             {
-                Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
-                                    LogType.Sentry);
+                if (!IsEnabled) return Guid.Empty;
+                if (ex is AggregateException && ex.InnerException != null) ex = ex.InnerException;
+                if (ex is TaskCanceledException or OperationCanceledException)
+                {
+                    Logger.LogWriteLine($"Caught TCE/OCE exception from: {ex.Source}. Exception will not be uploaded!\r\n{ex}",
+                                        LogType.Sentry);
+                    return Guid.Empty;
+                }
+
+                string exKey = $"{ex.GetType().Name}:{ex.Message}:{ex.StackTrace?.GetHashCode()}";
+
+                // Use semaphore to lock and wait until the previous operation is done on the same thread.
+                // Note from neon:
+                // The reason why I changed it with SemaphoreSlim is that Lock is synchronous and may cause deadlock.
+                await AsyncSemaphore.WaitAsync();
+                if (exKey == _lastExceptionKey) return Guid.Empty;
+
+                CancellationTokenSource oldToken = _loopToken;
+
+                _loopToken        = new CancellationTokenSource();
+                _lastExceptionKey = exKey;
+                ExHLoopLastEx_AutoClean(_loopToken.Token); // Start auto clean loop
+
+                // Detach and create a new thread.
+                _ = Task.Run(async () =>
+                             {
+                                 await oldToken.CancelAsync();
+                                 oldToken.Dispose();
+                             }, oldToken.Token);
+
+                // ReSharper disable once MethodSupportsCancellation
+                return await Task.Run(() =>
+                                      {
+                                          SentryId id = ExceptionHandlerInner(ex, exT);
+                                          return Guid.TryParse(id.ToString(), out Guid sentryId)
+                                              ? sentryId
+                                              : Guid.Empty;
+                                      });
+            }
+            catch (Exception err)
+            {
+                Logger.LogWriteLine($"[SentryHelper::ExceptionHandler_ForLoopAsync] Failed to send exception!\r\n{err}",
+                                    LogType.Error, true);
                 return Guid.Empty;
             }
-
-            if (ex == _exHLoopLastEx) return Guid.Empty; // If exception pointer is the same as the last one, ignore it.
-            await _loopToken.CancelAsync(); // Cancel the previous loop
-            _loopToken.Dispose();
-            _loopToken     = new CancellationTokenSource(); // Create new token
-            _exHLoopLastEx = ex;
-            ExHLoopLastEx_AutoClean(); // Start auto clean loop
-            
-            Guid sentryId = Guid.Empty;
-            await Task.Run(() =>
-                           {
-                               var id = ExceptionHandlerInner(ex, exT);
-                               Guid.TryParse(id.ToString(), out sentryId);
-                           });
-
-            return sentryId;
+            finally
+            {
+                // After the operation is done, release the semaphore.
+                AsyncSemaphore.Release();
+            }
         }
 
         #region Breadcrumbs Data
+        public static Func<string>? AppCdnOptionGetter { get; set; } = null;
 
         public static string AppBuildCommit        { get; set; } = "";
         public static string AppBuildBranch        { get; set; } = "";
         public static string AppBuildRepo          { get; set; } = "";
-        public static string AppCdnOption          { get; set; } = "";
+        public static string AppCdnOption          { get => AppCdnOptionGetter?.Invoke() ?? field; } = "";
         public static string CurrentGameCategory   { get; set; } = "";
         public static string CurrentGameRegion     { get; set; } = "";
         public static string CurrentGameLocation   { get; set; } = "";
@@ -344,6 +383,7 @@ namespace Hi3Helper.SentryHelper
         public static bool   CurrentGameUpdated    { get; set; }
         public static bool   CurrentGameHasPreload { get; set; }
         public static bool   CurrentGameHasDelta   { get; set; }
+        public static bool   CurrentGameIsPlugin   { get; set; }
 
         private static int CpuThreadsTotal => Environment.ProcessorCount;
 
@@ -354,9 +394,9 @@ namespace Hi3Helper.SentryHelper
                 try
                 {
                     string cpuName;
-                    var    env = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "Unknown CPU";
-                    var reg =
-                        Registry.GetValue("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\SYSTEM\\CentralProcessor\\0",
+                    string    env = Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? "Unknown CPU";
+                    object? reg =
+                        Registry.GetValue(@"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\SYSTEM\CentralProcessor\0",
                                           "ProcessorNameString", null);
                     if (reg != null)
                     {
@@ -387,16 +427,16 @@ namespace Hi3Helper.SentryHelper
                                 .OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\");
                     if (baseKey != null)
                     {
-                        foreach (var subKeyName in baseKey.GetSubKeyNames())
+                        foreach (string subKeyName in baseKey.GetSubKeyNames())
                         {
                             if (!int.TryParse(subKeyName, out int subKeyInt) || subKeyInt < 0 || subKeyInt > 9999)
                                 continue;
 
-                            var gpuName       = "Unknown GPU";
-                            var driverVersion = "Unknown Driver Version";
+                            string? gpuName       = "Unknown GPU";
+                            string? driverVersion = "Unknown Driver Version";
                             try
                             {
-                                using var subKey = baseKey.OpenSubKey(subKeyName);
+                                using RegistryKey? subKey = baseKey.OpenSubKey(subKeyName);
                                 if (subKey == null) continue;
 
                                 gpuName       = subKey.GetValue("DriverDesc") as string;
@@ -425,36 +465,33 @@ namespace Hi3Helper.SentryHelper
         }
 
         private static Breadcrumb? _buildInfo;
-        private static Breadcrumb BuildInfo
-        {
-            get => _buildInfo ??= new("Build Info", "commit", new Dictionary<string, string>
+
+        private static Breadcrumb BuildInfo =>
+            _buildInfo ??= new Breadcrumb("Build Info", "commit", new Dictionary<string, string>
             {
                 { "Branch", AppBuildBranch },
                 { "Commit", AppBuildCommit },
                 { "Repository", AppBuildRepo },
                 { "IsPreview", IsPreview.ToString() }
             }, "BuildInfo");
-        }
-        
+
         private static Breadcrumb? _cpuInfo;
-        private static Breadcrumb CpuInfo
-        {
-            get => _cpuInfo ??= new("CPU Info", "system.cpu", new Dictionary<string, string>
+
+        private static Breadcrumb CpuInfo =>
+            _cpuInfo ??= new Breadcrumb("CPU Info", "system.cpu", new Dictionary<string, string>
             {
                 { "CPU Name", CpuName },
                 { "Total Thread", CpuThreadsTotal.ToString() }
             }, "CPUInfo");
-        }
 
         private static Breadcrumb? _gpuInfo;
-        private static Breadcrumb GpuInfo
-        {
-            get => _gpuInfo ??= new("GPU Info", "system.gpu",
-                                     GetGpuInfo.ToDictionary(item => item.GpuName,
-                                                             item => item.DriverVersion),
-                                     "GPUInfo");
-        }
-        
+
+        private static Breadcrumb GpuInfo =>
+            _gpuInfo ??= new Breadcrumb("GPU Info", "system.gpu",
+                                        GetGpuInfo.ToDictionary(item => item.GpuName,
+                                                                item => item.DriverVersion),
+                                        "GPUInfo");
+
         private static Breadcrumb GameInfo =>
             new("Current Loaded Game Info", "game", new Dictionary<string, string>
             {
@@ -464,12 +501,13 @@ namespace Hi3Helper.SentryHelper
                 { "Updated", CurrentGameUpdated.ToString() },
                 { "HasPreload", CurrentGameHasPreload.ToString() },
                 { "HasDelta", CurrentGameHasDelta.ToString() },
+                { "IsGameFromPlugin", CurrentGameIsPlugin.ToString() },
                 { "Location", CurrentGameLocation },
                 { "CdnOption", AppCdnOption }
             }, "GameInfo");
 
         #endregion
-        
+
         private static SentryId ExceptionHandlerInner(Exception ex, ExceptionType exT = ExceptionType.Handled)
         {
             SentrySdk.AddBreadcrumb(BuildInfo);
@@ -477,61 +515,57 @@ namespace Hi3Helper.SentryHelper
             SentrySdk.AddBreadcrumb(CpuInfo);
             SentrySdk.AddBreadcrumb(GpuInfo);
 
-            var loadedModules = Process.GetCurrentProcess().Modules;
-            var modulesInfo   = new ConcurrentDictionary<string, string>();
-
-            Parallel.ForEach(loadedModules.Cast<ProcessModule>(), module =>
-            {
-                try
-                {
-                    var name = module.ModuleName;
-                    var ver  = module.FileVersionInfo.FileVersion;
-                    var path = module.FileName;
-                    _ = modulesInfo.TryAdd(name, $"{ver} ({path})");
-                }
-                catch (Exception exI)
-                {
-                    Logger.LogWriteLine($"Failed to get module info: {exI.Message}", LogType.Error, true);
-                }
-            });
-
-            var sbModulesInfo = new StringBuilder();
-            foreach (var (key, value) in modulesInfo)
-            {
-                sbModulesInfo.AppendLine($"{key}: {value}");
-            }
-            
             ex.Data[Mechanism.HandledKey] ??= exT == ExceptionType.Handled;
 
             string? methodName = null;
-            var    st = ex.StackTrace;
+            string? st         = ex.StackTrace;
             if (st != null)
             {
-                var          m   = ExceptionFrame().Match(st);
+                Match m = ExceptionFrame().Match(st);
                 methodName = m.Success ? m.Value : null;
             }
 
             ex.Data[Mechanism.MechanismKey] ??= exT switch
-                                              {
-                                                  ExceptionType.UnhandledXaml => "Application.XamlUnhandledException",
-                                                  ExceptionType.UnhandledOther => methodName ?? ex.Source ?? "Application.UnhandledException",
-                                                  _ => methodName ?? ex.Source ?? "Application.HandledException"
-                                              };
-            
+                                                {
+                                                    ExceptionType.UnhandledXaml => "Application.XamlUnhandledException",
+                                                    ExceptionType.UnhandledOther => methodName ??
+                                                        ex.Source ?? "Application.UnhandledException",
+                                                    _ => methodName ?? ex.Source ?? "Application.HandledException"
+                                                };
+
         #pragma warning disable CS0162 // Unreachable code detected
-            if (SentryUploadLog) // Upload log file if enabled
+            string? logPath = LoggerBase.LogPath;
+            if (logPath != null && SentryUploadLog) // Upload log file if enabled
                 // ReSharper disable once HeuristicUnreachableCode
             {
                 if ((bool)(ex.Data[Mechanism.HandledKey] ?? false))
                     return SentrySdk.CaptureException(ex);
                 else
-                    return SentrySdk.CaptureException(ex, s =>
-                                                   {
-                                                       s.AddAttachment(LoggerBase.LogPath, AttachmentType.Default, "text/plain");
-                                                       s.AddAttachment(new MemoryStream(Encoding.UTF8.GetBytes(sbModulesInfo.ToString())),
-                                                                       "LoadedModules.txt", AttachmentType.Default,
-                                                                       "text/plain");
-                                                   });
+                {
+                    // Tail to the last 100 lines of log
+                    MemoryStream logStream = new MemoryStream();
+                    using FileStream logFileStream =
+                        new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+                    bool isSuccessTailing = TryTailLinesFromStream(logFileStream, logStream, 100);
+                    if (!isSuccessTailing)
+                    {
+                        // Send only the exception without providing attachment if fails on tailing.
+                        logStream.Dispose();
+                        return SentrySdk.CaptureException(ex);
+                    }
+                    else
+                    {
+                        logStream.Position = 0; // Reset stream position to the beginning
+                        return SentrySdk.CaptureException(ex,
+                                                          s =>
+                                                          {
+                                                              s.AddAttachment(logStream,
+                                                                              Path.GetFileName(logPath),
+                                                                              AttachmentType.Default, "text/plain");
+                                                          });
+                    }
+                }
             }
             else
             {
@@ -539,12 +573,13 @@ namespace Hi3Helper.SentryHelper
             }
         #pragma warning restore CS0162 // Unreachable code detected
         }
-        
+
         public static bool SendExceptionFeedback(Guid sentryId, string userEmail, string user, string feedback)
         {
             if (sentryId == Guid.Empty)
             {
-                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!", LogType.Error,
+                Logger.LogWriteLine("[SendExceptionFeedback] SentryId is empty, feedback will not be sent!",
+                                    LogType.Error,
                                     true);
                 return false;
             }
@@ -556,11 +591,11 @@ namespace Hi3Helper.SentryHelper
                 return false;
             }
 
-            var sId       = new SentryId(sentryId);
+            SentryId sId = new SentryId(sentryId);
             SentrySdk.CaptureFeedback(feedback, userEmail, user, null, null, sId);
             return true;
         }
-        
+
         public static bool SendGenericFeedback(string feedback, string userEmail, string user)
         {
             if (!IsEnabled)
@@ -569,14 +604,129 @@ namespace Hi3Helper.SentryHelper
                                     LogType.Error, true);
                 return false;
             }
-            
+
             SentrySdk.CaptureFeedback(feedback, userEmail, user);
             return true;
         }
 
         [GeneratedRegex(@"(?<=\bat\s)(CollapseLauncher|Hi3Helper)\.[^\s(]+", RegexOptions.Compiled)]
         private static partial Regex ExceptionFrame();
-    }
 
         #endregion
+
+        #region Private Tools
+        private static unsafe bool TryTailLinesFromStream(Stream sourceStream, Stream targetStream, int maxLines, int bufferSize = 8 << 10) // == 8K buffer
+        {
+            // This approach reads the stream from the end backwards to find the last `maxLines` lines.
+
+            if (!sourceStream.CanSeek)
+                throw new ArgumentException("Source stream must support seeking.", nameof(sourceStream));
+
+            const byte returnByteChar   = (byte)'\r';
+            const byte lineFeedByteChar = (byte)'\n';
+
+            long currentPos        = sourceStream.Length;
+            long endWriteFromPos   = currentPos;
+            long startWriteFromPos = 0;
+
+            bool isFirst = true;
+
+            // Seek to the end
+            sourceStream.Seek(0, SeekOrigin.End);
+
+            // Automatic buffer rent or allocating from stack
+            byte[]?           poolBuffer = bufferSize > 8 << 10 ? ArrayPool<byte>.Shared.Rent(bufferSize) : null;
+            scoped Span<byte> buffer     = poolBuffer ?? stackalloc byte[bufferSize];
+
+            try
+            {
+                // Do the do
+                do
+                {
+                    // Get the minimum bytes to read, just in case if the file is smaller than buffer size
+                    int toRead = (int)Math.Min(bufferSize, currentPos);
+                    if (toRead == 0)
+                    {
+                        break;
+                    }
+
+                    // Seek to the position - buffer to read
+                    sourceStream.Position = currentPos - toRead;
+                    int readBytes = sourceStream.ReadAtLeast(buffer[..toRead], toRead, false);
+                    currentPos -= readBytes;
+
+                    Span<byte> readData = buffer[..readBytes];
+                    int        offset   = readData.Length;
+
+                    // Scan character backwards
+                    while (offset > 0)
+                    {
+                        // Not new line feed? Skip
+                        if (readData[--offset] != lineFeedByteChar)
+                        {
+                            continue;
+                        }
+
+                        // Try skip trailing chars (including return char)
+                        if (isFirst)
+                        {
+                            --endWriteFromPos;
+                            while (offset > 0 &&
+                                   (readData[offset - 1] == returnByteChar ||
+                                    readData[offset - 1] == lineFeedByteChar))
+                            {
+                                --endWriteFromPos;
+                                --offset;
+                            }
+
+                            isFirst = false;
+                            continue;
+                        }
+
+                        // Found a new line feed, count down
+                        --maxLines;
+                        if (maxLines != 0)
+                        {
+                            continue;
+                        }
+
+                        // Set the current stream position for the next read scan
+                        currentPos = currentPos + offset + 1;
+                        break;
+                    }
+
+                    // Set the position to write from
+                    startWriteFromPos = currentPos;
+                } while (maxLines > 0);
+
+                sourceStream.Position = startWriteFromPos;
+
+                // Now copy the data to the target stream.
+                long remainedBytes = endWriteFromPos - startWriteFromPos;
+                while (remainedBytes != 0)
+                {
+                    int toWrite = (int)Math.Min(bufferSize, remainedBytes);
+                    int read    = sourceStream.Read(buffer[..toWrite]);
+                    if (read == 0) break;
+
+                    targetStream.Write(buffer[..read]);
+                    remainedBytes -= read;
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                if (poolBuffer != null)
+                {
+                    ArrayPool<byte>.Shared.Return(poolBuffer);
+                }
+            }
+        }
+        #endregion
+    }
 }

@@ -3,6 +3,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.SentryHelper;
 using System;
@@ -44,7 +45,7 @@ namespace CollapseLauncher.InstallManager
 
             if (packageProperty.version != null)
             {
-                Version = new GameVersion(packageProperty.version);
+                Version = packageProperty.version;
             }
             PackageType = GameInstallPackageType.Plugin;
         }
@@ -71,7 +72,7 @@ namespace CollapseLauncher.InstallManager
 
             if (packageProperty.version != null || overrideVersion != null)
             {
-                Version = new GameVersion(overrideVersion ?? packageProperty.version);
+                Version = overrideVersion ?? packageProperty.version;
             }
 
             if (!string.IsNullOrEmpty(packageProperty.md5))

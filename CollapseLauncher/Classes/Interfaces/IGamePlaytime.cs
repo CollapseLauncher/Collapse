@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GamePlaytime;
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CollapseLauncher.Interfaces
@@ -11,8 +12,9 @@ namespace CollapseLauncher.Interfaces
         CollapsePlaytime CollapsePlaytime { get; }
 
         void Reset();
-        void Update(TimeSpan      timeSpan, bool      forceUpdateDb = false);
-        void StartSession(Process proc,     DateTime? begin         = null);
+        void Update(TimeSpan timeSpan, bool forceUpdateDb = false);
+        Task StartSession(Process proc, DateTime? begin = null);
+        Task StartSessionFromAwaiter(Func<CancellationToken, Task> awaiterTask, DateTime? begin = null);
         Task CheckDb(bool redirectThrow = false);
     }
 }

@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.WinUI;
+﻿using CollapseLauncher.Helper.Animation;
+using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
 using Hi3Helper.SentryHelper;
@@ -13,10 +14,13 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Text;
+using WinRT;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable UnusedMember.Global
 
@@ -181,7 +185,7 @@ namespace CollapseLauncher.Extension
             navViewControl.UpdateLayout();
         }
 
-        internal static T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay)
+        internal static T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay, UpdateSourceTrigger sourceTrigger = UpdateSourceTrigger.Default)
             where T : FrameworkElement
         {
             // Create a new binding instance
@@ -190,7 +194,7 @@ namespace CollapseLauncher.Extension
                 Source = objectToBind,
                 Mode = bindingMode,
                 Path = new PropertyPath(propertyName),
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                UpdateSourceTrigger = sourceTrigger
             };
 
             // If the converter is assigned, then add the converter
@@ -386,9 +390,13 @@ namespace CollapseLauncher.Extension
             return textBlock;
         }
 
+        private static ResourceDictionary _currentDictionary;
+
         internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
         {
-            if (!Application.Current.Resources.TryGetValue(resourceKey, out object resourceObj))
+            _currentDictionary ??= Application.Current.Resources;
+
+            if (!(_currentDictionary?.TryGetValue(resourceKey, out object resourceObj) ?? false))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
             if (resourceObj is not TReturnType resource)
@@ -397,12 +405,25 @@ namespace CollapseLauncher.Extension
             return resource;
         }
 
+        internal static ref TReturnType GetApplicationResourceRef<TReturnType>(string resourceKey)
+            where TReturnType : struct
+        {
+            _currentDictionary ??= Application.Current.Resources;
+
+            if (!(_currentDictionary?.TryGetValue(resourceKey, out object resourceObj) ?? false))
+            {
+                return ref Unsafe.NullRef<TReturnType>();
+            }
+
+            return ref Unsafe.Unbox<TReturnType>(resourceObj);
+        }
+
         internal static void SetApplicationResource(string resourceKey, object value)
         {
-            if (!Application.Current.Resources.ContainsKey(resourceKey))
+            if (!_currentDictionary.ContainsKey(resourceKey))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
-            Application.Current.Resources[resourceKey] = value;
+            _currentDictionary[resourceKey] = value;
         }
 
         internal static CornerRadius GetElementCornerRadius(FrameworkElement element, CornerRadiusKind kind = CornerRadiusKind.Normal)
@@ -987,6 +1008,47 @@ namespace CollapseLauncher.Extension
         }
 
 #nullable enable
+        public static nint GetPointerFromDependencyObject<T>(this T? element)
+            where T : DependencyObject
+            => element is null ? nint.Zero : MarshalInspectable<T>.FromManaged(element);
+
+        public static T? GetDependencyObjectFromPointer<T>(this nint ptr)
+            where T : DependencyObject
+            => ptr == nint.Zero ? null : MarshalInspectable<T>.FromAbi(ptr);
+
+
+        internal static readonly InputSystemCursor HandCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+
+        internal static void AttachHandCursorRecursiveOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not UIElement element)
+            {
+                return;
+            }
+
+            element.SetAllControlsCursorRecursive(HandCursor);
+        }
+
+        internal static void AttachHandCursorOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not UIElement element)
+            {
+                return;
+            }
+
+            element.SetCursor(HandCursor);
+        }
+
+        internal static void EnableImplicitAnimationRecursiveOnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not UIElement element)
+            {
+                return;
+            }
+
+            element.EnableImplicitAnimation(true);
+        }
+
         private static IEnumerable<DependencyObject> VisualTreeHelperGetChildrenEnumerable(FrameworkElement? element)
         {
             if (element is null)
@@ -1053,6 +1115,66 @@ namespace CollapseLauncher.Extension
 
             return VisualTreeHelper.GetParent(element) is not FrameworkElement parentElement ||
                    (parentElement.Visibility != Visibility.Collapsed && !(element.Opacity < 1));
+        }
+
+        internal static Grid FindOverlayGrid([NotNull] this XamlRoot? root, bool isAlwaysOnTop)
+        {
+            // XAML root cannot be empty or null!
+            ArgumentNullException.ThrowIfNull(root);
+
+            // If alwaysOnTop is not preferred, find for a grid called "OverlayRootGrid" under the XamlRoot's Content.
+            if (!isAlwaysOnTop)
+            {
+                FrameworkElement? parent = root.Content.FindDescendant("OverlayRootGrid", StringComparison.OrdinalIgnoreCase);
+                if (parent is not Grid parentAsGrid)
+                {
+                    //If the "OverlayRootGrid" doesn't exist, start searching for any last grid existed.
+                    goto FindAnyLastGrid;
+                }
+
+                // Otherwise, return the "OverlayRootGrid"
+                return parentAsGrid;
+            }
+
+        FindAnyLastGrid:
+            // Assign the XamlRoot's Content as grid. If it's not a grid, find any last child grid
+            // on the XamlRoot's VisualTree children.
+            Grid? topGrid = root.Content as Grid;
+            topGrid ??= FindLastChildGrid(root.Content);
+
+            // If it still cannot find any grid, throw.
+            if (topGrid is null)
+            {
+                throw new InvalidOperationException("Cannot find any or the last grid in your XAML layout!");
+            }
+
+            // Otherwise, any grid that have been found.
+            return topGrid;
+        }
+
+        internal static Grid? FindLastChildGrid(DependencyObject? element)
+        {
+            // Get count of any children existed under the element's VisualTree
+            int visualTreeCount = VisualTreeHelper.GetChildrenCount(element);
+            if (visualTreeCount == 0)
+            {
+                // If none is found, return null.
+                return null;
+            }
+
+            // Find the last grid to be found under the element's VisualTree
+            Grid? lastGrid = null;
+            for (int i = 0; i < visualTreeCount; i++)
+            {
+                DependencyObject currentObject = VisualTreeHelper.GetChild(element, i);
+                if (currentObject is Grid asGrid)
+                {
+                    lastGrid = asGrid;
+                }
+            }
+
+            // Return the result (whether if it's not found/as null, or any last grid)
+            return lastGrid;
         }
     }
 }

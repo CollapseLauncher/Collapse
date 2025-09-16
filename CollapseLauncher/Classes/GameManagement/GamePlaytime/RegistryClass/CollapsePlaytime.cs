@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Database;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -26,8 +27,9 @@ namespace CollapseLauncher.GamePlaytime
         private  static HashSet<int>      _isDeserializing = [];
         private         RegistryKey       _registryRoot;
         private         int               _hashID;
-        private         IGameVersion _gameVersion;
+        private         IGameVersion      _gameVersion;
         private         IGameSettings     _gameSettings;
+        private         string            _gameType;
         
         #endregion
 
@@ -115,6 +117,8 @@ namespace CollapseLauncher.GamePlaytime
                 }
 
                 playtimeInner._gameVersion  = gameVersion;
+                playtimeInner._gameType     = gameVersion.GameType is not GameNameType.Plugin 
+                                                ? gameVersion.GameType.ToString() : gameVersion.GameName?.Replace(" ", "");
                 playtimeInner._gameSettings = gameSettings;
                 playtimeInner._registryRoot = root;
                 playtimeInner._hashID       = hashID;
@@ -164,7 +168,7 @@ namespace CollapseLauncher.GamePlaytime
                 if (lastPlayed != null)
                     _registryRoot.SetValue(LastPlayedValueName, lastPlayed, RegistryValueKind.DWord);
                 
-                if (DbHandler.IsEnabled && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
+                if ((DbHandler.IsEnabled ?? false) && _gameSettings.AsIGameSettingsUniversal().SettingsCollapseMisc.IsSyncPlaytimeToDatabase &&
                     ((DateTime.Now - LastDbUpdate).TotalMinutes >= 5 || forceUpdateDb)) // Sync only every 5 minutes to reduce database usage
                 {
                     _ = UpdatePlaytime_Database_Push(data, TotalPlaytime.TotalSeconds, lastPlayed);
@@ -278,10 +282,10 @@ namespace CollapseLauncher.GamePlaytime
         private int?    _unixStampDb;
         
         // Key names
-        private string KeyPlaytimeJson => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-js";
-        private string KeyTotalTime    => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-total";
-        private string KeyLastPlayed   => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-lastPlayed";
-        private string KeyLastUpdated  => $"{_gameVersion.GameType.ToString()}-{_gameVersion.GameRegion}-pt-lu";
+        private string KeyPlaytimeJson => $"{_gameType}-{_gameVersion.GameRegion}-pt-js";
+        private string KeyTotalTime    => $"{_gameType}-{_gameVersion.GameRegion}-pt-total";
+        private string KeyLastPlayed   => $"{_gameType}-{_gameVersion.GameRegion}-pt-lastPlayed";
+        private string KeyLastUpdated  => $"{_gameType}-{_gameVersion.GameRegion}-pt-lu";
         
 
         #region Sync Methods

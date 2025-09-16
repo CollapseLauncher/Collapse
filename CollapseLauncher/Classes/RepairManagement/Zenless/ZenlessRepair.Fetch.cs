@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.InstallManager.Zenless;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Parser.AssetIndex;
@@ -80,11 +81,54 @@ namespace CollapseLauncher
                         EliminatePluginAssetIndex(assetIndex);
                     }
                 }
+
+                FilterExcludedAssets(assetIndex);
             }
             finally
             {
                 hashSet.Clear();
             }
+        }
+        #endregion
+
+        #region Filter Excluded Assets
+        private void FilterExcludedAssets(List<FilePropertiesRemote> assetList)
+        {
+            string gameExecDataName =
+                Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
+            string gameExecDataPath         = $"{gameExecDataName}_Data";
+            string gamePersistentDataPath   = Path.Combine(GamePath,               gameExecDataPath, "Persistent");
+            string gameExceptMatchFieldFile = Path.Combine(gamePersistentDataPath, "KDelResource");
+
+            if (!File.Exists(gameExceptMatchFieldFile))
+            {
+                return;
+            }
+
+            string exceptMatchFieldContent = File.ReadAllText(gameExceptMatchFieldFile);
+            HashSet<int> exceptMatchFieldHashSet = ZenlessInstall.CreateExceptMatchFieldHashSet<int>(exceptMatchFieldContent);
+
+            List<FilePropertiesRemote> filteredList = [];
+            foreach (FilePropertiesRemote asset in assetList)
+            {
+                if (asset.AssociatedObject is not ZenlessResManifestAsset zenlessResAsset ||
+                    zenlessResAsset.PackageMatchingIds == null ||
+                    zenlessResAsset.PackageMatchingIds.Length == 0)
+                {
+                    filteredList.Add(asset);
+                    continue;
+                }
+
+                bool isExceptionFound = zenlessResAsset.PackageMatchingIds.Any(exceptMatchFieldHashSet.Contains);
+                if (isExceptionFound)
+                {
+                    continue;
+                }
+                filteredList.Add(asset);
+            }
+
+            assetList.Clear();
+            assetList.AddRange(filteredList);
         }
         #endregion
 
@@ -109,7 +153,7 @@ namespace CollapseLauncher
                 Dictionary<string, string> repoMetadata = await FetchMetadata(token);
 
                 // Check for manifest. If it doesn't exist, then throw and warn the user
-                if (!repoMetadata.TryGetValue(GameVersion.VersionString, out var value))
+                if (!repoMetadata.TryGetValue(GameVersion.VersionString, out string value))
                 {
                     // If version override is on, then throw
                     if (IsVersionOverride)
@@ -154,30 +198,32 @@ namespace CollapseLauncher
             string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, GameVersionManager.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil and return its stream
-            await Task.Run(async () =>
+            await using Stream assetIndexStream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token: token);
+            if (assetIndexStream != null)
             {
-                await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
-                if (stream != null)
-                {
-                    // Deserialize asset index and set it to list
-                    AssetIndexV2 parserTool = new AssetIndexV2();
-                    pkgVersion = parserTool.Deserialize(stream, out DateTime timestamp);
-                    Logger.LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
-                }
+                // Deserialize asset index and set it to list
+                AssetIndexV2 parserTool = new AssetIndexV2();
+                pkgVersion = parserTool.Deserialize(assetIndexStream, out DateTime timestamp);
+                Logger.LogWriteLine($"Asset index timestamp: {timestamp}", LogType.Default, true);
+            }
 
-                // Convert the pkg version list to asset index
-                foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, alternateHashSet, GamePath, GameRepoURL))
-                {
-                    // If entry is null (means, an existing entry has been overwritten), then next
-                    if (entry == null)
-                        continue;
+            if (GameRepoURL == null)
+            {
+                return;
+            }
 
-                    assetIndex.Add(entry);
-                }
+            // Convert the pkg version list to asset index
+            foreach (FilePropertiesRemote entry in pkgVersion.RegisterMainCategorizedAssetsToHashSet(assetIndex, alternateHashSet, GamePath, GameRepoURL))
+            {
+                // If entry is null (means, an existing entry has been overwritten), then next
+                if (entry == null)
+                    continue;
 
-                // Clear the pkg version list
-                pkgVersion.Clear();
-            }, token).ConfigureAwait(false);
+                assetIndex.Add(entry);
+            }
+
+            // Clear the pkg version list
+            pkgVersion.Clear();
         }
 
         private async Task<Dictionary<string, string>> FetchMetadata(CancellationToken token)
@@ -186,7 +232,7 @@ namespace CollapseLauncher
             string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, GameVersionManagerCast!.GamePreset.ProfileName);
 
             // Start downloading metadata using FallbackCDNUtil
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token: token);
             return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token);
         }
         #endregion
@@ -422,7 +468,7 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            GameVersionManager.GameApiProp.data!.plugins?.ForEach(plugin =>
+            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
                   assetIndex.RemoveAll(asset =>

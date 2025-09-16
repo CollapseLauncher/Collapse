@@ -7,6 +7,7 @@ using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.Http;
 using Hi3Helper.Http.Legacy;
+using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Win32.FileDialogCOM;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -216,13 +217,14 @@ namespace CollapseLauncher.Dialogs
 
                 // Check if the version value exist and matches
                 if (!(sourceIniVersionFile.ContainsKey("General") && sourceIniVersionFile["General"].ContainsKey("game_version"))) return false;
-                string localVersionString = sourceIniVersionFile["General"]["game_version"].ToString();
-                if (string.IsNullOrEmpty(localVersionString)) return false;
-                GameVersion localVersion = new GameVersion(localVersionString);
-                GameVersion? remoteVersion = CurrentGameProperty.GameVersion?.GetGameVersionApi();
-                if (!localVersion.IsMatch(remoteVersion)) return false;
+                string       localVersionString = sourceIniVersionFile["General"]["game_version"].ToString();
+                GameVersion? localVersion       = localVersionString;
+                if (!localVersion.HasValue) return false;
 
-                var execPath = Path.Combine(gamePath, profile.GameExecutableName ?? "");
+                GameVersion? remoteVersion = CurrentGameProperty.GameVersion?.GetGameVersionApi();
+                if (localVersion != remoteVersion) return false;
+
+                string execPath = Path.Combine(gamePath, profile.GameExecutableName ?? "");
                 if (!File.Exists(execPath))
                     return false;
             }

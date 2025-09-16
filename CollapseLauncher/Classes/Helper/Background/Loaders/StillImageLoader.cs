@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Animation;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Image;
 using CommunityToolkit.WinUI.Animations;
 using Hi3Helper.Shared.Region;
@@ -14,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable PartialTypeWithSinglePart
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Helper.Background.Loaders
@@ -67,38 +69,46 @@ namespace CollapseLauncher.Helper.Background.Loaders
             GC.SuppressFinalize(this);
         }
 
-        public async Task LoadAsync(string filePath,      bool              isImageLoadForFirstTime,
-                                    bool   isRequestInit, CancellationToken token)
+        public async Task LoadAsync(string            filePath,
+                                    bool              isImageLoadForFirstTime,
+                                    bool              isRequestInit,
+                                    CancellationToken token)
         {
-            try
+            // Get the image stream
+            token.ThrowIfCancellationRequested();
+            await using FileStream? imageStream = BackgroundMediaUtility.GetAlternativeFileStream() ??
+                                                  await ImageLoaderHelper.LoadImage(filePath, false,
+                                                           isImageLoadForFirstTime);
+            // Return if the stream is null due to cancellation or an error.
+            if (imageStream == null)
             {
-                // Get the image stream
-                token.ThrowIfCancellationRequested();
-                await using FileStream? imageStream = BackgroundMediaUtility.GetAlternativeFileStream() ??
-                                                      await ImageLoaderHelper.LoadImage(filePath, false,
-                                                               isImageLoadForFirstTime);
-                // Return if the stream is null due to cancellation or an error.
-                if (imageStream == null)
-                {
-                    return;
-                }
-
-                BitmapImage bitmapImage =
-                    await ImageLoaderHelper.Stream2BitmapImage(imageStream.AsRandomAccessStream());
-
-                await Task.WhenAll(ApplyAndSwitchImage(AnimationDuration, bitmapImage), ColorPaletteUtility.ApplyAccentColor(ParentUI,
-                                                                                                                             imageStream.AsRandomAccessStream(),
-                                                                                                                             filePath,
-                                                                                                                             isImageLoadForFirstTime, false));
-
+                return;
             }
-            finally
-            {
-                GC.Collect();
-            }
+
+            // Load and decode to WriteableBitmap
+            WriteableBitmap wBitmap = new(1, 1);
+            await wBitmap.SetSourceAsync(imageStream.AsRandomAccessStream());
+
+            // Run image switch task
+            nint wBitmapBufferP = wBitmap.GetBufferPointer();
+            Task applyColorTask = ColorPaletteUtility
+               .ApplyAccentColor(ParentUI,
+                                 new BitmapInputStruct
+                                 {
+                                     Buffer  = wBitmapBufferP,
+                                     Channel = 4,
+                                     Width   = wBitmap.PixelWidth,
+                                     Height  = wBitmap.PixelHeight
+                                 },
+                                 filePath,
+                                 isImageLoadForFirstTime);
+            Task applyAndSwitchImageTask = ApplyAndSwitchImage(AnimationDuration, wBitmap);
+
+            _ = Task.WhenAll(applyAndSwitchImageTask, applyColorTask)
+                    .ContinueWith(_ => GC.Collect(), token);
         }
 
-        private async Task ApplyAndSwitchImage(double duration, BitmapImage imageToApply)
+        private Task ApplyAndSwitchImage(double duration, BitmapSource imageToApply)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(duration);
 
@@ -109,7 +119,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             ImageBackLast!.Opacity   = 1;
             ImageBackCurrent!.Source = imageToApply;
 
-            await Task.WhenAll(
+            return Task.WhenAll(
                                ImageBackCurrent.StartAnimation(timeSpan,
                                                                CurrentCompositor
                                                                   .CreateScalarKeyFrameAnimation("Opacity",
@@ -125,7 +135,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
         public void Undimm() => BackgroundMediaUtility.RunQueuedTask(ToggleImageVisibility(false));
 
-        private async Task ToggleImageVisibility(bool hideImage, bool completeInvisible = false, bool isForceShow = false)
+        private Task ToggleImageVisibility(bool hideImage, bool completeInvisible = false, bool isForceShow = false)
         {
             if (isForceShow)
             {
@@ -134,7 +144,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
             else
             {
-                if (IsBackgroundDimm == hideImage) return;
+                if (IsBackgroundDimm == hideImage) return Task.CompletedTask;
                 IsBackgroundDimm = hideImage;
             }
 
@@ -152,7 +162,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
             if (isForceShow)
             {
-                await Task.WhenAll(
+                return Task.WhenAll(
                     AcrylicMask.StartAnimation(
                         duration,
                         CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 1f : 0f, hideImage ? 0f : 1f)
@@ -169,33 +179,28 @@ namespace CollapseLauncher.Helper.Background.Loaders
                         )
                 );
             }
-            else if (completeInvisible)
+
+            if (completeInvisible)
             {
-                await Task.WhenAll(
+                return Task.WhenAll(
                     ImageBackParentGrid.StartAnimation(
                         duration,
                         CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? completeInvisible ? 0f : 0.4f : 1f, hideImage ? 1f : 0f)
                     )
                 );
             }
-            else
-            {
-                await Task.WhenAll(
-                    AcrylicMask.StartAnimation(
-                        duration,
-                        CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 1f : 0f, hideImage ? 0f : 1f)
-                        ),
-                    OverlayTitleBar.StartAnimation(
-                         duration,
-                         CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : 1f, hideImage ? 1f : 0f)
-                        ),
-                    ImageBackParentGrid.StartAnimation(
-                        duration,
-                        CurrentCompositor.CreateVector3KeyFrameAnimation("Scale", new Vector3(hideImage ? toScale : fromScale), new Vector3(!hideImage ? toScale : fromScale)),
-                        CurrentCompositor.CreateVector3KeyFrameAnimation("Translation", hideImage ? toTranslate : fromTranslate, !hideImage ? toTranslate : fromTranslate)
-                        )
-                );
-            }
+
+            return Task.WhenAll(AcrylicMask.StartAnimation(duration,
+                                                           CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 1f : 0f, hideImage ? 0f : 1f)
+                                                          ),
+                                OverlayTitleBar.StartAnimation(duration,
+                                                               CurrentCompositor.CreateScalarKeyFrameAnimation("Opacity", hideImage ? 0f : 1f, hideImage ? 1f : 0f)
+                                                              ),
+                                ImageBackParentGrid.StartAnimation(duration,
+                                                                   CurrentCompositor.CreateVector3KeyFrameAnimation("Scale",       new Vector3(hideImage ? toScale : fromScale), new Vector3(!hideImage ? toScale : fromScale)),
+                                                                   CurrentCompositor.CreateVector3KeyFrameAnimation("Translation", hideImage ? toTranslate : fromTranslate,      !hideImage ? toTranslate : fromTranslate)
+                                                                  )
+                               );
         }
 
         public void Show(bool isForceShow = false)

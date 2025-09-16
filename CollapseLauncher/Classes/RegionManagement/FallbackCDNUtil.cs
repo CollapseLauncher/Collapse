@@ -15,36 +15,27 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+using Velopack.Sources;
 using static Hi3Helper.Logger;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
-#if !USEVELOPACK
-using System.Text;
-using Squirrel.Sources;
-#else
-using System.Text;
-using Velopack.Sources;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
-#endif
 
+#nullable enable
 namespace CollapseLauncher
 {
     public class UpdateManagerHttpAdapter : IFileDownloader
     {
-#if !USEVELOPACK
-        public async Task DownloadFile(string url, string targetFile, Action<int> progress, string authorization = null, string accept = null)
-#else
-#nullable enable
         private async Task DownloadFileInner(string            url,
                                              string            targetFile,
                                              Action<int>       progress,
                                              string?           authorization = null,
                                              CancellationToken cancelToken   = default)
-#endif
         {
             // Initialize new proxy-aware HttpClient
             HttpClientBuilder builder = new HttpClientBuilder()
@@ -64,13 +55,11 @@ namespace CollapseLauncher
             {
                 FallbackCDNUtil.DownloadProgress += progressEvent;
                 string relativePath = GetRelativePathOnly(url);
-                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient, targetFile, AppCurrentDownloadThread,
+                await FallbackCDNUtil.DownloadCDNFallbackContent(downloadClient,
+                                                                 targetFile,
+                                                                 AppCurrentDownloadThread,
                                                                  relativePath,
-                                                             #if !USEVELOPACK
-                                                                 default
-                                                             #else
                                                                  cancelToken
-                                                             #endif
                                                                 );
             }
             catch (Exception ex)
@@ -84,27 +73,19 @@ namespace CollapseLauncher
             }
         }
 
-#if !USEVELOPACK
-        public async Task<byte[]> DownloadBytes(string url, string authorization = null, string accept = null)
-#else
         public async Task<byte[]> DownloadBytesInner(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
-#endif
         {
             string             relativePath = GetRelativePathOnly(url);
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, CancellationToken.None, true);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, true, CancellationToken.None);
             byte[]             buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return buffer;
         }
 
-#if !USEVELOPACK
-        public async Task<string> DownloadString(string url, string authorization = null, string accept = null)
-#else
         public async Task<string> DownloadStringInner(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
-#endif
         {
             string             relativePath = GetRelativePathOnly(url);
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, CancellationToken.None, true);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, true, CancellationToken.None);
             byte[]             buffer = new byte[stream.Length];
             await stream.ReadExactlyAsync(buffer);
             return Encoding.UTF8.GetString(buffer);
@@ -132,7 +113,6 @@ namespace CollapseLauncher
             return url;
         }
 
-        #if USEVELOPACK
         public async Task DownloadFile(string                       url,
                                        string                       targetFile,
                                        Action<int>                  progress,
@@ -155,21 +135,15 @@ namespace CollapseLauncher
                                          headers?.TryGetValueIgnoreCase("Authorization"),
                                          null,
                                          timeout);
-
-#endif
     }
-
-#if USEVELOPACK
-#nullable restore
-#endif
 
     internal readonly struct CDNUtilHTTPStatus
     {
-        internal readonly HttpStatusCode StatusCode;
-        internal readonly bool IsSuccessStatusCode;
-        internal readonly bool IsInitializationError;
-        internal readonly Uri AbsoluteURL;
-        internal readonly HttpResponseMessage Message;
+        internal readonly HttpStatusCode       StatusCode;
+        internal readonly bool                 IsSuccessStatusCode;
+        internal readonly bool                 IsInitializationError;
+        internal readonly Uri?                 AbsoluteURL;
+        internal readonly HttpResponseMessage? Message;
         internal CDNUtilHTTPStatus(HttpResponseMessage message) : this(false)
         {
             Message = message;
@@ -204,29 +178,36 @@ namespace CollapseLauncher
 
         private static HttpClient _clientNoCompression;
 
+        // ReSharper disable once NotNullOrRequiredMemberIsNotInitialized
+    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         static FallbackCDNUtil()
         {
             InitializeHttpClient();
         }
+    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         public static void InitializeHttpClient()
         {
             _client?.Dispose();
             _clientNoCompression?.Dispose();
 
             _client = new HttpClientBuilder()
-                .UseLauncherConfig()
-                .Create();
+                     .UseLauncherConfig()
+                     .Create();
 
             _clientNoCompression = new HttpClientBuilder()
-                .UseLauncherConfig()
-                .SetAllowedDecompression(DecompressionMethods.None)
-                .Create();
+                                  .UseLauncherConfig()
+                                  .SetAllowedDecompression(DecompressionMethods.None)
+                                  .Create();
 
             LogWriteLine("[FallbackCDNUtil::ReinitializeHttpClient()] HttpClient under FallbackCDNUtil has been successfully initialized", LogType.Default, true);
         }
+        // ReSharper enable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+        // ReSharper enable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
-        public static event EventHandler<DownloadEvent> DownloadProgress;
+        public static event EventHandler<DownloadEvent>? DownloadProgress;
 
         public static async Task DownloadCDNFallbackContent(DownloadClient downloadClient, string outputPath, int parallelThread, string relativeURL, CancellationToken token)
         {
@@ -251,7 +232,7 @@ namespace CollapseLauncher
                 }
 
                 // If successful, then return
-                var i = CDNList.IndexOf(fallbackCDN);
+                int i = CDNList.IndexOf(fallbackCDN);
                 SetAndSaveConfigValue("CurrentCDN", i);
                 return;
             }
@@ -259,7 +240,7 @@ namespace CollapseLauncher
             // If all of them failed, then throw an exception
             if (!isSuccess)
             {
-                var ex = new AggregateException($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
+                AggregateException ex = new($"All available CDNs aren't reachable for your network while getting content: {relativeURL}. Please check your internet!");
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw ex;
             }
@@ -291,7 +272,7 @@ namespace CollapseLauncher
                 }
 
                 // If successful, then return
-                var i = CDNList.IndexOf(fallbackCDN);
+                int i = CDNList.IndexOf(fallbackCDN);
                 SetAndSaveConfigValue("CurrentCDN", i);
                 return;
             }
@@ -303,11 +284,11 @@ namespace CollapseLauncher
             }
         }
 
-        public static async Task<Stream> TryGetCDNFallbackStream(string relativeURL, CancellationToken token = default, bool isForceUncompressRequest = false)
+        public static async Task<Stream> TryGetCDNFallbackStream(string relativeURL, bool isForceUncompressRequest = false, CancellationToken token = default)
         {
             // Get the preferred CDN first and try to get the content
             CDNURLProperty preferredCDN = GetPreferredCDN();
-            Stream contentStream = await TryGetCDNContent(preferredCDN, relativeURL, token, isForceUncompressRequest);
+            Stream? contentStream = await TryGetCDNContent(preferredCDN, relativeURL, isForceUncompressRequest, token);
 
             // If successful, then return
             if (contentStream != null) return contentStream;
@@ -319,7 +300,7 @@ namespace CollapseLauncher
             foreach (CDNURLProperty fallbackCDN in CDNList.Where(x => !x.Equals(preferredCDN)))
             {
                 // Reassign and try to get the CDN stream
-                contentStream = await TryGetCDNContent(fallbackCDN, relativeURL, token, isForceUncompressRequest);
+                contentStream = await TryGetCDNContent(fallbackCDN, relativeURL, isForceUncompressRequest, token);
 
                 // If the stream returns a null, then continue
                 if (contentStream == null) continue;
@@ -342,18 +323,20 @@ namespace CollapseLauncher
             outputStream.Position = 0;
         }
 
-        private static async Task<Stream> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isForceUncompressRequest)
+        private static async Task<Stream?> TryGetCDNContent(CDNURLProperty cdnProp, string relativeURL, bool isForceUncompressRequest, CancellationToken token)
         {
             try
             {
-                // Get the URL Status then return boolean and URLStatus
-                CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(cdnProp, relativeURL, token, isForceUncompressRequest);
+                HttpClient clientToUse = isForceUncompressRequest
+                    ? _clientNoCompression
+                    : _client;
 
-                // If URL status is false, then return null
-                if (urlStatus.IsInitializationError || !urlStatus.IsSuccessStatusCode) return null;
+                CDNCacheResult result = await clientToUse
+                   .TryGetCachedStreamFrom(cdnProp.URLPrefix.CombineURLFromString(relativeURL),
+                                           HttpMethod.Get,
+                                           token);
 
-                // Continue to get the content and return the stream if successful
-                return await GetHttpStreamFromResponse(urlStatus.Message, token);
+                return result.Stream;
             }
             // Handle the error and log it. If fails, then log it and return false
             catch (Exception ex)
@@ -415,7 +398,6 @@ namespace CollapseLauncher
 
             try
             {
-                SentryHelper.AppCdnOption = cdnProp.URLPrefix;
                 // Get the URL Status then return boolean and URLStatus
                 (bool, string) urlStatus = await TryGetURLStatus(cdnProp, downloadClient, relativeURL, token);
 
@@ -492,9 +474,9 @@ namespace CollapseLauncher
                 LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
                 // Try check the status of the URL
-                using var timeoutCts = new CancellationTokenSource(5000);
-                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutCts.Token);
-                var httpResponse = await GetURLHttpResponse(absoluteURL, linkedCts.Token, isUncompressRequest, 1);
+                using CancellationTokenSource timeoutCts = new CancellationTokenSource(5000);
+                using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutCts.Token);
+                HttpResponseMessage httpResponse = await GetURLHttpResponse(absoluteURL, linkedCts.Token, isUncompressRequest, 1);
 
                 // If it's not a successful code, log the information
                 if (!httpResponse.IsSuccessStatusCode)
@@ -514,7 +496,7 @@ namespace CollapseLauncher
         public static CDNURLProperty GetPreferredCDN()
         {
             // Get the CurrentCDN index
-            var cdnIndex = GetAppConfigValue("CurrentCDN").ToInt();
+            int cdnIndex = GetAppConfigValue("CurrentCDN").ToInt();
 
             // Fallback to the first CDN if index < 0 or > length of the list
             if (cdnIndex >= 0 && cdnIndex <= CDNList.Count - 1)
@@ -601,11 +583,16 @@ namespace CollapseLauncher
             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
         }
 
-        public static async Task<T?> DownloadAsJSONType<T>(string? URL, JsonTypeInfo<T> typeInfo, CancellationToken token)
-            => await _client.GetFromJsonAsync(URL, typeInfo, token);
+        public static async Task<T?> DownloadAsJSONType<T>(string?           url,
+                                                           JsonTypeInfo<T?>  typeInfo,
+                                                           CancellationToken token)
+            where T : class
+        {
+            return await _client.GetFromCachedJsonAsync(url, typeInfo, null, token);
+        }
 
-        public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
-             => await _client.GetURLStatusCode(URL, token);
+        public static async ValueTask<UrlStatus> GetURLStatusCode(string url, CancellationToken token)
+             => await _client.GetURLStatusCode(url, token);
 
         public static async ValueTask<UrlStatus> GetURLStatusCode(this HttpClient client, string url, CancellationToken token = default)
         {
@@ -616,7 +603,7 @@ namespace CollapseLauncher
 
         public static async Task<Stream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
-            var responseMsg = await GetURLHttpResponse(URL, token);
+            HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
             return await GetHttpStreamFromResponse(responseMsg, token);
         }
 

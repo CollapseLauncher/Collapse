@@ -147,7 +147,7 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            GameVersionManager.GameApiProp.data!.plugins?.ForEach(plugin =>
+            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
               {
                   if (plugin.package?.validate == null) return;
                   assetIndex.RemoveAll(asset =>
@@ -192,7 +192,7 @@ namespace CollapseLauncher
             string urlIndex = string.Format(LauncherConfig.AppGameRepairIndexURLPrefix, GameVersionManager.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
 
             // Start downloading asset index using FallbackCDNUtil and return its stream
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token: token);
             if (stream != null)
             {
                 // Deserialize asset index and set it to list
@@ -214,7 +214,7 @@ namespace CollapseLauncher
             string urlMetadata = string.Format(LauncherConfig.AppGameRepoIndexURLPrefix, GameVersionManager.GamePreset.ProfileName);
 
             // Start downloading metadata using FallbackCDNUtil
-            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token);
+            await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlMetadata, token: token);
             return await stream.DeserializeAsync(CoreLibraryJsonContext.Default.DictionaryStringString, token: token);
         }
 

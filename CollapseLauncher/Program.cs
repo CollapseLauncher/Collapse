@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.Database;
 using CollapseLauncher.Helper.Update;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.Http.Legacy;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -12,6 +13,7 @@ using Hi3Helper.Win32.Native.LibraryImport;
 using InnoSetupHelper;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -20,9 +22,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Velopack;
 using WinRT;
 using static CollapseLauncher.ArgumentParser;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -35,164 +37,77 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
 
+#nullable enable
+#pragma warning disable CS0618
 namespace CollapseLauncher
 {
-    public static partial class MainEntryPointExtension
-    {
-        [LibraryImport("Microsoft.ui.xaml.dll", EntryPoint = "XamlCheckProcessRequirements")]
-        public static partial void XamlCheckProcessRequirements();
-    }
-
     public static class MainEntryPoint
     {
         // Decide AUMID string
         public const string AppAumid = "Collapse";
-#nullable enable
         public static int  InstanceCount      { get; set; }
         public static App? CurrentAppInstance { get; set; }
-    #nullable restore
 
         [STAThread]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Main(params string[] args)
         {
-            // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
-            // But due to AOT build uses Static Library in favor of Shared ones (that comes
-            // with .dll files), the check will be ignored.
-        #if AOT
-            ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
-        #endif
-
-            AppCurrentArgument = args.ToList();
-        #if PREVIEW
-            IsPreview = true;
-        #endif
             try
             {
-                // Add callbacks to apply shared settings
-                ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
+                AppCurrentArgument = args.ToList();
+#if PREVIEW
+                IsPreview = true;
+#endif
 
-                // Initialize the Sentry SDK
-                SentryHelper.IsPreview = IsPreview;
-            #pragma warning disable CS0618 // Type or member is obsolete
-                SentryHelper.AppBuildCommit = ThisAssembly.Git.Sha;
-                SentryHelper.AppBuildBranch = ThisAssembly.Git.Branch;
-                SentryHelper.AppBuildRepo   = ThisAssembly.Git.RepositoryUrl;
-            #pragma warning restore CS0618 // Type or member is obsolete
-                if (SentryHelper.IsEnabled)
-                {
-                    try
-                    {
-                        // Sentry SDK Entry
-                        LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
-                        SentryHelper.InitializeSentrySdk();
-                        LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
-                        SentryHelper.InitializeExceptionRedirect();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
-                    }
-                }
-                
-                // Extract icons from the executable file
-                string mainModulePath = AppExecutablePath;
-                uint   iconCount      = PInvoke.ExtractIconEx(mainModulePath, -1, nint.Zero, nint.Zero, 0);
-                if (iconCount > 0)
-                {
-                    IntPtr[] largeIcons       = new IntPtr[1];
-                    IntPtr[] smallIcons       = new IntPtr[1];
-                    nint     largeIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(largeIcons, 0);
-                    nint     smallIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(smallIcons, 0);
-                    PInvoke.ExtractIconEx(mainModulePath, 0, largeIconsArrayP, smallIconsArrayP, 1);
-                    AppIconLarge = largeIcons[0];
-                    AppIconSmall = smallIcons[0];
-                }
-
+                // Initialize Application Configs and apply default settings.
                 InitAppPreset();
-                string logPath = AppGameLogsFolder;
-                CurrentLogger = IsConsoleEnabled
-                    ? new LoggerConsole(logPath, Encoding.UTF8)
-                    : new LoggerNull(logPath, Encoding.UTF8);
 
-                // Set ILogger for CDNCacheUtil
-                CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");
+                // Initialize Application Icons to Static Variables
+                InitAppIcons();
 
-                // Start Updater Hook
-                VelopackLocatorExtension.StartUpdaterHook(AppAumid);
-                
-                if (Directory.GetCurrentDirectory() != AppExecutableDir)
+                // Initialize Logger
+                UseConsoleLog(IsConsoleEnabled);
+
+                // Initialize Critical Modules (Including Sentry SDK and WASDK+WinRT ComWrappers)
+                InitCriticalModules();
+
+                // Perform AppActivation Redirection.
+                AppActivation.Enable();
+                if (AppActivation.DecideRedirection())
                 {
-                    LogWriteLine(
-                                 $"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
-                                 LogType.Warning, true);
-                    Directory.SetCurrentDirectory(AppExecutableDir);
+                    return; // Rage quit :>
                 }
-                
-                InitializeAppSettings();
-                SentryHelper.AppCdnOption = FallbackCDNUtil.GetPreferredCDN().URLPrefix;
 
+                // Initialize Localization Files
+                InitLocale();
+
+                // Log Application Info
                 LogWriteLine(string.Format("Running Collapse Launcher [{0}], [{3}], under {1}, as {2}",
                                            LauncherUpdateHelper.LauncherCurrentVersionString,
                                            GetVersionString(),
                                        #if DEBUG
                                            Environment.UserName,
                                        #else
-                "[REDACTED]",
+                                           "[REDACTED]",
                                        #endif
                                            IsPreview ? "Preview" : "Stable"), LogType.Scheme, true);
 
-            #pragma warning disable CS0618 // Type or member is obsolete
                 LogWriteLine($"Runtime: {RuntimeInformation.FrameworkDescription} - WindowsAppSDK {WindowsAppSdkVersion}",
                              LogType.Scheme, true);
                 LogWriteLine($"Built from repo {ThisAssembly.Git.RepositoryUrl}\r\n\t" +
                              $"Branch {ThisAssembly.Git.Branch} - Commit {ThisAssembly.Git.Commit} at {ThisAssembly.Git.CommitDate}",
                              LogType.Scheme, true);
-            #pragma warning restore CS0618 // Type or member is obsolete
 
-                Process.GetCurrentProcess().PriorityBoostEnabled = true;
-
+                // Parse arguments for app activation
                 ParseArguments(args);
 
-                // Initiate InnoSetupHelper's log event
-                InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
-                HttpLogInvoker.DownloadLog += HttpClientLogWatcher!;
-
-                switch (m_appMode)
+                // Try run and check if the main application can be run (if other modes m_appMode is not set)
+                if (!IsRunMainApp())
                 {
-                    case AppMode.ElevateUpdater:
-                        RunElevateUpdate();
-                        return;
-                    case AppMode.InvokerTakeOwnership:
-                        TakeOwnership.StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
-                        return;
-                    case AppMode.InvokerMigrate:
-                        if (m_arguments.Migrate.IsBhi3L)
-                        {
-                            new Migrate().DoMigrationBHI3L(
-                                                           m_arguments.Migrate.GameVer,
-                                                           m_arguments.Migrate.RegLoc,
-                                                           m_arguments.Migrate.InputPath,
-                                                           m_arguments.Migrate.OutputPath);
-                        }
-                        else
-                        {
-                            new Migrate().DoMigration(
-                                                      m_arguments.Migrate.InputPath,
-                                                      m_arguments.Migrate.OutputPath);
-                        }
-
-                        return;
-                    case AppMode.InvokerMoveSteam:
-                        new Migrate().DoMoveSteam(
-                                                  m_arguments.Migrate.InputPath,
-                                                  m_arguments.Migrate.OutputPath,
-                                                  m_arguments.Migrate.GameVer,
-                                                  m_arguments.Migrate.KeyName);
-                        return;
-                    case AppMode.GenerateVelopackMetadata:
-                        VelopackLocatorExtension.GenerateVelopackMetadata(AppAumid);
-                        return;
+                    return; // Rage quit :>
                 }
+
+                // Now we start the main course :)
 
                 // Reason: These are methods that either has its own error handling and/or not that important,
                 // so the execution could continue without anything to worry about **technically**
@@ -200,26 +115,27 @@ namespace CollapseLauncher
                 _ = CheckRuntimeFeatures();
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit!;
 
-                InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
-
-                AppActivation.Enable();
-                if (AppActivation.DecideRedirection())
+                Application.Start(pContext =>
                 {
-                    return;
-                }
+                    DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-                MainEntryPointExtension.XamlCheckProcessRequirements();
-                ComWrappersSupport.InitializeComWrappers();
+                    DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
+                    SynchronizationContext.SetSynchronizationContext(context);
 
-                StartMainApplication();
+                    // ReSharper disable once ObjectCreationAsStatement
+                    CurrentAppInstance = new App
+                    {
+                        HighContrastAdjustment = ApplicationHighContrastAdjustment.None
+                    };
+                });
             }
-        #if !DEBUG
-        catch (Exception ex)
-        {
-            SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
-            SpawnFatalErrorConsole(ex);
-        }
-        #else
+            #if !DEBUG
+            catch (Exception ex)
+            {
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
+                SpawnFatalErrorConsole(ex);
+            }
+            #else
             // ReSharper disable once RedundantCatchClause
             // Reason: warning shaddap-er
             catch (Exception ex)
@@ -227,11 +143,163 @@ namespace CollapseLauncher
                 SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 throw;
             }
-        #endif
+            #endif
             finally
             {
                 HttpLogInvoker.DownloadLog -= HttpClientLogWatcher!;
             }
+        }
+
+        // In order to prevent unexpected over-optimization from the JIT, NoInlining is applied.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void InitAppIcons()
+        {
+            // Extract icons from the executable file
+            string mainModulePath = AppExecutablePath;
+            uint iconCount = PInvoke.ExtractIconEx(mainModulePath, -1, nint.Zero, nint.Zero, 0);
+            if (iconCount > 0)
+            {
+                IntPtr[] largeIcons = new IntPtr[1];
+                IntPtr[] smallIcons = new IntPtr[1];
+                nint largeIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(largeIcons, 0);
+                nint smallIconsArrayP = Marshal.UnsafeAddrOfPinnedArrayElement(smallIcons, 0);
+                PInvoke.ExtractIconEx(mainModulePath, 0, largeIconsArrayP, smallIconsArrayP, 1);
+                AppIconLarge = largeIcons[0];
+                AppIconSmall = smallIcons[0];
+            }
+        }
+
+        private static bool IsRunMainApp()
+        {
+            switch (m_appMode)
+            {
+                case AppMode.ElevateUpdater:
+                    RunElevateUpdate();
+                    return false;
+                case AppMode.InvokerTakeOwnership:
+                    TakeOwnership.StartTakingOwnership(m_arguments.TakeOwnership.AppPath);
+                    return false;
+                case AppMode.InvokerMigrate:
+                    if (m_arguments.Migrate.IsBhi3L)
+                    {
+                        new Migrate().DoMigrationBHI3L(
+                                                       m_arguments.Migrate.GameVer,
+                                                       m_arguments.Migrate.RegLoc,
+                                                       m_arguments.Migrate.InputPath,
+                                                       m_arguments.Migrate.OutputPath);
+                    }
+                    else
+                    {
+                        new Migrate().DoMigration(
+                                                  m_arguments.Migrate.InputPath,
+                                                  m_arguments.Migrate.OutputPath);
+                    }
+
+                    return false;
+                case AppMode.InvokerMoveSteam:
+                    new Migrate().DoMoveSteam(
+                                              m_arguments.Migrate.InputPath,
+                                              m_arguments.Migrate.OutputPath,
+                                              m_arguments.Migrate.GameVer,
+                                              m_arguments.Migrate.KeyName);
+                    return false;
+                case AppMode.GenerateVelopackMetadata:
+                    VelopackLocatorExtension.GenerateVelopackMetadata(AppAumid);
+                    return false;
+            }
+
+            return true;
+        }
+
+        // In order to prevent unexpected over-optimization from the JIT, NoInlining is applied.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void InitCriticalModules()
+        {
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Internal Working Directory Check
+             */
+
+            if (Directory.GetCurrentDirectory() != AppExecutableDir)
+            {
+                LogWriteLine($"Force changing the working directory from {Directory.GetCurrentDirectory()} to {AppExecutableDir}!",
+                             LogType.Warning, true);
+                Directory.SetCurrentDirectory(AppExecutableDir);
+            }
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Sentry SDK
+             */
+
+            // Set App information to Sentry SDK
+            SentryHelper.IsPreview          = IsPreview;
+            SentryHelper.AppBuildCommit     = ThisAssembly.Git.Sha;
+            SentryHelper.AppBuildBranch     = ThisAssembly.Git.Branch;
+            SentryHelper.AppBuildRepo       = ThisAssembly.Git.RepositoryUrl;
+            SentryHelper.AppCdnOptionGetter = () => FallbackCDNUtil.GetPreferredCDN().URLPrefix;
+
+            // Initialize Sentry SDK if enabled
+            if (SentryHelper.IsEnabled)
+            {
+                try
+                {
+                    // Sentry SDK Entry
+                    LogWriteLine("Loading Sentry SDK...", LogType.Sentry, true);
+                    SentryHelper.InitializeSentrySdk();
+                    LogWriteLine("Setting up global exception handler redirection", LogType.Scheme, true);
+                    SentryHelper.InitializeExceptionRedirect();
+                }
+                catch (Exception ex)
+                {
+                    LogWriteLine($"Failed to load Sentry SDK.\r\n{ex}", LogType.Sentry, true);
+                }
+            }
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: WindowsAppSDK + WinRT
+             */
+
+            // Force WinRT's COM Wrappers to be initialized early.
+            // The method which this calls placed must not be inlined.
+            // So the Main() above has MethodImplOptions.NoInlining applied.
+            // 
+            // This is a workaround to fix COM 0x80040154 error code under Windows 10 1809 build.
+            ComWrappersSupport.InitializeComWrappers(new DefaultComWrappers());
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Libzstd
+             */
+
+            // Basically, the Libzstd's DLL will be checked if they exist on Non-AOT build.
+            // But due to AOT build uses Static Library in favor of Shared ones (that comes
+            // with .dll files), the check will be ignored.
+            ZstdNet.DllUtils.IsIgnoreMissingLibrary = true;
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Internal Misc. and Callbacks
+             */
+
+            // Add callbacks to apply shared settings
+            ApplyExternalConfigCallbackList.Add(HttpClientBuilder.ApplyDnsConfigOnAppConfigLoad);
+
+            // Initiate InnoSetupHelper's log event
+            InnoSetupLogUpdate.LoggerEvent += InnoSetupLogUpdate_LoggerEvent;
+            HttpLogInvoker.DownloadLog     += HttpClientLogWatcher!;
+
+            // Set Priority Boost Enabled by default
+            Process.GetCurrentProcess().PriorityBoostEnabled = true;
+
+            // Set ILogger for CDNCacheUtil
+            CDNCacheUtil.Logger = ILoggerHelper.GetILogger("CDNCacheUtil");
+
+            // Get how many the same processes are running
+            InstanceCount = ProcessChecker.EnumerateInstances(ILoggerHelper.GetILogger());
+
+            /* ---------------------------------------------------------------------------------------------
+             * Module: Velopack
+             */
+
+            // Start Updater Hook
+            VelopackLocatorExtension.StartUpdaterHook(AppAumid);
         }
 
         private static async Task InitDatabaseHandler()
@@ -248,7 +316,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static void InnoSetupLogUpdate_LoggerEvent(object sender, InnoSetupLogStruct e)
+        private static void InnoSetupLogUpdate_LoggerEvent(object? sender, InnoSetupLogStruct e)
         {
             LogWriteLine(
                          e.Message,
@@ -264,17 +332,25 @@ namespace CollapseLauncher
         public static void SpawnFatalErrorConsole(Exception ex)
         {
             CurrentAppInstance?.Exit();
-            LoggerConsole.AllocateConsole();
-            Console.Error
-                   .WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
-            Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
-                                    "please report it to: https://github.com/CollapseLauncher/Collapse/issues\r\n" +
-                                    "Press any key to exit or Press 'R' to restart the main thread app...");
 
-        #if !DEBUG
+            UseConsoleLog(false);
+            LoggerConsole.AllocateConsole();
+            Console.Error.WriteLine($"FATAL ERROR ON APP MAIN() LEVEL AND THE MAIN THREAD HAS BEEN TERMINATED!!!\r\n{ex}");
+            Console.Error.WriteLine("\r\nIf you are sure that this is not intended, " +
+                                    "please report it to: https://github.com/CollapseLauncher/Collapse/issues");
+
+            ShowAdditionalInfoIfComExceptionNotInstalled(ex);
+
+            Console.Error.WriteLine();
+            Console.Error.WriteLine("Activity: Checking for possible fallback/recovery update...");
+            Console.Error.WriteLine("Press any key to exit or Press 'R' to restart the main thread app...");
+
+            using CancellationTokenSource tokenSource = new CancellationTokenSource();
+            _ = RunCheckForPossibleRecoveryOrFallbackUpdate(tokenSource.Token);
+
             if (ConsoleKey.R == Console.ReadKey().Key)
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                ProcessStartInfo startInfo = new()
                 {
                     FileName = AppExecutablePath,
                     UseShellExecute = false
@@ -290,24 +366,154 @@ namespace CollapseLauncher
                 };
                 process.Start();
             }
-        #endif
+
+            tokenSource.Cancel();
         }
 
-        private static void StartMainApplication()
+        private static async Task RunCheckForPossibleRecoveryOrFallbackUpdate(CancellationToken token)
         {
-            Application.Start(_ =>
-                              {
-                                  DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+            Console.CursorTop--;
+            Console.CursorTop--;
+            int posV = Console.CursorTop;
 
-                                  DispatcherQueueSynchronizationContext context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
-                                  SynchronizationContext.SetSynchronizationContext(context);
+            Updater updater = new Updater(IsPreview ? "preview" : "stable");
+            if (await TryRunUpdateCheck() is not UpdateInfo updateInfo ||
+                !IsCurrentUpToDate(updateInfo.TargetFullRelease.Version.ToString()))
+            {
+                PrintAndFlush(Console.Out, "Activity: Fallback/Recovery update is currently not available.");
+                return;
+            }
 
-                                  // ReSharper disable once ObjectCreationAsStatement
-                                  CurrentAppInstance = new App
-                                  {
-                                      HighContrastAdjustment = ApplicationHighContrastAdjustment.None
-                                  };
-                              });
+            updater.UpdaterProgressChanged += Updater_UpdaterProgressChanged;
+            PrintAndFlush(Console.Out, "Activity: Fallback/Recovery detected! Recovering...");
+
+            await updater.StartUpdate(updateInfo, token);
+            PrintAndFlush(Console.Out, "Activity: Fallback/Recovery finished!\r\n");
+
+            int seconds = 5;
+            posV = Console.CursorTop;
+            while (seconds > 0)
+            {
+                PrintAndFlush(Console.Out, $"Launcher will be restarted in {seconds}...");
+                await Task.Delay(1000);
+                seconds--;
+            }
+
+            await updater.FinishUpdate();
+
+            return;
+
+            static bool IsCurrentUpToDate(string versionString)
+            {
+                string filePath = AppExecutablePath;
+                if (!File.Exists(filePath))
+                {
+                    return true;
+                }
+
+                // Try to get the version info and if the version info is null, return false
+                FileVersionInfo toCheckVersionInfo = FileVersionInfo.GetVersionInfo(filePath);
+
+                if (!Version.TryParse(versionString, out Version? latestVersion))
+                {
+                    return true;
+                }
+
+                // Otherwise, try compare the version info.
+                if (!Version.TryParse(toCheckVersionInfo.FileVersion, out Version? currentVersion))
+                {
+                    return true;
+                }
+
+                // Try compare. If currentVersion is more or equal to latestVersion, return true. 
+                // Otherwise, return false.
+                return latestVersion > currentVersion;
+            }
+
+            async Task<UpdateInfo?> TryRunUpdateCheck()
+            {
+                try
+                {
+                    return await updater.StartCheck();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            void PrintAndFlush(TextWriter writer, string message)
+            {
+                Console.CursorTop = posV;
+                int buffSize = Console.BufferWidth - 1;
+
+                if (buffSize > 0)
+                {
+                    writer.Write("\r" + new string(' ', buffSize));
+                    writer.Write("\r" + message);
+                }
+            }
+
+            void Updater_UpdaterProgressChanged(object? sender, Updater.UpdaterProgress? e)
+            {
+                PrintAndFlush(Console.Out, $"Activity: Fallback/Recovery detected! Recovering ({e?.ProgressPercentage}%)...");
+            }
+        }
+
+        private static void ShowAdditionalInfoIfComExceptionNotInstalled(Exception? ex)
+        {
+            if (ex is not COMException exAsComEx ||
+                ex.HResult != unchecked((int)0x80040154))
+            {
+                return;
+            }
+
+            bool isLtsc = IsWindowsLTSC();
+            bool isRedstone5Update = Environment.OSVersion.Version.Build == 17763;
+
+            if (isRedstone5Update)
+            {
+                string windowsName = isLtsc
+                    ? "Windows 10 Enterprise LTSC Redstone 5 Update (Build 1809)"
+                    : "Windows 10 Redstone 5 Update (Build 1809)";
+
+                string recommendedWindowsName = isLtsc
+                    ? "Windows 10 Enterprise LTSC November 2021 update (Build 21H2)"
+                    : "Windows 10 May 2019 Update (Build 19H1)";
+
+                Console.Error.WriteLine();
+                Console.Error.WriteLine("\e[42;1mAdditional Note:\e[0m");
+                Console.Error.Write($"We have detected that you're trying to run this launcher under {windowsName}. ");
+                Console.Error.WriteLine("This error is expected to happen due to lack of Windows Runtime support for WinUI 3 apps compiled using NativeAOT.\r\n");
+                Console.Error.WriteLine($"We are recommending you to update your Windows to at least {recommendedWindowsName} or newer in order to use this launcher.\r\n");
+                Console.Error.WriteLine("We apologize for this inconvenience. We will try our best to get our launcher run across any Windows 10 (1809 LTSC/GAC or above) editions or newer in the future.\r\n");
+
+                Console.Error.WriteLine($"Error: {ex}");
+            }
+
+            static bool IsWindowsLTSC()
+            {
+                RegistryKey? key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows NT\CurrentVersion");
+                if (key == null)
+                {
+                    return false;
+                }
+
+                if (key.GetValue("EditionID", null) is string editionId &&
+                    editionId.StartsWith("Enterprise", StringComparison.OrdinalIgnoreCase) &&
+                    editionId.EndsWith("S", StringComparison.OrdinalIgnoreCase)) 
+                {
+                    return true;
+                }
+
+                if (key.GetValue("ProductName", null) is string productName &&
+                    productName.Contains("LTSC", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
 
         private static void HttpClientLogWatcher(object sender, DownloadLogEvent e)
@@ -354,7 +560,7 @@ namespace CollapseLauncher
             }
         }
 
-        private static void InitializeAppSettings()
+        private static void InitLocale()
         {
             InitializeLocale();
             if (IsFirstInstall)
@@ -367,7 +573,7 @@ namespace CollapseLauncher
                 LoadLocale(GetAppConfigValue("AppLanguage").ToString());
             }
 
-            string themeValue = GetAppConfigValue("ThemeMode").ToString();
+            string? themeValue = GetAppConfigValue("ThemeMode").ToString();
             if (Enum.TryParse(themeValue, true, out CurrentAppTheme))
             {
                 return;
@@ -410,9 +616,17 @@ namespace CollapseLauncher
             }
 
             FileStream stream = File.OpenRead(path);
-            byte[]     hash   = Hash.GetCryptoHash<MD5>(stream);
+            byte[]     hash   = CryptoHashUtility<MD5>.Shared.GetHashFromStream(stream);
             stream.Close();
             return Convert.ToHexStringLower(hash);
+        }
+
+        public static void ForceRestart()
+        {
+            // Workaround to artificially start new process and wait for the current one to be killed.
+            string collapsePath = AppExecutablePath;
+            Process.Start("cmd.exe", $"/c timeout /T 1 && start /I \"\" \"{collapsePath}\"");
+            Application.Current.Exit();
         }
     }
 }
