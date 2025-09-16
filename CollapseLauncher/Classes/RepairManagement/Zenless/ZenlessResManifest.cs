@@ -10,7 +10,7 @@ namespace CollapseLauncher
         [JsonPropertyName("remoteName")]
         public string FileRelativePath { get; set; }
 
-        [JsonPropertyName("md5")] // "mD5" they said. BROO, IT'S A F**KING XXH64 HASH!!!!
+        [JsonPropertyName("md5")] // "MD5" they said. BROO, IT'S A F**KING XXH64 HASH!!!!
         [JsonConverter(typeof(NumberStringToXxh64HashBytesConverter))] // AND THEY STORED IT AS A NUMBER IN A STRING WTFF??????
         public byte[] Xxh64Hash { get; set; } // classic
 
@@ -23,5 +23,8 @@ namespace CollapseLauncher
 
         [JsonPropertyName("tags")]
         public int[] Tags { get; set; }
+
+        [JsonPropertyName("packages")]
+        public int[] PackageMatchingIds { get; set; }
     }
 }

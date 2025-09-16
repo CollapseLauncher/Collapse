@@ -884,14 +884,11 @@ namespace CollapseLauncher
         private async Task<KianaAudioManifest> TryGetAudioManifest(HttpClient client, SenadinaFileIdentifier senadinaFileIdentifier, string manifestLocal, string manifestRemote, CancellationToken token)
         {
             string originalUrl = senadinaFileIdentifier.GetOriginalFileUrl();
-            await using Stream?    originalFile = await client.GetStreamAsync(originalUrl, token);
+            await using Stream     originalFile = await BridgedNetworkStream.CreateStream(client, originalUrl, null, token);
             await using FileStream localFile    = new FileStream(EnsureCreationOfDirectory(manifestLocal), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             // Start downloading manifest.m
-            if (originalFile != null)
-            {
-                await DoCopyStreamProgress(originalFile, localFile, token: token);
-            }
+            await DoCopyStreamProgress(originalFile, localFile, token: token);
 
             Stream? networkStream = senadinaFileIdentifier.fileStream;
 
@@ -988,7 +985,7 @@ namespace CollapseLauncher
             using MemoryStream tempXMFMetaStream = new();
 
             await using Stream? metaBaseXMFStream = !IsOnlyRecoverMain && isPlatformXMFStreamExist ?
-                await _httpClient.GetStreamAsync(xmfPlatformIdentifier!.GetOriginalFileUrl(), token) :
+                await BridgedNetworkStream.CreateStream(_httpClient, xmfPlatformIdentifier!.GetOriginalFileUrl(), null, token) :
                 null;
             if (xmfPlatformIdentifier != null)
             {
@@ -998,9 +995,10 @@ namespace CollapseLauncher
 
                 if (isEitherXMFExist)
                 {
-                    await using Stream? baseXMFStream = !IsOnlyRecoverMain && isSecondaryXMFStreamExist ?
-                        await _httpClient.GetStreamAsync(xmfCurrentIdentifier!.GetOriginalFileUrl(), token) :
-                        await _httpClient.GetStreamAsync(xmfBaseIdentifier!.GetOriginalFileUrl(), token);
+                    string baseXMFUrlStream = !IsOnlyRecoverMain && isSecondaryXMFStreamExist
+                        ? xmfCurrentIdentifier!.GetOriginalFileUrl()
+                        : xmfBaseIdentifier!.GetOriginalFileUrl();
+                    await using Stream baseXMFStream = await BridgedNetworkStream.CreateStream(_httpClient, baseXMFUrlStream, null, token);
                     if (xmfCurrentIdentifier != null)
                     {
                         await using Stream? dataXMFStream = !IsOnlyRecoverMain ? xmfCurrentIdentifier.fileStream : xmfBaseIdentifier?.fileStream;
@@ -1009,10 +1007,7 @@ namespace CollapseLauncher
                         await using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(!IsOnlyRecoverMain ? xmfSecPath : xmfPriPath), FileMode.Create, FileAccess.ReadWrite))
                         {
                             // Download the secondary XMF into MemoryStream
-                            if (baseXMFStream != null)
-                            {
-                                await DoCopyStreamProgress(baseXMFStream, fs1, token: token);
-                            }
+                            await DoCopyStreamProgress(baseXMFStream, fs1, token: token);
 
                             // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
                             if (!IsOnlyRecoverMain)
