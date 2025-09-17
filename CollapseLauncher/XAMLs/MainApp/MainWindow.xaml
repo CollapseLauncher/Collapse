@@ -53,47 +53,6 @@
             <AnimatedVisualPlayer x:Name="IntroAnimation"
                                   AutoPlay="False"
                                   Visibility="Collapsed" />
-            <Grid x:Name="Temporary20250827CrisisIntro"
-                  Margin="32"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Bottom"
-                  Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <ToggleSwitch Grid.Column="1"
-                              HorizontalAlignment="Right"
-                              IsOn="{x:Bind IsEnableCrisisIntro, Mode=TwoWay}"
-                              OffContent="Disable this Crisis Intro Animation"
-                              OnContent="Enable this Crisis Intro Animation" />
-                <Button Grid.Column="0"
-                        Margin="0,0,32,0"
-                        Click="Temporary20250827CrisisIntroButton_OnClick"
-                        Opacity=".5"
-                        PointerEntered="IntroSequenceToggle_PointerEntered"
-                        PointerExited="IntroSequenceToggle_PointerExited"
-                        Style="{ThemeResource TransparentDefaultButtonStyle}">
-                    <Grid Margin="0,0"
-                          ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="1"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   FontWeight="SemiBold"
-                                   Text="Learn more about &quot;Indonesian Government Untrust Protest&quot; Crisis (by The Jakarta Post &amp; Al Jazeera)"
-                                   TextWrapping="Wrap" />
-                        <FontIcon Grid.Column="0"
-                                  HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"
-                                  FontSize="18"
-                                  Glyph="&#xE946;" />
-                    </Grid>
-                </Button>
-            </Grid>
             <CheckBox x:Name="IntroSequenceToggle"
                       Margin="32,32,16,24"
                       HorizontalAlignment="Right"
