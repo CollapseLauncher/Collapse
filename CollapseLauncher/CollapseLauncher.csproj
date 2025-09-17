@@ -142,13 +142,12 @@
         <IlcGenerateDgmlFile>false</IlcGenerateDgmlFile>
         
         <!-- Security and Resource Management -->
-        <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
         <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
         <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
         <EventSourceSupport>false</EventSourceSupport>
         <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
         <MetricsSupport>false</MetricsSupport>
-        <UseSystemResourceKeys>true</UseSystemResourceKeys>
+        <UseSystemResourceKeys>false</UseSystemResourceKeys>
         <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
 
         <!-- Instruction Sets -->
