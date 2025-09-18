@@ -16,7 +16,7 @@
         <Authors>$(Company). neon-nyan, Cry0, bagusnl, shatyuka, gablm.</Authors>
         <Copyright>Copyright 2022-2025 $(Company)</Copyright>
         <!-- Versioning -->
-        <Version>1.83.9</Version>
+        <Version>1.83.10</Version>
         <LangVersion>preview</LangVersion>
         <!-- Target Settings -->
         <Platforms>x64</Platforms>
@@ -142,13 +142,12 @@
         <IlcGenerateDgmlFile>false</IlcGenerateDgmlFile>
         
         <!-- Security and Resource Management -->
-        <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
         <EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
         <EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
         <EventSourceSupport>false</EventSourceSupport>
         <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
         <MetricsSupport>false</MetricsSupport>
-        <UseSystemResourceKeys>true</UseSystemResourceKeys>
+        <UseSystemResourceKeys>false</UseSystemResourceKeys>
         <XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
 
         <!-- Instruction Sets -->
