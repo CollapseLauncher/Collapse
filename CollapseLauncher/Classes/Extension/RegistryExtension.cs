@@ -33,21 +33,41 @@ public static class RegistryExtension
     {
         try
         {
-            if (key != null) return key.GetValue(name, defaultValue);
+            if (key == null)
+            {
+                LogWriteLine($"[RegistryExtension::TryGetValue] The provided RegistryKey is null. Cannot retrieve value {name}.",
+                             LogType.Error, true);
+                return null;
+            }
             
-            LogWriteLine($"[RegistryExtension::TryGetValue] The provided RegistryKey is null. Cannot retrieve value {name}.", LogType.Error, true);
-            return null;
+            var value = key.GetValue(name, defaultValue);
+
+            if (value == defaultValue)
+            {
+                throw new
+                    NullReferenceException($"Value {name} returns null or does not exist in registry key {key.Name}.");
+            }
+            
+            return value;
         }
         catch (Exception ex)
         {
-            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {name} from {key?.Name ?? "null"}\r\n{ex}" +
+            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {name} from {key?.Name ?? "null"} due to {ex.Message}" +
                          $"\r\n\t Attempting to reload the registry key after running function {reloadFunction.Method.Name}",
                          LogType.Error, true);
-            var reloadedKey = reloadFunction();
-            if (reloadedKey != null) return reloadedKey?.GetValue(name, defaultValue);
             
-            LogWriteLine($"[RegistryExtension::TryGetValue] Reload function {reloadFunction.Method.Name} returned null. Cannot retrieve value {name}.", LogType.Error, true);
-            return null;
+            var reloadedKey = reloadFunction();
+            if (reloadedKey == null)
+            {
+                LogWriteLine($"[RegistryExtension::TryGetValue] Reload function {reloadFunction.Method.Name} returned null. Cannot retrieve value {name}.", LogType.Error, true);
+                return defaultValue;
+            }
+            
+            var value = reloadedKey.GetValue(name, defaultValue);
+            if (value != defaultValue) return reloadedKey.GetValue(name, defaultValue);
+            
+            LogWriteLine($"[RegistryExtension::TryGetValue] Value {name} still returns null or does not exist in reloaded registry key {reloadedKey.Name}.", LogType.Error, true);
+            return defaultValue;
         }
     }
 }
