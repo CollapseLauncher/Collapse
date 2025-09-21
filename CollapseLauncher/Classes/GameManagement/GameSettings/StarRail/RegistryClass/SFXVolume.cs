@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
@@ -38,7 +39,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(ValueName, null);
+                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
                 if (value != null)
                 {
                     int sfxVolume = (int)value;

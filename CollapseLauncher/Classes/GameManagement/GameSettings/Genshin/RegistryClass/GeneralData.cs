@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.GameSettings.Genshin.Context;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -349,8 +350,8 @@ namespace CollapseLauncher.GameSettings.Genshin
             try
             {
                 if (RegistryRoot == null) throw new ArgumentNullException($"Cannot load {ValueName} since RegistryKey is unexpectedly not initialized!");
-                object value = RegistryRoot.GetValue(ValueName) ?? throw new ArgumentNullException($"Cannot find registry key {ValueName}");
-
+                object value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot) ?? throw new ArgumentNullException($"Cannot find registry key {ValueName}");
+                
                 ReadOnlySpan<byte> byteStr = (byte[])value;
 #if DUMPGIJSON
                 // Dump GeneralData as raw string
