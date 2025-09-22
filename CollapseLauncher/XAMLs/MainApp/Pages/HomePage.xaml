@@ -1868,6 +1868,16 @@
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                 </StackPanel>
+                                <StackPanel>
+                                    <TextBlock MinWidth="200"
+                                               Margin="0,8,0,0"
+                                               Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                               Text="Use Alternative Background (if available)" />
+                                    <ToggleSwitch x:Name="RegionAltBackgroundToggle"
+                                                  IsOn="{x:Bind ToggleRegionAlternativeBackground, Mode=TwoWay}"
+                                                  OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
+                                                  OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
+                                </StackPanel>
                                 <StackPanel x:Name="CustomChangeBGParams"
                                             x:FieldModifier="internal"
                                             Visibility="Visible">

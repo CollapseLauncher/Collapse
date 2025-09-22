@@ -222,5 +222,23 @@ namespace CollapseLauncher.Pages
         public void ToggleEventsPanel(bool      hide) => HideImageCarousel(!hide);
         public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
         public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
+
+        public bool ToggleRegionAlternativeBackground
+        {
+            get =>
+                field = GetAppConfigValue($"{CurrentGameProperty.GameVersion?.GameName}_{CurrentGameProperty.GamePreset?.ZoneName}_IsUseAlternativeBackground")
+                   .ToBool();
+            set 
+            {
+                SetAndSaveConfigValue($"{CurrentGameProperty.GameVersion?.GameName}_{CurrentGameProperty.GamePreset?.ZoneName}_IsUseAlternativeBackground", value);
+
+                if (field != value)
+                {
+                    // Refresh background if value changed
+                    ReturnToHomePage();
+                }
+                field = value;
+            }
+        }
     }
 }

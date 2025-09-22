@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.EncTool;
+using Hi3Helper.Shared.Region;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -28,10 +29,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public override HttpClient ApiGeneralHttpClient { get; protected set; }
 
         public override HttpClient ApiResourceHttpClient { get; protected set; }
+        
+        private static bool isUseAlternativeBackground;
 
         private HoYoPlayLauncherApiLoader(PresetConfig presetConfig, string gameName, string gameRegion)
             : base(presetConfig, gameName, gameRegion, true)
         {
+            isUseAlternativeBackground = LauncherConfig.GetAppConfigValue($"{gameName}_{gameRegion}_IsUseAlternativeBackground").ToBool();
+            
             // Set the HttpClientBuilder for HoYoPlay's own General API.
             HttpClientBuilder apiGeneralHttpBuilder = new HttpClientBuilder()
                 .UseLauncherConfig()
@@ -63,8 +68,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             presetConfig.AddApiResourceAdditionalHeaders((key, value) => apiResourceHttpBuilder.AddHeader(key, value));
 
             // Create HttpClient instances for both General and Resource APIs.
-            ApiGeneralHttpClient  = apiGeneralHttpBuilder.Create();
-            ApiResourceHttpClient = apiResourceHttpBuilder.Create();
+            ApiGeneralHttpClient       = apiGeneralHttpBuilder.Create();
+            ApiResourceHttpClient      = apiResourceHttpBuilder.Create();
         }
 
         public static HoYoPlayLauncherApiLoader CreateApiInstance(PresetConfig presetConfig, string gameName, string gameRegion)
@@ -471,7 +476,17 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             if (string.IsNullOrEmpty(hypLauncherInfoData?.BackgroundImageUrl)) return;
 
             if (sophonLauncherNewsData?.Content?.Background == null) return;
-            sophonLauncherNewsData.Content.Background.BackgroundImg           = hypLauncherInfoData.BackgroundImageUrl;
+
+            var bgList = hypLauncherInfoData.GameInfoList?.FirstOrDefault()?.BackgroundsDetail;
+            if (bgList?.Count > 1 && isUseAlternativeBackground)
+            {
+                sophonLauncherNewsData.Content.Background.BackgroundImg = bgList[1].BackgroundImage?.ImageUrl ?? hypLauncherInfoData.BackgroundImageUrl;
+            }
+            else
+            {
+                sophonLauncherNewsData.Content.Background.BackgroundImg           = hypLauncherInfoData.BackgroundImageUrl;
+            }
+            
             sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnImg = hypLauncherInfoData.FeaturedEventIconUrl;
             sophonLauncherNewsData.Content.Background.FeaturedEventIconBtnUrl = hypLauncherInfoData.FeaturedEventIconClickLink;
         }
