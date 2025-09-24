@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
@@ -221,7 +222,11 @@ public partial class MainPage : Page
             
         // If the custom per region is enabled, then execute below
         BackgroundImgChanger.ChangeBackground(gameLauncherApi.GameBackgroundImgLocal,
-                                              () => IsFirstStartup = false,
+                                              () =>
+                                              {
+                                                  IsFirstStartup = false;
+                                                  this.ReloadPageTheme();
+                                              },
                                               IsCustomBG || isUseCustomPerRegionBg,
                                               true,
                                               true);

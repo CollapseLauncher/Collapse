@@ -35,7 +35,7 @@ namespace CollapseLauncher.Extension
             element.ReloadPageTheme();
         }
 
-        private static void ReloadPageTheme(this FrameworkElement page)
+        internal static void ReloadPageTheme(this FrameworkElement page)
         {
             ElementTheme theme = InnerLauncherConfig.CurrentAppTheme switch
                                  {

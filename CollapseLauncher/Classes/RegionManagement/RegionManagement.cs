@@ -212,7 +212,11 @@ namespace CollapseLauncher
             if (isDownloaded)
             {
                 BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
-                                                      () => IsFirstStartup = false,
+                                                      () =>
+                                                      {
+                                                          IsFirstStartup = false;
+                                                          this.ReloadPageTheme();
+                                                      },
                                                       false,
                                                       false,
                                                       true);
@@ -245,7 +249,11 @@ namespace CollapseLauncher
                               _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                           };
             BackgroundImgChanger.ChangeBackground(tempImage,
-                                                  () => IsFirstStartup = false,
+                                                  () =>
+                                                  {
+                                                      IsFirstStartup = false;
+                                                      this.ReloadPageTheme();
+                                                  },
                                                   false,
                                                   false,
                                                   true);
@@ -256,7 +264,11 @@ namespace CollapseLauncher
                                                                        token))
             {
                 BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
-                                                      () => IsFirstStartup = false,
+                                                      () =>
+                                                      {
+                                                          IsFirstStartup = false;
+                                                          this.ReloadPageTheme();
+                                                      },
                                                       false,
                                                       true,
                                                       true);
