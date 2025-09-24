@@ -57,7 +57,7 @@ public partial class HomePage
         IGameSettingsUniversal _Settings   = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
         PresetConfig           _gamePreset = CurrentGameProperty!.GameVersion!.GamePreset;
 
-        bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+        bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true };
 
         bool isGenshin  = CurrentGameProperty!.GameVersion.GameType == GameNameType.Genshin;
         bool giForceHDR = false;
@@ -239,7 +239,7 @@ public partial class HomePage
         ArgumentNullException.ThrowIfNull(gamePreset);
         try
         {
-            if (gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } pluginGamePreset)
+            if (gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true } pluginGamePreset)
             {
                 LogWriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
                 pluginGamePreset.RunGameContext.KillRunningGame(out _, out _, out _);
@@ -838,7 +838,7 @@ public partial class HomePage
     #region Game Running State
     private async Task CheckRunningGameInstance(PresetConfig presetConfig, CancellationToken token)
     {
-        bool usePluginGameLaunchApi = presetConfig is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+        bool usePluginGameLaunchApi = presetConfig is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true };
         DateTime pluginLaunchedGameTime =
             (presetConfig as PluginPresetConfigWrapper)?.RunGameContext.GameLaunchStartTime ?? default;
 
