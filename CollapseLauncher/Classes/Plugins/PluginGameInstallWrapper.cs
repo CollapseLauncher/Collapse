@@ -19,6 +19,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -89,6 +90,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         GC.SuppressFinalize(this);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public async ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false)
     {
         // Try get existing path
@@ -191,6 +193,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         return new ValueTask<int>(1);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public async Task StartPackageInstallation()
     {
         _updateProgressProperty.IsUpdateMode = await GameManager.GetGameState() == GameInstallStateEnum.NeedsUpdate;
@@ -228,6 +231,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
                                      _updateProgressStatusDelegate,
                                      _plugin.RegisterCancelToken(Token.Token),
                                      out nint asyncStartUpdateResult);
+
                 routineTask = asyncStartUpdateResult.AsTask();
             }
             else
@@ -368,6 +372,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         return new ValueTask<bool>(false);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public async ValueTask<bool> UninstallGame()
     {
         if (!ComMarshal<IGameInstaller>.TryCastComObjectAs(_gameInstaller,
