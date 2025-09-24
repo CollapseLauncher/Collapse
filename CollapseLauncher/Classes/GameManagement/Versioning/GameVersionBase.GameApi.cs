@@ -40,7 +40,24 @@ namespace CollapseLauncher.GameManagement.Versioning
 
         protected virtual GameVersion? GameVersionAPI => GameApiProp?.data?.game?.latest?.version;
 
-        protected virtual GameVersion? GameVersionAPIPreload => GameVersionInstalled ?? GameApiProp?.data?.pre_download_game?.latest?.version;
+        protected virtual GameVersion? GameVersionAPIPreload
+        {
+            get
+            {
+                GameVersion? gameVersionInstalled = GameVersionInstalled;
+                if (!gameVersionInstalled.HasValue)
+                {
+                    return null;
+                }
+
+                if (gameVersionInstalled == GameVersion.Empty)
+                {
+                    return null;
+                }
+
+                return GameApiProp?.data?.pre_download_game?.latest?.version;
+            }
+        }
 
         protected virtual Dictionary<string, GameVersion> PluginVersionsAPI
         {

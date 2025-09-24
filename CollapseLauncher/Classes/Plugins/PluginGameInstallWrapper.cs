@@ -14,12 +14,12 @@ using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;
 using Hi3Helper.Win32.ManagedTools;
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,13 +28,28 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionProperties>, IGameInstallManager
 {
+    private struct InstallProgressProperty
+    {
+        public int  StateCount;
+        public int  StateCountTotal;
+        public int  AssetCount;
+        public int  AssetCountTotal;
+        public long LastDownloaded;
+        public bool IsUpdateMode;
+    }
+
     public event EventHandler? FlushingTrigger;
 
-    public bool            IsRunning       { get; private set; }
+    public bool IsRunning { get; private set; }
 
     private readonly IPlugin                   _plugin;
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
     private readonly IGameInstaller            _gameInstaller;
+
+    private readonly Lock                         _updateStatusLock;
+    private readonly InstallProgressDelegate      _updateProgressDelegate;
+    private readonly InstallProgressStateDelegate _updateProgressStatusDelegate;
+    private          InstallProgressProperty      _updateProgressProperty;
 
     private PluginGameVersionWrapper GameManager =>
         GameVersionManager as PluginGameVersionWrapper ?? throw new InvalidCastException("GameVersionManager is not PluginGameVersionWrapper");
@@ -50,6 +65,11 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         _gameInstaller      = pluginPresetConfig.PluginGameInstaller;
 
         IsSophonInUpdateMode = false;
+
+        _updateStatusLock             = new Lock();
+        _updateProgressDelegate       = UpdateProgressCallback;
+        _updateProgressStatusDelegate = UpdateStatusCallback;
+        _updateProgressProperty       = new InstallProgressProperty();
     }
 
     public void CancelRoutine()
@@ -70,6 +90,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         GC.SuppressFinalize(this);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public async ValueTask<int> GetInstallationPath(bool isHasOnlyMigrateOption = false)
     {
         // Try get existing path
@@ -172,11 +193,11 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         return new ValueTask<int>(1);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public async Task StartPackageInstallation()
     {
-        bool isUpdateMode = await GameManager.GetGameState() == GameInstallStateEnum.NeedsUpdate;
+        _updateProgressProperty.IsUpdateMode = await GameManager.GetGameState() == GameInstallStateEnum.NeedsUpdate;
 
-        Lock updateStatusLock = new Lock();
         ResetStatusAndProgressProperty();
 
         try
@@ -189,21 +210,10 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Status.IsIncludePerFileIndicator     = false;
             UpdateStatus();
 
-            int stateCount = 0;
-            int stateCountTotal = 0;
-
-            int assetCount = 0;
-            int assetCountTotal = 0;
-
-            long lastDownloaded = 0;
-
             Guid cancelGuid = _plugin.RegisterCancelToken(Token.Token);
             await _gameInstaller.InitPluginComAsync(_plugin, Token.Token);
 
-            InstallProgressDelegate      progressDelegate       = UpdateProgressCallback;
-            InstallProgressStateDelegate progressStatusDelegate = UpdateStatusCallback;
-
-            GameInstallerKind sizeInstallerKind = isUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
+            GameInstallerKind sizeInstallerKind = _updateProgressProperty.IsUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
 
             _gameInstaller.GetGameSizeAsync(sizeInstallerKind, in cancelGuid, out nint asyncGetGameSizeResult);
             long sizeToDownload = await asyncGetGameSizeResult.AsTask<long>();
@@ -214,20 +224,21 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             await EnsureDiskSpaceAvailability(GameManager.GameDirPath, sizeToDownload, sizeAlreadyDownloaded);
 
             Task routineTask;
-            if (isUpdateMode)
+            if (_updateProgressProperty.IsUpdateMode)
             {
                 _gameInstaller
-                   .StartUpdateAsync(progressDelegate,
-                                     progressStatusDelegate,
+                   .StartUpdateAsync(_updateProgressDelegate,
+                                     _updateProgressStatusDelegate,
                                      _plugin.RegisterCancelToken(Token.Token),
                                      out nint asyncStartUpdateResult);
+
                 routineTask = asyncStartUpdateResult.AsTask();
             }
             else
             {
                 _gameInstaller
-                   .StartInstallAsync(progressDelegate,
-                                      progressStatusDelegate,
+                   .StartInstallAsync(_updateProgressDelegate,
+                                      _updateProgressStatusDelegate,
                                       _plugin.RegisterCancelToken(Token.Token),
                                       out nint asyncStartInstallResult);
 
@@ -235,73 +246,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             }
 
             await routineTask.ConfigureAwait(false);
-            return;
-
-            void UpdateProgressCallback(in InstallProgress delegateProgress)
-            {
-                using (updateStatusLock.EnterScope())
-                {
-                    stateCount = delegateProgress.StateCount;
-                    stateCountTotal = delegateProgress.TotalStateToComplete;
-
-                    assetCount = delegateProgress.DownloadedCount;
-                    assetCountTotal = delegateProgress.TotalCountToDownload;
-
-                    long downloadedBytes = delegateProgress.DownloadedBytes;
-                    long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
-
-                    long readDownload = delegateProgress.DownloadedBytes - lastDownloaded;
-                    double currentSpeed = CalculateSpeed(readDownload);
-
-                    Progress.ProgressAllEntryCountCurrent = assetCount;
-                    Progress.ProgressAllEntryCountTotal = assetCountTotal;
-
-                    Progress.ProgressAllSizeCurrent = downloadedBytes;
-                    Progress.ProgressAllSizeTotal = downloadedBytesTotal;
-                    Progress.ProgressAllSpeed = currentSpeed;
-
-                    Progress.ProgressAllTimeLeft = ConverterTool
-                       .ToTimeSpanRemain(downloadedBytesTotal, downloadedBytes, currentSpeed);
-
-                    Progress.ProgressAllPercentage = ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes);
-
-                    lastDownloaded = downloadedBytes;
-
-                    if (CheckIfNeedRefreshStopwatch())
-                    {
-                        return;
-                    }
-
-                    if (Status.IsProgressAllIndetermined)
-                    {
-                        Status.IsProgressAllIndetermined     = false;
-                        Status.IsProgressPerFileIndetermined = false;
-                        UpdateStatus();
-                    }
-
-                    UpdateProgress();
-                }
-            }
-
-            void UpdateStatusCallback(InstallProgressState delegateState)
-            {
-                using (updateStatusLock.EnterScope())
-                {
-                    string stateString = delegateState switch
-                    {
-                        InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal),
-                        InstallProgressState.Idle => Locale.Lang._Misc.Idle,
-                        InstallProgressState.Install => string.Format(Locale.Lang._Misc.Extracting + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal),
-                        InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Lang._Misc.Verifying + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal),
-                        _ => string.Format((!isUpdateMode ? Locale.Lang._Misc.Downloading : Locale.Lang._Misc.Updating) + ": " + Locale.Lang._Misc.PerFromTo, stateCount, stateCountTotal)
-                    };
-
-                    Status.ActivityStatus = stateString;
-                    Status.ActivityAll = string.Format(Locale.Lang._Misc.PerFromTo, assetCount, assetCountTotal);
-
-                    UpdateStatus();
-                }
-            }
         }
         catch (OperationCanceledException) when (Token.IsCancellationRequested)
         {
@@ -312,6 +256,72 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         {
             Status.IsCompleted = true;
             IsRunning = false;
+            UpdateStatus();
+        }
+    }
+
+    private void UpdateProgressCallback(in InstallProgress delegateProgress)
+    {
+        using (_updateStatusLock.EnterScope())
+        {
+            _updateProgressProperty.StateCount      = delegateProgress.StateCount;
+            _updateProgressProperty.StateCountTotal = delegateProgress.TotalStateToComplete;
+
+            _updateProgressProperty.AssetCount      = delegateProgress.DownloadedCount;
+            _updateProgressProperty.AssetCountTotal = delegateProgress.TotalCountToDownload;
+
+            long downloadedBytes = delegateProgress.DownloadedBytes;
+            long downloadedBytesTotal = delegateProgress.TotalBytesToDownload;
+
+            long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
+            double currentSpeed = CalculateSpeed(readDownload);
+
+            Progress.ProgressAllEntryCountCurrent = _updateProgressProperty.AssetCount;
+            Progress.ProgressAllEntryCountTotal   = _updateProgressProperty.AssetCountTotal;
+
+            Progress.ProgressAllSizeCurrent = downloadedBytes;
+            Progress.ProgressAllSizeTotal = downloadedBytesTotal;
+            Progress.ProgressAllSpeed = currentSpeed;
+
+            Progress.ProgressAllTimeLeft = ConverterTool
+               .ToTimeSpanRemain(downloadedBytesTotal, downloadedBytes, currentSpeed);
+
+            Progress.ProgressAllPercentage = ConverterTool.ToPercentage(downloadedBytesTotal, downloadedBytes);
+
+            _updateProgressProperty.LastDownloaded = downloadedBytes;
+
+            if (CheckIfNeedRefreshStopwatch())
+            {
+                return;
+            }
+
+            if (Status.IsProgressAllIndetermined)
+            {
+                Status.IsProgressAllIndetermined = false;
+                Status.IsProgressPerFileIndetermined = false;
+                UpdateStatus();
+            }
+
+            UpdateProgress();
+        }
+    }
+
+    private void UpdateStatusCallback(InstallProgressState delegateState)
+    {
+        using (_updateStatusLock.EnterScope())
+        {
+            string stateString = delegateState switch
+            {
+                InstallProgressState.Removing => string.Format("Deleting" + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                InstallProgressState.Idle => Locale.Lang._Misc.Idle,
+                InstallProgressState.Install => string.Format(Locale.Lang._Misc.Extracting + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                InstallProgressState.Verify or InstallProgressState.Preparing => string.Format(Locale.Lang._Misc.Verifying + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal),
+                _ => string.Format((!_updateProgressProperty.IsUpdateMode ? Locale.Lang._Misc.Downloading : Locale.Lang._Misc.Updating) + ": " + Locale.Lang._Misc.PerFromTo, _updateProgressProperty.StateCount, _updateProgressProperty.StateCountTotal)
+            };
+
+            Status.ActivityStatus = stateString;
+            Status.ActivityAll = string.Format(Locale.Lang._Misc.PerFromTo, _updateProgressProperty.AssetCount, _updateProgressProperty.AssetCountTotal);
+
             UpdateStatus();
         }
     }
@@ -362,6 +372,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
         return new ValueTask<bool>(false);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public async ValueTask<bool> UninstallGame()
     {
         if (!ComMarshal<IGameInstaller>.TryCastComObjectAs(_gameInstaller,

@@ -1,8 +1,9 @@
-﻿using CollapseLauncher.GameSettings.Base;
+﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Microsoft.Win32;
 using System;
+using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -41,11 +42,11 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (SettingsBase.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 #if DEBUG
-                LogWriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)SettingsBase.RegistryRoot.GetValue(ValueName, null) ?? ""}", LogType.Debug, true);
+                LogWriteLine($"Loaded Collapse Custom Argument Settings:\r\n{(string?)RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot) ?? ""}", LogType.Debug, true);
 #endif
-                return new CustomArgs { CustomArgumentValue = (string?)SettingsBase.RegistryRoot.GetValue(ValueName, null) ?? "" };
+                return new CustomArgs { CustomArgumentValue = (string?)RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot) ?? "" };
             }
             catch (Exception ex)
             {
@@ -58,11 +59,11 @@ namespace CollapseLauncher.GameSettings.Universal
         {
             try
             {
-                if (SettingsBase.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 #if DEBUG
                 LogWriteLine($"Saved Collapse Custom Argument Settings:\r\n{CustomArgumentValue}", LogType.Debug, true);
 #endif
-                SettingsBase.RegistryRoot.SetValue(ValueName, CustomArgumentValue, RegistryValueKind.String);
+                RegistryRoot.SetValue(ValueName, CustomArgumentValue, RegistryValueKind.String);
             }
             catch (Exception ex)
             {

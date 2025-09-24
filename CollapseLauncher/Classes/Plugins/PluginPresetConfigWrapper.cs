@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core;
+using Hi3Helper.Plugin.Core.DiscordPresence;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Management.Api;
 using Hi3Helper.Plugin.Core.Management.PresetConfig;
@@ -23,7 +24,8 @@ namespace CollapseLauncher.Plugins;
 
 public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
 {
-    public GameManagerExtension.RunGameFromGameManagerContext RunGameContext { get; }
+    public           DiscordPresenceExtension.DiscordPresenceContext    DiscordPresenceContext { get; }
+    public           GameManagerExtension.RunGameFromGameManagerContext RunGameContext         { get; }
     public readonly  PluginInfo                                         PluginInfo;
     public readonly  IPlugin                                            Plugin;
     private readonly IPluginPresetConfig                                _config;
@@ -47,6 +49,8 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
             PresetConfig         = config,
             PrintGameLogCallback = PrintGameLogCallback
         };
+
+        DiscordPresenceContext = new DiscordPresenceExtension.DiscordPresenceContext(pluginInfo.Handle, config);
     }
 
     public unsafe GameManagerExtension.RunGameFromGameManagerContext UseToggledGameLaunchContext()
@@ -383,6 +387,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
     public void Dispose()
     {
         _config.Free();
+        DiscordPresenceContext.Dispose();
 
         ReleaseComObject(PluginNewsApi);
         ReleaseComObject(PluginMediaApi);

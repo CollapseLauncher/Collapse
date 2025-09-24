@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.StarRail.Context;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.GameSettings.StarRail.Context;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Pages;
 using Hi3Helper;
@@ -322,7 +323,7 @@ namespace CollapseLauncher.GameSettings.StarRail
             try
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
-                object? value = RegistryRoot.GetValue(ValueName, null);
+                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
 
                 if (value != null)
                 {

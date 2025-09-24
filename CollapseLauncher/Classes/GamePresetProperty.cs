@@ -133,7 +133,7 @@ namespace CollapseLauncher
             get
             {
                 // Try to use plugin's game launch API
-                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } asPluginPresetConfig)
+                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true } asPluginPresetConfig)
                 {
                     return asPluginPresetConfig.RunGameContext.IsGameRunning;
                 }
