@@ -233,11 +233,11 @@ namespace Hi3Helper.Shared.Region
         private const          string       SectionName                 = "app";
         public static readonly List<string> ScreenResolutionsList       = [];
 
-        public const long AppDiscordApplicationID     = 1138126643592970251;
-        public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
-        public const long AppDiscordApplicationID_GI  = 1124137436650426509;
-        public const long AppDiscordApplicationID_HSR = 1124153902959431780;
-        public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
+        public const ulong AppDiscordApplicationID     = 1138126643592970251;
+        public const ulong AppDiscordApplicationID_HI3 = 1124126288370737314;
+        public const ulong AppDiscordApplicationID_GI  = 1124137436650426509;
+        public const ulong AppDiscordApplicationID_HSR = 1124153902959431780;
+        public const ulong AppDiscordApplicationID_ZZZ = 1124154024879456276;
 
         public static nint AppIconLarge;
         public static nint AppIconSmall;

@@ -8,7 +8,6 @@ namespace CollapseLauncher.Extension;
 public static class RegistryExtension
 {
 #nullable enable
-
     /// <summary>
     /// Attempts to retrieve a value from the specified registry key. If an exception occurs,
     /// the provided reload function is invoked to reload the registry key, and the value is

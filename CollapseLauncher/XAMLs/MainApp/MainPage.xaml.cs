@@ -190,6 +190,7 @@ namespace CollapseLauncher
             if (await LoadRegionFromCurrentConfigV2(presetConfig, gameName, gameRegion))
             {
                 MainFrameChanger.ChangeMainFrame(Page);
+                AppDiscordPresence.SetupPresence();
             }
 
             // Unlock ChangeBtn for first start
