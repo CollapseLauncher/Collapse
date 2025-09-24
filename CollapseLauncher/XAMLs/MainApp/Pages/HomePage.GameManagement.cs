@@ -82,7 +82,7 @@ public sealed partial class HomePage
             return;
         }
 
-        string ver = CurrentGameProperty.GameVersion?.GetGameVersionApiPreload()?.VersionString;
+        string ver = CurrentGameProperty.GameVersion?.GetGameVersionApiPreload()?.ToString();
 
         try
         {
