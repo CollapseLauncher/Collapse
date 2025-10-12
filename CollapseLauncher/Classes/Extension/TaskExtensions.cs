@@ -87,5 +87,11 @@ namespace CollapseLauncher.Extension
 
             throw new TimeoutException("The operation has timed out!");
         }
+
+        internal static async Task GetResultFromAction<T>(this Task<T> task, Action<T> getResultAction)
+        {
+            T result = await task;
+            getResultAction(result);
+        }
     }
 }

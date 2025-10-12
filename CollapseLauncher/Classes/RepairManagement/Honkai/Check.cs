@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper;
-using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
@@ -166,15 +165,12 @@ namespace CollapseLauncher
             ProgressAllSizeFound += asset.S;
             ProgressAllCountFound++;
 
-            Dispatch(() => AssetEntry.Add(
-                                          new AssetProperty<RepairAssetType>(
-                                                                             Path.GetFileName(asset.N),
+            Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
                                                                              RepairAssetType.Video,
                                                                              Path.GetDirectoryName(asset.N),
                                                                              asset.S,
                                                                              null,
-                                                                             asset.CRCArray
-                                                                            )
+                                                                             asset.CRCArray)
                                          ));
 
             // Add asset for missing/unmatched size file
@@ -255,8 +251,11 @@ namespace CollapseLauncher
             // Open and read fileInfo as FileStream 
             await using FileStream fileStream = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do MD5 Hash calculation
-            var localCrc = await GetCryptoHashAsync<MD5>(fileStream, null, true, true, token);
-            if (_isGame820PostVersion) // Reverse the hash if the game version is >= 8.2.0
+            byte[] localCrc = asset.CRCArray.Length > 8
+                ? await base.GetCryptoHashAsync<MD5>(fileStream, null, true, true, token)
+                : await GetCryptoHashAsync<MD5>(fileStream, null, true, true, token);
+
+            if (asset.CRCArray.Length == 8) // Reverse the hash if the game version is >= 8.2.0
                 Array.Reverse(localCrc);
 
             // Get size difference for summarize the _progressAllSizeCurrent
@@ -479,8 +478,11 @@ namespace CollapseLauncher
                 // Open and read fileInfo as FileStream 
                 await using FileStream fileOldFs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read);
                 // If pass the check above, then do CRC calculation
-                byte[] localOldCrc = await GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
-                if (_isGame820PostVersion) // Reverse the hash if the game version is >= 8.2.0
+                byte[] localOldCrc = fileHashToCheck.Length > 8
+                    ? await base.GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token)
+                    : await GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
+
+                if (fileHashToCheck.Length == 8) // Reverse the hash if the game version is >= 8.2.0
                     Array.Reverse(localOldCrc);
 
                 // If the hash matches, then add the patch
@@ -570,7 +572,9 @@ namespace CollapseLauncher
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCrc = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
+            byte[] localCrc = fileHashToCheck.Length > 8
+                ? await base.GetCryptoHashAsync<MD5>(filefs, null, true, true, token)
+                : await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
             if (_isGame820PostVersion) // Reverse the hash if the game version is >= 8.2.0
                 Array.Reverse(localCrc);
 

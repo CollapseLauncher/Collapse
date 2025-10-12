@@ -261,55 +261,62 @@ namespace CollapseLauncher.InstallManager.Base
                         // Get Audio Choices first.
                         // If the fallbackFromUpdate flag is set, then don't show the dialog and instead
                         // use the default language (ja-jp) as the fallback and read the existing audio_lang file
-                        List<int>? addedVo;
+                        List<int> addedVo = [];
                         int setAsDefaultVo = GetSophonLocaleCodeIndex(
                                               sophonMainInfoPair.OtherSophonBuildData,
                                               "ja-jp"
                                              );
 
-                        if (fallbackFromUpdate)
+                        if (voLanguageList.Count != 0)
                         {
-                            addedVo = [];
-                            if (!File.Exists(_gameAudioLangListPathStatic))
+                            if (fallbackFromUpdate)
                             {
-                                addedVo.Add(setAsDefaultVo);
-                            }
-                            else
-                            {
-                                string[] voLangList = await File.ReadAllLinesAsync(_gameAudioLangListPathStatic);
-                                foreach (string voLang in voLangList)
-                                {
-                                    string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
-                                        voLang
-#if !DEBUG
-                                        , false
-#endif
-                                        );
-
-                                    if (string.IsNullOrEmpty(voLocaleId))
-                                    {
-                                        continue;
-                                    }
-
-                                    int voLocaleIndex = GetSophonLocaleCodeIndex(
-                                         sophonMainInfoPair.OtherSophonBuildData,
-                                         voLocaleId
-                                        );
-                                    addedVo.Add(voLocaleIndex);
-                                }
-
-                                if (addedVo.Count == 0)
+                                if (!File.Exists(_gameAudioLangListPathStatic))
                                 {
                                     addedVo.Add(setAsDefaultVo);
                                 }
+                                else
+                                {
+                                    string[] voLangList = await File.ReadAllLinesAsync(_gameAudioLangListPathStatic);
+                                    foreach (string voLang in voLangList)
+                                    {
+                                        string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
+                                            voLang
+#if !DEBUG
+                                        , false
+#endif
+                                            );
+
+                                        if (string.IsNullOrEmpty(voLocaleId))
+                                        {
+                                            continue;
+                                        }
+
+                                        int voLocaleIndex = GetSophonLocaleCodeIndex(
+                                             sophonMainInfoPair.OtherSophonBuildData,
+                                             voLocaleId
+                                            );
+                                        addedVo.Add(voLocaleIndex);
+                                    }
+
+                                    if (addedVo.Count == 0)
+                                    {
+                                        addedVo.Add(setAsDefaultVo);
+                                    }
+                                }
                             }
-                        }
-                        else
-                        {
-                            (addedVo, setAsDefaultVo) =
-                                await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
-                                 voLanguageList,
-                                 setAsDefaultVo);
+                            else
+                            {
+                                (List<int>? addedVoTemp, setAsDefaultVo) =
+                                    await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
+                                     voLanguageList,
+                                     setAsDefaultVo);
+
+                                if (addedVoTemp != null)
+                                {
+                                    addedVo.AddRange(addedVoTemp);
+                                }
+                            }
                         }
 
                         if (addedVo == null || setAsDefaultVo < 0)

@@ -1,6 +1,7 @@
 using CollapseLauncher.GameManagement.Versioning;
 using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -14,12 +15,14 @@ using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Http;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Sophon;
+using Hi3Helper.Sophon.Structs;
 using Microsoft.Win32;
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -41,7 +44,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 #nullable enable
 namespace CollapseLauncher
 {
-    internal struct HonkaiRepairAssetIgnore
+    internal class HonkaiRepairAssetIgnore
     {
         internal static HonkaiRepairAssetIgnore CreateEmpty() => new()
         {
@@ -49,8 +52,8 @@ namespace CollapseLauncher
             IgnoredVideoCGSubCategory = []
         };
 
-        internal AudioPCKType[] IgnoredAudioPCKType;
-        internal int[] IgnoredVideoCGSubCategory;
+        internal required AudioPCKType[] IgnoredAudioPCKType;
+        internal required int[]          IgnoredVideoCGSubCategory;
     }
 
     internal partial class HonkaiRepair
@@ -68,9 +71,9 @@ namespace CollapseLauncher
             public CancellationToken       CancelToken           { get; } = token;
         }
 
-        private          string? _primaryMainMetaRepoUrl;
-        private          string? _secondaryMainMetaRepoUrl;
-        private readonly byte[]  _collapseHeader = "Collapse"u8.ToArray();
+        private        string?            _primaryMainMetaRepoUrl;
+        private        string?            _secondaryMainMetaRepoUrl;
+        private static ReadOnlySpan<byte> _collapseHeader => "Collapse"u8;
 
         private async Task Fetch(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
@@ -109,7 +112,7 @@ namespace CollapseLauncher
                 // Check for manifest. If it doesn't exist, then throw and warn the user
                 if (!manifestDict.TryGetValue(GameVersion.VersionString, out string? gameRepoUrl))
                 {
-                    throw new VersionNotFoundException($"Manifest for {GameVersionManager!.GamePreset.ZoneName} (version: {GameVersion.VersionString}) doesn't exist! Please contact @neon-nyan or open an issue for this!");
+                    LogWriteLine($"Game Repo Url (Repair Index) for version: {GameVersion.VersionString} doesn't exist. The basic resource will use reference data from Sophon.", LogType.Warning);
                 }
 
                 GameRepoURL = gameRepoUrl;
@@ -205,9 +208,6 @@ namespace CollapseLauncher
                     await FetchAudioIndex(client, assetIndex, IgnoredAssetIDs, audioManifestSenadinaFileIdentifier!, token);
                 }
 
-                // Assign the URL based on the version
-                GameRepoURL = manifestDict[GameVersion.VersionString];
-
                 // Region: XMFAndAssetIndex
                 // Fetch asset index
                 await FetchAssetIndex(assetIndex, token);
@@ -248,207 +248,6 @@ namespace CollapseLauncher
                 senadinaFileIdentifier?.Clear();
             }
         }
-
-        /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
-        private static unsafe void AlterAssetBundleHashWithReferenceSpan(List<FilePropertiesRemote> assetIndex,
-                                                                         Version? currentVersion,
-                                                                         SenadinaFileIdentifier? asbReferenceSenadinaFileIdentifier)
-        {
-            // Set buffer for asset bundle reference span
-            byte[] asbReferenceBuffer = ArrayPool<byte>.Shared.Rent(512 << 10);
-
-            try
-            {
-                // Get the asset bundle reference span
-                if (!GetAssetBundleRefSpan(asbReferenceSenadinaFileIdentifier,
-                                           asbReferenceBuffer,
-                                           currentVersion,
-                                           out AssetBundleReferenceSpan span,
-                                           out Dictionary<string, int> keyIndexes))
-                {
-                    LogWriteLine("Failed to parse Asset Bundle Reference file to span. Skipping!", LogType.Warning);
-                    return;
-                }
-
-                if (keyIndexes == null || keyIndexes.Count == 0)
-                    return;
-
-                ReadOnlySpan<AssetBundleReferenceData> dataSpan = span.Data;
-                List<FilePropertiesRemote> assetIndexFiltered = [];
-
-                Span<FilePropertiesRemote> assetIndexSpan = CollectionsMarshal.AsSpan(assetIndex);
-                ref AssetBundleReferenceData asbRef = ref MemoryMarshal.GetReference(span.Data);
-                var keyIndexesLookup = keyIndexes.GetAlternateLookup<ReadOnlySpan<char>>();
-
-                int assetIndexCount = assetIndexSpan.Length;
-                for (int i = 0; i < assetIndexCount; i++)
-                {
-                    FilePropertiesRemote block = assetIndexSpan[i];
-                    if (block.FT != FileType.Block)
-                    {
-                        continue;
-                    }
-                    ReadOnlySpan<char> blockName = Path.GetFileName(block.N);
-
-                    if (!keyIndexesLookup.TryGetValue(blockName, out int blockIndex))
-                    {
-                        continue;
-                    }
-
-                    ref AssetBundleReferenceData asbRefData = ref Unsafe.Add(ref asbRef, blockIndex);
-                    int hashLen = asbRefData.HashSize;
-                    string hashString = GetHashString(ref asbRefData);
-
-                    block.CRC = hashString;
-                    if (block.BlockPatchInfo != null)
-                    {
-                        string blockNameNew = block.BlockPatchInfo.NewName;
-                        if (!keyIndexesLookup.TryGetValue(blockNameNew, out blockIndex))
-                        {
-                            continue;
-                        }
-
-                        ref AssetBundleReferenceData asbRefDataNew = ref Unsafe.Add(ref asbRef, blockIndex);
-                        block.BlockPatchInfo.NewHash = GetHashRaw(ref asbRefDataNew);
-
-                        for (int j = 0; j < block.BlockPatchInfo.PatchPairs.Count; j++)
-                        {
-                            if (!keyIndexesLookup.TryGetValue(block.BlockPatchInfo.PatchPairs[j].PatchName, out blockIndex))
-                            {
-                                continue;
-                            }
-
-                            ref AssetBundleReferenceData asbRefDataPatch = ref Unsafe.Add(ref asbRef, blockIndex);
-                            block.BlockPatchInfo.PatchPairs[j].PatchHash = GetHashRaw(ref asbRefDataPatch);
-
-                            if (!keyIndexesLookup.TryGetValue(block.BlockPatchInfo.PatchPairs[j].OldName, out blockIndex))
-                            {
-                                continue;
-                            }
-
-                            ref AssetBundleReferenceData asbRefDataOld = ref Unsafe.Add(ref asbRef, blockIndex);
-                            block.BlockPatchInfo.PatchPairs[j].OldHash = GetHashRaw(ref asbRefDataOld);
-                        }
-                    }
-
-                    assetIndexFiltered.Add(block);
-                }
-
-                assetIndexFiltered.AddRange(assetIndex.Where(x => x.FT != FileType.Block));
-
-                assetIndex.Clear();
-                assetIndex.AddRange(assetIndexFiltered);
-            }
-            finally
-            {
-                // Return the buffer to the pool
-                ArrayPool<byte>.Shared.Return(asbReferenceBuffer);
-            }
-
-            return;
-
-            static byte[] GetHashRaw(ref AssetBundleReferenceData asbRefData)
-            {
-                int hashSize = asbRefData.HashSize;
-                byte[] hash = new byte[hashSize];
-                fixed (byte* hashPtr = asbRefData.Hash)
-                {
-                    MemoryMarshal.CreateSpan(ref Unsafe.AsRef<byte>(hashPtr), hashSize).CopyTo(hash);
-                }
-                return hash;
-            }
-
-            static string GetHashString(ref AssetBundleReferenceData asbRefData)
-            {
-                fixed (byte* hashPtr = asbRefData.Hash)
-                {
-                    int hashSize = asbRefData.HashSize;
-                    Span<char> hashString = stackalloc char[hashSize * 2];
-                    ReadOnlySpan<byte> hash = new(hashPtr, hashSize);
-
-                    HexTool.TryBytesToHexUnsafe(hash, hashString, out int bytesWritten);
-                    if (bytesWritten != hashSize * 2)
-                    {
-                        throw new InvalidOperationException($"Cannot convert hash to string! Hash size: {hashSize} | Bytes written: {bytesWritten}");
-                    }
-
-                    return new string(hashString);
-                }
-            }
-        }
-
-        private static bool GetAssetBundleRefSpan(
-            SenadinaFileIdentifier? identifier,
-            byte[] buffer,
-            Version? currentVersion,
-            out AssetBundleReferenceSpan span,
-            out Dictionary<string, int> keyIndexes)
-        {
-            Unsafe.SkipInit(out span);
-            Unsafe.SkipInit(out keyIndexes);
-
-            // If the identifier is null, then skip the hash reference assignment
-            if (identifier?.fileStream == null)
-            {
-                LogWriteLine("SenadinaFileIdentifier for SenadinaKind.wonderland is empty! The hash reference cannot be assigned!", LogType.Warning);
-                return false;
-            }
-
-            // Get current game version
-            if (currentVersion == null)
-            {
-                LogWriteLine("Current version is null! The hash reference cannot be assigned!", LogType.Warning);
-                return false;
-            }
-
-            // If version is < 8.2.0, return (This is unnecessary but important for sanity check)
-            if (currentVersion < _game820PostVersion)
-            {
-                return false;
-            }
-
-            // Get asset bundle reference span 
-            using Stream assetBundleReferenceStream = identifier.fileStream;
-            AssetBundleReferenceReadOp assetBundleReadOpResult = AssetBundleReference
-                .TryReadAssetBundleReference(assetBundleReferenceStream,
-                                             buffer,
-                                             out span);
-            if (assetBundleReadOpResult != AssetBundleReferenceReadOp.Success)
-            {
-                throw new InvalidOperationException($"Cannot parse Asset Bundle Reference from Senadina Identifier! Reason: {assetBundleReadOpResult} | BufferSize: {buffer.Length}");
-            }
-
-            Span<char> charsBuffer = stackalloc char[256];
-
-            keyIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            var alternativeLookup = keyIndexes.GetAlternateLookup<ReadOnlySpan<char>>();
-
-            ref AssetBundleReferenceKvpData startKvpIndex = ref MemoryMarshal.GetReference(span.KeyValuePair);
-            ref AssetBundleReferenceKvpData endKvpIndex = ref Unsafe.Add(ref startKvpIndex, span.KeyValuePair.Length);
-
-            int currentDataOffset = 0;
-            ref AssetBundleReferenceData startDataOffset = ref MemoryMarshal.GetReference(span.Data);
-            while (Unsafe.IsAddressLessThan(ref startKvpIndex, ref endKvpIndex))
-            {
-                ReadOnlySpan<char> keyNameSpan = startKvpIndex.GetKeyFromKvp();
-                LogWriteLine($"  > Adding Asset Bundle Reference hash from key: {keyNameSpan.ToString()}", LogType.Debug, true);
-
-                ref AssetBundleReferenceData startDataIndex = ref Unsafe.Add(ref startDataOffset, currentDataOffset);
-                ref AssetBundleReferenceData endDataIndex = ref Unsafe.Add(ref startDataOffset, currentDataOffset + startKvpIndex.DataCount);
-                while (Unsafe.IsAddressLessThan(ref startDataIndex, ref endDataIndex))
-                {
-                    ReadOnlySpan<char> dataNameSpan = startDataIndex.GetDataNameSpan();
-                    alternativeLookup.TryAdd(dataNameSpan, currentDataOffset);
-
-                    startDataIndex = ref Unsafe.Add(ref startDataIndex, 1);
-                    ++currentDataOffset;
-                }
-                startKvpIndex = ref Unsafe.Add(ref startKvpIndex, 1);
-            }
-
-            return true;
-        }
-        */
 
         private static void ReorderAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
@@ -568,8 +367,8 @@ namespace CollapseLauncher
                   if (plugin.package?.validate == null) return;
                   assetIndex.RemoveAll(asset =>
                   {
-                      var r = plugin.package?.validate.Any(validate => validate.path != null &&
-                                                                      (asset.N.Contains(validate.path)||asset.RN.Contains(validate.path)));
+                      bool? r = plugin.package?.validate.Any(validate => validate.path != null &&
+                                                                         (asset.N.Contains(validate.path) || asset.RN.Contains(validate.path)));
                       if (r ?? false)
                       {
                           LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
@@ -676,29 +475,27 @@ namespace CollapseLauncher
             ConcurrentDictionary<string, CGMetadata> videoMetadataQueue = new();
 
             // Iterate the metadata to be converted into asset index
-            await Parallel.ForEachAsync(enumEntry, new ParallelOptions
-            {
-                CancellationToken      = token,
-                MaxDegreeOfParallelism = ThreadCount
-            }, async (metadata, tokenInternal) =>
-               {
-                   // Only add remote available videos (not build-in) and check if the CG file is available in the server
-                   // Edit: 2023-12-09
-                   // Starting from 7.1, the CGs that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
-                   bool isCGAvailable = await IsCGFileAvailable(metadata, baseURL, tokenInternal);
-                   bool isCGIgnored   = ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata.CgSubCategory);
+            await Parallel.ForEachAsync(enumEntry,
+                                        token,
+                                        async (metadata, tokenInternal) =>
+                                        {
+                                            // Only add remote available videos (not build-in) and check if the CG file is available in the server 
+                                            // Edit: 2023-12-09
+                                            // Starting from 7.1, the CGs that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
+                                            bool isCGAvailable = await IsCGFileAvailable(metadata, client, tokenInternal);
+                                            bool isCGIgnored = ignoredAssetIDs.IgnoredVideoCGSubCategory.Contains(metadata.CgSubCategory);
 
-               #if DEBUG
-                   if (isCGIgnored)
-                       LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {(AudioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN)}", LogType.Debug, true);
-               #endif
+                                        #if DEBUG
+                                            if (isCGIgnored)
+                                                LogWriteLine($"Ignoring CG Category: {metadata.CgSubCategory} {(AudioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN)}", LogType.Debug, true);
+                                        #endif
 
-                   if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
-                   {
-                       string name = (AudioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN) + ".usm";
-                       _ = videoMetadataQueue.TryAdd(name, metadata);
-                   }
-               });
+                                            if (!metadata.InStreamingAssets && isCGAvailable && !isCGIgnored)
+                                            {
+                                                string name = (AudioLanguage == AudioLanguageType.Japanese ? metadata.CgPathHighBitrateJP : metadata.CgPathHighBitrateCN) + ".usm";
+                                                _ = videoMetadataQueue.TryAdd(name, metadata);
+                                            }
+                                        });
 
             foreach (KeyValuePair<string, CGMetadata> metadata in videoMetadataQueue)
             {
@@ -826,11 +623,7 @@ namespace CollapseLauncher
                 .Where(audioInfo => (audioInfo!.Language == AudioLanguageType.Common
                                   || audioInfo.Language == AudioLanguage)
                                   && !ignoredAssetIDs.IgnoredAudioPCKType.Contains(audioInfo.PckType)),
-                new ParallelOptions
-                {
-                    CancellationToken = token,
-                    MaxDegreeOfParallelism = ThreadCount
-                }, async (audioInfo, _tokenInternal) =>
+                token, async (audioInfo, _tokenInternal) =>
                 {
                     // Try get the availability of the audio asset
                     if (await IsAudioFileAvailable(audioInfo, _tokenInternal))
@@ -884,8 +677,8 @@ namespace CollapseLauncher
         private async Task<KianaAudioManifest> TryGetAudioManifest(HttpClient client, SenadinaFileIdentifier senadinaFileIdentifier, string manifestLocal, string manifestRemote, CancellationToken token)
         {
             string originalUrl = senadinaFileIdentifier.GetOriginalFileUrl();
-            await using Stream     originalFile = await BridgedNetworkStream.CreateStream(client, originalUrl, null, token);
-            await using FileStream localFile    = new FileStream(EnsureCreationOfDirectory(manifestLocal), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            await using Stream originalFile = (await client.TryGetCachedStreamFrom(originalUrl, token: token)).Stream;
+            await using FileStream localFile = new(EnsureCreationOfDirectory(manifestLocal), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
             // Start downloading manifest.m
             await DoCopyStreamProgress(originalFile, localFile, token: token);
@@ -911,14 +704,101 @@ namespace CollapseLauncher
 
         private async Task FetchAssetIndex(List<FilePropertiesRemote> assetIndex, CancellationToken token)
         {
-            // Set asset index URL
-            string urlIndex = string.Format(AppGameRepairIndexURLPrefix, GameVersionManager!.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
+            // Fetch assets from Asset Index
+            if (!string.IsNullOrEmpty(GameRepoURL))
+            {
+                // Set asset index URL
+                string urlIndex = string.Format(AppGameRepairIndexURLPrefix, GameVersionManager!.GamePreset.ProfileName, GameVersion.VersionString) + ".binv2";
 
-            // Start downloading asset index using FallbackCDNUtil
-            await using BridgedNetworkStream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token);
+                // Start downloading asset index using FallbackCDNUtil
+                await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(urlIndex, token: token);
 
-            // Deserialize asset index and return
-            DeserializeAssetIndexV2(stream, assetIndex);
+                // Deserialize asset index and return
+                DeserializeAssetIndexV2(stream, assetIndex);
+
+                return;
+            }
+
+            // Otherwise, fetch assets from Sophon
+            await ImportAssetIndexFromSophon(assetIndex, token);
+        }
+
+        private async Task ImportAssetIndexFromSophon(List<FilePropertiesRemote> assetIndexList, CancellationToken token)
+        {
+            PresetConfig gamePreset    = GameVersionManager.GamePreset;
+            string?      sophonApiUrl  = gamePreset.LauncherResourceChunksURL?.MainUrl;
+            string?      matchingField = gamePreset.LauncherResourceChunksURL?.MainBranchMatchingField;
+
+            if (string.IsNullOrEmpty(sophonApiUrl))
+            {
+                throw new InvalidOperationException("Cannot import asset list from Sophon when LauncherResourceChunksURL property inside of Game Preset Config is null!");
+            }
+
+            sophonApiUrl += $"&tag={GameVersion.ToString()}";
+            using HttpClient client = HttpClientBuilder.CreateDefaultClient();
+
+            SophonChunkManifestInfoPair infoPair = await SophonManifest
+               .CreateSophonChunkManifestInfoPair(client,
+                                                  sophonApiUrl,
+                                                  matchingField,
+                                                  false,
+                                                  token);
+
+            if (!infoPair.IsFound)
+            {
+                throw new InvalidOperationException($"Sophon cannot find matching field: {matchingField} from API URL: {sophonApiUrl}");
+            }
+
+            SearchValues<string> excludedMatchingFields =
+                SearchValues
+                   .Create(["en-us", "zh-cn", "ja-jp", "ko-kr"],
+                           StringComparison.OrdinalIgnoreCase);
+
+            List<SophonChunkManifestInfoPair> infoPairs = [infoPair];
+            infoPairs.AddRange(infoPair
+                              .OtherSophonBuildData?
+                              .ManifestIdentityList
+                              .Where(x => !x.MatchingField
+                                           .ContainsAny(excludedMatchingFields) && !x.MatchingField.Equals(matchingField))
+                              .Select(x => infoPair.GetOtherManifestInfoPair(x.MatchingField)) ?? []);
+
+            foreach (SophonChunkManifestInfoPair pair in infoPairs)
+            {
+                await foreach (SophonAsset asset in SophonManifest
+                                  .EnumerateAsync(client,
+                                                  pair,
+                                                  token: token))
+                {
+                    assetIndexList.Add(new FilePropertiesRemote
+                    {
+                        AssociatedObject = asset,
+                        S                = asset.AssetSize,
+                        N                = asset.AssetName,
+                        CRC              = asset.AssetHash,
+                        FT               = DetermineFileTypeFromExtension(asset.AssetName)
+                    });
+                }
+            }
+        }
+
+        private static FileType DetermineFileTypeFromExtension(string fileName)
+        {
+            if (fileName.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase))
+            {
+                return FileType.Block;
+            }
+
+            if (fileName.EndsWith(".usm", StringComparison.OrdinalIgnoreCase))
+            {
+                return FileType.Video;
+            }
+
+            if (fileName.EndsWith(".pck", StringComparison.OrdinalIgnoreCase))
+            {
+                return FileType.Audio;
+            }
+
+            return FileType.Generic;
         }
 
         private void DeserializeAssetIndexV2(Stream stream, List<FilePropertiesRemote> assetIndexList)
@@ -1083,6 +963,16 @@ namespace CollapseLauncher
                 return;
             }
 
+            Dictionary<string, FilePropertiesRemote> fileEntriesXmfOnlyLookup =
+                assetIndex
+                   .Where(x => x.N.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase))
+                   .ToDictionary(x => Path.GetFileName(x.N), StringComparer.OrdinalIgnoreCase);
+
+            Dictionary<string, FilePropertiesRemote> fileEntriesGenericLookup =
+                assetIndex
+                   .Where(x => !x.N.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase))
+                   .ToDictionary(x => x.N, StringComparer.OrdinalIgnoreCase);
+
             // Reset the temporal stream pos.
             xmfStream.Position = 0;
 
@@ -1101,20 +991,25 @@ namespace CollapseLauncher
                     blockPatchInfo = patchInfo.PatchAsset[blockPatchInfoIndex];
                 }
 
-                // Assign as FilePropertiesRemote
-                FilePropertiesRemote assetInfo = new FilePropertiesRemote
-                {
-                    N = CombineURLFromString(BlockBasePath, xmfParser.BlockEntry[i].BlockName),
-                    RN = CombineURLFromString(BlockAsbBaseURL, xmfParser.BlockEntry[i].BlockName),
-                    S = xmfParser.BlockEntry[i]!.Size,
-                    CRC = HexTool.BytesToHexUnsafe(xmfParser.BlockEntry[i].Hash),
-                    FT = FileType.Block,
-                    BlockPatchInfo = blockPatchInfo
-                };
+                fileEntriesXmfOnlyLookup.Remove(xmfParser.BlockEntry[i].BlockName, out FilePropertiesRemote? oldAsset);
 
-                // Add the asset infoz
-                assetIndex.Add(assetInfo);
+                // Assign as FilePropertiesRemote
+                FilePropertiesRemote assetInfo = new()
+                {
+                    N                = CombineURLFromString(BlockBasePath,   xmfParser.BlockEntry[i].BlockName),
+                    RN               = CombineURLFromString(BlockAsbBaseURL, xmfParser.BlockEntry[i].BlockName),
+                    S                = xmfParser.BlockEntry[i]!.Size,
+                    CRC              = HexTool.BytesToHexUnsafe(xmfParser.BlockEntry[i].Hash),
+                    FT               = FileType.Block,
+                    BlockPatchInfo   = blockPatchInfo,
+                    AssociatedObject = oldAsset?.AssociatedObject
+                };
+                fileEntriesXmfOnlyLookup.Add(Path.GetFileName(assetInfo.N), assetInfo);
             }
+
+            assetIndex.Clear();
+            assetIndex.AddRange(fileEntriesGenericLookup.Values);
+            assetIndex.AddRange(fileEntriesXmfOnlyLookup.Values);
 
             // Write the blockVerifiedVersion based on secondary XMF
             File.WriteAllText(Path.Combine(GamePath!, NormalizePath(BlockBasePath)!, "blockVerifiedVersion.txt"), string.Join('_', xmfParser.Version!));
