@@ -2,6 +2,7 @@
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
 // ReSharper disable CheckNamespace
@@ -14,6 +15,8 @@ namespace Hi3Helper.Shared.ClassStruct
 {
     [JsonConverter(typeof(JsonStringEnumConverter<FileType>))]
     public enum FileType : byte { Generic, Block, Audio, Video, Unused }
+
+    [DebuggerDisplay("{N}")]
     public class FilePropertiesRemote : IAssetIndexSummary
     {
         public  bool   IsUsed { get; set; }

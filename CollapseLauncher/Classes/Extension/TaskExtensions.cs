@@ -218,5 +218,11 @@ namespace CollapseLauncher.Extension
 
             return initTask;
         }
+
+        internal static async Task GetResultFromAction<T>(this Task<T> task, Action<T> getResultAction)
+        {
+            T result = await task;
+            getResultAction(result);
+        }
     }
 }

@@ -2,8 +2,10 @@
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.ClassStruct;
+using Hi3Helper.Sophon;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -91,14 +93,21 @@ namespace CollapseLauncher
                         LogWriteLine($"Found duplicated task for {asset.AssetProperty.Name}! Skipping...", LogType.Warning, true);
                         break;
                     }
-                    // Assign a task depends on the asset type
-                    Task assetTask = asset.AssetIndex.FT switch
-                    {
-                        FileType.Block => RepairAssetTypeBlocks(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        FileType.Audio => RepairOrPatchTypeAudio(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        FileType.Video => RepairAssetTypeVideo(asset, downloadClient, _httpClient_RepairAssetProgress, token),
-                        _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
-                    };
+
+                    Task assetTask = asset.AssetIndex.AssociatedObject is SophonAsset asSophonAsset
+                        ? RepairAssetTypeSophon(asSophonAsset,
+                                                asset.AssetIndex,
+                                                asset.AssetProperty,
+                                                downloadClient,
+                                                _httpClient_RepairAssetProgress,
+                                                token)
+                        : asset.AssetIndex.FT switch
+                          {
+                              FileType.Block => RepairAssetTypeBlocks(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                              FileType.Audio => RepairOrPatchTypeAudio(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                              FileType.Video => RepairAssetTypeVideo(asset, downloadClient, _httpClient_RepairAssetProgress, token),
+                              _ => RepairAssetTypeGeneric(asset, downloadClient, _httpClient_RepairAssetProgress, token)
+                          };
 
                     // Await the task
                     await assetTask;
@@ -168,16 +177,74 @@ namespace CollapseLauncher
         #endregion
 
         #region GenericRepair
+
+        private async Task RepairAssetTypeSophon(
+            SophonAsset              sophonAsset,
+            FilePropertiesRemote     assetIndex,
+            IAssetProperty           assetEntry,
+            DownloadClient           downloadClient,
+            DownloadProgressDelegate downloadProgress,
+            CancellationToken        token)
+        {
+            // Increment total count current
+            ProgressAllCountCurrent++;
+            // Set repair activity status
+            string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, Progress.ProgressAllTimeLeft);
+            UpdateRepairStatus(string.Format(assetIndex.FT == FileType.Block ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, assetIndex.FT == FileType.Block ? assetIndex.CRC : assetIndex.N),
+                               string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
+                               true);
+
+            string   assetPath     = Path.Combine(GamePath, ConverterTool.NormalizePath(sophonAsset.AssetName));
+            FileInfo assetFileInfo = new FileInfo(assetPath)
+                                    .StripAlternateDataStream()
+                                    .EnsureNoReadOnly();
+
+            try
+            {
+                if (assetIndex.FT == FileType.Unused && !IsOnlyRecoverMain)
+                {
+                    // Remove unused asset
+                    RemoveUnusedAssetTypeGeneric(assetFileInfo);
+                    LogWriteLine($"Unused {assetIndex.N} has been deleted!", LogType.Default, true);
+
+                    return;
+                }
+
+                HttpClient client = downloadClient.GetHttpClient();
+                DownloadProgress simulatedDownloadProgress = new()
+                {
+                    BytesDownloaded = 0,
+                    BytesTotal      = sophonAsset.AssetSize
+                };
+
+                await using FileStream outFileStream = assetFileInfo.Create();
+                await sophonAsset.WriteToStreamAsync(client,
+                                                     outFileStream,
+                                                     read =>
+                                                     {
+                                                         simulatedDownloadProgress.BytesDownloaded += read;
+                                                         downloadProgress.Invoke((int)read, simulatedDownloadProgress);
+                                                     },
+                                                     token: token);
+                LogWriteLine($"File [T: {assetIndex.FT}] {(assetIndex.FT == FileType.Block ? assetIndex.CRC : assetIndex.N)} has been downloaded!", LogType.Default, true);
+            }
+            finally
+            {
+                // Pop repair asset display entry
+                PopRepairAssetEntry(assetEntry);
+            }
+
+        }
+
         private async Task RepairAssetTypeGeneric((FilePropertiesRemote AssetIndex, IAssetProperty AssetProperty) asset, DownloadClient downloadClient, DownloadProgressDelegate downloadProgress, CancellationToken token, string customURL = null)
         {
             // Increment total count current
             ProgressAllCountCurrent++;
             // Set repair activity status
             string timeLeftString = string.Format(Lang!._Misc!.TimeRemainHMSFormat!, Progress.ProgressAllTimeLeft);
-            UpdateRepairStatus(
-                string.Format(asset.AssetIndex.FT == FileType.Block ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N),
-                string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
-                true);
+            UpdateRepairStatus(string.Format(asset.AssetIndex.FT == FileType.Block ? Lang._GameRepairPage.Status9 : Lang._GameRepairPage.Status8, asset.AssetIndex.FT == FileType.Block ? asset.AssetIndex.CRC : asset.AssetIndex.N),
+                               string.Format(Lang._GameRepairPage.PerProgressSubtitle2, ConverterTool.SummarizeSizeSimple(ProgressAllSizeCurrent), ConverterTool.SummarizeSizeSimple(ProgressAllSizeTotal)) + $" | {timeLeftString}",
+                               true);
 
             // Set URL of the asset
             string assetURL  = customURL ?? asset.AssetIndex.RN;

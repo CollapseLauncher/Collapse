@@ -60,18 +60,18 @@ namespace CollapseLauncher.Interfaces
         public event EventHandler<TotalPerFileProgress>? ProgressChanged;
         public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-        protected TotalPerFileStatus    SophonStatus;
-        protected TotalPerFileProgress  SophonProgress;
-        protected TotalPerFileStatus    Status;
-        protected TotalPerFileProgress  Progress;
-        protected int                   ProgressAllCountCurrent;
-        protected int                   ProgressAllCountFound;
-        protected int                   ProgressAllCountTotal;
-        protected long                  ProgressAllSizeCurrent;
-        protected long                  ProgressAllSizeFound;
-        protected long                  ProgressAllSizeTotal;
-        protected long                  ProgressPerFileSizeCurrent;
-        protected long                  ProgressPerFileSizeTotal;
+        internal  TotalPerFileStatus   SophonStatus;
+        internal  TotalPerFileProgress SophonProgress;
+        internal  TotalPerFileStatus   Status;
+        internal  TotalPerFileProgress Progress;
+        protected int                  ProgressAllCountCurrent;
+        protected int                  ProgressAllCountFound;
+        protected int                  ProgressAllCountTotal;
+        protected long                 ProgressAllSizeCurrent;
+        protected long                 ProgressAllSizeFound;
+        protected long                 ProgressAllSizeTotal;
+        protected long                 ProgressPerFileSizeCurrent;
+        protected long                 ProgressPerFileSizeTotal;
 
         // Extension for IGameInstallManager
 
@@ -698,7 +698,7 @@ namespace CollapseLauncher.Interfaces
         protected void ResetStatusAndProgressProperty()
         {
             // Reset cancellation token
-            Token = new CancellationTokenSourceWrapper();
+            Token ??= new CancellationTokenSourceWrapper();
 
             lock (Status)
             {
@@ -887,7 +887,26 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected async Task<bool> TryRunExamineThrow(Task<bool> action)
+        protected virtual async Task<T> TryRunExamineThrow<T>(Task<T> action)
+        {
+            await TryRunExamineThrow((Task)action);
+
+            if (action.IsCompletedSuccessfully)
+            {
+                return action.Result;
+            }
+
+            if ((action.IsFaulted ||
+                 action.IsCanceled) &&
+                action.Exception != null)
+            {
+                throw action.Exception;
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        protected virtual async Task TryRunExamineThrow(Task task)
         {
             try
             {
@@ -895,20 +914,22 @@ namespace CollapseLauncher.Interfaces
                 Status.IsRunning = true;
 
                 // Run the task
-                return await action;
+                await task;
+
+                Status.IsCompleted = true;
             }
             catch (TaskCanceledException)
             {
                 // If a cancellation was thrown, then set IsCanceled as true
                 Status.IsCompleted = false;
-                Status.IsCanceled = true;
+                Status.IsCanceled  = true;
                 throw;
             }
             catch (OperationCanceledException)
             {
                 // If a cancellation was thrown, then set IsCanceled as true
                 Status.IsCompleted = false;
-                Status.IsCanceled = true;
+                Status.IsCanceled  = true;
                 throw;
             }
             catch (Exception)
@@ -916,7 +937,7 @@ namespace CollapseLauncher.Interfaces
                 // Except, if the other exception was thrown, then set both IsCompleted
                 // and IsCanceled as false.
                 Status.IsCompleted = false;
-                Status.IsCanceled = false;
+                Status.IsCanceled  = false;
                 throw;
             }
             finally
@@ -925,6 +946,11 @@ namespace CollapseLauncher.Interfaces
                 if (Status is { IsCompleted: false })
                 {
                     AssetIndex.Clear();
+                    WindowUtility.SetTaskBarState(TaskbarState.Error);
+                }
+                else
+                {
+                    WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
                 }
 
                 Status.IsRunning = false;
@@ -1473,29 +1499,33 @@ namespace CollapseLauncher.Interfaces
             UpdateProgress();
         }
 
-        protected virtual void UpdateProgress()
-        {
-            ProgressChanged?.Invoke(this, Progress);
+        internal virtual void UpdateProgress() => UpdateProgress(Progress);
 
-            if (Status is {IsProgressAllIndetermined: false, IsRunning: true})
+        internal virtual void UpdateProgress(TotalPerFileProgress progress)
+        {
+            ProgressChanged?.Invoke(this, progress);
+
+            if (Status is { IsProgressAllIndetermined: false, IsRunning: true })
             {
-                WindowUtility.SetProgressValue((ulong)(Progress.ProgressAllPercentage * 10), 1000);
+                WindowUtility.SetProgressValue((ulong)(progress.ProgressAllPercentage * 10), 1000);
             }
         }
 
-        protected virtual void UpdateStatus()
-        {
-            StatusChanged?.Invoke(this, Status);
+        internal virtual void UpdateStatus() => UpdateStatus(Status);
 
-            if (Status.IsCanceled || Status.IsCompleted)
+        internal virtual void UpdateStatus(TotalPerFileStatus status)
+        {
+            StatusChanged?.Invoke(this, status);
+
+            if (status.IsCanceled || status.IsCompleted)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
             }
-            else if (Status.IsProgressAllIndetermined)
+            else if (status.IsProgressAllIndetermined)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
             }
-            else if (Status.IsRunning)
+            else if (status.IsRunning)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Normal);
             }
