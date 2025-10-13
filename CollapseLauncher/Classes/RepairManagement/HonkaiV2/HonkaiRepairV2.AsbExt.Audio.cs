@@ -27,7 +27,8 @@ namespace CollapseLauncher.RepairManagement;
 
 internal static partial class AssetBundleExtension
 {
-    internal const string RelativePathAudio = @"BH3_Data\StreamingAssets\Audio\GeneratedSoundBanks\Windows";
+    internal const string RelativePathAudio      = @"BH3_Data\StreamingAssets\Audio\GeneratedSoundBanks\Windows\";
+    internal const string RelativePathAudioPatch = RelativePathAudio + @"Patch\";
 
     internal static async Task<List<FilePropertiesRemote>>
         GetAudioAssetListAsync<T>(
@@ -103,7 +104,7 @@ internal static partial class AssetBundleExtension
 
                     if (audioAsset.NeedMap)
                     {
-                        goto AddAsset;
+                        goto AddAsset; // I love goto. Dun ask me why :>
                     }
 
                     if (progressibleInstance != null)
@@ -128,12 +129,13 @@ internal static partial class AssetBundleExtension
                     {
                         assetList.Add(new FilePropertiesRemote
                         {
-                            AssociatedObject = audioAsset,
-                            CRC              = audioAsset.HashString,
-                            FT               = FileType.Audio,
-                            RN               = baseAudioAssetUrl.CombineURLFromString(audioAsset.Path),
-                            N                = audioAsset.Name + ".pck",
-                            S                = audioAsset.Size
+                            IsPatchApplicable = audioAsset.IsHasPatch,
+                            AssociatedObject  = audioAsset,
+                            CRC               = audioAsset.HashString,
+                            FT                = FileType.Audio,
+                            RN                = baseAudioAssetUrl.CombineURLFromString(audioAsset.Path),
+                            N                 = audioAsset.Name + ".pck",
+                            S                 = audioAsset.Size
                         });
                     }
                 }
