@@ -44,19 +44,17 @@ internal static partial class AssetBundleExtension
                                                                  | CacheAssetType.Event
                                                                  | CacheAssetType.AI;
 
-    internal static async Task<(List<CacheAssetInfo> CacheList, KianaDispatch GameServerInfo)>
+    internal static async Task<List<CacheAssetInfo>>
         GetCacheAssetBundleListAsync<T>(
             this HttpClient   assetBundleHttpClient,
             PresetConfig      presetConfig,
             GameVersion       gameVersion,
+            KianaDispatch     gameServerInfo,
             CacheAssetType?   cacheAssetType,
             ProgressBase<T>?  progressibleInstance = null,
             CancellationToken token                = default)
         where T : IAssetIndexSummary
     {
-        KianaDispatch gameServerInfo = await assetBundleHttpClient
-           .GetGameServerInfoAsync(presetConfig, gameVersion, token);
-
         // ReSharper disable once RedundantAssignment
         cacheAssetType ??= AcceptableCacheAssetTypeFlags;
 
@@ -119,7 +117,7 @@ internal static partial class AssetBundleExtension
                                         LogType.Default,
                                         true);
 
-                    return (assetInfoList, gameServerInfo);
+                    return assetInfoList;
                 }
             }
             catch when (token.IsCancellationRequested)
@@ -318,7 +316,7 @@ internal static partial class AssetBundleExtension
         }
     }
 
-    private static async Task<KianaDispatch> GetGameServerInfoAsync(
+    internal static async Task<KianaDispatch> GetGameServerInfoAsync(
         this HttpClient   assetBundleHttpClient,
         PresetConfig      presetConfig,
         GameVersion       gameVersion,
