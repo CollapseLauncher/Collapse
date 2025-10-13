@@ -1,7 +1,6 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 #pragma warning disable IDE0130
 

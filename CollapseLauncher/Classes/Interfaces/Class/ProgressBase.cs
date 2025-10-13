@@ -516,7 +516,7 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region BaseTools
-        protected async Task DoCopyStreamProgress(Stream source, Stream target, long? estimatedSize = null, CancellationToken token = default)
+        internal async Task DoCopyStreamProgress(Stream source, Stream target, long? estimatedSize = null, CancellationToken token = default)
         {
             // ReSharper disable once ConstantNullCoalescingCondition
             long inputSize = estimatedSize != null ? estimatedSize ?? 0 : source.Length;

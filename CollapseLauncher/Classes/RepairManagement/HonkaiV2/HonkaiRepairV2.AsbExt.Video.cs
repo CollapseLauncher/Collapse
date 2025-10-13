@@ -31,7 +31,7 @@ namespace CollapseLauncher.RepairManagement;
 
 internal static partial class AssetBundleExtension
 {
-    internal const string RelativePathVideo = @"BH3_Data\StreamingAssets\Video";
+    internal const string RelativePathVideo = @"BH3_Data\StreamingAssets\Video\";
 
     internal static async Task<(List<FilePropertiesRemote> AssetList, KianaDispatch GameServerInfo)>
         GetVideoAssetListAsync<T>(
@@ -86,7 +86,14 @@ internal static partial class AssetBundleExtension
             (await assetBundleHttpClient.TryGetCachedStreamFrom(cgMetadataFile.AssetUrl, token: token))
            .Stream;
         await using MemoryStream cgFileStreamMemory = new MemoryStream();
-        await cgFileStream.CopyToAsync(cgFileStreamMemory, token);
+        if (progressibleInstance != null)
+        {
+            await progressibleInstance.DoCopyStreamProgress(cgFileStream, cgFileStreamMemory, token: token);
+        }
+        else
+        {
+            await cgFileStream.CopyToAsync(cgFileStreamMemory, token);
+        }
         cgFileStreamMemory.Position = 0;
 
         await using CacheStream dechipheredCgStream =
@@ -129,7 +136,7 @@ internal static partial class AssetBundleExtension
                 // If the file has no appoinment schedule (like non-birthday CG), then return true
                 if (entry.AppointmentDownloadScheduleID == 0)
                 {
-                    goto AddCgEntry;
+                    goto AddCgEntry; // I love goto. Dun ask me why :>
                 }
 
                 // Update status

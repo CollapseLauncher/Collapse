@@ -160,10 +160,14 @@ namespace CollapseLauncher
     internal readonly struct UrlStatus
     {
         internal readonly HttpStatusCode StatusCode;
-        internal readonly bool IsSuccessStatusCode;
+        internal readonly bool           IsSuccessStatusCode;
+        internal readonly long?          FileSize = null;
 
         internal UrlStatus(HttpResponseMessage message)
-            : this(message.StatusCode, message.IsSuccessStatusCode) { }
+            : this(message.StatusCode, message.IsSuccessStatusCode)
+        {
+            FileSize = message.Content.Headers.ContentLength;
+        }
 
         internal UrlStatus(HttpStatusCode statusCode, bool isSuccessStatusCode)
         {
