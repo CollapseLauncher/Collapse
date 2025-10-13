@@ -121,24 +121,39 @@ internal partial class HonkaiRepairV2
         string senadinaPrimaryUrl = $"https://cdn.collapselauncher.com/cl-meta/pustaka/{gamePresetConfig.ProfileName}/{GameVersion}";
         string senadinaSecondaryUrl = $"https://r2.bagelnl.my.id/cl-meta/pustaka/{gamePresetConfig.ProfileName}/{GameVersion}";
 
-        SenadinaFileResult senadinaResult = await HttpClientGeneric
-           .GetSenadinaPropertyAsync(senadinaPrimaryUrl,
-                                     senadinaSecondaryUrl,
-                                     GameVersion,
-                                     true,
-                                     this,
-                                     token);
+        SenadinaFileResult senadinaResult = null!;
+        Task senadinaTask = HttpClientGeneric
+                           .GetSenadinaPropertyAsync(senadinaPrimaryUrl,
+                                                     senadinaSecondaryUrl,
+                                                     GameVersion,
+                                                     true,
+                                                     this,
+                                                     token)
+                           .GetResultFromAction(result => senadinaResult = result);
+
+        KianaDispatch gameServerInfo = null!;
+        Task gameServerInfoTask = HttpClientAssetBundle
+                                 .GetGameServerInfoAsync(gamePresetConfig, GameVersion, token)
+                                 .GetResultFromAction(result => gameServerInfo = result);
+
+        await Task.WhenAll(senadinaTask, gameServerInfoTask);
         #endregion
 
         #region Fetch Video Assets from AssetBundle
-        (List<FilePropertiesRemote> assetListFromCg, KianaDispatch gameServerInfo) =
-            await HttpClientAssetBundle
+        List<FilePropertiesRemote> assetListFromVideo = [];
+        Task assetListFromVideoTask =
+            HttpClientAssetBundle
                .GetVideoAssetListAsync(gamePresetConfig,
                                        GameVersion,
+                                       gameServerInfo,
                                        ignoredAssets.IgnoredVideoCGSubCategory,
                                        this,
-                                       token);
-        FinalizeVideoAssetsPath(assetListFromCg);
+                                       token)
+               .GetResultFromAction(result =>
+                                    {
+                                        assetListFromVideo.AddRange(result);
+                                        FinalizeVideoAssetsPath(assetListFromVideo);
+                                    });
         #endregion
 
         #region Fetch Audio Assets from AssetBundle
@@ -183,13 +198,14 @@ internal partial class HonkaiRepairV2
         #endregion
 
         #region Run Task Continuation in Parallel
-        await Task.WhenAll(assetListFromAudioTask,
+        await Task.WhenAll(assetListFromVideoTask,
+                           assetListFromAudioTask,
                            assetListFromBlockTask);
         #endregion
 
         // Finalize the asset index list by overriding it from above additional sources.
         FinalizeBaseAssetIndex(assetIndex,
-                               assetListFromCg,
+                               assetListFromVideo,
                                assetListFromAudio,
                                assetListFromBlock);
     }

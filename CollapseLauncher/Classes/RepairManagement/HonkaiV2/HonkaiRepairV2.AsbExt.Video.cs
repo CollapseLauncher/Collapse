@@ -33,11 +33,12 @@ internal static partial class AssetBundleExtension
 {
     internal const string RelativePathVideo = @"BH3_Data\StreamingAssets\Video\";
 
-    internal static async Task<(List<FilePropertiesRemote> AssetList, KianaDispatch GameServerInfo)>
+    internal static async Task<List<FilePropertiesRemote>>
         GetVideoAssetListAsync<T>(
             this HttpClient   assetBundleHttpClient,
             PresetConfig      presetConfig,
             GameVersion       gameVersion,
+            KianaDispatch     gameServerInfo,
             int[]?            ignoredCgIds         = null,
             ProgressBase<T>?  progressibleInstance = null,
             CancellationToken token                = default)
@@ -52,10 +53,11 @@ internal static partial class AssetBundleExtension
         }
 
         ignoredCgIds ??= [];
-        (List<CacheAssetInfo> assetInfoList, KianaDispatch gameServerInfo) =
+        List<CacheAssetInfo> assetInfoList =
             await GetCacheAssetBundleListAsync(assetBundleHttpClient,
                                                presetConfig,
                                                gameVersion,
+                                               gameServerInfo,
                                                CacheAssetType.Data,
                                                progressibleInstance,
                                                token);
@@ -68,7 +70,7 @@ internal static partial class AssetBundleExtension
             Logger.LogWriteLine($"[AssetBundleExtension::GetVideoAssetListAsync] Cannot find CG Metadata file with Asset ID: {CGMetadataHashId.CgMetadataFilename}",
                                 LogType.Error,
                                 true);
-            return ([], gameServerInfo);
+            return [];
         }
 
         // Update Progress
@@ -109,7 +111,7 @@ internal static partial class AssetBundleExtension
                          },
                          ImplCheckAndAdd);
 
-        return (cgEntries, gameServerInfo);
+        return cgEntries;
 
         async ValueTask ImplCheckAndAdd(CGMetadata entry, CancellationToken innerToken)
         {

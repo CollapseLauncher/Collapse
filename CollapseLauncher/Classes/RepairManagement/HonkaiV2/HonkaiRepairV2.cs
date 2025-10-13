@@ -73,8 +73,6 @@ internal partial class HonkaiRepairV2
         CancelRoutine();
 
         AssetIndex.Clear();
-        HttpClientAssetBundle.Dispose();
-        HttpClientGeneric.Dispose();
 
         GC.SuppressFinalize(this);
     }
