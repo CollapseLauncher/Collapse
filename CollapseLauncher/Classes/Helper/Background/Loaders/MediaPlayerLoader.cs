@@ -55,7 +55,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
         private Grid OverlayTitleBar  { get; }
         public  bool IsBackgroundDimm { get; set; }
 
-        private FileStream?        _currentMediaStream;
+        private MemoryStream?      _currentMediaStream;
         private MediaPlayer?       _currentMediaPlayer;
 #if USEFFMPEGFORVIDEOBG
         private FFmpegMediaSource? _currentFFmpegMediaSource;
@@ -153,7 +153,22 @@ namespace CollapseLauncher.Helper.Background.Loaders
 
                 await GetPreviewAsColorPalette(filePath);
 
-                _currentMediaStream ??= BackgroundMediaUtility.GetAlternativeFileStream() ?? File.Open(filePath, StreamExtension.FileStreamOpenReadOpt);
+                if (_currentMediaStream == null)
+                {
+                    var altStream = BackgroundMediaUtility.GetAlternativeImageStream();
+                    if (altStream != null)
+                    {
+                        _currentMediaStream = altStream;
+                    }
+                    else
+                    {
+                        await using var fileStream = File.Open(filePath, StreamExtension.FileStreamOpenReadOpt);
+                        var memoryStream = new MemoryStream();
+                        await fileStream.CopyToAsync(memoryStream, token);
+                        memoryStream.Position = 0;
+                        _currentMediaStream = memoryStream;
+                    }
+                }
 
 #if !USEFFMPEGFORVIDEOBG
                 EnsureIfFormatIsDashOrUnsupported(_currentMediaStream);
