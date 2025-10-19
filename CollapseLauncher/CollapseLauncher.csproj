@@ -257,9 +257,9 @@
     <ItemGroup>
         <PackageReference Include="Libsql.Client" Version="0.5.1" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.7.25380.108" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-rc.2.25502.107" />
         <!-- Velopacks' outdated dependencies, remove this once they switched to .NET 9 -->
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-preview.7.25380.108" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-rc.2.25502.107" />
         <PackageReference Include="ThisAssembly.Constants" Version="2.0.14">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -298,7 +298,7 @@
         <PackageReference Include="SharpCompress" Version="0.40.0" Condition="$(DefineConstants.Contains('USENEWZIPDECOMPRESS'))" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta7.25380.108" />
         <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta5.25306.1" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0-preview.7.25380.108" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0-rc.2.25502.107" />
     </ItemGroup>
 
     <ItemGroup>
