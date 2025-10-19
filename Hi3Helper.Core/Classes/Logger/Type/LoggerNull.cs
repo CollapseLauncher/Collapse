@@ -1,26 +1,12 @@
 ﻿using System.Text;
 // ReSharper disable MethodOverloadWithOptionalParameter
+// ReSharper disable CheckNamespace
 
-namespace Hi3Helper
+#nullable enable
+namespace Hi3Helper;
+
+public class LoggerNull : LoggerBase
 {
-    public class LoggerNull(string folderPath, Encoding encoding) : LoggerBase(folderPath, encoding), ILog
-    {
-        ~LoggerNull() => DisposeBase();
-
-        #region Methods
-        public void Dispose() => DisposeBase();
-        public override void LogWriteLine() { }
-        public override void LogWriteLine(string line = null) { }
-        public override void LogWriteLine(string line, LogType type) { }
-        public override void LogWriteLine(string line, LogType type, bool writeToLog)
-        {
-            if (writeToLog) WriteLog(line, type);
-        }
-
-        public override void LogWrite(string line, LogType type, bool writeToLog, bool resetLinePosition)
-        {
-            if (writeToLog) WriteLog(line, type);
-        }
-        #endregion
-    }
+    public LoggerNull(string folderPath, Encoding encoding) : base(folderPath, encoding) { }
+    internal LoggerNull() { }
 }

@@ -111,7 +111,7 @@ namespace CollapseLauncher
         public void StartMainPage()
         {
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
-            
+
             RunIntroSequence();
             RootFrame.Navigate(typeof(MainPage), null, new DrillInNavigationTransitionInfo());
         }
@@ -147,7 +147,7 @@ namespace CollapseLauncher
                     IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
                     );
 
-                await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+                _ = Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
             }
             else
             {
@@ -389,7 +389,7 @@ namespace CollapseLauncher
         {
             Compositor curCompositor = Compositor;
             UIElement element = sender as UIElement;
-            element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
+            element.StartAnimationDetached(TimeSpan.FromSeconds(0.50),
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 1f)
                 );
         }
@@ -398,7 +398,7 @@ namespace CollapseLauncher
         {
             Compositor curCompositor = Compositor;
             UIElement element = sender as UIElement;
-            element.StartAnimationDetached(TimeSpan.FromSeconds(0.25),
+            element.StartAnimationDetached(TimeSpan.FromSeconds(0.50),
                     curCompositor.CreateScalarKeyFrameAnimation("Opacity", 0.25f)
                 );
         }

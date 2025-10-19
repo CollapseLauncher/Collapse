@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -119,9 +120,9 @@ namespace CollapseLauncher.GameSettings.Zenless
             {
                 if (RegistryRoot == null) throw new NullReferenceException("Cannot load Zenless Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
-                object? valueWidth = RegistryRoot.GetValue(ValueNameScreenManagerWidth, null);
-                object? valueHeight = RegistryRoot.GetValue(ValueNameScreenManagerHeight, null);
-                object? valueFullscreen = RegistryRoot.GetValue(ValueNameScreenManagerFullscreen, null);
+                object? valueWidth = RegistryRoot.TryGetValue(ValueNameScreenManagerWidth, null, RefreshRegistryRoot);
+                object? valueHeight = RegistryRoot.TryGetValue(ValueNameScreenManagerHeight, null, RefreshRegistryRoot);
+                object? valueFullscreen = RegistryRoot.TryGetValue(ValueNameScreenManagerFullscreen, null, RefreshRegistryRoot);
                 if (valueWidth != null && valueHeight != null && valueFullscreen != null)
                 {
                     int width = (int)valueWidth;

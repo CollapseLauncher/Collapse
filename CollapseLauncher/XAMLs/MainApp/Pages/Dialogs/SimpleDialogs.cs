@@ -1594,33 +1594,8 @@ namespace CollapseLauncher.Dialogs
 
         internal static Task<ContentDialogResult> Dialog_DownloadSettings(GamePresetProperty currentGameProperty)
         {
-            var gameInstallProp = currentGameProperty.GameInstall;
-            
-            var startAfterInstall = new ToggleSwitch
-            {
-                IsOn       = gameInstallProp?.StartAfterInstall ?? false,
-                OffContent = Lang._Misc.Disabled,
-                OnContent  = Lang._Misc.Enabled
-            };
-            startAfterInstall.Toggled += (_, _) =>
-                                         {
-                                             if (gameInstallProp != null)
-                                             {
-                                                 gameInstallProp.StartAfterInstall =
-                                                     startAfterInstall.IsOn;
-                                             }
-                                         };
-
-            StackPanel panel = CollapseUIExt.CreateStackPanel();
-            panel.AddElementToStackPanel(
-                                         new TextBlock
-                                                 { Text = Lang._Dialogs.DownloadSettingsOption1 }
-                                            .WithMargin(0d, 0d, 0d, 4d),
-                                         startAfterInstall
-                                        );
-
             return SpawnDialog(Lang._Dialogs.DownloadSettingsTitle,
-                               panel,
+                               new DownloadSettings(currentGameProperty),
                                null,
                                Lang._Misc.Close);
         }
@@ -1643,6 +1618,12 @@ namespace CollapseLauncher.Dialogs
 
             return _sharedDispatcherQueue?.EnqueueAsync(async () =>
                                                         {
+                                                            XamlRoot? xamlRoot =
+                                                                WindowUtility.CurrentWindow is MainWindow
+                                                                    mainWindow
+                                                                    ? mainWindow.Content.XamlRoot
+                                                                    : parentUI?.XamlRoot;
+
                                                             // Create a new instance of dialog
                                                             ContentDialogCollapse dialog =
                                                                 new ContentDialogCollapse(dialogTheme)
@@ -1657,11 +1638,7 @@ namespace CollapseLauncher.Dialogs
                                                                         CollapseUIExt
                                                                            .GetApplicationResource<
                                                                                 Style>("CollapseContentDialogStyle"),
-                                                                    XamlRoot =
-                                                                        WindowUtility.CurrentWindow is MainWindow
-                                                                            mainWindow
-                                                                            ? mainWindow.Content.XamlRoot
-                                                                            : parentUI?.XamlRoot
+                                                                    XamlRoot = xamlRoot
                                                                 };
 
                                                             try
@@ -1682,6 +1659,24 @@ namespace CollapseLauncher.Dialogs
 
         public static async Task<ContentDialogResult> QueueAndSpawnDialog(this ContentDialog dialog)
         {
+            // Wait until the SharedXamlRoot OR dialog.XamlRoot is not null
+            // Prevent crash on startup where the UI is not ready yet
+            var timeout = TimeSpan.FromSeconds(10);
+            var actStart = DateTime.Now;
+            while (SharedXamlRoot is null && dialog.XamlRoot is null && DateTime.Now - actStart < timeout)
+            {
+                await Task.Delay(200);
+            }
+
+            if (SharedXamlRoot is null && dialog.XamlRoot is null)
+            {
+                var msg = $"[SimpleDialogs::QueueAndSpawnDialog] Failed to spawn dialog {dialog.Title} " +
+                          $"due to XamlRoot is null after waiting for {timeout.TotalSeconds} seconds";
+                Logger.LogWriteLine(msg, LogType.Warning, true);
+                SentryHelper.ExceptionHandler(new TimeoutException(msg));
+                return ContentDialogResult.None;
+            }
+            
             // If a dialog is currently spawned, then wait until the task is completed
             while (_currentSpawnedDialogTask is { Status: AsyncStatus.Started })
             {

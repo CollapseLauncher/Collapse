@@ -5,7 +5,7 @@
 
   "_StartupPage": {
     "SelectLang": "Seleccione su idioma",
-    "SelectLangDesc": "Por favor selecciona tu idioma para iniciar este lanzador por primera vez!",
+    "SelectLangDesc": "Por favor selecciona tu idioma para iniciar este launcher por primera vez!",
     "SelectWindowSize": "Seleccione el tamaño de ventana preferido",
     "SelectCDN": "Seleccione su CDN preferido",
     "CDNHelpTitle_1": "¿Qué es un CDN?",
@@ -882,7 +882,6 @@
     "CDNDescription_Cloudflare": "Mirror del repositorio oficial (principal) alojado por Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "Mirror del repositorio oficial (principal) alojado por Bitbucket.",
     "CDNDescription_GitLab": "Mirror del repositorio oficial (principal) alojado por GitLab.",
-    "CDNDescription_Coding": "Mirror del repositorio oficial (principal) alojado por Coding.",
     "CDNDescription_CNB": "Mirror del repositorio oficial (principal) alojado por CNB.",
 
     "LocateExecutable": "Localizar el Ejecutable",
@@ -1195,7 +1194,16 @@
 
     "LauncherRestartTitle": "Reiniciando Collapse Launcher",
     "LauncherRestartSubtitle1": "El launcher esta a punto de reiniciarse. Asegúrate de cerrar o cancelar cualquier tarea de fondo antes de seguir con el reinicio.",
-    "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?"
+    "LauncherRestartSubtitle2": "¿Estas seguro de reiniciar el launcher?",
+
+    "PostInstallBehaviour_Title": "Comportamiento tras la instalación/actualización",
+    "PostInstallBehaviour_Subtitle": "Comportamiento tras una instalación/actualización correcta",
+    "PostInstallBehaviour_Subtitle2": "Tiempo antes de reiniciar/apagar",
+    "PostInstallBehaviour_EnumNothing": "No hacer nada",
+    "PostInstallBehaviour_EnumStartGame": "Lanzar Juego",
+    "PostInstallBehaviour_EnumHibernate": "Hibernar",
+    "PostInstallBehaviour_EnumRestart": "Reiniciar Equipo",
+    "PostInstallBehaviour_EnumShutdown": "Apagar Equipo"
   },
 
   "_FileMigrationProcess": {

@@ -1,0 +1,11 @@
+[
+  {
+    "Name": "Collapse (No Debugging)",
+    "Projects": [
+      {
+        "Path": "CollapseLauncher\\CollapseLauncher.csproj",
+        "Action": "StartWithoutDebugging"
+      }
+    ]
+  }
+]

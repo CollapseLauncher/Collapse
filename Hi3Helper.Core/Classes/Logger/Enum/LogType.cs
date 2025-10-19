@@ -1,15 +1,17 @@
-﻿namespace Hi3Helper
+﻿// ReSharper disable CheckNamespace
+namespace Hi3Helper
 {
     public enum LogType
     {
-        Error,
+        Info = 0,
+        Default = Info,
         Warning,
-        Default,
+        Error,
         Scheme,
-        NoTag,
         Game,
         Debug,
         GLC,
-        Sentry
+        Sentry,
+        NoTag
     }
 }

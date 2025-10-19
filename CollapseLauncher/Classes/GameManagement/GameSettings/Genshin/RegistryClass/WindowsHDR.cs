@@ -1,4 +1,5 @@
-﻿using Hi3Helper;
+﻿using CollapseLauncher.Extension;
+using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
@@ -41,7 +42,7 @@ namespace CollapseLauncher.GameSettings.Genshin
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} since RegistryRoot is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(ValueName, null);
+                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
                 if (value != null)
                 {
                     int hdr = (int)value;

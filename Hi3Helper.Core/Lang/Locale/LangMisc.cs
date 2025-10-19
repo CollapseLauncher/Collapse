@@ -106,7 +106,6 @@ namespace Hi3Helper
                 public string CDNDescription_Statically      { get; set; } = LangFallback?._Misc.CDNDescription_Statically;
                 public string CDNDescription_jsDelivr        { get; set; } = LangFallback?._Misc.CDNDescription_jsDelivr;
                 public string CDNDescription_GitLab          { get; set; } = LangFallback?._Misc.CDNDescription_GitLab;
-                public string CDNDescription_Coding          { get; set; } = LangFallback?._Misc.CDNDescription_Coding;
                 public string CDNDescription_CNB             { get; set; } = LangFallback?._Misc.CDNDescription_CNB;
 
                 public string DiscordRP_Play         { get; set; } = LangFallback?._Misc.DiscordRP_Play;

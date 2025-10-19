@@ -9,8 +9,10 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using InternalExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable CheckNamespace
 
@@ -106,7 +108,7 @@ namespace CollapseLauncher.Pages
                     $"{imported} plugin(s) have been imported! But some error has occurred while importing other plugins:" :
                     "No plugin has been imported due to following error:";
 
-                ErrorSender.SendException(new UnknownPluginException(messageHead, ex));
+                ErrorSender.SendException(ex.WrapPluginException(messageHead));
             }
             finally
             {
@@ -151,6 +153,18 @@ namespace CollapseLauncher.Pages
         {
             PluginManagerPageContext.CheckAndDownloadUpdateEnumeratePlugins(PluginManager.PluginInstances.Values);
         }
-#pragma warning enable CA2012
+#pragma warning restore CA2012
+
+        private void OnClickGoToPluginDownloadCatalogButton(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+                     {
+                         Process.Start(new ProcessStartInfo
+                         {
+                             FileName        = "https://collapselauncher.com/plugin/catalog.html",
+                             UseShellExecute = true
+                         });
+                     });
+        }
     }
 }

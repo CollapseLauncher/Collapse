@@ -882,7 +882,6 @@
     "CDNDescription_Cloudflare": "A mirror of the official (main) repository powered by Cloudflare R2 bucket.",
     "CDNDescription_Bitbucket": "A mirror of the official (main) repository powered by Bitbucket.",
     "CDNDescription_GitLab": "A mirror of the official (main) repository powered by GitLab.",
-    "CDNDescription_Coding": "A mirror of the official (main) repository powered by Coding.",
     "CDNDescription_CNB": "A mirror of the official (main) repository powered by CNB.",
 
     "LocateExecutable": "Locate Executable",
@@ -1195,7 +1194,16 @@
 
     "LauncherRestartTitle": "Restarting Collapse Launcher",
     "LauncherRestartSubtitle1": "You're about to restart the launcher. Make sure to close or cancel any background activity before restarting your launcher.",
-    "LauncherRestartSubtitle2": "Are you sure to restart the launcher?"
+    "LauncherRestartSubtitle2": "Are you sure to restart the launcher?",
+
+    "PostInstallBehaviour_Title": "Post Install/Update Behaviour",
+    "PostInstallBehaviour_Subtitle": "Behaviour after successful install/update",
+    "PostInstallBehaviour_Subtitle2": "Timeout before restart/shutdown",
+    "PostInstallBehaviour_EnumNothing": "Do Nothing",
+    "PostInstallBehaviour_EnumStartGame": "Start Game",
+    "PostInstallBehaviour_EnumHibernate": "Hibernate",
+    "PostInstallBehaviour_EnumRestart": "Restart Computer",
+    "PostInstallBehaviour_EnumShutdown": "Shutdown Computer"
   },
 
   "_FileMigrationProcess": {

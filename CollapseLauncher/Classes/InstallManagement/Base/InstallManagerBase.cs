@@ -155,14 +155,12 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected bool _isAllowExtractCorruptZip  { get; set; }
         protected UninstallGameProperty? _uninstallGameProperty { get; set; }
-
         #endregion
 
         #region Public Properties
-
         public event EventHandler FlushingTrigger;
-        public virtual bool       StartAfterInstall { get; set; }
         public virtual bool       IsRunning         { get; protected set; }
+        public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
         #endregion
 
         public InstallManagerBase(UIElement parentUI, IGameVersion GameVersionManager)
@@ -1240,7 +1238,7 @@ namespace CollapseLauncher.InstallManager.Base
                             continue;
                         }
 
-                        gamePluginVersionDictionary.Add(plugins.plugin_id, new GameVersion(plugins.version));
+                        gamePluginVersionDictionary.Add(plugins.plugin_id, plugins.version);
                     }
 
                     GameVersionManager.UpdatePluginVersions(gamePluginVersionDictionary);
@@ -2908,7 +2906,7 @@ namespace CollapseLauncher.InstallManager.Base
                     string iniPluginId = iniKey.AsSpan(startIniKeyOffset, startIniKeyLength).ToString();
 
                     // Try remove the plugin resource from dictionary if found
-                    if (!pluginResourceDictionary.TryGetValue(iniPluginId, out var pluginResource))
+                    if (!pluginResourceDictionary.TryGetValue(iniPluginId, out RegionResourcePlugin? pluginResource))
                     {
                         continue;
                     }

@@ -22,6 +22,7 @@ namespace CollapseLauncher.GameSettings.Base
                 Path.Combine($"Software\\{GameVersionManager.VendorTypeProp.VendorType}", GameVersionManager.GamePreset.InternalGameNameInConfig);
         }
 
+        private static RegistryKey? _registryRoot;
         internal static RegistryKey? RegistryRoot
         {
             get
@@ -30,13 +31,21 @@ namespace CollapseLauncher.GameSettings.Base
                 if (RegistryPath == null) return null;
 
                 // Try to open the registry path
-                field = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
+                _registryRoot = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
 
                 // If it's still empty, then create a new one
-                field ??= Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
+                _registryRoot ??= Registry.CurrentUser.CreateSubKey(RegistryPath, true, RegistryOptions.None);
 
-                return field;
+                return _registryRoot;
             }
+        }
+
+        internal static RegistryKey? RefreshRegistryRoot()
+        {
+            _registryRoot?.Close();
+            _registryRoot?.Dispose();
+            _registryRoot = null;
+            return RegistryRoot;
         }
 
         protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;

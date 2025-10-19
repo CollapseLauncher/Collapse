@@ -233,7 +233,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                     } ?? GameVersionManager!.GetGameVersionApi();
 
                     // Add the tag query to the Url
-                    requestedUrl += $"&tag={requestedVersion.ToString()}";
+                    requestedUrl += $"&tag={requestedVersion}";
 #endif
 
                     try
@@ -262,55 +262,62 @@ namespace CollapseLauncher.InstallManager.Base
                         // Get Audio Choices first.
                         // If the fallbackFromUpdate flag is set, then don't show the dialog and instead
                         // use the default language (ja-jp) as the fallback and read the existing audio_lang file
-                        List<int>? addedVo;
+                        List<int> addedVo = [];
                         int setAsDefaultVo = GetSophonLocaleCodeIndex(
                                               sophonMainInfoPair.OtherSophonBuildData,
                                               "ja-jp"
                                              );
 
-                        if (fallbackFromUpdate)
+                        if (voLanguageList.Count != 0)
                         {
-                            addedVo = [];
-                            if (!File.Exists(_gameAudioLangListPathStatic))
+                            if (fallbackFromUpdate)
                             {
-                                addedVo.Add(setAsDefaultVo);
-                            }
-                            else
-                            {
-                                string[] voLangList = await File.ReadAllLinesAsync(_gameAudioLangListPathStatic);
-                                foreach (string voLang in voLangList)
-                                {
-                                    string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
-                                        voLang
-#if !DEBUG
-                                        , false
-#endif
-                                        );
-
-                                    if (string.IsNullOrEmpty(voLocaleId))
-                                    {
-                                        continue;
-                                    }
-
-                                    int voLocaleIndex = GetSophonLocaleCodeIndex(
-                                         sophonMainInfoPair.OtherSophonBuildData,
-                                         voLocaleId
-                                        );
-                                    addedVo.Add(voLocaleIndex);
-                                }
-
-                                if (addedVo.Count == 0)
+                                if (!File.Exists(_gameAudioLangListPathStatic))
                                 {
                                     addedVo.Add(setAsDefaultVo);
                                 }
+                                else
+                                {
+                                    string[] voLangList = await File.ReadAllLinesAsync(_gameAudioLangListPathStatic);
+                                    foreach (string voLang in voLangList)
+                                    {
+                                        string? voLocaleId = GetLanguageLocaleCodeByLanguageString(
+                                            voLang
+#if !DEBUG
+                                        , false
+#endif
+                                            );
+
+                                        if (string.IsNullOrEmpty(voLocaleId))
+                                        {
+                                            continue;
+                                        }
+
+                                        int voLocaleIndex = GetSophonLocaleCodeIndex(
+                                             sophonMainInfoPair.OtherSophonBuildData,
+                                             voLocaleId
+                                            );
+                                        addedVo.Add(voLocaleIndex);
+                                    }
+
+                                    if (addedVo.Count == 0)
+                                    {
+                                        addedVo.Add(setAsDefaultVo);
+                                    }
+                                }
                             }
-                        }
-                        else
-                        {
-                            (addedVo, setAsDefaultVo) =
-                                await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
-                                 voLanguageList,
-                                 setAsDefaultVo);
+                            else
+                            {
+                                (List<int>? addedVoTemp, setAsDefaultVo) =
+                                    await SimpleDialogs.Dialog_ChooseAudioLanguageChoice(
+                                     voLanguageList,
+                                     setAsDefaultVo);
+
+                                if (addedVoTemp != null)
+                                {
+                                    addedVo.AddRange(addedVoTemp);
+                                }
+                            }
                         }
 
                         if (addedVo == null || setAsDefaultVo < 0)
@@ -422,12 +429,13 @@ namespace CollapseLauncher.InstallManager.Base
                         // Remove sophon verified files
                         CleanupTempSophonVerifiedFiles();
 
+                        // ReSharper disable AccessToDisposedClosure
                         // Declare the download delegate
-                        ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _)
-                        // ReSharper disable once AccessToDisposedClosure
-                        {
-                            return RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
-                        }
+                        ValueTask DelegateAssetDownload(SophonAsset asset, CancellationToken _) =>
+                            gameState == GameInstallStateEnum.NeedsUpdate
+                                ? RunSophonAssetUpdateThread(httpClient, asset, parallelChunksOptions)
+                                : RunSophonAssetDownloadThread(httpClient, asset, parallelChunksOptions);
+                        // ReSharper enable AccessToDisposedClosure
 
                         // Declare the rename temp file delegate
                         async ValueTask DelegateAssetRenameTempFile(SophonAsset asset, CancellationToken token)
@@ -792,6 +800,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                                downloadSpeedLimiter);
                 }
 
+                // Filter asset list
+                await FilterSophonPatchAssetList(sophonUpdateAssetList, Token.Token);
+
                 // Get the remote chunk size
                 ProgressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
                 ProgressPerFileSizeCurrent = 0;
@@ -927,7 +938,14 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        private ValueTask RunSophonAssetDownloadThread(HttpClient      client, SophonAsset asset,
+        protected virtual Task FilterSophonPatchAssetList(List<SophonAsset> itemList, CancellationToken token)
+        {
+            // NOP
+            return Task.CompletedTask;
+        }
+
+        private ValueTask RunSophonAssetDownloadThread(HttpClient      client,
+                                                       SophonAsset     asset,
                                                        ParallelOptions parallelOptions)
         {
             // If the asset is a dictionary, then return
@@ -937,11 +955,49 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Get the file path and start the write process
-            var assetName = asset.AssetName;
-            var filePath  = EnsureCreationOfDirectory(Path.Combine(GamePath, assetName));
+            string? assetName = asset.AssetName;
+            string  filePath  = EnsureCreationOfDirectory(Path.Combine(GamePath, assetName));
+
+            if (File.Exists(filePath + "_tempSophon")) // Fallback to legacy behaviour
+            {
+                return RunSophonAssetUpdateThread(client, asset, parallelOptions);
+            }
 
             // Get the target and temp file info
-            FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly(out bool isExistingFileInfoExist);
+            FileInfo existingFileInfo = new FileInfo(filePath).EnsureNoReadOnly();
+
+            return asset.WriteToStreamAsync(client,
+                                            assetSize => existingFileInfo.Open(new FileStreamOptions
+                                            {
+                                                Mode       = FileMode.OpenOrCreate,
+                                                Access     = FileAccess.ReadWrite,
+                                                Share      = FileShare.ReadWrite,
+                                                BufferSize = assetSize.GetFileStreamBufferSize()
+                                            }),
+                                            parallelOptions,
+                                            UpdateSophonFileTotalProgress,
+                                            UpdateSophonFileDownloadProgress,
+                                            UpdateSophonDownloadStatus
+                                           );
+        }
+
+        private ValueTask RunSophonAssetUpdateThread(HttpClient      client,
+                                                     SophonAsset     asset,
+                                                     ParallelOptions parallelOptions)
+        {
+            // If the asset is a dictionary, then return
+            if (asset.IsDirectory)
+            {
+                return ValueTask.CompletedTask;
+            }
+
+            // Get the file path and start the write process
+            string? assetName = asset.AssetName;
+            string  filePath  = EnsureCreationOfDirectory(Path.Combine(GamePath, assetName));
+
+            // Get the target and temp file info
+            FileInfo existingFileInfo =
+                new FileInfo(filePath).EnsureNoReadOnly(out bool isExistingFileInfoExist);
             FileInfo sophonFileInfo =
                 new FileInfo(filePath + "_tempSophon").EnsureNoReadOnly(out bool isSophonFileInfoExist);
 
@@ -959,10 +1015,12 @@ namespace CollapseLauncher.InstallManager.Base
                 sophonFileInfo.Delete();
             }
 
-            return asset.WriteToStreamAsync(
-                                            client,
-                                            () => new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                                                                 FileShare.ReadWrite),
+            return asset.WriteToStreamAsync(client,
+                                            assetSize => new FileStream(filePath,
+                                                                        FileMode.OpenOrCreate,
+                                                                        FileAccess.ReadWrite,
+                                                                        FileShare.ReadWrite,
+                                                                        assetSize.GetFileStreamBufferSize()),
                                             parallelOptions,
                                             UpdateSophonFileTotalProgress,
                                             UpdateSophonFileDownloadProgress,

@@ -20,6 +20,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -81,7 +82,7 @@ public sealed partial class HomePage
             return;
         }
 
-        string ver = CurrentGameProperty.GameVersion?.GetGameVersionApiPreload()?.VersionString;
+        string ver = CurrentGameProperty.GameVersion?.GetGameVersionApiPreload()?.ToString();
 
         try
         {
@@ -347,9 +348,7 @@ public sealed partial class HomePage
 
             await CurrentGameProperty.GameInstall.StartPackageInstallation();
             CurrentGameProperty.GameInstall.ApplyGameConfig(true);
-            if (CurrentGameProperty.GameInstall.StartAfterInstall &&
-                CurrentGameProperty.GameVersion!.IsGameInstalled())
-                StartGame(null, null);
+            PostInstallProcedure();
 
             // Set the notification trigger to "Completed" state
             CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
@@ -443,7 +442,7 @@ public sealed partial class HomePage
             IsSkippingUpdateCheck = false;
             if (CurrentGameProperty.GameInstall != null)
             {
-                CurrentGameProperty.GameInstall.StartAfterInstall = false;
+                CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
 
                 CurrentGameProperty.GameInstall.ProgressChanged -=
                     isUseSophon ? GameInstallSophon_ProgressChanged : GameInstall_ProgressChanged;
@@ -556,8 +555,54 @@ public sealed partial class HomePage
                 break;
         }
     }
+
+    private void PostInstallProcedure()
+    {
+        if (CurrentGameProperty.GameVersion == null || 
+            !CurrentGameProperty.GameVersion.IsGameInstalled()) return;
+
+        var behaviour = CurrentGameProperty.GameInstall?.PostInstallBehaviour
+            ?? PostInstallBehaviour.Nothing;
+        switch (behaviour)
+        {
+            case PostInstallBehaviour.Nothing:
+                break;
+            case PostInstallBehaviour.StartGame:
+                StartGame(null!, null!);
+                break;
+            case PostInstallBehaviour.Hibernate:
+                Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", "/h")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                });
+                break;
+            case PostInstallBehaviour.Restart:
+            case PostInstallBehaviour.Shutdown:
+                var shutdownTimeout = GetAppConfigValue("PostInstallShutdownTimeout").ToInt(60);
+                var shutdownType = behaviour switch
+                {
+                    PostInstallBehaviour.Restart => "/r",
+                    PostInstallBehaviour.Shutdown => "/s",
+                    // ReSharper disable once UnreachableSwitchArmDueToIntegerAnalysis
+                    _ => "/a"
+                };
+
+                Process.Start(new ProcessStartInfo(@"C:\Windows\System32\shutdown.exe", $"{shutdownType} /t {shutdownTimeout}")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                });
+                break;
+        }
+
+        if (CurrentGameProperty.GameInstall != null)
+        {
+            CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
+        }
+    }
     #endregion
-    
+
     #region Game Management Buttons
     private void RepairGameButton_Click(object sender, RoutedEventArgs e)
     {
@@ -592,10 +637,10 @@ public sealed partial class HomePage
             
         if (currentMediaType == MediaType.StillImage)
         {
-            FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
             
             if (croppedImage == null) return;
-            SetAlternativeFileStream(croppedImage);
+            SetAlternativeImageStream(croppedImage);
         }
 
         if (CurrentGameProperty?.GameSettings?.SettingsCollapseMisc != null)
@@ -829,8 +874,7 @@ public sealed partial class HomePage
 
             await CurrentGameProperty.GameInstall.StartPackageInstallation();
             CurrentGameProperty.GameInstall.ApplyGameConfig(true);
-            if (CurrentGameProperty.GameInstall.StartAfterInstall && CurrentGameProperty.GameVersion!.IsGameInstalled())
-                StartGame(null, null);
+            PostInstallProcedure();
 
             // Set the notification trigger to "Completed" state
             CurrentGameProperty.GameInstall.UpdateCompletenessStatus(CompletenessStatus.Completed);
@@ -886,7 +930,7 @@ public sealed partial class HomePage
             IsSkippingUpdateCheck                             = false;
             if (CurrentGameProperty.GameInstall != null)
             {
-                CurrentGameProperty.GameInstall.StartAfterInstall = false;
+                CurrentGameProperty.GameInstall.PostInstallBehaviour = PostInstallBehaviour.Nothing;
 
                 CurrentGameProperty.GameInstall.ProgressChanged -=
                     isUseSophon ? GameInstallSophon_ProgressChanged : GameInstall_ProgressChanged;

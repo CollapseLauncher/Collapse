@@ -13,8 +13,6 @@ using CollapseLauncher.InstallManager.Zenless;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
-using Hi3Helper.Plugin.Core.Utility;
-using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
 using Hi3Helper.Win32.Native.Enums;
 using Microsoft.Extensions.Logging;
@@ -54,7 +52,8 @@ namespace CollapseLauncher
                     property.GameVersion  = new GameTypeHonkaiVersion(apiResourceProp, gameName, gameRegion);
                     property.GameSettings = new HonkaiSettings(property.GameVersion);
                     property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion);
-                    property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
+                    // property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
+                    property.GameRepair   = new HonkaiRepairV2(uiElementParent, property.GameVersion);
                     property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameCache);
                     break;
                 case GameNameType.StarRail:
@@ -135,9 +134,9 @@ namespace CollapseLauncher
             get
             {
                 // Try to use plugin's game launch API
-                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.IsGameRunning: true })
+                if (GamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true } asPluginPresetConfig)
                 {
-                    return true;
+                    return asPluginPresetConfig.RunGameContext.IsGameRunning;
                 }
 
                 return ProcessChecker.IsProcessExist(GameExecutableName, out _, out _, GameExecutablePath, GamePropLogger);

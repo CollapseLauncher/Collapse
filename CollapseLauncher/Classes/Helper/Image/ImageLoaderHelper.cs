@@ -3,11 +3,13 @@ using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Plugins;
 using CommunityToolkit.WinUI.Animations;
 using CommunityToolkit.WinUI.Media;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
+using Hi3Helper.EncTool.Hashes;
 using Hi3Helper.SentryHelper;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -18,6 +20,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using PhotoSauce.MagicScaler;
 using System;
 using System.Buffers;
+using System.Buffers.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
@@ -25,7 +28,10 @@ using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -109,7 +115,7 @@ namespace CollapseLauncher.Helper.Image
         }
         #endregion
 
-        internal static async Task<FileStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)
+        internal static async Task<MemoryStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)
         {
             if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
             double aspectRatioX = InnerLauncherConfig.m_actualMainFrameSize.Width;
@@ -122,6 +128,7 @@ namespace CollapseLauncher.Helper.Image
             if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder!);
 
             FileStream resizedImageFileStream = null;
+            MemoryStream imageStream = null;
 
             try
             {
@@ -130,18 +137,17 @@ namespace CollapseLauncher.Helper.Image
                 if (resizedFileInfo!.Exists && resizedFileInfo.Length > 1 << 15 && !overwriteCachedImage)
                 {
                     resizedImageFileStream = resizedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
-                    return resizedImageFileStream;
                 }
-
-                if (isUseImageCropper)
+                else if (isUseImageCropper)
                 {
                     resizedImageFileStream = await SpawnImageCropperDialog(path, resizedFileInfo.FullName,
                                                                            targetSourceImageWidth, targetSourceImageHeight);
-                    return resizedImageFileStream;
                 }
-
-                resizedImageFileStream = await GenerateCachedStream(inputFileInfo, targetSourceImageWidth,
-                                                                    targetSourceImageHeight);
+                else
+                {
+                    resizedImageFileStream = await GenerateCachedStream(inputFileInfo, targetSourceImageWidth,
+                                                                        targetSourceImageHeight);
+                }
             }
             catch
             {
@@ -153,10 +159,18 @@ namespace CollapseLauncher.Helper.Image
                 if (isError && resizedImageFileStream != null)
                 {
                     await resizedImageFileStream.DisposeAsync();
+                    resizedImageFileStream = null;
+                }
+                if (resizedImageFileStream != null)
+                {
+                    imageStream = new MemoryStream();
+                    await resizedImageFileStream.CopyToAsync(imageStream);
+                    imageStream.Position = 0;
+                    await resizedImageFileStream.DisposeAsync();
                 }
             }
 
-            return resizedImageFileStream;
+            return imageStream;
         }
 
         private static async Task<FileStream> SpawnImageCropperDialog(string filePath, string cachedFilePath,
@@ -326,7 +340,7 @@ namespace CollapseLauncher.Helper.Image
 
         internal static FileInfo GetCacheFileInfo(string filePath)
         {
-            string cachedFileHash = Hash.GetHashStringFromString<Crc32>(filePath);
+            string cachedFileHash = HexTool.BytesToHexUnsafe(HashUtility<Crc32>.Shared.GetHashFromString(filePath))!;
             string cachedFilePath = Path.Combine(AppGameImgCachedFolder!, cachedFileHash!);
             if (IsWaifu2XEnabled)
                 cachedFilePath += "_waifu2x";
@@ -366,12 +380,12 @@ namespace CollapseLauncher.Helper.Image
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            FileStream cachedFileStream = await LoadImage(filePath);
-            if (cachedFileStream == null) return (null, null);
-            await using (cachedFileStream)
+            var cachedImageStream = await LoadImage(filePath);
+            if (cachedImageStream == null) return (null, null);
+            await using (cachedImageStream)
             {
-                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedImageStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedImageStream.AsRandomAccessStream());
             }
 
             return (bitmapRet, bitmapImageRet);
@@ -714,6 +728,126 @@ namespace CollapseLauncher.Helper.Image
                 return url;
             }
             return cachePath;
+        }
+
+        private delegate bool WriteEmbeddedBase64DataToBuffer(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded);
+
+        public static string? CopyToLocalIfBase64(string? url, string? dirPath = null)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
+
+            WriteEmbeddedBase64DataToBuffer writeToDelegate;
+            if (Base64Url.IsValid(url, out int bufferLen))
+            {
+                writeToDelegate = WriteBufferFromBase64Url;
+            }
+            else if (Base64.IsValid(url, out bufferLen))
+            {
+                writeToDelegate = WriteBufferFromBase64Raw;
+            }
+            else
+            {
+                return url;
+            }
+
+            ReadOnlySpan<char> urlAsSpan = url;
+
+            dirPath ??= Path.GetTempPath();
+            byte[] fileNameHash = HashUtility<XxHash128>.Shared.GetHashFromString(urlAsSpan.Length > 32 ? urlAsSpan[..^32] : urlAsSpan[..Math.Min(urlAsSpan.Length - 1, 32)]);
+            string fileNameBase = HexTool.BytesToHexUnsafe(fileNameHash)!;
+            string filePath = Path.Combine(dirPath, fileNameBase);
+
+            string? existingFilePath = Directory
+                .EnumerateFiles(dirPath, fileNameBase + ".*", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(existingFilePath))
+            {
+                return existingFilePath;
+            }
+
+            byte[] decodedBuffer = ArrayPool<byte>.Shared.Rent(bufferLen);
+            try
+            {
+                if (!writeToDelegate(url, decodedBuffer, out int writtenToBuffer))
+                {
+                    return null;
+                }
+
+                string fileExt = PluginLauncherApiWrapper.DecideEmbeddedDataExtension(decodedBuffer);
+                filePath += fileExt;
+
+                using UnmanagedMemoryStream bufferStream = ToStream(new Span<byte>(decodedBuffer, 0, writtenToBuffer));
+                using FileStream fileStream = File.Create(filePath);
+                bufferStream.CopyTo(fileStream);
+
+                return filePath;
+            }
+            catch
+#if DEBUG
+            (Exception ex)
+#endif
+            {
+#if DEBUG
+                Logger.LogWriteLine($"An error has occurred while writing Base64 URL to local file.\r\n{ex}", LogType.Error, true);
+#endif
+                return null;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(decodedBuffer);
+            }
+
+            unsafe UnmanagedMemoryStream ToStream(Span<byte> buffer)
+            {
+                ref byte dataRef = ref MemoryMarshal.AsRef<byte>(buffer);
+                return new UnmanagedMemoryStream((byte*)Unsafe.AsPointer(ref dataRef), buffer.Length);
+            }
+
+            bool WriteBufferFromBase64Url(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            {
+                if (Base64Url.TryDecodeFromChars(chars, buffer, out dataDecoded))
+                {
+                    return true;
+                }
+
+                dataDecoded = 0;
+                return false;
+            }
+
+            bool WriteBufferFromBase64Raw(ReadOnlySpan<char> chars, Span<byte> buffer, out int dataDecoded)
+            {
+                int tempBufferToUtf8Len = Encoding.UTF8.GetByteCount(chars);
+                byte[] tempBufferToUtf8 = ArrayPool<byte>.Shared.Rent(tempBufferToUtf8Len);
+                try
+                {
+                    if (!Encoding.UTF8.TryGetBytes(chars, tempBufferToUtf8, out int utf8StrWritten))
+                    {
+                        dataDecoded = 0;
+                        return false;
+                    }
+
+                    OperationStatus decodeStatus = Base64.DecodeFromUtf8(tempBufferToUtf8.AsSpan(0, utf8StrWritten), buffer, out _, out dataDecoded);
+                    if (decodeStatus == OperationStatus.Done)
+                    {
+                        return true;
+                    }
+
+                    dataDecoded = 0;
+#if DEBUG
+                    throw new InvalidOperationException($"Cannot decode data string from Base64 as it returns with status: {decodeStatus}");
+#else
+                    return false;
+#endif
+                }
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(tempBufferToUtf8);
+                }
+            }
         }
     }
 }

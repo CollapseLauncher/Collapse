@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.Helper;
-using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
@@ -165,15 +164,12 @@ namespace CollapseLauncher
             ProgressAllSizeFound += asset.S;
             ProgressAllCountFound++;
 
-            Dispatch(() => AssetEntry.Add(
-                                          new AssetProperty<RepairAssetType>(
-                                                                             Path.GetFileName(asset.N),
+            Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
                                                                              RepairAssetType.Video,
                                                                              Path.GetDirectoryName(asset.N),
                                                                              asset.S,
                                                                              null,
-                                                                             asset.CRCArray
-                                                                            )
+                                                                             asset.CRCArray)
                                          ));
 
             // Add asset for missing/unmatched size file
@@ -254,8 +250,11 @@ namespace CollapseLauncher
             // Open and read fileInfo as FileStream 
             await using FileStream fileStream = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do MD5 Hash calculation
-            var localCrc = await GetCryptoHashAsync<MD5>(fileStream, null, true, true, token);
-            if (_isGame820PostVersion) // Reverse the hash if the game version is >= 8.2.0
+            byte[] localCrc = asset.CRCArray.Length > 8
+                ? await base.GetCryptoHashAsync<MD5>(fileStream, null, true, true, token)
+                : await GetCryptoHashAsync<MD5>(fileStream, null, true, true, token);
+
+            if (asset.CRCArray.Length == 8) // Reverse the hash if the game version is >= 8.2.0
                 Array.Reverse(localCrc);
 
             // Get size difference for summarize the _progressAllSizeCurrent
@@ -487,8 +486,11 @@ namespace CollapseLauncher
                 // Open and read fileInfo as FileStream 
                 await using FileStream fileOldFs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read);
                 // If pass the check above, then do CRC calculation
-                byte[] localOldCrc = await GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
-                if (_isGame820PostVersion) // Reverse the hash if the game version is >= 8.2.0
+                byte[] localOldCrc = fileHashToCheck.Length > 8
+                    ? await base.GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token)
+                    : await GetCryptoHashAsync<MD5>(fileOldFs, null, true, false, token);
+
+                if (fileHashToCheck.Length == 8) // Reverse the hash if the game version is >= 8.2.0
                     Array.Reverse(localOldCrc);
 
                 // If the hash matches, then add the patch
@@ -578,7 +580,9 @@ namespace CollapseLauncher
             await using FileStream filefs = await NaivelyOpenFileStreamAsync(file, FileMode.Open, FileAccess.Read, FileShare.Read);
             // If pass the check above, then do CRC calculation
             // Additional: the total file size progress is disabled and will be incremented after this
-            byte[] localCrc = await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
+            byte[] localCrc = fileHashToCheck.Length > 8
+                ? await base.GetCryptoHashAsync<MD5>(filefs, null, true, true, token)
+                : await GetCryptoHashAsync<MD5>(filefs, null, true, true, token);
             if (_isGame820PostVersion) // Reverse the hash if the game version is >= 8.2.0
                 Array.Reverse(localCrc);
 
@@ -785,11 +789,11 @@ namespace CollapseLauncher
 
         #region Override Methods
         protected override ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
-            Stream stream,
-            byte[]? hmacKey = null,
-            bool updateProgress = true,
-            bool updateTotalProgress = true,
-            CancellationToken token = default)
+            Stream            stream,
+            byte[]?           hmacKey             = null,
+            bool              updateProgress      = true,
+            bool              updateTotalProgress = true,
+            CancellationToken token               = default)
         {
             // If the game version is >= 8.2.0 and the T is MD5, switch to MhyMurmurHash2 implementation.
             if (!_isGame820PostVersion || typeof(T) != typeof(MD5))
@@ -801,17 +805,37 @@ namespace CollapseLauncher
                                                   token);
             }
 
+            // Use Murmur implementation for latest version.
+            return GetCryptoHashAsyncMurmur(stream, updateProgress, updateTotalProgress, token)
+               .ConfigureAwait(false);
+        }
+
+        private async Task<byte[]> GetCryptoHashAsyncMurmur(
+            Stream            stream,
+            bool              updateProgress      = true,
+            bool              updateTotalProgress = true,
+            CancellationToken token               = default)
+        {
             // Create the Hasher provider by explicitly specify the length of the stream.
             MhyMurmurHash264B murmurHashProvider = MhyMurmurHash264B.CreateForStream(stream, 0, stream.Length);
 
-            // Pass the provider and return the task
-            return Hash.GetHashAsync(stream,
-                                     murmurHashProvider,
-                                     read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                     stream is { Length: > 1024 << 20 },
-                                     token);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(512 << 10);
+            try
+            {
+                int read;
+                while ((read = await stream.ReadAtLeastAsync(buffer, buffer.Length, false, token)
+                                           .ConfigureAwait(false)) > 0)
+                {
+                    UpdateHashReadProgress(read, updateProgress, updateTotalProgress);
+                    murmurHashProvider.Append(buffer[..read]);
+                }
 
-            // Otherwise, fallback to the default implementation.
+                return murmurHashProvider.GetHashAndReset();
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
         #endregion
     }

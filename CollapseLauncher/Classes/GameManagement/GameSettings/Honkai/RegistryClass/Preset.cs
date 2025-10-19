@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.Metadata;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Microsoft.Win32;
 using System;
@@ -123,7 +124,7 @@ namespace CollapseLauncher.GameSettings
             string presetRegistryName = $"Preset_{typeof(T1).Name}";
             if (RegistryRoot == null) throw new NullReferenceException($"Cannot load preset name of {typeof(T1).Name} RegistryKey is unexpectedly not initialized!");
 
-            string? value = (string?)RegistryRoot.GetValue(presetRegistryName, null);
+            string? value = (string?)RegistryRoot.TryGetValue(presetRegistryName, null, RefreshRegistryRoot);
 
             if (value != null)
             {

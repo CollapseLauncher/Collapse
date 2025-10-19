@@ -791,7 +791,6 @@
     "CDNDescription_Cloudflare": "Cloudflare R2 버킷에서 호스팅되는 공식 (기본) 저장소 미러",
     "CDNDescription_Bitbucket": "Bitbucket에서 호스팅되는 공식 (기본) 저장소 미러",
     "CDNDescription_GitLab": "GitLab에서 호스팅되는 공식 (기본) 저장소 미러.",
-    "CDNDescription_Coding": "Coding에서 호스팅되는 공식 (기본) 저장소 미러.",
 
     "LocateExecutable": "실행 파일 지정",
     "OpenDownloadPage": "다운로드 페이지 열기",

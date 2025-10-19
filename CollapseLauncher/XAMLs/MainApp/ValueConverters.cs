@@ -1,7 +1,6 @@
-﻿using CollapseLauncher.Plugins;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
-using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Update;
 using Hi3Helper.SentryHelper;
@@ -11,7 +10,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.IO;
-using System.Numerics;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable PartialTypeWithSinglePart
 
@@ -350,6 +348,25 @@ namespace CollapseLauncher.Pages
                    };
 
             string GetFullFormat(DateTimeOffset offset) => offset.ToString(FullFormat);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class TimeToStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is not double asDouble)
+            {
+                return Locale.Lang._Misc.IsBytesNotANumber;
+            }
+
+            TimeSpan span = TimeSpan.FromSeconds(asDouble);
+            return span.ToString("mm\\:ss");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

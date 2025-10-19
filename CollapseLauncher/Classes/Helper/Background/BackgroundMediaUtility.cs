@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using ImageUI = Microsoft.UI.Xaml.Controls.Image;
 // ReSharper disable PartialTypeWithSinglePart
@@ -69,25 +70,39 @@ namespace CollapseLauncher.Helper.Background
 
         private bool _isCurrentRegistered;
 
-        private static FileStream? _alternativeFileStream;
+        private static MemoryStream? _alternativeImageStream;
 
         private delegate  ValueTask AssignDefaultAction<in T>(T    element) where T : class;
         internal delegate void      ThrowExceptionAction(Exception element);
 
-        private static bool _isOnQueue;
-        internal static async void RunQueuedTask(Task task)
-        {
-            while (_isOnQueue)
-            {
-                await Task.Delay(100);
-            }
+        private static readonly Channel<Task> QueuedTaskChannel;
 
-            Interlocked.Exchange(ref _isOnQueue, true);
-            await task;
-            Interlocked.Exchange(ref _isOnQueue, false);
+        static BackgroundMediaUtility()
+        {
+            QueuedTaskChannel = Channel.CreateBounded<Task>(new BoundedChannelOptions(1)
+            {
+                AllowSynchronousContinuations = true,
+                FullMode                      = BoundedChannelFullMode.Wait,
+                SingleReader                  = true,
+                SingleWriter                  = true
+            });
+
+            _ = RunAsyncTaskFromChannel();
         }
 
-        internal static void RunQueuedTask(Action action) => RunQueuedTask(Task.Factory.StartNew(action));
+        private static async Task RunAsyncTaskFromChannel()
+        {
+            while (await QueuedTaskChannel.Reader.ReadAsync() is { } asTask)
+            {
+                await asTask;
+            }
+        }
+
+        internal static async void RunQueuedTask(Task task)
+        {
+            await QueuedTaskChannel.Writer.WaitToWriteAsync();
+            await QueuedTaskChannel.Writer.WriteAsync(task);
+        }
 
         /// <summary>
         ///     Attach and register the <see cref="Grid" /> of the page to be assigned with background utility.
@@ -104,10 +119,10 @@ namespace CollapseLauncher.Helper.Background
         {
             CurrentAppliedMediaPath = null;
             CurrentAppliedMediaType = MediaType.Unknown;
-            if (_alternativeFileStream != null)
+            if (_alternativeImageStream != null)
             {
-                await _alternativeFileStream.DisposeAsync();
-                _alternativeFileStream = null;
+                await _alternativeImageStream.DisposeAsync();
+                _alternativeImageStream = null;
             }
 
             // Set the parent UI
@@ -173,8 +188,8 @@ namespace CollapseLauncher.Helper.Background
             _loaderStillImage?.Dispose();
             _loaderStillImage  = null;
 
-            _alternativeFileStream?.Dispose();
-            _alternativeFileStream = null;
+            _alternativeImageStream?.Dispose();
+            _alternativeImageStream = null;
 
             _isCurrentRegistered = false;
             GC.SuppressFinalize(this);
@@ -481,17 +496,17 @@ namespace CollapseLauncher.Helper.Background
             _loaderStillImage?.Pause();
         }
 
-        public static FileStream? GetAlternativeFileStream()
+        public static MemoryStream? GetAlternativeImageStream()
         {
-            FileStream? returnStream = _alternativeFileStream;
-            _alternativeFileStream = null;
+            MemoryStream? returnStream = _alternativeImageStream;
+            _alternativeImageStream = null;
             return returnStream;
         }
 
-        public static void SetAlternativeFileStream(FileStream stream)
+        public static void SetAlternativeImageStream(MemoryStream stream)
         {
-            _alternativeFileStream?.Dispose();
-            _alternativeFileStream = stream;
+            _alternativeImageStream?.Dispose();
+            _alternativeImageStream = stream;
         }
 
         public static MediaType GetMediaType(string mediaPath)

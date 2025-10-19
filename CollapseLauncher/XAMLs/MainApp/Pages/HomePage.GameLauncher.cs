@@ -4,6 +4,7 @@ using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using CollapseLauncher.Plugins;
 using H.NotifyIcon;
@@ -50,13 +51,13 @@ public partial class HomePage
     private CancellationTokenSource ResizableWindowHookToken;
 
 #nullable enable
-    private async void StartGame(object sender, RoutedEventArgs e)
+    private async void StartGame(object? sender, RoutedEventArgs? e)
     {
         // Initialize values
         IGameSettingsUniversal _Settings   = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
         PresetConfig           _gamePreset = CurrentGameProperty!.GameVersion!.GamePreset;
 
-        bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+        bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true };
 
         bool isGenshin  = CurrentGameProperty!.GameVersion.GameType == GameNameType.Genshin;
         bool giForceHDR = false;
@@ -96,10 +97,10 @@ public partial class HomePage
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Arguments = additionalArguments;
                 LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
-                if (File.Exists(Path.Combine(GameDirPath!, "@AltLaunchMode")))
+                if (File.Exists(Path.Combine(GameDirPath, "@AltLaunchMode")))
                 {
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
-                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset!.ZoneName == "Bilibili" ||
+                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
                                                        (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
                         Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
                 }
@@ -114,7 +115,7 @@ public partial class HomePage
             else
             {
                 _ = ((PluginPresetConfigWrapper)_gamePreset)
-                   .RunGameContext
+                   .UseToggledGameLaunchContext()
                    .RunGameFromGameManagerAsync(additionalArguments,
                                                 isUseGameBoost,
                                                 isUseGameBoost
@@ -193,8 +194,6 @@ public partial class HomePage
             await Task.Delay(3000);
         }
 
-        LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
-
         if (ResizableWindowHookToken != null)
         {
             await ResizableWindowHookToken.CancelAsync();
@@ -240,11 +239,10 @@ public partial class HomePage
         ArgumentNullException.ThrowIfNull(gamePreset);
         try
         {
-            if (gamePreset is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true } pluginGamePreset)
+            if (gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true } pluginGamePreset)
             {
                 LogWriteLine("Trying to stop game process from plugin...", LogType.Scheme, true);
-                throw new NotImplementedException();
-                //pluginGamePreset.RunGameContext.KillRunningGame(out _, out _);
+                pluginGamePreset.RunGameContext.KillRunningGame(out _, out _, out _);
             }
             else
             {
@@ -514,8 +512,6 @@ public partial class HomePage
         // Sentry issue ref : COLLAPSE-LAUNCHER-55; Event ID: 13059407
         if (int.IsNegative(barWidth)) barWidth = 30;
             
-        LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning,
-                     true);
         LogWriteLine($"Are Game logs getting saved to Collapse logs: {saveGameLog}", LogType.Scheme, true);
             
         try
@@ -604,28 +600,41 @@ public partial class HomePage
     #endregion
 
     #region Game Resizable Window Payload
-    private async void StartResizableWindowPayload(string       executableName, IGameSettingsUniversal settings,
-                                                   GameNameType gameType,       int? height, int? width)
+    private async void StartResizableWindowPayload(string                 executableName,
+                                                   IGameSettingsUniversal settings,
+                                                   PresetConfig           gamePreset,
+                                                   int?                   height,
+                                                   int?                   width)
     {
         try
         {
+            GameNameType gameType = gamePreset.GameType;
+
             // Check if the game is using Resizable Window settings
             if (!settings.SettingsCollapseScreen.UseResizableWindow) return;
             ResizableWindowHookToken = new CancellationTokenSource();
 
-            executableName = Path.GetFileNameWithoutExtension(executableName);
-            var gameExecutableDirectory = CurrentGameProperty.GameVersion?.GameDirPath;
+            while (!ResizableWindowHookToken.IsCancellationRequested &&
+                   !CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out _, out _))
+            {
+                await Task.Delay(200, ResizableWindowHookToken.Token);
+            }
+
+            string gameExecutablePath = Path.Combine(CurrentGameProperty.GameVersion?.GameDirPath.NormalizePath() ?? "",
+                                                     executableName.NormalizePath());
+            executableName = Path.GetFileNameWithoutExtension(gameExecutablePath);
+            var gameExecutableDirectory = Path.GetDirectoryName(gameExecutablePath);
             if (string.IsNullOrEmpty(gameExecutableDirectory))
             {
                 LogWriteLine("Game executable directory is not set! Cannot start Resizable Window payload!", LogType.Error);
                 return;
             }
 
-            // Set the pos + size reinitialization to true if the game is Honkai: Star Rail
-            // This is required for Honkai: Star Rail since the game will reset its pos + size. Making
+            // Set the pos + size reinitialization to true if the game is Honkai: Star Rail or ZZZ
+            // This is required for Honkai: Star Rail or ZZZ since the game will reset its pos + size. Making
             // it impossible to use custom resolution (but since you are using Collapse, it's now
             // possible :teriStare:)
-            bool isNeedToResetPos = gameType == GameNameType.StarRail;
+            bool isNeedToResetPos = gameType is GameNameType.StarRail or GameNameType.Zenless;
             await Task.Run(() => ResizableWindowHook.StartHook(executableName,
                                                                height,
                                                                width,
@@ -828,7 +837,9 @@ public partial class HomePage
     #region Game Running State
     private async Task CheckRunningGameInstance(PresetConfig presetConfig, CancellationToken token)
     {
-        bool usePluginGameLaunchApi = presetConfig is PluginPresetConfigWrapper { RunGameContext.CanUseGameLaunchApi: true };
+        bool usePluginGameLaunchApi = presetConfig is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true };
+        DateTime pluginLaunchedGameTime =
+            (presetConfig as PluginPresetConfigWrapper)?.RunGameContext.GameLaunchStartTime ?? default;
 
         TextBlock startGameBtnText = (StartGameBtn.Content as Grid)!.Children.OfType<TextBlock>().FirstOrDefault();
         FontIcon startGameBtnIcon = (StartGameBtn.Content as Grid)!.Children.OfType<FontIcon>().FirstOrDefault();
@@ -870,6 +881,8 @@ public partial class HomePage
                     if ((!usePluginGameLaunchApi && CurrentGameProperty.TryGetGameProcessIdWithActiveWindow(out processId, out _)) ||
                         (usePluginGameLaunchApi && CurrentGameProperty.IsGameRunning))
                     {
+                        LogWriteLine($"{new string('=', barWidth)} GAME STARTED {new string('=', barWidth)}", LogType.Warning, true);
+
                         Process currentGameProcess = null!;
                         if (!usePluginGameLaunchApi)
                             currentGameProcess = Process.GetProcessById(processId);
@@ -879,7 +892,7 @@ public partial class HomePage
                             // HACK: For some reason, the text still unchanged.
                             //       Make sure the start game button text also changed.
                             startGameBtnText.Text = Lang._HomePage.StartBtnRunning;
-                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? DateTime.UtcNow;
+                            DateTime fromActivityOffset = currentGameProcess?.StartTime ?? pluginLaunchedGameTime;
                             IGameSettingsUniversal gameSettings = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
                             PresetConfig gamePreset = CurrentGameProperty.GamePreset;
 
@@ -887,6 +900,16 @@ public partial class HomePage
                             if (ToggleRegionPlayingRpc)
                                 AppDiscordPresence?.SetActivity(ActivityType.Play, fromActivityOffset.ToUniversalTime());
                         #endif
+
+                            int height = gameSettings.SettingsScreen?.height ?? 0;
+                            int width  = gameSettings.SettingsScreen?.width ?? 0;
+
+                            // Start the resizable window payload
+                            StartResizableWindowPayload(gamePreset.GameExecutableName,
+                                                        gameSettings,
+                                                        gamePreset,
+                                                        height,
+                                                        width);
 
                             Task ProcessAwaiter(CancellationToken x) =>
                                 // ReSharper disable once AccessToDisposedClosure
@@ -896,15 +919,9 @@ public partial class HomePage
 
                             _ = CurrentGameProperty!.GamePlaytime!.StartSessionFromAwaiter(ProcessAwaiter);
 
-                            int height = gameSettings.SettingsScreen?.height ?? 0;
-                            int width  = gameSettings.SettingsScreen?.width ?? 0;
-
-                            // Start the resizable window payload
-                            StartResizableWindowPayload(gamePreset.GameExecutableName,
-                                                        gameSettings,
-                                                        gamePreset.GameType, height, width);
-
                             await ProcessAwaiter(token);
+
+                            LogWriteLine($"{new string('=', barWidth)} GAME STOPPED {new string('=', barWidth)}", LogType.Warning, true);
                         }
                         finally
                         {

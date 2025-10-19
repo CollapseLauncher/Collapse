@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Honkai.Context;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.EncTool;
@@ -22,7 +23,7 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class PersonalAudioSetting : IGameSettingsValue<PersonalAudioSetting>
     {
         #region Fields
-        private const    string                     ValueName    = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
+        internal const   string                     ValueName    = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
         private readonly PersonalAudioSettingVolume _volumeValue = PersonalAudioSettingVolume.Load();
 
         #endregion
@@ -177,7 +178,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(ValueName, null);
+                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
 
                 if (value != null)
                 {

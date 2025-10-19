@@ -69,7 +69,7 @@ public partial class MainPage : Page
             CancellationTokenSource TokenSource = new CancellationTokenSource();
             RunTimeoutCancel(TokenSource);
 
-            await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), TokenSource.Token);
+            await using Stream networkStream = await FallbackCDNUtil.TryGetCDNFallbackStream(string.Format(AppNotifURLPrefix, IsPreview ? "preview" : "stable"), token: TokenSource.Token);
             NotificationData = await networkStream.DeserializeAsync(NotificationPushJsonContext.Default.NotificationPush, token: TokenSource.Token);
             IsLoadNotifComplete = true;
 
@@ -164,8 +164,8 @@ public partial class MainPage : Page
                                                                       _ => null
                                                                   };
 
-            GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
-            GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+            GameVersion? ValidForVerBelow = Entry.ValidForVerBelow;
+            GameVersion? ValidForVerAbove = Entry.ValidForVerAbove;
 
             if (Entry.ValidForVerBelow == null && IsNotificationTimestampValid(Entry)
                 || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow

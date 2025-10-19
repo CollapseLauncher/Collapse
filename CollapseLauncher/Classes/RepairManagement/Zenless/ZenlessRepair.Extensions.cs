@@ -1,6 +1,7 @@
 ﻿using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.Sleepy;
 using Hi3Helper.Shared.ClassStruct;
@@ -55,12 +56,10 @@ namespace CollapseLauncher
             string persistentPath,
             [EnumeratorCancellation] CancellationToken token = default)
         {
-            string                    manifestFileUrl = fileInfo.BaseUrl.CombineURLFromString(fileInfo.ReferenceFileInfo.FileName);
-            using HttpResponseMessage responseMessage = await httpClient.GetAsync(manifestFileUrl, HttpCompletionOption.ResponseHeadersRead, token);
+            string manifestFileUrl = fileInfo.BaseUrl.CombineURLFromString(fileInfo.ReferenceFileInfo.FileName);
+            string filePath        = Path.Combine(persistentPath, fileInfo.ReferenceFileInfo.FileName + "_persist");
 
-            string filePath = Path.Combine(persistentPath, fileInfo.ReferenceFileInfo.FileName + "_persist");
-
-            await using Stream responseStream = await responseMessage.Content.ReadAsStreamAsync(token);
+            await using Stream responseStream = (await httpClient.TryGetCachedStreamFrom(manifestFileUrl, null, token)).Stream;
             await using Stream responseInterceptedStream = new JsonFieldToEnumerableStream(needWriteToLocal ? filePath : null, responseStream);
 
             IAsyncEnumerable<ZenlessResManifestAsset?> enumerable = JsonSerializer
@@ -84,7 +83,8 @@ namespace CollapseLauncher
                     isForceStoreInPersistent = manifest.IsPersistentFile,
                     isPatch = manifest.IsPersistentFile,
                     md5 = Convert.ToHexStringLower(manifest.Xxh64Hash),
-                    remoteName = manifest.FileRelativePath
+                    remoteName = manifest.FileRelativePath,
+                    associatedObject = manifest
                 };
             }
         }
@@ -143,6 +143,7 @@ namespace CollapseLauncher
                     asset.fileSize,
                     asset.md5,
                     FileType.Generic,
+                    asset.associatedObject,
                     asset.isPatch);
 
             ReadOnlySpan<char> relTypeRelativePath = asRemoteProperty.GetAssetRelativePath(out RepairAssetType assetType);
@@ -189,6 +190,7 @@ namespace CollapseLauncher
                                                                                long fileSize,
                                                                                string hash,
                                                                                FileType type = FileType.Generic,
+                                                                               object associatedObject = null!,
                                                                                bool isPatchApplicable = false)
         {
             string remoteAbsolutePath = type switch
@@ -205,7 +207,8 @@ namespace CollapseLauncher
                 S = fileSize,
                 N = localAbsolutePath,
                 RN = remoteAbsolutePath,
-                IsPatchApplicable = isPatchApplicable
+                IsPatchApplicable = isPatchApplicable,
+                AssociatedObject = associatedObject
             };
         }
 

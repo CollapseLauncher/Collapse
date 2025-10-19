@@ -237,6 +237,15 @@ namespace Hi3Helper
                 public string LauncherRestartTitle { get; set; } = LangFallback?._Dialogs.LauncherRestartTitle;
                 public string LauncherRestartSubtitle1 { get; set; } = LangFallback?._Dialogs.LauncherRestartSubtitle1;
                 public string LauncherRestartSubtitle2 { get; set; } = LangFallback?._Dialogs.LauncherRestartSubtitle2;
+
+                public string PostInstallBehaviour_Title { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_Title;
+                public string PostInstallBehaviour_Subtitle { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_Subtitle;
+                public string PostInstallBehaviour_Subtitle2 { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_Subtitle2;
+                public string PostInstallBehaviour_EnumNothing { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumNothing;
+                public string PostInstallBehaviour_EnumStartGame { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumStartGame;
+                public string PostInstallBehaviour_EnumHibernate { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumHibernate;
+                public string PostInstallBehaviour_EnumRestart { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumRestart;
+                public string PostInstallBehaviour_EnumShutdown { get; set; } = LangFallback?._Dialogs.PostInstallBehaviour_EnumShutdown;
             }
         }
         #endregion

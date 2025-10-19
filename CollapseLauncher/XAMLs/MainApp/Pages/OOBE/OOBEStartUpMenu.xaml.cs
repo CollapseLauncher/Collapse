@@ -515,7 +515,7 @@ namespace CollapseLauncher.Pages.OOBE
 
             try
             {
-                FileStream imageStream = await ImageLoaderHelper.LoadImage(selectedPath, true, true);
+                var imageStream = await ImageLoaderHelper.LoadImage(selectedPath, true, true);
                 if (imageStream != null)
                 {
                     await ReplaceBackgroundImage(imageStream, 0.5f, IsAppThemeLight ? 0.2f : 0.175f);
@@ -559,8 +559,8 @@ namespace CollapseLauncher.Pages.OOBE
             await ReplaceBackgroundImage(fileStream, fromOpacity, toOpacity);
         }
 
-        private async Task ReplaceBackgroundImage(FileStream sourceStream, float fromOpacity = 0.25f,
-                                                  float      toOpacity = 0.25f)
+        private async Task ReplaceBackgroundImage(Stream sourceStream, float fromOpacity = 0.25f,
+                                                  float  toOpacity = 0.25f)
         {
             const float toScale      = 1.2f;
             float       toTranslateX = -((float)ContainerBackgroundImage.ActualWidth * (toScale - 1f) / 2);

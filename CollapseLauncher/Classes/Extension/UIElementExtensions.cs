@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Windows.UI;
 using Windows.UI.Text;
 using WinRT;
@@ -389,9 +390,13 @@ namespace CollapseLauncher.Extension
             return textBlock;
         }
 
+        private static ResourceDictionary _currentDictionary;
+
         internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
         {
-            if (!Application.Current.Resources.TryGetValue(resourceKey, out object resourceObj))
+            _currentDictionary ??= Application.Current.Resources;
+
+            if (!(_currentDictionary?.TryGetValue(resourceKey, out object resourceObj) ?? false))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
             if (resourceObj is not TReturnType resource)
@@ -400,12 +405,25 @@ namespace CollapseLauncher.Extension
             return resource;
         }
 
+        internal static ref TReturnType GetApplicationResourceRef<TReturnType>(string resourceKey)
+            where TReturnType : struct
+        {
+            _currentDictionary ??= Application.Current.Resources;
+
+            if (!(_currentDictionary?.TryGetValue(resourceKey, out object resourceObj) ?? false))
+            {
+                return ref Unsafe.NullRef<TReturnType>();
+            }
+
+            return ref Unsafe.Unbox<TReturnType>(resourceObj);
+        }
+
         internal static void SetApplicationResource(string resourceKey, object value)
         {
-            if (!Application.Current.Resources.ContainsKey(resourceKey))
+            if (!_currentDictionary.ContainsKey(resourceKey))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
-            Application.Current.Resources[resourceKey] = value;
+            _currentDictionary[resourceKey] = value;
         }
 
         internal static CornerRadius GetElementCornerRadius(FrameworkElement element, CornerRadiusKind kind = CornerRadiusKind.Normal)

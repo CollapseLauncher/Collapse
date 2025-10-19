@@ -1,3 +1,4 @@
+using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.Background;
 using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Metadata;
@@ -107,9 +108,8 @@ public partial class MainPage : Page
                     BackgroundNewBackGrid.Visibility        = Visibility.Collapsed;
                     break;
                 case BackgroundMediaUtility.MediaType.StillImage:
-                    FileStream imgStream =
-                        await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
-                    BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
+                    var imgStream = await ImageLoaderHelper.LoadImage(gameLauncherApi.GameBackgroundImgLocal);
+                    BackgroundMediaUtility.SetAlternativeImageStream(imgStream);
                     BackgroundNewMediaPlayerGrid.Visibility = Visibility.Collapsed;
                     BackgroundNewBackGrid.Visibility        = Visibility.Visible;
                     break;
@@ -177,8 +177,8 @@ public partial class MainPage : Page
             {
                 if (BackgroundMediaUtility.GetMediaType(regionBgPath) == BackgroundMediaUtility.MediaType.StillImage)
                 {
-                    FileStream imgStream = await ImageLoaderHelper.LoadImage(regionBgPath);
-                    BackgroundMediaUtility.SetAlternativeFileStream(imgStream);
+                    var imgStream = await ImageLoaderHelper.LoadImage(regionBgPath);
+                    BackgroundMediaUtility.SetAlternativeImageStream(imgStream);
                 }
                     
                 gameLauncherApi.GameBackgroundImgLocal = regionBgPath;
@@ -224,8 +224,10 @@ public partial class MainPage : Page
                                               () =>
                                               {
                                                   IsFirstStartup = false;
-                                                  ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
+                                                  this.ReloadPageTheme();
                                               },
-                                              IsCustomBG || isUseCustomPerRegionBg, true, true);
+                                              IsCustomBG || isUseCustomPerRegionBg,
+                                              true,
+                                              true);
     }
 }

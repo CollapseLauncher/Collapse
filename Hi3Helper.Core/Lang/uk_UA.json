@@ -791,7 +791,6 @@
     "CDNDescription_Cloudflare": "Дзеркало офіційного (основного) репозиторію, опубліковане на Cloudflare R2.",
     "CDNDescription_Bitbucket": "Дзеркало офіційного (основного) репозиторію, опубліковане на Bitbucket.",
     "CDNDescription_GitLab": "Дзеркало офіційного (основного) репозиторію, розміщене на GitLab.",
-    "CDNDescription_Coding": "Дзеркало офіційного (основного) репозиторію, розміщене на Coding.",
 
     "LocateExecutable": "Знайти виконуваний файл",
     "OpenDownloadPage": "Відкрити сторінку завантаження",

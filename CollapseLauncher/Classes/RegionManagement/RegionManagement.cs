@@ -211,11 +211,15 @@ namespace CollapseLauncher
             var isDownloaded = await ImageLoaderHelper.IsFileCompletelyDownloadedAsync(imgFileInfo, true);
             if (isDownloaded)
             {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                            {
-                                                                                IsFirstStartup = false;
-                                                                                ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                            }, false, false, true);
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
+                                                      () =>
+                                                      {
+                                                          IsFirstStartup = false;
+                                                          this.ReloadPageTheme();
+                                                      },
+                                                      false,
+                                                      false,
+                                                      true);
                 return;
             }
 
@@ -244,22 +248,30 @@ namespace CollapseLauncher
                               GameNameType.Zenless => Path.Combine(AppExecutableDir,  @"Assets\Images\GameBackground\zzz.webp"),
                               _ => BackgroundMediaUtility.GetDefaultRegionBackgroundPath()
                           };
-            BackgroundImgChanger.ChangeBackground(tempImage, () =>
-                                                             {
-                                                                 IsFirstStartup = false;
-                                                                 ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                             }, false, false, true);
+            BackgroundImgChanger.ChangeBackground(tempImage,
+                                                  () =>
+                                                  {
+                                                      IsFirstStartup = false;
+                                                      this.ReloadPageTheme();
+                                                  },
+                                                  false,
+                                                  false,
+                                                  true);
             if (await ImageLoaderHelper.TryDownloadToCompletenessAsync(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImg,
                                                                        LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.ApiResourceHttpClient,
                                                                        imgFileInfo,
                                                                        false,
                                                                        token))
             {
-                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName, () =>
-                                                                            {
-                                                                                IsFirstStartup = false;
-                                                                                ColorPaletteUtility.ReloadPageTheme(this, CurrentAppTheme);
-                                                                            }, false, true, true);
+                BackgroundImgChanger.ChangeBackground(imgFileInfo.FullName,
+                                                      () =>
+                                                      {
+                                                          IsFirstStartup = false;
+                                                          this.ReloadPageTheme();
+                                                      },
+                                                      false,
+                                                      true,
+                                                      true);
                 SetAndSaveConfigValue(lastBgCfg, imgFileInfo.FullName);
             }
         #nullable restore
@@ -322,11 +334,11 @@ namespace CollapseLauncher
 
                 if (NotificationData.RegionPush == null) return;
                 
-                var regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
+                List<NotificationProp> regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
 
-                foreach (var Entry in regionPushCopy)
+                foreach (NotificationProp Entry in regionPushCopy)
                 {
-                    var toEntry = new NotificationInvokerProp
+                    NotificationInvokerProp toEntry = new NotificationInvokerProp
                     {
                         CloseAction = null,
                         IsAppNotif = false,
@@ -339,8 +351,8 @@ namespace CollapseLauncher
                         toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
                     }
 
-                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow != null ? new GameVersion(Entry.ValidForVerBelow) : null;
-                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove != null ? new GameVersion(Entry.ValidForVerAbove) : null;
+                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow;
+                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove;
 
                     if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
                             || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow

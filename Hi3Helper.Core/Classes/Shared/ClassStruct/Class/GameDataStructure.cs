@@ -2,6 +2,7 @@
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
 // ReSharper disable CheckNamespace
@@ -14,6 +15,8 @@ namespace Hi3Helper.Shared.ClassStruct
 {
     [JsonConverter(typeof(JsonStringEnumConverter<FileType>))]
     public enum FileType : byte { Generic, Block, Audio, Video, Unused }
+
+    [DebuggerDisplay("{N}")]
     public class FilePropertiesRemote : IAssetIndexSummary
     {
         public  bool   IsUsed { get; set; }
@@ -40,22 +43,24 @@ namespace Hi3Helper.Shared.ClassStruct
         public ManifestAudioPatchInfo? AudioPatchInfo    { get; set; }
         public BlockPatchInfo?         BlockPatchInfo    { get; set; }
 #nullable restore
-        public long                    S                 { get; set; }
-        public bool                    IsPatchApplicable { get; set; }
-        public bool                    IsBlockNeedRepair { get; set; }
-        public bool                    IsHasHashMark     { get; set; }
+        public long   S                 { get; set; }
+        public bool   IsPatchApplicable { get; set; }
+        public bool   IsBlockNeedRepair { get; set; }
+        public bool   IsHasHashMark     { get; set; }
+        public object AssociatedObject  { get; set; }
 
         public FilePropertiesRemote Copy() => new()
         {
-            N = N,
-            RN = RN,
-            CRC = CRC,
-            M = M,
-            FT = FT,
-            S = S,
+            N                 = N,
+            RN                = RN,
+            CRC               = CRC,
+            M                 = M,
+            FT                = FT,
+            S                 = S,
             IsPatchApplicable = IsPatchApplicable,
             IsBlockNeedRepair = IsBlockNeedRepair,
-            IsHasHashMark = IsHasHashMark,
+            IsHasHashMark     = IsHasHashMark,
+            AssociatedObject  = AssociatedObject
         };
 
         public string PrintSummary() => $"File [T: {FT}]: {N}\t{SummarizeSizeSimple(S)} ({S} bytes)";

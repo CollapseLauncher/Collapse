@@ -73,7 +73,7 @@ namespace Hi3Helper.Shared.Region
                 SetAppConfigValue("GameFolder", AppSettingsTemplate["GameFolder"]);
 
                 // Force enable Console Log and return
-                Logger.CurrentLogger = new LoggerConsole(AppGameLogsFolder, Encoding.UTF8);
+                Logger.UseConsoleLog(true);
                 Logger.LogWriteLine($"Game App Folder path: {gameFolder} doesn't exist! The launcher will be reinitialize the setup.",
                                     LogType.Error, true);
                 return;
@@ -212,13 +212,6 @@ namespace Hi3Helper.Shared.Region
 
             new()
             {
-                Name        = "Coding" + $" [{Lang._Misc.Tag_Deprecated}]",
-                URLPrefix   = "https://ohly-generic.pkg.coding.net/collapse/release/",
-                Description = Lang._Misc!.CDNDescription_Coding
-            },
-
-            new()
-            {
                 Name        = "CNB",
                 URLPrefix   = "https://cnb.cool/CollapseLauncher/ReleaseRepo/-/git/raw/main/",
                 Description = Lang._Misc!.CDNDescription_CNB
@@ -240,14 +233,14 @@ namespace Hi3Helper.Shared.Region
         private const          string       SectionName                 = "app";
         public static readonly List<string> ScreenResolutionsList       = [];
 
-        public const long AppDiscordApplicationID     = 1138126643592970251;
-        public const long AppDiscordApplicationID_HI3 = 1124126288370737314;
-        public const long AppDiscordApplicationID_GI  = 1124137436650426509;
-        public const long AppDiscordApplicationID_HSR = 1124153902959431780;
-        public const long AppDiscordApplicationID_ZZZ = 1124154024879456276;
+        public const ulong AppDiscordApplicationID     = 1138126643592970251;
+        public const ulong AppDiscordApplicationID_HI3 = 1124126288370737314;
+        public const ulong AppDiscordApplicationID_GI  = 1124137436650426509;
+        public const ulong AppDiscordApplicationID_HSR = 1124153902959431780;
+        public const ulong AppDiscordApplicationID_ZZZ = 1124154024879456276;
 
-        public static IntPtr AppIconLarge;
-        public static IntPtr AppIconSmall;
+        public static nint AppIconLarge;
+        public static nint AppIconSmall;
 
         public static List<Action> ApplyExternalConfigCallbackList = [];
 
@@ -529,6 +522,12 @@ namespace Hi3Helper.Shared.Region
             set => SetAndSaveConfigValue("UseInstantRegionChange", value);
         }
 
+        public static int PostInstallShutdownTimeout
+        {
+            get => GetAppConfigValue("PostInstallShutdownTimeout");
+            set => SetAndSaveConfigValue("PostInstallShutdownTimeout", value);
+        }
+
         public static bool                 ForceInvokeUpdate     = false;
         public static GameInstallStateEnum GameInstallationState = GameInstallStateEnum.NotInstalled;
 
@@ -624,12 +623,18 @@ namespace Hi3Helper.Shared.Region
             { "IsUseExternalDns", false },
             { "ExternalDnsAddresses", string.Empty },
 
+            { "PostInstallShutdownTimeout", 60 },
+            
             { "IsCDNCacheEnabled", false },
             { "IsCDNCacheAggressiveModeEnabled", false },
             { "CDNCacheDir", string.Empty },
             { "CDNCacheExpireTimeMinutes", 10d },
 
-            { "IsEnablePluginAutoUpdate", true }
+            { "IsEnablePluginAutoUpdate", true },
+
+            // TEMPORARY
+            { "Enable20250827CrisisIntro", true },
+            { "Enable20250827CrisisIntroDialog", true }
         };
         #endregion
     }

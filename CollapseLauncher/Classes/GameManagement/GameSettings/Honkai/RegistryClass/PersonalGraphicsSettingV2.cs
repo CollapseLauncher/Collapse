@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GameSettings.Honkai.Context;
+﻿using CollapseLauncher.Extension;
+using CollapseLauncher.GameSettings.Honkai.Context;
 using CollapseLauncher.GameSettings.Honkai.Enums;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -186,7 +187,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             {
                 if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.GetValue(ValueName, null);
+                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
 
                 if (value != null)
                 {

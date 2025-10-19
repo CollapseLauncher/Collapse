@@ -1,9 +1,13 @@
-﻿using CollapseLauncher.Extension;
+﻿using CollapseLauncher.Classes.Helper.Image;
+using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Microsoft.Win32;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,16 +20,51 @@ namespace CollapseLauncher.ShortcutUtils
 {
     public static class ShortcutCreator
     {
-        public static string GetIconName(GameNameType gameType)
+        public static string GetIconName(PresetConfig preset)
         {
-            return gameType switch
+            return preset.GameType switch
             {
                 GameNameType.Genshin => "icon-genshin.ico",
                 GameNameType.StarRail => "icon-starrail.ico",
                 GameNameType.Zenless => "icon-zenless.ico",
+                GameNameType.Plugin => $"{preset.ProfileName}.ico",
                 _ => "icon-honkai.ico"
             };
         }
+
+#nullable enable
+        public static string GetIconPath(PresetConfig preset)
+        {
+            var appPath = Path.GetDirectoryName(AppExecutablePath)!;
+            var iconPath = Path.Combine(appPath, $"Assets\\Images\\GameIcon");
+
+            var icon = Path.Combine(iconPath, GetIconName(preset));
+            if (preset is PluginPresetConfigWrapper pluginPresetConfig)
+            {
+                pluginPresetConfig.Plugin.GetPluginAppIconUrl(out string? iconUrl);
+                string? appIconUrl = ImageLoaderHelper.CopyToLocalIfBase64(iconUrl, iconPath);
+
+                if (appIconUrl == null)
+                    return icon;
+
+                icon = appIconUrl;
+                if (Path.GetExtension(icon) != ".ico")
+                {
+                    var expectedPath = Path.ChangeExtension(icon, ".ico");
+                    using (var stream = File.OpenWrite(expectedPath))
+                    {
+                        Image img = Image.FromFile(icon);
+                        ImageConverterHelper.ConvertToIcon(img)
+                            .Save(stream);
+                    }
+
+                    return expectedPath;
+                }
+            }
+
+            return icon;
+        }
+#nullable disable
 
         internal static void CreateShortcut(string path, PresetConfig preset, bool play = false)
         {
@@ -40,8 +79,7 @@ namespace CollapseLauncher.ShortcutUtils
 
             if (play) url += " -p";
 
-            var icon = Path.Combine(Path.GetDirectoryName(AppExecutablePath)!,
-                                    $"Assets/Images/GameIcon/{GetIconName(preset.GameType)}");
+            var icon = GetIconPath(preset);
 
             var fullPath = Path.Combine(path, shortcutName);
 
