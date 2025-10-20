@@ -1,8 +1,8 @@
-<UserControl x:Class="CollapseLauncher.Dialogs.DownloadSettings"
+﻿<UserControl x:Class="CollapseLauncher.Dialogs.DownloadSettings"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:conv="using:CollapseLauncher.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helper="using:Hi3Helper"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              CacheMode="BitmapCache"
@@ -15,31 +15,37 @@
     </UserControl.Resources>
     <ScrollViewer>
         <ScrollViewer.KeyboardAccelerators>
-            <KeyboardAccelerator Key="Enter" Invoked="IgnoreInput"/>
+            <KeyboardAccelerator Key="Enter"
+                                 Invoked="IgnoreInput" />
         </ScrollViewer.KeyboardAccelerators>
         <StackPanel>
-            <TextBlock FontSize="16"
+            <TextBlock Margin="0,0,0,12"
+                       FontSize="16"
                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                       Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Title}"
-                       Margin="0,0,0,12"/>
-            <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle}"
-                    Margin="0,0,0,4"/>
+                       Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Title}" />
+            <TextBlock Margin="0,0,0,4"
+                       Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle}" />
             <ComboBox x:Name="PostInstallBox"
-                  Margin="0,8,0,0"
-                  MinWidth="250"
-                  SelectionChanged="OnPostInstallBehaviourChange">
+                      MinWidth="250"
+                      Margin="0,8,0,0"
+                      SelectionChanged="OnPostInstallBehaviourChange">
                 <ComboBox.Items>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumNothing}" TextWrapping="Wrap"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumStartGame}" TextWrapping="Wrap"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumHibernate}" TextWrapping="Wrap"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumRestart}" TextWrapping="Wrap"/>
-                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumShutdown}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumNothing}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumStartGame}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumHibernate}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumRestart}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_EnumShutdown}"
+                               TextWrapping="Wrap" />
                 </ComboBox.Items>
             </ComboBox>
             <StackPanel x:Name="ShutdownTimeout"
                         Visibility="Collapsed">
-                <TextBlock Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle2}"
-                           Margin="0,16,0,4"/>
+                <TextBlock Margin="0,16,0,4"
+                           Text="{x:Bind helper:Locale.Lang._Dialogs.PostInstallBehaviour_Subtitle2}" />
                 <Grid Margin="0,8,0,0"
                       ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
@@ -49,12 +55,12 @@
                     <NumberBox x:Name="ShutdownTimeoutBox"
                                Grid.Column="0"
                                Margin="0,0,0,0"
-                               Minimum="0"
-                               Maximum="300"
-                               SmallChange="1"
                                LargeChange="10"
+                               Maximum="300"
+                               Minimum="0"
+                               SmallChange="1"
                                SpinButtonPlacementMode="Inline"
-                               Value="{x:Bind PostInstallShutdownTimeout, Mode=TwoWay}"/>
+                               Value="{x:Bind PostInstallShutdownTimeout, Mode=TwoWay}" />
                     <Grid x:Name="ShutdownTimeoutGrid"
                           Grid.Column="1"
                           Margin="0,0,0,4"
@@ -66,13 +72,13 @@
                           Shadow="{ThemeResource FatSliderThumbShadow}"
                           Translation="0,0,8">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center"
+                            <TextBlock Margin="0,0,4,0"
+                                       VerticalAlignment="Center"
                                        FontSize="12"
                                        FontStyle="Italic"
                                        FontWeight="SemiBold"
                                        Foreground="{ThemeResource DefaultFGColorAccentBrush}"
-                                       Text="= "
-                                       Margin="0,0,4,0"/>
+                                       Text="= " />
                             <TextBlock VerticalAlignment="Center"
                                        FontSize="12"
                                        FontStyle="Italic"
@@ -84,10 +90,10 @@
                 </Grid>
             </StackPanel>
             <StackPanel x:Name="NetworkSettings">
-                <TextBlock FontSize="16"
+                <TextBlock Margin="0,24,0,8"
+                           FontSize="16"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_Title}"
-                           Margin="0,24,0,8"/>
+                           Text="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_Title}" />
                 <ToggleSwitch x:Name="NetworkDownloadSpeedLimitToggle"
                               Margin="0,4,0,0"
                               Header="{x:Bind helper:Locale.Lang._SettingsPage.FileDownloadSettings_SpeedLimit_Title}"
