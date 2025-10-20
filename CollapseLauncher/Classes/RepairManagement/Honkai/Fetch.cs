@@ -327,7 +327,7 @@ namespace CollapseLauncher
                 string hashedRelativePath = SenadinaFileIdentifier.GetHashedString(origFileRelativePath);
 
                 string fileUrl = CombineURLFromString(mainUrl, hashedRelativePath);
-                if (!dict.TryGetValue(origFileRelativePath, out var identifier))
+                if (!dict.TryGetValue(origFileRelativePath, out SenadinaFileIdentifier? identifier))
                 {
                     LogWriteLine($"Key reference to the pustaka file: {hashedRelativePath} is not found for game version: {string.Join('.', gameVersion)}. Please contact us on our Discord Server to report this issue.", LogType.Error, true);
                     if (skipThrow) return null;
@@ -889,7 +889,7 @@ namespace CollapseLauncher
             using MemoryStream tempXMFMetaStream = new();
 
             await using Stream? metaBaseXMFStream = !IsOnlyRecoverMain && isPlatformXMFStreamExist ?
-                (await (await xmfPlatformIdentifier!.GetOriginalFileHttpResponse(_httpClient, token: token)).TryGetCachedStreamFrom(token)).Stream :
+                await xmfPlatformIdentifier!.GetOriginalFileStream(_httpClient, token: token) :
                 null;
             if (xmfPlatformIdentifier != null)
             {
@@ -900,8 +900,8 @@ namespace CollapseLauncher
                 if (isEitherXMFExist)
                 {
                     await using Stream? baseXMFStream = !IsOnlyRecoverMain && isSecondaryXMFStreamExist ?
-                        (await (await xmfCurrentIdentifier!.GetOriginalFileHttpResponse(_httpClient, token: token)).TryGetCachedStreamFrom(token)).Stream :
-                        (await (await xmfBaseIdentifier!.GetOriginalFileHttpResponse(_httpClient, token: token)).TryGetCachedStreamFrom(token)).Stream;
+                        await xmfCurrentIdentifier!.GetOriginalFileStream(_httpClient, token: token) :
+                        await xmfBaseIdentifier!.GetOriginalFileStream(_httpClient, token: token);
                     if (xmfCurrentIdentifier != null)
                     {
                         await using Stream? dataXMFStream = !IsOnlyRecoverMain ? xmfCurrentIdentifier.fileStream : xmfBaseIdentifier?.fileStream;
@@ -910,10 +910,7 @@ namespace CollapseLauncher
                         await using (FileStream fs1 = new FileStream(EnsureCreationOfDirectory(!IsOnlyRecoverMain ? xmfSecPath : xmfPriPath), FileMode.Create, FileAccess.ReadWrite))
                         {
                             // Download the secondary XMF into MemoryStream
-                            if (baseXMFStream != null)
-                            {
-                                await DoCopyStreamProgress(baseXMFStream, fs1, token: token);
-                            }
+                            await DoCopyStreamProgress(baseXMFStream, fs1, token: token);
 
                             // Copy the secondary XMF into primary XMF if _isOnlyRecoverMain == false
                             if (!IsOnlyRecoverMain)

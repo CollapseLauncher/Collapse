@@ -1,6 +1,8 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 #pragma warning disable IDE0130
 
@@ -38,6 +40,30 @@ internal partial class HonkaiRepairV2
             }
         }
 
-        return true;
+        // Restore progress bar indeterminate state
+        Status.IsProgressAllIndetermined     = false;
+        Status.IsProgressPerFileIndetermined = false;
+        UpdateStatus();
+
+        // Reset the counter on the UI
+        ProgressAllSizeTotal  = checkAssetIndex.Sum(x => x.S); // Add for generic size
+        ProgressAllCountTotal = checkAssetIndex.Count;
+
+        await Parallel.ForEachAsync(checkAssetIndex,
+                                    new ParallelOptions
+                                    {
+                                        CancellationToken      = Token.Token,
+                                        MaxDegreeOfParallelism = ThreadForIONormalized
+                                    },
+                                    Impl);
+
+        return AssetIndex.Count > 0;
+
+        ValueTask Impl(FilePropertiesRemote asset, CancellationToken token) =>
+            asset.FT switch
+            {
+                FileType.Block => CheckAssetBlockType(asset, useFastCheck, token),
+                _              => CheckAssetGenericType(asset, useFastCheck, token)
+            };
     }
 }

@@ -39,14 +39,14 @@ internal static partial class AssetBundleExtension
             PresetConfig      presetConfig,
             GameVersion       gameVersion,
             KianaDispatch     gameServerInfo,
-            int[]?            ignoredCgIds         = null,
-            ProgressBase<T>?  progressibleInstance = null,
-            CancellationToken token                = default)
+            ProgressBase<T>   progressibleInstance,
+            int[]?            ignoredCgIds = null,
+            CancellationToken token        = default)
         where T : IAssetIndexSummary
     {
-        bool isUseHttpRepairOverride = LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride");
-        AudioLanguageType gameLanguageType = GetCurrentGameAudioLanguage(presetConfig);
-        int parallelThread = LauncherConfig.AppCurrentDownloadThread;
+        bool              isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
+        AudioLanguageType gameLanguageType        = GetCurrentGameAudioLanguage(presetConfig);
+        int               parallelThread          = LauncherConfig.AppCurrentDownloadThread;
         if (parallelThread <= 0)
         {
             parallelThread = Environment.ProcessorCount;
@@ -74,28 +74,18 @@ internal static partial class AssetBundleExtension
         }
 
         // Update Progress
-        if (progressibleInstance != null)
-        {
-            progressibleInstance.Status.ActivityStatus =
-                string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Video");
-            progressibleInstance.Status.IsProgressAllIndetermined = true;
-            progressibleInstance.Status.IsIncludePerFileIndicator = false;
+        progressibleInstance.Status.ActivityStatus =
+            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Video");
+        progressibleInstance.Status.IsProgressAllIndetermined = true;
+        progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
-            progressibleInstance.UpdateStatus();
-        }
+        progressibleInstance.UpdateStatus();
 
         await using Stream cgFileStream =
             (await assetBundleHttpClient.TryGetCachedStreamFrom(cgMetadataFile.AssetUrl, token: token))
            .Stream;
         await using MemoryStream cgFileStreamMemory = new MemoryStream();
-        if (progressibleInstance != null)
-        {
-            await progressibleInstance.DoCopyStreamProgress(cgFileStream, cgFileStreamMemory, token: token);
-        }
-        else
-        {
-            await cgFileStream.CopyToAsync(cgFileStreamMemory, token);
-        }
+        await progressibleInstance.DoCopyStreamProgress(cgFileStream, cgFileStreamMemory, token: token);
         cgFileStreamMemory.Position = 0;
 
         await using CacheStream dechipheredCgStream =

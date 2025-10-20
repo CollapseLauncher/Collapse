@@ -105,26 +105,27 @@ namespace CollapseLauncher
         public byte[] RemoteCRCByte { get; }
     }
 
+#nullable enable
     public class AssetProperty<T>(
-        string name,
-        T      assetType,
-        string source,
-        long   size,
-        byte[] localCrcByte,
-        byte[] remoteCrcByte)
+        string  name,
+        T       assetType,
+        string  source,
+        long    size,
+        byte[]? localCrcByte,
+        byte[]? remoteCrcByte)
         : IAssetProperty
         where T : struct, Enum
     {
-        public string AssetTypeString { get => Enum.GetName(AssetType); }
-        public string Name            { get; } = name;
-        public T      AssetType       { get; } = assetType;
-        public string Source          { get; } = '\\' + source;
-        public long   Size            { get; } = size;
-        public string SizeStr         { get => ConverterTool.SummarizeSizeSimple(Size); }
-        public string LocalCRC        { get => LocalCRCByte == null ? "-" : HexTool.BytesToHexUnsafe(LocalCRCByte); }
-        public byte[] LocalCRCByte    { get; } = localCrcByte;
-        public string RemoteCRC       { get => RemoteCRCByte == null ? "-" : HexTool.BytesToHexUnsafe(RemoteCRCByte); }
-        public byte[] RemoteCRCByte   { get; } = remoteCrcByte;
+        public string  AssetTypeString { get => Enum.GetName(AssetType) ?? "Unknown"; }
+        public string  Name { get; } = name;
+        public T       AssetType { get; } = assetType;
+        public string  Source { get; } = '\\' + source;
+        public long    Size { get; } = size;
+        public string  SizeStr { get => ConverterTool.SummarizeSizeSimple(Size); }
+        public string  LocalCRC { get => LocalCRCByte?.Length == 0 ? "-" : HexTool.BytesToHexUnsafe(LocalCRCByte) ?? "-"; }
+        public byte[]? LocalCRCByte { get; } = localCrcByte;
+        public string  RemoteCRC { get => RemoteCRCByte?.Length == 0 ? "-" : HexTool.BytesToHexUnsafe(RemoteCRCByte) ?? "-"; }
+        public byte[]? RemoteCRCByte { get; } = remoteCrcByte;
 
         public IAssetProperty ToIAssetProperty() => this;
     }

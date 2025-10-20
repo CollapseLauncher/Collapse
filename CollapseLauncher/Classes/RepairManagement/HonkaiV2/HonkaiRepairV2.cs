@@ -60,7 +60,7 @@ internal partial class HonkaiRepairV2
         HttpClientGeneric = new HttpClientBuilder()
                            .UseLauncherConfig(DownloadThreadCount * DownloadThreadCount)
                         #if AOT
-                          .SetHttpVersion(HttpVersion.Version20)
+                           .SetHttpVersion(HttpVersion.Version20)
                         #else
                            .SetHttpVersion(HttpVersion.Version30)
                         #endif
@@ -84,25 +84,5 @@ internal partial class HonkaiRepairV2
         Token?.Cancel();
         Token?.Dispose();
         Token = null;
-    }
-
-    private static FileType DetermineFileTypeFromExtension(string fileName)
-    {
-        if (fileName.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase))
-        {
-            return FileType.Block;
-        }
-
-        if (fileName.EndsWith(".usm", StringComparison.OrdinalIgnoreCase))
-        {
-            return FileType.Video;
-        }
-
-        if (fileName.EndsWith(".pck", StringComparison.OrdinalIgnoreCase))
-        {
-            return FileType.Audio;
-        }
-
-        return FileType.Generic;
     }
 }

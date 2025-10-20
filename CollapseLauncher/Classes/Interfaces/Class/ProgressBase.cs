@@ -60,18 +60,59 @@ namespace CollapseLauncher.Interfaces
         public event EventHandler<TotalPerFileProgress>? ProgressChanged;
         public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-        internal  TotalPerFileStatus   SophonStatus;
-        internal  TotalPerFileProgress SophonProgress;
-        internal  TotalPerFileStatus   Status;
-        internal  TotalPerFileProgress Progress;
-        protected int                  ProgressAllCountCurrent;
-        protected int                  ProgressAllCountFound;
-        protected int                  ProgressAllCountTotal;
-        protected long                 ProgressAllSizeCurrent;
-        protected long                 ProgressAllSizeFound;
-        protected long                 ProgressAllSizeTotal;
-        protected long                 ProgressPerFileSizeCurrent;
-        protected long                 ProgressPerFileSizeTotal;
+        internal TotalPerFileStatus   SophonStatus;
+        internal TotalPerFileProgress SophonProgress;
+        internal TotalPerFileStatus   Status;
+        internal TotalPerFileProgress Progress;
+        internal int                  ProgressAllCountCurrent;
+        internal int                  ProgressAllCountFound;
+        internal int                  ProgressAllCountTotal;
+        internal long                 ProgressAllSizeCurrent;
+        internal long                 ProgressAllSizeFound;
+        internal long                 ProgressAllSizeTotal;
+        internal long                 ProgressPerFileSizeCurrent;
+        internal long                 ProgressPerFileSizeTotal;
+
+        /// <summary>
+        /// Normalized app download thread configured within app global config.<br/>
+        /// <br/>
+        /// If the thread is set to less or equal to 0, it will automatically set to the thread count of your CPU.
+        /// </summary>
+        internal int ThreadForDownloadNormalized
+        {
+            get
+            {
+                int parallelThread = LauncherConfig.AppCurrentDownloadThread;
+                if (parallelThread <= 0)
+                {
+                    parallelThread = Environment.ProcessorCount;
+                }
+
+                return parallelThread;
+            }
+        }
+
+        /// <summary>
+        /// Normalized app I/O thread configured within app global config.<br/>
+        /// <br/>
+        /// If the thread is set to less or equal to 0, it will automatically set to the thread count of your CPU.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        internal int ThreadForIONormalized
+        {
+            get
+            {
+                int parallelThread = LauncherConfig.AppCurrentThread;
+                if (parallelThread <= 0)
+                {
+                    parallelThread = Environment.ProcessorCount;
+                }
+
+                return parallelThread;
+            }
+        }
+
+        internal bool IsForceHttpOverride => LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride");
 
         // Extension for IGameInstallManager
 

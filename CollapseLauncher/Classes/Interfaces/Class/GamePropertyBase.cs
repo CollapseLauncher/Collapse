@@ -72,7 +72,7 @@ namespace CollapseLauncher.Interfaces
             set;
         }
 
-        protected List<T1> AssetIndex { get; set; }
+        internal List<T1> AssetIndex { get; set; }
         protected bool UseFastMethod { get; set; }
 
         public ObservableCollection<IAssetProperty> AssetEntry { get; set; }

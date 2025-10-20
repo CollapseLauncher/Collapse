@@ -8,7 +8,6 @@ using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,33 +36,26 @@ internal static partial class AssetBundleExtension
             GameVersion             gameVersion,
             KianaDispatch           gameServerInfo,
             SenadinaFileIdentifier? audioFileIdentifier,
-            AudioPCKType[]?         ignoredCgIds         = null,
-            ProgressBase<T>?        progressibleInstance = null,
-            CancellationToken       token                = default)
+            ProgressBase<T>         progressibleInstance,
+            AudioPCKType[]?         ignoredCgIds = null,
+            CancellationToken       token        = default)
         where T : IAssetIndexSummary
     {
         ignoredCgIds ??= [];
         int[] ignoredCgIdInts = Array.ConvertAll(ignoredCgIds, x => (int)x);
 
         ArgumentNullException.ThrowIfNull(audioFileIdentifier);
-        int parallelThread = LauncherConfig.AppCurrentDownloadThread;
-        if (parallelThread <= 0)
-        {
-            parallelThread = Environment.ProcessorCount;
-        }
+        int parallelThread = progressibleInstance.ThreadForIONormalized;
 
         // Update Progress
-        if (progressibleInstance != null)
-        {
-            progressibleInstance.Status.ActivityStatus =
-                string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Audio Manifest");
-            progressibleInstance.Status.IsProgressAllIndetermined = true;
-            progressibleInstance.Status.IsIncludePerFileIndicator = false;
+        progressibleInstance.Status.ActivityStatus =
+            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Audio Manifest");
+        progressibleInstance.Status.IsProgressAllIndetermined = true;
+        progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
-            progressibleInstance.UpdateStatus();
-        }
+        progressibleInstance.UpdateStatus();
 
-        bool              isUseHttpRepairOverride = LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride");
+        bool              isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
         AudioLanguageType gameLanguageType        = GetCurrentGameAudioLanguage(presetConfig);
 
         Exception? lastException = null;
@@ -107,13 +99,10 @@ internal static partial class AssetBundleExtension
                         goto AddAsset; // I love goto. Dun ask me why :>
                     }
 
-                    if (progressibleInstance != null)
-                    {
-                        progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status15, audioAsset.Path);
-                        progressibleInstance.Status.IsProgressAllIndetermined = true;
-                        progressibleInstance.Status.IsProgressPerFileIndetermined = true;
-                        progressibleInstance.UpdateStatus();
-                    }
+                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status15, audioAsset.Path);
+                    progressibleInstance.Status.IsProgressAllIndetermined = true;
+                    progressibleInstance.Status.IsProgressPerFileIndetermined = true;
+                    progressibleInstance.UpdateStatus();
 
                     string    assetUrl  = baseAudioAssetUrl.CombineURLFromString(audioAsset.Path);
                     UrlStatus urlStatus = await assetBundleHttpClient.GetURLStatusCode(assetUrl, innerToken);

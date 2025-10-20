@@ -25,17 +25,28 @@ namespace Hi3Helper.Shared.ClassStruct
         public string N { get; set; }
         public string RN { get; set; }
 
+        private string _crcField;
         public string CRC
         {
-            get;
+            get => _crcField;
             set
             {
-                field     = value.ToLower();
-                CRCArray = HexTool.HexToBytesUnsafe(field);
+                _crcField      = value.ToLower();
+                _crcArrayField = HexTool.HexToBytesUnsafe(_crcField);
             }
         }
 
-        public byte[]                  CRCArray          { get; private set; }
+        private byte[] _crcArrayField;
+        public byte[] CRCArray
+        {
+            get => _crcArrayField;
+            set
+            {
+                _crcArrayField = value;
+                _crcField      = HexTool.BytesToHexUnsafe(value) ?? "";
+            }
+        }
+
         public string                  M                 { get; set; }
         public FileType                FT                { get; set; }
         public List<XMFBlockList>      BlkC              { get; set; }
@@ -67,6 +78,8 @@ namespace Hi3Helper.Shared.ClassStruct
         public long GetAssetSize() => FT == FileType.Unused ? 0 : S;
         public string GetRemoteURL() => RN;
         public void SetRemoteURL(string url) => RN = url;
+
+        public override string ToString() => $"Type: {FT} | {N}";
     }
 
     public class FileProperties
