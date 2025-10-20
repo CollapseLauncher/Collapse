@@ -9,7 +9,6 @@ using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
-using Hi3Helper.Shared.Region;
 using Hi3Helper.UABT;
 using Microsoft.Win32;
 using System;
@@ -51,7 +50,7 @@ internal static partial class AssetBundleExtension
             GameVersion       gameVersion,
             KianaDispatch     gameServerInfo,
             CacheAssetType?   cacheAssetType,
-            ProgressBase<T>?  progressibleInstance = null,
+            ProgressBase<T>   progressibleInstance,
             CancellationToken token                = default)
         where T : IAssetIndexSummary
     {
@@ -76,15 +75,12 @@ internal static partial class AssetBundleExtension
                     indexFileUrl = string.Format(indexFileUrl, cacheType == CacheAssetType.Data ? "Data" : "Resource");
 
                     // Update Progress
-                    if (progressibleInstance != null)
-                    {
-                        progressibleInstance.Status.ActivityStatus =
-                            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, cacheType);
-                        progressibleInstance.Status.IsProgressAllIndetermined = true;
-                        progressibleInstance.Status.IsIncludePerFileIndicator = false;
+                    progressibleInstance.Status.ActivityStatus =
+                        string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, cacheType);
+                    progressibleInstance.Status.IsProgressAllIndetermined = true;
+                    progressibleInstance.Status.IsIncludePerFileIndicator = false;
 
-                        progressibleInstance.UpdateStatus();
-                    }
+                    progressibleInstance.UpdateStatus();
 
                     Logger.LogWriteLine($"[AssetBundleExtension::GetCacheAssetBundleListAsync] Fetching ASB Cache Asset Type: {cacheType} from: {indexFileUrl}",
                                         LogType.Default,
@@ -139,15 +135,11 @@ internal static partial class AssetBundleExtension
         string            asbBaseUrl,
         string            gameLanguage,
         CacheAssetType    cacheType,
-        ProgressBase<T>?  progressibleInstance = null,
-        CancellationToken token                = default)
+        ProgressBase<T>   progressibleInstance,
+        CancellationToken token = default)
         where T : IAssetIndexSummary
     {
-        int parallelThread = LauncherConfig.AppCurrentDownloadThread;
-        if (parallelThread <= 0)
-        {
-            parallelThread = Environment.ProcessorCount;
-        }
+        int parallelThread = progressibleInstance.ThreadForIONormalized;
 
         if (LauncherMetadataHelper.CurrentMasterKey?.Key == null)
         {
@@ -260,11 +252,8 @@ internal static partial class AssetBundleExtension
             if (assetInfo.Asset.DLM == 2)
             {
                 // Update progress
-                if (progressibleInstance != null)
-                {
-                    progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.Status2, cacheType, assetInfo.Asset.N);
-                    progressibleInstance.UpdateStatus();
-                }
+                progressibleInstance.Status.ActivityStatus = string.Format(Locale.Lang._CachesPage.Status2, cacheType, assetInfo.Asset.N);
+                progressibleInstance.UpdateStatus();
 
                 UrlStatus urlStatus = await checkAsbHttpClient.GetURLStatusCode(assetInfo.AssetUrl, innerToken);
                 Logger.LogWriteLine($"[AssetBundleExtension::DeserializeCacheAssetListAsync] Cache Asset: {assetInfo.Asset.N} " + (urlStatus.IsSuccessStatusCode ? "is" : "is not") + $" available (Status code: {urlStatus.StatusCode})",

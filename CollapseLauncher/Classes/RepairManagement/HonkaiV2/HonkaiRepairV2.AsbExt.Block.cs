@@ -9,7 +9,6 @@ using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,20 +45,18 @@ internal static partial class AssetBundleExtension
             string             gameDir,
             KianaDispatch      gameServerInfo,
             SenadinaFileResult senadinaResults,
-            ProgressBase<T>?   progressibleInstance = null,
+            ProgressBase<T>    progressibleInstance,
             CancellationToken  token                = default)
         where T : IAssetIndexSummary
     {
         // Update Progress
-        if (progressibleInstance != null)
-        {
-            progressibleInstance.Status.ActivityStatus =
-                string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Block Files");
-            progressibleInstance.Status.IsProgressAllIndetermined = true;
-            progressibleInstance.Status.IsIncludePerFileIndicator = false;
-            progressibleInstance.UpdateStatus();
-        }
-        bool isUseHttpRepairOverride = LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride");
+        progressibleInstance.Status.ActivityStatus =
+            string.Format(Locale.Lang._CachesPage.CachesStatusFetchingType, "Block Files");
+        progressibleInstance.Status.IsProgressAllIndetermined = true;
+        progressibleInstance.Status.IsIncludePerFileIndicator = false;
+        progressibleInstance.UpdateStatus();
+
+        bool isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
 
         await using Stream xmfMetaCurrentFileStream  = senadinaResults.XmfMeta?.fileStream ?? throw new NullReferenceException("Senadina BlockMeta Identifier Stream cannot be null!");
         await using Stream xmfPatchCurrentFileStream = senadinaResults.XmfPatch?.fileStream ?? throw new NullReferenceException("Senadina BlockPatch Identifier Stream cannot be null!");

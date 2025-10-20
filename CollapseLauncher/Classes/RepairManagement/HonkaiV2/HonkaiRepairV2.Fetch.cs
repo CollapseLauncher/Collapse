@@ -19,7 +19,6 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -146,8 +145,8 @@ internal partial class HonkaiRepairV2
                .GetVideoAssetListAsync(gamePresetConfig,
                                        GameVersion,
                                        gameServerInfo,
-                                       ignoredAssets.IgnoredVideoCGSubCategory,
                                        this,
+                                       ignoredAssets.IgnoredVideoCGSubCategory,
                                        token)
                .GetResultFromAction(result =>
                                     {
@@ -164,8 +163,8 @@ internal partial class HonkaiRepairV2
                                        GameVersion,
                                        gameServerInfo,
                                        senadinaResult.Audio,
-                                       ignoredAssets.IgnoredAudioPCKType,
                                        this,
+                                       ignoredAssets.IgnoredAudioPCKType,
                                        token)
                .GetResultFromAction(async result =>
                                     {
@@ -219,6 +218,26 @@ internal partial class HonkaiRepairV2
     #endregion
 
     #region Fetch Utils
+    private static FileType DetermineFileTypeFromExtension(string fileName)
+    {
+        if (fileName.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase))
+        {
+            return FileType.Block;
+        }
+
+        if (fileName.EndsWith(".usm", StringComparison.OrdinalIgnoreCase))
+        {
+            return FileType.Video;
+        }
+
+        if (fileName.EndsWith(".pck", StringComparison.OrdinalIgnoreCase))
+        {
+            return FileType.Audio;
+        }
+
+        return FileType.Generic;
+    }
+
     private static ulong GetLongFromHashStr(ReadOnlySpan<char> span)
     {
         Span<byte> spanChar = stackalloc byte[span.Length];
@@ -369,14 +388,14 @@ internal partial class HonkaiRepairV2
                                            .EnsureNoReadOnly()
                                            .StripAlternateDataStream();
 
-                using HttpResponseMessage originManifestResponse =
+
+                CDNCacheResult originManifestResponse =
                     await audioManifestIdentifier
                        .GetOriginalFileHttpResponse(HttpClientAssetBundle, token: token);
                 if (originManifestResponse.IsSuccessStatusCode)
                 {
-                    await using BridgedNetworkStream originManifestStreamRemote =
-                        await BridgedNetworkStream.CreateStream(originManifestResponse, token);
-                    await using FileStream originManifestStreamLocal = manifestFileInfo.Create();
+                    await using Stream     originManifestStreamRemote = originManifestResponse.Stream;
+                    await using FileStream originManifestStreamLocal  = manifestFileInfo.Create();
                     await DoCopyStreamProgress(originManifestStreamRemote, originManifestStreamLocal, token: token);
                 }
             }
@@ -488,14 +507,13 @@ internal partial class HonkaiRepairV2
                                    .EnsureNoReadOnly()
                                    .StripAlternateDataStream();
 
-                using HttpResponseMessage originResponse =
+                CDNCacheResult originResponse =
                     await identifier
                        .GetOriginalFileHttpResponse(HttpClientAssetBundle, token: innerToken);
                 if (originResponse.IsSuccessStatusCode)
                 {
-                    await using BridgedNetworkStream originStreamRemote =
-                        await BridgedNetworkStream.CreateStream(originResponse, innerToken);
-                    await using FileStream originStreamLocal = fileInfo.Create();
+                    await using Stream     originStreamRemote = originResponse.Stream;
+                    await using FileStream originStreamLocal  = fileInfo.Create();
                     await DoCopyStreamProgress(originStreamRemote, originStreamLocal, token: innerToken);
                 }
             }
