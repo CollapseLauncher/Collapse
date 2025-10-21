@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
@@ -182,25 +182,6 @@ namespace CollapseLauncher
         private CDNUtilHTTPStatus(bool isInitializationError) => IsInitializationError = isInitializationError;
 
         internal static CDNUtilHTTPStatus CreateInitializationError() => new(true);
-    }
-
-    internal readonly struct UrlStatus
-    {
-        internal readonly HttpStatusCode StatusCode;
-        internal readonly bool           IsSuccessStatusCode;
-        internal readonly long?          FileSize = null;
-
-        internal UrlStatus(HttpResponseMessage message)
-            : this(message.StatusCode, message.IsSuccessStatusCode)
-        {
-            FileSize = message.Content.Headers.ContentLength;
-        }
-
-        internal UrlStatus(HttpStatusCode statusCode, bool isSuccessStatusCode)
-        {
-            StatusCode = statusCode;
-            IsSuccessStatusCode = isSuccessStatusCode;
-        }
     }
 
     internal static class FallbackCDNUtil
@@ -609,14 +590,14 @@ namespace CollapseLauncher
         public static async Task<T?> DownloadAsJSONType<T>(string? URL, JsonTypeInfo<T> typeInfo, CancellationToken token)
             => await _client.GetFromJsonAsync(URL, typeInfo, token);
 
-        public static async ValueTask<UrlStatus> GetURLStatusCode(string URL, CancellationToken token)
-             => await _client.GetURLStatusCode(URL, token);
+        public static ValueTask<UrlStatus> GetURLStatusCode(string url, CancellationToken token) =>
+            _clientNoCompression.GetCachedUrlStatus(url, token);
 
-        public static async ValueTask<UrlStatus> GetURLStatusCode(this HttpClient client, string url, CancellationToken token = default)
-        {
-            using HttpResponseMessage message = await client.GetURLHttpResponse(url, HttpMethod.Get, token);
-            return new UrlStatus(message);
-        }
+        public static ValueTask<UrlStatus> GetURLStatusCode(
+            this HttpClient   client,
+            string            url,
+            CancellationToken token = default) =>
+            client.GetCachedUrlStatus(url, token);
 #nullable restore
 
         public static async Task<BridgedNetworkStream> GetHttpStreamFromResponse(string URL, CancellationToken token)

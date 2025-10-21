@@ -2,6 +2,7 @@
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.EncTool.Parser.Senadina;

@@ -375,8 +375,7 @@ internal partial class HonkaiRepairV2
                     RN  = audioManifestIdentifier.GetOriginalFileUrl(),
                     N   = Path.Combine(AssetBundleExtension.RelativePathAudio, "manifest.m"),
                     S = (await HttpClientAssetBundle.GetURLStatusCode(audioManifestIdentifier.GetOriginalFileUrl(),
-                                                                      token)).FileSize ??
-                        0
+                                                                      token)).FileSize
                 };
                 assetList.Add(manifestAsset);
             }
@@ -494,8 +493,7 @@ internal partial class HonkaiRepairV2
                     RN  = identifier.GetOriginalFileUrl(),
                     N   = Path.Combine(AssetBundleExtension.RelativePathBlock, targetFilename),
                     S = (await HttpClientAssetBundle.GetURLStatusCode(identifier.GetOriginalFileUrl(),
-                                                                      innerToken)).FileSize ??
-                        0
+                                                                      innerToken)).FileSize
                 };
                 targetAssetList.Add(manifestAsset);
             }
