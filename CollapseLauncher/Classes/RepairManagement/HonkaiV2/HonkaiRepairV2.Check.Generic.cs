@@ -160,6 +160,11 @@ internal partial class HonkaiRepairV2
             }
         }
 
+        if (resultStatus == HashOperationStatus.OperationCancelled)
+        {
+            throw new OperationCanceledException($"Hash check operation for asset {asset} was cancelled!");
+        }
+
         if (resultStatus != HashOperationStatus.Success)
         {
             throw new InvalidOperationException($"Hash check operation for asset {asset} is unsuccessful! (Status code: {resultStatus})");
