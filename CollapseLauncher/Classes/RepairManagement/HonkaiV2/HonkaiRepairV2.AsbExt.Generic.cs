@@ -23,7 +23,8 @@ internal static partial class AssetBundleExtension
     internal static void AddBrokenAssetToList(
         this ProgressBase<FilePropertiesRemote> progressBase,
         FilePropertiesRemote                    asset,
-        byte[]?                                 finalHash = null)
+        byte[]?                                 finalHash    = null,
+        long?                                   useFoundSize = null)
     {
         progressBase.Dispatch(AddToUITable);
         lock (progressBase.AssetIndex)
@@ -32,7 +33,7 @@ internal static partial class AssetBundleExtension
         }
 
         progressBase.Status.IsAssetEntryPanelShow = progressBase.AssetIndex.Count > 0;
-        Interlocked.Add(ref progressBase.ProgressAllSizeFound, asset.S);
+        Interlocked.Add(ref progressBase.ProgressAllSizeFound, useFoundSize ?? asset.S);
         Interlocked.Increment(ref progressBase.ProgressAllCountFound);
 
         return;

@@ -120,6 +120,7 @@ internal static partial class AssetBundleExtension
                         {
                             IsPatchApplicable = audioAsset.IsHasPatch,
                             AssociatedObject  = audioAsset,
+                            AudioPatchInfo    = audioAsset.PatchInfo,
                             CRC               = audioAsset.HashString,
                             FT                = FileType.Audio,
                             RN                = baseAudioAssetUrl.CombineURLFromString(audioAsset.Path),

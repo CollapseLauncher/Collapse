@@ -33,7 +33,8 @@ internal partial class HonkaiRepairV2
         }
 
         // Nullify the patch info so it won't be determined as patchable.
-        asset.BlockPatchInfo = null;
+        asset.BlockPatchInfo    = null;
+        asset.IsPatchApplicable = false;
 
         // Borrow generic type checker
         await CheckAssetGenericType(asset,
@@ -85,14 +86,19 @@ internal partial class HonkaiRepairV2
         if (!await IsHashMatchedAuto(oldFileProperties,
                                      false,
                                      false,
-                                     false,
                                      token: token))
         {
+            // Artificially reset progress size to avoid wrong current counting if patch isn't applicable
+            Interlocked.Add(ref ProgressAllSizeCurrent, -oldFileInfo.Length);
             return false;
         }
 
-        Interlocked.Add(ref ProgressAllSizeTotal, asset.S);
-        this.AddBrokenAssetToList(asset, patchInfo.OldHash);
+        // Artificially adjust progress size to avoid wrong total counting
+        Interlocked.Add(ref ProgressAllSizeTotal, -asset.S);
+        Interlocked.Add(ref ProgressAllSizeTotal, oldFileInfo.Length);
+
+        // Add patch to list
+        this.AddBrokenAssetToList(asset, patchInfo.OldHash, patchInfo.PatchSize);
         return true;
     }
 }
