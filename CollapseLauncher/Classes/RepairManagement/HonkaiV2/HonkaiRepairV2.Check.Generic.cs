@@ -36,6 +36,27 @@ internal partial class HonkaiRepairV2
         byte[]?              hmacKey                      = null,
         CancellationToken    token                        = default)
     {
+        byte[] hashBuffer = new byte[SHA1.HashSizeInBytes]; // Use SHA1 size as maximum
+        return (await IsHashMatchedAuto(asset,
+                                        hashBuffer,
+                                        useFastCheck,
+                                        addAssetIfBroken,
+                                        isUpdateTotalProgressCounter,
+                                        hmacKey,
+                                        false,
+                                        token)).IsHashMatched;
+    }
+
+    private async Task<(bool IsHashMatched, int HashSize)> IsHashMatchedAuto(
+        FilePropertiesRemote asset,
+        byte[]               hashBuffer,
+        bool                 useFastCheck,
+        bool                 addAssetIfBroken             = true,
+        bool                 isUpdateTotalProgressCounter = true,
+        byte[]?              hmacKey                      = null,
+        bool                 isSkipSizeCheck              = false,
+        CancellationToken    token                        = default)
+    {
         // Update activity status
         Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status6, asset.N);
 
@@ -46,11 +67,13 @@ internal partial class HonkaiRepairV2
         ProgressPerFileSizeTotal   = asset.S;
         ProgressPerFileSizeCurrent = 0;
 
+        int hashSize = asset.CRCArray?.Length ?? 0;
+
         string   assetFilePath = Path.Combine(GamePath, asset.N);
         FileInfo assetFileInfo = new FileInfo(assetFilePath)
            .EnsureNoReadOnly(out bool isAssetExist);
 
-        if (!isAssetExist || assetFileInfo.Length != asset.S)
+        if (!isAssetExist || (assetFileInfo.Length != asset.S && !isSkipSizeCheck))
         {
             Interlocked.Add(ref ProgressAllSizeCurrent, asset.S);
             if (addAssetIfBroken)
@@ -59,16 +82,24 @@ internal partial class HonkaiRepairV2
             }
 
             await Logger.LogWriteLineAsync($"Asset with {asset} is missing!", LogType.Warning, true, token: token);
-            return false;
+            return (false, hashSize);
         }
 
         // Fast check only checks for file existence and size match
         if (useFastCheck || asset.CRC == null)
         {
             Interlocked.Add(ref ProgressAllSizeCurrent, asset.S);
-            return true;
+            return (true, hashSize);
         }
-        
+
+        /* Perform Hashing Check */
+        if (hashBuffer.Length < hashSize)
+        {
+            throw new ArgumentOutOfRangeException(nameof(hashBuffer), "Buffer has less size than the required hash size");
+        }
+
+        Memory<byte> hashBufferSpan = hashBuffer.AsMemory(0, hashSize);
+
         // Open file stream.
         int bufferSize = asset.S.GetFileStreamBufferSize();
         await using FileStream assetFileStream = assetFileInfo
@@ -79,10 +110,6 @@ internal partial class HonkaiRepairV2
                      Share = FileShare.Read,
                      BufferSize = bufferSize
                  });
-
-        /* Perform Hashing Check */
-        int    hashSize   = asset.CRC.Length / 2;
-        byte[] hashBuffer = new byte[hashSize];
 
         // Override hash if HMAC key is null and asset's AssociatedObject is CacheAssetInfo
         hmacKey ??= (asset.AssociatedObject as CacheAssetInfo)?.HmacSha1Salt;
@@ -99,7 +126,7 @@ internal partial class HonkaiRepairV2
                     await hashUtil
                        .TryGetHashFromStreamAsync(hasher,
                                                   assetFileStream,
-                                                  hashBuffer,
+                                                  hashBufferSpan,
                                                   ImplReadBytesAction,
                                                   bufferSize,
                                                   token);
@@ -111,7 +138,7 @@ internal partial class HonkaiRepairV2
                 (resultStatus, _) =
                     await hashUtil
                        .TryGetHashFromStreamAsync(assetFileStream,
-                                                  hashBuffer,
+                                                  hashBufferSpan,
                                                   ImplReadBytesAction,
                                                   hmacKey,
                                                   bufferSize,
@@ -124,7 +151,7 @@ internal partial class HonkaiRepairV2
                 (resultStatus, _) =
                     await hashUtil
                        .TryGetHashFromStreamAsync(assetFileStream,
-                                                  hashBuffer,
+                                                  hashBufferSpan,
                                                   ImplReadBytesAction,
                                                   hmacKey,
                                                   bufferSize,
@@ -139,18 +166,9 @@ internal partial class HonkaiRepairV2
         }
 
         // Check hash equality
-        bool isNeedReverse = true;
-    HashCheck:
-        if (hashBuffer.SequenceEqual(asset.CRCArray))
+        if (IsBytesEqualReversible(hashBufferSpan.Span, asset.CRCArray))
         {
-            return true;
-        }
-
-        if (isNeedReverse)
-        {
-            Array.Reverse(hashBuffer);
-            isNeedReverse = false;
-            goto HashCheck;
+            return (true, hashSize);
         }
 
         // If we reach this point, it means the hash check failed
@@ -163,14 +181,13 @@ internal partial class HonkaiRepairV2
         // ReSharper disable once InvertIf
         if (addAssetIfBroken)
         {
-            Array.Reverse(hashBuffer);
-            await Logger.LogWriteLineAsync($"Asset with {asset} has unmatched hash! {asset.CRC} != {HexTool.BytesToHexUnsafe(hashBuffer)}",
+            await Logger.LogWriteLineAsync($"Asset with {asset} has unmatched hash! {asset.CRC} != {HexTool.BytesToHexUnsafe(hashBufferSpan.Span)}",
                                            LogType.Warning,
                                            true,
                                            token: token);
         }
-        return false;
+        return (false, hashSize);
 
-        void ImplReadBytesAction(int read) => UpdateHashReadProgress(read, true, true);
+        void ImplReadBytesAction(int read) => UpdateHashReadProgress(read, true, isUpdateTotalProgressCounter);
     }
 }

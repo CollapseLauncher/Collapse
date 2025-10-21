@@ -62,6 +62,7 @@ internal partial class HonkaiRepairV2
         ValueTask Impl(FilePropertiesRemote asset, CancellationToken token) =>
             asset.FT switch
             {
+                FileType.Audio => CheckAssetAudioType(asset, useFastCheck, token),
                 FileType.Block => CheckAssetBlockType(asset, useFastCheck, token),
                 _              => CheckAssetGenericType(asset, useFastCheck, token)
             };
