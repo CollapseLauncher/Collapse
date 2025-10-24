@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -51,7 +52,7 @@ internal partial class HonkaiRepairV2
             try
             {
                 string[] ignoredFiles = File.ReadAllLines(ignoredFilesPath);
-                string mergedPattern = string.Join("|", ignoredFiles.Select(r => $"(?:{r})"));
+                string mergedPattern = PatternMatcher.MergeRegexPattern(ignoredFiles);
 
                 matchIgnoredRegex = new Regex(mergedPattern, RegexOptions.IgnoreCase |
                                                              RegexOptions.NonBacktracking |

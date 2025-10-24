@@ -1,9 +1,7 @@
 ﻿using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 // ReSharper disable CheckNamespace
 // ReSharper disable IdentifierTypo
