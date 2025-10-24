@@ -1,14 +1,10 @@
 ﻿using CollapseLauncher.Interfaces;
-using Hi3Helper.Preset;
+using Hi3Helper;
 using Hi3Helper.Shared.ClassStruct;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 // ReSharper disable CheckNamespace
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
@@ -26,6 +22,15 @@ internal static partial class AssetBundleExtension
         byte[]?                                 finalHash    = null,
         long?                                   useFoundSize = null)
     {
+        AssetProperty<RepairAssetType> property =
+            new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
+                                               asset.GetRepairAssetType(),
+                                               Path.GetDirectoryName(asset.N) ?? "\\",
+                                               asset.S,
+                                               finalHash,
+                                               asset.CRCArray);
+
+        asset.AssociatedAssetProperty = property;
         progressBase.Dispatch(AddToUITable);
         lock (progressBase.AssetIndex)
         {
@@ -33,6 +38,7 @@ internal static partial class AssetBundleExtension
         }
 
         progressBase.Status.IsAssetEntryPanelShow = progressBase.AssetIndex.Count > 0;
+        progressBase.UpdateStatus();
         Interlocked.Add(ref progressBase.ProgressAllSizeFound, useFoundSize ?? asset.S);
         Interlocked.Increment(ref progressBase.ProgressAllCountFound);
 
@@ -40,16 +46,28 @@ internal static partial class AssetBundleExtension
 
         void AddToUITable()
         {
-            AssetProperty<RepairAssetType> property =
-                new(Path.GetFileName(asset.N),
-                    asset.GetRepairAssetType(),
-                    Path.GetDirectoryName(asset.N) ?? "\\",
-                    asset.S,
-                    finalHash,
-                    asset.CRCArray);
-
             progressBase.AssetEntry.Add(property);
         }
+    }
+
+    internal static void PopBrokenAssetFromList(
+        this ProgressBase<FilePropertiesRemote> progressBase,
+        FilePropertiesRemote                    asset)
+    {
+        if (asset.AssociatedAssetProperty is IAssetProperty assetProperty)
+        {
+            progressBase.PopRepairAssetEntry(assetProperty);
+        }
+    }
+
+    internal static void UpdateCurrentRepairStatus(
+        this ProgressBase<FilePropertiesRemote> progressBase,
+        FilePropertiesRemote                    asset)
+    {
+        // Increment total count current
+        progressBase.ProgressAllCountCurrent++;
+        progressBase.Status.ActivityStatus = string.Format(Locale.Lang._GameRepairPage.Status8, asset.N);
+        progressBase.UpdateStatus();
     }
 
     internal static RepairAssetType GetRepairAssetType(this FilePropertiesRemote asset) =>
@@ -63,4 +81,32 @@ internal static partial class AssetBundleExtension
             { FT: FileType.Unused } => RepairAssetType.Unused,
             _ => RepairAssetType.Generic
         };
+
+    /*
+    internal static long GetDownloadableSize(this List<FilePropertiesRemote> assetList)
+    {
+        if (assetList.Count == 0)
+        {
+            return 0;
+        }
+
+        IEnumerable<FilePropertiesRemote> nonPatchableQuery =
+            assetList.Where(x => x.FT != FileType.Unused && !x.IsPatchApplicable);
+
+        IEnumerable<uint> patchableBlockLengthQuery =
+            assetList.Where(x => x.FT != FileType.Unused && x is { IsPatchApplicable: true, BlockPatchInfo: not null })
+                     .Select(x => x.BlockPatchInfo)
+                     .SelectMany(x => x?.PatchPairs ?? [])
+                     .Select(x => x.PatchSize);
+
+        IEnumerable<uint> patchableAudioLengthQuery =
+            assetList.Where(x => x.FT != FileType.Unused && x is { IsPatchApplicable: true, AudioPatchInfo: not null })
+                     .Select(x => x.AudioPatchInfo)
+                     .Select(x => x?.PatchFileSize ?? 0);
+
+        return nonPatchableQuery.Sum(x => x.S)
+            + patchableBlockLengthQuery.Sum(x => x)
+            + patchableAudioLengthQuery.Sum(x => x);
+    }
+    */
 }

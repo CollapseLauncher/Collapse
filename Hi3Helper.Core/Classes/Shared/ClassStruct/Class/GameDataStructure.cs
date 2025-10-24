@@ -54,11 +54,12 @@ namespace Hi3Helper.Shared.ClassStruct
         public ManifestAudioPatchInfo? AudioPatchInfo    { get; set; }
         public BlockPatchInfo?         BlockPatchInfo    { get; set; }
 #nullable restore
-        public long   S                 { get; set; }
-        public bool   IsPatchApplicable { get; set; }
-        public bool   IsBlockNeedRepair { get; set; }
-        public bool   IsHasHashMark     { get; set; }
-        public object AssociatedObject  { get; set; }
+        public long   S                       { get; set; }
+        public bool   IsPatchApplicable       { get; set; }
+        public bool   IsBlockNeedRepair       { get; set; }
+        public bool   IsHasHashMark           { get; set; }
+        public object AssociatedObject        { get; set; }
+        public object AssociatedAssetProperty { get; set; }
 
         public FilePropertiesRemote Copy() => new()
         {
@@ -79,7 +80,7 @@ namespace Hi3Helper.Shared.ClassStruct
         public string GetRemoteURL() => RN;
         public void SetRemoteURL(string url) => RN = url;
 
-        public override string ToString() => $"Type: {FT} | {N}";
+        public override string ToString() => $"Type: {FT} | {N} | {SummarizeSizeSimple(S)} ({S} bytes)";
     }
 
     public class FileProperties

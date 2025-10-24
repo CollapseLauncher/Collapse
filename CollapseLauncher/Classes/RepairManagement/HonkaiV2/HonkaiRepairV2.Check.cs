@@ -1,4 +1,5 @@
 ﻿using Hi3Helper;
+using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,16 @@ internal partial class HonkaiRepairV2
                                     },
                                     Impl);
 
-        return AssetIndex.Count > 0;
+        if (!IsMainAssetOnlyMode)
+        {
+            CheckAssetUnusedType(AssetIndex, checkAssetIndex);
+        }
+
+        return SummarizeStatusAndProgress(AssetIndex,
+                                          string.Format(Locale.Lang._GameRepairPage.Status3,
+                                                        ProgressAllCountFound,
+                                                        ConverterTool.SummarizeSizeSimple(ProgressAllSizeFound)),
+                                          Locale.Lang._GameRepairPage.Status4);
 
         ValueTask Impl(FilePropertiesRemote asset, CancellationToken token) =>
             asset.FT switch
