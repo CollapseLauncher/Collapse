@@ -221,7 +221,7 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected virtual void UpdateRepairStatus(string activityStatus, string activityAll, bool isPerFileIndetermined)
+        internal virtual void UpdateRepairStatus(string activityStatus, string activityAll, bool isPerFileIndetermined)
         {
             lock (Status)
             {
@@ -1022,9 +1022,9 @@ namespace CollapseLauncher.Interfaces
 
             // Set status
             Status.IsAssetEntryPanelShow = isBrokenFound;
-            Status.IsCompleted = true;
-            Status.IsCanceled = false;
-            Status.ActivityStatus = isBrokenFound ? msgIfFound : msgIfClear;
+            Status.IsCompleted           = true;
+            Status.IsCanceled            = false;
+            Status.ActivityStatus        = isBrokenFound ? msgIfFound : msgIfClear;
 
             // Update status and progress
             UpdateAll();
@@ -1498,38 +1498,35 @@ namespace CollapseLauncher.Interfaces
         }
 
         #nullable enable
-        protected virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)
+        internal virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)
         {
             try
             {
-                if (ParentUI!.DispatcherQueue!.HasThreadAccessSafe())
+                if (ParentUI.DispatcherQueue.HasThreadAccessSafe())
                 {
-                    if (assetProperty == null)
-                    {
-                        if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
-                    }
-                    else
-                    {
-                        AssetEntry.Remove(assetProperty);
-                    }
+                    ImplDelete();
                     return;
                 }
 
-                Dispatch(() =>
-                {
-                    if (assetProperty == null)
-                    {
-                        if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
-                    }
-                    else
-                    {
-                        AssetEntry.Remove(assetProperty);
-                    }
-                });
+                Dispatch(ImplDelete);
             }
             catch
             {
                 // pipe to parent
+            }
+
+            return;
+
+            void ImplDelete()
+            {
+                if (assetProperty == null)
+                {
+                    if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0);
+                }
+                else
+                {
+                    AssetEntry.Remove(assetProperty);
+                }
             }
         }
         #nullable restore

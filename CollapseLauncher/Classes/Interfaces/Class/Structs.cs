@@ -109,7 +109,7 @@ namespace CollapseLauncher
     public class AssetProperty<T>(
         string  name,
         T       assetType,
-        string  source,
+        string? source,
         long    size,
         byte[]? localCrcByte,
         byte[]? remoteCrcByte)
