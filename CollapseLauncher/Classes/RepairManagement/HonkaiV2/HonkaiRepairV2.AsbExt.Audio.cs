@@ -11,6 +11,7 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -38,12 +39,11 @@ internal static partial class AssetBundleExtension
             KianaDispatch           gameServerInfo,
             SenadinaFileIdentifier? audioFileIdentifier,
             ProgressBase<T>         progressibleInstance,
-            AudioPCKType[]?         ignoredCgIds = null,
-            CancellationToken       token        = default)
+            AudioPCKType[]?         ignoredAudioIds = null,
+            CancellationToken       token           = default)
         where T : IAssetIndexSummary
     {
-        ignoredCgIds ??= [];
-        int[] ignoredCgIdInts = Array.ConvertAll(ignoredCgIds, x => (int)x);
+        HashSet<AudioPCKType> ignoredAudioHashset = new(ignoredAudioIds ?? []);
 
         ArgumentNullException.ThrowIfNull(audioFileIdentifier);
         int parallelThread = progressibleInstance.ThreadForIONormalized;
@@ -90,7 +90,7 @@ internal static partial class AssetBundleExtension
                     // Eliminate removed audio assets or not matching language.
                     if ((audioAsset.Language != gameLanguageType &&
                         audioAsset.Language != AudioLanguageType.Common) ||
-                        ignoredCgIdInts.Contains((int)audioAsset.PckType))
+                        ignoredAudioHashset.Contains(audioAsset.PckType))
                     {
                         return;
                     }
@@ -138,5 +138,42 @@ internal static partial class AssetBundleExtension
         }
 
         throw lastException ?? new HttpRequestException("No Asset bundle URLs were reachable");
+    }
+
+    internal static bool GetAudioPatchUrlProperty(
+        this                    FilePropertiesRemote    asset,
+        [NotNullWhen(true)] out ManifestAudioPatchInfo? patchInfo,
+        [NotNullWhen(true)] out string?                 patchUrl)
+    {
+        const string startTrim         = "/";
+
+        patchInfo = null;
+        patchUrl  = null;
+
+        patchInfo = asset.AudioPatchInfo;
+        if (patchInfo == null)
+        {
+            throw new InvalidOperationException("This method cannot be called while AudioPatchInfo is null");
+        }
+
+        if (asset.AssociatedObject is not ManifestAssetInfo audioAssetInfo)
+        {
+            throw new InvalidOperationException("This method cannot be called while AssociatedObject is not a ManifestAssetInfo type");
+        }
+
+        ReadOnlySpan<char> fullUrl   = asset.RN;
+        int                trimStart = fullUrl.LastIndexOf(startTrim, StringComparison.OrdinalIgnoreCase);
+
+        if (trimStart < 0)
+        {
+            throw new InvalidOperationException($"Cannot find \"{startTrim}\" string inside of the URL!");
+        }
+
+        fullUrl = fullUrl[..trimStart];
+        patchUrl = ConverterTool.CombineURLFromString(fullUrl,
+                                                      "Patch",
+                                                      patchInfo.PatchFilename);
+
+        return true;
     }
 }

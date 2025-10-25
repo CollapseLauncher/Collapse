@@ -9,7 +9,6 @@ using Hi3Helper.EncTool.Parser.KianaDispatch;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
-using Hi3Helper.Shared.Region;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +17,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CGMetadataHashId = Hi3Helper.EncTool.Parser.Cache.HashID;
 
 // ReSharper disable CheckNamespace
@@ -46,13 +46,9 @@ internal static partial class AssetBundleExtension
     {
         bool              isUseHttpRepairOverride = progressibleInstance.IsForceHttpOverride;
         AudioLanguageType gameLanguageType        = GetCurrentGameAudioLanguage(presetConfig);
-        int               parallelThread          = LauncherConfig.AppCurrentDownloadThread;
-        if (parallelThread <= 0)
-        {
-            parallelThread = Environment.ProcessorCount;
-        }
+        int               parallelThread          = Math.Clamp(progressibleInstance.ThreadForIONormalized * 4, 16, 64);
 
-        ignoredCgIds ??= [];
+        HashSet<int> ignoredCgHashset = new(ignoredCgIds ?? []);
         List<CacheAssetInfo> assetInfoList =
             await GetCacheAssetBundleListAsync(assetBundleHttpClient,
                                                presetConfig,
@@ -106,7 +102,7 @@ internal static partial class AssetBundleExtension
         async ValueTask ImplCheckAndAdd(CGMetadata entry, CancellationToken innerToken)
         {
             if (entry.InStreamingAssets ||
-                ignoredCgIds.Contains(entry.CgSubCategory))
+                ignoredCgHashset.Contains(entry.CgSubCategory))
             {
                 return;
             }
@@ -126,10 +122,12 @@ internal static partial class AssetBundleExtension
                 assetUrl = assetUrl.CombineURLFromString("Video", assetName);
 
                 // If the file has no appoinment schedule (like non-birthday CG), then return true
+                /*
                 if (entry.AppointmentDownloadScheduleID == 0)
                 {
                     goto AddCgEntry; // I love goto. Dun ask me why :>
                 }
+                */
 
                 // Update status
                 if (progressibleInstance != null)
@@ -146,6 +144,11 @@ internal static partial class AssetBundleExtension
                 if (!urlStatus.IsSuccessStatusCode)
                 {
                     continue;
+                }
+
+                if (urlStatus.FileSize > 0)
+                {
+                    assetFilesize = urlStatus.FileSize;
                 }
 
             AddCgEntry:

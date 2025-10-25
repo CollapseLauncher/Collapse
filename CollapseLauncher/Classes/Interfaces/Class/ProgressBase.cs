@@ -727,7 +727,8 @@ namespace CollapseLauncher.Interfaces
         protected virtual void ResetStatusAndProgress()
         {
             // Reset RepairAssetProperty list
-            AssetEntry!.Clear();
+            AssetEntry.Clear();
+            AssetIndex.Clear();
 
             // Reset status and progress properties
             ResetStatusAndProgressProperty();
@@ -949,11 +950,13 @@ namespace CollapseLauncher.Interfaces
 
         protected virtual async Task TryRunExamineThrow(Task task)
         {
+            // Define if the status is still running
+            Status.IsRunning   = true;
+            Status.IsCompleted = false;
+            Status.IsCanceled  = false;
+
             try
             {
-                // Define if the status is still running
-                Status.IsRunning = true;
-
                 // Run the task
                 await task;
 

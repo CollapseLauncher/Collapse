@@ -24,7 +24,7 @@ internal static partial class AssetBundleExtension
             new AssetProperty<RepairAssetType>(Path.GetFileName(asset.N),
                                                asset.GetRepairAssetType(),
                                                Path.GetDirectoryName(asset.N) ?? "\\",
-                                               asset.S,
+                                               useFoundSize ?? asset.S,
                                                finalHash,
                                                asset.CRCArray);
 

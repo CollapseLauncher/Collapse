@@ -7,6 +7,7 @@ using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 #pragma warning disable IDE0130
@@ -50,6 +51,7 @@ internal partial class HonkaiRepairV2
     }
 
     private async ValueTask RepairAssetGenericType(
+        HttpClient           downloadHttpClient,
         FilePropertiesRemote asset,
         CancellationToken    token)
     {
@@ -77,7 +79,7 @@ internal partial class HonkaiRepairV2
 
             // Use Hi3Helper.Http module to download the file.
             DownloadClient downloadClient = DownloadClient
-               .CreateInstance(HttpClientAssetBundle);
+               .CreateInstance(downloadHttpClient);
 
             // Perform download
             await RunDownloadTask(asset.S,
