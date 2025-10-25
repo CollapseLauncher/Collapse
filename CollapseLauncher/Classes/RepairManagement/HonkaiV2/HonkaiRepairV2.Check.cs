@@ -37,6 +37,7 @@ internal partial class HonkaiRepairV2
             await FetchAssetFromSophon(checkAssetIndex, Token.Token);
             if (!IsMainAssetOnlyMode)
             {
+                RemoveBlockAssetFromList(checkAssetIndex);
                 await FetchAssetFromGameAssetBundle(checkAssetIndex, Token.Token);
             }
         }

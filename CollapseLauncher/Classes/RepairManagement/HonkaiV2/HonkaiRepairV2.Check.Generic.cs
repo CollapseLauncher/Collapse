@@ -4,9 +4,11 @@ using CollapseLauncher.RepairManagement;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
+using Hi3Helper.EncTool.Parser.Senadina;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.IO;
+using System.IO.Hashing;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,8 +25,8 @@ internal partial class HonkaiRepairV2
         CancellationToken    token)
     {
         _ = await IsHashMatchedAuto(asset,
-                                useFastCheck,
-                                token: token)
+                                    useFastCheck,
+                                    token: token)
            .ConfigureAwait(false);
     }
 
@@ -71,7 +73,8 @@ internal partial class HonkaiRepairV2
 
         string   assetFilePath = Path.Combine(GamePath, asset.N);
         FileInfo assetFileInfo = new FileInfo(assetFilePath)
-           .EnsureNoReadOnly(out bool isAssetExist);
+                                .EnsureNoReadOnly(out bool isAssetExist)
+                                .StripAlternateDataStream();
 
         if (!isAssetExist || (assetFileInfo.Length != asset.S && !isSkipSizeCheck))
         {
@@ -132,29 +135,52 @@ internal partial class HonkaiRepairV2
                                                   token);
                 break;
             }
-            case MD5.HashSizeInBytes:
+            case MD5.HashSizeInBytes when asset.AssociatedObject is SenadinaFileIdentifier:
             {
-                CryptoHashUtility<MD5> hashUtil = CryptoHashUtility<MD5>.ThreadSafe;
+                XxHash128              hasher   = new();
+                HashUtility<XxHash128> hashUtil = HashUtility<XxHash128>.ThreadSafe;
+
                 (resultStatus, _) =
                     await hashUtil
-                       .TryGetHashFromStreamAsync(assetFileStream,
+                       .TryGetHashFromStreamAsync(hasher,
+                                                  assetFileStream,
+                                                  hashBufferSpan,
+                                                  ImplReadBytesAction,
+                                                  bufferSize,
+                                                  token);
+                break;
+            }
+            case MD5.HashSizeInBytes:
+            {
+                using HashAlgorithm    hasher   = hmacKey != null ? new HMACMD5(hmacKey) : MD5.Create();
+                CryptoHashUtility<MD5> hashUtil = CryptoHashUtility<MD5>.ThreadSafe;
+
+                (resultStatus, _) =
+                    await hashUtil
+                       .TryGetHashFromStreamAsync(hasher,
+                                                  assetFileStream,
                                                   hashBufferSpan,
                                                   ImplReadBytesAction,
                                                   hmacKey,
                                                   bufferSize,
+                                                  false,
                                                   token);
                 break;
             }
             case SHA1.HashSizeInBytes:
             {
+                using HashAlgorithm     hasher   = hmacKey != null ? new HMACSHA1(hmacKey) : SHA1.Create();
                 CryptoHashUtility<SHA1> hashUtil = CryptoHashUtility<SHA1>.ThreadSafe;
+
                 (resultStatus, _) =
                     await hashUtil
-                       .TryGetHashFromStreamAsync(assetFileStream,
+                       .TryGetHashFromStreamAsync(hasher,
+                                                  assetFileStream,
                                                   hashBufferSpan,
                                                   ImplReadBytesAction,
                                                   hmacKey,
                                                   bufferSize,
+                                                  false,
                                                   token);
                 break;
             }
@@ -179,7 +205,7 @@ internal partial class HonkaiRepairV2
         // If we reach this point, it means the hash check failed
         if (addAssetIfBroken)
         {
-            this.AddBrokenAssetToList(asset);
+            this.AddBrokenAssetToList(asset, hashBufferSpan.Span.ToArray());
         }
 
         // Reverse the hash back for logging

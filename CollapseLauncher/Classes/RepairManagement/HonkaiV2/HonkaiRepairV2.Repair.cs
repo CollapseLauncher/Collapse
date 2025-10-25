@@ -4,7 +4,9 @@ using Hi3Helper.Data;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Sophon;
 using System;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 #pragma warning disable IDE0130
@@ -14,9 +16,21 @@ namespace CollapseLauncher;
 
 internal partial class HonkaiRepairV2
 {
-    public Task StartRepairRoutine(bool    showInteractivePrompt     = false,
-                                   Action? actionIfInteractiveCancel = null) =>
-        TryRunExamineThrow(StartRepairRoutineCoreAsync(showInteractivePrompt, actionIfInteractiveCancel));
+    public async Task StartRepairRoutine(
+        bool    showInteractivePrompt     = false,
+        Action? actionIfInteractiveCancel = null)
+    {
+        await TryRunExamineThrow(StartRepairRoutineCoreAsync(showInteractivePrompt, actionIfInteractiveCancel));
+
+        // Reset status and progress
+        ResetStatusAndProgress();
+
+        // Set as completed
+        Status.ActivityStatus = Locale.Lang._GameRepairPage.Status7;
+
+        // Update status and progress
+        UpdateAll();
+    }
 
     private async Task StartRepairRoutineCoreAsync(bool    showInteractivePrompt     = false,
                                                    Action? actionIfInteractiveCancel = null)
@@ -24,7 +38,7 @@ internal partial class HonkaiRepairV2
         if (AssetIndex.Count == 0) throw new InvalidOperationException("There's no broken file being reported! You can't perform repair process!");
 
         // Swap current found all size to per file size
-        ProgressPerFileSizeTotal = ProgressAllSizeFound;
+        ProgressPerFileSizeTotal = ProgressAllSizeTotal;
         ProgressAllSizeTotal     = AssetIndex.Where(x => x.FT != FileType.Unused).Sum(x => x.S);
 
         // Reset progress counter
@@ -53,8 +67,22 @@ internal partial class HonkaiRepairV2
                 { AssociatedObject: SophonAsset }    => RepairAssetGenericSophonType(asset, token),
                 { FT              : FileType.Audio } => RepairAssetAudioType(asset, token),
                 { FT              : FileType.Block } => RepairAssetBlockType(asset, token),
-                _                                    => RepairAssetGenericType(asset, token)
+                _                                    => RepairAssetGenericType(GetHttpClientFromFilename(asset), asset, token)
             };
+        }
+
+        HttpClient GetHttpClientFromFilename(FilePropertiesRemote asset)
+        {
+            const StringComparison comp = StringComparison.OrdinalIgnoreCase;
+
+            ReadOnlySpan<char> filename = Path.GetFileName(asset.N);
+            if (filename.EndsWith(".xmf", comp) ||
+                (filename.StartsWith("manifest", comp) && filename.EndsWith(".m", comp)))
+            {
+                return HttpClientAssetBundle;
+            }
+
+            return HttpClientGeneric;
         }
     }
 

@@ -218,6 +218,14 @@ internal partial class HonkaiRepairV2
     #endregion
 
     #region Fetch Utils
+    private static void RemoveBlockAssetFromList(List<FilePropertiesRemote> assetIndex)
+    {
+        List<FilePropertiesRemote> filtered = [];
+        filtered.AddRange(assetIndex.Where(x => x.FT != FileType.Block));
+        assetIndex.Clear();
+        assetIndex.AddRange(filtered);
+    }
+
     private static FileType DetermineFileTypeFromExtension(string fileName)
     {
         if (fileName.EndsWith(".wmv", StringComparison.OrdinalIgnoreCase))
@@ -370,10 +378,11 @@ internal partial class HonkaiRepairV2
             {
                 FilePropertiesRemote manifestAsset = new()
                 {
-                    CRC = HexTool.BytesToHexUnsafe(audioManifestIdentifier.lastOriginHash),
-                    FT  = FileType.Generic,
-                    RN  = audioManifestIdentifier.GetOriginalFileUrl(),
-                    N   = Path.Combine(AssetBundleExtension.RelativePathAudio, "manifest.m"),
+                    AssociatedObject = audioManifestIdentifier,
+                    CRC              = HexTool.BytesToHexUnsafe(audioManifestIdentifier.lastOriginHash),
+                    FT               = FileType.Generic,
+                    RN               = audioManifestIdentifier.GetOriginalFileUrl(),
+                    N                = Path.Combine(AssetBundleExtension.RelativePathAudio, "manifest.m"),
                     S = (await HttpClientAssetBundle.GetURLStatusCode(audioManifestIdentifier.GetOriginalFileUrl(),
                                                                       token)).FileSize
                 };
@@ -488,10 +497,11 @@ internal partial class HonkaiRepairV2
             {
                 FilePropertiesRemote manifestAsset = new()
                 {
-                    CRC = HexTool.BytesToHexUnsafe(identifier.lastOriginHash),
-                    FT  = FileType.Generic,
-                    RN  = identifier.GetOriginalFileUrl(),
-                    N   = Path.Combine(AssetBundleExtension.RelativePathBlock, targetFilename),
+                    AssociatedObject = identifier,
+                    CRC              = HexTool.BytesToHexUnsafe(identifier.lastOriginHash),
+                    FT               = FileType.Generic,
+                    RN               = identifier.GetOriginalFileUrl(),
+                    N                = Path.Combine(AssetBundleExtension.RelativePathBlock, targetFilename),
                     S = (await HttpClientAssetBundle.GetURLStatusCode(identifier.GetOriginalFileUrl(),
                                                                       innerToken)).FileSize
                 };

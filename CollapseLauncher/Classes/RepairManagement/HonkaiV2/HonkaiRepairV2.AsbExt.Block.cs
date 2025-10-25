@@ -11,7 +11,9 @@ using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -132,5 +134,43 @@ internal static partial class AssetBundleExtension
             string selectedUrl = kianaDispatch.ExternalAssetUrls.RandomSelectSingle();
             return isUseHttpRepairOverride ? "http://" : "https://" + selectedUrl;
         }
+    }
+
+    internal static bool GetBlockPatchUrlProperty(
+        this                    FilePropertiesRemote asset,
+        [NotNullWhen(true)] out BlockOldPatchInfo?   patchInfo,
+        [NotNullWhen(true)] out string?              patchUrl)
+    {
+        const string startTrim = "pc/HD";
+        patchInfo = null;
+        patchUrl  = null;
+
+        if (asset.BlockPatchInfo == null)
+        {
+            throw new InvalidOperationException("This method cannot be called while BlockPatchInfo is null");
+        }
+
+        patchInfo = asset.BlockPatchInfo.PatchPairs.FirstOrDefault();
+        if (patchInfo == null)
+        {
+            throw new InvalidOperationException("This method cannot be called while BlockPatchInfo.PatchPairs is empty or null");
+        }
+
+        ReadOnlySpan<char> fullUrl   = asset.RN;
+        int                trimStart = fullUrl.IndexOf(startTrim, StringComparison.OrdinalIgnoreCase);
+
+        if (trimStart < 0)
+        {
+            throw new InvalidOperationException($"Cannot find \"{startTrim}\" string inside of the URL!");
+        }
+
+        fullUrl = fullUrl[..trimStart];
+        patchUrl = ConverterTool.CombineURLFromString(fullUrl,
+                                                      startTrim,
+                                                      "patch",
+                                                      patchInfo.OldVersionDir,
+                                                      patchInfo.PatchName);
+
+        return true;
     }
 }
