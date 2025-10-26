@@ -2,6 +2,7 @@
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
 using CollapseLauncher.Statics;
 using Hi3Helper;
@@ -500,10 +501,9 @@ namespace CollapseLauncher.Helper.Metadata
             CurrentGameRegionMaxCount = LauncherMetadataConfig.Max(x => x.Value?.Count ?? 0);
         }
 
-        internal static async Task<object?> LoadAndGetConfig(Stamp  stamp,
-                                                             string currentChannel,
-                                                             bool   throwAfterRetry     = false,
-                                                             bool   allowDeserializeKey = false)
+        internal static async Task<FileStream> LoadOrGetConfigStream(
+            Stamp stamp,
+            string currentChannel)
         {
             if (string.IsNullOrEmpty(stamp.MetadataPath))
             {
@@ -514,24 +514,47 @@ namespace CollapseLauncher.Helper.Metadata
             string configRemoteFilePath =
                 $"/metadata/{MetadataVersion}/{currentChannel}/".CombineURLFromString(stamp.MetadataPath);
 
-            FileStream? configLocalStream = null;
-            try
-            {
-                // Get the local stream
-                configLocalStream = new FileStream(configLocalFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            FileInfo fileInfo = new FileInfo(configLocalFilePath)
+                               .EnsureNoReadOnly();
 
-                // Check if the file doesn't exist, then download the file
-                if (configLocalStream.Length == 0)
+            if (!fileInfo.Exists ||
+                fileInfo.Length == 0)
+            {
+                FileStream fileStream = fileInfo.Create();
+                try
                 {
                     // Get the stream and download the file
                     await using Stream stampRemoteStream =
                         await FallbackCDNUtil.TryGetCDNFallbackStream(configRemoteFilePath);
-                    await stampRemoteStream.CopyToAsync(configLocalStream);
+                    await stampRemoteStream.CopyToAsync(fileStream);
 
                     // Reset the position to 0
-                    configLocalStream.Position = 0;
-                }
+                    fileStream.Position = 0;
 
+                    return fileStream;
+                }
+                catch
+                {
+                    fileStream.Dispose();
+                    throw;
+                }
+            }
+
+            return fileInfo.Open(FileMode.Open, FileAccess.Read);
+        }
+
+        internal static async Task<object?> LoadAndGetConfig(Stamp  stamp,
+                                                             string currentChannel,
+                                                             bool   throwAfterRetry     = false,
+                                                             bool   allowDeserializeKey = false)
+        {
+            // Get the local stream
+            FileStream configLocalStream = await LoadOrGetConfigStream(stamp, currentChannel);
+            string configLocalFilePath = configLocalStream.Name;
+            bool isSuccess = true;
+
+            try
+            {
                 switch (stamp.MetadataType)
                 {
                     case MetadataType.MasterKey when allowDeserializeKey:
@@ -554,12 +577,8 @@ namespace CollapseLauncher.Helper.Metadata
                     case MetadataType.PresetConfigV2:
                         {
                             PresetConfig? presetConfig =
-                                await configLocalStream.DeserializeAsync(PresetConfigJsonContext.Default.PresetConfig);
-
-                            if (presetConfig == null)
-                            {
-                                throw new InvalidDataException("Config seems to be empty!");
-                            }
+                                await configLocalStream.DeserializeAsync(PresetConfigJsonContext.Default.PresetConfig)
+                                ?? throw new InvalidDataException("Config seems to be empty!");
 
                             // Generate HashID and GameName
                             string hashComposition = $"{stamp.LastUpdated} - {stamp.GameName} - {stamp.GameRegion}";
@@ -588,6 +607,8 @@ namespace CollapseLauncher.Helper.Metadata
             }
             catch (Exception ex)
             {
+                isSuccess = false;
+
                 await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
                 // Throw if it's allowed
                 if (throwAfterRetry)
@@ -602,8 +623,7 @@ namespace CollapseLauncher.Helper.Metadata
                                     LogType.Warning, true);
 
                 // Try to dispose and delete the old file first, then retry to initialize the config once again.
-                if (configLocalStream != null)
-                    await configLocalStream.DisposeAsync();
+                await configLocalStream.DisposeAsync();
 
                 if (File.Exists(configLocalFilePath))
                     File.Delete(configLocalFilePath);
@@ -612,12 +632,9 @@ namespace CollapseLauncher.Helper.Metadata
             }
             finally
             {
-                // Dispose the local stream
-                if (configLocalStream != null)
+                await configLocalStream.DisposeAsync();
+                if (isSuccess)
                 {
-                    await configLocalStream.DisposeAsync();
-
-                    // Register last write timestamp into Stamp
                     stamp.LastModifiedTimeUtc = GetFileLastModifiedStampUtc(configLocalFilePath);
                 }
             }
