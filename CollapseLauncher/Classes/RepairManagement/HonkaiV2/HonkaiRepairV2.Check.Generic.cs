@@ -84,7 +84,7 @@ internal partial class HonkaiRepairV2
                 this.AddBrokenAssetToList(asset);
             }
 
-            await Logger.LogWriteLineAsync($"Asset with {asset} is missing!", LogType.Warning, true, token: token);
+            Logger.LogWriteLine($"Asset with {asset} is missing!", LogType.Warning, true);
             return (false, hashSize);
         }
 
@@ -212,10 +212,9 @@ internal partial class HonkaiRepairV2
         // ReSharper disable once InvertIf
         if (addAssetIfBroken)
         {
-            await Logger.LogWriteLineAsync($"Asset with {asset} has unmatched hash! {asset.CRC} != {HexTool.BytesToHexUnsafe(hashBufferSpan.Span)}",
-                                           LogType.Warning,
-                                           true,
-                                           token: token);
+            Logger.LogWriteLine($"Asset with {asset} has unmatched hash! {asset.CRC} != {HexTool.BytesToHexUnsafe(hashBufferSpan.Span)}",
+                                LogType.Warning,
+                                true);
         }
         return (false, hashSize);
 

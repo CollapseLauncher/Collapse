@@ -6,7 +6,6 @@ using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.EncTool.Parser.Cache;
 using Hi3Helper.EncTool.Parser.KianaDispatch;
-using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.Shared.ClassStruct;
 using System;

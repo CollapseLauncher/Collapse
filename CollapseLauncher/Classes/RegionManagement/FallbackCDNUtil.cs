@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -25,7 +26,6 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 using System.Text;
 using Squirrel.Sources;
 #else
-using System.Text;
 using Velopack.Sources;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo

@@ -19,6 +19,7 @@ using CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog;
 #endif
 using CommunityToolkit.WinUI;
 using Hi3Helper;
+using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
 using Hi3Helper.Shared.Region;

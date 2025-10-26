@@ -5,7 +5,6 @@ using Hi3Helper.Data;
 using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetIndex;
 using Hi3Helper.EncTool.Parser.Senadina;
-using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using System;
 using System.Buffers.Binary;

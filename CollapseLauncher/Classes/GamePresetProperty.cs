@@ -49,12 +49,12 @@ namespace CollapseLauncher
             switch (gamePreset.GameType)
             {
                 case GameNameType.Honkai:
-                    property.GameVersion  = new GameTypeHonkaiVersion(apiResourceProp, gameName, gameRegion);
-                    property.GameSettings = new HonkaiSettings(property.GameVersion);
-                    property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion);
-                    // property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
-                    property.GameRepair   = new HonkaiRepairV2(uiElementParent, property.GameVersion);
-                    property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameCache);
+                    GameVersion  = new GameTypeHonkaiVersion(apiResourceProp, gameName, gameRegion);
+                    GameSettings = new HonkaiSettings(GameVersion);
+                    GameCache    = new HonkaiCache(uiElementParent, GameVersion);
+                    // GameRepair   = new HonkaiRepair(uiElementParent, GameVersion, GameCache, GameSettings);
+                    GameRepair   = new HonkaiRepairV2(uiElementParent, GameVersion);
+                    GameInstall  = new HonkaiInstall(uiElementParent, GameVersion, GameCache);
                     break;
                 case GameNameType.StarRail:
                     GameVersion = new GameTypeStarRailVersion(ApiResourceProp, gameName, gameRegion);
