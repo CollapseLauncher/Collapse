@@ -14,12 +14,12 @@ namespace CollapseLauncher
     {
         #region Properties
 
-        private const string           CacheRegionalCheckName = "sprite";
-        private       string           GameLang         { get; }
-        private       byte[]           GameSalt         { get; set; }
-        private       KianaDispatch    GameGateway      { get; set; }
-        private       List<CacheAsset> UpdateAssetIndex { get; set; }
-        private       int              LuckyNumber      { get; set; }
+        private const string CacheRegionalCheckName = "sprite";
+        private string GameLang { get; }
+        private byte[] GameSalt { get; set; }
+        private KianaDispatch GameGateway { get; set; }
+        private List<CacheAsset> UpdateAssetIndex { get; set; }
+        private int LuckyNumber { get; set; }
         #endregion
 
         public HonkaiCache(UIElement parentUI, IGameVersion gameVersionManager)

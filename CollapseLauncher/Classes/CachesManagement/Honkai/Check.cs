@@ -94,12 +94,12 @@ namespace CollapseLauncher
                 // Add asset to the returnAsset
                 CacheAsset asset = new CacheAsset
                 {
-                    BasePath       = Path.GetDirectoryName(fileInfo.FullName),
-                    N              = Path.GetFileName(fileInfo.FullName),
-                    DataType       = CacheAssetType.Unused,
-                    CS             = fileInfo.Length,
-                    CRC            = null,
-                    Status         = CacheAssetStatus.Unused,
+                    BasePath = Path.GetDirectoryName(fileInfo.FullName),
+                    N = Path.GetFileName(fileInfo.FullName),
+                    DataType = CacheAssetType.Unused,
+                    CS = fileInfo.Length,
+                    CRC = null,
+                    Status = CacheAssetStatus.Unused,
                     IsUseLocalPath = true
                 };
                 returnAsset!.Add(asset);

@@ -22,6 +22,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable StringLiteralTypo
 
+#nullable enable
 namespace CollapseLauncher
 {
     internal partial class HonkaiRepair
@@ -31,7 +32,7 @@ namespace CollapseLauncher
             List<FilePropertiesRemote> brokenAssetIndex = [];
 
             // Set Indetermined status as false
-            Status.IsProgressAllIndetermined     = false;
+            Status.IsProgressAllIndetermined = false;
             Status.IsProgressPerFileIndetermined = false;
 
             // Show the asset entry panel
@@ -93,7 +94,7 @@ namespace CollapseLauncher
         #region Additional Old Block Removal Check
         private void CheckUnusedOldBlocks(List<FilePropertiesRemote> origAssetIndex, List<FilePropertiesRemote> targetAssetIndex)
         {
-            HashSet<string> listedAssets = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> listedAssets = new(StringComparer.OrdinalIgnoreCase);
             foreach (string filePath in origAssetIndex
                 .Select(x => Path.Combine(GamePath, x.N.NormalizePath()))
                 .Where(x => x.EndsWith(".wmv")))
@@ -101,7 +102,7 @@ namespace CollapseLauncher
                 _ = listedAssets.Add(filePath);
             }
 
-            HashSet<string> listedAssetsTarget = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> listedAssetsTarget = new(StringComparer.OrdinalIgnoreCase);
             foreach (string filePath in targetAssetIndex
                 .Select(x => Path.Combine(GamePath, x.N.NormalizePath()))
                 .Where(x => x.EndsWith(".wmv")))
@@ -112,32 +113,36 @@ namespace CollapseLauncher
             string gamePath = GamePath.NormalizePath();
             foreach (string blockPath in Directory.EnumerateFiles(gamePath, "*.wmv", SearchOption.AllDirectories))
             {
-                if (!listedAssets.Contains(blockPath) &&
-                    !listedAssetsTarget.Contains(blockPath))
+                if (listedAssets.Contains(blockPath) ||
+                    listedAssetsTarget.Contains(blockPath))
                 {
-                    FileInfo fileInfo = new FileInfo(blockPath)
-                        .EnsureNoReadOnly(out bool isExist);
-
-                    if (isExist)
-                    {
-                        string nameBase = blockPath.Substring(gamePath.Length).TrimStart(['/', '\\']);
-                        targetAssetIndex.Add(new FilePropertiesRemote
-                        {
-                            N = nameBase,
-                            S = fileInfo.Length,
-                            FT = FileType.Unused
-                        });
-                        Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
-                                                           Path.GetFileName(nameBase),
-                                                           RepairAssetType.Unused,
-                                                           Path.GetDirectoryName(nameBase),
-                                                           fileInfo.Length,
-                                                           null,
-                                                           null
-                                                          )
-                                                     ));
-                    }
+                    continue;
                 }
+
+                FileInfo fileInfo = new FileInfo(blockPath)
+                   .EnsureNoReadOnly(out bool isExist);
+
+                if (!isExist)
+                {
+                    continue;
+                }
+
+                string nameBase = blockPath[gamePath.Length..].TrimStart('/', '\\');
+                targetAssetIndex.Add(new FilePropertiesRemote
+                {
+                    N = nameBase,
+                    S = fileInfo.Length,
+                    FT = FileType.Unused
+                });
+                Dispatch(() => AssetEntry.Add(new AssetProperty<RepairAssetType>(
+                                                   Path.GetFileName(nameBase),
+                                                   RepairAssetType.Unused,
+                                                   Path.GetDirectoryName(nameBase),
+                                                   fileInfo.Length,
+                                                   null,
+                                                   null
+                                                  )
+                                             ));
             }
         }
         #endregion
@@ -145,12 +150,6 @@ namespace CollapseLauncher
         #region VideoCheck
         private void CheckAssetTypeVideo(FilePropertiesRemote asset, List<FilePropertiesRemote> targetAssetIndex)
         {
-            // Increment current total count
-            // _progressAllCountCurrent++;
-
-            // Increment current Total Size
-            // _progressAllSizeCurrent += asset.S;
-
             // Get file path
             string filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(asset.N));
             FileInfo file = new FileInfo(filePath);
@@ -275,7 +274,7 @@ namespace CollapseLauncher
                 ProgressAllSizeCurrent += sizeDifference;
                 // ReSharper disable PossibleInvalidOperationException
                 // Increment progress count and size
-                ProgressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo!.PatchFileSize : asset.S;
+                ProgressAllSizeFound += asset.IsPatchApplicable ? asset.AudioPatchInfo?.PatchFileSize ?? 0 : asset.S;
                 ProgressAllCountFound++;
 
                 // Add asset to Display
@@ -287,11 +286,11 @@ namespace CollapseLauncher
                               : RepairAssetType.Audio,
                           Path.GetDirectoryName(asset.N),
                           asset.IsPatchApplicable
-                              ? asset.AudioPatchInfo!.PatchFileSize
+                              ? asset.AudioPatchInfo?.PatchFileSize ?? 0
                               : asset.S,
                           localCrc,
                           asset.IsPatchApplicable
-                              ? asset.AudioPatchInfo!.NewAudioMD5Array
+                              ? asset.AudioPatchInfo?.NewAudioMD5Array
                               : asset.CRCArray
                          )
                     ));
@@ -397,7 +396,7 @@ namespace CollapseLauncher
             if (IsOnlyRecoverMain) return;
 
             List<FilePropertiesRemote> removableAssets = [];
-            Span<Range>                ranges          = stackalloc Range[2];
+            Span<Range> ranges = stackalloc Range[2];
 
             // Iterate the skippable asset and do LINQ check
             foreach (string skippableAsset in _skippableAssets)
@@ -435,18 +434,16 @@ namespace CollapseLauncher
         #endregion
 
         #region BlocksCheck
-        private static BlockPatchInfo TryGetPossibleOldBlockLinkedPatch(string directory, FilePropertiesRemote block)
+        private static BlockPatchInfo? TryGetPossibleOldBlockLinkedPatch(string directory, FilePropertiesRemote block)
         {
-            BlockOldPatchInfo existingOldBlockPair = block.BlockPatchInfo?.PatchPairs?
-               .Where(x => File.Exists(Path.Combine(directory, x.OldName)))
-               .FirstOrDefault();
+            BlockOldPatchInfo? existingOldBlockPair = block.BlockPatchInfo?.PatchPairs?
+                                                           .Where(x => File.Exists(Path.Combine(directory, x.OldName)))
+                                                           .FirstOrDefault();
 
             if (string.IsNullOrEmpty(existingOldBlockPair?.PatchName)) return null;
 
-            BlockOldPatchInfo oldBlockPairCopy = existingOldBlockPair;
-
-            block.BlockPatchInfo?.PatchPairs.Clear();
-            block.BlockPatchInfo?.PatchPairs.Add(oldBlockPairCopy);
+            block.BlockPatchInfo?.PatchPairs?.Clear();
+            block.BlockPatchInfo?.PatchPairs?.Add(existingOldBlockPair);
 
             return block.BlockPatchInfo;
         }
@@ -466,14 +463,25 @@ namespace CollapseLauncher
             // Get original and old path (for patching)
             string blockPath = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath));
             string filePath = Path.Combine(GamePath, asset.N);
+            byte[] fileHashToCheck = asset.CRCArray;
             FileInfo file = new FileInfo(filePath);
+            long fileSize = asset.S;
 
-            BlockPatchInfo patchInfo = TryGetPossibleOldBlockLinkedPatch(blockPath, asset);
-            string filePathOld = patchInfo != null ? Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldName!) : null;
-            FileInfo fileOld = patchInfo != null ? new FileInfo(filePathOld) : null;
+            BlockPatchInfo? patchInfo = TryGetPossibleOldBlockLinkedPatch(blockPath, asset);
+            FileInfo fileOld = null!;
+            byte[] fileOldHash = [];
+            long fileOldSize = 0;
+            if (patchInfo != null)
+            {
+                string fileOldPath = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), patchInfo.PatchPairs[0].OldName);
+
+                fileOld = new FileInfo(fileOldPath);
+                fileOldSize = patchInfo.PatchPairs[0].PatchSize;
+                fileOldHash = patchInfo.PatchPairs[0].OldHash;
+            }
 
             // If old block exist but current block doesn't, check if the hash of the old block matches and patchable
-            if ((fileOld?.Exists ?? false) && !file.Exists)
+            if (patchInfo != null && fileOld.Exists && fileOldSize == fileOld.Length)
             {
                 // Open and read fileInfo as FileStream 
                 await using FileStream fileOldFs = await NaivelyOpenFileStreamAsync(fileOld, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -486,10 +494,10 @@ namespace CollapseLauncher
                     Array.Reverse(localOldCrc);
 
                 // If the hash matches, then add the patch
-                if (IsArrayMatch(localOldCrc, patchInfo.PatchPairs[0].OldHash))
+                if (IsArrayMatch(localOldCrc, fileOldHash))
                 {
                     // Update the total progress and found counter
-                    ProgressAllSizeFound += patchInfo.PatchPairs[0].PatchSize;
+                    ProgressAllSizeFound += fileSize;
                     ProgressAllCountFound++;
 
                     // Set the per size progress
@@ -502,7 +510,7 @@ namespace CollapseLauncher
                                                        Path.GetFileName(asset.N),
                                                        RepairAssetType.BlockUpdate,
                                                        Path.GetDirectoryName(asset.N) + $" (MetaVer: {string.Join('.', patchInfo.PatchPairs[0].OldVersion)})",
-                                                       patchInfo.PatchPairs[0].PatchSize,
+                                                       fileOldSize,
                                                        localOldCrc,
                                                        asset.CRCArray
                                                       )
@@ -522,8 +530,8 @@ namespace CollapseLauncher
 
             // Check if the file exist or doesn't have proper size, then mark it.
             bool isFileNotExistOrHasImproperSize = !file.Exists || (file.Exists && file.Length != asset.S);
-            bool isFileImproperSize              = file.Exists && file.Length != asset.S;
-            bool isFileExist                     = !file.Exists; // invert operator to match logic below
+            bool isFileImproperSize = file.Exists && file.Length != asset.S;
+            bool isFileExist = !file.Exists; // invert operator to match logic below
 
             if (isFileNotExistOrHasImproperSize)
             {
@@ -554,7 +562,8 @@ namespace CollapseLauncher
                 if (isFileImproperSize)
                 {
                     LogWriteLine($"File [T: {asset.FT}]: {asset.N} has unmatched size", LogType.Warning, true);
-                } else if (isFileExist)
+                }
+                else if (isFileExist)
                 {
                     LogWriteLine($"File [T: {asset.FT}]: {asset.N} is not found", LogType.Warning, true);
                 }
@@ -579,7 +588,7 @@ namespace CollapseLauncher
                 Array.Reverse(localCrc);
 
             // If local and asset CRC doesn't match, then add the asset
-            if (!IsArrayMatch(localCrc, asset.CRCArray))
+            if (!IsArrayMatch(localCrc, fileHashToCheck))
             {
                 ProgressAllSizeFound += asset.S;
                 ProgressAllCountFound++;
@@ -637,7 +646,7 @@ namespace CollapseLauncher
                         catalog.Add(path);
                         if (asset.BlockPatchInfo != null)
                         {
-                            string oldBlockPath = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo?.PatchPairs[0].OldName!);
+                            string oldBlockPath = Path.Combine(GamePath, ConverterTool.NormalizePath(BlockBasePath), asset.BlockPatchInfo.PatchPairs[0].OldName);
                             catalog.Add(oldBlockPath);
                         }
                         break;
@@ -646,7 +655,6 @@ namespace CollapseLauncher
                     case FileType.Video:
                         catalog.Add(path);
                         break;
-
                 }
             }
         }
@@ -654,7 +662,7 @@ namespace CollapseLauncher
         private void GetUnusedAssetIndexList(HashSet<string> catalog, List<FilePropertiesRemote> targetAssetIndex)
         {
             SearchValues<string> searchValuesContains = SearchValues.Create([
-                "\\ScreenShot\\",
+                @"\ScreenShot\",
                 "webCaches",
                 "SDKCaches",
                 "Patch",
@@ -666,7 +674,7 @@ namespace CollapseLauncher
                 "@",
                 "d3d",
                 "dxgi.dll",
-                GameVersionManager.GamePreset.ProfileName
+                GameVersionManager.GamePreset.ProfileName!
                 ], StringComparison.OrdinalIgnoreCase);
 
             SearchValues<string> searchValuesEndsWith = SearchValues.Create([
@@ -685,7 +693,7 @@ namespace CollapseLauncher
                 ], StringComparison.OrdinalIgnoreCase);
 
             List<Regex> matchIgnoredFilesRegex = [];
-            string      ignoredFilesPath       = Path.Combine(GamePath, "@IgnoredFiles");
+            string ignoredFilesPath = Path.Combine(GamePath, "@IgnoredFiles");
             if (File.Exists(ignoredFilesPath))
             {
                 try
@@ -725,17 +733,15 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                bool isStartsWithAnyFileName = filename.IndexOfAny(searchValuesStartsWith) == 0;
                 int isEndsWithAnyFileNameIndex = filename.IndexOfAny(searchValuesEndsWith);
-                bool isEndsWithAnyFileName = isEndsWithAnyFileNameIndex > -1 && isEndsWithAnyFileNameIndex < filename.Length;
-                if (isStartsWithAnyFileName && isEndsWithAnyFileName)
+                bool isStartsWithAnyFileName = filename.IndexOfAny(searchValuesStartsWith) == 0;
+                bool isEndsWithAnyFileName = isEndsWithAnyFileNameIndex > -1 &&
+                                             isEndsWithAnyFileNameIndex < filename.Length;
+                switch (isStartsWithAnyFileName)
                 {
-                    continue;
-                }
-
-                if (isStartsWithAnyFileName)
-                {
-                    continue;
+                    case true when isEndsWithAnyFileName:
+                    case true:
+                        continue;
                 }
 
                 if (isEndsWithAnyFileName)
@@ -756,12 +762,12 @@ namespace CollapseLauncher
                     continue;
                 }
 
-                string   n = asset.AsSpan()[pathOffset..].ToString();
+                string n = asset.AsSpan()[pathOffset..].ToString();
                 FileInfo f = new FileInfo(asset);
                 targetAssetIndex.Add(new FilePropertiesRemote
                 {
-                    N  = n,
-                    S  = f.Length,
+                    N = n,
+                    S = f.Length,
                     FT = FileType.Unused
                 });
                 Dispatch(() => AssetEntry.Add(
@@ -783,7 +789,6 @@ namespace CollapseLauncher
         #endregion
 
         #region Override Methods
-#nullable enable
         protected override ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
             Stream stream,
             byte[]? hmacKey = null,
@@ -792,27 +797,47 @@ namespace CollapseLauncher
             CancellationToken token = default)
         {
             // If the game version is >= 8.2.0 and the T is MD5, switch to MhyMurmurHash2 implementation.
-            if (_isGame820PostVersion && typeof(T) == typeof(MD5))
+            if (!_isGame820PostVersion || typeof(T) != typeof(MD5))
             {
-                // Create the Hasher provider by explicitly specify the length of the stream.
-                MhyMurmurHash264B murmurHashProvider = MhyMurmurHash264B.CreateForStream(stream, 0, stream.Length);
-
-                // Pass the provider and return the task
-                return Hash.GetHashAsync(stream,
-                                         murmurHashProvider,
-                                         read => UpdateHashReadProgress(read, updateProgress, updateTotalProgress),
-                                         stream is { Length: > 1024 << 20 },
-                                         token);
+                return base.GetCryptoHashAsync<T>(stream,
+                                                  hmacKey,
+                                                  updateProgress,
+                                                  updateTotalProgress,
+                                                  token);
             }
 
-            // Otherwise, fallback to the default implementation.
-            return base.GetCryptoHashAsync<T>(stream,
-                                              hmacKey,
-                                              updateProgress,
-                                              updateTotalProgress,
-                                              token);
+            // Use Murmur implementation for latest version.
+            return GetCryptoHashAsyncMurmur(stream, updateProgress, updateTotalProgress, token)
+               .ConfigureAwait(false);
         }
-#nullable restore
+
+        private async Task<byte[]> GetCryptoHashAsyncMurmur(
+            Stream stream,
+            bool updateProgress = true,
+            bool updateTotalProgress = true,
+            CancellationToken token = default)
+        {
+            // Create the Hasher provider by explicitly specify the length of the stream.
+            MhyMurmurHash264B murmurHashProvider = MhyMurmurHash264B.CreateForStream(stream, 0, stream.Length);
+
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(512 << 10);
+            try
+            {
+                int read;
+                while ((read = await stream.ReadAtLeastAsync(buffer, buffer.Length, false, token)
+                                           .ConfigureAwait(false)) > 0)
+                {
+                    UpdateHashReadProgress(read, updateProgress, updateTotalProgress);
+                    murmurHashProvider.Append(buffer[..read]);
+                }
+
+                return murmurHashProvider.GetHashAndReset();
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
+        }
         #endregion
     }
 }
