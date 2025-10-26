@@ -390,13 +390,15 @@ namespace CollapseLauncher.Extension
             return textBlock;
         }
 
-        private static ResourceDictionary _currentDictionary;
+        [field: AllowNull, MaybeNull]
+        private static ResourceDictionary CurrentDictionary
+        {
+            get => field ??= Application.Current.Resources ?? throw new NullReferenceException("Application.Current.Resources is null or not initialized!");
+        }
 
         internal static TReturnType GetApplicationResource<TReturnType>(string resourceKey)
         {
-            _currentDictionary ??= Application.Current.Resources;
-
-            if (!(_currentDictionary?.TryGetValue(resourceKey, out object resourceObj) ?? false))
+            if (!CurrentDictionary.TryGetValue(resourceKey, out object resourceObj))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
             if (resourceObj is not TReturnType resource)
@@ -408,9 +410,7 @@ namespace CollapseLauncher.Extension
         internal static ref TReturnType GetApplicationResourceRef<TReturnType>(string resourceKey)
             where TReturnType : struct
         {
-            _currentDictionary ??= Application.Current.Resources;
-
-            if (!(_currentDictionary?.TryGetValue(resourceKey, out object resourceObj) ?? false))
+            if (!CurrentDictionary.TryGetValue(resourceKey, out object resourceObj))
             {
                 return ref Unsafe.NullRef<TReturnType>();
             }
@@ -420,10 +420,10 @@ namespace CollapseLauncher.Extension
 
         internal static void SetApplicationResource(string resourceKey, object value)
         {
-            if (!_currentDictionary.ContainsKey(resourceKey))
+            if (!CurrentDictionary.ContainsKey(resourceKey))
                 throw new KeyNotFoundException($"Application resource with key: {resourceKey} does not exist!");
 
-            _currentDictionary[resourceKey] = value;
+            CurrentDictionary[resourceKey] = value;
         }
 
         internal static CornerRadius GetElementCornerRadius(FrameworkElement element, CornerRadiusKind kind = CornerRadiusKind.Normal)
