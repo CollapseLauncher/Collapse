@@ -1,5 +1,5 @@
-using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Http;
@@ -24,7 +24,7 @@ namespace CollapseLauncher
         private async Task<bool> Update(List<CacheAsset> updateAssetIndex, List<CacheAsset> assetIndex, CancellationToken token)
         {
             // Initialize new proxy-aware HttpClient
-            using HttpClient client = new HttpClientBuilder<SocketsHttpHandler>()
+            using HttpClient client = new HttpClientBuilder()
                 .UseLauncherConfig(DownloadThreadWithReservedCount)
                 .SetUserAgent(UserAgent)
                 .SetAllowedDecompression(DecompressionMethods.None)
@@ -39,7 +39,7 @@ namespace CollapseLauncher
                 UpdateStatus();
 
                 // Iterate the asset index and do update operation
-                ObservableCollection<IAssetProperty> assetProperty   = [.. AssetEntry];
+                ObservableCollection<IAssetProperty> assetProperty = [.. AssetEntry];
 
                 ConcurrentDictionary<(CacheAsset, IAssetProperty), byte> runningTask = new();
                 if (IsBurstDownloadEnabled)
@@ -105,7 +105,7 @@ namespace CollapseLauncher
             string listFile = Path.Combine(GamePath!, "Data", "Verify.txt");
 
             // Initialize listFile File Stream
-            using FileStream   fs = new FileStream(listFile, FileMode.Create, FileAccess.Write);
+            using FileStream fs = new FileStream(listFile, FileMode.Create, FileAccess.Write);
             using StreamWriter sw = new StreamWriter(fs);
             // Iterate asset index and generate the path for the cache path
             for (var index = 0; index < assetIndex!.Count; index++)
@@ -114,7 +114,7 @@ namespace CollapseLauncher
                 // Yes, the path is written in this way. Idk why miHoYo did this...
                 // Update 6.8: They finally notices that they use "//" instead of "/"
                 string basePath = GetAssetBasePathByType(asset!.DataType)!.Replace('\\', '/');
-                string path     = basePath + "/" + asset.ConcatN;
+                string path = basePath + "/" + asset.ConcatN;
                 sw.WriteLine(path);
             }
         }
@@ -141,15 +141,15 @@ namespace CollapseLauncher
             // Other than unused file, do this action
             else
             {
-            #if DEBUG
+#if DEBUG
                 LogWriteLine($"Downloading cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N} at URL: {asset.AssetIndex.ConcatURL}", LogType.Debug, true);
-            #endif
+#endif
 
                 await RunDownloadTask(asset.AssetIndex.CS, fileInfo, asset.AssetIndex.ConcatURL, downloadClient, downloadProgress, token);
 
-            #if !DEBUG
+#if !DEBUG
                 LogWriteLine($"Downloaded cache [T: {asset.AssetIndex.DataType}]: {asset.AssetIndex.N}", LogType.Default, true);
-            #endif
+#endif
             }
 
             // Remove Asset Entry display

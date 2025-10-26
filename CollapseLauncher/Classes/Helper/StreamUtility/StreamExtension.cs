@@ -1,6 +1,7 @@
 ﻿using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.SentryHelper;
+using Hi3Helper.Win32.ManagedTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -282,6 +283,67 @@ namespace CollapseLauncher.Helper.StreamUtility
                 SentryHelper.ExceptionHandler(ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Deletes the directory if it is empty.
+        /// </summary>
+        /// <param name="dir">The directory to remove.</param>
+        /// <param name="recursive">Whether to remove all possibly empty directories recursively.</param>
+        public static void DeleteEmptyDirectory(this string dir, bool recursive = false)
+            => new DirectoryInfo(dir).DeleteEmptyDirectory(recursive);
+
+        /// <summary>
+        /// Deletes the directory if it is empty.
+        /// </summary>
+        /// <param name="dir">The directory to remove.</param>
+        /// <param name="recursive">Whether to remove all possibly empty directories recursively.</param>
+        public static void DeleteEmptyDirectory(this DirectoryInfo dir, bool recursive = false)
+        {
+            if (recursive)
+            {
+                foreach (DirectoryInfo childDir in dir.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                {
+                    DeleteEmptyDirectory(childDir);
+                }
+            }
+
+            FindFiles.TryIsDirectoryEmpty(dir.FullName, out bool isEmpty);
+            if (isEmpty)
+            {
+                dir.Delete(true);
+            }
+        }
+
+        public static FileStream Open(this FileInfo fileInfo,
+                                      FileMode      fileMode,
+                                      FileAccess    fileAccess,
+                                      FileShare     fileShare,
+                                      int           bufferSize)
+        {
+            return fileInfo.Open(new FileStreamOptions
+            {
+                Mode       = fileMode,
+                Access     = fileAccess,
+                Share      = fileShare,
+                BufferSize = bufferSize
+            });
+        }
+
+        public static FileStream Open(this FileInfo fileInfo,
+                                      FileMode      fileMode,
+                                      FileAccess    fileAccess,
+                                      FileShare     fileShare,
+                                      FileOptions   fileOptions,
+                                      int           bufferSize)
+        {
+            return fileInfo.Open(new FileStreamOptions
+            {
+                Mode       = fileMode,
+                Access     = fileAccess,
+                Share      = fileShare,
+                BufferSize = bufferSize
+            });
         }
     }
 }

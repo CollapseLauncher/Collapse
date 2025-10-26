@@ -2,6 +2,7 @@
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Preset;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using static Hi3Helper.Data.ConverterTool;
 // ReSharper disable CheckNamespace
@@ -14,6 +15,8 @@ namespace Hi3Helper.Shared.ClassStruct
 {
     [JsonConverter(typeof(JsonStringEnumConverter<FileType>))]
     public enum FileType : byte { Generic, Block, Audio, Video, Unused }
+
+    [DebuggerDisplay("{N}")]
     public class FilePropertiesRemote : IAssetIndexSummary
     {
         public  bool   IsUsed { get; set; }
@@ -22,17 +25,28 @@ namespace Hi3Helper.Shared.ClassStruct
         public string N { get; set; }
         public string RN { get; set; }
 
+        private string _crcField;
         public string CRC
         {
-            get;
+            get => _crcField;
             set
             {
-                field     = value.ToLower();
-                CRCArray = HexTool.HexToBytesUnsafe(field);
+                _crcField      = value.ToLower();
+                _crcArrayField = HexTool.HexToBytesUnsafe(_crcField);
             }
         }
 
-        public byte[]                  CRCArray          { get; private set; }
+        private byte[] _crcArrayField;
+        public byte[] CRCArray
+        {
+            get => _crcArrayField;
+            set
+            {
+                _crcArrayField = value;
+                _crcField      = HexTool.BytesToHexUnsafe(value) ?? "";
+            }
+        }
+
         public string                  M                 { get; set; }
         public FileType                FT                { get; set; }
         public List<XMFBlockList>      BlkC              { get; set; }
@@ -40,11 +54,12 @@ namespace Hi3Helper.Shared.ClassStruct
         public ManifestAudioPatchInfo? AudioPatchInfo    { get; set; }
         public BlockPatchInfo?         BlockPatchInfo    { get; set; }
 #nullable restore
-        public long   S                 { get; set; }
-        public bool   IsPatchApplicable { get; set; }
-        public bool   IsBlockNeedRepair { get; set; }
-        public bool   IsHasHashMark     { get; set; }
-        public object AssociatedObject  { get; set; }
+        public long   S                       { get; set; }
+        public bool   IsPatchApplicable       { get; set; }
+        public bool   IsBlockNeedRepair       { get; set; }
+        public bool   IsHasHashMark           { get; set; }
+        public object AssociatedObject        { get; set; }
+        public object AssociatedAssetProperty { get; set; }
 
         public FilePropertiesRemote Copy() => new()
         {
@@ -64,6 +79,8 @@ namespace Hi3Helper.Shared.ClassStruct
         public long GetAssetSize() => FT == FileType.Unused ? 0 : S;
         public string GetRemoteURL() => RN;
         public void SetRemoteURL(string url) => RN = url;
+
+        public override string ToString() => $"Type: {FT} | {N} | {SummarizeSizeSimple(S)} ({S} bytes)";
     }
 
     public class FileProperties

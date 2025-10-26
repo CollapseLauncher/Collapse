@@ -54,6 +54,11 @@ namespace CollapseLauncher.Helper
                 + $"WinAppSDK/{LauncherConfig.WindowsAppSdkVersion}";
         }
 
+        public static HttpClient CreateDefaultClient(int maxConnection = 32, bool isSkipDnsInit = false)
+            => new HttpClientBuilder()
+              .UseLauncherConfig()
+              .Create();
+
         public HttpClientBuilder<THandler> UseExternalProxy(string host, string? username = null, SecureString? password = null)
         {
             // Try to create the Uri
