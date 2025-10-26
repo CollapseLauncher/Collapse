@@ -505,7 +505,8 @@ namespace CollapseLauncher.Pages
 
         public bool IsMobileMode
         {
-            get => Settings.SettingsCollapseMisc.LaunchMobileMode;
+            //get => Settings.SettingsCollapseMisc.LaunchMobileMode;
+            get => false;
             set => Settings.SettingsCollapseMisc.LaunchMobileMode = value;
         }
         #endregion
