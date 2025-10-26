@@ -194,7 +194,7 @@ namespace CollapseLauncher.InstallManager.Genshin
                     "HoYoKProtect.sys", "pkg_version", $"{execName}.exe", "UnityPlayer.dll", "config.ini", "^mhyp.*",
                     "^Audio.*"
                 ],
-                foldersToKeepInData = []
+                foldersToKeepInData = ["ScreenShot"]
             };
         }
 

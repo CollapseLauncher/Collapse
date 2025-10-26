@@ -101,6 +101,18 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringConverter))]
         public string? SdkUrl { get; set; }
 
+        [JsonConverter(typeof(ServeV3StringArrayConverter))]
+        public string[] ExcludeMatchingFieldMain { get; set; } = [];
+
+        [JsonConverter(typeof(ServeV3StringArrayConverter))]
+        public string[] ExcludeMatchingFieldPreload { get; set; } = [];
+
+        [JsonConverter(typeof(ServeV3StringArrayConverter))]
+        public string[] ExcludeMatchingFieldPatch { get; set; } = [];
+
+        [JsonConverter(typeof(ServeV3StringArrayConverter))]
+        public string[] ExcludeMatchingFieldUpdate { get; set; } = [];
+
         public bool ResetAssociation() => IsReassociated = false;
 
         public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)

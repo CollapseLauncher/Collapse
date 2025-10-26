@@ -133,7 +133,9 @@
                                             <CheckBox x:Name="MobileModeToggle"
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
-                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}">
+                                                      IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
+                                                      IsEnabled="False"
+                                                      ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Misc.Generic_GameFeatureDeprecation}">
                                                 <TextBlock Text="{x:Bind helper:Locale.Lang._GameSettingsPage.MobileLayout}"
                                                            TextWrapping="Wrap" />
                                             </CheckBox>

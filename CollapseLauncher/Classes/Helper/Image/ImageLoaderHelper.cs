@@ -115,7 +115,7 @@ namespace CollapseLauncher.Helper.Image
         }
         #endregion
 
-        internal static async Task<FileStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)
+        internal static async Task<MemoryStream> LoadImage(string path, bool isUseImageCropper = false, bool overwriteCachedImage = false)
         {
             if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
             double aspectRatioX = InnerLauncherConfig.m_actualMainFrameSize.Width;
@@ -128,6 +128,7 @@ namespace CollapseLauncher.Helper.Image
             if (!Directory.Exists(AppGameImgCachedFolder)) Directory.CreateDirectory(AppGameImgCachedFolder!);
 
             FileStream resizedImageFileStream = null;
+            MemoryStream imageStream = null;
 
             try
             {
@@ -136,18 +137,17 @@ namespace CollapseLauncher.Helper.Image
                 if (resizedFileInfo!.Exists && resizedFileInfo.Length > 1 << 15 && !overwriteCachedImage)
                 {
                     resizedImageFileStream = resizedFileInfo.Open(StreamExtension.FileStreamOpenReadOpt);
-                    return resizedImageFileStream;
                 }
-
-                if (isUseImageCropper)
+                else if (isUseImageCropper)
                 {
                     resizedImageFileStream = await SpawnImageCropperDialog(path, resizedFileInfo.FullName,
                                                                            targetSourceImageWidth, targetSourceImageHeight);
-                    return resizedImageFileStream;
                 }
-
-                resizedImageFileStream = await GenerateCachedStream(inputFileInfo, targetSourceImageWidth,
-                                                                    targetSourceImageHeight);
+                else
+                {
+                    resizedImageFileStream = await GenerateCachedStream(inputFileInfo, targetSourceImageWidth,
+                                                                        targetSourceImageHeight);
+                }
             }
             catch
             {
@@ -159,10 +159,18 @@ namespace CollapseLauncher.Helper.Image
                 if (isError && resizedImageFileStream != null)
                 {
                     await resizedImageFileStream.DisposeAsync();
+                    resizedImageFileStream = null;
+                }
+                if (resizedImageFileStream != null)
+                {
+                    imageStream = new MemoryStream();
+                    await resizedImageFileStream.CopyToAsync(imageStream);
+                    imageStream.Position = 0;
+                    await resizedImageFileStream.DisposeAsync();
                 }
             }
 
-            return resizedImageFileStream;
+            return imageStream;
         }
 
         private static async Task<FileStream> SpawnImageCropperDialog(string filePath, string cachedFilePath,
@@ -372,12 +380,12 @@ namespace CollapseLauncher.Helper.Image
             Bitmap bitmapRet;
             BitmapImage bitmapImageRet;
 
-            FileStream cachedFileStream = await LoadImage(filePath);
-            if (cachedFileStream == null) return (null, null);
-            await using (cachedFileStream)
+            var cachedImageStream = await LoadImage(filePath);
+            if (cachedImageStream == null) return (null, null);
+            await using (cachedImageStream)
             {
-                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedFileStream.AsRandomAccessStream()));
-                bitmapImageRet = await Stream2BitmapImage(cachedFileStream.AsRandomAccessStream());
+                bitmapRet = await Task.Run(() => Stream2Bitmap(cachedImageStream.AsRandomAccessStream()));
+                bitmapImageRet = await Stream2BitmapImage(cachedImageStream.AsRandomAccessStream());
             }
 
             return (bitmapRet, bitmapImageRet);

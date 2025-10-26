@@ -335,5 +335,36 @@ namespace CollapseLauncher.Helper.StreamUtility
                 dir.Delete(true);
             }
         }
+
+        public static FileStream Open(this FileInfo fileInfo,
+                                      FileMode      fileMode,
+                                      FileAccess    fileAccess,
+                                      FileShare     fileShare,
+                                      int           bufferSize)
+        {
+            return fileInfo.Open(new FileStreamOptions
+            {
+                Mode       = fileMode,
+                Access     = fileAccess,
+                Share      = fileShare,
+                BufferSize = bufferSize
+            });
+        }
+
+        public static FileStream Open(this FileInfo fileInfo,
+                                      FileMode      fileMode,
+                                      FileAccess    fileAccess,
+                                      FileShare     fileShare,
+                                      FileOptions   fileOptions,
+                                      int           bufferSize)
+        {
+            return fileInfo.Open(new FileStreamOptions
+            {
+                Mode       = fileMode,
+                Access     = fileAccess,
+                Share      = fileShare,
+                BufferSize = bufferSize
+            });
+        }
     }
 }

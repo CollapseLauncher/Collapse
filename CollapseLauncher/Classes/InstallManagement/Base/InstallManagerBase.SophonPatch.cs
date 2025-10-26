@@ -9,6 +9,7 @@
 
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
+using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
@@ -100,6 +101,12 @@ namespace CollapseLauncher.InstallManager.Base
             // Get matching fields from main game and the VO
             List<string> matchingFields = [GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField];
             matchingFields.AddRange(await GetAlterSophonPatchVOMatchingFields(Token.Token));
+
+            // Exclude matching fields from metadata filter
+            string[] excludeMatchingFields =
+                GameVersionManager.GamePreset.LauncherResourceChunksURL.ExcludeMatchingFieldPatch;
+            matchingFields = matchingFields.WhereMatchPattern(x => x, true, excludeMatchingFields)
+                                           .ToList();
 
             // Perform check on additional data package (in this case: Zenless Zone Zero has some cutscene files registered)
             await ConfirmAdditionalPatchDataPackageFiles(patchManifest, matchingFields, Token.Token);

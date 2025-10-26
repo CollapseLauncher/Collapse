@@ -52,7 +52,8 @@ namespace CollapseLauncher
                     property.GameVersion  = new GameTypeHonkaiVersion(apiResourceProp, gameName, gameRegion);
                     property.GameSettings = new HonkaiSettings(property.GameVersion);
                     property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion);
-                    property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
+                    // property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
+                    property.GameRepair   = new HonkaiRepairV2(uiElementParent, property.GameVersion);
                     property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameCache);
                     break;
                 case GameNameType.StarRail:

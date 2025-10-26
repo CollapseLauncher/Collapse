@@ -331,7 +331,10 @@ public partial class HomePage
                 }
 
                 // Enable mobile mode
-                if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
+                //if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
+                if (false) // Force disable Mobile mode due to reported bannable offense in GI. Thank you HoYo.
+                    // Added pragma in-case this will be reused in the future.
+            #pragma warning disable CS0162 // Unreachable code detected
                 {
                     const string regLoc  = GameSettings.StarRail.Model.ValueName;
                     var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
@@ -356,6 +359,7 @@ public partial class HomePage
                                      LogType.Error, true);
                     }
                 }
+            #pragma warning restore CS0162 // Unreachable code detected
 
                 Size screenSize = _Settings.SettingsScreen.sizeRes;
 
@@ -387,8 +391,13 @@ public partial class HomePage
                 }
 
                 // Enable mobile mode
-                if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
+                // Enable mobile mode
+                //if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
+                if (false) // Force disable Mobile mode due to reported bannable offense in GI. Thank you HoYo.
+                    // Added pragma in-case this will be reused in the future.
+                #pragma warning disable CS0162 // Unreachable code detected
                     parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
+                #pragma  warning enable CS0162 // Unreachable code detected
 
                 Size screenSize = _Settings.SettingsScreen.sizeRes;
 

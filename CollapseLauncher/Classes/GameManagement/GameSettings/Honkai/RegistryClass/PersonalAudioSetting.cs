@@ -23,7 +23,7 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class PersonalAudioSetting : IGameSettingsValue<PersonalAudioSetting>
     {
         #region Fields
-        private const    string                     ValueName    = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
+        internal const   string                     ValueName    = "GENERAL_DATA_V2_PersonalAudioSetting_h3869048096";
         private readonly PersonalAudioSettingVolume _volumeValue = PersonalAudioSettingVolume.Load();
 
         #endregion

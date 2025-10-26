@@ -60,18 +60,59 @@ namespace CollapseLauncher.Interfaces
         public event EventHandler<TotalPerFileProgress>? ProgressChanged;
         public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-        protected TotalPerFileStatus    SophonStatus;
-        protected TotalPerFileProgress  SophonProgress;
-        protected TotalPerFileStatus    Status;
-        protected TotalPerFileProgress  Progress;
-        protected int                   ProgressAllCountCurrent;
-        protected int                   ProgressAllCountFound;
-        protected int                   ProgressAllCountTotal;
-        protected long                  ProgressAllSizeCurrent;
-        protected long                  ProgressAllSizeFound;
-        protected long                  ProgressAllSizeTotal;
-        protected long                  ProgressPerFileSizeCurrent;
-        protected long                  ProgressPerFileSizeTotal;
+        internal TotalPerFileStatus   SophonStatus;
+        internal TotalPerFileProgress SophonProgress;
+        internal TotalPerFileStatus   Status;
+        internal TotalPerFileProgress Progress;
+        internal int                  ProgressAllCountCurrent;
+        internal int                  ProgressAllCountFound;
+        internal int                  ProgressAllCountTotal;
+        internal long                 ProgressAllSizeCurrent;
+        internal long                 ProgressAllSizeFound;
+        internal long                 ProgressAllSizeTotal;
+        internal long                 ProgressPerFileSizeCurrent;
+        internal long                 ProgressPerFileSizeTotal;
+
+        /// <summary>
+        /// Normalized app download thread configured within app global config.<br/>
+        /// <br/>
+        /// If the thread is set to less or equal to 0, it will automatically set to the thread count of your CPU.
+        /// </summary>
+        internal int ThreadForDownloadNormalized
+        {
+            get
+            {
+                int parallelThread = LauncherConfig.AppCurrentDownloadThread;
+                if (parallelThread <= 0)
+                {
+                    parallelThread = Environment.ProcessorCount;
+                }
+
+                return parallelThread;
+            }
+        }
+
+        /// <summary>
+        /// Normalized app I/O thread configured within app global config.<br/>
+        /// <br/>
+        /// If the thread is set to less or equal to 0, it will automatically set to the thread count of your CPU.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        internal int ThreadForIONormalized
+        {
+            get
+            {
+                int parallelThread = LauncherConfig.AppCurrentThread;
+                if (parallelThread <= 0)
+                {
+                    parallelThread = Environment.ProcessorCount;
+                }
+
+                return parallelThread;
+            }
+        }
+
+        internal bool IsForceHttpOverride => LauncherConfig.GetAppConfigValue("EnableHTTPRepairOverride");
 
         // Extension for IGameInstallManager
 
@@ -180,7 +221,7 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected virtual void UpdateRepairStatus(string activityStatus, string activityAll, bool isPerFileIndetermined)
+        internal virtual void UpdateRepairStatus(string activityStatus, string activityAll, bool isPerFileIndetermined)
         {
             lock (Status)
             {
@@ -516,7 +557,7 @@ namespace CollapseLauncher.Interfaces
         #endregion
 
         #region BaseTools
-        protected async Task DoCopyStreamProgress(Stream source, Stream target, long? estimatedSize = null, CancellationToken token = default)
+        internal async Task DoCopyStreamProgress(Stream source, Stream target, long? estimatedSize = null, CancellationToken token = default)
         {
             // ReSharper disable once ConstantNullCoalescingCondition
             long inputSize = estimatedSize != null ? estimatedSize ?? 0 : source.Length;
@@ -686,7 +727,8 @@ namespace CollapseLauncher.Interfaces
         protected virtual void ResetStatusAndProgress()
         {
             // Reset RepairAssetProperty list
-            AssetEntry!.Clear();
+            AssetEntry.Clear();
+            AssetIndex.Clear();
 
             // Reset status and progress properties
             ResetStatusAndProgressProperty();
@@ -698,7 +740,7 @@ namespace CollapseLauncher.Interfaces
         protected void ResetStatusAndProgressProperty()
         {
             // Reset cancellation token
-            Token = new CancellationTokenSourceWrapper();
+            Token ??= new CancellationTokenSourceWrapper();
 
             lock (Status)
             {
@@ -887,28 +929,51 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected async Task<bool> TryRunExamineThrow(Task<bool> action)
+        protected virtual async Task<T> TryRunExamineThrow<T>(Task<T> action)
         {
+            await TryRunExamineThrow((Task)action);
+
+            if (action.IsCompletedSuccessfully)
+            {
+                return action.Result;
+            }
+
+            if ((action.IsFaulted ||
+                 action.IsCanceled) &&
+                action.Exception != null)
+            {
+                throw action.Exception;
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        protected virtual async Task TryRunExamineThrow(Task task)
+        {
+            // Define if the status is still running
+            Status.IsRunning   = true;
+            Status.IsCompleted = false;
+            Status.IsCanceled  = false;
+
             try
             {
-                // Define if the status is still running
-                Status.IsRunning = true;
-
                 // Run the task
-                return await action;
+                await task;
+
+                Status.IsCompleted = true;
             }
             catch (TaskCanceledException)
             {
                 // If a cancellation was thrown, then set IsCanceled as true
                 Status.IsCompleted = false;
-                Status.IsCanceled = true;
+                Status.IsCanceled  = true;
                 throw;
             }
             catch (OperationCanceledException)
             {
                 // If a cancellation was thrown, then set IsCanceled as true
                 Status.IsCompleted = false;
-                Status.IsCanceled = true;
+                Status.IsCanceled  = true;
                 throw;
             }
             catch (Exception)
@@ -916,7 +981,7 @@ namespace CollapseLauncher.Interfaces
                 // Except, if the other exception was thrown, then set both IsCompleted
                 // and IsCanceled as false.
                 Status.IsCompleted = false;
-                Status.IsCanceled = false;
+                Status.IsCanceled  = false;
                 throw;
             }
             finally
@@ -925,6 +990,11 @@ namespace CollapseLauncher.Interfaces
                 if (Status is { IsCompleted: false })
                 {
                     AssetIndex.Clear();
+                    WindowUtility.SetTaskBarState(TaskbarState.Error);
+                }
+                else
+                {
+                    WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
                 }
 
                 Status.IsRunning = false;
@@ -955,9 +1025,9 @@ namespace CollapseLauncher.Interfaces
 
             // Set status
             Status.IsAssetEntryPanelShow = isBrokenFound;
-            Status.IsCompleted = true;
-            Status.IsCanceled = false;
-            Status.ActivityStatus = isBrokenFound ? msgIfFound : msgIfClear;
+            Status.IsCompleted           = true;
+            Status.IsCanceled            = false;
+            Status.ActivityStatus        = isBrokenFound ? msgIfFound : msgIfClear;
 
             // Update status and progress
             UpdateAll();
@@ -1431,38 +1501,35 @@ namespace CollapseLauncher.Interfaces
         }
 
         #nullable enable
-        protected virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)
+        internal virtual void PopRepairAssetEntry(IAssetProperty? assetProperty = null)
         {
             try
             {
-                if (ParentUI!.DispatcherQueue!.HasThreadAccessSafe())
+                if (ParentUI.DispatcherQueue.HasThreadAccessSafe())
                 {
-                    if (assetProperty == null)
-                    {
-                        if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
-                    }
-                    else
-                    {
-                        AssetEntry.Remove(assetProperty);
-                    }
+                    ImplDelete();
                     return;
                 }
 
-                Dispatch(() =>
-                {
-                    if (assetProperty == null)
-                    {
-                        if (AssetEntry!.Count > 0) AssetEntry.RemoveAt(0);
-                    }
-                    else
-                    {
-                        AssetEntry.Remove(assetProperty);
-                    }
-                });
+                Dispatch(ImplDelete);
             }
             catch
             {
                 // pipe to parent
+            }
+
+            return;
+
+            void ImplDelete()
+            {
+                if (assetProperty == null)
+                {
+                    if (AssetEntry.Count > 0) AssetEntry.RemoveAt(0);
+                }
+                else
+                {
+                    AssetEntry.Remove(assetProperty);
+                }
             }
         }
         #nullable restore
@@ -1473,29 +1540,33 @@ namespace CollapseLauncher.Interfaces
             UpdateProgress();
         }
 
-        protected virtual void UpdateProgress()
-        {
-            ProgressChanged?.Invoke(this, Progress);
+        internal virtual void UpdateProgress() => UpdateProgress(Progress);
 
-            if (Status is {IsProgressAllIndetermined: false, IsRunning: true})
+        internal virtual void UpdateProgress(TotalPerFileProgress progress)
+        {
+            ProgressChanged?.Invoke(this, progress);
+
+            if (Status is { IsProgressAllIndetermined: false, IsRunning: true })
             {
-                WindowUtility.SetProgressValue((ulong)(Progress.ProgressAllPercentage * 10), 1000);
+                WindowUtility.SetProgressValue((ulong)(progress.ProgressAllPercentage * 10), 1000);
             }
         }
 
-        protected virtual void UpdateStatus()
-        {
-            StatusChanged?.Invoke(this, Status);
+        internal virtual void UpdateStatus() => UpdateStatus(Status);
 
-            if (Status.IsCanceled || Status.IsCompleted)
+        internal virtual void UpdateStatus(TotalPerFileStatus status)
+        {
+            StatusChanged?.Invoke(this, status);
+
+            if (status.IsCanceled || status.IsCompleted)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
             }
-            else if (Status.IsProgressAllIndetermined)
+            else if (status.IsProgressAllIndetermined)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Indeterminate);
             }
-            else if (Status.IsRunning)
+            else if (status.IsRunning)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Normal);
             }

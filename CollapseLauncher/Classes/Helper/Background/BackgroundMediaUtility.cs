@@ -70,7 +70,7 @@ namespace CollapseLauncher.Helper.Background
 
         private bool _isCurrentRegistered;
 
-        private static FileStream? _alternativeFileStream;
+        private static MemoryStream? _alternativeImageStream;
 
         private delegate  ValueTask AssignDefaultAction<in T>(T    element) where T : class;
         internal delegate void      ThrowExceptionAction(Exception element);
@@ -119,10 +119,10 @@ namespace CollapseLauncher.Helper.Background
         {
             CurrentAppliedMediaPath = null;
             CurrentAppliedMediaType = MediaType.Unknown;
-            if (_alternativeFileStream != null)
+            if (_alternativeImageStream != null)
             {
-                await _alternativeFileStream.DisposeAsync();
-                _alternativeFileStream = null;
+                await _alternativeImageStream.DisposeAsync();
+                _alternativeImageStream = null;
             }
 
             // Set the parent UI
@@ -188,8 +188,8 @@ namespace CollapseLauncher.Helper.Background
             _loaderStillImage?.Dispose();
             _loaderStillImage  = null;
 
-            _alternativeFileStream?.Dispose();
-            _alternativeFileStream = null;
+            _alternativeImageStream?.Dispose();
+            _alternativeImageStream = null;
 
             _isCurrentRegistered = false;
             GC.SuppressFinalize(this);
@@ -496,17 +496,17 @@ namespace CollapseLauncher.Helper.Background
             _loaderStillImage?.Pause();
         }
 
-        public static FileStream? GetAlternativeFileStream()
+        public static MemoryStream? GetAlternativeImageStream()
         {
-            FileStream? returnStream = _alternativeFileStream;
-            _alternativeFileStream = null;
+            MemoryStream? returnStream = _alternativeImageStream;
+            _alternativeImageStream = null;
             return returnStream;
         }
 
-        public static void SetAlternativeFileStream(FileStream stream)
+        public static void SetAlternativeImageStream(MemoryStream stream)
         {
-            _alternativeFileStream?.Dispose();
-            _alternativeFileStream = stream;
+            _alternativeImageStream?.Dispose();
+            _alternativeImageStream = stream;
         }
 
         public static MediaType GetMediaType(string mediaPath)

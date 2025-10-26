@@ -87,7 +87,7 @@
     "CopyClipboardBtn1": "Tout copier dans le presse-papier",
     "CopyClipboardBtn2": "Copié dans le presse-papier !",
     "GoBackPageBtn1": "Retourner à la page précédente",
-    
+
     "CustomBackground_NotFound": "L'arrière-plan personnalisé est manquant ! L'image par défaut a été utilisée.",
     "CustomBackground_RegionalTag": "Arrière-plan régional",
     "CustomBackground_GlobalTag": "Arrière-plan global"
@@ -436,6 +436,7 @@
     "Debug_SendRemoteCrashData": "Envoyer des rapports de plantage anonymes aux développeurs",
     "Debug_SendRemoteCrashData_EnvVarDisablement": "Ce paramètre est désactivé en raison de la variable d'environnement « DISABLE_SENTRY » définie sur « true ».",
     "Debug_MultipleInstance": "Permettre l'exécution de plusieurs instances de Collapse",
+    "Debug_CustomDialogBtn": "[DBG] Affich. boîte de dialogue",
 
     "ChangeRegionWarning_Toggle": "Afficher un avertissement lors d'un changement de région",
     "ChangeRegionInstant_Toggle": "Basculement de région instantané lors de la sélection",
@@ -693,8 +694,95 @@
     "Database_ValidationChecking": "Validation des paramètres…",
     "Database_Placeholder_DbUserIdTextBox": "Exemple de GUID : ed6e8048-e3a0-4983-bd56-ad19956c701f",
     "Database_Placeholder_DbTokenPasswordBox": "Entrez votre jeton d'authentification ici",
-    
-    "SearchPlaceholder": "Rechercher un paramètre…"
+
+    "SearchPlaceholder": "Rechercher un paramètre…",
+
+    "HttpCache_Title": "Paramètres de cache HTTP",
+    "HttpCacheModeToggle": "Mode cache",
+    "HttpCacheModeToggle_Tooltip1": "Utilise la mise en cache réseau lors de l'exécution de requêtes HTTP vers les CDN. Cela peut réduire le temps de chargement de certaines fonctionnalités.",
+    "HttpCacheModeToggle_Tooltip2": "Si activée, cette fonctionnalité peut utiliser deux méthodes de mise en cache :",
+    "HttpCacheModeToggle_Tooltip3": "Note :",
+    "HttpCacheModeToggle_Tooltip4": "Vous pourriez avoir à vider le cache en cliquant sur le bouton «",
+    "HttpCacheModeToggle_Tooltip5": "» dans le cas où vous feriez face à des problèmes ou que le launcher ne se comporte pas normalement.",
+    "HttpCacheMode_Cat1": "Mise en cache avec expiration programmée",
+    "HttpCacheMode_Cat2": "Mise en cache basée sur le hachage/ETag",
+    "HttpCacheAggressiveModeToggle": "Mise en cache agressive",
+    "HttpCacheAggressiveModeToggle_Tooltip1": "Une fois activée, cette option permet au lanceur d'effectuer la mise en cache en fonction du",
+    "HttpCacheAggressiveModeToggle_Tooltip2": "défini. Les méthodes de",
+    "HttpCacheAggressiveModeToggle_Tooltip3": "et de",
+    "HttpCacheAggressiveModeToggle_Tooltip4": "seront automatiquement ignorées.",
+    "HttpCacheAggressiveModeToggle_Tooltip5": "Pour utiliser cette fonctionnalité, le",
+    "HttpCacheAggressiveModeToggle_Tooltip6": "doit être activé.",
+    "HttpCacheMaxExpireTimeBox": "Délai maximum avant expiration",
+    "HttpCacheMaxExpireTimeBox_TooltipDefaultValue": "10 minutes",
+    "HttpCacheMaxExpireTimeBox_Tooltip1": "Détermine la durée maximale à laquelle la réponse sera conservée en cache (en minutes).",
+    "HttpCacheMaxExpireTimeBoxMinutes": "minutes",
+    "HttpCacheClearButton": "Vider le cache réseau",
+    "HttpCacheClearedText": "Les caches ont été vidés !",
+
+    "Plugin_LoadedInfoTitle": "Informations sur les plugins chargés",
+    "Plugin_OpenManagerBtn": "Ouvrir le menu de gestion des plugins",
+    "Plugin_AuthorBy": "par {0}",
+    "Plugin_LoadedInfoDesc": "Description",
+    "Plugin_LoadedInfoPluginVer": "Version du plugin",
+    "Plugin_LoadedInfoInterfaceVer": "Version de l'interfaçage",
+    "Plugin_LoadedInfoCreationDate": "Date de création",
+    "Plugin_LoadedInfoMainLibLocation": "Emplacement de la bibliothèque principale",
+    "Plugin_LoadedInfoLoadedPresets": "Préréglages chargés",
+    "Plugin_LoadedInfoClipboardCopied": "Informations copiées !",
+    "Plugin_PluginInfoNameUnknown": "Inconnu",
+    "Plugin_PluginInfoDescUnknown": "Aucune description",
+    "Plugin_PluginInfoAuthorUnknown": "Auteur inconnu"
+  },
+
+  "_PluginManagerPage": {
+    "PageTitle": "Menu de gestion des plugins",
+
+    "FileDialogTitle": "Importer un plugin Collapse Launcher",
+    "FileDialogFileFilter1": "Plugin Collapse Launcher",
+
+    "LeftPanelNoPluginTitle": "Hé ! Vous n'avez aucun plugin chargé…",
+    "LeftPanelNoPluginButton1": "Accéder au",
+    "LeftPanelNoPluginButton2": "catalogue de téléchargement de plugins",
+    "LeftPanelNoPluginButton3": " ",
+
+    "LeftPanelListViewTitle": "Informations sur les plugins chargés",
+
+    "ListViewMainActionButton1": "Vérifier les mises à jour des plugins",
+    "ListViewMainActionButton1AltChecking": "Vérification des mises à jour…",
+    "ListViewMainActionButton2": "Télécharger les mises à jour des plugins",
+    "ListViewMainActionButton3": "Activer la mise à jour automatique des plugins au lancement du launcher",
+
+    "ListViewItemContextButton1": "Désinstaller les plugins sélectionnés",
+    "ListViewItemContextButton2": "Restaurer les plugins sélectionnés",
+    "ListViewItemContextButton3": "Activer les plugins sélectionnés",
+    "ListViewItemContextButton4": "Désactiver les plugins sélectionnés",
+    "ListViewItemContextButton5": "Mettre à jour les plugins sélectionnés",
+    "ListViewItemContextButton6": "Ouvrir le dossier du plugin",
+    "ListViewItemContextButton7": "Ouvrir le dossier des plugins de Collapse Launcher",
+    "ListViewItemContextButton8": "Mettre à jour le plugin",
+
+    "ListViewItemContentButton1": "Désinstaller le plugin",
+    "ListViewItemContentButton2": "Restaurer le plugin",
+
+    "ListViewItemContextButtonCheckUpdateOnly": "Vérifier uniquement les mises à jour",
+    "ListViewItemContextButtonCheckAndDownloadUpdate": "Vérifier et télécharger la mise à jour",
+    "ListViewItemContextButtonDownloadUpdate": "Télécharger la mise à jour",
+
+    "ListViewItemUpdateStatusAvailable": "Mise à jour disponible !",
+    "ListViewItemUpdateStatusAvailableButton": "Mettre à jour vers la v{0}",
+    "ListViewItemUpdateStatusAvailableButtonUpdating": "Mise à jour ({0} %)…",
+    "ListViewItemUpdateStatusCompleted": "Le plugin a été mis à jour vers la v{0}. Veuillez redémarrer le launcher pour appliquer la mise à jour !",
+    "ListViewItemUpdateStatusChecking": "Vérification des mises à jour…",
+    "ListViewItemUpdateStatusUpToDate": "Le plugin est à jour !",
+
+    "ListViewFooterWarning1": "Vous devez redémarrer le launcher pour appliquer les changements !",
+    "ListViewFooterRestartButton": "Redémarrer le launcher",
+
+    "RightPanelImportTitle1": "Déposez le",
+    "RightPanelImportTitle2": "ou le",
+    "RightPanelImportTitle3": "ici",
+    "RightPanelImportTitle4": "ou cliquez sur cette boîte pour importer le plugin"
   },
 
   "_Misc": {
@@ -717,6 +805,7 @@
     "EverythingIsOkay": "Tout est en ordre !",
     "Cancel": "Annuler",
     "Close": "Fermer",
+    "CloseOverlay": "Fermer l'overlay",
     "UseCurrentDir": "Utiliser le dossier actuel",
     "UseDefaultDir": "Utiliser le dossier par défaut",
     "MoveToDifferentDir": "Déplacer vers un emplacement différent",
@@ -793,6 +882,7 @@
     "CDNDescription_Cloudflare": "Un miroir du dépôt officiel (principal) propulsé par le seau Cloudflare R2",
     "CDNDescription_Bitbucket": "Un miroir du dépôt officiel (principal) propulsé par BitBucket",
     "CDNDescription_GitLab": "Un miroir du dépôt officiel (principal) propulsé par GitLab",
+    "CDNDescription_CNB": "Un miroir du dépôt officiel (principal) propulsé par CNB",
 
     "LocateExecutable": "Localiser le programme",
     "OpenDownloadPage": "Ouvrir la page de téléchargement",
@@ -1057,13 +1147,30 @@
     "SophonIncrementUpdateUnavailSubtitle3": " et la mise à jour incrémentielle à partir de celle-ci n'est pas disponible. Il est cependant possible de mettre à jour le jeu en effectuant un nouveau téléchargement au complet de celui-ci.",
     "SophonIncrementUpdateUnavailSubtitle4": "Cliquez sur « {0} » pour procéder à la mise à jour complète ou sur « {1} » pour annuler le processus.",
 
+    "SophonAdditionalPkgAvailableUpdateTitle": "Des paquets additionnels sont disponibles pour la mise à jour !",
+    "SophonAdditionalPkgAvailableDownloadTitle": "Des paquets additionnels sont disponibles au téléchargement !",
+
+    "SophonAdditionalPkgAvailableSubtitle1": "Votre jeu a des paquets additionnels qui peuvent être téléchargés. La taille des données additionnelles est de",
+    "SophonAdditionalPkgAvailableSubtitle2": " (soit un téléchargement total de",
+    "SophonAdditionalPkgAvailableSubtitle3": "si vous décidez d'inclure les paquets additionnels).",
+    "SophonAdditionalPkgAvailableSubtitle4": "Cliquez sur «",
+    "SophonAdditionalPkgAvailableSubtitle5": "» si vous souhaitez télécharger les paquets additionnels, ou sur «",
+    "SophonAdditionalPkgAvailableSubtitle6": "» si vous ne voulez télécharger que les données de base uniquement (soit",
+    "SophonAdditionalPkgAvailableSubtitle7": "au total).",
+    "SophonAdditionalPkgAvailableFootnote1": "Note :",
+    "SophonAdditionalPkgAvailableFootnote2": "Vous pourriez être contraint de télécharger les paquets additionnels plus tard en jeu si vous décidez de ne télécharger que les ressources de base.",
+    "SophonAdditionalPkgSeeDetailsBtn": "Voir les détails sur les paquets additionnels",
+    "SophonAdditionalConfirmYesBtn": "Tout télécharger",
+    "SophonAdditionalConfirmNoBtn": "Données de base uniquement",
+
     "UACWarningTitle": "Avertissement : UAC désactivé détecté",
     "UACWarningContent": "Désactiver le Contrôle de compte d'utilisateur (UAC) n'est jamais une bonne idée.\r\nLa sécurité de votre système d'exploitation pourrait en pâtir ainsi qu'empêcher votre jeu de s'exécuter correctement.\r\n\r\nCliquez sur « En savoir plus » pour voir comment activer l'UAC.\r\nL'entrée relatif est : Exécuter tous les administrateurs en mode d’approbation Administration.",
     "UACWarningLearnMore": "En savoir plus",
     "UACWarningDontShowAgain": "Ne plus afficher",
 
     "EnsureExitTitle": "Quitter l'application",
-    "EnsureExitSubtitle": "Il y a des tâches critiques en cours en arrière-plan. Êtes-vous sûr de vouloir quitter l'application ?",
+    "EnsureExitSubtitle": "Des opérations critiques s'exécutent actuellement en arrière-plan.",
+    "EnsureExitSubtitle2": "Êtes-vous sûr de vouloir quitter ?",
 
     "UserFeedback_DialogTitle": "Partagez vos pensées",
     "UserFeedback_TextFieldTitleHeader": "Titre de l'avis",
@@ -1076,7 +1183,27 @@
     "UserFeedback_SubmitBtn": "Envoyer",
     "UserFeedback_SubmitBtn_Processing": "Traitement…",
     "UserFeedback_SubmitBtn_Completed": "Commentaires envoyés !",
-    "UserFeedback_SubmitBtn_Cancelled": "Annulé !"
+    "UserFeedback_SubmitBtn_Cancelled": "Annulé !",
+
+    "PluginManagerUpdateAvailableTitle": "Vous avez {0} plugin(s) en attente de mise à jour",
+    "PluginManagerUpdateAvailableSubtitle1": "{0} plugin(s) demandent a être mis à jour. Vous devez redémarrer votre launcher afin d'appliquer la mise à jour des plugins suivants :",
+    "PluginManagerUpdateAvailableSubtitle2": "Voulez-vous redémarrer le launcher ?",
+    "PluginManagerUpdateAvailableCancelBtn": "Plus tard",
+    "PluginManagerUpdateAvailableConfirmBtn": "Redémarrer",
+    "PluginManagerUpdateAvailableToManagerMenuBtn": "Accéder au {0}",
+
+    "LauncherRestartTitle": "Redémarrer le launcher",
+    "LauncherRestartSubtitle1": "Vous êtes sur le point de redémarrer le launcher. Assurez-vous de fermer ou stopper tout processus d'arrière-plan en cours avant de redémarrer.",
+    "LauncherRestartSubtitle2": "Êtes-vous sûr de vouloir redémarrer le launcher ?",
+
+    "PostInstallBehaviour_Title": "Comportement post-installation/mise à jour",
+    "PostInstallBehaviour_Subtitle": "Comportement après la réussite de l'opération",
+    "PostInstallBehaviour_Subtitle2": "Délai avant le redémarrage/arrêt",
+    "PostInstallBehaviour_EnumNothing": "Ne rien faire",
+    "PostInstallBehaviour_EnumStartGame": "Démarrer le jeu",
+    "PostInstallBehaviour_EnumHibernate": "Mettre en veille prolongée",
+    "PostInstallBehaviour_EnumRestart": "Redémarrer l'ordinateur",
+    "PostInstallBehaviour_EnumShutdown": "Éteindre l'ordinateur"
   },
 
   "_FileMigrationProcess": {
@@ -1316,7 +1443,7 @@
     "Graphics_DlssQuality": "NVIDIA DLSS",
     "Graphics_SelfShadow": "Ombre du personnage en temps réel lors de l'exploration",
     "Graphics_HalfResTransparent": "Transparence semi-résolution",
-    
+
     "Graphics_DLSS_UHP": "Performance ultra",
     "Graphics_DLSS_Perf": "Performance",
     "Graphics_DLSS_Balanced": "Équilibré",
@@ -1613,7 +1740,8 @@
     "Audio_PlaybackDev": "Périphérique de sortie audio",
     "Audio_PlaybackDev_Headphones": "Casque",
     "Audio_PlaybackDev_Speakers": "Haut-parleurs",
-    "Audio_PlaybackDev_TV": "Téléviseur"
+    "Audio_PlaybackDev_TV": "Téléviseur",
+    "Audio_Ambient": "Volume des bruits d'ambiance"
   },
 
   "_NotificationToast": {

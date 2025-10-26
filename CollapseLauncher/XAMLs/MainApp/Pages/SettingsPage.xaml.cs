@@ -297,7 +297,7 @@ namespace CollapseLauncher.Pages
         {
             try
             {
-                var stream = BackgroundMediaUtility.GetAlternativeFileStream();
+                var stream = BackgroundMediaUtility.GetAlternativeImageStream();
                 if (stream != null)
                     await stream.DisposeAsync();
 
@@ -566,10 +566,10 @@ namespace CollapseLauncher.Pages
 
             if (currentMediaType == MediaType.StillImage)
             {
-                FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+                var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
 
                 if (croppedImage == null) return;
-                BackgroundMediaUtility.SetAlternativeFileStream(croppedImage);
+                BackgroundMediaUtility.SetAlternativeImageStream(croppedImage);
             }
 
             LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal = file;
@@ -581,10 +581,6 @@ namespace CollapseLauncher.Pages
             if (!isUseRegionCustomBg)
             {
                 BackgroundImgChanger.ChangeBackground(LauncherMetadataHelper.CurrentMetadataConfig.GameLauncherApi.GameBackgroundImgLocal, null, true, true, true);
-            }
-            else if (!string.IsNullOrEmpty(currentGameProperty.GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath))
-            {
-                _ = BackgroundMediaUtility.GetMediaType(currentGameProperty.GameSettings?.SettingsCollapseMisc?.CustomRegionBGPath);
             }
         }
 

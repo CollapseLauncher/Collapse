@@ -637,10 +637,10 @@ public sealed partial class HomePage
             
         if (currentMediaType == MediaType.StillImage)
         {
-            FileStream croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
+            var croppedImage = await ImageLoaderHelper.LoadImage(file, true, true);
             
             if (croppedImage == null) return;
-            SetAlternativeFileStream(croppedImage);
+            SetAlternativeImageStream(croppedImage);
         }
 
         if (CurrentGameProperty?.GameSettings?.SettingsCollapseMisc != null)

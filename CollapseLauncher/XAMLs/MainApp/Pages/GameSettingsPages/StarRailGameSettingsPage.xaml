@@ -133,6 +133,7 @@
                                                       HorizontalAlignment="Left"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{x:Bind IsMobileMode, Mode=TwoWay}"
+                                                      IsEnabled="False"
                                                       ToolTipService.ToolTip="{x:Bind helper:Locale.Lang._Misc.Generic_GameFeatureDeprecation}">
                                                 <TextBlock x:Name="MobileModeToggleText"
                                                            TextWrapping="Wrap" />
