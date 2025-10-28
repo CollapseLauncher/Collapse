@@ -11,9 +11,9 @@ jobs:
     steps:
       - name: Check Release Name and Extract Version
         id: check
+        # Find X.Y.Z version, then check for "Preview" after it for regex
         run: |
           RELEASE_NAME="${{ github.event.release.name }}"
-          # Find X.Y.Z version, then check for "Preview" after it for regex
           if [[ "$RELEASE_NAME" =~ (\d+\.\d+\.\d+) ]]; then
             VERSION="${BASH_REMATCH[1]}"
           else
@@ -40,7 +40,7 @@ jobs:
       - name: Publish CollapseLauncher.Collapse (Stable) to WinGet
         uses: vedantmgoyal9/winget-releaser@main
         with:
-          identifier: CollapseLauncher.Collapse # <--- Corrected Stable ID
+          identifier: CollapseLauncher.Collapse
           version: ${{ needs.determine_channel.outputs.version }}
           installers-regex: '\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
