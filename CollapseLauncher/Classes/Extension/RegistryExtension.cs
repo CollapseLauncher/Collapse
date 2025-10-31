@@ -75,7 +75,7 @@ public static class RegistryExtension
         }
         catch (Exception ex) when (getReloadedRegistry != null)
         {
-            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey.Name} due to {ex.Message}" +
+            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey?.Name} due to {ex.Message}" +
                          $"\r\n\t Attempting to reload the registry key after running function...",
                          LogType.Error,
                          true);
@@ -87,7 +87,7 @@ public static class RegistryExtension
         }
         catch (Exception ex) when (getReloadedRegistry == null)
         {
-            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey.Name} due to {ex.Message}",
+            LogWriteLine($"[RegistryExtension::TryGetValue] Failed to get registry value {keyName} from {registryKey?.Name} due to {ex.Message}",
                          LogType.Error,
                          true);
         }
