@@ -217,7 +217,7 @@ public partial class HomePage
                 WindowUtility.WindowRestore();
                 break;
             case "ToTray":
-                WindowUtility.CurrentWindow!.Show();
+                WindowUtility.CurrentWindow?.Show();
                 WindowUtility.WindowRestore();
                 break;
             case "Nothing":
@@ -397,7 +397,7 @@ public partial class HomePage
                     // Added pragma in-case this will be reused in the future.
                 #pragma warning disable CS0162 // Unreachable code detected
                     parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
-                #pragma  warning enable CS0162 // Unreachable code detected
+                #pragma warning enable CS0162 // Unreachable code detected
 
                 Size screenSize = _Settings.SettingsScreen.sizeRes;
 
