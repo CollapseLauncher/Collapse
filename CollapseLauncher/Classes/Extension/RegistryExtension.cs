@@ -64,7 +64,8 @@ public static class RegistryExtension
                          LogType.Warning,
                          true);
 
-            registryKey = getReloadedRegistry();
+            registryKey         = getReloadedRegistry();
+            getReloadedRegistry = null;
             if (registryKey != null)
             {
                 goto TryGetValue;
