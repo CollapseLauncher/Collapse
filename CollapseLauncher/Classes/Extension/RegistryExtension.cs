@@ -50,9 +50,25 @@ public static class RegistryExtension
 
         try
         {
+        TryGetValue:
             result = registryKey.GetValue(keyName, defaultValue);
             bool isValueFound = result != null;
             result ??= defaultValue;
+
+            if (isValueFound || getReloadedRegistry == null)
+            {
+                return isValueFound;
+            }
+
+            LogWriteLine($"[RegistryExtension::TryGetValue] Value {keyName} not found in {registryKey.Name}. Attempting to reload the registry key...",
+                         LogType.Warning,
+                         true);
+
+            registryKey = getReloadedRegistry();
+            if (registryKey != null)
+            {
+                goto TryGetValue;
+            }
 
             return isValueFound;
         }
