@@ -785,9 +785,6 @@ namespace CollapseLauncher.Helper.Metadata
                 // Then update the stamp file
                 string stampLocalFilePath = Path.Combine(LauncherMetadataFolder, LauncherMetadataStampPrefix);
                 await UpdateStampContent(stampLocalFilePath, NewUpdateMetadataStamp);
-
-                // Then reinitialize the metadata
-                await Initialize();
             }
             catch (Exception ex)
             {
