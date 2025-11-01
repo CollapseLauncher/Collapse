@@ -147,7 +147,7 @@ namespace CollapseLauncher
                     IntroAnimationGrid.GetElementCompositor().CreateScalarKeyFrameAnimation("Opacity", 0, 1)
                     );
 
-                _ = Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
+                await Task.WhenAll(rootFrameAnimTask, introFrameAnimTask);
             }
             else
             {

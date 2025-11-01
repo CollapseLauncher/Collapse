@@ -189,20 +189,6 @@ public partial class MainPage : Page
 
     private void DeleteKeyboardShortcutHandlers() => KeyboardHandler.KeyboardAccelerators.Clear();
 
-    private static async Task DisableKbShortcuts(int time = 500, CancellationToken token = default)
-    {
-        try
-        {
-            CannotUseKbShortcuts = true;
-            await Task.Delay(time, token);
-            CannotUseKbShortcuts = false;
-        }
-        catch
-        {
-            // Ignore warnings
-        }
-    }
-
     private void RestoreCurrentRegion()
     {
         string gameName = GetAppConfigValue("GameCategory")!;
@@ -260,12 +246,12 @@ public partial class MainPage : Page
             return;
         }
 
-        ComboBoxGameRegion.SelectedValue = ComboBoxGameRegion.Items[index];
-        ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
+        ComboBoxGameRegion.SelectedValue          = ComboBoxGameRegion.Items[index];
         ChangeRegionConfirmBtn.IsEnabled          = false;
         ChangeRegionConfirmBtnNoWarning.IsEnabled = false;
         CannotUseKbShortcuts                      = true;
         DisableInstantRegionChange                = false;
+        ChangeRegionNoWarning(ChangeRegionConfirmBtn, null);
     }
 
     private async void ShowKeybinds_Invoked(KeyboardAccelerator? sender, KeyboardAcceleratorInvokedEventArgs? args)
@@ -281,7 +267,6 @@ public partial class MainPage : Page
 
         if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[0]) return;
 
-        _                                  = DisableKbShortcuts();
         NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[0];
         NavigateInnerSwitch("launcher");
 
@@ -293,7 +278,6 @@ public partial class MainPage : Page
 
         if (NavigationViewControl.SelectedItem == NavigationViewControl.SettingsItem) return;
 
-        _                                  = DisableKbShortcuts();
         NavigationViewControl.SelectedItem = NavigationViewControl.SettingsItem;
         Navigate(typeof(SettingsPage), "settings");
     }
@@ -419,7 +403,6 @@ public partial class MainPage : Page
 
         if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[2]) return;
 
-        _                                  = DisableKbShortcuts();
         NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[2];
         NavigateInnerSwitch("repair");
     }
@@ -431,7 +414,6 @@ public partial class MainPage : Page
         if (NavigationViewControl.SelectedItem == NavigationViewControl.MenuItems[3])
             return;
 
-        _                                  = DisableKbShortcuts();
         NavigationViewControl.SelectedItem = NavigationViewControl.MenuItems[3];
         NavigateInnerSwitch("caches");
     }
@@ -444,7 +426,6 @@ public partial class MainPage : Page
         if (NavigationViewControl.SelectedItem == NavigationViewControl.FooterMenuItems.Last())
             return;
 
-        _                                  = DisableKbShortcuts();
         NavigationViewControl.SelectedItem = NavigationViewControl.FooterMenuItems.Last();
         switch (CurrentGameProperty.GamePreset)
         {

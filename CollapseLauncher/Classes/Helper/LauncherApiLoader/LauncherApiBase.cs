@@ -127,11 +127,11 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
                                           ErrorLoadRoutineDelegate? errorLoadRoutine,
                                           CancellationToken         token)
         {
-            _ = beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask;
-
             try
             {
                 IsLoadingCompleted = false;
+                await (beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
+
                 await LoadAsyncInner(onTimeoutRoutine, token);
                 await (afterLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
 
