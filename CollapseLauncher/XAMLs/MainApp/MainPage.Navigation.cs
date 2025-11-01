@@ -35,112 +35,118 @@ public partial class MainPage : Page
 {
     private void InitializeNavigationItems(bool ResetSelection = true)
     {
-        DispatcherQueue.TryEnqueue(() =>
-                                   {
-                                       NavigationViewControl.IsSettingsVisible = true;
-                                       NavigationViewControl.MenuItems.Clear();
-                                       NavigationViewControl.FooterMenuItems.Clear();
+        DispatcherQueue.TryEnqueue(Impl);
+        return;
 
-                                       IGameVersion CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
+        void Impl()
+        {
+            NavigationViewControl.IsSettingsVisible = true;
+            NavigationViewControl.MenuItems.Clear();
+            NavigationViewControl.FooterMenuItems.Clear();
 
-                                       FontIcon IconLauncher     = new FontIcon { Glyph = "" };
-                                       FontIcon IconRepair       = new FontIcon { Glyph = "" };
-                                       FontIcon IconCaches       = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
-                                       FontIcon IconGameSettings = new FontIcon { Glyph = "" };
-                                       FontIcon IconAppSettings  = new FontIcon { Glyph = "" };
+            IGameVersion CurrentGameVersionCheck = GetCurrentGameProperty().GameVersion;
 
-                                       if (m_appMode == AppMode.Hi3CacheUpdater)
-                                       {
-                                           if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
-                                           {
-                                               NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                       { Icon = IconCaches, Tag = "caches" }
-                                                  .BindNavigationViewItemText("_CachesPage", "PageTitle"));
-                                           }
-                                           return;
-                                       }
+            FontIcon IconLauncher = new FontIcon { Glyph = "" };
+            FontIcon IconRepair = new FontIcon { Glyph = "" };
+            FontIcon IconCaches = new FontIcon { Glyph = m_isWindows11 ? "" : "" };
+            FontIcon IconGameSettings = new FontIcon { Glyph = "" };
+            FontIcon IconAppSettings = new FontIcon { Glyph = "" };
 
-                                       NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                                                   { Icon = IconLauncher, Tag = "launcher" }
-                                                                              .BindNavigationViewItemText("_HomePage", "PageTitle"));
+            if (m_appMode == AppMode.Hi3CacheUpdater)
+            {
+                if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
+                {
+                    NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                                { Icon = IconCaches, Tag = "caches" }
+                                                           .BindNavigationViewItemText("_CachesPage",
+                                                                "PageTitle"));
+                }
+                return;
+            }
 
-                                       NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
-                                                                              .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                        { Icon = IconLauncher, Tag = "launcher" }
+                                                   .BindNavigationViewItemText("_HomePage", "PageTitle"));
 
-                                       if (CurrentGameVersionCheck?.GamePreset.IsRepairEnabled ?? false)
-                                       {
-                                           NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                                                       { Icon = IconRepair, Tag = "repair" }
-                                                                                  .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
-                                       }
+            NavigationViewControl.MenuItems.Add(new NavigationViewItemHeader()
+                                                   .BindNavigationViewItemText("_MainPage", "NavigationUtilities"));
 
-                                       if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
-                                       {
-                                           NavigationViewControl.MenuItems.Add(new NavigationViewItem
-                                                                                       { Icon = IconCaches, Tag = "caches" }
-                                                                                  .BindNavigationViewItemText("_CachesPage", "PageTitle"));
-                                       }
+            if (CurrentGameVersionCheck?.GamePreset.IsRepairEnabled ?? false)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                            { Icon = IconRepair, Tag = "repair" }
+                                                       .BindNavigationViewItemText("_GameRepairPage", "PageTitle"));
+            }
 
-                                       switch (CurrentGameVersionCheck?.GameType)
-                                       {
-                                           case GameNameType.Honkai:
-                                               NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                       { Icon = IconGameSettings, Tag = "honkaigamesettings" }
-                                                  .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
-                                               break;
-                                           case GameNameType.StarRail:
-                                               NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                       { Icon = IconGameSettings, Tag = "starrailgamesettings" }
-                                                  .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
-                                               break;
-                                           case GameNameType.Genshin:
-                                               NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                       { Icon = IconGameSettings, Tag = "genshingamesettings" }
-                                                  .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
-                                               break;
-                                           case GameNameType.Zenless:
-                                               NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
-                                                       { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
-                                                  .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
-                                               break;
-                                       }
+            if (CurrentGameVersionCheck?.GamePreset.IsCacheUpdateEnabled ?? false)
+            {
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                                                            { Icon = IconCaches, Tag = "caches" }
+                                                       .BindNavigationViewItemText("_CachesPage", "PageTitle"));
+            }
 
-                                       if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
-                                       {
-                                           SettingsItem.Icon = IconAppSettings;
-                                           _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
-                                       }
+            switch (CurrentGameVersionCheck?.GameType)
+            {
+                case GameNameType.Honkai:
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "honkaigamesettings" }
+                                                                 .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
+                    break;
+                case GameNameType.StarRail:
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "starrailgamesettings" }
+                                                                 .BindNavigationViewItemText("_StarRailGameSettingsPage", "PageTitle"));
+                    break;
+                case GameNameType.Genshin:
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "genshingamesettings" }
+                                                                 .BindNavigationViewItemText("_GenshinGameSettingsPage", "PageTitle"));
+                    break;
+                case GameNameType.Zenless:
+                    NavigationViewControl.FooterMenuItems.Add(new NavigationViewItem
+                                                                      { Icon = IconGameSettings, Tag = "zenlessgamesettings" }
+                                                                 .BindNavigationViewItemText("_GameSettingsPage", "PageTitle"));
+                    break;
+            }
 
-                                       foreach (var dependency in NavigationViewControl.FindDescendants().OfType<FrameworkElement>())
-                                       {
-                                           // Avoid any icons to have shadow attached if it's not from this page
-                                           if (dependency.BaseUri.AbsolutePath != BaseUri.AbsolutePath)
-                                           {
-                                               continue;
-                                           }
+            if (NavigationViewControl.SettingsItem is NavigationViewItem SettingsItem)
+            {
+                SettingsItem.Icon = IconAppSettings;
+                _ = SettingsItem.BindNavigationViewItemText("_SettingsPage", "PageTitle");
+            }
 
-                                           switch (dependency)
-                                           {
-                                               case FontIcon icon:
-                                                   AttachShadowNavigationPanelItem(icon);
-                                                   break;
-                                               case AnimatedIcon animIcon:
-                                                   AttachShadowNavigationPanelItem(animIcon);
-                                                   break;
-                                           }
-                                       }
-                                       AttachShadowNavigationPanelItem(IconAppSettings);
+            foreach (FrameworkElement dependency in NavigationViewControl
+                                                   .FindDescendants()
+                                                   .OfType<FrameworkElement>())
+            {
+                // Avoid any icons to have shadow attached if it's not from this page
+                if (dependency.BaseUri.AbsolutePath != BaseUri.AbsolutePath)
+                {
+                    continue;
+                }
 
-                                       if (ResetSelection)
-                                       {
-                                           NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
-                                       }
+                switch (dependency)
+                {
+                    case FontIcon icon:
+                        AttachShadowNavigationPanelItem(icon);
+                        break;
+                    case AnimatedIcon animIcon:
+                        AttachShadowNavigationPanelItem(animIcon);
+                        break;
+                }
+            }
+            AttachShadowNavigationPanelItem(IconAppSettings);
 
-                                       NavigationViewControl.ApplyNavigationViewItemLocaleTextBindings();
+            if (ResetSelection)
+            {
+                NavigationViewControl.SelectedItem = (NavigationViewItem)NavigationViewControl.MenuItems[0];
+            }
 
-                                       InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
-                                       MainPageGrid.SetAllControlsCursorRecursive(handCursor);
-                                   });
+            NavigationViewControl.ApplyNavigationViewItemLocaleTextBindings();
+
+            InputSystemCursor handCursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
+            MainPageGrid.SetAllControlsCursorRecursive(handCursor);
+        }
     }
 
     private static void AttachShadowNavigationPanelItem(FrameworkElement element)
