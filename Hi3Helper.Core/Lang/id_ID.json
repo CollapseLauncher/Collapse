@@ -1720,6 +1720,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "(Eksperimental)",
     "Graphics_ColorFilter": "Penguatan Filter Warna",
     "Graphics_RenderRes": "Resolusi Render",
     "Graphics_EffectsQ": "Kualitas Efek",
@@ -1730,7 +1731,18 @@
     "Audio_PlaybackDev_Headphones": "Headphone",
     "Audio_PlaybackDev_Speakers": "Speaker",
     "Audio_PlaybackDev_TV": "Televisi",
-    "Audio_Ambient": "Volume Suara Sekitar"
+    "Audio_Ambient": "Volume Suara Sekitar",
+    "AdvancedGraphics_Title": "Pengaturan Grafis Lanjutan",
+    "AdvancedGraphics_Tooltip1": "Beberapa fitur hanya bisa digunakan kalau kamu punya Kartu Grafis Nvidia GeForce Seri RTX dan fitur DirectX 12 API dinyalakan.",
+    "AdvancedGraphics_Tooltip2": "Perlu diingat bahwa fitur yang tersedia pada pengaturan ini adalah EKSPERIMENTAL. Resiko ditanggung sendiri!",
+    "AdvancedGraphics_UseDirectX12API": "Gunakan DirectX 12 API",
+    "AdvancedGraphics_RayTracing": "Ray Tracing",
+    "AdvancedGraphics_RayTracingQ": "Kualitas Ray Tracing",
+    "AdvancedGraphics_SuperScaling": "Super Scaling",
+    "AdvancedGraphics_SuperScalingQ": "Prioritas Super Scaling",
+    "AdvancedGraphics_SuperScalingQ_Performance": "Performa",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "Seimbang",
+    "AdvancedGraphics_SuperScalingQ_Quality": "Kualitas"
   },
 
   "_NotificationToast": {

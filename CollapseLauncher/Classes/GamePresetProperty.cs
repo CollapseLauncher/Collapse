@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GamePlaytime;
+﻿using CollapseLauncher.Classes.GameManagement.GameSettings;
+using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
@@ -82,7 +83,7 @@ namespace CollapseLauncher
                     PluginGameVersionWrapper  pluginGameVersion  = new PluginGameVersionWrapper(pluginPresetConfig);
 
                     property.GameVersion  = pluginGameVersion;
-                    property.GameSettings = SettingsBase.CreateBaseFrom(pluginGameVersion, true);
+                    property.GameSettings = SettingsBase.CreateBaseFrom<DummyGameSettings>(pluginGameVersion, true);
                     property.GameCache    = null;
                     property.GameRepair   = null;
                     property.GameInstall  = new PluginGameInstallWrapper(uiElementParent, pluginPresetConfig, pluginGameVersion);

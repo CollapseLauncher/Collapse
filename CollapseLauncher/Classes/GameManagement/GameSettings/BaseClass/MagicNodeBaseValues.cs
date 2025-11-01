@@ -13,6 +13,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.GameSettings.Base
@@ -204,7 +205,7 @@ namespace CollapseLauncher.GameSettings.Base
             // Otherwise, return the default value instead
             return defaultValue;
 
-            TEnum EnumFromInt(int value) => Unsafe.As<int, TEnum>(ref value); // Unsafe casting from int to TEnum
+            static TEnum EnumFromInt(int value) => Unsafe.As<int, TEnum>(ref value); // Unsafe casting from int to TEnum
         }
 
         public static void SetAsJsonNode(this JsonNode? node, string keyName, JsonNode? jsonNode)
@@ -270,19 +271,19 @@ namespace CollapseLauncher.GameSettings.Base
                 jsonObject.Add(new KeyValuePair<string, JsonNode?>(keyName, jsonValue));
             return;
 
-            JsonValue AsEnumNumber(TEnum v)
+            static JsonValue AsEnumNumber(TEnum v)
             {
                 int enumAsNumber = Unsafe.As<TEnum, int>(ref v);
                 return JsonValue.Create(enumAsNumber);
             }
 
-            JsonValue? AsEnumString(TEnum v)
+            static JsonValue? AsEnumString(TEnum v)
             {
                 string? enumName = Enum.GetName(v);
                 return JsonValue.Create(enumName);
             }
 
-            JsonValue AsEnumNumberString(TEnum v)
+            static JsonValue AsEnumNumberString(TEnum v)
             {
                 int enumAsNumber = Unsafe.As<TEnum, int>(ref v);
                 string enumAsNumberString = $"{enumAsNumber}";
@@ -328,16 +329,16 @@ namespace CollapseLauncher.GameSettings.Base
         [JsonIgnore]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-        public byte[] Magic { get; protected set; }
+        public byte[] Magic { get; private set; }
 
         [JsonIgnore]
-        protected SettingsGameVersionManager GameVersionManager { get; set; }
+        private SettingsGameVersionManager GameVersionManager { get; set; }
 
         [JsonIgnore]
-        public JsonNode? SettingsJsonNode { get; protected set; }
+        protected JsonNode? SettingsJsonNode { get; private set; }
 
         [JsonIgnore]
-        public JsonTypeInfo<T?> TypeInfo { get; protected set; }
+        private JsonTypeInfo<T?> TypeInfo { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 
@@ -361,7 +362,7 @@ namespace CollapseLauncher.GameSettings.Base
                              $"{raw}", LogType.Debug, true);
 #endif
                 JsonNode? node = raw.DeserializeAsJsonNode();
-                T data = new T();
+                T data = new();
                 data.InjectNodeAndMagic(node, magic, versionManager, typeInfo);
                 return data;
             }
@@ -422,14 +423,14 @@ namespace CollapseLauncher.GameSettings.Base
 
         public override int GetHashCode() => SettingsJsonNode?.GetHashCode() ?? 0;
 
-        public bool Equals(T? other) => JsonNode.DeepEquals(SettingsJsonNode, other?.SettingsJsonNode);
+        private bool Equals(T? other) => JsonNode.DeepEquals(SettingsJsonNode, other?.SettingsJsonNode);
 
-        protected virtual void InjectNodeAndMagic(JsonNode? jsonNode, byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo)
+        private void InjectNodeAndMagic(JsonNode? jsonNode, byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo)
         {
-            SettingsJsonNode = jsonNode;
+            SettingsJsonNode   = jsonNode;
             GameVersionManager = versionManager;
-            Magic = magic;
-            TypeInfo = typeInfo;
+            Magic              = magic;
+            TypeInfo           = typeInfo;
         }
     }
 }

@@ -4,6 +4,8 @@ using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Text;
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
 
@@ -70,6 +72,36 @@ namespace CollapseLauncher.GameSettings.Zenless
             base.SaveSettings();
             SettingsScreen.Save();
             GeneralData.Save();
+        }
+
+        public override string GetLaunchArguments(GamePresetProperty property)
+        {
+            StringBuilder parameter = new(1024);
+
+            if (SettingsCollapseScreen.UseCustomResolution)
+            {
+                Size screenSize = SettingsScreen.sizeRes;
+                parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
+            }
+
+            if (SettingsCollapseScreen.GameGraphicsAPI == 4)
+            {
+                parameter.Append("-use-d3d12 ");
+            }
+
+            if (SettingsCollapseScreen.UseBorderlessScreen)
+            {
+                parameter.Append("-popupwindow ");
+            }
+
+            string customArgs = SettingsCustomArgument.CustomArgumentValue;
+            if (SettingsCollapseMisc.UseCustomArguments &&
+                !string.IsNullOrEmpty(customArgs))
+            {
+                parameter.Append(customArgs);
+            }
+
+            return parameter.ToString();
         }
 
         public override IGameSettingsUniversal AsIGameSettingsUniversal() => this;

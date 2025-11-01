@@ -58,7 +58,7 @@ namespace CollapseLauncher.GameSettings.Universal
         ///     - 4 = DirectX 12 (Feature Level: 12.0) [Experimental]<br/><br/>
         /// Default: 3
         /// </summary>
-        public byte GameGraphicsAPI { get; set; } = 3;
+        public int GameGraphicsAPI { get; set; } = 3;
         #endregion
 
         #region Methods

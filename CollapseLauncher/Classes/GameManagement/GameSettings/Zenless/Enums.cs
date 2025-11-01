@@ -141,6 +141,27 @@ public enum QualityOption5
 }
 
 /// <summary>
+/// Available options for Super Resolution Scaling.
+/// Default : Disabled (0)
+/// </summary>
+public enum SuperResolutionScalingOption
+{
+    Disabled = 0,
+    DLSS
+}
+
+/// <summary>
+/// Available options for Super Resolution Scaling Quality.
+/// Default : Balanced (1)
+/// </summary>
+public enum SuperResolutionScalingQuality
+{
+    Performance,
+    Balanced,
+    Quality
+}
+
+/// <summary>
 /// Available options for Audio Playback Device. Alters sound profile <br/>
 /// Default : Headphones, Options: Headphones, Speakers, TV
 /// </summary>

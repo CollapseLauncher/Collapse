@@ -88,7 +88,7 @@ public partial class HomePage
             int height = _Settings.SettingsScreen?.height ?? 0;
             int width  = _Settings.SettingsScreen?.width ?? 0;
 
-            string additionalArguments = GetLaunchArguments(_Settings);
+            string additionalArguments = _Settings.GetLaunchArguments(CurrentGameProperty);
 
             if (!usePluginGameLaunchApi)
             {
@@ -266,191 +266,6 @@ public partial class HomePage
 
     #region Game Launch Argument Builder
 
-    private bool RequireWindowExclusivePayload;
-
-    private string GetLaunchArguments(IGameSettingsUniversal _Settings)
-    {
-        StringBuilder parameter = new StringBuilder();
-
-        switch (CurrentGameProperty.GameVersion?.GameType)
-        {
-            case GameNameType.Honkai:
-            {
-                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
-                {
-                    parameter.Append("-window-mode exclusive ");
-                    RequireWindowExclusivePayload = true;
-                }
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-
-                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
-
-                if (apiID == 4)
-                {
-                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                    {
-                        var size = ScreenProp.CurrentResolution;
-                        parameter.Append($"-screen-width {size.Width} -screen-height {size.Height} ");
-                    }
-                    else
-                        parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-                else
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-
-                switch (apiID)
-                {
-                    case 0:
-                        parameter.Append("-force-feature-level-10-1 ");
-                        break;
-                    // case 1 is default
-                    default:
-                        parameter.Append("-force-feature-level-11-0 -force-d3d11-no-singlethreaded ");
-                        break;
-                    case 2:
-                        parameter.Append("-force-feature-level-11-1 ");
-                        break;
-                    case 3:
-                        parameter.Append("-force-feature-level-11-1 -force-d3d11-no-singlethreaded ");
-                        break;
-                    case 4:
-                        parameter.Append("-force-d3d12 ");
-                        break;
-                }
-
-                break;
-            }
-            case GameNameType.StarRail:
-            {
-                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
-                {
-                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
-                    RequireWindowExclusivePayload = true;
-                }
-
-                // Enable mobile mode
-                //if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
-                if (false) // Force disable Mobile mode due to reported bannable offense in GI. Thank you HoYo.
-                    // Added pragma in-case this will be reused in the future.
-            #pragma warning disable CS0162 // Unreachable code detected
-                {
-                    const string regLoc  = GameSettings.StarRail.Model.ValueName;
-                    var          regRoot = GameSettings.Base.SettingsBase.RegistryRoot;
-
-                    if (regRoot != null || !string.IsNullOrEmpty(regLoc))
-                    {
-                        var regModel = (byte[])regRoot!.GetValue(regLoc, null);
-
-                        if (regModel != null)
-                        {
-                            string regB64 = Convert.ToBase64String(regModel);
-                            parameter.Append($"-is_cloud 1 -platform_type CLOUD_WEB_TOUCH -graphics_setting {regB64} ");
-                        }
-                        else
-                        {
-                            LogWriteLine("Failed enabling MobileMode for HSR: regModel is null.", LogType.Error, true);
-                        }
-                    }
-                    else
-                    {
-                        LogWriteLine("Failed enabling MobileMode for HSR: regRoot/regLoc is unexpectedly uninitialized.",
-                                     LogType.Error, true);
-                    }
-                }
-            #pragma warning restore CS0162 // Unreachable code detected
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-
-                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
-
-                if (apiID == 4)
-                {
-                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                    {
-                        var size = ScreenProp.CurrentResolution;
-                        parameter.Append($"-screen-width {size.Width} -screen-height {size.Height} ");
-                    }
-                    else
-                        parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-                else
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-
-                break;
-            }
-            case GameNameType.Genshin:
-            {
-                if (_Settings.SettingsCollapseScreen.UseExclusiveFullscreen)
-                {
-                    parameter.Append("-window-mode exclusive -screen-fullscreen 1 ");
-                    RequireWindowExclusivePayload = true;
-                    LogWriteLine("Exclusive mode is enabled in Genshin Impact, stability may suffer!\r\nTry not to Alt+Tab when game is on its loading screen :)", LogType.Warning, true);
-                }
-
-                // Enable mobile mode
-                // Enable mobile mode
-                //if (_Settings.SettingsCollapseMisc.LaunchMobileMode)
-                if (false) // Force disable Mobile mode due to reported bannable offense in GI. Thank you HoYo.
-                    // Added pragma in-case this will be reused in the future.
-                #pragma warning disable CS0162 // Unreachable code detected
-                    parameter.Append("use_mobile_platform -is_cloud 1 -platform_type CLOUD_THIRD_PARTY_MOBILE ");
-                #pragma warning enable CS0162 // Unreachable code detected
-
-                Size screenSize = _Settings.SettingsScreen.sizeRes;
-
-                byte apiID = _Settings.SettingsCollapseScreen.GameGraphicsAPI;
-
-                if (apiID == 4)
-                {
-                    LogWriteLine("You are going to use DX12 mode in your game.\r\n\tUsing CustomScreenResolution or FullscreenExclusive value may break the game!", LogType.Warning);
-                    if (_Settings.SettingsCollapseScreen.UseCustomResolution && _Settings.SettingsScreen.isfullScreen)
-                    {
-                        var size = ScreenProp.CurrentResolution;
-                        parameter.Append($"-screen-width {size.Width} -screen-height {size.Height} ");
-                    }
-                    else
-                        parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-                else
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-
-                break;
-            }
-            case GameNameType.Zenless:
-            {
-                // does not support exclusive mode at all
-                // also doesn't properly support dx12 or dx11 st
-                
-                if (_Settings.SettingsCollapseScreen.UseCustomResolution)
-                {
-                    Size screenSize = _Settings.SettingsScreen.sizeRes;
-                    parameter.Append($"-screen-width {screenSize.Width} -screen-height {screenSize.Height} ");
-                }
-
-                break;
-            }
-        }
-
-        if (_Settings.SettingsCollapseScreen.UseBorderlessScreen)
-        {
-            parameter.Append("-popupwindow ");
-        }
-
-        if (!_Settings.SettingsCollapseMisc.UseCustomArguments)
-        {
-            return parameter.ToString();
-        }
-
-        string customArgs = _Settings.SettingsCustomArgument.CustomArgumentValue;
-        if (!string.IsNullOrEmpty(customArgs))
-            parameter.Append(customArgs);
-
-        return parameter.ToString();
-    }
-
     public string CustomArgsValue
     {
         get => CurrentGameProperty?.GameSettings?.SettingsCustomArgument.CustomArgumentValue;
@@ -569,15 +384,19 @@ public partial class HomePage
             await using FileStream fs =
                 new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
             using StreamReader reader = new StreamReader(fs);
+
+            bool requireWindowExclusivePayload =
+                CurrentGameProperty.GameSettings?.SettingsCollapseScreen.UseExclusiveFullscreen ?? false;
+
             while (true)
             {
                 while (!reader.EndOfStream)
                 {
                     var line = await reader.ReadLineAsync(WatchOutputLog.Token);
-                    if (RequireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
+                    if (requireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                     {
                         StartExclusiveWindowPayload();
-                        RequireWindowExclusivePayload = false;
+                        requireWindowExclusivePayload = false;
                     }
 
                     LogWriteLine(line!, LogType.Game, saveGameLog);

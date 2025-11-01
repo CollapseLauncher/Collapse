@@ -5,7 +5,7 @@ using System.IO;
 
 namespace CollapseLauncher.GameSettings.Base
 {
-    internal class SettingsBase : ImportExportBase, IGameSettings
+    internal abstract class SettingsBase : ImportExportBase, IGameSettings
     {
         #region Base Properties
         public virtual CustomArgs SettingsCustomArgument { get; set; }
@@ -48,11 +48,17 @@ namespace CollapseLauncher.GameSettings.Base
             return RegistryRoot;
         }
 
+        public abstract string GetLaunchArguments(GamePresetProperty property);
+
+        protected SettingsBase() {}
         protected SettingsBase(IGameVersion gameVersionManager) => GameVersionManager = gameVersionManager;
 
-        public static IGameSettings CreateBaseFrom(IGameVersion gameVersionManager, bool isEnableResizableWindow = false)
+        public static IGameSettings CreateBaseFrom<T>(IGameVersion gameVersionManager, bool isEnableResizableWindow = false)
+            where T : SettingsBase, new()
         {
-            SettingsBase settings = new SettingsBase(gameVersionManager);
+            SettingsBase settings = new T();
+            GameVersionManager = gameVersionManager;
+
             settings.InitializeSettings();
             settings.SettingsCollapseScreen.UseResizableWindow = isEnableResizableWindow;
 

@@ -31,6 +31,7 @@ using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI;
 using WinRT.Interop;
+using Rect = Windows.Foundation.Rect;
 using Size = System.Drawing.Size;
 using WindowId = Microsoft.UI.WindowId;
 // ReSharper disable InconsistentNaming

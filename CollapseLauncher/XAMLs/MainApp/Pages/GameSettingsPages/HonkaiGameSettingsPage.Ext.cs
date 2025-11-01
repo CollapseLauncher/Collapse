@@ -442,7 +442,7 @@ namespace CollapseLauncher.Pages
             set => Settings.SettingsGraphics.UseDistortion = value;
         }
 
-        public byte GraphicsAPI
+        public int GraphicsAPI
         {
             get => Settings.SettingsCollapseScreen.GameGraphicsAPI;
             set => Settings.SettingsCollapseScreen.GameGraphicsAPI = value;
