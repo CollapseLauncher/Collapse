@@ -497,10 +497,12 @@
         <ItemGroup>
             <FilesToDelete Include="$(PublishDir)*.winmd;" />
             <FilesToDelete Include="$(PublishDir)*.xml;" />
+            <FilesToDelete Include="$(PublishDir)DirectML.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Vision*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Workloads*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.AI*.dll;" />
             <FilesToDelete Include="$(PublishDir)Microsoft.Windows.Widgets*.dll;" />
+            <FilesToDelete Include="$(PublishDir)onnxruntime*.*;" />
             <FilesToDelete Include="$(PublishDir)workloads*.json;" />
         </ItemGroup>
         <Delete Files="@(FilesToDelete)" />
