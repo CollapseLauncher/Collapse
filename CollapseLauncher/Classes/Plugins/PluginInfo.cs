@@ -297,6 +297,8 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
         {
             setDnsResolverCallbackAsyncHandle(nint.Zero);
         }
+
+        Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
     }
 
     internal async Task Initialize(CancellationToken token = default)
@@ -321,27 +323,26 @@ public partial class PluginInfo : INotifyPropertyChanged, IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed)
+        if (_isDisposed || !IsLoaded)
         {
             return;
         }
 
         try
         {
-            // Dispose loaded preset config
-            foreach (PluginPresetConfigWrapper presetConfig in PresetConfigs)
-            {
-                presetConfig.Dispose();
-            }
-
+            // Disable callbacks
+            DisableDnsResolver();
             if (Handle.TryGetExport("SetLoggerCallback", out DelegateSetCallback setLoggerCallbackHandle))
             {
                 setLoggerCallbackHandle(nint.Zero);
                 Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} Logger Callbacks have been detached!", LogType.Debug, true);
             }
 
-            DisableDnsResolver();
-            Logger.LogWriteLine($"[PluginInfo] Plugin: {Name} DNS Resolver Callbacks have been detached!", LogType.Debug, true);
+            // Dispose loaded preset config
+            foreach (PluginPresetConfigWrapper presetConfig in PresetConfigs)
+            {
+                presetConfig.Dispose();
+            }
 
             // Try to dispose the IPlugin instance using the plugin's safe FreePlugin method first.
             if (Handle.TryGetExport("FreePlugin", out DelegateFreePlugin freePluginCallback))
