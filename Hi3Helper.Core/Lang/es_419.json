@@ -1731,6 +1731,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "(Experimental)",
     "Graphics_ColorFilter": "Fuerza Filtro de Color",
     "Graphics_RenderRes": "Calidad de Renderizado",
     "Graphics_EffectsQ": "Calidad del Efectos",
@@ -1741,7 +1742,18 @@
     "Audio_PlaybackDev_Headphones": "Auriculares",
     "Audio_PlaybackDev_Speakers": "Altavoces",
     "Audio_PlaybackDev_TV": "TV",
-    "Audio_Ambient": "Volumen Sonido Ambiente"
+    "Audio_Ambient": "Volumen Sonido Ambiente",
+    "AdvancedGraphics_Title": "Ajustes Gráficos Avanzados",
+    "AdvancedGraphics_Tooltip1": "Algunas funciones solo se pueden utilizar si tienes una tarjeta gráfica Nvidia GeForce RTX y habilitada la API DirectX 12",
+    "AdvancedGraphics_Tooltip2": "Ten en cuenta que todas las funciones en esta sección son EXPERIMENTALES. ¡Úselas bajo su propia responsabilidad!",
+    "AdvancedGraphics_UseDirectX12API": "Usar API DirectX 12",
+    "AdvancedGraphics_RayTracing": "Ray Tracing",
+    "AdvancedGraphics_RayTracingQ": "Calidad Ray Tracing ",
+    "AdvancedGraphics_SuperScaling": "Superescalado",
+    "AdvancedGraphics_SuperScalingQ": "Prioridad Superescalado",
+    "AdvancedGraphics_SuperScalingQ_Performance": "Rendimiento",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "Balanceado",
+    "AdvancedGraphics_SuperScalingQ_Quality": "Calidad"
   },
 
   "_NotificationToast": {
