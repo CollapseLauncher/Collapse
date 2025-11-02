@@ -42,11 +42,11 @@ namespace CollapseLauncher.GamePlaytime
             _gameVersionManager = gameVersionManager;
 
             CollapsePlaytime = CollapsePlaytime.Load(_registryRoot,
-                                              _gameVersionManager.GamePreset.HashID,
-                                              _gameVersionManager,
-                                              gameSettings);
-            
-            
+                                                     _gameVersionManager.GamePreset.HashID,
+                                                     _gameVersionManager,
+                                                     gameSettings);
+
+
             IGameSettingsUniversal gameSettingsUniversal = gameSettings.AsIGameSettingsUniversal();
             if ((DbHandler.IsEnabled ?? false) && gameSettingsUniversal.SettingsCollapseMisc.IsSyncPlaytimeToDatabase)
                 _ = CheckDb();

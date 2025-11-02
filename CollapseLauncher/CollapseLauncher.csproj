@@ -152,7 +152,7 @@
 
         <!-- Instruction Sets -->
         <!-- x86-x64-v2: base, sse, sse2, sse3, ssse3, sse4.1, sse4.2 -->
-        <IlcInstructionSet>x86-x64-v2</IlcInstructionSet>
+        <!-- <IlcInstructionSet>x86-x64-v2</IlcInstructionSet> -->
         
         <!-- Security thingymajig -->
         <!-- Disabling CFG for now due to stupid rust(y) libs which depends on CC compiler that don't even support CFG

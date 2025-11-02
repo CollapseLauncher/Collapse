@@ -1,5 +1,4 @@
 ﻿using CollapseLauncher.GameSettings.Base;
-using CollapseLauncher.Interfaces;
 using System.Text;
 // ReSharper disable VirtualMemberCallInConstructor
 
@@ -7,16 +6,9 @@ namespace CollapseLauncher.Classes.GameManagement.GameSettings;
 
 internal class DummyGameSettings : SettingsBase
 {
-    public DummyGameSettings() : base()
+    public DummyGameSettings()
     {
 
-    }
-
-    public DummyGameSettings(IGameVersion gameVersionManager)
-        : base(gameVersionManager)
-    {
-        // Initialize and Load Settings
-        InitializeSettings();
     }
 
     public override string GetLaunchArguments(GamePresetProperty property)

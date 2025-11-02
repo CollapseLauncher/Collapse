@@ -338,12 +338,15 @@ namespace CollapseLauncher.GameSettings.Base
         protected JsonNode? SettingsJsonNode { get; private set; }
 
         [JsonIgnore]
+        public IGameSettings ParentGameSettings => null!;
+
+        [JsonIgnore]
         private JsonTypeInfo<T?> TypeInfo { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 
         [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!", true)]
-        public static T Load() => throw new NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");
+        public static T Load(IGameSettings gameSettings) => throw new NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");
 
         public static T LoadWithMagic(byte[] magic, SettingsGameVersionManager versionManager, JsonTypeInfo<T?> typeInfo)
         {

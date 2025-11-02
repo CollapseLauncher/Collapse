@@ -7,7 +7,6 @@ using Hi3Helper.Win32.Screen;
 using Microsoft.Win32;
 using System;
 using System.Drawing;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable NonReadonlyMemberInGetHashCode
 // ReSharper disable InconsistentNaming
@@ -24,6 +23,8 @@ namespace CollapseLauncher.GameSettings.Zenless
         private const           string ValueNameScreenManagerHeightDef  = "Screenmanager Resolution Height Default_h1380706816";
         private const           string ValueNameScreenManagerFullscreen = "Screenmanager Fullscreen mode_h3630240806";
         private static readonly Size   CurrentRes                       = ScreenProp.CurrentResolution;
+
+        private ScreenManager(IGameSettings gameSettings) : base(gameSettings) {}
         #endregion
 
         #region Enums
@@ -114,15 +115,15 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         #region Methods
 #nullable enable
-        public static ScreenManager Load()
+        public static ScreenManager Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException("Cannot load Zenless Screen Manager settings as RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException("Cannot load Zenless Screen Manager settings as RegistryKey is unexpectedly not initialized!");
 
-                object? valueWidth = RegistryRoot.TryGetValue(ValueNameScreenManagerWidth, null, RefreshRegistryRoot);
-                object? valueHeight = RegistryRoot.TryGetValue(ValueNameScreenManagerHeight, null, RefreshRegistryRoot);
-                object? valueFullscreen = RegistryRoot.TryGetValue(ValueNameScreenManagerFullscreen, null, RefreshRegistryRoot);
+                object? valueWidth = gameSettings.RegistryRoot.TryGetValue(ValueNameScreenManagerWidth, null, gameSettings.RefreshRegistryRoot);
+                object? valueHeight = gameSettings.RegistryRoot.TryGetValue(ValueNameScreenManagerHeight, null, gameSettings.RefreshRegistryRoot);
+                object? valueFullscreen = gameSettings.RegistryRoot.TryGetValue(ValueNameScreenManagerFullscreen, null, gameSettings.RefreshRegistryRoot);
                 if (valueWidth != null && valueHeight != null && valueFullscreen != null)
                 {
                     int width = (int)valueWidth;
@@ -134,7 +135,7 @@ namespace CollapseLauncher.GameSettings.Zenless
                                  $"{ValueNameScreenManagerHeight} : {height}\r\n\t" +
                                  $"{ValueNameScreenManagerFullscreen} : {fullscreen}", LogType.Debug, true);
 #endif
-                    return new ScreenManager { width = width, height = height, fullscreen = fullscreen };
+                    return new ScreenManager(gameSettings) { width = width, height = height, fullscreen = fullscreen };
                 }
             }
             catch (Exception ex)
@@ -149,23 +150,23 @@ namespace CollapseLauncher.GameSettings.Zenless
                     $"{ex}", ex));
             }
 
-            return new ScreenManager();
+            return new ScreenManager(gameSettings);
         }
 
         public override void Save()
         {
             try
             {
-                RegistryRoot?.SetValue(ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerWidth,      width,      RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerWidthDef,   width,      RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerHeight,     height,     RegistryValueKind.DWord);
-                RegistryRoot?.SetValue(ValueNameScreenManagerHeightDef,  height,     RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerFullscreen, fullscreen, RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerWidth,      width,      RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerWidthDef,   width,      RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerHeight,     height,     RegistryValueKind.DWord);
+                ParentGameSettings.RegistryRoot?.SetValue(ValueNameScreenManagerHeightDef,  height,     RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved Zenless Settings:\r\n\t" +
-                             $"{ValueNameScreenManagerFullscreen} : {RegistryRoot?.GetValue(ValueNameScreenManagerFullscreen, null)}\r\n\t" +
-                             $"{ValueNameScreenManagerWidth} : {RegistryRoot?.GetValue(ValueNameScreenManagerWidth, null)}\r\n\t" +
-                             $"{ValueNameScreenManagerHeight} : {RegistryRoot?.GetValue(ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
+                             $"{ValueNameScreenManagerFullscreen} : {ParentGameSettings.RegistryRoot?.GetValue(ValueNameScreenManagerFullscreen, null)}\r\n\t" +
+                             $"{ValueNameScreenManagerWidth} : {ParentGameSettings.RegistryRoot?.GetValue(ValueNameScreenManagerWidth, null)}\r\n\t" +
+                             $"{ValueNameScreenManagerHeight} : {ParentGameSettings.RegistryRoot?.GetValue(ValueNameScreenManagerHeight, null)}", LogType.Debug, true);
 #endif
             }
             catch (Exception ex)

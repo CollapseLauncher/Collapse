@@ -739,7 +739,7 @@ namespace CollapseLauncher.GameSettings.Zenless
 
         [Obsolete("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!",
                   true)]
-        public new static GeneralData Load()
+        public static GeneralData Load()
         {
             throw new
                 NotSupportedException("Loading settings with Load() is not supported for IGameSettingsValueMagic<T> member. Use LoadWithMagic() instead!");

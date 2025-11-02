@@ -10,9 +10,9 @@ namespace CollapseLauncher.GameSettings.Genshin
 {
     internal class GenshinSettings : SettingsBase
     {
-        public GeneralData           SettingsGeneralData      { get; set; }
-        public VisibleBackground     SettingVisibleBackground { get; set; }
-        public WindowsHDR            SettingsWindowsHDR       { get; set; }
+        public GeneralData       SettingsGeneralData      { get; private set; }
+        public VisibleBackground SettingVisibleBackground { get; private set; }
+        public WindowsHDR        SettingsWindowsHDR       { get; private set; }
 
         public GenshinSettings(IGameVersion gameVersionManager)
             : base(gameVersionManager)
@@ -25,15 +25,15 @@ namespace CollapseLauncher.GameSettings.Genshin
         {
             // Load Settings
             base.InitializeSettings();
-            SettingsScreen           = ScreenManager.Load();
-            SettingVisibleBackground = VisibleBackground.Load();
-            SettingsWindowsHDR       = WindowsHDR.Load();
+            SettingsScreen           = ScreenManager.Load(this);
+            SettingVisibleBackground = VisibleBackground.Load(this);
+            SettingsWindowsHDR       = WindowsHDR.Load(this);
         }
 
         public override void ReloadSettings()
         {
             // To ease up resource and prevent bad JSON locking up launcher
-            SettingsGeneralData = GeneralData.Load();
+            SettingsGeneralData = GeneralData.Load(this);
             InitializeSettings();
         } 
 

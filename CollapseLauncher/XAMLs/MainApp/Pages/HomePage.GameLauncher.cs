@@ -51,18 +51,18 @@ public partial class HomePage
     private async void StartGame(object? sender, RoutedEventArgs? e)
     {
         // Initialize values
-        IGameSettingsUniversal _Settings   = CurrentGameProperty!.GameSettings!.AsIGameSettingsUniversal();
-        PresetConfig           _gamePreset = CurrentGameProperty!.GameVersion!.GamePreset;
+        IGameSettings? _Settings   = CurrentGameProperty.GameSettings;
+        PresetConfig   _gamePreset = CurrentGameProperty.GameVersion!.GamePreset;
 
         bool usePluginGameLaunchApi = _gamePreset is PluginPresetConfigWrapper { RunGameContext.IsFeatureAvailable: true };
 
-        bool isGenshin  = CurrentGameProperty!.GameVersion.GameType == GameNameType.Genshin;
+        bool isGenshin  = CurrentGameProperty.GameVersion.GameType == GameNameType.Genshin;
         bool giForceHDR = false;
 
         // Stop update check
         IsSkippingUpdateCheck = true;
         Process? proc           = null;
-        bool     isUseGameBoost = _Settings.SettingsCollapseMisc is { UseGameBoost: true };
+        bool     isUseGameBoost = _Settings?.SettingsCollapseMisc is { UseGameBoost: true };
 
         try
         {
@@ -71,7 +71,7 @@ public partial class HomePage
             if (isGenshin)
             {
                 giForceHDR = GetAppConfigValue("ForceGIHDREnable").ToBool();
-                if (giForceHDR) GenshinHDREnforcer();
+                if (giForceHDR) GenshinHDREnforcer(_Settings);
             }
 
             if (_Settings is { SettingsCollapseMisc: { UseAdvancedGameSettings: true, UseGamePreLaunchCommand: true } })
@@ -82,15 +82,15 @@ public partial class HomePage
                     await Task.Delay(delay);
             }
                 
-            int height = _Settings.SettingsScreen?.height ?? 0;
-            int width  = _Settings.SettingsScreen?.width ?? 0;
+            int height = _Settings?.SettingsScreen?.height ?? 0;
+            int width  = _Settings?.SettingsScreen?.width ?? 0;
 
-            string additionalArguments = _Settings.GetLaunchArguments(CurrentGameProperty);
+            string? additionalArguments = _Settings?.GetLaunchArguments(CurrentGameProperty);
 
             if (!usePluginGameLaunchApi)
             {
                 proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath)!, _gamePreset.GameExecutableName!);
+                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath), _gamePreset.GameExecutableName!);
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Arguments = additionalArguments;
                 LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
@@ -99,11 +99,11 @@ public partial class HomePage
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
                     proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
                                                        (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
-                        Path.GetDirectoryName(NormalizePath(GameDirPath))!)!;
+                        Path.GetDirectoryName(NormalizePath(GameDirPath))!);
                 }
                 else
                 {
-                    proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath)!;
+                    proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
                 }
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.Verb            = "runas";
@@ -129,7 +129,7 @@ public partial class HomePage
                 }
             }
 
-            if (_Settings.SettingsCollapseScreen.UseCustomResolution && height != 0 && width != 0)
+            if ((_Settings?.SettingsCollapseScreen.UseCustomResolution ?? false) && height != 0 && width != 0)
             {
                 SetBackScreenSettings(_Settings, height, width, CurrentGameProperty);
             }
@@ -181,7 +181,7 @@ public partial class HomePage
     }
 
     // Use this method to do something when game is closed
-    private async void GameRunningWatcher(IGameSettingsUniversal _settings)
+    private async void GameRunningWatcher(IGameSettings? _settings)
     {
         ArgumentNullException.ThrowIfNull(_settings);
 
@@ -476,10 +476,10 @@ public partial class HomePage
         }
     }
 
-    private static async void SetBackScreenSettings(IGameSettingsUniversal settingsUniversal,
-                                                    int                    height,
-                                                    int                    width,
-                                                    GamePresetProperty     gameProp)
+    private static async void SetBackScreenSettings(IGameSettings      settingsUniversal,
+                                                    int                height,
+                                                    int                width,
+                                                    GamePresetProperty gameProp)
     {
         // Wait for the game to fully initialize
         await Task.Delay(20000);
@@ -494,14 +494,14 @@ public partial class HomePage
             switch (gameProp.GamePreset.GameType)
             {
                 case GameNameType.Zenless:
-                    var screenManagerZ = GameSettings.Zenless.ScreenManager.Load();
+                    var screenManagerZ = GameSettings.Zenless.ScreenManager.Load(settingsUniversal);
                     screenManagerZ.width  = width;
                     screenManagerZ.height = height;
                     screenManagerZ.Save();
                     break;
                     
                 case GameNameType.Honkai:
-                    var screenManagerH = GameSettings.Honkai.ScreenSettingData.Load();
+                    var screenManagerH = GameSettings.Honkai.ScreenSettingData.Load(settingsUniversal);
                     screenManagerH.width  = width;
                     screenManagerH.height = height;
                     screenManagerH.Save();

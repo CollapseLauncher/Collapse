@@ -150,8 +150,7 @@ internal static partial class AssetBundleExtension
                 {
                     assetFilesize = urlStatus.FileSize;
                 }
-
-            AddCgEntry:
+                
                 lock (cgEntries)
                 {
                     cgEntries.Add(new FilePropertiesRemote

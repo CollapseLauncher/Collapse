@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization.Metadata;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.GameSettings
@@ -119,12 +118,12 @@ namespace CollapseLauncher.GameSettings
 
         /// <returns>Get the current preset key name. If it doesn't match, then return the <c>DefaultPresetName</c></returns>
         /// <exception cref="NullReferenceException">If <code>RegistryRoot</code> is null</exception>
-        public string GetPresetKey()
+        public string GetPresetKey(IGameSettings gameSettings)
         {
             string presetRegistryName = $"Preset_{typeof(T1).Name}";
-            if (RegistryRoot == null) throw new NullReferenceException($"Cannot load preset name of {typeof(T1).Name} RegistryKey is unexpectedly not initialized!");
+            if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load preset name of {typeof(T1).Name} RegistryKey is unexpectedly not initialized!");
 
-            string? value = (string?)RegistryRoot.TryGetValue(presetRegistryName, null, RefreshRegistryRoot);
+            string? value = (string?)gameSettings.RegistryRoot.TryGetValue(presetRegistryName, null, gameSettings.RefreshRegistryRoot);
 
             if (value != null)
             {
@@ -143,12 +142,12 @@ namespace CollapseLauncher.GameSettings
         /// Save changes of the current preset name
         /// </summary>
         /// <exception cref="NullReferenceException"></exception>
-        public void SaveChanges()
+        public void SaveChanges(IGameSettings gameSettings)
         {
             string presetRegistryName = $"Preset_{typeof(T1).Name}";
-            if (RegistryRoot == null) throw new NullReferenceException($"Cannot save preset name of {typeof(T1).Name} since RegistryKey is unexpectedly not initialized!");
+            if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save preset name of {typeof(T1).Name} since RegistryKey is unexpectedly not initialized!");
 
-            RegistryRoot.SetValue(presetRegistryName, _currentPresetName, RegistryValueKind.String);
+            gameSettings.RegistryRoot.SetValue(presetRegistryName, _currentPresetName, RegistryValueKind.String);
         }
         #endregion
     }

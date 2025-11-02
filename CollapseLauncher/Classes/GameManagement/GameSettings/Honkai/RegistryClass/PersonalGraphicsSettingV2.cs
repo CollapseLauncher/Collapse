@@ -9,7 +9,6 @@ using Microsoft.Win32;
 using System;
 using System.Text;
 using System.Text.Json.Serialization;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -21,7 +20,10 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class PersonalGraphicsSettingV2 : IGameSettingsValue<PersonalGraphicsSettingV2>
     {
         #region Fields
-        private const string ValueName                = "GENERAL_DATA_V2_PersonalGraphicsSettingV2_h3480068519";
+        private const string ValueName = "GENERAL_DATA_V2_PersonalGraphicsSettingV2_h3480068519";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
 
         #endregion
 
@@ -179,15 +181,21 @@ namespace CollapseLauncher.GameSettings.Honkai
         public SelectParticleEmitLevel ParticleEmitLevel { get; set; } = SelectParticleEmitLevel.Low;
         #endregion
 
+        public PersonalGraphicsSettingV2() : this(null) {}
+
+        private PersonalGraphicsSettingV2(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #region Methods
 #nullable enable
-        public static PersonalGraphicsSettingV2 Load()
+        public static PersonalGraphicsSettingV2 Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
 
                 if (value != null)
                 {
@@ -195,7 +203,9 @@ namespace CollapseLauncher.GameSettings.Honkai
 #if DEBUG
                     LogWriteLine($"Loaded HI3 Settings: {ValueName}\r\n{Encoding.UTF8.GetString(byteStr.TrimEnd((byte)0))}", LogType.Debug, true);
 #endif
-                    return byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalGraphicsSettingV2) ?? new PersonalGraphicsSettingV2();
+                    PersonalGraphicsSettingV2 result = byteStr.Deserialize(HonkaiSettingsJsonContext.Default.PersonalGraphicsSettingV2) ?? new PersonalGraphicsSettingV2();
+                    result.ParentGameSettings = gameSettings;
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -210,19 +220,19 @@ namespace CollapseLauncher.GameSettings.Honkai
                     $"{ex}", ex));
             }
 
-            return new PersonalGraphicsSettingV2();
+            return new PersonalGraphicsSettingV2(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
 
                 string data = this.Serialize(HonkaiSettingsJsonContext.Default.PersonalGraphicsSettingV2);
                 byte[] dataByte = Encoding.UTF8.GetBytes(data);
 
-                RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, dataByte, RegistryValueKind.Binary);
 #if DEBUG
                 LogWriteLine($"Saved HI3 Settings: {ValueName}\r\n{data}", LogType.Debug, true);
 #endif

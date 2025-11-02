@@ -37,7 +37,7 @@ namespace CollapseLauncher.GameSettings.Zenless
         #endregion
 
         #region Properties
-        public GeneralData GeneralData { get; set; }
+        public GeneralData GeneralData { get; private set; }
         #endregion
 
         public ZenlessSettings(IGameVersion gameVersionManager) : base(gameVersionManager)
@@ -54,7 +54,7 @@ namespace CollapseLauncher.GameSettings.Zenless
 
             base.InitializeSettings();
 
-            SettingsScreen = ScreenManager.Load();
+            SettingsScreen = ScreenManager.Load(this);
             GeneralData = GeneralData.LoadWithMagic(
                 MagicReDo,
                 SettingsGameVersionManager.Create(GameVersionManager, ZZZSettingsConfigFile, "GENERAL_DATA.bin"),

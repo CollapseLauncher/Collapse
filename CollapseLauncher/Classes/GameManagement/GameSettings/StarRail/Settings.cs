@@ -10,13 +10,13 @@ namespace CollapseLauncher.GameSettings.StarRail
 {
     internal class StarRailSettings : SettingsBase
     {
-        public Model GraphicsSettings { get; set; }
-        public BGMVolume AudioSettingsBgm { get; set; }
-        public MasterVolume AudioSettingsMaster { get; set; }
-        public SFXVolume AudioSettingsSfx { get; set; }
-        public VOVolume AudioSettingsVo { get; set; }
-        public LocalAudioLanguage AudioLanguage { get; set; }
-        public LocalTextLanguage TextLanguage { get; set; }
+        public Model              GraphicsSettings    { get; private set; }
+        public BGMVolume          AudioSettingsBgm    { get; private set; }
+        public MasterVolume       AudioSettingsMaster { get; private set; }
+        public SFXVolume          AudioSettingsSfx    { get; private set; }
+        public VOVolume           AudioSettingsVo     { get; private set; }
+        public LocalAudioLanguage AudioLanguage       { get; private set; }
+        public LocalTextLanguage  TextLanguage        { get; private set; }
 
         public StarRailSettings(IGameVersion gameVersionManager)
             : base(gameVersionManager)
@@ -29,19 +29,19 @@ namespace CollapseLauncher.GameSettings.StarRail
         {
             // Load Settings required for MainPage
             base.InitializeSettings();
-            SettingsScreen         = PCResolution.Load();
+            SettingsScreen         = PCResolution.Load(this);
         }
 
         public override void ReloadSettings()
         {
             // Load rest of the settings for GSP
-            AudioSettingsBgm    = BGMVolume.Load();
-            AudioSettingsMaster = MasterVolume.Load();
-            AudioSettingsSfx    = SFXVolume.Load();
-            AudioSettingsVo     = VOVolume.Load();
-            AudioLanguage        = LocalAudioLanguage.Load();
-            TextLanguage         = LocalTextLanguage.Load();
-            GraphicsSettings     = Model.Load();
+            AudioSettingsBgm    = BGMVolume.Load(this);
+            AudioSettingsMaster = MasterVolume.Load(this);
+            AudioSettingsSfx    = SFXVolume.Load(this);
+            AudioSettingsVo     = VOVolume.Load(this);
+            AudioLanguage       = LocalAudioLanguage.Load(this);
+            TextLanguage        = LocalTextLanguage.Load(this);
+            GraphicsSettings    = Model.Load(this);
             InitializeSettings();
         } 
 

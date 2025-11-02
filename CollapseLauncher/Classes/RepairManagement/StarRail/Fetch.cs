@@ -279,7 +279,7 @@ namespace CollapseLauncher
 
 #nullable enable
             // Try to get the value as nullable object
-            object? value = RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
+            object? value = GameSettings.RegistryRoot?.GetValue("App_LastServerName_h2577443795", null);
             // Check if the value is null, then return the default name
             // Return the dispatch default name. If none, then throw
             if (value == null) return GetDefaultValue();

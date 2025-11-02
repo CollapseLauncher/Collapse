@@ -14,14 +14,14 @@ namespace CollapseLauncher.GameSettings.Honkai
     internal class HonkaiSettings : SettingsBase
     {
         #region PresetProperties
-        public Preset<PersonalGraphicsSettingV2, HonkaiSettingsJsonContext> PresetSettingsGraphics { get; set; }
+        public Preset<PersonalGraphicsSettingV2, HonkaiSettingsJsonContext> PresetSettingsGraphics { get; private set; }
         #endregion
 
         #region SettingProperties
-        public PersonalGraphicsSettingV2 SettingsGraphics       { get; set; }
-        public PersonalAudioSetting      SettingsAudio          { get; set; }
-        public PhysicsSimulation         SettingsPhysics        { get; set; }
-        public GraphicsGrade             SettingsGraphicsGrade  { get; set; }
+        public  PersonalGraphicsSettingV2 SettingsGraphics      { get; set; }
+        public  PersonalAudioSetting      SettingsAudio         { get; private set; }
+        public  PhysicsSimulation         SettingsPhysics       { get; private set; }
+        private GraphicsGrade             SettingsGraphicsGrade { get; set; }
         #endregion
 
         public HonkaiSettings(IGameVersion gameVersionManager)
@@ -34,11 +34,11 @@ namespace CollapseLauncher.GameSettings.Honkai
         public sealed override void InitializeSettings()
         {
             // Load Settings
-            SettingsGraphics       = PersonalGraphicsSettingV2.Load();
-            SettingsGraphicsGrade  = GraphicsGrade.Load();
-            SettingsPhysics        = PhysicsSimulation.Load();
-            SettingsAudio          = PersonalAudioSetting.Load();
-            SettingsScreen         = ScreenSettingData.Load();
+            SettingsGraphics      = PersonalGraphicsSettingV2.Load(this);
+            SettingsGraphicsGrade = GraphicsGrade.Load(this);
+            SettingsPhysics       = PhysicsSimulation.Load(this);
+            SettingsAudio         = PersonalAudioSetting.Load(this);
+            SettingsScreen        = ScreenSettingData.Load(this);
             base.InitializeSettings();
 
             // Load Preset
@@ -58,7 +58,7 @@ namespace CollapseLauncher.GameSettings.Honkai
             base.SaveSettings();
 
             // Save Preset
-            PresetSettingsGraphics.SaveChanges();
+            PresetSettingsGraphics.SaveChanges(this);
         }
 
         public override string GetLaunchArguments(GamePresetProperty property)

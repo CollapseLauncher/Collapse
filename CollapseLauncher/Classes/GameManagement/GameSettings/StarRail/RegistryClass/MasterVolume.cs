@@ -5,7 +5,7 @@ using Hi3Helper.EncTool;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
-using static CollapseLauncher.GameSettings.Base.SettingsBase;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -18,6 +18,14 @@ namespace CollapseLauncher.GameSettings.StarRail
     {
         #region Fields
         private const string ValueName = "AudioSettings_MasterVolume_h1622207037";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; }
+
+        private MasterVolume(IGameSettings gameSettings)
+        {
+            ParentGameSettings = gameSettings;
+        }
         #endregion
 
         #region Properties
@@ -32,20 +40,20 @@ namespace CollapseLauncher.GameSettings.StarRail
 
         #region Methods
 #nullable enable
-        public static MasterVolume Load()
+        public static MasterVolume Load(IGameSettings gameSettings)
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
+                if (gameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot load {ValueName} RegistryKey is unexpectedly not initialized!");
 
-                object? value = RegistryRoot.TryGetValue(ValueName, null, RefreshRegistryRoot);
+                object? value = gameSettings.RegistryRoot.TryGetValue(ValueName, null, gameSettings.RefreshRegistryRoot);
                 if (value != null)
                 {
                     int masterVolume = (int)value;
 #if DEBUG
                     LogWriteLine($"Loaded StarRail Settings: {ValueName} : {value}", LogType.Debug, true);
 #endif
-                    return new MasterVolume { MasterVol = masterVolume };
+                    return new MasterVolume(gameSettings) { MasterVol = masterVolume };
                 }
             }
             catch (Exception ex)
@@ -59,15 +67,15 @@ namespace CollapseLauncher.GameSettings.StarRail
                     $"Please open the game and change any graphics settings, then safely close the game. If the problem persist, report the issue on our GitHub\r\n" +
                     $"{ex}", ex));
             }
-            return new MasterVolume();
+            return new MasterVolume(gameSettings);
         }
 
         public void Save()
         {
             try
             {
-                if (RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
-                RegistryRoot.SetValue(ValueName, MasterVol, RegistryValueKind.DWord);
+                if (ParentGameSettings.RegistryRoot == null) throw new NullReferenceException($"Cannot save {ValueName} since RegistryKey is unexpectedly not initialized!");
+                ParentGameSettings.RegistryRoot.SetValue(ValueName, MasterVol, RegistryValueKind.DWord);
 #if DEBUG
                 LogWriteLine($"Saved StarRail Settings: {ValueName} : {MasterVol}", LogType.Debug, true);
 #endif
