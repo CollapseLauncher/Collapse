@@ -83,6 +83,20 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             set;
         }
 
+        [JsonPropertyName("video")]
+        public LauncherContentData? BackgroundVideo
+        {
+            get;
+            set;
+        }
+
+        [JsonPropertyName("theme")]
+        public LauncherContentData? BackgroundOverlay
+        {
+            get;
+            set;
+        }
+
         [JsonPropertyName("id")]
         [JsonConverter(typeof(EmptyStringAsNullConverter))]
         public string? Id { get; set; }
