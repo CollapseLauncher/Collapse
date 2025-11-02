@@ -6,6 +6,7 @@ using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 using static Hi3Helper.Logger;
 // ReSharper disable RedundantDefaultMemberInitializer
 // ReSharper disable IdentifierTypo
@@ -18,8 +19,10 @@ namespace CollapseLauncher.GameSettings.Universal
     internal class CollapseScreenSetting : IGameSettingsValue<CollapseScreenSetting>
     {
         #region Fields
-        private const string        ValueName = "CollapseLauncher_ScreenSetting";
-        public        IGameSettings ParentGameSettings { get; private set; }
+        private const string ValueName = "CollapseLauncher_ScreenSetting";
+
+        [JsonIgnore]
+        public IGameSettings ParentGameSettings { get; private set; }
 
         public CollapseScreenSetting() : this(null) {}
 
