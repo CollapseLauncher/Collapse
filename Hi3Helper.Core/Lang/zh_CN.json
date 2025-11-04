@@ -1,7 +1,7 @@
 {
   "LanguageName": "简体中文",
   "LanguageID": "zh-CN",
-  "Author": "misaka10843, imgradeone, SatoSouta",
+  "Author": "misaka10843, imgradeone, SatoSouta, Shatyuka, LaoShuBaby",
 
   "_StartupPage": {
     "SelectLang": "选择您的语言",
@@ -1731,6 +1731,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "（实验性）",
     "Graphics_ColorFilter": "调色滤镜强度",
     "Graphics_RenderRes": "渲染精度",
     "Graphics_EffectsQ": "特效质量",
@@ -1741,7 +1742,18 @@
     "Audio_PlaybackDev_Headphones": "耳机",
     "Audio_PlaybackDev_Speakers": "音响",
     "Audio_PlaybackDev_TV": "电视",
-    "Audio_Ambient": "人文氛围音量"
+    "Audio_Ambient": "人文氛围音量",
+    "AdvancedGraphics_Title": "高级图形设置",
+    "AdvancedGraphics_Tooltip1": "某些功能仅在您拥有 Nvidia GeForce RTX 系列显卡并启用 DirectX 12 API 时方可使用。",
+    "AdvancedGraphics_Tooltip2": "请注意，此部分所有功能均为实验性功能。使用风险自负！",
+    "AdvancedGraphics_UseDirectX12API": "使用 DirectX 12 API",
+    "AdvancedGraphics_RayTracing": "光线追踪",
+    "AdvancedGraphics_RayTracingQ": "光线追踪质量",
+    "AdvancedGraphics_SuperScaling": "超分辨率",
+    "AdvancedGraphics_SuperScalingQ": "超分辨率优先级",
+    "AdvancedGraphics_SuperScalingQ_Performance": "性能",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "平衡",
+    "AdvancedGraphics_SuperScalingQ_Quality": "质量"
   },
 
   "_NotificationToast": {
