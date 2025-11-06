@@ -13,6 +13,9 @@ using Hi3Helper.EncTool.WindowTool;
 using Hi3Helper.Plugin.Core.Utility;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Win32.ManagedTools;
+using Hi3Helper.Win32.Native.Enums;
+using Hi3Helper.Win32.Native.LibraryImport;
+using Hi3Helper.Win32.Native.Structs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -21,6 +24,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static CollapseLauncher.InnerLauncherConfig;
@@ -85,29 +89,39 @@ public partial class HomePage
             int height = _Settings?.SettingsScreen?.height ?? 0;
             int width  = _Settings?.SettingsScreen?.width ?? 0;
 
-            string? additionalArguments = _Settings?.GetLaunchArguments(CurrentGameProperty);
+            var additionalArguments = _Settings?.GetLaunchArguments(CurrentGameProperty) ?? "";
 
             if (!usePluginGameLaunchApi)
             {
-                proc = new Process();
-                proc.StartInfo.FileName = Path.Combine(NormalizePath(GameDirPath), _gamePreset.GameExecutableName!);
-                proc.StartInfo.UseShellExecute = true;
-                proc.StartInfo.Arguments = additionalArguments;
-                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{proc.StartInfo.Arguments}");
+                var exePath = Path.Combine(NormalizePath(GameDirPath), _gamePreset.GameExecutableName!);
+                string workingDir;
+                LogWriteLine($"[HomePage::StartGame()] Running game with parameters:\r\n{additionalArguments}");
                 if (File.Exists(Path.Combine(GameDirPath, "@AltLaunchMode")))
                 {
                     LogWriteLine("[HomePage::StartGame()] Using alternative launch method!", LogType.Warning, true);
-                    proc.StartInfo.WorkingDirectory = (CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
-                                                       (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
-                        Path.GetDirectoryName(NormalizePath(GameDirPath))!);
+                    workingDir = CurrentGameProperty!.GameVersion.GamePreset.ZoneName == "Bilibili" ||
+                                 (isGenshin && giForceHDR) ? NormalizePath(GameDirPath) :
+                        Path.GetDirectoryName(NormalizePath(GameDirPath))!;
                 }
                 else
                 {
-                    proc.StartInfo.WorkingDirectory = NormalizePath(GameDirPath);
+                    workingDir = NormalizePath(GameDirPath);
                 }
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.Verb            = "runas";
-                proc.Start();
+
+                var pid = CreateProcessWithParent("explorer", exePath, additionalArguments, workingDir);
+                if (pid > 0)
+                {
+                    proc = Process.GetProcessById(pid);
+                }
+                else
+                {
+                    LogWriteLine("[HomePage::StartGame()] Failed to start process with parent, falling back to normal process start.", LogType.Warning, true);
+                    proc = new Process();
+                    proc.StartInfo.FileName = exePath;
+                    proc.StartInfo.Arguments = additionalArguments;
+                    proc.StartInfo.WorkingDirectory = workingDir;
+                    proc.Start();
+                }
             }
             else
             {
@@ -177,6 +191,83 @@ public partial class HomePage
             LogWriteLine($"There is a problem while trying to launch Game with Region: {_gamePreset.ZoneName}\r\nTraceback: {ex}", LogType.Error, true);
             ErrorSender.SendException(new Win32Exception($"There was an error while trying to launch the game!\r\tThrow: {ex}", ex));
             IsSkippingUpdateCheck = false;
+        }
+    }
+
+    private static int CreateProcessWithParent(string parent, string applicationPath, string arguments,
+                                                  string workingDirectory)
+    {
+        var parentHandle = IntPtr.Zero;
+        var hToken = IntPtr.Zero;
+        var hDuplicateToken = IntPtr.Zero;
+        var attributeList = IntPtr.Zero;
+        var pHandle = IntPtr.Zero;
+
+        try
+        {
+            // Get the handle of the parent process
+            var parentProc = Process.GetProcessesByName(parent).FirstOrDefault();
+            if (parentProc == null)
+                return -1;
+            const int PROCESS_CREATE_PROCESS = 0x0080;
+            parentHandle = PInvoke.OpenProcess(PROCESS_CREATE_PROCESS, false, parentProc.Id);
+            if (parentHandle == IntPtr.Zero)
+                return -1;
+
+            // Obtain the current process token
+            if (!PInvoke.OpenProcessToken(Process.GetCurrentProcess().Handle, TOKEN_ACCESS.TOKEN_ALL_ACCESS, out hToken))
+                return -1;
+            if (!PInvoke.DuplicateTokenEx(hToken, TOKEN_ACCESS.TOKEN_ALL_ACCESS, IntPtr.Zero,
+                                          SECURITY_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary,
+                                          out hDuplicateToken))
+                return -1;
+
+            // Initialize the attribute list with the parent process
+            var siex = new STARTUPINFOEX();
+            siex.StartupInfo.cb = Marshal.SizeOf<STARTUPINFOEX>();
+            var attributeSize = IntPtr.Zero;
+            PInvoke.InitializeProcThreadAttributeList(IntPtr.Zero, 1, 0, ref attributeSize);
+            attributeList = Marshal.AllocHGlobal(attributeSize);
+            if (!PInvoke.InitializeProcThreadAttributeList(attributeList, 1, 0, ref attributeSize))
+                return -1;
+            pHandle = Marshal.AllocHGlobal(IntPtr.Size);
+            Marshal.WriteIntPtr(pHandle, parentHandle);
+            if (!PInvoke.UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE.PARENT_PROCESS, pHandle, IntPtr.Size,
+                                                   IntPtr.Zero, IntPtr.Zero))
+                return -1;
+            siex.lpAttributeList = attributeList;
+
+            // Create the new process as a child of the specified parent process, and with our process user token
+            var ok = PInvoke.CreateProcessAsUser(hDuplicateToken, applicationPath, arguments, IntPtr.Zero, IntPtr.Zero, false,
+                                                 ProcessCreationFlags.EXTENDED_STARTUPINFO_PRESENT, IntPtr.Zero, workingDirectory, ref siex,
+                                                  out var pi);
+            if (!ok)
+                return -1;
+
+            PInvoke.CloseHandle(pi.hProcess);
+            PInvoke.CloseHandle(pi.hThread);
+
+            return (int) pi.dwProcessId;
+        }
+        finally
+        {
+            if (hDuplicateToken != IntPtr.Zero)
+                PInvoke.CloseHandle(hDuplicateToken);
+
+            if (hToken != IntPtr.Zero)
+                PInvoke.CloseHandle(hToken);
+
+            if (pHandle != IntPtr.Zero)
+                Marshal.FreeHGlobal(pHandle);
+
+            if (attributeList != IntPtr.Zero)
+            {
+                PInvoke.DeleteProcThreadAttributeList(attributeList);
+                Marshal.FreeHGlobal(attributeList);
+            }
+
+            if (parentHandle != IntPtr.Zero)
+                PInvoke.CloseHandle(parentHandle);
         }
     }
 
