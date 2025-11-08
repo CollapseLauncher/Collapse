@@ -55,12 +55,14 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
     public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles) ?? GameName;
     public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions) ?? GameRegion;
 
-    public HypLauncherResourceWpfApi LauncherGameResourceWpf    { get; } = new();
-    public HypGameInfoData           LauncherGameInfoField      { get; } = new();
-    public HypLauncherGameInfoApi    LauncherGameResourceSophon { get; } = new();
-    public HypLauncherBackgroundApi  LauncherGameBackground     { get; } = new();
-    public HypLauncherContentApi     LauncherGameContent        { get; } = new();
-    public RegionResourceProp        LauncherGameResource       { get; } = new();
+    public HypLauncherGameResourcePackageApi LauncherGameResourcePackage { get; } = new();
+    public HypLauncherGameResourcePluginApi  LauncherGameResourcePlugin  { get; } = new();
+    public HypLauncherGameResourceSdkApi     LauncherGameResourceSdk     { get; } = new();
+    public HypLauncherGameResourceWpfApi         LauncherGameGameResourceWpf     { get; } = new();
+    public HypGameInfoData                   LauncherGameInfoField       { get; } = new();
+    public HypLauncherSophonBranchesApi      LauncherGameSophonBranches  { get; } = new();
+    public HypLauncherBackgroundApi          LauncherGameBackground      { get; } = new();
+    public HypLauncherContentApi             LauncherGameContent         { get; } = new();
 
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();

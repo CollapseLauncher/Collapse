@@ -10,10 +10,6 @@ using WinRT;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 
-[JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
-[JsonSerializable(typeof(HypLauncherContentApi))]
-internal sealed partial class HypLauncherContentApiJsonContext : JsonSerializerContext;
-
 public class HypLauncherContentApi : HypApiResponse<HypLauncherContentData>;
 
 public class HypLauncherContentData

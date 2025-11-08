@@ -6,6 +6,7 @@ using CollapseLauncher.GameSettings.Honkai;
 using CollapseLauncher.GameSettings.StarRail;
 using CollapseLauncher.GameSettings.Zenless;
 using CollapseLauncher.GameVersioning;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.InstallManager.Genshin;
 using CollapseLauncher.InstallManager.Honkai;
@@ -30,7 +31,7 @@ namespace CollapseLauncher
 {
     internal sealed partial class GamePresetProperty : IDisposable
     {
-        internal static GamePresetProperty Create(UIElement uiElementParent, RegionResourceProp? apiResourceProp, string gameName, string gameRegion)
+        internal static GamePresetProperty Create(UIElement uiElementParent, ILauncherApi? launcherApis, string gameName, string gameRegion)
         {
             var gamePreset = LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?[gameRegion];
             if (gamePreset == null)
@@ -44,13 +45,11 @@ namespace CollapseLauncher
                 throw new InvalidCastException($"[GamePresetProperty.Ctor] The game preset with name: {gameName} and region: {gameRegion} is not a valid PluginPresetConfigWrapper instance!");
             }
 
-            GamePresetProperty property = new GamePresetProperty();
-
-            property.ApiResourceProp = apiResourceProp?.Copy();
+            GamePresetProperty property = new();
             switch (gamePreset.GameType)
             {
                 case GameNameType.Honkai:
-                    property.GameVersion  = new GameTypeHonkaiVersion(apiResourceProp, gameName, gameRegion);
+                    property.GameVersion  = new GameTypeHonkaiVersion(launcherApis, gameName, gameRegion);
                     property.GameSettings = new HonkaiSettings(property.GameVersion);
                     property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion);
                     // property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
@@ -58,21 +57,21 @@ namespace CollapseLauncher
                     property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameCache);
                     break;
                 case GameNameType.StarRail:
-                    property.GameVersion  = new GameTypeStarRailVersion(apiResourceProp, gameName, gameRegion);
+                    property.GameVersion  = new GameTypeStarRailVersion(launcherApis, gameName, gameRegion);
                     property.GameSettings = new StarRailSettings(property.GameVersion);
                     property.GameCache    = new StarRailCache(uiElementParent, property.GameVersion);
                     property.GameRepair   = new StarRailRepair(uiElementParent, property.GameVersion);
                     property.GameInstall  = new StarRailInstall(uiElementParent, property.GameVersion);
                     break;
                 case GameNameType.Genshin:
-                    property.GameVersion = new GameTypeGenshinVersion(apiResourceProp, gameName, gameRegion);
+                    property.GameVersion = new GameTypeGenshinVersion(launcherApis, gameName, gameRegion);
                     property.GameSettings = new GenshinSettings(property.GameVersion);
                     property.GameCache = null;
                     property.GameRepair = new GenshinRepair(uiElementParent, property.GameVersion, property.GameVersion.GameApiProp?.data?.game?.latest?.decompressed_path ?? "");
                     property.GameInstall = new GenshinInstall(uiElementParent, property.GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    property.GameVersion = new GameTypeZenlessVersion(apiResourceProp, gamePreset, gameName, gameRegion);
+                    property.GameVersion = new GameTypeZenlessVersion(launcherApis, gamePreset, gameName, gameRegion);
                     property.GameSettings = new ZenlessSettings(property.GameVersion);
                     property.GameCache = new ZenlessCache(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);
                     property.GameRepair = new ZenlessRepair(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);
@@ -80,7 +79,7 @@ namespace CollapseLauncher
                     break;
                 case GameNameType.Plugin:
                     PluginPresetConfigWrapper pluginPresetConfig = (PluginPresetConfigWrapper)gamePreset;
-                    PluginGameVersionWrapper  pluginGameVersion  = new PluginGameVersionWrapper(pluginPresetConfig);
+                    PluginGameVersionWrapper  pluginGameVersion  = new(pluginPresetConfig);
 
                     property.GameVersion  = pluginGameVersion;
                     property.GameSettings = SettingsBase.CreateBaseFrom<DummyGameSettings>(pluginGameVersion, true);
@@ -99,17 +98,17 @@ namespace CollapseLauncher
             return property;
         }
 
-        internal bool                 IsPlugin        => GamePreset is PluginPresetConfigWrapper;
-        internal RegionResourceProp?  ApiResourceProp { get; set; }
-        internal IGameSettings?       GameSettings    { get; set; }
-        internal IGamePlaytime?       GamePlaytime    { get; set; }
-        internal IRepair?             GameRepair      { get; set; }
-        internal ICache?              GameCache       { get; set; }
-        internal ILogger?             GamePropLogger  { get; set; }
-        internal IGameVersion?        GameVersion     { get; set; }
-        internal IGameInstallManager? GameInstall     { get; set; }
-        internal PresetConfig         GamePreset      { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
-        
+        internal bool                 IsPlugin       => GamePreset is PluginPresetConfigWrapper;
+        internal IGameSettings?       GameSettings   { get; private set; }
+        internal IGamePlaytime?       GamePlaytime   { get; private set; }
+        internal IRepair?             GameRepair     { get; private set; }
+        internal ICache?              GameCache      { get; private set; }
+        internal IGameVersion?        GameVersion    { get; private set; }
+        internal IGameInstallManager? GameInstall    { get; private set; }
+        internal PresetConfig         GamePreset     { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
+
+        private ILogger? GamePropLogger { get; set; }
+
         internal string GameExecutableName
         {
             get => GamePreset.GameExecutableName ?? "";
@@ -120,12 +119,12 @@ namespace CollapseLauncher
             get => Path.GetFileNameWithoutExtension(GameExecutableName);
         }
 
-        internal string GameExecutableDir
+        private string GameExecutableDir
         {
             get => GameVersion?.GameDirPath ?? throw new NullReferenceException();
         }
 
-        internal string GameExecutablePath
+        private string GameExecutablePath
         {
             get => Path.Combine(GameExecutableDir, GameExecutableName);
         }
@@ -179,7 +178,6 @@ namespace CollapseLauncher
             GameInstall?.Dispose();
             GamePlaytime?.Dispose();
 
-            ApiResourceProp = null;
             GameSettings    = null;
             GameRepair      = null;
             GameCache       = null;
@@ -188,7 +186,7 @@ namespace CollapseLauncher
 
             GC.SuppressFinalize(this);
         #if DEBUG
-            var hashID = GameVersion != null ? GamePreset.HashID.ToString() : "null";
+            string hashID = GameVersion != null ? GamePreset.HashID.ToString() : "null";
             Logger.LogWriteLine($"[GamePresetProperty::Dispose()] GamePresetProperty has been disposed for Hash ID: {hashID}",
                                 LogType.Warning, true);
         #endif

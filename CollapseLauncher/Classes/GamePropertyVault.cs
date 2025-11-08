@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -41,7 +42,7 @@ namespace CollapseLauncher.Statics
                        .TryGetValue(CurrentGameRegion, out PresetConfig? gamePreset) ?? false)
                 {
                     // Try register the game property and get its hash id
-                    RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi?.LauncherGameResource!, CurrentGameName, CurrentGameRegion);
+                    RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi?.LauncherGameResourcePackage!, CurrentGameName, CurrentGameRegion);
                     int reRegisteredHashId = gamePreset.HashID;
 
                     // Try to get the value from the cache vault and return if we get one.
@@ -56,7 +57,7 @@ namespace CollapseLauncher.Statics
             throw new KeyNotFoundException($"Cached region with Hash ID: {hashId} was not found in the vault!");
         }
 
-        public static void LoadGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+        public static void LoadGameProperty(UIElement uiElementParent, HypLauncherGameResourcePackageApi apiGameResourcePackageProp, string gameName, string gameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
                 .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false)
@@ -65,10 +66,10 @@ namespace CollapseLauncher.Statics
                 CurrentGameHashID = gamePreset.HashID;
             }
 
-            RegisterGameProperty(uiElementParent, apiResourceProp, gameName, gameRegion);
+            RegisterGameProperty(uiElementParent, apiGameResourcePackageProp, gameName, gameRegion);
         }
 
-        private static void RegisterGameProperty(UIElement uiElementParent, RegionResourceProp apiResourceProp, string gameName, string gameRegion)
+        private static void RegisterGameProperty(UIElement uiElementParent, HypLauncherGameResourcePackageApi apiGameResourcePackageProp, string gameName, string gameRegion)
         {
             CurrentGameName   =   gameName;
             CurrentGameRegion =   gameRegion;
@@ -93,7 +94,7 @@ namespace CollapseLauncher.Statics
                 return;
             }
 
-            GamePresetProperty property = GamePresetProperty.Create(uiElementParent, apiResourceProp, gameName, gameRegion);
+            GamePresetProperty property = GamePresetProperty.Create(uiElementParent, apiGameResourcePackageProp, gameName, gameRegion);
             UpdateSentryState(property);
             _ = Vault.TryAdd(gamePreset.HashID, property);
         #if DEBUG
@@ -101,7 +102,7 @@ namespace CollapseLauncher.Statics
         #endif
         }
 
-        internal static void UpdateSentryState(GamePresetProperty property)
+        private static void UpdateSentryState(GamePresetProperty property)
         {
             SentryHelper.CurrentGameCategory   = property.GameVersion?.GameName ?? string.Empty;
             SentryHelper.CurrentGameRegion     = property.GameVersion?.GameRegion ?? string.Empty;

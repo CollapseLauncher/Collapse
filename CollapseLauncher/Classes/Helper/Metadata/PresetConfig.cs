@@ -4,6 +4,7 @@ using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using Hi3Helper;
 using Hi3Helper.Data;
+using Hi3Helper.EncTool;
 using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.SentryHelper;
 using Microsoft.Win32;
@@ -26,6 +27,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Global
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Helper.Metadata
@@ -114,22 +116,24 @@ namespace CollapseLauncher.Helper.Metadata
         [JsonConverter(typeof(ServeV3StringArrayConverter))]
         public string[] ExcludeMatchingFieldUpdate { get; set; } = [];
 
-        public bool ResetAssociation() => IsReassociated = false;
+        public void ResetAssociation()
+        {
+            IsReassociated = false;
+        }
 
         public Task EnsureReassociated(HttpClient? client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
         {
-            if (IsReassociated)
+            if (IsReassociated || string.IsNullOrEmpty(branchUrl))
                 return Task.CompletedTask;
 
-            if (string.IsNullOrEmpty(branchUrl))
-                return Task.CompletedTask;
+            client ??= FallbackCDNUtil.GetGlobalHttpClient(true);
 
             // Fetch branch info
-            ActionTimeoutTaskCallback<HypLauncherGameInfoApi?> hypLauncherBranchCallback =
+            ActionTimeoutTaskCallback<HypLauncherSophonBranchesApi?> hypLauncherBranchCallback =
                 innerToken =>
-                    FallbackCDNUtil.DownloadAsJSONType(branchUrl,
-                                                       HoYoPlayLauncherGameInfoJsonContext.Default.HypLauncherGameInfoApi,
-                                                       innerToken);
+                    client.GetFromCachedJsonAsync(branchUrl,
+                                                  HypApiJsonContext.Default.HypLauncherSophonBranchesApi,
+                                                  token: innerToken);
 
             return hypLauncherBranchCallback
                 .WaitForRetryAsync(LauncherApiBase.ExecutionTimeout,
@@ -138,15 +142,15 @@ namespace CollapseLauncher.Helper.Metadata
                                    null, token)
                 .ContinueWith(async result =>
                 {
-                    HypLauncherGameInfoApi? hypLauncherBranchInfo = await result;
+                    HypLauncherSophonBranchesApi? hypLauncherBranchInfo = await result;
 
                     // If branch info is null or empty, return
-                    HypGameInfoBranchesKind? branch = hypLauncherBranchInfo?
-                       .Data?
-                       .GameBranchesInfo?
-                       .FirstOrDefault(x => x.GameInfo?.GameBiz?.Equals(bizName) ?? false);
-                    if (branch == null)
+                    if (!(hypLauncherBranchInfo?
+                           .Data?
+                           .TryFindByBiz(bizName, out HypLauncherSophonBranchesKind? branch) ?? false))
+                    {
                         return;
+                    }
 
                     // Re-associate url if main field is exist
                     if (branch.GameMainField != null)

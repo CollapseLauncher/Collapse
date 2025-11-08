@@ -1,13 +1,9 @@
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
-using Google.Protobuf.WellKnownTypes;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using System;
-#if SIMULATEPRELOAD
-using System.Collections.Generic;
-#endif
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
@@ -20,8 +16,6 @@ using System.Net.Http;
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
 {
-    public delegate void ErrorLoadRoutineDelegate(Exception ex);
-
     internal abstract partial class LauncherApiBase(
         PresetConfig                    presetConfig,
         string                          gameName,
@@ -48,12 +42,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public string? GameRegionTranslation =>
             InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions);
 
-        public RegionResourceProp?        LauncherGameResource       { get; protected set; }
-        public HypLauncherGameInfoApi?    LauncherGameResourceSophon { get; protected set; }
-        public HypLauncherResourceWpfApi? LauncherGameResourceWpf    { get; protected set; }
-        public HypLauncherBackgroundApi?  LauncherGameBackground     { get; protected set; }
-        public HypLauncherContentApi?     LauncherGameContent        { get; protected set; }
-        public HypGameInfoData?           LauncherGameInfoField      { get; protected set; }
+        public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; protected set; }
+        public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; protected set; }
+        public HypLauncherGameResourceSdkApi?     LauncherGameResourceSdk     { get; protected set; }
+        public HypLauncherGameResourceWpfApi?     LauncherGameGameResourceWpf { get; protected set; }
+        public HypLauncherSophonBranchesApi?      LauncherGameSophonBranches  { get; protected set; }
+        public HypLauncherBackgroundApi?          LauncherGameBackground      { get; protected set; }
+        public HypLauncherContentApi?             LauncherGameContent         { get; protected set; }
+        public HypGameInfoData?                   LauncherGameInfoField       { get; protected set; }
 
         public HttpClient ApiGeneralHttpClient  { get; } = apiGeneralHttpClientFactory(presetConfig);
         public HttpClient ApiResourceHttpClient { get; } = apiResourceHttpClientFactory(presetConfig);

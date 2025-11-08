@@ -652,5 +652,8 @@ namespace CollapseLauncher
             URL = cdnParentURL.CombineURLFromString(relativeURL);
             return URL;
         }
+
+        public static HttpClient GetGlobalHttpClient(bool useCompression) =>
+            useCompression ? _client : _clientNoCompression;
     }
 }

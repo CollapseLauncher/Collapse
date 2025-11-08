@@ -12,23 +12,25 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
 {
     public interface ILauncherApi : IDisposable
     {
-        bool                       IsLoadingCompleted         { get; }
-        bool                       IsForceRedirectToSophon    { get; }
-        string?                    GameBackgroundImg          { get; }
-        string?                    GameBackgroundImgLocal     { get; set; }
-        string?                    GameName                   { get; }
-        string?                    GameRegion                 { get; }
-        string?                    GameNameTranslation        { get; }
-        string?                    GameRegionTranslation      { get; }
-        RegionResourceProp?        LauncherGameResource       { get; }
-        HypLauncherGameInfoApi?    LauncherGameResourceSophon { get; }
-        HypLauncherBackgroundApi?  LauncherGameBackground     { get; }
-        HypLauncherContentApi?     LauncherGameContent        { get; }
-        HypLauncherResourceWpfApi? LauncherGameResourceWpf    { get; }
-        HypGameInfoData?           LauncherGameInfoField      { get; }
-        HttpClient?                ApiGeneralHttpClient       { get; }
-        HttpClient?                ApiResourceHttpClient      { get; }
-        bool                       IsPlugin                   { get; }
+        bool                               IsLoadingCompleted          { get; }
+        bool                               IsForceRedirectToSophon     { get; }
+        string?                            GameBackgroundImg           { get; }
+        string?                            GameBackgroundImgLocal      { get; set; }
+        string?                            GameName                    { get; }
+        string?                            GameRegion                  { get; }
+        string?                            GameNameTranslation         { get; }
+        string?                            GameRegionTranslation       { get; }
+        HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; }
+        HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; }
+        HypLauncherGameResourceSdkApi?     LauncherGameResourceSdk     { get; }
+        HypLauncherGameResourceWpfApi?     LauncherGameGameResourceWpf { get; }
+        HypLauncherSophonBranchesApi?      LauncherGameSophonBranches  { get; }
+        HypLauncherBackgroundApi?          LauncherGameBackground      { get; }
+        HypLauncherContentApi?             LauncherGameContent         { get; }
+        HypGameInfoData?                   LauncherGameInfoField       { get; }
+        HttpClient?                        ApiGeneralHttpClient        { get; }
+        HttpClient?                        ApiResourceHttpClient       { get; }
+        bool                               IsPlugin                    { get; }
         ValueTask<bool> LoadAsync(Func<CancellationToken, ValueTask>? beforeLoadRoutineAsync = null,
                                   Func<CancellationToken, ValueTask>? afterLoadRoutineAsync  = null,
                                   ActionOnTimeOutRetry?               onTimeoutRoutine       = null,

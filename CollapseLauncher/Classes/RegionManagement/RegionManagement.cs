@@ -286,7 +286,7 @@ namespace CollapseLauncher
 
             // Load region property (and potentially, cached one)
             GamePropertyVault.LoadGameProperty(this,
-                                                     preset.GameType == GameNameType.Plugin ? null : preset.GameLauncherApi.LauncherGameResource,
+                                                     preset.GameType == GameNameType.Plugin ? null : preset.GameLauncherApi.LauncherGameResourcePackage,
                                                      gameName,
                                                      gameRegion);
 

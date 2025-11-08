@@ -15,7 +15,10 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class HomePage
     {
-        private string GameDirPath { get => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException(); }
+        private string GameDirPath
+        {
+            get => CurrentGameProperty.GameVersion?.GameDirPath ?? throw new NullReferenceException();
+        }
 
         private static ILauncherApi? CurrentGameLauncherApi
         {
