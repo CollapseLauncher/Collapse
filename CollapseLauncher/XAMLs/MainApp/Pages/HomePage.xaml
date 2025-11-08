@@ -87,9 +87,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="32" />
@@ -204,9 +204,9 @@
                     </Grid>
                     <Grid x:Name="ProgressPreSophonStatusGrid"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
@@ -308,9 +308,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <!--<Grid.ChildrenTransitions>
+                        <Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>-->
+                        </Grid.ChildrenTransitions>
                         <Grid x:Name="DownloadModeLabelPreload"
                               Padding="8,2"
                               HorizontalAlignment="Left"
@@ -435,9 +435,9 @@
                     CornerRadius="12,0,0,12"
                     Orientation="Vertical"
                     Shadow="{ThemeResource SharedShadow}">
-            <!--<StackPanel.Transitions>
+            <StackPanel.Transitions>
                 <PopupThemeTransition />
-            </StackPanel.Transitions>-->
+            </StackPanel.Transitions>
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
@@ -445,9 +445,9 @@
                               ItemsSource="{x:Bind pages:HomePage.GameSocialMediaData}"
                               TabFocusNavigation="Once"
                               XYFocusKeyboardNavigation="Enabled">
-                    <!--<ItemsControl.Transitions>
+                    <ItemsControl.Transitions>
                         <PopupThemeTransition />
-                    </ItemsControl.Transitions>-->
+                    </ItemsControl.Transitions>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                             <Grid Loaded="SetHandCursor">
@@ -915,13 +915,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Grid>
-                <!--<Grid.ChildrenTransitions>
+                <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>-->
+                </Grid.ChildrenTransitions>
                 <Grid x:Name="SophonProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
@@ -1230,13 +1230,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <!--<Grid.ChildrenTransitions>
+            <Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>-->
+            </Grid.ChildrenTransitions>
             <Grid>
-                <!--<Grid.ChildrenTransitions>
+                <Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>-->
+                </Grid.ChildrenTransitions>
                 <Grid x:Name="progressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
