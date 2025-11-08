@@ -9,41 +9,27 @@ using System.Text.Json.Serialization;
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 {
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
-    [JsonSerializable(typeof(HoYoPlayLauncherResources))]
-    internal sealed partial class HoYoPlayLauncherResourcesJsonContext : JsonSerializerContext;
+    [JsonSerializable(typeof(HypLauncherResourceApi))]
+    internal sealed partial class HypLauncherResourceApiJsonContext : JsonSerializerContext;
 
-    public class HoYoPlayLauncherResources
-    {
-        [JsonPropertyName("data")]
-        public LauncherResourceData? Data { get; set; }
+    public class HypLauncherResourceApi : HypApiResponse<HypLauncherResourceKind>;
 
-        [JsonPropertyName("message")]
-        public string? ResultMessage { get; set; }
-
-        [JsonPropertyName("retcode")]
-        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
-        public int? ReturnCode { get; set; }
-    }
-
-    public class LauncherResourceData
+    public class HypLauncherResourceKind
     {
         [JsonPropertyName("game_packages")]
-        public List<LauncherPackages>? LauncherPackages { get; set; }
+        public List<HypResourcesData> LauncherPackages { get; set; } = [];
 
         [JsonPropertyName("plugin_releases")]
-        public List<LauncherPackages>? PluginPackages { get; set; }
+        public List<HypResourcesData> PluginPackages { get; set; } = [];
 
         [JsonPropertyName("game_channel_sdks")]
-        public List<LauncherSdkPackages>? ChannelSdks { get; set; }
+        public List<HypChannelSdkData> ChannelSdks { get; set; } = [];
     }
 
-    public class LauncherSdkPackages
+    public class HypChannelSdkData : HypApiIdentifiable
     {
-        [JsonPropertyName("game")]
-        public GameDetail? GameDetail { get; set; }
-
         [JsonPropertyName("channel_sdk_pkg")]
-        public PackageDetails? SdkPackageDetail { get; set; }
+        public HypPackageData? SdkPackageDetail { get; set; }
 
         [JsonPropertyName("pkg_version_file_name")]
         public string? PkgVersionFileName { get; set; }
@@ -52,46 +38,34 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? Version { get; set; }
     }
 
-    public class LauncherPackages
+    public class HypResourcesData : HypApiIdentifiable
     {
-        [JsonPropertyName("game")]
-        public GameDetail? GameDetail { get; set; }
-
         [JsonPropertyName("main")]
-        public PackagePartition? MainPackage { get; set; }
+        public HypResourcePackageData? MainPackage { get; set; }
 
         [JsonPropertyName("plugins")]
-        public List<PackagePluginSections>? PluginPackageSections { get; set; }
+        public List<HypPluginPackageInfo> PluginPackageSections { get; set; } = [];
 
         [JsonPropertyName("pre_download")]
-        public PackagePartition? PreDownload { get; set; }
+        public HypResourcePackageData? PreDownload { get; set; }
     }
 
-    public class GameDetail
-    {
-        [JsonPropertyName("biz")]
-        public string? GameBiz { get; set; }
-
-        [JsonPropertyName("id")]
-        public string? LauncherId { get; set; }
-    }
-
-    public class PackagePartition
+    public class HypResourcePackageData
     {
         [JsonPropertyName("major")]
-        public PackageResourceSections? CurrentVersion { get; set; }
+        public HypPluginPackageData? CurrentVersion { get; set; }
 
         [JsonPropertyName("patches")]
-        public List<PackageResourceSections>? Patches { get; set; }
+        public List<HypPluginPackageData> Patches { get; set; } = [];
     }
 
-    public class PackagePluginSections
+    public class HypPluginPackageInfo
     {
         [JsonPropertyName("plugin_id")]
         public string? PluginId { get; set; }
 
         [JsonPropertyName("plugin_pkg")]
-        public PackageDetails? PluginPackage { get; set; }
+        public HypPackageData? PluginPackage { get; set; }
 
         [JsonPropertyName("release_id")]
         public string? ReleaseId { get; set; }
@@ -100,13 +74,13 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? Version { get; set; }
     }
 
-    public class PackageResourceSections
+    public class HypPluginPackageData
     {
         [JsonPropertyName("audio_pkgs")]
-        public List<PackageDetails>? AudioPackages { get; set; }
+        public List<HypPackageData> AudioPackages { get; set; } = [];
 
         [JsonPropertyName("game_pkgs")]
-        public List<PackageDetails>? GamePackages { get; set; }
+        public List<HypPackageData> GamePackages { get; set; } = [];
 
         [JsonPropertyName("res_list_url")]
         public string? ResourceListUrl { get; set; }
@@ -115,7 +89,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? Version { get; set; }
     }
 
-    public class PackageDetails
+    public class HypPackageData
     {
         [JsonPropertyName("decompressed_size")]
         [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
@@ -144,8 +118,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         public string? PackageRunCommand { get; init; }
 
         [JsonPropertyName("validation")]
-        [JsonConverter(typeof(RegionResourcePluginValidateConverter))]
-        public List<RegionResourcePluginValidate>? PackageAssetValidationList { get; init; }
+        [JsonConverter(typeof(HypPackageFileValidationInfoConverter))]
+        public List<HypPackageFileValidationInfo> PackageAssetValidationList { get; init; } = [];
 
         [JsonPropertyName("language")]
         public string? Language { get; init; }

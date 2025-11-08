@@ -107,7 +107,7 @@ namespace CollapseLauncher
                 });
             }
 
-            async Task AfterLoadRoutine(CancellationToken token)
+            async ValueTask AfterLoadRoutine(CancellationToken token)
             {
                 try
                 {
@@ -143,7 +143,7 @@ namespace CollapseLauncher
                 LoadingMessageHelper.ShowActionButton(Lang._Misc.Cancel, "", CancelLoadEvent);
             }
 
-            async Task BeforeLoadRoutine(CancellationToken token)
+            async ValueTask BeforeLoadRoutine(CancellationToken token)
             {
                 try
                 {

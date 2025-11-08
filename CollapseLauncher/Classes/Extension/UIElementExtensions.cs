@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.Animation;
+using CollapseLauncher.Interfaces.Class;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
 using Hi3Helper.CommunityToolkit.WinUI.Controls;
@@ -14,6 +15,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -185,7 +187,14 @@ namespace CollapseLauncher.Extension
             navViewControl.UpdateLayout();
         }
 
-        internal static T BindProperty<T>(this T element, DependencyProperty dependencyProperty, object objectToBind, string propertyName, IValueConverter? converter = null, BindingMode bindingMode = BindingMode.OneWay, UpdateSourceTrigger sourceTrigger = UpdateSourceTrigger.Default)
+        internal static void BindProperty<T>(
+            this T              element,
+            DependencyProperty  dependencyProperty,
+            object              objectToBind,
+            string              propertyName,
+            IValueConverter?    converter     = null,
+            BindingMode         bindingMode   = BindingMode.OneWay,
+            UpdateSourceTrigger sourceTrigger = UpdateSourceTrigger.Default)
             where T : FrameworkElement
         {
             // Create a new binding instance
@@ -205,8 +214,21 @@ namespace CollapseLauncher.Extension
 
             // Set binding to the element
             element.SetBinding(dependencyProperty, binding);
+        }
 
-            return element;
+        internal static void OnPropertyChanged<T>(
+            this               T       instance,
+            [CallerMemberName] string? propertyName = null)
+            where T : NotifyPropertyChanged, INotifyPropertyChanged
+        {
+            InnerLauncherConfig
+               .m_mainPage?
+               .DispatcherQueue
+               .TryEnqueue(() => instance.OnPropertyChanged(propertyName));
+
+#if DEBUG
+            Logger.LogWriteLine($"{typeof(T).Name}::OnPropertyChanged() Change to Property: {propertyName} has been notified!");
+#endif
         }
 #nullable restore
 

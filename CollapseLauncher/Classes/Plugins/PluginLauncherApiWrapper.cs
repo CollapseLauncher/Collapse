@@ -1,7 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using Hi3Helper;
 using Hi3Helper.Plugin.Core;
 using Hi3Helper.Plugin.Core.Management;
@@ -29,8 +27,8 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
 
     public PluginLauncherApiWrapper(IPlugin plugin, PluginPresetConfigWrapper presetConfig)
     {
-        ArgumentNullException.ThrowIfNull(plugin,       nameof(plugin));
-        ArgumentNullException.ThrowIfNull(presetConfig, nameof(presetConfig));
+        ArgumentNullException.ThrowIfNull(plugin);
+        ArgumentNullException.ThrowIfNull(presetConfig);
 
         _plugin             = plugin;
         _pluginPresetConfig = presetConfig;
@@ -39,7 +37,8 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
         _pluginNewsApi      = presetConfig.PluginNewsApi;
     }
 
-    public bool IsPlugin                => true;
+    public bool IsPlugin => true;
+
     public bool IsForceRedirectToSophon => false;
     public bool IsLoadingCompleted      { get; private set; }
 
@@ -56,20 +55,24 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
     public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles) ?? GameName;
     public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions) ?? GameRegion;
 
-    public HoYoPlayGameInfoField? LauncherGameInfoField { get; } = new();
-    public LauncherGameNews       LauncherGameNews      { get; } = new();
-    public RegionResourceProp     LauncherGameResource  { get; } = new();
+    public HypLauncherResourceWpfApi LauncherGameResourceWpf    { get; } = new();
+    public HypGameInfoData           LauncherGameInfoField      { get; } = new();
+    public HypLauncherGameInfoApi    LauncherGameResourceSophon { get; } = new();
+    public HypLauncherBackgroundApi  LauncherGameBackground     { get; } = new();
+    public HypLauncherContentApi     LauncherGameContent        { get; } = new();
+    public RegionResourceProp        LauncherGameResource       { get; } = new();
 
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();
 
-    public async Task<bool> LoadAsync(OnLoadTaskAction?         beforeLoadRoutine = null,
-                                      OnLoadTaskAction?         afterLoadRoutine  = null,
-                                      ActionOnTimeOutRetry?     onTimeoutRoutine  = null,
-                                      ErrorLoadRoutineDelegate? errorLoadRoutine  = null,
-                                      CancellationToken         token             = default)
+    public async ValueTask<bool> LoadAsync(
+        Func<CancellationToken, ValueTask>? beforeLoadRoutineAsync = null,
+        Func<CancellationToken, ValueTask>? afterLoadRoutineAsync  = null,
+        ActionOnTimeOutRetry?               onTimeoutRoutine       = null,
+        Action<Exception>?                  errorLoadRoutine       = null,
+        CancellationToken                   token                  = default)
     {
-        _ = beforeLoadRoutine?.Invoke(token) ?? Task.CompletedTask;
+        _ = beforeLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask;
 
         try
         {
@@ -78,13 +81,13 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
             Task[] initTasks = GetApiInitTasks(onTimeoutRoutine, token);
             await Task.WhenAll(initTasks);
 
-            LauncherGameNews.Content = new LauncherGameNewsData();
+            LauncherGameBackground.Data = [];
 
-            await ConvertBackgroundImageEntries(LauncherGameNews.Content, token);
-            await ConvertSocialMediaEntries(LauncherGameNews.Content, token);
-            await ConvertNewsAndCarouselEntries(LauncherGameNews.Content, token);
+            await ConvertBackgroundImageEntries(LauncherGameBackground.Data, token);
+            await ConvertSocialMediaEntries(LauncherGameContent, token);
+            await ConvertNewsAndCarouselEntries(LauncherGameContent, token);
 
-            await (afterLoadRoutine?.Invoke(token) ?? Task.CompletedTask);
+            await(afterLoadRoutineAsync?.Invoke(token) ?? ValueTask.CompletedTask);
             return true;
         }
         catch (Exception ex)

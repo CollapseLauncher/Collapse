@@ -1,5 +1,5 @@
 ﻿using CollapseLauncher.Extension;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
@@ -19,20 +19,31 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 // ReSharper disable ConvertIfStatementToReturnStatement
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
 internal partial class PluginLauncherApiWrapper
 {
-    private async Task ConvertSocialMediaEntries(LauncherGameNewsData newsData, CancellationToken token)
+    private async ValueTask ConvertSocialMediaEntries(HypLauncherContentApi contentApi, CancellationToken token)
     {
         string spriteFolder = Path.Combine(LauncherConfig.AppGameImgFolder, "cached");
-        newsData.SocialMedia ??= [];
-        newsData.SocialMedia.Clear();
+
+        contentApi.Data         ??= new HypLauncherContentData();
+        contentApi.Data.Content ??= new HypLauncherContentKind();
+
+        var list = contentApi.Data.Content.SocialMedia;
+        list.Clear();
 
         using PluginDisposableMemory<LauncherSocialMediaEntry> socialMediaEntry = PluginDisposableMemoryExtension.ToManagedSpan<LauncherSocialMediaEntry>(_pluginNewsApi.GetSocialMediaEntries);
         int count = socialMediaEntry.Length;
+
+        if (count == 0)
+        {
+            return;
+        }
+
         for (int i = 0; i < count; i++)
         {
             using LauncherSocialMediaEntry entry = socialMediaEntry[i];
@@ -71,29 +82,40 @@ internal partial class PluginLauncherApiWrapper
                                                                    qrImageDataMarshal,
                                                                    token);
 
-            newsData.SocialMedia.Add(new LauncherGameNewsSocialMedia
+            list.Add(new HypLauncherSocialMediaContentData
             {
-                IconId             = Guid.CreateVersion7().ToString(),
-                IconImg            = iconUrl,
-                IconImgHover       = iconHoverUrl ?? iconUrl,
-                Title              = iconTitle,
-                SocialMediaUrl     = iconClickUrl,
-                QrImg              = qrImageUrl,
-                QrTitle            = qrImageDescription,
-                QrLinks            = GetSocialMediaInnerLinks(ref entry.ChildEntryHandle),
-                IsImageUrlHashable = false
+                Id = Guid.CreateVersion7().ToString(),
+
+                ChildrenLinks = GetSocialMediaInnerLinks(ref entry.ChildEntryHandle),
+                QrDescription = qrImageDescription,
+
+                Icon = new HypLauncherMediaContentData
+                {
+                    ImageUrl      = iconUrl,
+                    ImageHoverUrl = iconHoverUrl ?? iconUrl,
+                    ClickLink     = iconClickUrl,
+                    Description   = iconTitle,
+                    Title         = iconTitle
+                },
+
+                QrImage = new HypLauncherMediaContentData
+                {
+                    ImageUrl    = qrImageUrl,
+                    Description = qrImageDescription,
+                    Title       = qrImageDescription
+                }
             });
         }
     }
 
-    private static List<LauncherGameNewsSocialMediaQrLinks>? GetSocialMediaInnerLinks(ref LauncherSocialMediaEntry innerEntry)
+    private static List<HypLauncherMediaContentData> GetSocialMediaInnerLinks(ref LauncherSocialMediaEntry innerEntry)
     {
         if (Unsafe.IsNullRef(ref innerEntry))
         {
-            return null;
+            return [];
         }
 
-        List<LauncherGameNewsSocialMediaQrLinks> links = [];
+        List<HypLauncherMediaContentData> links = [];
         while (!Unsafe.IsNullRef(ref innerEntry))
         {
             try
@@ -109,10 +131,10 @@ internal partial class PluginLauncherApiWrapper
                     continue;
                 }
 
-                links.Add(new LauncherGameNewsSocialMediaQrLinks
+                links.Add(new HypLauncherMediaContentData
                 {
-                    Title = description,
-                    Url   = descriptionUrl
+                    Title     = description,
+                    ClickLink = descriptionUrl
                 });
             }
             finally

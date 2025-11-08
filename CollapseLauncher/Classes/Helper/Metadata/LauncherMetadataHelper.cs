@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Helper.Loading;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Plugins;
@@ -589,8 +588,8 @@ namespace CollapseLauncher.Helper.Metadata
                             presetConfig.GameName = stamp.GameName;
                             presetConfig.GameLauncherApi ??= presetConfig.LauncherType switch
                             {
-                                LauncherType.Sophon => LegacyLauncherApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
-                                LauncherType.HoYoPlay => HoYoPlayLauncherApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
+                                LauncherType.HoYoPlay => HypApiLoader.CreateApiInstance(presetConfig, stamp.GameName, stamp.GameRegion),
+                                LauncherType.Legacy => throw new NotSupportedException("Legacy Launcher API is no longer supported!"),
                                 _ => throw new NotSupportedException($"Launcher type: {presetConfig.LauncherType} is not supported!")
                             };
 

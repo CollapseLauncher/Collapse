@@ -200,7 +200,7 @@ public partial class FullPageOverlay : ContentControl
         // Binding overlay title visibility
         if (_layoutOverlayTitleGrid?.Children.OfType<TextBlock>().FirstOrDefault() is { } asOverlayTitleTextBlock)
         {
-            asOverlayTitleTextBlock.BindProperty(VisibilityProperty, this, nameof(OverlayTitle), StringToVisibilityConverter);
+            asOverlayTitleTextBlock.BindProperty(VisibilityProperty, this, nameof(OverlayTitle), converter: StringToVisibilityConverter);
         }
 
         // Try update overlay title if title source is available

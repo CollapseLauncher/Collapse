@@ -352,9 +352,9 @@ namespace CollapseLauncher.Pages
         {
             // Get the url and article image path
             string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
-                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
+                .HoYoPlayGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
             string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
-                .LauncherGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
+                .HoYoPlayGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
 
             // If the region event panel property is null, then return
             if (string.IsNullOrEmpty(featuredEventIconImg)

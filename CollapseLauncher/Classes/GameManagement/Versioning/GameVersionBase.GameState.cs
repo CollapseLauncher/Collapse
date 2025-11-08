@@ -442,7 +442,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return result;
             }
 
-            foreach (RegionResourcePluginValidate validate in plugin.package?.validate!)
+            foreach (HypPackageFileValidationInfo validate in plugin.package?.validate!)
             {
                 if (validate.path == null)
                 {

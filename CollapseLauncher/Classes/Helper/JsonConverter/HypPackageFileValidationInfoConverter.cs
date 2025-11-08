@@ -6,20 +6,20 @@ using System.Text.Json.Serialization;
 
 namespace CollapseLauncher.Helper.JsonConverter
 {
-    public class RegionResourcePluginValidateConverter : JsonConverter<List<RegionResourcePluginValidate>>
+    public class HypPackageFileValidationInfoConverter : JsonConverter<List<HypPackageFileValidationInfo>>
     {
         public override bool CanConvert(Type type)
         {
             return true;
         }
 
-        public override List<RegionResourcePluginValidate> Read(
+        public override List<HypPackageFileValidationInfo> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options)
         {
             string valueString = EmptiedBackslash(reader.ValueSpan);
-            List<RegionResourcePluginValidate> returnList = valueString.Deserialize(RegionResourcePluginValidateJsonContext.Default.ListRegionResourcePluginValidate);
+            List<HypPackageFileValidationInfo> returnList = valueString.Deserialize(RegionResourcePluginValidateJsonContext.Default.ListRegionResourcePluginValidate);
 
             return returnList;
         }
@@ -50,7 +50,7 @@ namespace CollapseLauncher.Helper.JsonConverter
 
         public override void Write(
                 Utf8JsonWriter writer,
-                List<RegionResourcePluginValidate> baseType,
+                List<HypPackageFileValidationInfo> baseType,
                 JsonSerializerOptions options)
         {
 

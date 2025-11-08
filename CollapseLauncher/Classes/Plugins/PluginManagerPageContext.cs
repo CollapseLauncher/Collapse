@@ -123,7 +123,7 @@ public partial class PluginManagerPageContext : INotifyPropertyChanged
 
     public PluginManagerPageContext()
     {
-        PluginCollection.CollectionChanged +=  OnChangeUpdatePluginCollection;
+        PluginCollection.CollectionChanged += OnChangeUpdatePluginCollection;
     }
 
     private static ObservableCollection<PluginInfo> CreateNewCollectionFromPluginManager()

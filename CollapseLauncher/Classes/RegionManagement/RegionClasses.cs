@@ -86,16 +86,16 @@ namespace CollapseLauncher
     }
 
     [JsonSourceGenerationOptions(IncludeFields = false, GenerationMode = JsonSourceGenerationMode.Metadata, IgnoreReadOnlyFields = true)]
-    [JsonSerializable(typeof(List<RegionResourcePluginValidate>))]
+    [JsonSerializable(typeof(List<HypPackageFileValidationInfo>))]
     internal sealed partial class RegionResourcePluginValidateJsonContext : JsonSerializerContext;
-    public sealed class RegionResourcePluginValidate : IRegionResourceCopyable<RegionResourcePluginValidate>
+    public sealed class HypPackageFileValidationInfo : IRegionResourceCopyable<HypPackageFileValidationInfo>
     {
         public string? path { get; set; }
         public string? md5  { get; set; }
 
-        public RegionResourcePluginValidate Copy()
+        public HypPackageFileValidationInfo Copy()
         {
-            return new RegionResourcePluginValidate
+            return new HypPackageFileValidationInfo
             {
                 path = path,
                 md5  = md5
@@ -147,8 +147,8 @@ namespace CollapseLauncher
         public List<RegionResourceVersion>? voice_packs { get; set; }
         public List<RegionResourceVersion>? segments    { get; set; }
 
-        [JsonConverter(typeof(RegionResourcePluginValidateConverter))]
-        public List<RegionResourcePluginValidate>? validate { get; set; }
+        [JsonConverter(typeof(HypPackageFileValidationInfoConverter))]
+        public List<HypPackageFileValidationInfo>? validate { get; set; }
 
         public RegionResourceVersion Copy()
         {

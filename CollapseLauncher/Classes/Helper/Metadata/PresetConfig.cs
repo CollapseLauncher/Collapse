@@ -71,7 +71,8 @@ namespace CollapseLauncher.Helper.Metadata
     [JsonConverter(typeof(JsonStringEnumConverter<LauncherType>))]
     public enum LauncherType
     {
-        Sophon,
+        Legacy,
+        Sophon = Legacy,
         HoYoPlay,
         Plugin
     }
@@ -115,7 +116,7 @@ namespace CollapseLauncher.Helper.Metadata
 
         public bool ResetAssociation() => IsReassociated = false;
 
-        public Task EnsureReassociated(HttpClient client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
+        public Task EnsureReassociated(HttpClient? client, string? branchUrl, string bizName, bool isPreloadForPatch, CancellationToken token)
         {
             if (IsReassociated)
                 return Task.CompletedTask;
@@ -124,10 +125,10 @@ namespace CollapseLauncher.Helper.Metadata
                 return Task.CompletedTask;
 
             // Fetch branch info
-            ActionTimeoutTaskCallback<HoYoPlayLauncherGameInfo?> hypLauncherBranchCallback =
+            ActionTimeoutTaskCallback<HypLauncherGameInfoApi?> hypLauncherBranchCallback =
                 innerToken =>
                     FallbackCDNUtil.DownloadAsJSONType(branchUrl,
-                                                       HoYoPlayLauncherGameInfoJsonContext.Default.HoYoPlayLauncherGameInfo,
+                                                       HoYoPlayLauncherGameInfoJsonContext.Default.HypLauncherGameInfoApi,
                                                        innerToken);
 
             return hypLauncherBranchCallback
@@ -137,13 +138,13 @@ namespace CollapseLauncher.Helper.Metadata
                                    null, token)
                 .ContinueWith(async result =>
                 {
-                    HoYoPlayLauncherGameInfo? hypLauncherBranchInfo = await result;
+                    HypLauncherGameInfoApi? hypLauncherBranchInfo = await result;
 
                     // If branch info is null or empty, return
-                    HoYoPlayGameInfoBranch? branch = hypLauncherBranchInfo?
-                       .GameInfoData?
+                    HypGameInfoBranchesKind? branch = hypLauncherBranchInfo?
+                       .Data?
                        .GameBranchesInfo?
-                       .FirstOrDefault(x => x.GameInfo?.BizName?.Equals(bizName) ?? false);
+                       .FirstOrDefault(x => x.GameInfo?.GameBiz?.Equals(bizName) ?? false);
                     if (branch == null)
                         return;
 
@@ -180,12 +181,12 @@ namespace CollapseLauncher.Helper.Metadata
                     // Re-associate url if patch URL property exists
                     if (!string.IsNullOrEmpty(PatchUrl))
                     {
-                        HoYoPlayGameInfoBranchField branchField = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
-                        ArgumentException.ThrowIfNullOrEmpty(branchField.PackageId);
-                        ArgumentException.ThrowIfNullOrEmpty(branchField.Password);
+                        HypGameInfoBranchData branchData = (isPreloadForPatch ? branch.GamePreloadField : branch.GameMainField) ?? throw new InvalidOperationException($"Cannot find branch field for respective patch URL (isPreloadForPatch: {isPreloadForPatch}).");
+                        ArgumentException.ThrowIfNullOrEmpty(branchData.PackageId);
+                        ArgumentException.ThrowIfNullOrEmpty(branchData.Password);
 
-                        string packageIdValue = branchField.PackageId;
-                        string passwordValue  = branchField.Password;
+                        string packageIdValue = branchData.PackageId;
+                        string passwordValue  = branchData.Password;
                         string branchValue    = isPreloadForPatch ? "predownload" : "main";
 
                         PatchUrl = PatchUrl.AssociateGameAndLauncherId(QueryPasswordHead,
@@ -237,7 +238,7 @@ namespace CollapseLauncher.Helper.Metadata
                 urlSpanBufferLen += splitRanges[0].End.Value - splitRanges[0].Start.Value;
                 urlSpanBuffer[urlSpanBufferLen++] = '?';
 
-                #region Parse and split queries - Sanitize the GameId and LauncherId query
+                #region Parse and split queries - Sanitize the GameId and GameId query
                 int querySplitRangesLen = querySpan.Split(splitRanges, '&', StringSplitOptions.RemoveEmptyEntries);
                 int queryWritten = 0;
                 Span<char> querySpanBuffer = urlSpanBuffer[urlSpanBufferLen..];
@@ -247,7 +248,7 @@ namespace CollapseLauncher.Helper.Metadata
                     int segmentLen = segmentRange.End.Value - segmentRange.Start.Value;
                     ReadOnlySpan<char> querySegment = querySpan[segmentRange];
 
-                    // Skip GameId or LauncherId query head
+                    // Skip GameId or GameId query head
                     if (querySegment.StartsWith(launcherIdOrPasswordHead, StringComparison.OrdinalIgnoreCase)
                      || querySegment.StartsWith(gameIdOrGamePackageIdHead, StringComparison.OrdinalIgnoreCase))
                         continue;
@@ -269,7 +270,7 @@ namespace CollapseLauncher.Helper.Metadata
                 urlSpanBufferLen += queryWritten;
                 #endregion
 
-                #region Append GameId and LauncherId query
+                #region Append GameId and GameId query
                 if (!launcherIdOrPasswordHead.TryCopyTo(urlSpanBuffer[urlSpanBufferLen..]))
                     throw new InvalidOperationException("Failed to copy launcher id or password head string to buffer");
                 urlSpanBufferLen += launcherIdOrPasswordHead.Length;
@@ -290,7 +291,7 @@ namespace CollapseLauncher.Helper.Metadata
 
                 string returnString = new string(urlBuffer, 0, urlSpanBufferLen);
 #if DEBUG
-                LogWriteLine($"URL string's GameId or Password and LauncherId or PackageId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
+                LogWriteLine($"URL string's GameId or Password and GameId or PackageId association has been successfully replaced!\r\nSource: {url}\r\nResult: {returnString}", LogType.Debug, true);
 #endif
                 return returnString;
                 #endregion
@@ -845,7 +846,7 @@ namespace CollapseLauncher.Helper.Metadata
                     string? gameKeyName = subKeyKey.FirstOrDefault(x => x.Equals(LauncherBizName, StringComparison.OrdinalIgnoreCase));
                     if (string.IsNullOrEmpty(gameKeyName)) continue;
 
-                    // Get the game-key once a BizName is obtained.
+                    // Get the game-key once a GameBiz is obtained.
                     using RegistryKey? gameKey = subKey.OpenSubKey(gameKeyName);
 
                     // Try to get the value of "GameInstallPath" key and check if the game
