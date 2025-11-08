@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Interfaces.Class;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -67,37 +68,109 @@ public class HypLauncherContentKind : HypApiIdentifiable
     }
 }
 
-public class HypLauncherCarouselContentData
+[GeneratedBindableCustomProperty]
+public partial class HypLauncherCarouselContentData : NotifyPropertyChanged
 {
     [JsonPropertyName("id")]
     [JsonConverter(typeof(EmptyStringAsNullConverter))]
-    public string? Id { get; init; }
+    public string? Id
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
     [JsonPropertyName("image")]
-    public HypLauncherMediaContentData? Image { get; init; }
+    public HypLauncherMediaContentData? Image
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
     [JsonPropertyName("i18n_identifier")]
     [JsonConverter(typeof(EmptyStringAsNullConverter))]
-    public string? LocalizationIdentifier { get; init; }
+    public string? LocalizationIdentifier
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 }
 
-public class HypLauncherSocialMediaContentData
+[GeneratedBindableCustomProperty]
+public partial class HypLauncherSocialMediaContentData : NotifyPropertyChanged
 {
     [JsonPropertyName("id")]
     [JsonConverter(typeof(EmptyStringAsNullConverter))]
-    public string? Id { get; init; }
+    public string? Id
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
     [JsonPropertyName("icon")]
-    public HypLauncherMediaContentData? Icon { get; init; }
+    public HypLauncherMediaContentData? Icon
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
     [JsonPropertyName("qr_image")]
-    public HypLauncherMediaContentData? QrImage { get; init; }
+    public HypLauncherMediaContentData? QrImage
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
     [JsonPropertyName("qr_desc")]
     [JsonConverter(typeof(EmptyStringAsNullConverter))]
-    public string? QrDescription { get; init; }
+    public string? QrDescription
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
     [JsonPropertyName("links")]
-    [JsonConverter(typeof(EmptyStringAsNullConverter))]
-    public List<HypLauncherMediaContentData> ChildrenLinks { get; init; } = [];
+    public List<HypLauncherMediaContentData> ChildrenLinks
+    {
+        get;
+        init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    } = [];
+
+    [JsonIgnore]
+    public bool CanShowFlyout
+    {
+        get => QrImage?.ImageUrl is not null ||
+               ChildrenLinks.Count != 0;
+    }
 }

@@ -26,7 +26,7 @@ internal partial class PluginLauncherApiWrapper
         using PluginDisposableMemory<LauncherPathEntry> backgroundEntries = PluginDisposableMemoryExtension.ToManagedSpan<LauncherPathEntry>(_pluginMediaApi.GetBackgroundEntries);
         int count = backgroundEntries.Length;
 
-        newsData.Clear();
+        newsData.GameContentList.Clear();
         if (count == 0)
         {
             return;
@@ -74,8 +74,6 @@ internal partial class PluginLauncherApiWrapper
                 firstImageSpritePath ??= spriteLocalPath;
                 continue; // Skip further processing for local files
             }
-
-
 
             // Start the download
             Guid                   cancelTokenPass = _plugin.RegisterCancelToken(token);

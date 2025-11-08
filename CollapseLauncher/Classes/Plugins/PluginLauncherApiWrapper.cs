@@ -81,7 +81,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
             Task[] initTasks = GetApiInitTasks(onTimeoutRoutine, token);
             await Task.WhenAll(initTasks);
 
-            LauncherGameBackground.Data = [];
+            LauncherGameBackground.Data = new();
 
             await ConvertBackgroundImageEntries(LauncherGameBackground.Data, token);
             await ConvertSocialMediaEntries(LauncherGameContent, token);

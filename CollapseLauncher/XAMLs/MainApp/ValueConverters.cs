@@ -470,4 +470,15 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+
+    public partial class NullableVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+            => value is null ? Visibility.Collapsed : Visibility.Visible;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

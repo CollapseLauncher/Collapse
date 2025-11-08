@@ -17,7 +17,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:pages="using:CollapseLauncher.Pages"
       xmlns:s="using:CommunityToolkit.WinUI"
-      xmlns:sophonTypes="using:CollapseLauncher.Helper.LauncherApiLoader.Legacy"
+      xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
       x:Name="HomePage_Page"
       x:FieldModifier="public"
       CacheMode="BitmapCache"
@@ -31,6 +31,9 @@
                               CastTo="{x:Bind ImageEventImgShadow}"
                               Opacity="0.3"
                               Offset="0,4,0" />
+        <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter"/>
+        <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter"/>
+        <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
     </Page.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
@@ -84,9 +87,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="32" />
@@ -201,9 +204,9 @@
                     </Grid>
                     <Grid x:Name="ProgressPreSophonStatusGrid"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
@@ -305,9 +308,9 @@
                           HorizontalAlignment="Stretch"
                           VerticalAlignment="Top"
                           Visibility="Collapsed">
-                        <Grid.ChildrenTransitions>
+                        <!--<Grid.ChildrenTransitions>
                             <PopupThemeTransition />
-                        </Grid.ChildrenTransitions>
+                        </Grid.ChildrenTransitions>-->
                         <Grid x:Name="DownloadModeLabelPreload"
                               Padding="8,2"
                               HorizontalAlignment="Left"
@@ -432,21 +435,21 @@
                     CornerRadius="12,0,0,12"
                     Orientation="Vertical"
                     Shadow="{ThemeResource SharedShadow}">
-            <StackPanel.Transitions>
+            <!--<StackPanel.Transitions>
                 <PopupThemeTransition />
-            </StackPanel.Transitions>
+            </StackPanel.Transitions>-->
             <ScrollViewer x:Name="SocMedPanelScrollView"
                           MaxHeight="336"
                           VerticalScrollBarVisibility="Auto">
                 <ItemsControl IsTabStop="False"
-                              ItemsSource="{x:Bind pages:HomePage.GameNewsData.SocialMedia}"
+                              ItemsSource="{x:Bind pages:HomePage.GameSocialMediaData}"
                               TabFocusNavigation="Once"
                               XYFocusKeyboardNavigation="Enabled">
-                    <ItemsControl.Transitions>
+                    <!--<ItemsControl.Transitions>
                         <PopupThemeTransition />
-                    </ItemsControl.Transitions>
+                    </ItemsControl.Transitions>-->
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="sophonTypes:LauncherGameNewsSocialMedia">
+                        <DataTemplate x:DataType="hypTypes:HypLauncherSocialMediaContentData">
                             <Grid Loaded="SetHandCursor">
                                 <Button x:Name="SocMedButton"
                                         Width="48px"
@@ -459,9 +462,10 @@
                                         Loaded="ApplyShadowToImageElement"
                                         PointerEntered="FadeInSocMedButton"
                                         PointerExited="FadeOutSocMedButton"
+                                        DataContext="{x:Bind}"
                                         Shadow="{ThemeResource SharedShadow}"
                                         Style="{ThemeResource TransparentDefaultButtonStyle}"
-                                        Tag="{x:Bind SocialMediaUrl}">
+                                        Tag="{x:Bind Icon.ClickLink, FallbackValue={x:Null}}">
                                     <ToolTipService.ToolTip>
                                         <ToolTip Opened="ShowSocMedFlyout"
                                                  Tag="{Binding ElementName=SocMedButton}"
@@ -476,14 +480,10 @@
                                                         Background="Transparent"
                                                         Loaded="OnLoadedSocMedFlyout"
                                                         PointerExited="HideSocMedFlyout"
-                                                        Tag="{x:Bind}"
-                                                        Visibility="Collapsed">
-                                                <Grid Tag="{Binding ElementName=SocMedFlyout}"
-                                                      Visibility="Collapsed" />
-
+                                                        Tag="{x:Bind ChildrenLinks}">
                                                 <!--  START: SocialMediaParentPanel_QR  -->
-                                                <StackPanel x:Name="SocialMediaParentPanel_QR"
-                                                            Margin="4,8,4,0">
+                                                <StackPanel Margin="4,8,4,0"
+                                                            Visibility="{x:Bind QrImage.ImageUrl, Converter={StaticResource NullableVisibilityConverter}}">
                                                     <Grid Margin="0,0,0,8"
                                                           Background="White"
                                                           CornerRadius="5"
@@ -495,23 +495,25 @@
                                                         </Grid.RowDefinitions>
                                                         <imageex:ImageEx Width="160"
                                                                          Margin="4"
-                                                                         HorizontalAlignment="Center" />
+                                                                         HorizontalAlignment="Center"
+                                                                         Source="{x:Bind QrImage.ImageUrl, FallbackValue={x:Null}}" />
                                                         <TextBlock Grid.Row="1"
                                                                    Margin="0,0,0,8"
                                                                    HorizontalAlignment="Center"
                                                                    FontWeight="Bold"
                                                                    Foreground="Black"
                                                                    TextAlignment="Center"
-                                                                   TextWrapping="Wrap" />
+                                                                   TextWrapping="Wrap"
+                                                                   Text="{x:Bind QrDescription}"/>
                                                     </Grid>
                                                 </StackPanel>
 
                                                 <!--  START: SocialMediaParentPanel_Links  -->
-                                                <StackPanel x:Name="SocialMediaParentPanel_Links"
-                                                            Margin="0,2">
-                                                    <ItemsControl>
+                                                <StackPanel Margin="0,2"
+                                                            Visibility="{x:Bind ChildrenLinks, Converter={StaticResource CountToVisibilityConverter}}">
+                                                    <ItemsControl ItemsSource="{x:Bind ChildrenLinks}">
                                                         <ItemsControl.ItemTemplate>
-                                                            <DataTemplate x:DataType="sophonTypes:LauncherGameNewsSocialMediaQrLinks">
+                                                            <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                                 <Button MinWidth="160"
                                                                         Margin="0,2"
                                                                         HorizontalAlignment="Stretch"
@@ -523,7 +525,7 @@
                                                                         PointerExited="ElementScaleInHoveredPointerExited"
                                                                         Shadow="{ThemeResource SharedShadow}"
                                                                         Style="{ThemeResource AcrylicSemiButtonStyle}"
-                                                                        Tag="{x:Bind Url}"
+                                                                        Tag="{x:Bind ClickLink}"
                                                                         Translation="0,0,8">
                                                                     <Grid Margin="0,0,0,0"
                                                                           HorizontalAlignment="Stretch">
@@ -563,12 +565,6 @@
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
                                                 </StackPanel>
-
-                                                <!--  START: SocialMediaParentPanel_Description  -->
-                                                <TextBlock x:Name="SocialMediaParentPanel_Description"
-                                                           Margin="0,4"
-                                                           HorizontalAlignment="Center"
-                                                           TextWrapping="Wrap" />
                                             </StackPanel>
                                             <Flyout.FlyoutPresenterStyle>
                                                 <Style TargetType="FlyoutPresenter">
@@ -581,12 +577,12 @@
                                             </Flyout.FlyoutPresenterStyle>
                                         </Flyout>
                                     </Button.Flyout>
-                                    <Grid>
+                                    <Grid DataContext="{x:Bind Icon}">
                                         <imageex:ImageEx x:Name="Icon"
-                                                         Source="{x:Bind IconImg}" />
+                                                         Source="{Binding ImageUrl}" />
                                         <imageex:ImageEx x:Name="IconHover"
                                                          Opacity="0"
-                                                         Source="{x:Bind IconImgHover}" />
+                                                         Source="{Binding ImageHoverUrl}" />
                                     </Grid>
                                 </Button>
                             </Grid>
@@ -604,6 +600,7 @@
               CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
+              Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}}"
               Shadow="{ThemeResource SharedShadow}"
               Translation="0,0,32">
             <Grid.RenderTransform>
@@ -623,21 +620,22 @@
                               Height="{x:Bind localWindowSize:WindowSize.CurrentWindowSize.EventPostCarouselBounds.Height}"
                               HorizontalAlignment="Stretch"
                               CornerRadius="4"
-                              ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsCarousel}"
+                              ItemsSource="{x:Bind pages:HomePage.GameCarouselData}"
                               Shadow="{ThemeResource SharedShadow}"
                               Style="{ThemeResource CollapseFlipViewStyle}"
                               Translation="0,0,12">
                         <FlipView.ItemTemplate>
-                            <DataTemplate x:DataType="sophonTypes:LauncherGameNewsCarousel">
+                            <DataTemplate x:DataType="hypTypes:HypLauncherCarouselContentData">
                                 <imageex:ImageEx EnableLazyLoading="True"
                                                  IsCacheEnabled="True"
                                                  Loaded="SetHandCursor"
+                                                 VerticalAlignment="Center"
                                                  PlaceholderSource="ms-appx:///Assets/Images/PageBackground/default.png"
                                                  PointerPressed="OpenImageLinkFromTag"
-                                                 Source="{x:Bind CarouselImg}"
-                                                 Stretch="Fill"
-                                                 Tag="{x:Bind CarouselUrl}"
-                                                 ToolTipService.ToolTip="{x:Bind CarouselTitle}" />
+                                                 Source="{x:Bind Image.ImageUrl}"
+                                                 Stretch="UniformToFill"
+                                                 Tag="{x:Bind Image.ClickLink}"
+                                                 ToolTipService.ToolTip="{x:Bind Image.Description}" />
                             </DataTemplate>
                         </FlipView.ItemTemplate>
                     </FlipView>
@@ -668,16 +666,16 @@
                                               Visibility="{x:Bind pages:HomePage.IsPostEventPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeActivity}"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataEventKind}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
+                                                <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
                                                             Style="{ThemeResource DraftButtonStyle}"
-                                                            Tag="{x:Bind PostUrl}">
+                                                            Tag="{x:Bind ClickLink}">
                                                         <Grid Margin="0,2"
                                                               HorizontalAlignment="Stretch"
                                                               Background="Transparent"
@@ -701,7 +699,7 @@
                                                                        FontSize="12"
                                                                        FontWeight="Bold"
                                                                        Foreground="{ThemeResource AccentColor}"
-                                                                       Text="{x:Bind PostDate}" />
+                                                                       Text="{x:Bind Date}" />
                                                         </Grid>
                                                     </Button>
                                                 </DataTemplate>
@@ -746,16 +744,16 @@
                                               Visibility="{x:Bind pages:HomePage.IsPostNoticePanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeAnnouncement}"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataAnnouncementKind}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
+                                                <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
                                                             Style="{ThemeResource DraftButtonStyle}"
-                                                            Tag="{x:Bind PostUrl}">
+                                                            Tag="{x:Bind ClickLink}">
                                                         <Grid Margin="0,2"
                                                               HorizontalAlignment="Stretch"
                                                               Background="Transparent"
@@ -779,7 +777,7 @@
                                                                        FontSize="12"
                                                                        FontWeight="Bold"
                                                                        Foreground="{ThemeResource AccentColor}"
-                                                                       Text="{x:Bind PostDate}" />
+                                                                       Text="{x:Bind Date}" />
                                                         </Grid>
                                                     </Button>
                                                 </DataTemplate>
@@ -824,16 +822,16 @@
                                               Visibility="{x:Bind pages:HomePage.IsPostInfoPanelVisible}">
                                     <StackPanel Margin="0,0,16,4">
                                         <ItemsControl IsTabStop="False"
-                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsData.NewsPostTypeInfo}"
+                                                      ItemsSource="{x:Bind pages:HomePage.GameNewsDataInformationKind}"
                                                       TabFocusNavigation="Once"
                                                       XYFocusKeyboardNavigation="Enabled">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="sophonTypes:LauncherGameNewsPost">
+                                                <DataTemplate x:DataType="hypTypes:HypLauncherMediaContentData">
                                                     <Button HorizontalAlignment="Stretch"
                                                             Click="OpenButtonLinkFromTag"
                                                             Loaded="SetHandCursor"
                                                             Style="{ThemeResource DraftButtonStyle}"
-                                                            Tag="{x:Bind PostUrl}">
+                                                            Tag="{x:Bind ClickLink}">
                                                         <Grid Margin="0,2"
                                                               HorizontalAlignment="Stretch"
                                                               Background="Transparent"
@@ -857,7 +855,7 @@
                                                                        FontSize="12"
                                                                        FontWeight="Bold"
                                                                        Foreground="{ThemeResource AccentColor}"
-                                                                       Text="{x:Bind PostDate}" />
+                                                                       Text="{x:Bind Date}" />
                                                         </Grid>
                                                     </Button>
                                                 </DataTemplate>
@@ -891,6 +889,7 @@
                     </Pivot>
                 </Grid>
                 <Grid x:Name="ImageCarouselPipsPager"
+                      DataContext="{x:Bind pages:HomePage.GameCarouselData}"
                       Grid.Row="0"
                       Padding="8,0"
                       HorizontalAlignment="Center"
@@ -901,7 +900,7 @@
                       Translation="0,0,16">
                     <PipsPager VerticalAlignment="Center"
                                NextButtonVisibility="Collapsed"
-                               NumberOfPages="{x:Bind pages:HomePage.GameNewsData.NewsCarousel.Count}"
+                               NumberOfPages="{Binding Count}"
                                Orientation="Horizontal"
                                PreviousButtonVisibility="Collapsed"
                                SelectedPageIndex="{x:Bind Path=ImageCarousel.SelectedIndex, Mode=TwoWay}" />
@@ -916,13 +915,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             <Grid>
-                <Grid.ChildrenTransitions>
+                <!--<Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>
+                </Grid.ChildrenTransitions>-->
                 <Grid x:Name="SophonProgressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(SophonProgressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"
@@ -1231,13 +1230,13 @@
               VerticalAlignment="Center"
               Shadow="{ThemeResource SharedShadow}"
               Visibility="Collapsed">
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <PopupThemeTransition />
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             <Grid>
-                <Grid.ChildrenTransitions>
+                <!--<Grid.ChildrenTransitions>
                     <PopupThemeTransition />
-                </Grid.ChildrenTransitions>
+                </Grid.ChildrenTransitions>-->
                 <Grid x:Name="progressRingShadow"
                       CornerRadius="{x:Bind extension:UIElementExtensions.AttachRoundedKindCornerRadius(progressRingShadow)}"
                       Shadow="{ThemeResource SharedShadow}"

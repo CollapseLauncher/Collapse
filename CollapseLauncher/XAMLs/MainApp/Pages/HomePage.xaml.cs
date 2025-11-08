@@ -2,7 +2,6 @@
 using CollapseLauncher.DiscordPresence;
 #endif
 using CollapseLauncher.CustomControls;
-using CollapseLauncher.Helper.LauncherApiLoader.Legacy;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.Animation;
@@ -47,6 +46,7 @@ using Brush = Microsoft.UI.Xaml.Media.Brush;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Point = Windows.Foundation.Point;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable AsyncVoidMethod
@@ -74,11 +74,9 @@ namespace CollapseLauncher.Pages
     public sealed partial class HomePage
     {
         #region Properties
-        private GamePresetProperty CurrentGameProperty { get; set; }
-        private CancellationTokenSourceWrapper PageToken { get; set; }
-        private CancellationTokenSourceWrapper CarouselToken { get; set; }
-
-        private Button _lastSocMedButton;
+        private GamePresetProperty             CurrentGameProperty { get; set; }
+        private CancellationTokenSourceWrapper PageToken           { get; set; }
+        private CancellationTokenSourceWrapper CarouselToken       { get; set; }
 
         private int barWidth;
         private int consoleWidth;
@@ -168,9 +166,6 @@ namespace CollapseLauncher.Pages
 
                 await GetCurrentGameState();
 
-                if (!GetAppConfigValue("ShowEventsPanel").ToBool() || (!IsCarouselPanelAvailable && !IsPostPanelAvailable))
-                    SidePanel.Visibility = Visibility.Collapsed;
-
                 if (!GetAppConfigValue("ShowSocialMediaPanel").ToBool())
                     SocMedPanel.Visibility = Visibility.Collapsed;
 
@@ -187,11 +182,11 @@ namespace CollapseLauncher.Pages
 
                 TryLoadEventPanelImage();
 
-                SocMedPanel.Translation += Shadow48;
+                SocMedPanel.Translation        += Shadow48;
                 GameStartupSetting.Translation += Shadow32;
-                CommunityToolsBtn.Translation += Shadow32;
+                CommunityToolsBtn.Translation  += Shadow32;
 
-                if (IsCarouselPanelAvailable || IsPostPanelAvailable)
+                if (IsCarouselPanelAvailable || IsNewsPanelAvailable)
                 {
                     ImageCarousel.SelectedIndex = 0;
                     ImageCarousel.Visibility = Visibility.Visible;
@@ -347,14 +342,13 @@ namespace CollapseLauncher.Pages
         #endregion
 
         #region EventPanel
-        private readonly ConcurrentDictionary<string, byte> _eventPanelProcessing = new();
+        private readonly ConcurrentDictionary<string, byte> _eventPanelProcessing =
+            new ConcurrentDictionary<string, byte>();
         private async void TryLoadEventPanelImage()
         {
             // Get the url and article image path
-            string featuredEventArticleUrl = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
-                .HoYoPlayGameNews?.Content?.Background?.FeaturedEventIconBtnUrl;
-            string featuredEventIconImg = LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi?
-                .HoYoPlayGameNews?.Content?.Background?.FeaturedEventIconBtnImg;
+            string featuredEventArticleUrl = GameBackgroundData?.FeaturedEventIconClickLink;
+            string featuredEventIconImg = GameBackgroundData?.FeaturedEventIconUrl;
 
             // If the region event panel property is null, then return
             if (string.IsNullOrEmpty(featuredEventIconImg)
@@ -453,11 +447,11 @@ namespace CollapseLauncher.Pages
 
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CarouselToken.Token);
                     if (!IsCarouselPanelAvailable) return;
-                    if (ImageCarousel.SelectedIndex != GameNewsData?.NewsCarousel?.Count - 1 
+                    if (ImageCarousel.SelectedIndex != GameCarouselData?.Count - 1 
                         && ImageCarousel.SelectedIndex < ImageCarousel.Items.Count - 1)
                         ImageCarousel.SelectedIndex++;
                     else
-                        for (int i = GameNewsData?.NewsCarousel?.Count ?? 0; i > 0; i--)
+                        for (int i = GameCarouselData?.Count ?? 0; i > 0; i--)
                         {
                             if (i - 1 >= 0 && i - 1 < ImageCarousel.Items.Count)
                             {
@@ -638,26 +632,14 @@ namespace CollapseLauncher.Pages
 
         private void ShowSocMedFlyout(object sender, RoutedEventArgs e)
         {
-            if (sender is not ToolTip { Tag: Button button })
+            if (sender is not ToolTip { Tag: Button { IsPointerOver: true } button })
             {
                 return;
             }
 
-            if (!button.IsPointerOver && _lastSocMedButton == button)
-                return;
-            _lastSocMedButton = button;
-
-            Flyout flyout = button.Flyout as Flyout;
-            if (flyout != null)
+            if (button.DataContext is not HypLauncherSocialMediaContentData { CanShowFlyout: true })
             {
-                Panel contextPanel = flyout.Content as Panel;
-                if (contextPanel != null && contextPanel.Tag is LauncherGameNewsSocialMedia socMedData)
-                {
-                    if (!socMedData.IsHasDescription && !socMedData.IsHasLinks && !socMedData.IsHasQr)
-                    {
-                        return;
-                    }
-                }
+                return;
             }
 
             FlyoutBase.ShowAttachedFlyout(button);
@@ -678,17 +660,13 @@ namespace CollapseLauncher.Pages
         private void OnLoadedSocMedFlyout(object sender, RoutedEventArgs e)
         {
             // Prevent the flyout showing when there is no content visible
-            StackPanel stackPanel = sender as StackPanel;
-
-            if (stackPanel == null)
+            if (sender is not StackPanel stackPanel)
             {
                 return;
             }
 
-            ApplySocialMediaBinding(stackPanel);
-
             bool visible = false;
-            foreach (var child in stackPanel!.Children)
+            foreach (UIElement child in stackPanel.Children)
             {
                 if (child.Visibility == Visibility.Visible)
                     visible = true;

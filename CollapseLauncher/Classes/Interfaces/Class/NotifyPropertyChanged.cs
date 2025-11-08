@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0130
 
 #nullable enable

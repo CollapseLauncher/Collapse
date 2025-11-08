@@ -1,6 +1,5 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
 using CollapseLauncher.Interfaces.Class;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -19,115 +18,43 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
     public class HypLauncherBackgroundApi : HypApiResponse<HypLauncherBackgroundList>;
 
-    public class HypLauncherBackgroundList : IList<HypLauncherBackgroundContentList>
+    public class HypLauncherBackgroundList
     {
         [JsonPropertyName("game_info_list")]
-        public List<HypLauncherBackgroundContentList> Backgrounds { get; set; } = new(8);
-
-        public IEnumerator<HypLauncherBackgroundContentList> GetEnumerator() =>
-            Backgrounds.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public void Add(HypLauncherBackgroundContentList item) => Backgrounds.Add(item);
-
-        public void Clear() => Backgrounds.Clear();
-
-        public bool Contains(HypLauncherBackgroundContentList item) => Backgrounds.Contains(item);
-
-        public void CopyTo(HypLauncherBackgroundContentList[] array, int arrayIndex) => Backgrounds.CopyTo(array, arrayIndex);
-
-        public bool Remove(HypLauncherBackgroundContentList item) => Backgrounds.Remove(item);
-
-        public int IndexOf(HypLauncherBackgroundContentList item) => Backgrounds.IndexOf(item);
-
-        public void Insert(int index, HypLauncherBackgroundContentList item) => Backgrounds.Insert(index, item);
-
-        public void RemoveAt(int index) => Backgrounds.RemoveAt(index);
-
-        [JsonIgnore]
-        public int Count => Backgrounds.Count;
-
-        [JsonIgnore]
-        public bool IsReadOnly => false;
-
-        [JsonIgnore]
-        public bool IsEmpty => Count == 0;
-
-        public HypLauncherBackgroundContentList this[int index]
-        {
-            get => Backgrounds[index];
-            set => Backgrounds[index] = value;
-        }
+        public List<HypLauncherBackgroundContentList> GameContentList { get; init; } = [];
 
         [JsonIgnore]
         public string? BackgroundImageUrl
         {
-            get => Backgrounds.FirstOrDefault()?.FirstOrDefault()?.BackgroundImage?.ImageUrl;
+            get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.BackgroundImage?.ImageUrl;
         }
 
         [JsonIgnore]
         public string? FeaturedEventIconUrl
         {
-            get => Backgrounds.FirstOrDefault()?.FirstOrDefault()?.FeaturedEventIcon?.ImageUrl;
+            get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageUrl;
         }
 
         [JsonIgnore]
         public string? FeaturedEventIconHoverUrl
         {
-            get => Backgrounds.FirstOrDefault()?.FirstOrDefault()?.FeaturedEventIcon?.ImageHoverUrl;
+            get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ImageHoverUrl;
         }
 
         [JsonIgnore]
         public string? FeaturedEventIconClickLink
         {
-            get => Backgrounds.FirstOrDefault()?.FirstOrDefault()?.FeaturedEventIcon?.ClickLink;
+            get => GameContentList.FirstOrDefault()?.Backgrounds.FirstOrDefault()?.FeaturedEventIcon?.ClickLink;
         }
     }
 
-    public class HypLauncherBackgroundContentList : IList<HypLauncherBackgroundContentKindData>
+    public class HypLauncherBackgroundContentList
     {
         [JsonPropertyName("backgrounds")]
         public List<HypLauncherBackgroundContentKindData> Backgrounds { get; init; } = [];
 
         [JsonPropertyName("game")]
         public HypGameInfoData? GameInfo { get; set; }
-
-        public IEnumerator<HypLauncherBackgroundContentKindData> GetEnumerator() =>
-            Backgrounds.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public void Add(HypLauncherBackgroundContentKindData item) => Backgrounds.Add(item);
-
-        public void Clear() => Backgrounds.Clear();
-
-        public bool Contains(HypLauncherBackgroundContentKindData item) => Backgrounds.Contains(item);
-
-        public void CopyTo(HypLauncherBackgroundContentKindData[] array, int arrayIndex) => Backgrounds.CopyTo(array, arrayIndex);
-
-        public bool Remove(HypLauncherBackgroundContentKindData item) => Backgrounds.Remove(item);
-
-        public int IndexOf(HypLauncherBackgroundContentKindData item) => Backgrounds.IndexOf(item);
-
-        public void Insert(int index, HypLauncherBackgroundContentKindData item) => Backgrounds.Insert(index, item);
-
-        public void RemoveAt(int index) => Backgrounds.RemoveAt(index);
-
-        [JsonIgnore]
-        public int Count => Backgrounds.Count;
-
-        [JsonIgnore]
-        public bool IsReadOnly => false;
-
-        [JsonIgnore]
-        public bool IsEmpty => Count == 0;
-
-        public HypLauncherBackgroundContentKindData this[int index]
-        {
-            get => Backgrounds[index];
-            set => Backgrounds[index] = value;
-        }
     }
 
     public class HypLauncherBackgroundContentKindData
@@ -217,7 +144,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         [JsonConverter(typeof(EmptyStringAsNullConverter))]
         public string? Description
         {
-            get;
+            get => field ?? Title;
             set
             {
                 field = value;
@@ -253,118 +180,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         [JsonConverter(typeof(EmptyStringAsNullConverter))]
         public string? ImageHoverUrl
         {
-            get;
+            get => field ?? ImageUrl;
             set
             {
                 field = value;
                 OnPropertyChanged();
             }
         }
-    }
-
-    [GeneratedBindableCustomProperty]
-    public partial class LauncherSocialMedia : NotifyPropertyChanged
-    {
-        [JsonPropertyName("enable_red_dot")]
-        public bool NotificationDotEnabled
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [JsonPropertyName("red_dot_content")]
-        public string? NotificationDotContent
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [JsonPropertyName("icon")]
-        public HypLauncherMediaContentData? SocialMediaIcon
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [JsonPropertyName("id")]
-        public string? SocialMediaId
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [JsonPropertyName("links")]
-        public List<HypLauncherMediaContentData>? SocialMediaLinks
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [JsonPropertyName("qr_desc")]
-        public string? SocialMediaQrDescription
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-
-        [JsonPropertyName("qr_image")]
-        public HypLauncherMediaContentData? SocialMediaQrImage
-        {
-            get;
-            set
-            {
-                field = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    public class HypLauncherNewsContentData
-    {
-        // Note from @neon-nyan:
-        // We preallocate List<T> here to avoid inner buffer resizing while adding items.
-
-        [JsonPropertyName("banners")]
-        public List<LauncherNewsBanner> NewsCarouselList { get; set; } = new(8);
-
-        [JsonPropertyName("posts")]
-        public List<HypLauncherMediaContentData> NewsPostsList { get; set; } = new(16);
-
-        [JsonPropertyName("social_media_list")]
-        public List<LauncherSocialMedia> SocialMediaList { get; set; } = new(8);
-    }
-
-    public class LauncherNewsBanner
-    {
-        [JsonPropertyName("id")]
-        [JsonConverter(typeof(EmptyStringAsNullConverter))]
-        public string? Id { get; set; }
-
-        [JsonPropertyName("image")]
-        public HypLauncherMediaContentData? Image { get; set; }
     }
 }

@@ -318,17 +318,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                                innerToken)
                        .ConfigureAwait(false);
 
-            ActionTimeoutTaskAwaitableCallback<HypLauncherBackgroundApi?> hypLauncherNewsCallback =
+            ActionTimeoutTaskAwaitableCallback<HypLauncherContentApi?> hypLauncherNewsCallback =
                 innerToken =>
                     ApiResourceHttpClient
                        .GetFromCachedJsonAsync(launcherNewsUrl,
-                                               HypLauncherBackgroundApiJsonContext.Default.HypLauncherBackgroundApi,
+                                               HypLauncherContentApiJsonContext.Default.HypLauncherContentApi,
                                                null,
                                                innerToken)
                        .ConfigureAwait(false);
-
-            HypLauncherBackgroundApi? hypLauncherBackground = null;
-            HypLauncherBackgroundApi? hypLauncherNews = null;
 
             // Load both in parallel
             Task[] tasks = [
@@ -337,14 +334,14 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                        ExecutionTimeoutStep,
                                        ExecutionTimeoutAttempt,
                                        onTimeoutRoutine,
-                                       result => hypLauncherBackground = result,
+                                       result => LauncherGameBackground = result,
                                        token),
                 hypLauncherNewsCallback
                     .WaitForRetryAsync(ExecutionTimeout,
                                        ExecutionTimeoutStep,
                                        ExecutionTimeoutAttempt,
                                        onTimeoutRoutine,
-                                       result => hypLauncherNews = result,
+                                       result => LauncherGameContent = result,
                                        token)
                 ];
 
@@ -356,8 +353,10 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             void AfterExecute()
             {
                 // Merge background image
+                /* TODO: Remove these lines after HYP API refactor is complete
                 if (hypLauncherBackground?.Data?.Backgrounds != null && hypLauncherNews?.Data != null)
                     hypLauncherNews.Data.Backgrounds = hypLauncherBackground.Data.Backgrounds;
+                */
             }
         }
         #endregion

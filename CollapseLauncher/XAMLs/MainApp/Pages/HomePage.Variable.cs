@@ -22,17 +22,42 @@ namespace CollapseLauncher.Pages
             get => LauncherMetadataHelper.CurrentMetadataConfig?.GameLauncherApi;
         }
 
+        private static HypLauncherBackgroundList? GameBackgroundData
+        {
+            get => CurrentGameLauncherApi?.LauncherGameBackground?.Data;
+        }
+
         private static HypLauncherContentKind? GameContentData
         {
             get => CurrentGameLauncherApi?.LauncherGameContent?.Data?.Content;
         }
 
-        internal static List<HypLauncherMediaContentData>? GameNewsData
+        internal static List<HypLauncherSocialMediaContentData>? GameSocialMediaData
+        {
+            get => GameContentData?.SocialMedia;
+        }
+
+        internal static List<HypLauncherMediaContentData>? GameNewsDataAll
         {
             get => GameContentData?.News;
         }
 
-        private static List<HypLauncherCarouselContentData>? GameCarouselData
+        internal static List<HypLauncherMediaContentData>? GameNewsDataEventKind
+        {
+            get => GameContentData?.NewsEventKind;
+        }
+
+        internal static List<HypLauncherMediaContentData>? GameNewsDataAnnouncementKind
+        {
+            get => GameContentData?.NewsAnnouncementKind;
+        }
+
+        internal static List<HypLauncherMediaContentData>? GameNewsDataInformationKind
+        {
+            get => GameContentData?.NewsInformationKind;
+        }
+
+        internal static List<HypLauncherCarouselContentData>? GameCarouselData
         {
             get => GameContentData?.Carousel;
         }
@@ -42,14 +67,33 @@ namespace CollapseLauncher.Pages
             get => CurrentGameLauncherApi?.LauncherGameInfoField;
         }
 
-        private static bool IsPostPanelAvailable
-        {
-            get => GameNewsData?.Count > 0;
-        }
-
         private static bool IsCarouselPanelAvailable
         {
             get => GameCarouselData?.Count > 0;
+        }
+
+        private static bool IsNewsPanelAvailable
+        {
+            get => GameNewsDataAll?.Count > 0;
+        }
+
+        private static bool IsSocialMediaPanelAvailable
+        {
+            get => GameSocialMediaData?.Count > 0;
+        }
+
+        internal bool IsShowSidePanel
+        {
+            get => GetAppConfigValue("ShowEventsPanel") &&
+                   IsCarouselPanelAvailable &&
+                   IsNewsPanelAvailable;
+        }
+
+        internal bool IsShowSocialMediaPanel
+        {
+            get =>
+                GetAppConfigValue("ShowSocialMediaPanel") &&
+                IsSocialMediaPanelAvailable;
         }
 
         private static bool IsGameStatusPreRegister
@@ -71,12 +115,12 @@ namespace CollapseLauncher.Pages
             get => GameInfoDisplayField?.ReservationLink?.ClickLink;
         }
 
-        internal static Visibility IsPostEventPanelVisible  => (GameContentData?.NewsEventKind.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostEventPanelEmpty    => (GameContentData?.NewsEventKind.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostNoticePanelVisible => (GameContentData?.NewsAnnouncementKind.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostNoticePanelEmpty   => (GameContentData?.NewsAnnouncementKind.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostInfoPanelVisible   => (GameContentData?.NewsInformationKind.Count ?? 0) == 0 ? Visibility.Collapsed : Visibility.Visible;
-        internal static Visibility IsPostInfoPanelEmpty     => (GameContentData?.NewsInformationKind.Count ?? 0) != 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostEventPanelVisible  => GameNewsDataEventKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostEventPanelEmpty    => GameNewsDataEventKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostNoticePanelVisible => GameNewsDataAnnouncementKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostNoticePanelEmpty   => GameNewsDataAnnouncementKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostInfoPanelVisible   => GameNewsDataInformationKind?.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        internal static Visibility IsPostInfoPanelEmpty     => GameNewsDataInformationKind?.Count != 0 ? Visibility.Collapsed : Visibility.Visible;
 
         internal static Visibility IsPostInfoPanelAllEmpty  =>
             IsPostEventPanelVisible == Visibility.Collapsed
@@ -156,7 +200,7 @@ namespace CollapseLauncher.Pages
         {
             get
             {
-                bool ret = GetAppConfigValue("ShowSocialMediaPanel").ToBoolNullable() ?? true;
+                bool ret = GetAppConfigValue("ShowSocialMediaPanel");
                 return ret;
             }
             set
