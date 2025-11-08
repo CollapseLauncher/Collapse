@@ -1608,6 +1608,7 @@
     "General_OpenNotifTray": "Open the Notification Tray",
     "General_ReloadRegion": "Reload current page",
     "General_ReloadRegion_Desc": "Pressing F5 is an alternative to this shortcut.\nPlease note that reloading the Home Page will reload the region.",
+    "General_OpenPluginManager": "Opens the Plugin Manager overlay",
 
     "Switch_Title": "Quick Game/Region change",
     "Switch_Subtitle": "Note: The keybinds follow the selector order.",

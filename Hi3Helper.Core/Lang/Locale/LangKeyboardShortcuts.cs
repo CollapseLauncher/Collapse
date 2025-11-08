@@ -30,6 +30,7 @@ namespace Hi3Helper
                 public string General_OpenNotifTray { get; set; } = LangFallback?._KbShortcuts.General_OpenNotifTray;
                 public string General_ReloadRegion { get; set; } = LangFallback?._KbShortcuts.General_ReloadRegion;
                 public string General_ReloadRegion_Desc { get; set; } = LangFallback?._KbShortcuts.General_ReloadRegion_Desc;
+                public string General_OpenPluginManager { get; set; } = LangFallback?._KbShortcuts.General_OpenPluginManager;
 
                 public string Switch_Title { get; set; } = LangFallback?._KbShortcuts.Switch_Title;
                 public string Switch_Subtitle { get; set; } = LangFallback?._KbShortcuts.Switch_Subtitle;
