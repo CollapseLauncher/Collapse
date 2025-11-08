@@ -740,7 +740,7 @@ namespace CollapseLauncher.Interfaces
         protected void ResetStatusAndProgressProperty()
         {
             // Reset cancellation token
-            Token ??= new CancellationTokenSourceWrapper();
+            Token = new CancellationTokenSourceWrapper();
 
             lock (Status)
             {
