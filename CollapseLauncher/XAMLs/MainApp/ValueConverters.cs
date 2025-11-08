@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using System;
+using System.Collections;
 using System.IO;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable PartialTypeWithSinglePart
@@ -150,7 +151,14 @@ namespace CollapseLauncher.Pages
     public partial class CountToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
-            => value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
+        {
+            if (value is ICollection asCollection)
+            {
+                return asCollection.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+            
+            return value.Equals(0) ? Visibility.Collapsed : Visibility.Visible;
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
