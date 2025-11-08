@@ -264,6 +264,8 @@ namespace CollapseLauncher.Helper.Background.Loaders
                 _currentCanvasBitmap?.Dispose();
                 _currentCanvasBitmap             = null;
                 _currentCanvasVirtualImageSource = null;
+
+                _currentCanvasDevice ??= CanvasDevice.GetSharedDevice();
                 CreateAndAssignCanvasVirtualImageSource();
                 CreateCanvasBitmap();
             }
