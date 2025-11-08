@@ -1,30 +1,30 @@
 ﻿<!--  ReSharper disable IdentifierTypo  -->
 <!--  ReSharper disable UnusedMember.Local  -->
 <!--  ReSharper disable Xaml.ConstructorWarning  -->
-<Page x:Class="CollapseLauncher.Pages.HomePage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-      xmlns:customcontrol="using:CollapseLauncher.CustomControls"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:extension="using:CollapseLauncher.Extension"
-      xmlns:helper="using:Hi3Helper"
-      xmlns:imageex="using:ImageEx"
-      xmlns:local="using:CollapseLauncher"
-      xmlns:localStatic="using:CollapseLauncher.Statics"
-      xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
-      xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:pages="using:CollapseLauncher.Pages"
-      xmlns:s="using:CommunityToolkit.WinUI"
-      xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
-      x:Name="HomePage_Page"
-      x:FieldModifier="public"
-      CacheMode="BitmapCache"
-      NavigationCacheMode="Enabled"
-      Unloaded="Page_Unloaded"
-      mc:Ignorable="d">
-    <Page.Resources>
+<class:PageNotifyPropertyChanged
+    x:Class="CollapseLauncher.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:customcontrol="using:CollapseLauncher.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:extension="using:CollapseLauncher.Extension"
+    xmlns:helper="using:Hi3Helper"
+    xmlns:imageex="using:ImageEx"
+    xmlns:local="using:CollapseLauncher"
+    xmlns:localStatic="using:CollapseLauncher.Statics"
+    xmlns:localWindowSize="using:CollapseLauncher.WindowSize"
+    xmlns:lottie="using:CollapseLauncher.AnimatedVisuals.Lottie"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pages="using:CollapseLauncher.Pages"
+    xmlns:s="using:CommunityToolkit.WinUI"
+    xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
+    xmlns:class="using:CollapseLauncher.Interfaces.Class"
+    CacheMode="BitmapCache"
+    NavigationCacheMode="Enabled"
+    Unloaded="Page_Unloaded"
+    mc:Ignorable="d">
+    <class:PageNotifyPropertyChanged.Resources>
         <ThemeShadow x:Key="SharedShadow" />
         <s:AttachedDropShadow x:Key="SharedDropShadow"
                               BlurRadius="16"
@@ -34,7 +34,7 @@
         <pages:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter"/>
         <pages:NullableVisibilityConverter x:Key="NullableVisibilityConverter"/>
         <pages:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
-    </Page.Resources>
+    </class:PageNotifyPropertyChanged.Resources>
     <Grid x:Name="FrameGrid"
           Margin="32,8,32,32"
           HorizontalAlignment="Stretch">
@@ -600,7 +600,7 @@
               CornerRadius="8"
               PointerEntered="SidePanelScaleOutHoveredPointerEntered"
               PointerExited="SidePanelScaleInHoveredPointerExited"
-              Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}}"
+              Visibility="{x:Bind IsShowSidePanel, Converter={StaticResource BooleanVisibilityConverter}, Mode=OneWay}"
               Shadow="{ThemeResource SharedShadow}"
               Translation="0,0,32">
             <Grid.RenderTransform>
@@ -1935,7 +1935,7 @@
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ShowEventsPanelToggle"
                                                   IsEnabled="False"
-                                                  IsOn="{x:Bind IsEventsPanelShow, Mode=TwoWay}"
+                                                  IsOn="{x:Bind IsShowSidePanel, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <TextBlock Margin="0,8,0,0"
@@ -1951,7 +1951,7 @@
                                                TextWrapping="Wrap" />
                                     <ToggleSwitch x:Name="ShowSocialMediaPanelToggle"
                                                   IsEnabled="True"
-                                                  IsOn="{x:Bind IsSocMedPanelShow, Mode=TwoWay}"
+                                                  IsOn="{x:Bind IsShowSocialMediaPanel, Mode=TwoWay}"
                                                   OffContent="{x:Bind helper:Locale.Lang._Misc.Disabled}"
                                                   OnContent="{x:Bind helper:Locale.Lang._Misc.Enabled}" />
                                     <TextBlock Margin="0,8,0,0"
@@ -2564,4 +2564,4 @@
             </Button>
         </StackPanel>
     </Grid>
-</Page>
+</class:PageNotifyPropertyChanged>

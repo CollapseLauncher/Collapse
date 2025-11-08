@@ -37,7 +37,7 @@ namespace CollapseLauncher.Pages
             get => GameContentData?.SocialMedia;
         }
 
-        internal static List<HypLauncherMediaContentData>? GameNewsDataAll
+        private static List<HypLauncherMediaContentData>? GameNewsDataAll
         {
             get => GameContentData?.News;
         }
@@ -65,35 +65,6 @@ namespace CollapseLauncher.Pages
         private static HypGameInfoData? GameInfoDisplayField
         {
             get => CurrentGameLauncherApi?.LauncherGameInfoField;
-        }
-
-        private static bool IsCarouselPanelAvailable
-        {
-            get => GameCarouselData?.Count > 0;
-        }
-
-        private static bool IsNewsPanelAvailable
-        {
-            get => GameNewsDataAll?.Count > 0;
-        }
-
-        private static bool IsSocialMediaPanelAvailable
-        {
-            get => GameSocialMediaData?.Count > 0;
-        }
-
-        internal bool IsShowSidePanel
-        {
-            get => GetAppConfigValue("ShowEventsPanel") &&
-                   IsCarouselPanelAvailable &&
-                   IsNewsPanelAvailable;
-        }
-
-        internal bool IsShowSocialMediaPanel
-        {
-            get =>
-                GetAppConfigValue("ShowSocialMediaPanel") &&
-                IsSocialMediaPanelAvailable;
         }
 
         private static bool IsGameStatusPreRegister
@@ -169,18 +140,19 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        internal bool IsEventsPanelShow
+        private static bool IsCarouselPanelAvailable
         {
-            get
-            {
-                bool ret = GetAppConfigValue("ShowEventsPanel").ToBoolNullable() ?? true;
-                return ret;
-            }
-            set
-            {
-                SetAndSaveConfigValue("ShowEventsPanel", value);
-                ToggleEventsPanel(value);
-            }
+            get => GameCarouselData?.Count > 0;
+        }
+
+        private static bool IsNewsPanelAvailable
+        {
+            get => GameNewsDataAll?.Count > 0;
+        }
+
+        private static bool IsSocialMediaPanelAvailable
+        {
+            get => GameSocialMediaData?.Count > 0;
         }
 
         internal static bool IsEventsPanelScaleUp
@@ -196,33 +168,42 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        internal bool IsSocMedPanelShow
-        {
-            get
-            {
-                bool ret = GetAppConfigValue("ShowSocialMediaPanel");
-                return ret;
-            }
-            set
-            {
-                SetAndSaveConfigValue("ShowSocialMediaPanel", value);
-                ToggleSocmedPanelPanel(value);
-            }
-        }
-
         internal bool IsPlaytimeBtnVisible
         {
             get
             {
-                var v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
-                TogglePlaytimeBtn(v);
+                bool v = GetAppConfigValue("ShowGamePlaytime").ToBoolNullable() ?? true;
+                HidePlaytimeButton(!v);
 
                 return v;
             }
             set
             {
                 SetAndSaveConfigValue("ShowGamePlaytime", value);
-                TogglePlaytimeBtn(value);
+                HidePlaytimeButton(!value);
+            }
+        }
+
+        internal bool IsShowSidePanel
+        {
+            get => GetAppConfigValue("ShowEventsPanel") &&
+                   IsCarouselPanelAvailable &&
+                   IsNewsPanelAvailable;
+            set
+            {
+                SetAndSaveConfigValue("ShowEventsPanel", value);
+                HideImageCarousel(!value);
+            }
+        }
+
+        internal bool IsShowSocialMediaPanel
+        {
+            get => GetAppConfigValue("ShowSocialMediaPanel") &&
+                   IsSocialMediaPanelAvailable;
+            set
+            {
+                SetAndSaveConfigValue("ShowSocialMediaPanel", value);
+                HideSocialMediaPanel(!value);
             }
         }
 
@@ -311,9 +292,5 @@ namespace CollapseLauncher.Pages
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVertical :
                    WindowSize.WindowSize.CurrentWindowSize.BannerIconAlignVerticalHYP;
         }
-
-        public void ToggleEventsPanel(bool      hide) => HideImageCarousel(!hide);
-        public void ToggleSocmedPanelPanel(bool hide) => HideSocialMediaPanel(!hide);
-        public void TogglePlaytimeBtn(bool      hide) => HidePlaytimeButton(!hide);
     }
 }

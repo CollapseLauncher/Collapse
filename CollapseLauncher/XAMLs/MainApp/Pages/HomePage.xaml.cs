@@ -47,6 +47,8 @@ using Image = Microsoft.UI.Xaml.Controls.Image;
 using Point = Windows.Foundation.Point;
 using UIElementExtensions = CollapseLauncher.Extension.UIElementExtensions;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using WinRT;
+
 // ReSharper disable InconsistentNaming
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable AsyncVoidMethod
@@ -71,6 +73,7 @@ using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 
 namespace CollapseLauncher.Pages
 {
+    [GeneratedBindableCustomProperty]
     public sealed partial class HomePage
     {
         #region Properties
@@ -551,7 +554,10 @@ namespace CollapseLauncher.Pages
 
             FlyoutBase flyout = btn.Flyout;
             Point pos = e.GetCurrentPoint(btn).Position;
-            if (pos.Y <= 0 || pos.Y >= btn.Height || pos.X <= -8 || pos.X >= btn.Width)
+            if (pos.Y <= 0 ||
+                pos.Y >= btn.Height ||
+                pos.X <= -8 ||
+                pos.X >= btn.Width)
             {
                 flyout?.Hide();
             }
