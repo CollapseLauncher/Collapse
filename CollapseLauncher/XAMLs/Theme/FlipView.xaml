@@ -504,12 +504,16 @@
                             </ControlTemplate>
                         </Grid.Resources>
                         <ScrollViewer x:Name="ScrollingHost"
+                                      VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                       Padding="{TemplateBinding Padding}"
                                       AutomationProperties.AccessibilityView="Raw"
                                       BringIntoViewOnFocusChange="{TemplateBinding ScrollViewer.BringIntoViewOnFocusChange}"
                                       HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                       HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}"
-                                      HorizontalSnapPointsType="MandatorySingle"
+                                      HorizontalSnapPointsType="Mandatory"
                                       IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
                                       IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}"
                                       IsHorizontalScrollChainingEnabled="{TemplateBinding ScrollViewer.IsHorizontalScrollChainingEnabled}"
@@ -519,7 +523,7 @@
                                       TabNavigation="{TemplateBinding TabNavigation}"
                                       VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
                                       VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}"
-                                      VerticalSnapPointsType="MandatorySingle"
+                                      VerticalSnapPointsType="Mandatory"
                                       ZoomMode="Disabled">
                             <ItemsPresenter />
                         </ScrollViewer>
