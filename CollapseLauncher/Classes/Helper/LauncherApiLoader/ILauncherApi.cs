@@ -25,11 +25,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; }
         HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; }
         HypLauncherGameResourceSdkApi?     LauncherGameResourceSdk     { get; }
-        HypLauncherGameResourceWpfApi?     LauncherGameGameResourceWpf { get; }
+        HypLauncherGameResourceWpfApi?     LauncherGameResourceWpf     { get; }
         HypLauncherSophonBranchesApi?      LauncherGameSophonBranches  { get; }
         HypLauncherBackgroundApi?          LauncherGameBackground      { get; }
         HypLauncherContentApi?             LauncherGameContent         { get; }
         HypGameInfoData?                   LauncherGameInfoField       { get; }
+        HypLauncherGetGameApi?             LauncherGetGame             { get; }
         HttpClient?                        ApiGeneralHttpClient        { get; }
         HttpClient?                        ApiResourceHttpClient       { get; }
         bool                               IsPlugin                    { get; }

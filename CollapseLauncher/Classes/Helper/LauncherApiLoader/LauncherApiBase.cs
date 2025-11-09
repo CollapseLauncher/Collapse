@@ -48,11 +48,12 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; protected set; }
         public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; protected set; }
         public HypLauncherGameResourceSdkApi?     LauncherGameResourceSdk     { get; protected set; }
-        public HypLauncherGameResourceWpfApi?     LauncherGameGameResourceWpf { get; protected set; }
+        public HypLauncherGameResourceWpfApi?     LauncherGameResourceWpf     { get; protected set; }
         public HypLauncherSophonBranchesApi?      LauncherGameSophonBranches  { get; protected set; }
         public HypLauncherBackgroundApi?          LauncherGameBackground      { get; protected set; }
         public HypLauncherContentApi?             LauncherGameContent         { get; protected set; }
         public HypGameInfoData?                   LauncherGameInfoField       { get; protected set; }
+        public HypLauncherGetGameApi?             LauncherGetGame             { get; protected set; }
 
         public HttpClient ApiGeneralHttpClient  { get; } = apiGeneralHttpClientFactory(presetConfig);
         public HttpClient ApiResourceHttpClient { get; } = apiResourceHttpClientFactory(presetConfig);

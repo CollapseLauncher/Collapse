@@ -422,6 +422,22 @@ namespace CollapseLauncher.Helper.Metadata
                 value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
         }
 
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherGetGameURL
+        {
+            get;
+            init => field =
+                value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
+        }
+
+        [JsonConverter(typeof(ServeV3StringConverter))]
+        public string? LauncherResourceWpfURL
+        {
+            get;
+            init => field =
+                value.AssociateGameAndLauncherId(QueryLauncherIdHead, QueryGameIdHead, LauncherId, LauncherGameId);
+        }
+
         public SophonChunkUrls? LauncherResourceChunksURL
         {
             get;
@@ -487,13 +503,14 @@ namespace CollapseLauncher.Helper.Metadata
         public bool? IsGenshin        { get; init; }
         public bool? IsHideSocMedDesc { get; init; } = true;
 
+        public bool IsWpfUpdateEnabled { get; set; }
 #if !DEBUG
-        public bool? IsRepairEnabled            { get; set; }
-        public bool? IsCacheUpdateEnabled       { get; set; }
+        public bool IsRepairEnabled      { get; set; }
+        public bool IsCacheUpdateEnabled { get; set; }
 #else
-        public bool? IsRepairEnabled      = true;
-        public bool? IsCacheUpdateEnabled = true;
-        #endif
+        public bool IsRepairEnabled      { get; set; } = true;
+        public bool IsCacheUpdateEnabled { get; set; } = true;
+#endif
         public bool? LauncherSpriteURLMultiLang { get; init; }
 
         public byte? CachesListGameVerID { get; init; }

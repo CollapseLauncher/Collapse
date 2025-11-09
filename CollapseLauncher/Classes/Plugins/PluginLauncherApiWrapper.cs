@@ -59,14 +59,15 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
     public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles) ?? GameName;
     public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions) ?? GameRegion;
 
-    public HypLauncherGameResourcePackageApi LauncherGameResourcePackage { get; } = new();
-    public HypLauncherGameResourcePluginApi  LauncherGameResourcePlugin  { get; } = new();
-    public HypLauncherGameResourceSdkApi     LauncherGameResourceSdk     { get; } = new();
-    public HypLauncherGameResourceWpfApi         LauncherGameGameResourceWpf     { get; } = new();
-    public HypGameInfoData                   LauncherGameInfoField       { get; } = new();
-    public HypLauncherSophonBranchesApi      LauncherGameSophonBranches  { get; } = new();
-    public HypLauncherBackgroundApi          LauncherGameBackground      { get; } = new();
-    public HypLauncherContentApi             LauncherGameContent         { get; } = new();
+    public HypLauncherGameResourcePackageApi? LauncherGameResourcePackage { get; set; }
+    public HypLauncherGameResourcePluginApi?  LauncherGameResourcePlugin  { get; set; }
+    public HypLauncherGameResourceSdkApi?     LauncherGameResourceSdk     { get; set; }
+    public HypLauncherGameResourceWpfApi?     LauncherGameResourceWpf     { get; set; }
+    public HypGameInfoData?                   LauncherGameInfoField       { get; set; }
+    public HypLauncherSophonBranchesApi?      LauncherGameSophonBranches  { get; set; }
+    public HypLauncherBackgroundApi?          LauncherGameBackground      { get; private set; }
+    public HypLauncherContentApi?             LauncherGameContent         { get; private set; }
+    public HypLauncherGetGameApi?             LauncherGetGame             { get; set; }
 
     public HttpClient ApiGeneralHttpClient  => throw new NotImplementedException();
     public HttpClient ApiResourceHttpClient => throw new NotImplementedException();
@@ -87,7 +88,9 @@ internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
             Task[] initTasks = GetApiInitTasks(onTimeoutRoutine, token);
             await Task.WhenAll(initTasks);
 
-            LauncherGameBackground.Data = new();
+            LauncherGameBackground      ??= new HypLauncherBackgroundApi();
+            LauncherGameBackground.Data ??= new HypLauncherBackgroundList();
+            LauncherGameContent         ??= new HypLauncherContentApi();
 
             await ConvertBackgroundImageEntries(LauncherGameBackground.Data, token);
             await ConvertSocialMediaEntries(LauncherGameContent, token);

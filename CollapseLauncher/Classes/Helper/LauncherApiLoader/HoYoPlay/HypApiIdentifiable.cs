@@ -54,4 +54,7 @@ public class HypGameInfoDisplayData
 
     [JsonPropertyName("thumbnail")]
     public HypLauncherMediaContentData? GamePreviewThumbnail { get; init; }
+
+    [JsonPropertyName("wpf_icon")]
+    public HypLauncherMediaContentData? WpfIcon { get; init; }
 }

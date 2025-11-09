@@ -465,7 +465,7 @@ namespace CollapseLauncher.Helper.Metadata
                 if (regionMetadataObject is PresetConfig presetConfig)
                 {
                     // If the cache update mode is enabled and the config is not enabled, then skip
-                    if (isCacheUpdateModeOnly && (!presetConfig.IsCacheUpdateEnabled ?? false)) return;
+                    if (isCacheUpdateModeOnly && !presetConfig.IsCacheUpdateEnabled) return;
 
                     // Try to add the preset config map into the dictionary
                     regionDictionary.TryAdd(stamp.MetadataPath ?? "", presetConfig);

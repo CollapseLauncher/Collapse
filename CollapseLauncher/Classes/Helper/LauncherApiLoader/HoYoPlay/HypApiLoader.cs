@@ -91,7 +91,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             await Task.WhenAll(LoadLauncherResourceSophon(onTimeoutRoutine, token),
                                LoadLauncherResource(onTimeoutRoutine, token),
                                LoadLauncherNews(onTimeoutRoutine, token),
-                               LoadLauncherGameInfo(onTimeoutRoutine, token));
+                               LoadLauncherGameInfo(onTimeoutRoutine, token),
+                               LoadLauncherWpfInfo(onTimeoutRoutine, token));
 
             InitializeFakeVersionInfo();
             PerformDebugRoutines();
@@ -200,7 +201,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                 Version = branchData.Tag
             };
 
-            HashSet<string> existingDiffsVer = new(region.Patches.Select(x => x.Version.ToString()));
+            HashSet<string> existingDiffsVer = new HashSet<string>(region.Patches.Select(x => x.Version.ToString()));
             foreach (string versionTag in (branchData.DiffTags ?? [])
                     .Where(x => !existingDiffsVer.Contains(x)))
             {
@@ -214,7 +215,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
 
         #region 2. Load Zip-Based Packages
         private Task LoadLauncherResource(ActionOnTimeOutRetry? onTimeoutRoutine,
-                                            CancellationToken     token)
+                                          CancellationToken     token)
         {
             // Assign as 3 Task array
             Task[] tasks = [
@@ -277,14 +278,7 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             }
 
             // Await all callbacks
-            Task waitAllTask = Task.WhenAll(tasks);
-            waitAllTask.GetAwaiter().OnCompleted(AfterExecute);
-
-            return waitAllTask;
-
-            void AfterExecute()
-            {
-            }
+            return Task.WhenAll(tasks);
         }
         #endregion
 
@@ -384,6 +378,61 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
                                      result => LauncherGameSophonBranches = result,
                                      token);
         }
+        #endregion
+
+        #region 5. Load WPF Packages
+
+        private Task LoadLauncherWpfInfo(
+            ActionOnTimeOutRetry? onTimeoutRoutine,
+            CancellationToken     token)
+        {
+            if (!PresetConfig!.IsWpfUpdateEnabled ||
+                string.IsNullOrEmpty(PresetConfig.LauncherGetGameURL) ||
+                string.IsNullOrEmpty(PresetConfig.LauncherResourceWpfURL))
+            {
+                return Task.CompletedTask;
+            }
+
+            // Load GetGame API callback
+            ActionTimeoutTaskAwaitableCallback<HypLauncherGetGameApi?> launcherGetGameCallback =
+                innerToken =>
+                    ApiGeneralHttpClient
+                       .GetFromCachedJsonAsync(PresetConfig.LauncherGetGameURL,
+                                               HypApiJsonContext.Default.HypLauncherGetGameApi,
+                                               null,
+                                               innerToken)
+                       .ConfigureAwait(false);
+
+            // Load WPF API callback
+            ActionTimeoutTaskAwaitableCallback<HypLauncherGameResourceWpfApi?> launcherWpfPackageCallback =
+                innerToken =>
+                    ApiGeneralHttpClient
+                       .GetFromCachedJsonAsync(PresetConfig.LauncherResourceWpfURL,
+                                               HypApiJsonContext.Default.HypLauncherGameResourceWpfApi,
+                                               null,
+                                               innerToken)
+                       .ConfigureAwait(false);
+
+            Task[] tasks =
+            [
+                launcherGetGameCallback.WaitForRetryAsync(ExecutionTimeout,
+                                                          ExecutionTimeoutStep,
+                                                          ExecutionTimeoutAttempt,
+                                                          onTimeoutRoutine,
+                                                          result => LauncherGetGame = result,
+                                                          token),
+                launcherWpfPackageCallback.WaitForRetryAsync(ExecutionTimeout,
+                                                             ExecutionTimeoutStep,
+                                                             ExecutionTimeoutAttempt,
+                                                             onTimeoutRoutine,
+                                                             result => LauncherGameResourceWpf = result,
+                                                             token)
+            ];
+
+            // Await all callbacks
+            return Task.WhenAll(tasks);
+        }
+
         #endregion
 
         #region GetDeviceId override
