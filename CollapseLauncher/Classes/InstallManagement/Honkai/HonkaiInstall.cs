@@ -40,15 +40,13 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #region Properties
 
-        private HonkaiCache    _gameCacheManager  { get; }
         private HonkaiRepairV2 _gameRepairManager { get; set; }
 
         #endregion
 
-        public HonkaiInstall(UIElement parentUI, IGameVersion GameVersionManager, ICache GameCacheManager)
-            : base(parentUI, GameVersionManager)
+        public HonkaiInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+            : base(parentUI, gameVersionManager, gameSettings)
         {
-            _gameCacheManager = GameCacheManager as HonkaiCache;
         }
 
         #region Public Methods
@@ -79,6 +77,7 @@ namespace CollapseLauncher.InstallManager.Honkai
         protected override HonkaiRepairV2 GetGameRepairInstance(string? versionString) =>
             new HonkaiRepairV2(ParentUI,
                                GameVersionManager,
+                               GameSettings,
                                versionString,
                                true,
                                false);

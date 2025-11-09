@@ -24,14 +24,13 @@ namespace CollapseLauncher.InstallManager.Zenless
     internal sealed partial class ZenlessInstall : InstallManagerBase
     {
         #region Private Properties
-        private ZenlessSettings? ZenlessSettings          { get; }
         private ZenlessRepair?   ZenlessGameRepairManager { get; set; }
         #endregion
 
         #region Override Properties
         protected override int _gameVoiceLanguageID
         {
-            get => ZenlessSettings?.GeneralData?.DeviceLanguageVoiceType switch
+            get => (GameSettings as ZenlessSettings)?.GeneralData?.DeviceLanguageVoiceType switch
             {
                 LanguageVoice.zh_cn => 0,
                 LanguageVoice.en_us => 1,
@@ -62,10 +61,10 @@ namespace CollapseLauncher.InstallManager.Zenless
             Path.Combine(_gameDataPersistentPath, "audio_lang");
         #endregion
 
-        public ZenlessInstall(UIElement parentUI, IGameVersion GameVersionManager, ZenlessSettings zenlessSettings)
-            : base(parentUI, GameVersionManager)
+        public ZenlessInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings zenlessSettings)
+            : base(parentUI, gameVersionManager, zenlessSettings)
         {
-            ZenlessSettings = zenlessSettings;
+            GameSettings = zenlessSettings;
         }
 
         #region Override Methods - StartPackageInstallationInner
@@ -92,8 +91,10 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         protected override IRepair GetGameRepairInstance(string? versionString) =>
             new ZenlessRepair(ParentUI,
-                               GameVersionManager, ZenlessSettings!, true,
-                               versionString);
+                              GameVersionManager,
+                              (GameSettings as ZenlessSettings)!,
+                              true,
+                              versionString);
 
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage>? gamePackage = null,
                                                                     bool isOnlyInstallPackage = false,

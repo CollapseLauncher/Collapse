@@ -38,20 +38,15 @@ internal partial class HonkaiRepairV2
     private HttpClient HttpClientGeneric     { get; }
 
     public HonkaiRepairV2(
-        UIElement    parentInterface,
-        IGameVersion gameVersionManager)
-        : this(parentInterface, gameVersionManager, null, false, false)
-    {
-    }
-
-    public HonkaiRepairV2(
-        UIElement    parentInterface,
-        IGameVersion gameVersionManager,
-        string?      useCustomVersion,
-        bool         isMainAssetOnlyMode,
-        bool         isCacheMode)
+        UIElement     parentInterface,
+        IGameVersion  gameVersionManager,
+        IGameSettings gameSettings,
+        string?       useCustomVersion    = null,
+        bool          isMainAssetOnlyMode = false,
+        bool          isCacheMode         = false)
         : base(parentInterface,
                gameVersionManager,
+               gameSettings,
                null,
                null,
                useCustomVersion)

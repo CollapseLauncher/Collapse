@@ -18,13 +18,13 @@ namespace CollapseLauncher.Interfaces
 #nullable enable
         protected GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
         {
-            GameSettings = gameSettings;
+            GameSettings       = gameSettings;
             GameVersionManager = gameVersionManager;
-            ParentUI = parentUI;
-            GamePathField = gamePath;
-            GameRepoURL = gameRepoURL;
-            Token = new CancellationTokenSourceWrapper();
-            IsVersionOverride = versionOverride != null;
+            ParentUI           = parentUI;
+            GamePathField      = gamePath;
+            GameRepoURL        = gameRepoURL;
+            Token              = new CancellationTokenSourceWrapper();
+            IsVersionOverride  = versionOverride != null;
 
             // If the version override is not null, then assign the override value
             if (IsVersionOverride)

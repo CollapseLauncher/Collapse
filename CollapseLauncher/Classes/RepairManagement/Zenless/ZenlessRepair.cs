@@ -1,5 +1,4 @@
-﻿using CollapseLauncher.GameSettings.Zenless;
-using CollapseLauncher.GameVersioning;
+﻿using CollapseLauncher.GameVersioning;
 using CollapseLauncher.Interfaces;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -13,16 +12,26 @@ using System.Threading.Tasks;
 #nullable enable
 namespace CollapseLauncher
 {
-    internal partial class ZenlessRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
+    internal partial class ZenlessRepair(
+        UIElement     parentUI,
+        IGameVersion  gameVersionManager,
+        IGameSettings gameSettings,
+        bool          isOnlyRecoverMain = false,
+        string?       versionOverride   = null,
+        bool          isCacheUpdateMode = false)
+        : ProgressBase<FilePropertiesRemote>(parentUI, gameVersionManager, gameSettings, null, "", versionOverride),
+          IRepair,
+          IRepairAssetIndex
     {
         #region Properties
 
         private const string AssetGamePersistentPath = @"{0}_Data\Persistent";
 
         // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
-        private bool IsOnlyRecoverMain { get; set; }
-        private bool IsCacheUpdateMode { get; set; }
-        private string? ExecutableName { get; set; }
+        private bool IsOnlyRecoverMain { get; set; } = isOnlyRecoverMain;
+        private bool IsCacheUpdateMode { get; set; } = isCacheUpdateMode;
+
+        private string? ExecutableName    { get; set; } = Path.GetFileNameWithoutExtension(gameVersionManager.GamePreset.GameExecutableName);
         // ReSharper restore AutoPropertyCanBeMadeGetOnly.Local
         
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
@@ -66,16 +75,9 @@ namespace CollapseLauncher
 
         protected override string UserAgent => "UnityPlayer/2019.4.40f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)";
 
-        public ZenlessRepair(UIElement parentUI, IGameVersion gameVersionManager, ZenlessSettings gameSettings, bool isOnlyRecoverMain = false, string? versionOverride = null, bool isCacheUpdateMode = false)
-            : base(parentUI, gameVersionManager, null, "", versionOverride)
-        {
-            // Use IsOnlyRecoverMain for future delta-patch or main game only files
-            IsOnlyRecoverMain = isOnlyRecoverMain;
-            // We are merging cache functionality with cache update
-            IsCacheUpdateMode = isCacheUpdateMode;
-            ExecutableName = Path.GetFileNameWithoutExtension(gameVersionManager.GamePreset.GameExecutableName);
-            GameSettings = gameSettings;
-        }
+        // Use IsOnlyRecoverMain for future delta-patch or main game only files
+        // We are merging cache functionality with cache update
+
         #endregion
 
         #region Public Methods
@@ -154,7 +156,9 @@ namespace CollapseLauncher
         public void CancelRoutine()
         {
             // Trigger token cancellation
-            Token.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         public void Dispose()

@@ -49,8 +49,8 @@ namespace CollapseLauncher
         protected override string UserAgent => "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
         #endregion
 
-        public StarRailRepair(UIElement parentUI, IGameVersion gameVersionManager, bool onlyRecoverMainAsset = false, string versionOverride = null)
-            : base(parentUI, gameVersionManager, null, "", versionOverride)
+        public StarRailRepair(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)
+            : base(parentUI, gameVersionManager, gameSettings, null, "", versionOverride)
         {
             // Get flag to only recover main assets
             IsOnlyRecoverMain = onlyRecoverMainAsset;
@@ -130,7 +130,9 @@ namespace CollapseLauncher
         public void CancelRoutine()
         {
             // Trigger token cancellation
-            Token.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         public void Dispose()

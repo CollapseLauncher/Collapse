@@ -22,13 +22,13 @@ namespace CollapseLauncher
         private       int              LuckyNumber      { get; set; }
         #endregion
 
-        public HonkaiCache(UIElement parentUI, IGameVersion gameVersionManager)
-            : base(
-                  parentUI,
-                  gameVersionManager!,
-                  gameVersionManager!.GameDirAppDataPath,
-                  null,
-                  gameVersionManager.GetGameVersionApi()?.VersionString)
+        public HonkaiCache(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+            : base(parentUI,
+                   gameVersionManager!,
+                   gameSettings,
+                   gameVersionManager!.GameDirAppDataPath,
+                   null,
+                   gameVersionManager.GetGameVersionApi()?.VersionString)
         {
             GameLang = GameVersionManager!.GamePreset!.GetGameLanguage() ?? "en";
         }
@@ -103,7 +103,9 @@ namespace CollapseLauncher
 
         public void CancelRoutine()
         {
-            Token!.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         public void Dispose()

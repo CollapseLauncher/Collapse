@@ -61,8 +61,8 @@ namespace CollapseLauncher.InstallManager.StarRail
 
         #endregion
 
-        public StarRailInstall(UIElement parentUI, IGameVersion GameVersionManager)
-            : base(parentUI, GameVersionManager)
+        public StarRailInstall(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+            : base(parentUI, gameVersionManager, gameSettings)
         {
         }
 
@@ -78,7 +78,7 @@ namespace CollapseLauncher.InstallManager.StarRail
 
             // If the confirm is 1 (verified) or -1 (cancelled), then return the code
             int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as StarRailRepair);
+                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer));
             if (deltaPatchConfirm is -1 or 1)
             {
                 return deltaPatchConfirm;
@@ -89,9 +89,11 @@ namespace CollapseLauncher.InstallManager.StarRail
         }
 
 #nullable enable
-        protected override IRepair GetGameRepairInstance(string? versionString) =>
+        protected override StarRailRepair GetGameRepairInstance(string? versionString) =>
             new StarRailRepair(ParentUI,
-                    GameVersionManager, true,
+                    GameVersionManager,
+                    GameSettings,
+                    true,
                     versionString);
 #nullable restore
 

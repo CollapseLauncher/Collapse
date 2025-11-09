@@ -24,8 +24,8 @@ namespace CollapseLauncher
         Korean = 3
     }
 
-    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager)
-        : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, null, null, null), IRepair
+    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+        : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, gameSettings, null, null, null), IRepair
     {
         #region ExtensionProperties
         private           string               ExecPrefix              { get => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName); }
@@ -121,7 +121,9 @@ namespace CollapseLauncher
         public void CancelRoutine()
         {
             // Trigger token cancellation
-            Token.Cancel();
+            Token?.Cancel();
+            Token?.Dispose();
+            Token = null;
         }
 
         private async Task<QueryProperty> GetCachedDispatcherQuery(HttpClient client, CancellationToken token)

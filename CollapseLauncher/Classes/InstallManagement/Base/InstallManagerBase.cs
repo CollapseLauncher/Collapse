@@ -161,13 +161,13 @@ namespace CollapseLauncher.InstallManager.Base
         public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
         #endregion
 
-        public InstallManagerBase(UIElement parentUI, IGameVersion GameVersionManager)
-            : base(parentUI, GameVersionManager, "", "", null)
+        public InstallManagerBase(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+            : base(parentUI, gameVersionManager, gameSettings, "", "", null)
         {
             _gamePersistentFolderBasePath =
-                $"{Path.GetFileNameWithoutExtension(GameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent";
+                $"{Path.GetFileNameWithoutExtension(gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent";
             _gameStreamingAssetsFolderBasePath =
-                $"{Path.GetFileNameWithoutExtension(GameVersionManager!.GamePreset!.GameExecutableName)}_Data\\StreamingAssets";
+                $"{Path.GetFileNameWithoutExtension(gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\StreamingAssets";
             UpdateCompletenessStatus(CompletenessStatus.Idle);
         }
 
