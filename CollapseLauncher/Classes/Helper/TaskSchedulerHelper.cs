@@ -19,24 +19,24 @@ namespace CollapseLauncher.Helper
     {
         private const string CollapseStartupTaskName = "CollapseLauncherStartupTask";
 
-        internal static bool IsInitialized;
-        internal static bool CachedIsOnTrayEnabled;
-        internal static bool CachedIsEnabled;
+        private static bool _isInitialized;
+        private static bool _cachedIsOnTrayEnabled;
+        private static bool _cachedIsEnabled;
 
         internal static bool IsOnTrayEnabled()
         {
-            if (!IsInitialized)
+            if (!_isInitialized)
                 InvokeGetStatusCommand().GetAwaiter().GetResult();
 
-            return CachedIsOnTrayEnabled;
+            return _cachedIsOnTrayEnabled;
         }
 
         internal static bool IsEnabled()
         {
-            if (!IsInitialized)
+            if (!_isInitialized)
                 InvokeGetStatusCommand().GetAwaiter().GetResult();
 
-            return CachedIsEnabled;
+            return _cachedIsEnabled;
         }
 
         private static async Task InvokeGetStatusCommand()
@@ -54,7 +54,7 @@ namespace CollapseLauncher.Helper
             // Invoke command and get return code
             var returnCode = await GetInvokeCommandReturnCode(argumentString);
 
-            (CachedIsEnabled, CachedIsOnTrayEnabled) = returnCode switch
+            (_cachedIsEnabled, _cachedIsOnTrayEnabled) = returnCode switch
             {
                 // -1 means task is disabled with tray enabled
                 -1 => (false, true),
@@ -78,7 +78,7 @@ namespace CollapseLauncher.Helper
             if (returnCode is > -2 and < 3)
             {
                 // Set as initialized
-                IsInitialized = true;
+                _isInitialized = true;
             }
             // Otherwise, log the return code
             else
@@ -97,13 +97,13 @@ namespace CollapseLauncher.Helper
 
         internal static void ToggleTrayEnabled(bool isEnabled)
         {
-            CachedIsOnTrayEnabled = isEnabled;
+            _cachedIsOnTrayEnabled = isEnabled;
             InvokeToggleCommand().GetAwaiter().GetResult();
         }
 
         internal static void ToggleEnabled(bool isEnabled)
         {
-            CachedIsEnabled = isEnabled;
+            _cachedIsEnabled = isEnabled;
             InvokeToggleCommand().GetAwaiter().GetResult();
         }
 
@@ -111,10 +111,10 @@ namespace CollapseLauncher.Helper
         {
             // Build the argument and mode to set
             StringBuilder argumentBuilder = new StringBuilder();
-            argumentBuilder.Append(CachedIsEnabled ? "Enable" : "Disable");
+            argumentBuilder.Append(_cachedIsEnabled ? "Enable" : "Disable");
 
             // Append argument whether to toggle the tray or not
-            if (CachedIsOnTrayEnabled)
+            if (_cachedIsOnTrayEnabled)
                 argumentBuilder.Append("ToTray");
 
             // Append task name and stub path

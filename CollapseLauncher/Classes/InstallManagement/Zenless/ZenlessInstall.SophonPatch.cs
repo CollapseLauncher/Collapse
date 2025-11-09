@@ -14,7 +14,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 {
     internal partial class ZenlessInstall
     {
-        internal const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+        private const StringSplitOptions SplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
         // ReSharper disable once StringLiteralTypo
         [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "<SophonChunksInfo>k__BackingField")]

@@ -31,7 +31,7 @@ internal partial class HonkaiRepairV2
     {
     }
 
-    public HonkaiRepairV2(
+    private HonkaiRepairV2(
         UIElement    parentInterface,
         IGameVersion gameVersionManager,
         string?      useCustomVersion,

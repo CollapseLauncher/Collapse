@@ -504,6 +504,7 @@
                                                                    Foreground="Black"
                                                                    TextAlignment="Center"
                                                                    TextWrapping="Wrap"
+                                                                   Visibility="{x:Bind QrDescription, Converter={StaticResource NullableVisibilityConverter}}"
                                                                    Text="{x:Bind QrDescription}"/>
                                                     </Grid>
                                                 </StackPanel>
@@ -1779,28 +1780,6 @@
                                             <TextBlock Grid.Column="1"
                                                        Margin="8,0,0,0"
                                                        Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2UninstallGame}"
-                                                       TextWrapping="Wrap" />
-                                        </Grid>
-                                    </Button.Content>
-                                </Button>
-                                <Button x:Name="ConvertVersionButton"
-                                        Margin="0,8"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Click="ConvertVersionButton_Click"
-                                        CornerRadius="14">
-                                    <Button.Content>
-                                        <Grid Margin="4,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="18" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <FontIcon FontFamily="{ThemeResource FontAwesomeSolid}"
-                                                      FontSize="16"
-                                                      Glyph="" />
-                                            <TextBlock Grid.Column="1"
-                                                       Margin="8,0,0,0"
-                                                       Text="{x:Bind helper:Locale.Lang._HomePage.GameSettings_Panel2ConvertVersion}"
                                                        TextWrapping="Wrap" />
                                         </Grid>
                                     </Button.Content>

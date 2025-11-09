@@ -25,14 +25,15 @@ using Windows.UI.Text;
 using WinRT;
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CollapseLauncher.Extension
 {
     internal enum CornerRadiusKind { Normal, Rounded }
     internal class NavigationViewItemLocaleTextProperty
     {
-        public string LocaleSetName { get; set; }
-        public string LocalePropertyName { get; set; }
+        public string LocaleSetName      { get; init; }
+        public string LocalePropertyName { get; init; }
     }
 
     internal static partial class UIElementExtensions
@@ -742,7 +743,7 @@ namespace CollapseLauncher.Extension
         internal static void SetGridSlices<TGrid>(this TGrid grid, GridLength[] gridSlices, bool isColumn)
             where TGrid : Grid
         {
-            foreach (var t in gridSlices)
+            foreach (GridLength t in gridSlices)
             {
                 if (isColumn)
                     grid.ColumnDefinitions.Add(new ColumnDefinition { Width = t });

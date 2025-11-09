@@ -24,19 +24,19 @@ namespace CollapseLauncher
         Korean = 3
     }
 
-    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager, string gameRepoURL)
-        : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, null, gameRepoURL, null), IRepair
+    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager)
+        : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, null, null, null), IRepair
     {
         #region ExtensionProperties
-        private protected string               ExecPrefix              { get => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName); }
-        private protected int                  DispatcherRegionID      { get; init; } = gameVersionManager.GamePreset.GetRegServerNameID();
-        private protected string               DispatcherURL           { get => GameVersionManager.GamePreset.GameDispatchURL ?? ""; }
+        private           string               ExecPrefix              { get => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName); }
+        private           int                  DispatcherRegionID      { get; } = gameVersionManager.GamePreset.GetRegServerNameID();
+        private           string               DispatcherURL           { get => GameVersionManager.GamePreset.GameDispatchURL ?? ""; }
         private protected string               DispatcherKey           { get => GameVersionManager.GamePreset.DispatcherKey ?? ""; }
         private protected int                  DispatcherKeyLength     { get => GameVersionManager.GamePreset.DispatcherKeyBitLength ?? 0x100; }
-        private protected QueryProperty        DispatchQuery           { get; set; }
-        private protected DateTime             LastDispatchQueryTime   { get; set; }
-        private protected string               GamePersistentPath      { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
-        private protected string               GameStreamingAssetsPath { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
+        private           QueryProperty        DispatchQuery           { get; set; }
+        private           DateTime             LastDispatchQueryTime   { get; set; }
+        private           string               GamePersistentPath      { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
+        private           string               GameStreamingAssetsPath { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
         private protected GenshinAudioLanguage AudioLanguage           { get; init; } = (GenshinAudioLanguage)gameVersionManager.GamePreset.GetVoiceLanguageID();
 
         #endregion
@@ -46,7 +46,7 @@ namespace CollapseLauncher
         private Dictionary<string, SophonAsset> SophonAssetDictRef { get; } = new(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, SophonAsset>.AlternateLookup<ReadOnlySpan<char>> SophonAssetDictRefLookup { get => _sophonAssetDictRefLookup ??= SophonAssetDictRef.GetAlternateLookup<ReadOnlySpan<char>>(); }
         private bool IsParsePersistentManifestSuccess { get; set; }
-        protected override string UserAgent { get; set; } = "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
+        protected override string UserAgent => "UnityPlayer/2017.4.30f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
         #endregion
 
         ~GenshinRepair() => Dispose();

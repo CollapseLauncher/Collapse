@@ -13,11 +13,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using ILauncherApi = CollapseLauncher.Helper.LauncherApiLoader.ILauncherApi;
 using LauncherApiBase = CollapseLauncher.Helper.LauncherApiLoader.LauncherApiBase;
+#pragma warning disable IDE0130
 
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal partial class PluginLauncherApiWrapper : ILauncherApi
+internal sealed partial class PluginLauncherApiWrapper : ILauncherApi
 {
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
     private readonly IPlugin                   _plugin;
@@ -50,8 +51,11 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
     public float GameBackgroundSequenceFps   { get; private set; }
     // ReSharper enable UnusedAutoPropertyAccessor.Global
 
-    public string GameName              => _pluginPresetConfig.GameName;
-    public string GameRegion            => _pluginPresetConfig.ZoneName;
+    public string  GameName   => _pluginPresetConfig.GameName;
+    public string  GameRegion => _pluginPresetConfig.ZoneName;
+    public string? GameBiz    => null;
+    public string? GameId     => null;
+
     public string GameNameTranslation   => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameName, Locale.Lang._GameClientTitles) ?? GameName;
     public string GameRegionTranslation => InnerLauncherConfig.GetGameTitleRegionTranslationString(GameRegion, Locale.Lang._GameClientRegions) ?? GameRegion;
 
@@ -167,7 +171,7 @@ internal partial class PluginLauncherApiWrapper : ILauncherApi
         return [initGameManagerTask, initMediaApiTask, initNewsApi];
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!disposing)
         {

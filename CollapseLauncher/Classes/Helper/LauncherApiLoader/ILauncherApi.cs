@@ -16,6 +16,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         bool                               IsForceRedirectToSophon     { get; }
         string?                            GameBackgroundImg           { get; }
         string?                            GameBackgroundImgLocal      { get; set; }
+        string?                            GameBiz                     { get; }
+        string?                            GameId                      { get; }
         string?                            GameName                    { get; }
         string?                            GameRegion                  { get; }
         string?                            GameNameTranslation         { get; }

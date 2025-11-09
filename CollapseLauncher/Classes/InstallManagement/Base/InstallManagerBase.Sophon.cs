@@ -47,9 +47,11 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Protected Properties
-        protected List<string> _sophonVOLanguageList      { get; set; } = [];
-        protected bool         _isSophonDownloadCompleted { get; set; }
-        protected bool         _isSophonPreloadCompleted
+
+        private List<string> _sophonVOLanguageList      { get; } = [];
+        private bool         _isSophonDownloadCompleted { get; set; }
+
+        private bool         _isSophonPreloadCompleted
         {
             get => File.Exists(Path.Combine(_gameSophonChunkDir, PreloadVerifiedFileName));
             set
@@ -108,12 +110,12 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        public virtual bool AskAdditionalSophonPkg
+        protected virtual bool AskAdditionalSophonPkg
         {
             get => File.Exists(Path.Combine(GamePath, "@AskAdditionalSophonPackage"));
         }
 
-        public string[] CommonSophonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
+        private readonly string[] CommonSophonPackageMatchingFields = ["game", "en-us", "zh-tw", "zh-cn", "ko-kr", "ja-jp"];
         #endregion
 
         #region Sophon Verification Methods
@@ -141,7 +143,8 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Sophon Download and Install/Update/Preload Methods
-        public virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState, bool fallbackFromUpdate = false)
+
+        protected virtual async Task StartPackageInstallSophon(GameInstallStateEnum gameState, bool fallbackFromUpdate = false)
         {
             // Set the flag to false
             _isSophonDownloadCompleted = false;
@@ -544,7 +547,7 @@ namespace CollapseLauncher.InstallManager.Base
             return sophonAssetList;
         }
 
-        protected async Task ConfirmAdditionalInstallDataPackageFiles(
+        private async Task ConfirmAdditionalInstallDataPackageFiles(
             List<SophonChunkManifestInfoPair> installManifest,
             CancellationToken                 token)
         {
@@ -641,7 +644,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        public virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
+        protected virtual async Task StartPackageUpdateSophon(GameInstallStateEnum gameState, bool isPreloadMode)
         {
             if (!Enum.IsDefined(gameState))
             {

@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Extension;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using Hi3Helper.Plugin.Core.Management;
 using Microsoft.UI.Xaml;
 using System;
@@ -15,7 +16,7 @@ namespace CollapseLauncher.Interfaces
         private GameVersion GameVersionOverride { get; }
 
 #nullable enable
-        public GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
+        protected GamePropertyBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
         {
             GameSettings = gameSettings;
             GameVersionManager = gameVersionManager;
@@ -40,14 +41,14 @@ namespace CollapseLauncher.Interfaces
 
         protected const   int    BufferMediumLength                        = 1 << 20; // 1 MiB
         protected const   int    BufferBigLength                           = 2 << 20; // 2 MiB
-        protected const   double DownloadThreadCountReservedMultiplication = 1.5d;
-        protected virtual string UserAgent { get; set; } = "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
+        private const     double DownloadThreadCountReservedMultiplication = 1.5d;
+        protected virtual string UserAgent => "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
 
         protected static bool                           IsBurstDownloadEnabled          { get => IsBurstDownloadModeEnabled; }
         protected static int                            DownloadThreadCount             { get => AppCurrentDownloadThread; }
         protected static int                            DownloadThreadWithReservedCount { get => (int)Math.Round(DownloadThreadCount * DownloadThreadCountReservedMultiplication); }
         protected static int                            ThreadCount                     { get => (byte)AppCurrentThread; }
-        protected        bool                           IsVersionOverride               { get; init; }
+        protected        bool                           IsVersionOverride               { get; }
         protected        CancellationTokenSourceWrapper Token                           { get; set; }
         protected GameVersion GameVersion
         {
@@ -61,14 +62,32 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected IGameVersion GameVersionManager { get; set; }
-        protected IGameSettings GameSettings { get; set; }
-        protected string GamePath { get => string.IsNullOrEmpty(GamePathField) ? GameVersionManager.GameDirPath : GamePathField; }
+        protected IGameVersion  GameVersionManager { get; }
+        protected IGameSettings GameSettings       { get; init; }
+        protected string        GamePath           { get => string.IsNullOrEmpty(GamePathField) ? GameVersionManager.GameDirPath : GamePathField; }
 
         [field: MaybeNull, AllowNull]
         protected string GameRepoURL
         {
-            get => string.IsNullOrEmpty(field) ? GameVersionManager.GameApiProp?.data?.game?.latest?.decompressed_path : field;
+            get
+            {
+                if (!string.IsNullOrEmpty(field))
+                {
+                    return field;
+                }
+
+                string gameBiz = GameVersionManager.LauncherApi.GameBiz ?? "";
+                string gameId = GameVersionManager.LauncherApi.GameId ?? "";
+                HypLauncherGameResourcePackageApi resourcePackage = GameVersionManager.LauncherApi.LauncherGameResourcePackage;
+
+                if (!(resourcePackage?.Data.TryFindByBizOrId(gameBiz, gameId, out HypResourcesData data) ?? false))
+                {
+                    return null;
+                }
+
+                field = data.MainPackage?.CurrentVersion?.ResourceListUrl;
+                return field;
+            }
             set;
         }
 
@@ -76,6 +95,6 @@ namespace CollapseLauncher.Interfaces
         protected bool UseFastMethod { get; set; }
 
         public ObservableCollection<IAssetProperty> AssetEntry { get; set; }
-        public UIElement ParentUI { get; init; }
+        public UIElement ParentUI { get; }
     }
 }

@@ -302,7 +302,7 @@ namespace CollapseLauncher.GameSettings.Base
             WriteTypeBinary(stream, (byte[])value, realValueType);
         }
 
-        public static unsafe object ReadTypeNumberUnsafe(Stream stream, int sizeOf)
+        private static unsafe object ReadTypeNumberUnsafe(Stream stream, int sizeOf)
         {
             Span<byte> buffer = stackalloc byte[sizeOf];
             stream.ReadExactly(buffer);

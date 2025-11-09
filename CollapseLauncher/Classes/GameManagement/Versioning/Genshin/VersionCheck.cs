@@ -1,16 +1,17 @@
 ﻿using CollapseLauncher.GameManagement.Versioning;
+using CollapseLauncher.Helper.LauncherApiLoader;
+using CollapseLauncher.Helper.Metadata;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 // ReSharper disable IdentifierTypo
+// ReSharper disable CheckNamespace
 
 namespace CollapseLauncher.GameVersioning
 {
     internal sealed class GameTypeGenshinVersion(
-        RegionResourceProp gameRegionProp,
-        string             gameName,
-        string             gamePreset)
-        : GameVersionBase(gameRegionProp, gameName, gamePreset)
+        ILauncherApi launcherApi,
+        PresetConfig presetConfig) : GameVersionBase(launcherApi, presetConfig)
     {
         #region Const
         private const string GlobalExecName = "GenshinImpact.exe";

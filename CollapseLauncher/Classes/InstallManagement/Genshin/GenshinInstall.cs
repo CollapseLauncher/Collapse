@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
@@ -65,52 +64,6 @@ namespace CollapseLauncher.InstallManager.Genshin
             : base(parentUI, GameVersionManager)
         {
         }
-
-        #region Public Methods
-
-#nullable enable
-        public override async ValueTask<bool> IsPreloadCompleted(CancellationToken token)
-        {
-            // If it's forcely redirected to sophon, check the preload using sophon
-            if (GameVersionManager.IsForceRedirectToSophon())
-            {
-                return await base.IsPreloadCompleted(token);
-            }
-
-            // Get the primary file first check
-            List<RegionResourceVersion>? resource = GameVersionManager.GetGamePreloadZip();
-
-            // Sanity Check: throw if resource returns null
-            if (resource == null)
-            {
-                throw new
-                    InvalidOperationException("You're trying to check this method while preload is not available!");
-            }
-
-            bool primaryAsset = resource.All(x =>
-                                             {
-                                                 string? name = Path.GetFileName(x.path);
-                                                 if (string.IsNullOrEmpty(name))
-                                                     return false;
-
-                                                 string path = Path.Combine(GamePath, name);
-                                                 return File.Exists(path);
-                                             });
-
-            // Get the second voice pack check
-            List<GameInstallPackage> voicePackList = [];
-
-            // Add another voice pack that already been installed
-            await TryAddOtherInstalledVoicePacks(resource.FirstOrDefault()?.voice_packs, voicePackList,
-                                                 resource.FirstOrDefault()?.version);
-
-            // Get the secondary file check
-            bool secondaryAsset = voicePackList.All(x => File.Exists(x.PathOutput));
-
-            return (primaryAsset && secondaryAsset) || await base.IsPreloadCompleted(token);
-        }
-#nullable restore
-        #endregion
 
         #region Override Methods - StartPackageInstallationInner
 

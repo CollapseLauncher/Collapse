@@ -16,7 +16,8 @@ namespace CollapseLauncher
     internal partial class ZenlessRepair : ProgressBase<FilePropertiesRemote>, IRepair, IRepairAssetIndex
     {
         #region Properties
-        internal const string AssetGamePersistentPath = @"{0}_Data\Persistent";
+
+        private const string AssetGamePersistentPath = @"{0}_Data\Persistent";
 
         // ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
         private bool IsOnlyRecoverMain { get; set; }
@@ -30,7 +31,7 @@ namespace CollapseLauncher
 
         private string GameDataPersistentPath { get => Path.Combine(GamePath, string.Format(AssetGamePersistentPath, ExecutableName)); }
 
-        protected string? GameAudioLangListPath
+        private string? GameAudioLangListPath
         {
             get
             {
@@ -63,7 +64,7 @@ namespace CollapseLauncher
         private string GameAudioLangListPathAlternateStatic =>
             Path.Combine(GameDataPersistentPath, "audio_lang");
 
-        protected override string UserAgent { get; set; } = "UnityPlayer/2019.4.40f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)";
+        protected override string UserAgent => "UnityPlayer/2019.4.40f1 (UnityWebRequest/1.0, libcurl/7.80.0-DEV)";
 
         public ZenlessRepair(UIElement parentUI, IGameVersion gameVersionManager, ZenlessSettings gameSettings, bool isOnlyRecoverMain = false, string? versionOverride = null, bool isCacheUpdateMode = false)
             : base(parentUI, gameVersionManager, null, "", versionOverride)

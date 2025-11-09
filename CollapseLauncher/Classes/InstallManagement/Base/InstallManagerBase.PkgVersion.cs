@@ -1,6 +1,8 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Helper.JsonConverter;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Loading;
+using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -29,6 +31,7 @@ using static Hi3Helper.Logger;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 
 #nullable enable
 namespace CollapseLauncher.InstallManager.Base
@@ -79,7 +82,7 @@ namespace CollapseLauncher.InstallManager.Base
             return relativePath.ToString();
         }
 
-        public void Update()
+        private void Update()
         {
             FileInfo fileInfo = new FileInfo(FullPath);
             IsFileExist = fileInfo.Exists;
@@ -160,9 +163,9 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async Task<string> DownloadPkgVersion(DownloadClient downloadClient, RegionResourceVersion? packageLatestBase)
+        protected virtual async Task<string> DownloadPkgVersion(DownloadClient downloadClient, GamePackageResult packageResult)
         {
-            string? packageExtractBasePath = packageLatestBase?.decompressed_path;
+            string? packageExtractBasePath = packageResult.UncompressedUrl;
 
             // Check Fail-safe: Download pkg_version files if not exist
             string pkgVersionPath = Path.Combine(GamePath, "pkg_version");
@@ -228,11 +231,10 @@ namespace CollapseLauncher.InstallManager.Base
                                                     Locale.Lang._FileCleanupPage.LoadingSubtitle2);
 
                     DownloadClient downloadClient = DownloadClient.CreateInstance(httpClient);
-                    RegionResourceVersion? packageLatestBase = GameVersionManager
-                                                              .GetGameLatestZip(gameStateEnum).FirstOrDefault();
+                    GamePackageResult packageResult = GameVersionManager.GetGameLatestZip(gameStateEnum);
 
                     // Download pkg_version file (with additional audio ones)
-                    string pkgVersionPath = await DownloadPkgVersion(downloadClient, packageLatestBase);
+                    string pkgVersionPath = await DownloadPkgVersion(downloadClient, packageResult);
 
                     // Check Fail-safe: If the main pkg_version still not exist, throw!
                     bool isMainPkgVersionExist = File.Exists(pkgVersionPath);
@@ -264,28 +266,40 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Add pre-download zips into the ignored list 
-                RegionResourceVersion? packagePreDownloadList =
-                    GameVersionManager.GetGamePreloadZip()?.FirstOrDefault();
-                if (packagePreDownloadList != null)
+                GamePackageResult packagePreloadResult = GameVersionManager.GetGamePreloadZip();
+                if (packagePreloadResult.MainPackage.Count != 0 ||
+                    packagePreloadResult.AudioPackage.Count != 0)
                 {
                     List<string> preDownloadZips = [];
-                    var pkg = new GameInstallPackage(packagePreDownloadList, GamePath)
-                        { PackageType = GameInstallPackageType.General };
-                    if (!string.IsNullOrEmpty(pkg.Name)) preDownloadZips.Add($"{pkg.Name}*");
-
-                    if (packagePreDownloadList.voice_packs?.Count > 0)
+                    foreach (HypPackageData preloadPkg in packagePreloadResult.MainPackage)
                     {
-                        preDownloadZips.AddRange(packagePreDownloadList.voice_packs
-                                                                       .Select(audioRes =>
-                                                                                   new GameInstallPackage(audioRes,
-                                                                                       GamePath)
-                                                                                   {
-                                                                                       PackageType =
-                                                                                           GameInstallPackageType.Audio
-                                                                                   })
-                                                                       .Where(pkgAudio =>
-                                                                                  !string.IsNullOrEmpty(pkgAudio.Name))
-                                                                       .Select(pkgAudio => $"{pkgAudio.Name}*"));
+                        GameInstallPackage pkg = new GameInstallPackage(preloadPkg,
+                                                                        GamePath,
+                                                                        packagePreloadResult.UncompressedUrl,
+                                                                        packagePreloadResult.Version)
+                        {
+                            PackageType = GameInstallPackageType.General
+                        };
+
+                        if (!string.IsNullOrEmpty(pkg.Name))
+                        {
+                            preDownloadZips.Add($"{pkg.Name}*");
+                        }
+                    }
+
+                    if (packagePreloadResult.AudioPackage.Count > 0)
+                    {
+                        preDownloadZips.AddRange(packagePreloadResult.AudioPackage
+                                                                     .Select(audioRes =>
+                                                                                 new GameInstallPackage(audioRes,
+                                                                                     GamePath)
+                                                                                 {
+                                                                                     PackageType =
+                                                                                         GameInstallPackageType.Audio
+                                                                                 })
+                                                                     .Where(pkgAudio =>
+                                                                                !string.IsNullOrEmpty(pkgAudio.Name))
+                                                                     .Select(pkgAudio => $"{pkgAudio.Name}*"));
                     }
 
                     if (preDownloadZips.Count > 0)

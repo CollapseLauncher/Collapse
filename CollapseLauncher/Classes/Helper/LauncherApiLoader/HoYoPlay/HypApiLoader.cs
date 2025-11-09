@@ -6,7 +6,6 @@ using Hi3Helper.Plugin.Core.Management;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -152,15 +151,17 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
             }
 
             if (!gameSophonBranch
-                   .TryFindByBiz(PresetConfig?.LauncherBizName,
-                                 out HypLauncherSophonBranchesKind? gameBranchSophon))
+                   .TryFindByBizOrId(PresetConfig?.LauncherBizName ?? "",
+                                     PresetConfig?.LauncherGameId ?? "",
+                                     out HypLauncherSophonBranchesKind? gameBranchSophon))
             {
                 return;
             }
 
             if (!gameResourceData
-                   .TryFindByBiz(PresetConfig?.LauncherBizName,
-                                                out HypResourcesData? gamePackage))
+                   .TryFindByBizOrId(PresetConfig?.LauncherBizName ?? "",
+                                     PresetConfig?.LauncherGameId ?? "",
+                                     out HypResourcesData? gamePackage))
             {
                 return;
             }
@@ -474,7 +475,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay
         #endregion
 
         #region Debug-Specific Methods
-        protected void PerformDebugRoutines()
+
+        private void PerformDebugRoutines()
         {
             /*
 #if DEBUG

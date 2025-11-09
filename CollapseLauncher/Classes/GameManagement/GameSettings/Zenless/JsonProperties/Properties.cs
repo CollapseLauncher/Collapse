@@ -30,7 +30,7 @@ public readonly struct SystemSettingLocalData<TData>
 
     public SystemSettingLocalData([NotNull] JsonNode node, TData defaultData = default, int defaultVersion = 1)
     {
-        ArgumentNullException.ThrowIfNull(node, nameof(node));
+        ArgumentNullException.ThrowIfNull(node);
         _node = node;
         _defaultVersion = defaultVersion;
         _defaultData = defaultData;
@@ -47,7 +47,7 @@ public static class SystemSettingLocalDataExt
         [NotNull] this JsonNode? node, string keyName, TData defaultData = default, int defaultVersion = 1)
         where TData : struct
     {
-        ArgumentNullException.ThrowIfNull(node, nameof(node));
+        ArgumentNullException.ThrowIfNull(node);
 
         JsonNode ensuredNode = node.GetAsJsonNode<JsonObject>(keyName);
         SystemSettingLocalData<TData> map = new(ensuredNode, defaultData, defaultVersion);

@@ -181,7 +181,7 @@ public partial class MainPage : Page
             Duration = TimeSpan.FromMilliseconds(150)
         };
 
-        var paneMainGrid = NavigationViewControl.FindDescendant("PaneContentGrid");
+        FrameworkElement paneMainGrid = NavigationViewControl.FindDescendant("PaneContentGrid");
         if (paneMainGrid is Grid paneMainGridAsGrid)
         {
             paneMainGridAsGrid.PointerEntered += NavView_PanePointerEntered;
@@ -189,7 +189,7 @@ public partial class MainPage : Page
         }
 
         // The toggle button is not a part of pane. Why Microsoft!!!
-        var paneToggleButtonGrid = (Grid)NavigationViewControl.FindDescendant("PaneToggleButtonGrid");
+        Grid paneToggleButtonGrid = (Grid)NavigationViewControl.FindDescendant("PaneToggleButtonGrid");
         if (paneToggleButtonGrid != null)
         {
             paneToggleButtonGrid.PointerEntered += NavView_PanePointerEntered;
@@ -199,7 +199,7 @@ public partial class MainPage : Page
         // var backIcon = NavigationViewControl.FindDescendant("NavigationViewBackButton")?.FindDescendant<AnimatedIcon>();
         // backIcon?.ApplyDropShadow(Colors.Gray, 20);
 
-        var toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
+        AnimatedIcon toggleIcon = NavigationViewControl.FindDescendant("TogglePaneButton")?.FindDescendant<AnimatedIcon>();
         toggleIcon?.ApplyDropShadow(Colors.Gray, 20);
     }
 
@@ -300,8 +300,8 @@ public partial class MainPage : Page
 
     internal void InvokeMainPageNavigateByTag(string tagStr)
     {
-        var item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
-                                        .FirstOrDefault(x => x.Tag is string tag && tag == tagStr);
+        NavigationViewItem item = NavigationViewControl.MenuItems.OfType<NavigationViewItem>()
+                                                       .FirstOrDefault(x => x.Tag is string tag && tag == tagStr);
         if (item == null)
         {
             return;
@@ -367,8 +367,8 @@ public partial class MainPage : Page
         LauncherFrame.GoBack();
         if (PreviousTagString.Count < 1) return;
 
-        var lastPreviousTag          = PreviousTagString[^1];
-        var currentNavigationItemTag = (string)((NavigationViewItem)sender.SelectedItem).Tag;
+        string lastPreviousTag          = PreviousTagString[^1];
+        string currentNavigationItemTag = (string)((NavigationViewItem)sender.SelectedItem).Tag;
 
         if (!string.Equals(lastPreviousTag, currentNavigationItemTag, StringComparison.CurrentCultureIgnoreCase))
         {
@@ -376,8 +376,7 @@ public partial class MainPage : Page
         }
 
     #nullable enable
-        string? goLastPreviousTag;
-        goLastPreviousTag = PreviousTagString.Count < 2 ? PreviousTagString[^2] : lastPreviousTag;
+        string? goLastPreviousTag = PreviousTagString.Count < 2 ? PreviousTagString[^2] : lastPreviousTag;
         
         NavigationViewItem? goPreviousNavigationItem = sender.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => goLastPreviousTag == (string)x.Tag);
         goPreviousNavigationItem ??= sender.FooterMenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => goLastPreviousTag == (string)x.Tag);

@@ -1,4 +1,4 @@
-using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.LauncherApiLoader;
 using CollapseLauncher.Helper.Metadata;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
@@ -17,12 +17,14 @@ namespace CollapseLauncher.Statics
 {
     internal static class GamePropertyVault
     {
-        private static ConcurrentDictionary<int, GamePresetProperty> Vault             { get; } = new();
-        private static UIElement?                                    LastElementParent { get; set; }
-        public static  int                                           LastGameHashID    { get; set; }
-        public static  int                                           CurrentGameHashID { get; set; }
-        public static  string?                                       CurrentGameName   { get; set; }
-        public static  string?                                       CurrentGameRegion { get; set; }
+        private static ConcurrentDictionary<int, GamePresetProperty> Vault { get; } =
+            new ConcurrentDictionary<int, GamePresetProperty>();
+
+        private static UIElement? LastElementParent { get; set; }
+        private static int        LastGameHashID    { get; set; }
+        private static int        CurrentGameHashID { get; set; }
+        private static string?    CurrentGameName   { get; set; }
+        private static string?    CurrentGameRegion { get; set; }
 
         public static GamePresetProperty GetCurrentGameProperty()
         {
@@ -42,7 +44,7 @@ namespace CollapseLauncher.Statics
                        .TryGetValue(CurrentGameRegion, out PresetConfig? gamePreset) ?? false)
                 {
                     // Try register the game property and get its hash id
-                    RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi?.LauncherGameResourcePackage!, CurrentGameName, CurrentGameRegion);
+                    RegisterGameProperty(LastElementParent!, gamePreset.GameLauncherApi!, CurrentGameName, CurrentGameRegion);
                     int reRegisteredHashId = gamePreset.HashID;
 
                     // Try to get the value from the cache vault and return if we get one.
@@ -57,7 +59,7 @@ namespace CollapseLauncher.Statics
             throw new KeyNotFoundException($"Cached region with Hash ID: {hashId} was not found in the vault!");
         }
 
-        public static void LoadGameProperty(UIElement uiElementParent, HypLauncherGameResourcePackageApi apiGameResourcePackageProp, string gameName, string gameRegion)
+        public static void LoadGameProperty(UIElement uiElementParent, ILauncherApi launcherApis, string gameName, string gameRegion)
         {
             if (LauncherMetadataHelper.LauncherMetadataConfig?[gameName]?
                 .TryGetValue(gameRegion, out PresetConfig? gamePreset) ?? false)
@@ -66,10 +68,13 @@ namespace CollapseLauncher.Statics
                 CurrentGameHashID = gamePreset.HashID;
             }
 
-            RegisterGameProperty(uiElementParent, apiGameResourcePackageProp, gameName, gameRegion);
+            RegisterGameProperty(uiElementParent, launcherApis, gameName, gameRegion);
         }
 
-        private static void RegisterGameProperty(UIElement uiElementParent, HypLauncherGameResourcePackageApi apiGameResourcePackageProp, string gameName, string gameRegion)
+        private static void RegisterGameProperty(UIElement    uiElementParent,
+                                                 ILauncherApi launcherApis,
+                                                 string       gameName,
+                                                 string       gameRegion)
         {
             CurrentGameName   =   gameName;
             CurrentGameRegion =   gameRegion;
@@ -94,7 +99,7 @@ namespace CollapseLauncher.Statics
                 return;
             }
 
-            GamePresetProperty property = GamePresetProperty.Create(uiElementParent, apiGameResourcePackageProp, gameName, gameRegion);
+            GamePresetProperty property = GamePresetProperty.Create(uiElementParent, launcherApis, gameName, gameRegion);
             UpdateSentryState(property);
             _ = Vault.TryAdd(gamePreset.HashID, property);
         #if DEBUG
@@ -214,7 +219,7 @@ namespace CollapseLauncher.Statics
 
     internal partial class PageStatics
     {
-        internal static CommunityToolsProperty? CommunityToolsProperty { get; set; } = new()
+        internal static CommunityToolsProperty? CommunityToolsProperty { get; set; } = new CommunityToolsProperty
         {
             OfficialToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>(),
             CommunityToolsDictionary = new Dictionary<GameNameType, List<CommunityToolsEntry>>()

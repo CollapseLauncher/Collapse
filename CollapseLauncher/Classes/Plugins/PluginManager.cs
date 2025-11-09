@@ -18,7 +18,7 @@ namespace CollapseLauncher.Plugins;
 #nullable enable
 internal static partial class PluginManager
 {
-    internal const string PluginDirPrefix = "Hi3Helper.Plugin.*";
+    private const string PluginDirPrefix = "Hi3Helper.Plugin.*";
     internal const string ManifestPrefix  = "manifest.json";
 
     public static readonly Dictionary<string, PluginInfo> PluginInstances = new(StringComparer.OrdinalIgnoreCase);
@@ -151,7 +151,7 @@ internal static partial class PluginManager
         PluginInstances.Clear();
     }
 
-    internal static void ApplyPendingRoutines(DirectoryInfo pluginRootDir)
+    private static void ApplyPendingRoutines(DirectoryInfo pluginRootDir)
     {
         foreach (DirectoryInfo pluginDir in pluginRootDir
                     .EnumerateDirectories(PluginDirPrefix, SearchOption.TopDirectoryOnly))

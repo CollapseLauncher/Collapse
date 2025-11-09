@@ -19,10 +19,12 @@ using CollapseLauncher.DiscordPresence;
 using CollapseLauncher.Extension;
 using CollapseLauncher.FileDialogCOM;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManagement.Base;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Pages;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -60,12 +62,12 @@ using System.Threading.Tasks;
 using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
-using CoreCombinedStream = Hi3Helper.EncTool.CombinedStream;
 
 #if USENEWZIPDECOMPRESS
 using ZipArchive = SharpCompress.Archives.Zip.ZipArchive;
 using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 #endif
 
 // ReSharper disable ForCanBeConvertedToForeach
@@ -107,7 +109,7 @@ namespace CollapseLauncher.InstallManager.Base
             public string[] foldersToKeepInData;
         }
 
-        protected delegate Task InstallPackageExtractorDelegate(GameInstallPackage asset);
+        private delegate Task InstallPackageExtractorDelegate(GameInstallPackage asset);
 
         #endregion
 
@@ -117,10 +119,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected readonly string _gamePersistentFolderBasePath;
         protected readonly string _gameStreamingAssetsFolderBasePath;
-        protected          RegionResourceGame _gameRegion => GameVersionManager!.GameApiProp!.data;
-        protected          GameVersion? _gameLatestVersion => GameVersionManager!.GetGameVersionApi();
-        protected          GameVersion? _gameLatestPreloadVersion => GameVersionManager!.GetGameVersionApiPreload();
-        protected          GameVersion? _gameInstalledVersion => GameVersionManager!.GetGameExistingVersion();
 
         // TODO: Override if the game was supposed to have voice packs (For example: Genshin)
         protected virtual int _gameVoiceLanguageID => int.MinValue;
@@ -367,30 +365,32 @@ namespace CollapseLauncher.InstallManager.Base
         }
 
         protected virtual async ValueTask<bool> GetAndDownloadDeltaPatchPreReq(
-            List<GameInstallPackage> gamePackage, GameInstallStateEnum gameState)
+            List<GameInstallPackage> gamePackage,
+            GameInstallStateEnum     gameState)
         {
-            // Iterate the latest game package list
-            foreach (RegionResourceVersion asset in GameVersionManager!.GetGameLatestZip(gameState)!)
-            {
-                await TryAddResourceVersionList(asset, gamePackage, true);
-            }
-
-            // Start getting the size of the packages
-            await GetPackagesRemoteSize(gamePackage, Token!.Token);
+            // Get latest package result
+            GamePackageResult packageResult = GameVersionManager.GetGameLatestZip(gameState);
 
             // If the game package list is empty, then return true as skips the prerequisite download
-            if (gamePackage == null || gamePackage.Count == 0)
+            if (packageResult == null ||
+                packageResult.MainPackage.Count == 0)
             {
                 return true;
             }
 
+            // Iterate the latest game package list
+            await TryAddResourceVersionList(packageResult, gamePackage, true);
+
+            // Start getting the size of the packages
+            await GetPackagesRemoteSize(gamePackage, Token.Token);
+
             // Get the required disk size
-            long totalDownloadSize = gamePackage.Sum(x => x!.Size);
+            long totalDownloadSize = gamePackage.Sum(x => x.Size);
             //long requiredDiskSpace = gamePackage.Sum(x => x!.SizeRequired);
 
             // Build the dialog UI
-            var locDialogs = Lang!._Dialogs!;
-            var locMisc    = Lang!._Misc!;
+            LocalizationParams.LangDialogs locDialogs = Lang._Dialogs;
+            LocalizationParams.LangMisc    locMisc    = Lang._Misc;
 
             TextBlock message = new TextBlock { TextWrapping = TextWrapping.Wrap };
             message.AddTextBlockLine(locDialogs.DeltaPatchPreReqSubtitle1);
@@ -457,9 +457,9 @@ namespace CollapseLauncher.InstallManager.Base
             DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
 
             // Set the progress bar to indetermined
-            Status.IsIncludePerFileIndicator = gamePackage.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
+            Status.IsIncludePerFileIndicator     = gamePackage.Count > 1;
             Status.IsProgressPerFileIndetermined = true;
-            Status.IsProgressAllIndetermined = true;
+            Status.IsProgressAllIndetermined     = true;
             UpdateStatus();
 
             // Start getting the size of the packages
@@ -600,8 +600,7 @@ namespace CollapseLauncher.InstallManager.Base
             DownloadClient downloadClient = DownloadClient.CreateInstance(httpClientNew);
 
             // Set the progress bar to indetermined
-            Status.IsIncludePerFileIndicator =
-                AssetIndex!.Sum(x => x!.Segments != null ? x.Segments.Count : 1) > 1;
+            Status.IsIncludePerFileIndicator     = AssetIndex.Count > 1;
             Status.IsProgressPerFileIndetermined = true;
             Status.IsProgressAllIndetermined     = true;
             UpdateStatus();
@@ -653,7 +652,7 @@ namespace CollapseLauncher.InstallManager.Base
             ArgumentNullException.ThrowIfNull(gamePackage);
 
             // Get the total asset count
-            int assetCount = gamePackage.Sum(x => x!.Segments != null ? x.Segments.Count : 1);
+            int assetCount = gamePackage.Count;
 
             // If the assetIndex is empty, then skip and return 0
             if (assetCount == 0)
@@ -686,21 +685,6 @@ namespace CollapseLauncher.InstallManager.Base
                 if (asset == null)
                 {
                     return 0;
-                }
-
-                // Iterate if the package has segment
-                if (asset.Segments != null)
-                {
-                    for (int i = 0; i < asset.Segments.Count; i++)
-                    {
-                        // Run the package verification routine
-                        if ((returnCode = await RunPackageVerificationRoutine(asset.Segments[i], Token!.Token)) < 1)
-                        {
-                            return returnCode;
-                        }
-                    }
-
-                    continue;
                 }
 
                 // Run the package verification routine as a single package
@@ -817,30 +801,12 @@ namespace CollapseLauncher.InstallManager.Base
 
         private Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
         {
-            if (asset == null)
-            {
-                return null;
-            }
-
-            return asset.Segments != null && asset.Segments.Count != 0
-                ? new CoreCombinedStream(asset.Segments.Select(x => x!.GetReadStream(DownloadThreadCount)).ToArray())
-                : asset.GetReadStream(DownloadThreadCount);
+            return asset?.GetReadStream(DownloadThreadCount);
         }
 
         private void DeleteSingleOrSegmentedDownloadStream(GameInstallPackage asset)
         {
-            if (asset == null)
-            {
-                return;
-            }
-
-            if (asset.Segments != null && asset.Segments.Count != 0)
-            {
-                asset.Segments.ForEach(x => x!.DeleteFile(DownloadThreadCount));
-                return;
-            }
-
-            asset.DeleteFile(DownloadThreadCount);
+            asset?.DeleteFile(DownloadThreadCount);
         }
 
         public async Task StartPackageInstallation()
@@ -1227,27 +1193,27 @@ namespace CollapseLauncher.InstallManager.Base
             {
                 GameVersionManager.UpdateGameVersionToLatest();
             #nullable enable
-                List<RegionResourcePlugin>? gamePluginList = GameVersionManager.GetGamePluginZip();
-                if (gamePluginList != null && gamePluginList.Count != 0)
+                List<HypPluginPackageInfo> gamePluginList = GameVersionManager.GetGamePluginZip();
+                if (gamePluginList.Count != 0)
                 {
                     Dictionary<string, GameVersion> gamePluginVersionDictionary = new Dictionary<string, GameVersion>();
-                    foreach (RegionResourcePlugin plugins in gamePluginList)
+                    foreach (HypPluginPackageInfo plugins in gamePluginList)
                     {
-                        if (plugins.plugin_id == null)
+                        if (plugins.PluginId == null)
                         {
                             continue;
                         }
 
-                        gamePluginVersionDictionary.Add(plugins.plugin_id, plugins.version);
+                        gamePluginVersionDictionary.Add(plugins.PluginId, plugins.Version);
                     }
 
                     GameVersionManager.UpdatePluginVersions(gamePluginVersionDictionary);
                 }
 
-                RegionResourcePlugin? gameSdkList = GameVersionManager.GetGameSdkZip()?.FirstOrDefault();
-                if (gameSdkList != null && GameVersion.TryParse(gameSdkList.version, out GameVersion sdkVersionResult))
+                HypChannelSdkData? sdk = GameVersionManager.GetGameSdkZip().FirstOrDefault();
+                if (sdk != null)
                 {
-                    GameVersionManager.UpdateSdkVersion(sdkVersionResult);
+                    GameVersionManager.UpdateSdkVersion(sdk.Version);
                 }
             #nullable restore
             }
@@ -1280,35 +1246,11 @@ namespace CollapseLauncher.InstallManager.Base
             long totalPackageSize = AssetIndex!.Sum(x => x!.Size);
 
             // Get the sum of the total size of the single or segmented packages
-            return AssetIndex.Sum(asset =>
-                                   {
-                                       // Check if the package is segmented
-                                       if (asset!.Segments != null && asset.Segments.Count != 0)
-                                       {
-                                           // Get the sum of the total size/length for each of its streams
-                                           return asset.Segments.Sum(segment =>
-                                                                     {
-                                                                         // Check if the read stream exist
-                                                                         if (segment!
-                                                                            .IsReadStreamExist(DownloadThreadCount))
-                                                                         {
-                                                                             // Return the size/length of the chunk stream
-                                                                             return segment
-                                                                                .GetStreamLength(DownloadThreadCount);
-                                                                         }
-
-                                                                         // If not, then return 0
-                                                                         return 0;
-                                                                     });
-                                       }
-
-                                       // If segment is none, check if the single stream exist
-                                       return asset.IsReadStreamExist(DownloadThreadCount) ?
-                                           // If yes, then return the size of the single stream
-                                           asset.GetStreamLength(DownloadThreadCount) :
-                                           // If neither of both exist, then return 0
-                                           0;
-                                   }) == totalPackageSize; // Then compare if the total package size is equal
+            return AssetIndex.Sum(asset => asset.IsReadStreamExist(DownloadThreadCount) ?
+                                      // If yes, then return the size of the single stream
+                                      asset.GetStreamLength(DownloadThreadCount) :
+                                      // If neither of both exist, then return 0
+                                      0) == totalPackageSize; // Then compare if the total package size is equal
 
             // Note:
             // x.GetReadStream() will check if the single package/zip exist.
@@ -2225,22 +2167,22 @@ namespace CollapseLauncher.InstallManager.Base
                    };
         }
 
-        protected virtual Dictionary<string, string> GetLanguageDisplayDictFromVoicePackList(
-            List<RegionResourceVersion> voicePacks)
+        protected virtual Dictionary<string, string>
+            GetLanguageDisplayDictFromVoicePackList(List<HypPackageData> voicePacks)
         {
             Dictionary<string, string> returnDict = new Dictionary<string, string>();
-            foreach (RegionResourceVersion Entry in voicePacks)
+            foreach (HypPackageData Entry in voicePacks)
             {
                 // Check the lang ID and add the translation of the language to the list
-                string? languageDisplay = GetLanguageDisplayByLocaleCode(Entry.language, false);
+                string? languageDisplay = GetLanguageDisplayByLocaleCode(Entry.Language, false);
                 if (string.IsNullOrEmpty(languageDisplay))
                 {
                     continue;
                 }
 
-                if (Entry.language != null)
+                if (!string.IsNullOrEmpty(Entry.Language))
                 {
-                    returnDict.Add(Entry.language, languageDisplay);
+                    returnDict.Add(Entry.Language, languageDisplay);
                 }
             }
 
@@ -2291,8 +2233,10 @@ namespace CollapseLauncher.InstallManager.Base
             assetDataList.AddRange(manifestListMain);
         }
 
-        protected virtual bool TryGetVoiceOverResourceByLocaleCode(List<RegionResourceVersion>? verResList,
-                                                                   string localeCode, [NotNullWhen(true)] out RegionResourceVersion? outRes)
+        protected virtual bool TryGetVoiceOverResourceByLocaleCode(
+            List<HypPackageData>?                   verResList,
+            string                                  localeCode,
+            [NotNullWhen(true)] out HypPackageData? outRes)
         {
             outRes = null;
             // Sanitation check: Check if the localeId argument is null or have no content
@@ -2308,7 +2252,7 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Try find the asset and if it's null, return false
-            outRes = verResList.FirstOrDefault(x => x.language?.Equals(localeCode, StringComparison.OrdinalIgnoreCase) ?? false);
+            outRes = verResList.FirstOrDefault(x => x.Language?.Equals(localeCode, StringComparison.OrdinalIgnoreCase) ?? false);
             // Otherwise, check the nullability and return
             return outRes != null;
         }
@@ -2841,18 +2785,18 @@ namespace CollapseLauncher.InstallManager.Base
             // Clean the package list
             packageList.Clear();
 
+            GamePackageResult packageDetail = usePreload
+                ? GameVersionManager.GetGamePreloadZip()
+                : GameVersionManager.GetGameLatestZip(gameState);
+
             // If the package is not in plugin update state, then skip adding the package
             if (gameState != GameInstallStateEnum.InstalledHavePlugin)
             {
                 // Iterate the package resource version and add it into packageList
-                foreach (var asset in ((usePreload
-                             ? GameVersionManager.GetGamePreloadZip()
-                             : GameVersionManager.GetGameLatestZip(gameState))
-                                ?? throw new InvalidOperationException("Cannot obtain any latest zip package from API"))
-                             .Where(asset => asset != null))
+                if (packageDetail.AudioPackage.Count != 0)
                 {
-                    RearrangeDataListLocaleOrder(asset.voice_packs, x => x.language);
-                    await TryAddResourceVersionList(asset, packageList);
+                    RearrangeDataListLocaleOrder(packageDetail.AudioPackage, x => x.Language);
+                    await TryAddResourceVersionList(packageDetail, packageList);
                 }
             }
 
@@ -2867,7 +2811,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (!await GameVersionManager.IsSdkVersionsMatch())
             {
                 // Get the sdk package
-                foreach (RegionResourcePlugin sdkPackage in GameVersionManager.GetGameSdkZip()!)
+                foreach (HypChannelSdkData sdkPackage in GameVersionManager.GetGameSdkZip())
                 {
                     packageList.Add(new GameInstallPackage(sdkPackage, GamePath));
                 }
@@ -2881,21 +2825,21 @@ namespace CollapseLauncher.InstallManager.Base
             const string pluginKeyEnd   = "_version";
 
             // Get the plugin resource list and if it's empty, return
-            List<RegionResourcePlugin>? pluginResourceList = GameVersionManager.GetGamePluginZip();
-            if (pluginResourceList == null)
+            List<HypPluginPackageInfo> pluginResourceList = GameVersionManager.GetGamePluginZip();
+            if (pluginResourceList.Count == 0)
             {
                 return;
             }
 
             // Parse game version INI configuration and search for the installed plugin.
             // Matching it if the latest version is found, then remove the corresponding
-            Dictionary<string, RegionResourcePlugin> pluginResourceDictionary = pluginResourceList
-               .ToDictionary(asset => asset.plugin_id!, StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HypPluginPackageInfo> pluginResourceDictionary = pluginResourceList
+               .ToDictionary(asset => asset.PluginId ?? "", StringComparer.OrdinalIgnoreCase);
 
             // If the game ini section is not null, then try eliminate the version section
             if (GameVersionManager.GameIniVersionSection != null)
             {
-                foreach (var (iniKey, value) in GameVersionManager.GameIniVersionSection
+                foreach ((string? iniKey, IniValue value) in GameVersionManager.GameIniVersionSection
                             .Where(x => x.Key.StartsWith(pluginKeyStart) && x.Key.EndsWith(pluginKeyEnd)))
                 {
                     // Get the plugin id from the ini property's key
@@ -2906,23 +2850,21 @@ namespace CollapseLauncher.InstallManager.Base
                     string iniPluginId = iniKey.AsSpan(startIniKeyOffset, startIniKeyLength).ToString();
 
                     // Try remove the plugin resource from dictionary if found
-                    if (!pluginResourceDictionary.TryGetValue(iniPluginId, out RegionResourcePlugin? pluginResource))
+                    if (!pluginResourceDictionary.TryGetValue(iniPluginId, out HypPluginPackageInfo? pluginResource))
                     {
                         continue;
                     }
 
                     // Try to get the plugin version from both installed and api's one
-                    string               pluginResourceVersion = pluginResource.version!;
-                    if (!GameVersion.TryParse(pluginResourceVersion, out GameVersion pluginResourceVersionResult)
-                        || !GameVersion.TryParse(value.ToString(),
-                                                 out GameVersion installedPluginVersionResult))
+                    GameVersion pluginResourceVersion = pluginResource.Version;
+                    if (!GameVersion.TryParse(value.ToString(), out GameVersion installedPluginVersionResult))
                     {
                         continue;
                     }
 
                     // If the both plugin versions from API and INI is equal, then remove the package
                     // from the dictionary.
-                    if (pluginResourceVersionResult.Equals(installedPluginVersionResult))
+                    if (installedPluginVersionResult == pluginResourceVersion)
                     {
                         // Remove the plugin resource
                         pluginResourceDictionary.Remove(iniPluginId);
@@ -2931,15 +2873,8 @@ namespace CollapseLauncher.InstallManager.Base
             }
 
             // Add the plugin resources to asset list
-            foreach (KeyValuePair<string, RegionResourcePlugin> pluginResource in pluginResourceDictionary)
+            foreach (KeyValuePair<string, HypPluginPackageInfo> pluginResource in pluginResourceDictionary)
             {
-                if (!GameVersion.TryParse(pluginResource.Value.version, out _))
-                {
-                    LogWriteLine($"Failed to parse plugin version: {pluginResource.Value.version} with id: {pluginResource.Key}",
-                                 LogType.Error, true);
-                    continue;
-                }
-
                 assetList.Add(new GameInstallPackage(pluginResource.Value, GamePath));
             }
         }
@@ -2973,48 +2908,49 @@ namespace CollapseLauncher.InstallManager.Base
         #region Virtual Methods - GetInstallationPath
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async ValueTask TryAddResourceVersionList(RegionResourceVersion    asset,
-                                                                    List<GameInstallPackage> packageList,
-                                                                    bool                     isSkipMainPackage = false)
+        protected virtual async ValueTask TryAddResourceVersionList(
+            GamePackageResult        packageDetail,
+            List<GameInstallPackage> packageList,
+            bool                     isSkipMainPackage = false)
         {
             // Try add the main resource version list first
-            await AddMainResourceVersionList(asset, packageList, isSkipMainPackage);
-            await AddVoiceOverResourceVersionList(asset, packageList);
+            await AddMainResourceVersionList(packageDetail, packageList, isSkipMainPackage);
+            await AddVoiceOverResourceVersionList(packageDetail, packageList);
         }
 
         protected virtual async ValueTask AddVoiceOverResourceVersionList(
-            RegionResourceVersion asset, List<GameInstallPackage> packageList)
+            GamePackageResult        packageDetail,
+            List<GameInstallPackage> packageList)
         {
-            // Initialize langID
-
             // Skip if the asset doesn't have voice packs
-            if (asset.voice_packs == null || asset.voice_packs.Count == 0)
+            if (packageDetail.AudioPackage.Count == 0)
             {
                 return;
             }
 
             // Get available language names
-            Dictionary<string, string> langStringsDict = GetLanguageDisplayDictFromVoicePackList(asset.voice_packs);
+            Dictionary<string, string> langStringsDict = GetLanguageDisplayDictFromVoicePackList(packageDetail.AudioPackage);
 
             if (!_canSkipAudio)
             {
                 // If the game has already installed or in preload, then try get Voice language ID from registry
                 GameInstallStateEnum gameState = await GameVersionManager.GetGameState();
                 GameInstallPackage   package;
-                if (gameState == GameInstallStateEnum.InstalledHavePreload
-                    || gameState == GameInstallStateEnum.NeedsUpdate)
+
+                if (gameState == GameInstallStateEnum.InstalledHavePreload ||
+                    gameState == GameInstallStateEnum.NeedsUpdate)
                 {
                     // Try get the voice language ID from the registry
-                    var    langID     = _gameVoiceLanguageID;
+                    int    langID     = _gameVoiceLanguageID;
                     string localeCode = GetLanguageLocaleCodeByID(langID);
 
                     // Try find the VO resource by locale code
-                    if (TryGetVoiceOverResourceByLocaleCode(asset.voice_packs, localeCode,
-                                                            out RegionResourceVersion voRes))
+                    if (TryGetVoiceOverResourceByLocaleCode(packageDetail.AudioPackage,
+                                                            localeCode,
+                                                            out HypPackageData voRes))
                     {
-                        package = new GameInstallPackage(voRes, GamePath, asset.version)
+                        package = new GameInstallPackage(voRes, GamePath, packageDetail.UncompressedUrl, packageDetail.Version)
                         {
-                            LanguageID  = localeCode,
                             PackageType = GameInstallPackageType.Audio
                         };
                         packageList.Add(package);
@@ -3023,7 +2959,7 @@ namespace CollapseLauncher.InstallManager.Base
                     }
 
                     // Also try add another voice pack that already been installed
-                    await TryAddOtherInstalledVoicePacks(asset.voice_packs, packageList, asset.version);
+                    await TryAddOtherInstalledVoicePacks(packageDetail, packageList);
                 }
                 // Else, show dialog to choose the language ID to be installed
                 else
@@ -3050,13 +2986,14 @@ namespace CollapseLauncher.InstallManager.Base
                     foreach (KeyValuePair<string, string> voChoice in addedVO)
                     {
                         // Try find the VO resource by locale code
-                        if (!TryGetVoiceOverResourceByLocaleCode(asset.voice_packs, voChoice.Key,
-                                                                 out RegionResourceVersion voRes))
+                        if (!TryGetVoiceOverResourceByLocaleCode(packageDetail.AudioPackage,
+                                                                 voChoice.Key,
+                                                                 out HypPackageData voRes))
                         {
                             continue;
                         }
 
-                        package = new GameInstallPackage(voRes, GamePath, asset.version)
+                        package = new GameInstallPackage(voRes, GamePath, packageDetail.UncompressedUrl, packageDetail.Version)
                         {
                             LanguageID  = voChoice.Key,
                             PackageType = GameInstallPackageType.Audio
@@ -3072,38 +3009,37 @@ namespace CollapseLauncher.InstallManager.Base
             }
         }
 
-        protected virtual async ValueTask AddMainResourceVersionList(RegionResourceVersion    asset,
-                                                                     List<GameInstallPackage> packageList,
-                                                                     bool                     isSkipMainPackage = false)
+        protected virtual async ValueTask AddMainResourceVersionList(
+            GamePackageResult        packageResult,
+            List<GameInstallPackage> packageList,
+            bool                     isSkipMainPackage = false)
         {
-            // Try add the package into the list
-            GameInstallPackage package = new GameInstallPackage(asset, GamePath)
-                { PackageType = GameInstallPackageType.General };
-
             // If the main package is not skipped, then add it.
             // Otherwise, ignore it.
-            if (!isSkipMainPackage)
+            if (isSkipMainPackage)
             {
+                return;
+            }
+
+            foreach (HypPackageData asset in packageResult.MainPackage)
+            {
+                // Try add the package into the list
+                GameInstallPackage package = new GameInstallPackage(asset, GamePath)
+                {
+                    PackageType = GameInstallPackageType.General
+                };
+
                 // Add the main package
                 packageList.Add(package);
                 LogWriteLine($"Adding general package: {package.Name} to the list (Hash: {package.HashString})",
                              LogType.Default, true);
-
-                // Write to log if the package has segments (Example: Genshin Impact)
-                if (package.Segments != null)
-                {
-                    foreach (GameInstallPackage segment in package.Segments.ToList())
-                    {
-                        LogWriteLine($"Adding segmented package: {segment.Name} to the list (Hash: {segment.HashString})",
-                                     LogType.Default, true);
-                    }
-                }
             }
         }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         protected virtual async ValueTask TryAddOtherInstalledVoicePacks(
-            List<RegionResourceVersion> packs, List<GameInstallPackage> packageList, string assetVersion)
+            GamePackageResult        packageDetail,
+            List<GameInstallPackage> packageList)
         {
             // If not found (null), then return
             if (_gameAudioLangListPath == null)
@@ -3130,20 +3066,29 @@ namespace CollapseLauncher.InstallManager.Base
 #nullable restore
 
                 // Try get the voice over resource
-                if (TryGetVoiceOverResourceByLocaleCode(packs, localeCode, out RegionResourceVersion outRes))
+                if (TryGetVoiceOverResourceByLocaleCode(packageDetail.AudioPackage,
+                                                        localeCode,
+                                                        out HypPackageData outRes))
                 {
                     // Check if the existing package is already exist or not.
                     GameInstallPackage outResDup =
                         packageList.FirstOrDefault(x => x.LanguageID != null &&
-                                                   x.LanguageID.Equals(outRes.language,
+                                                   x.LanguageID.Equals(outRes.Language,
                                                                     StringComparison.OrdinalIgnoreCase));
                     if (outResDup != null)
                     {
                         continue;
                     }
 
-                    GameInstallPackage package = new GameInstallPackage(outRes, GamePath, assetVersion)
-                        { LanguageID = localeCode, PackageType = GameInstallPackageType.Audio };
+                    GameInstallPackage package = new GameInstallPackage(outRes,
+                                                                        GamePath,
+                                                                        packageDetail.UncompressedUrl,
+                                                                        packageDetail.Version)
+                    {
+                        LanguageID  = localeCode,
+                        PackageType = GameInstallPackageType.Audio
+                    };
+
                     packageList.Add(package);
                     LogWriteLine($"Adding additional {package.LanguageID} audio package: {package.Name} to the list (Hash: {package.HashString})",
                                  LogType.Default, true);
@@ -3248,7 +3193,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                              CancellationToken        token)
         {
             // Get the package/segment count
-            int packageCount = packageList.Sum(x => x.Segments?.Count ?? 1);
+            int packageCount = packageList.Count;
 
             // Set progress count to beginning
             ProgressAllCountCurrent = 1;
@@ -3265,19 +3210,6 @@ namespace CollapseLauncher.InstallManager.Base
                 // Iterate the package list
                 foreach (GameInstallPackage package in packageList.ToList())
                 {
-                    // If the package is segmented, then iterate and run the routine for segmented packages
-                    if (package.Segments != null)
-                    {
-                        // Iterate the segment list
-                        for (int i = 0; i < package.Segments.Count; i++)
-                        {
-                            await RunPackageDownloadRoutine(_httpClient, downloadClient, package.Segments[i], packageCount, token);
-                        }
-
-                        // Skip action below and continue to the next segment
-                        continue;
-                    }
-
                     // Else, run the routine as normal
                     await RunPackageDownloadRoutine(_httpClient, downloadClient, package, packageCount, token);
                 }
@@ -3397,15 +3329,6 @@ namespace CollapseLauncher.InstallManager.Base
             // Iterate and start deleting the existing file
             for (int i = 0; i < packageList.Count; i++)
             {
-                // Check if the package has segment. If yes, then iterate it per segment
-                if (packageList[i].Segments != null)
-                {
-                    for (int j = 0; j < packageList[i].Segments.Count; j++)
-                    {
-                        DeleteDownloadedFile(packageList[i].Segments[j].PathOutput, DownloadThreadCount);
-                    }
-                }
-
                 // Otherwise, delete the package as a single file
                 DeleteDownloadedFile(packageList[i].PathOutput, DownloadThreadCount);
             }
@@ -3445,36 +3368,7 @@ namespace CollapseLauncher.InstallManager.Base
             // Iterate the size and find the total, then increment it to totalSize
             for (int i = 0; i < packageList.Count; i++)
             {
-                if (packageList[i].Segments != null)
-                {
-                    long totalSegmentDownloaded = 0;
-                    for (int j = 0; j < packageList[i].Segments.Count; j++)
-                    {
-                        long segmentDownloaded =
-                            Http
-                               .CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].Segments[j].PathOutput,
-                                    DownloadThreadCount, packageList[i].Segments[j].Size);
-
-                        long newSegmentedDownloaded                         = await downloadClient.GetDownloadedFileSize(
-                                                                                  packageList[i].Segments[j].URL,
-                                                                                  packageList[i].Segments[j].PathOutput,
-                                                                                  packageList[i].Segments[j].Size,
-                                                                                  token
-                                                                                  );
-                        bool isUseLegacySegmentedSize                       = !LauncherConfig.IsUsePreallocatedDownloader
-                            || segmentDownloaded > newSegmentedDownloaded
-                            || newSegmentedDownloaded > packageList[i].Segments[j].Size;
-                        totalSize                                           += isUseLegacySegmentedSize ? segmentDownloaded : newSegmentedDownloaded;
-                        totalSegmentDownloaded                              += isUseLegacySegmentedSize ? segmentDownloaded : newSegmentedDownloaded;
-                        packageList[i].Segments[j].SizeDownloaded           =  isUseLegacySegmentedSize ? segmentDownloaded : newSegmentedDownloaded;
-                        packageList[i].Segments[j].IsUseLegacyDownloader    =  isUseLegacySegmentedSize;
-                    }
-
-                    packageList[i].SizeDownloaded = totalSegmentDownloaded;
-                    continue;
-                }
-
-                long legacyDownloadedSize     =
+                long legacyDownloadedSize     = 
                     Http.CalculateExistingMultisessionFilesWithExpctdSize(packageList[i].PathOutput,
                         DownloadThreadCount, packageList[i].Size);
                 long newDownloaderSize        = await downloadClient.GetDownloadedFileSize(
@@ -3561,12 +3455,6 @@ namespace CollapseLauncher.InstallManager.Base
                 CancellationToken = token
             }, async (package, innerToken) =>
             {
-                if (package.Segments != null)
-                {
-                    await TryGetSegmentedPackageRemoteSize(package, innerToken);
-                    return;
-                }
-
                 await TryGetPackageRemoteSize(package, innerToken);
             });
         }
@@ -3637,27 +3525,6 @@ namespace CollapseLauncher.InstallManager.Base
             asset.Size = await FallbackCDNUtil.GetContentLength(asset.URL, token);
 
             LogWriteLine($"Package: [T: {asset.PackageType}] {asset.Name} has {ConverterTool.SummarizeSizeSimple(asset.Size)} in size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",
-                         LogType.Default, true);
-        }
-
-        protected async Task TryGetSegmentedPackageRemoteSize(GameInstallPackage asset, CancellationToken token)
-        {
-            long totalSize = 0;
-            await Parallel.ForAsync(0, asset.Segments.Count, new ParallelOptions
-            {
-                CancellationToken = token
-            },
-            async (i, _) =>
-            {
-                long segmentSize = await FallbackCDNUtil.GetContentLength(asset.Segments[i].URL, token);
-                totalSize += segmentSize;
-                asset.Segments[i].Size = segmentSize;
-                LogWriteLine($"Package Segment: [T: {asset.PackageType}] {asset.Segments[i].Name} has {ConverterTool.SummarizeSizeSimple(segmentSize)} in size",
-                             LogType.Default, true);
-            });
-
-            asset.Size = totalSize;
-            LogWriteLine($"Package Segment (count: {asset.Segments.Count}) has {ConverterTool.SummarizeSizeSimple(asset.Size)} in total size with {ConverterTool.SummarizeSizeSimple(asset.SizeRequired)} of free space required",
                          LogType.Default, true);
         }
 

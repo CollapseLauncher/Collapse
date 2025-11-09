@@ -12,9 +12,8 @@ namespace CommunityToolkit.Labs.WinUI.Labs.MarkdownTextBlock;
 
 public record MarkdownConfig
 {
-    public string?         BaseUrl       { get; set; }
-    public IImageProvider? ImageProvider { get; set; }
-    public ISVGRenderer?   SVGRenderer   { get; set; }
-    public MarkdownThemes  Themes        { get; set; } = MarkdownThemes.Default;
-    public static MarkdownConfig Default { get; set; } = new();
+    public        string?         BaseUrl       { get; set; }
+    public        IImageProvider? ImageProvider { get; set; }
+    public        ISVGRenderer?   SVGRenderer   { get; set; }
+    public static MarkdownThemes  Themes        => MarkdownThemes.Default;
 }

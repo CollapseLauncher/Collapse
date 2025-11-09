@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool;
@@ -7,10 +8,10 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Preset;
 using Hi3Helper.SentryHelper;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+#pragma warning disable IDE0130
 
 #pragma warning disable CS0618 // Type or member is obsolete
 namespace CollapseLauncher.InstallManager
@@ -19,83 +20,115 @@ namespace CollapseLauncher.InstallManager
     internal class GameInstallPackage : IAssetIndexSummary
     {
         #region Properties
-        public string                   URL                     { get; set; }
-        public string                   DecompressedURL         { get; set; }
-        public string                   Name                    { get; set; }
-        public string                   PathOutput              { get; set; }
-        public GameInstallPackageType   PackageType             { get; set; }
-        public long                     Size                    { get; set; }
-        public long                     SizeRequired            { get; set; }
-        public long                     SizeDownloaded          { get; set; }
-        public GameVersion              Version                 { get; set; }
-        public byte[]                   Hash                    { get; set; }
-        public string                   HashString              { get => HexTool.BytesToHexUnsafe(Hash); }
-        public string                   LanguageID              { get; set; }
-        public List<GameInstallPackage> Segments                { get; set; }
-        public string                   RunCommand              { get; set; }
-        public string                   PluginId                { get; set; }
-        public bool                     IsUseLegacyDownloader   { get; set; }
+        public string                 URL                   { get; private set; }
+        public string                 DecompressedURL       { get; set; }
+        public string                 Name                  { get; }
+        public string                 PathOutput            { get; }
+        public GameInstallPackageType PackageType           { get; init; }
+        public long                   Size                  { get; set; }
+        public long                   SizeRequired          { get; }
+        public long                   SizeDownloaded        { get; set; }
+        public GameVersion            Version               { get; set; }
+        public byte[]                 Hash                  { get; }
+        public string                 HashString            { get => HexTool.BytesToHexUnsafe(Hash); }
+        public string                 LanguageID            { get; init; }
+        public string                 RunCommand            { get; }
+        public string                 PluginId              { get; }
+        public bool                   IsUseLegacyDownloader { get; set; }
         #endregion
 
-        public GameInstallPackage(RegionResourcePlugin packageProperty, string pathOutput)
-            : this(packageProperty.package, pathOutput)
+        public GameInstallPackage(HypChannelSdkData packageProperty,
+                                  string            pathOutput,
+                                  string            uncompressedUrl = null)
         {
-            PluginId = packageProperty.plugin_id;
-            RunCommand = packageProperty.package?.run_command;
+            ArgumentNullException.ThrowIfNull(packageProperty);
+            ArgumentNullException.ThrowIfNull(packageProperty.SdkPackageDetail);
+            ArgumentException.ThrowIfNullOrEmpty(pathOutput);
 
-            if (packageProperty.version != null)
-            {
-                Version = packageProperty.version;
-            }
+            PluginId    = "sdk";
+            RunCommand  = packageProperty.SdkPackageDetail.PackageRunCommand;
+            Version     = packageProperty.Version;
             PackageType = GameInstallPackageType.Plugin;
+
+            if (packageProperty.SdkPackageDetail.FilePath != null)
+            {
+                URL        = packageProperty.SdkPackageDetail.FilePath;
+                Name       = Path.GetFileName(packageProperty.SdkPackageDetail.FilePath);
+                PathOutput = Path.Combine(pathOutput, Name);
+            }
+            else if (packageProperty.SdkPackageDetail.Url != null)
+            {
+                URL        = packageProperty.SdkPackageDetail.Url;
+                Name       = Path.GetFileName(packageProperty.SdkPackageDetail.Url);
+                PathOutput = Path.Combine(pathOutput, Name);
+            }
+
+            DecompressedURL = uncompressedUrl;
+            Hash            = packageProperty.SdkPackageDetail.PackageMD5Hash;
+            SizeRequired    = packageProperty.SdkPackageDetail.PackageSize;
+            Version         = packageProperty.Version;
         }
 
-        public GameInstallPackage(RegionResourceVersion packageProperty, string pathOutput, string overrideVersion = null)
+        public GameInstallPackage(HypPluginPackageInfo packageProperty,
+                                  string               pathOutput,
+                                  string               uncompressedUrl = null)
+        {
+            ArgumentNullException.ThrowIfNull(packageProperty);
+            ArgumentNullException.ThrowIfNull(packageProperty.PluginPackage);
+            ArgumentException.ThrowIfNullOrEmpty(pathOutput);
+
+            PluginId    = packageProperty.PluginId;
+            RunCommand  = packageProperty.PluginPackage.PackageRunCommand;
+            Version     = packageProperty.Version;
+            PackageType = GameInstallPackageType.Plugin;
+
+            if (packageProperty.PluginPackage.FilePath != null)
+            {
+                URL        = packageProperty.PluginPackage.FilePath;
+                Name       = Path.GetFileName(packageProperty.PluginPackage.FilePath);
+                PathOutput = Path.Combine(pathOutput, Name);
+            }
+            else if (packageProperty.PluginPackage.Url != null)
+            {
+                URL        = packageProperty.PluginPackage.Url;
+                Name       = Path.GetFileName(packageProperty.PluginPackage.Url);
+                PathOutput = Path.Combine(pathOutput, Name);
+            }
+
+            DecompressedURL = uncompressedUrl;
+            Hash            = packageProperty.PluginPackage.PackageMD5Hash;
+            SizeRequired    = packageProperty.PluginPackage.PackageSize;
+            Version         = packageProperty.Version;
+        }
+
+        public GameInstallPackage(HypPackageData packageProperty,
+                                  string         pathOutput,
+                                  string         uncompressedUrl = null,
+                                  GameVersion    version         = default)
         {
             if (packageProperty == null || pathOutput == null) throw new NullReferenceException();
-            
-            if (packageProperty.path != null)
+
+            if (packageProperty.FilePath != null)
             {
-                URL = packageProperty.path;
-                Name = Path.GetFileName(packageProperty.path);
+                URL        = packageProperty.FilePath;
+                Name       = Path.GetFileName(packageProperty.FilePath);
                 PathOutput = Path.Combine(pathOutput, Name);
             }
-            else if (packageProperty.url != null)
+            else if (packageProperty.Url != null)
             {
-                URL = packageProperty.url;
-                Name = Path.GetFileName(packageProperty.url);
+                URL        = packageProperty.Url;
+                Name       = Path.GetFileName(packageProperty.Url);
                 PathOutput = Path.Combine(pathOutput, Name);
             }
 
-            DecompressedURL = packageProperty.decompressed_path;
-            SizeRequired = packageProperty.size;
+            DecompressedURL = uncompressedUrl;
+            Hash            = packageProperty.PackageMD5Hash;
+            SizeRequired    = packageProperty.PackageSize;
+            Version         = version;
 
-            if (packageProperty.version != null || overrideVersion != null)
+            if (packageProperty.Language != null)
             {
-                Version = overrideVersion ?? packageProperty.version;
-            }
-
-            if (!string.IsNullOrEmpty(packageProperty.md5))
-            {
-                Hash = HexTool.HexToBytesUnsafe(packageProperty.md5);
-            }
-            if (packageProperty.language != null)
-            {
-                LanguageID = packageProperty.language;
-            }
-
-            if (packageProperty.segments is not { Count: > 0 })
-            {
-                return;
-            }
-
-            Name       = Path.GetFileName(packageProperty.segments.FirstOrDefault()?.path);
-            PathOutput = Path.Combine(pathOutput, Name ?? "");
-            Segments   = [];
-
-            foreach (RegionResourceVersion segment in packageProperty.segments)
-            {
-                Segments.Add(new GameInstallPackage(segment, pathOutput));
+                LanguageID = packageProperty.Language;
             }
         }
 
@@ -126,7 +159,7 @@ namespace CollapseLauncher.InstallManager
         public Stream GetReadStream(int count)
         {
             // Get the file info of the single file
-            FileInfo fileInfo = new FileInfo(PathOutput!).ResolveSymlink();
+            FileInfo fileInfo = new FileInfo(PathOutput!).ResolveSymlink().StripAlternateDataStream();
             // Check if the file exist and the length is equal to the size
             if (fileInfo.Exists && fileInfo.Length == Size)
             {

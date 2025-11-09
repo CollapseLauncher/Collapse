@@ -151,9 +151,6 @@ namespace CollapseLauncher.GamePlaytime
             }
         }
 
-        public Task StartSession(Process proc, DateTime? begin = null)
-            => StartSessionFromAwaiter(proc.WaitForExitAsync, begin);
-
         private static string TimeSpanToString(TimeSpan timeSpan) => $"{timeSpan.Days * 24 + timeSpan.Hours}h {timeSpan.Minutes}m";
 
         public void Dispose()

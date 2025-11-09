@@ -12,6 +12,7 @@ using System.Net.Http;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable VirtualMemberCallInConstructor
 // ReSharper disable CommentTypo
+#pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Helper.LauncherApiLoader
@@ -34,6 +35,8 @@ namespace CollapseLauncher.Helper.LauncherApiLoader
         public       string?       GameBackgroundImgLocal  { get; set; }
         public       string?       GameName                { get; } = gameName;
         public       string?       GameRegion              { get; } = gameRegion;
+        public       string?       GameBiz                 { get; } = presetConfig.LauncherBizName;
+        public       string?       GameId                  { get; } = presetConfig.LauncherGameId;
         protected    PresetConfig? PresetConfig            { get; } = presetConfig;
 
         public string? GameNameTranslation =>

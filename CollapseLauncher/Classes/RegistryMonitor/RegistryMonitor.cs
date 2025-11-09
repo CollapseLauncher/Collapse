@@ -234,7 +234,7 @@ namespace RegistryUtils
         /// <b>true</b> if this <see cref="RegistryMonitor"/> object is currently monitoring;
         /// otherwise, <b>false</b>.
         /// </summary>
-        public bool IsMonitoring
+        private bool IsMonitoring
         {
             get { return _thread != null; }
         }

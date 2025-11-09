@@ -150,7 +150,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         /// </summary>
         /// <param name="actionCallbackTaskOnSubmit">An <see cref="Task"/> callback where it consumes the result of <see cref="UserFeedbackResult"/> record asynchronously.</param>
         /// <returns>Returns a record of <see cref="UserFeedbackResult"/> if submitted, or <c>null</c> if cancelled.</returns>
-        public async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
+        private async Task<UserFeedbackResult?> ShowAsync(Func<UserFeedbackResult?, CancellationToken, Task>? actionCallbackTaskOnSubmit)
         {
             // Find an overlay grid where the UI element will be spawn to
             _parentOverlayGrid = XamlRoot.FindOverlayGrid(_isAlwaysOnTop);
@@ -324,7 +324,7 @@ namespace CollapseLauncher.XAMLs.Theme.CustomControls.UserFeedbackDialog
         private static async Task UseTokenAndWait([NotNull] CancellationTokenSource? tokenSource)
         {
             // Throw if tokenSource is null
-            ArgumentNullException.ThrowIfNull(tokenSource, nameof(tokenSource));
+            ArgumentNullException.ThrowIfNull(tokenSource);
 
             try
             {

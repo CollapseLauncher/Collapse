@@ -32,7 +32,7 @@ namespace CollapseLauncher.GameSettings.Honkai
         /// <summary>
         /// This defines if "<c>Physics</c>" toggle in "More" settings is enabled or not.<br/>
         /// </summary>
-        public int UsePhysicsSimulation { get; set; }
+        public int UsePhysicsSimulation { get; private set; }
 
         public bool PhysicsSimulationBool
         {

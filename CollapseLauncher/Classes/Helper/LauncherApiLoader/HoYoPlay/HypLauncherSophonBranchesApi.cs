@@ -13,7 +13,11 @@ public sealed class HypLauncherSophonBranchesApi : HypApiResponse<HypLauncherSop
 public class HypLauncherSophonBranchesData : HypApiDataLookupable<HypLauncherSophonBranchesKind>
 {
     [JsonPropertyName("game_branches")]
-    public override List<HypLauncherSophonBranchesKind> List { get; init; } = [];
+    public override List<HypLauncherSophonBranchesKind> List
+    {
+        get;
+        set => field = Init(value);
+    } = [];
 }
 
 public sealed class HypLauncherSophonBranchesKind : HypApiIdentifiable

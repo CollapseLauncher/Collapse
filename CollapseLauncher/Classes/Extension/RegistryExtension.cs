@@ -30,7 +30,7 @@ public static class RegistryExtension
     /// This method logs an error message if an exception occurs while attempting to retrieve
     /// the value from the registry key.
     /// </remarks>
-    public static bool TryGetValue(
+    private static bool TryGetValue(
         this RegistryKey?               registryKey,
         string                          keyName,
         [NotNullWhen(true)] out object? result,

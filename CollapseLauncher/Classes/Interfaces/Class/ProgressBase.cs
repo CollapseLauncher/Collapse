@@ -2,6 +2,7 @@
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
 using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.StreamUtility;
 using CommunityToolkit.WinUI;
 using Hi3Helper;
@@ -38,40 +39,37 @@ using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable IdentifierTypo
 // ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBeProtected.Global
 
 #nullable enable
 namespace CollapseLauncher.Interfaces
 {
     internal class ProgressBase<T1> : GamePropertyBase<T1> where T1 : IAssetIndexSummary
     {
-        public ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
+        protected ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, IGameSettings? gameSettings, string? gamePath, string? gameRepoURL, string? versionOverride)
             : base(parentUI, gameVersionManager, gameSettings, gamePath, gameRepoURL, versionOverride)
         {
-            Status         = new TotalPerFileStatus { IsIncludePerFileIndicator = true };
-            Progress       = new TotalPerFileProgress();
-            SophonStatus   = new TotalPerFileStatus { IsIncludePerFileIndicator = true };
-            SophonProgress = new TotalPerFileProgress();
-            AssetIndex     = [];
+            Status     = new TotalPerFileStatus { IsIncludePerFileIndicator = true };
+            Progress   = new TotalPerFileProgress();
+            AssetIndex = [];
         }
 
-        public ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
+        protected ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
             : this(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
 
         public event EventHandler<TotalPerFileProgress>? ProgressChanged;
         public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-        internal TotalPerFileStatus   SophonStatus;
-        internal TotalPerFileProgress SophonProgress;
-        internal TotalPerFileStatus   Status;
-        internal TotalPerFileProgress Progress;
-        internal int                  ProgressAllCountCurrent;
-        internal int                  ProgressAllCountFound;
-        internal int                  ProgressAllCountTotal;
-        internal long                 ProgressAllSizeCurrent;
-        internal long                 ProgressAllSizeFound;
-        internal long                 ProgressAllSizeTotal;
-        internal long                 ProgressPerFileSizeCurrent;
-        internal long                 ProgressPerFileSizeTotal;
+        internal readonly TotalPerFileStatus   Status;
+        internal readonly TotalPerFileProgress Progress;
+        internal          int                  ProgressAllCountCurrent;
+        internal          int                  ProgressAllCountFound;
+        internal          int                  ProgressAllCountTotal;
+        internal          long                 ProgressAllSizeCurrent;
+        internal          long                 ProgressAllSizeFound;
+        internal          long                 ProgressAllSizeTotal;
+        internal          long                 ProgressPerFileSizeCurrent;
+        internal          long                 ProgressPerFileSizeTotal;
 
         /// <summary>
         /// Normalized app download thread configured within app global config.<br/>
@@ -116,9 +114,9 @@ namespace CollapseLauncher.Interfaces
 
         // Extension for IGameInstallManager
 
-        protected const int RefreshInterval = 100;
+        private const int RefreshInterval = 100;
 
-        public bool IsSophonInUpdateMode { get; set; }
+        public bool IsSophonInUpdateMode { get; protected set; }
 
         #region ProgressEventHandlers - Fetch
         protected void _innerObject_ProgressAdapter(object? sender, TotalPerFileProgress e) => ProgressChanged?.Invoke(sender, e);
@@ -478,17 +476,17 @@ namespace CollapseLauncher.Interfaces
             }
 
             // Assign local sizes to progress
-            SophonProgress.ProgressAllSizeCurrent     = ProgressAllSizeCurrent;
-            SophonProgress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
-            SophonProgress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
-            SophonProgress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
+            Progress.ProgressAllSizeCurrent     = ProgressAllSizeCurrent;
+            Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
+            Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
+            Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
 
-            SophonProgress.ProgressAllSpeed     = speedAll;
-            SophonProgress.ProgressPerFileSpeed = speedDownloadClamped;
+            Progress.ProgressAllSpeed     = speedAll;
+            Progress.ProgressPerFileSpeed = speedDownloadClamped;
 
             // Calculate Count
-            SophonProgress.ProgressAllEntryCountCurrent = ProgressAllCountCurrent;
-            SophonProgress.ProgressAllEntryCountTotal   = ProgressAllCountTotal;
+            Progress.ProgressAllEntryCountCurrent = ProgressAllCountCurrent;
+            Progress.ProgressAllEntryCountTotal   = ProgressAllCountTotal;
 
             // Always change the status progress to determined
             Status.IsProgressAllIndetermined     = false;
@@ -496,12 +494,12 @@ namespace CollapseLauncher.Interfaces
             StatusChanged?.Invoke(this, Status);
 
             // Calculate percentage
-            SophonProgress.ProgressAllPercentage     = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
-            SophonProgress.ProgressPerFilePercentage = ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent);
-            SophonProgress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
+            Progress.ProgressAllPercentage     = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
+            Progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent);
+            Progress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
 
             // Update progress
-            ProgressChanged?.Invoke(this, SophonProgress);
+            ProgressChanged?.Invoke(this, Progress);
 
             // Update taskbar progress
             if (Status.IsCanceled || Status.IsCompleted)
@@ -515,7 +513,7 @@ namespace CollapseLauncher.Interfaces
             else if (Status.IsRunning)
             {
                 WindowUtility.SetTaskBarState(TaskbarState.Normal);
-                WindowUtility.SetProgressValue((ulong)(SophonProgress.ProgressAllPercentage * 10), 1000);
+                WindowUtility.SetProgressValue((ulong)(Progress.ProgressAllPercentage * 10), 1000);
             }
             else
             {
@@ -784,7 +782,7 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected async Task<MemoryStream> BufferSourceStreamToMemoryStream(Stream input, CancellationToken token)
+        private async Task<MemoryStream> BufferSourceStreamToMemoryStream(Stream input, CancellationToken token)
         {
             // Initialize buffer and return stream
             int read;
@@ -824,8 +822,17 @@ namespace CollapseLauncher.Interfaces
 
         protected async Task FetchBilibiliSdk(CancellationToken token)
         {
-            // Check whether the sdk is not null, 
-            if (GameVersionManager.GameApiProp?.data?.sdk == null) return;
+            // Check whether the sdk is not null
+            string gameBiz = GameVersionManager.LauncherApi.GameBiz ?? "";
+            string gameId  = GameVersionManager.LauncherApi.GameId ?? "";
+            if (!(GameVersionManager
+                 .LauncherApi
+                 .LauncherGameResourceSdk?
+                 .Data?
+                 .TryFindByBizOrId(gameBiz, gameId, out HypChannelSdkData? sdkData) ?? false))
+            {
+                return;
+            }
 
             // Set total activity string as "Loading Indexes..."
             Status.ActivityStatus = Lang!._GameRepairPage!.Status2;
@@ -833,15 +840,16 @@ namespace CollapseLauncher.Interfaces
 
             // Get the URL and get the remote stream of the zip file
             // Also buffer the stream to memory
-            string?                          url            = GameVersionManager.GameApiProp.data.sdk.path;
+            string? url = sdkData.SdkPackageDetail?.Url;
             if (url == null) throw new NullReferenceException();
 
-            HttpResponseMessage      httpResponse   = await FallbackCDNUtil.GetURLHttpResponse(url, token);
-            await using Stream       httpStream     = (await httpResponse.TryGetCachedStreamFrom(token)).Stream;
+            await using Stream httpStream = (await FallbackCDNUtil.GetGlobalHttpClient(false)
+                                                                  .TryGetCachedStreamFrom(url, token: token)).Stream;
             await using MemoryStream bufferedStream = await BufferSourceStreamToMemoryStream(httpStream, token);
-            using ZipArchive         zip            = new ZipArchive(bufferedStream, ZipArchiveMode.Read, true);
+            using ZipArchive         zip            = new(bufferedStream, ZipArchiveMode.Read, true);
+
             // Iterate the Zip Entry
-            foreach (var entry in zip.Entries)
+            foreach (ZipArchiveEntry entry in zip.Entries)
             {
                 // Get the filename of the entry without ext.
                 string fileName = Path.GetFileNameWithoutExtension(entry.FullName);
@@ -878,6 +886,51 @@ namespace CollapseLauncher.Interfaces
                 // Reset the SDK DLL stream pos and write the data
                 sdkDllStream.Position = 0;
                 await entryStream.CopyToAsync(sdkDllStream, token);
+            }
+        }
+
+        protected virtual void EliminatePluginAssetIndex<T>(List<T>          assetIndex,
+                                                            Func<T, string?> localNameSelector,
+                                                            Func<T, string>  remoteNameSelector)
+        {
+            string gameBiz = GameVersionManager.LauncherApi.GameBiz ?? "";
+            string gameId  = GameVersionManager.LauncherApi.GameId ?? "";
+
+            if (!(GameVersionManager
+                 .LauncherApi
+                 .LauncherGameResourcePlugin?
+                 .Data?
+                 .TryFindByBizOrId(gameBiz, gameId, out HypResourcePluginData? data) ?? false))
+            {
+                return;
+            }
+
+            data.Plugins.ForEach(Impl);
+
+            return;
+
+            void Impl(HypPluginPackageInfo plugin)
+            {
+                if (plugin.PluginPackage?.PackageAssetValidationList == null)
+                {
+                    return;
+                }
+
+                assetIndex.RemoveAll(asset =>
+                                     {
+                                         bool r = plugin
+                                                 .PluginPackage
+                                                 .PackageAssetValidationList
+                                                 .Any(validate => validate.FilePath != null &&
+                                                                  (localNameSelector(asset)?.Contains(validate.FilePath) ??
+                                                                   remoteNameSelector(asset).Contains(validate.FilePath)));
+                                         if (r)
+                                         {
+                                             LogWriteLine($"[EliminatePluginAssetIndex] Removed: {localNameSelector(asset)}", LogType.Warning,
+                                                          true);
+                                         }
+                                         return r;
+                                     });
             }
         }
 
@@ -1001,7 +1054,7 @@ namespace CollapseLauncher.Interfaces
             }
         }
 
-        protected void SetFoundToTotalValue()
+        private void SetFoundToTotalValue()
         {
             // Assign found count and size to total count and size
             ProgressAllCountTotal = ProgressAllCountFound;

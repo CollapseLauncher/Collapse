@@ -17,7 +17,7 @@ namespace CollapseLauncher.Helper.StreamUtility
 {
     internal static partial class StreamExtension
     {
-        internal const int DefaultBufferSize = 64 << 10;
+        private const int DefaultBufferSize = 64 << 10;
 
         internal static readonly FileStreamOptions FileStreamOpenReadOpt = new()
         {
@@ -137,7 +137,7 @@ namespace CollapseLauncher.Helper.StreamUtility
 
         internal static FileInfo EnsureCreationOfDirectory(this FileInfo filePath)
         {
-            ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
+            ArgumentNullException.ThrowIfNull(filePath);
             DirectoryInfo? directoryInfo = filePath.Directory;
 
             try

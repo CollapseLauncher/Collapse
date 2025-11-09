@@ -72,7 +72,7 @@ namespace CollapseLauncher
             }
         }
 
-        public async Task<byte[]> DownloadBytesInner(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
+        private async Task<byte[]> DownloadBytesInner(string url, string? authorization = null, string? accept = null, double timeout = 30.0)
         {
             string             relativePath = GetRelativePathOnly(url);
             await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, true, CancellationToken.None);
@@ -81,7 +81,7 @@ namespace CollapseLauncher
             return buffer;
         }
 
-        public async Task<string> DownloadStringInner(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
+        private async Task<string> DownloadStringInner(string url, string? authorization = null, string? accept = null,  double timeout = 30.0)
         {
             string             relativePath = GetRelativePathOnly(url);
             await using Stream stream = await FallbackCDNUtil.TryGetCDNFallbackStream(relativePath, true, CancellationToken.None);
@@ -134,26 +134,6 @@ namespace CollapseLauncher
                                          headers?.TryGetValueIgnoreCase("Authorization"),
                                          null,
                                          timeout);
-    }
-
-    internal readonly struct CDNUtilHTTPStatus
-    {
-        internal readonly HttpStatusCode       StatusCode;
-        internal readonly bool                 IsSuccessStatusCode;
-        internal readonly bool                 IsInitializationError;
-        internal readonly Uri?                 AbsoluteURL;
-        internal readonly HttpResponseMessage? Message;
-        internal CDNUtilHTTPStatus(HttpResponseMessage message) : this(false)
-        {
-            Message = message;
-            StatusCode = Message.StatusCode;
-            IsSuccessStatusCode = Message.IsSuccessStatusCode;
-            AbsoluteURL = Message.RequestMessage?.RequestUri;
-        }
-
-        private CDNUtilHTTPStatus(bool isInitializationError) => IsInitializationError = isInitializationError;
-
-        internal static CDNUtilHTTPStatus CreateInitializationError() => new(true);
     }
 
     internal static class FallbackCDNUtil
@@ -438,17 +418,16 @@ namespace CollapseLauncher
 
             if (returnCode.Item2)
             {
+                // Otherwise, return true
                 return (true, absoluteURL);
             }
 
             // If it's not a successful code, then return false
             LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned error code: {returnCode.Item1} ({(int)returnCode.Item1})", LogType.Error, true);
             return (false, absoluteURL);
-
-            // Otherwise, return true
         }
 
-        private static async ValueTask<CDNUtilHTTPStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isUncompressRequest)
+        private static async ValueTask<UrlStatus> TryGetURLStatus(CDNURLProperty cdnProp, string relativeURL, CancellationToken token, bool isUncompressRequest)
         {
             try
             {
@@ -458,22 +437,26 @@ namespace CollapseLauncher
                 LogWriteLine($"Getting CDN Content from: {cdnProp.Name} at URL: {absoluteURL}", LogType.Default, true);
 
                 // Try check the status of the URL
-                using CancellationTokenSource timeoutCts = new CancellationTokenSource(5000);
-                using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutCts.Token);
-                HttpResponseMessage httpResponse = await GetURLHttpResponse(absoluteURL, linkedCts.Token, isUncompressRequest, 1);
+                using CancellationTokenSource timeoutCts = new(5000);
+                using CancellationTokenSource linkedCts =
+                    CancellationTokenSource.CreateLinkedTokenSource(token, timeoutCts.Token);
+
+                UrlStatus status = await _clientNoCompression.GetCachedUrlStatus(absoluteURL, linkedCts.Token);
 
                 // If it's not a successful code, log the information
-                if (!httpResponse.IsSuccessStatusCode)
-                    LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {httpResponse.StatusCode} ({(int)httpResponse.StatusCode})", LogType.Error, true);
+                if (!status.IsSuccessStatusCode)
+                    LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has returned an error code: {status.StatusCode} ({(int)status.StatusCode})",
+                                 LogType.Error, true);
 
                 // Then return the status code
-                return new CDNUtilHTTPStatus(httpResponse);
+                return status;
             }
             catch (Exception ex)
             {
-                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}", LogType.Error, true);
+                LogWriteLine($"CDN content from: {cdnProp.Name} (prefix: {cdnProp.URLPrefix}) (relPath: {relativeURL}) has failed to initialize due to an exception:\r\n{ex}",
+                             LogType.Error, true);
                 await SentryHelper.ExceptionHandlerAsync(ex);
-                return CDNUtilHTTPStatus.CreateInitializationError();
+                return new UrlStatus();
             }
         }
         
@@ -493,78 +476,6 @@ namespace CollapseLauncher
 
             // Return the CDN property as per index
             return CDNList[cdnIndex];
-        }
-        
-        #nullable enable
-        public static async Task<HttpResponseMessage> GetURLHttpResponse(string Url,
-                                                                          CancellationToken token,
-                                                                          bool isForceUncompressedRequest = false,
-                                                                          int maxRetries = 3,
-                                                                          int delayMilliseconds = 1000)
-        {
-            int attempt = 0;
-
-            while (attempt < maxRetries)
-            {
-                try
-                {
-                    HttpResponseMessage hR;
-                    if (isForceUncompressedRequest)
-                    {
-                        hR = await _clientNoCompression.GetURLHttpResponse(Url, HttpMethod.Get, token);
-                    }
-                    else
-                    {
-                        hR = await _client.GetURLHttpResponse(Url, HttpMethod.Get, token);
-                    }
-
-                    return hR;
-                }
-                catch (Exception ex)
-                {
-                    LogWriteLine("Failed to get URL response from: " + Url + "\r\n" + ex, LogType.Error, true);
-                    if (attempt >= maxRetries - 1)
-                    {
-                        throw;
-                    }
-                }
-
-                attempt++;
-                await Task.Delay(delayMilliseconds, token);
-            }
-
-            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-        }
-        
-        public static async Task<HttpResponseMessage> GetURLHttpResponse(this HttpClient client,
-                                                                         string url,
-                                                                         HttpMethod? httpMethod = null,
-                                                                         CancellationToken token = default,
-                                                                         int maxRetries = 3,
-                                                                         int delayMilliseconds = 1000)
-        {
-            int attempt = 0;
-
-            while (attempt < maxRetries)
-            {
-                try
-                {
-                    return await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
-                }
-                catch (Exception ex) when (ex is not OperationCanceledException)
-                {
-                    LogWriteLine("Failed to get URL response from: " + url + "\r\n" + ex, LogType.Error, true);
-                    if (attempt >= maxRetries - 1)
-                    {
-                        throw;
-                    }
-                }
-
-                attempt++;
-                await Task.Delay(delayMilliseconds, token);
-            }
-
-            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
         }
 
         public static async Task<T?> DownloadAsJSONType<T>(string?           url,
@@ -587,12 +498,8 @@ namespace CollapseLauncher
 
         public static async Task<Stream> GetHttpStreamFromResponse(string URL, CancellationToken token)
         {
-            HttpResponseMessage responseMsg = await GetURLHttpResponse(URL, token);
-            return await GetHttpStreamFromResponse(responseMsg, token);
+            return (await _clientNoCompression.TryGetCachedStreamFrom(URL, token: token)).Stream;
         }
-
-        public static async Task<Stream> GetHttpStreamFromResponse(HttpResponseMessage responseMsg, CancellationToken token)
-            => (await responseMsg.TryGetCachedStreamFrom(token)).Stream;
 
         public static async ValueTask<long[]> GetCDNLatencies(CancellationTokenSource tokenSource, int pingCount = 1)
         {
@@ -623,8 +530,8 @@ namespace CollapseLauncher
                         // Restart the stopwatch
                         stopwatch.Restart();
                         // Get the URL Status then return boolean and URLStatus
-                        CDNUtilHTTPStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
-                        latencyAvgArr[j] = !(isSuccess = urlStatus is { IsSuccessStatusCode: true, IsInitializationError: false }) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
+                        UrlStatus urlStatus = await TryGetURLStatus(CDNList[i], fileAsPingTarget, tokenSource.Token, true);
+                        latencyAvgArr[j] = !(isSuccess = urlStatus is { IsSuccessStatusCode: true }) ? long.MaxValue : stopwatch.ElapsedMilliseconds;
                     }
 
                     // Get the average latency of the CDN.
@@ -637,7 +544,7 @@ namespace CollapseLauncher
         }
 
         public static async ValueTask<long> GetContentLength(string url, CancellationToken token) =>
-            (await _clientNoCompression.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token)).Content.Headers.ContentLength ?? 0;
+            (await GetURLStatusCode(url, token)).FileSize;
 
         public static string TryGetAbsoluteToRelativeCDNURL(string URL, string searchIndexStr)
         {

@@ -68,7 +68,7 @@ namespace CollapseLauncher
             await FetchBilibiliSdk(token);
 
             // Remove plugin from assetIndex
-            EliminatePluginAssetIndex(assetIndex);
+            EliminatePluginAssetIndex(assetIndex, x => x.localName, x => x.remoteName);
 
             // Clear hashtableManifest
             hashtableManifest.Clear();
@@ -103,27 +103,6 @@ namespace CollapseLauncher
 
             return assetIndex;
 #nullable restore
-        }
-
-        private void EliminatePluginAssetIndex(List<PkgVersionProperties> assetIndex)
-        {
-            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
-               {
-                   if (plugin.package?.validate == null) return;
-
-                   assetIndex.RemoveAll(asset =>
-                    {
-                        bool r = plugin.package.validate.Any(validate => validate.path != null &&
-                                                                         (asset.localName?.Contains(validate.path) ??
-                                                                          asset.remoteName.Contains(validate.path)));
-                        if (r)
-                        {
-                            LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.localName}", LogType.Warning,
-                                true);
-                        }
-                        return r;
-                    });
-               });
         }
 
         internal static void EliminateUnnecessaryAssetIndex<T>(string          audioLangListPath,

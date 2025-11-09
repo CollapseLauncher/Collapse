@@ -14,7 +14,7 @@ namespace CollapseLauncher.Plugins;
 
 #nullable enable
 
-internal partial class PluginLauncherApiWrapper
+internal sealed partial class PluginLauncherApiWrapper
 {
     private async Task ConvertNewsAndCarouselEntries(HypLauncherContentApi contentApi,
                                                      CancellationToken     token)

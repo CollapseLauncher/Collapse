@@ -1,4 +1,5 @@
 ﻿using CollapseLauncher.Helper.JsonConverter;
+using Hi3Helper.Data;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Plugin.Core.Utility.Json.Converters;
 using System.Collections.Generic;
@@ -12,8 +13,6 @@ using System.Text.Json.Serialization;
 namespace CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 
 public class HypLauncherGameResourcePackageApi : HypApiResponse<HypLauncherGameResourcePackageData>;
-public class HypLauncherGameResourcePluginApi : HypApiResponse<HypLauncherGameResourcePluginData>;
-public class HypLauncherGameResourceSdkApi : HypApiResponse<HypLauncherGameResourceSdkData>;
 
 public class HypLauncherGameResourcePackageData : HypApiDataLookupable<HypResourcesData>
 {
@@ -21,50 +20,14 @@ public class HypLauncherGameResourcePackageData : HypApiDataLookupable<HypResour
     public override List<HypResourcesData> List
     {
         get;
-        init;
+        set => field = Init(value);
     } = [];
-}
-
-public class HypLauncherGameResourcePluginData : HypApiDataLookupable<HypResourcesData>
-{
-    [JsonPropertyName("plugin_releases")]
-    public override List<HypResourcesData>? List
-    {
-        get;
-        init;
-    } = [];
-}
-
-public class HypLauncherGameResourceSdkData : HypApiDataLookupable<HypChannelSdkData>
-{
-    [JsonPropertyName("game_channel_sdks")]
-    public override List<HypChannelSdkData> List
-    {
-        get;
-        init;
-    } = [];
-}
-
-public class HypChannelSdkData : HypApiIdentifiable
-{
-    [JsonPropertyName("channel_sdk_pkg")]
-    public HypPackageData? SdkPackageDetail { get; set; }
-
-    [JsonPropertyName("pkg_version_file_name")]
-    public string? PkgVersionFileName { get; set; }
-
-    [JsonPropertyName("version")]
-    [JsonConverter(typeof(Utf8SpanParsableJsonConverter<GameVersion>))]
-    public GameVersion Version { get; set; }
 }
 
 public class HypResourcesData : HypApiIdentifiable
 {
     [JsonPropertyName("main")]
     public HypResourcePackageData? MainPackage { get; set; }
-
-    [JsonPropertyName("plugins")]
-    public List<HypPluginPackageInfo> PluginPackageSections { get; set; } = [];
 
     [JsonPropertyName("pre_download")]
     public HypResourcePackageData? PreDownload { get; set; }
@@ -77,22 +40,6 @@ public class HypResourcePackageData
 
     [JsonPropertyName("patches")]
     public List<HypPackageInfo> Patches { get; set; } = [];
-}
-
-public class HypPluginPackageInfo
-{
-    [JsonPropertyName("plugin_id")]
-    public string? PluginId { get; set; }
-
-    [JsonPropertyName("plugin_pkg")]
-    public HypPackageData? PluginPackage { get; set; }
-
-    [JsonPropertyName("release_id")]
-    public string? ReleaseId { get; set; }
-
-    [JsonPropertyName("version")]
-    [JsonConverter(typeof(Utf8SpanParsableJsonConverter<GameVersion>))]
-    public GameVersion Version { get; set; }
 }
 
 public class HypPackageInfo
@@ -118,20 +65,27 @@ public class HypPackageData
     public long PackageDecompressSize { get; init; }
 
     [JsonPropertyName("md5")]
-    public string? PackageMD5Hash { get; init; }
+    [JsonConverter(typeof(HexStringToArrayJsonConverter<byte>))]
+    public byte[]? PackageMD5Hash { get; init; }
+
+    [JsonIgnore]
+    public string? PackageMD5HashString
+    {
+        get => field ??= HexTool.BytesToHexUnsafe(PackageMD5Hash);
+    }
 
     [JsonPropertyName("size")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
-    public long? PackageSize { get; init; }
+    public long PackageSize { get; init; }
 
     [JsonPropertyName("url")]
-    public string? PackageUrl { get; init; }
+    public string? Url { get; init; }
 
     [JsonPropertyName("pkg_version_file_name")]
     public string? UnpackedPkgVersionFileName { get; init; }
 
     [JsonPropertyName("path")]
-    public string? UnpackedBaseUrl { get; init; }
+    public string? FilePath { get; init; }
 
     [JsonPropertyName("channel_sdk_pkg")]
     public string? ChannelSdkPkg { get; init; }
@@ -140,8 +94,8 @@ public class HypPackageData
     public string? PackageRunCommand { get; init; }
 
     [JsonPropertyName("validation")]
-    [JsonConverter(typeof(HypPackageFileValidationInfoConverter))]
-    public List<HypPackageFileValidationInfo> PackageAssetValidationList { get; init; } = [];
+    [JsonConverter(typeof(HypPackageDataConverter))]
+    public List<HypPackageData> PackageAssetValidationList { get; init; } = [];
 
     [JsonPropertyName("language")]
     public string? Language { get; init; }

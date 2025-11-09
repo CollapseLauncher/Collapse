@@ -119,7 +119,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public string _graphicsData { get; set; }
 
         [JsonIgnore]
-        public GraphicsData graphicsData { get; set; }
+        private GraphicsData graphicsData { get; set; }
 
         /// <summary>
         /// This is a dict that keeps track of graphics settings changes.<br/>
@@ -129,7 +129,7 @@ namespace CollapseLauncher.GameSettings.Genshin
         public string _globalPerfData { get; set; }
 
         [JsonIgnore]
-        public GlobalPerfData globalPerfData { get; set; }
+        public GlobalPerfData globalPerfData { get; private set; } = new();
 
         public int miniMapConfig { get; set; } = 1;
 

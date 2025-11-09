@@ -820,7 +820,7 @@ namespace CollapseLauncher.Helper.Metadata
             }
         }
 
-        public bool TryCheckGameLocationHoYoPlay()
+        private bool TryCheckGameLocationHoYoPlay()
         {
             // List the possible launcher parent registry path
             string[] possibleVendorList = ["miHoYo", "Cognosphere"];
@@ -865,7 +865,7 @@ namespace CollapseLauncher.Helper.Metadata
             return false;
         }
 
-        public bool TryCheckGameLocationLegacy(string? path)
+        private bool TryCheckGameLocationLegacy(string? path)
         {
             if (string.IsNullOrEmpty(path))
             {

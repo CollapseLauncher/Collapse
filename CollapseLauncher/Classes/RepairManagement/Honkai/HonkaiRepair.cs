@@ -39,13 +39,13 @@ namespace CollapseLauncher
         #endregion
 
         #region ExtensionProperties
-        private protected        AudioLanguageType          AudioLanguage            { get; set; }
-        private protected static string                     AudioBaseLocalPath       { get => AssetBasePath.CombineURLFromString("Audio/GeneratedSoundBanks/Windows/"); }
-        private protected        string                     AudioBaseRemotePath      { get => AssetBaseURL.CombineURLFromString("Audio/Windows/{0}/{1}/"); }
-        private protected static string                     AudioPatchBaseLocalPath  { get => AudioBaseLocalPath.CombineURLFromString("Patch/"); }
-        private protected        string                     AudioPatchBaseRemotePath { get => AudioBaseRemotePath.CombineURLFromString("Patch/"); }
-        private protected static string                     VideoBaseLocalPath       { get => AssetBasePath.CombineURLFromString("Video/"); }
-        private protected        List<FilePropertiesRemote> OriginAssetIndex         { get; set; }
+        private        AudioLanguageType          AudioLanguage            { get; }
+        private static string                     AudioBaseLocalPath       { get => AssetBasePath.CombineURLFromString("Audio/GeneratedSoundBanks/Windows/"); }
+        private        string                     AudioBaseRemotePath      { get => AssetBaseURL.CombineURLFromString("Audio/Windows/{0}/{1}/"); }
+        private static string                     AudioPatchBaseLocalPath  { get => AudioBaseLocalPath.CombineURLFromString("Patch/"); }
+        private        string                     AudioPatchBaseRemotePath { get => AudioBaseRemotePath.CombineURLFromString("Patch/"); }
+        private static string                     VideoBaseLocalPath       { get => AssetBasePath.CombineURLFromString("Video/"); }
+        private        List<FilePropertiesRemote> OriginAssetIndex         { get; set; }
         #endregion
 
         public HonkaiRepair(UIElement parentUI, IGameVersion gameVersionManager, ICache gameCacheManager, IGameSettings gameSettings, bool onlyRecoverMainAsset = false, string versionOverride = null)

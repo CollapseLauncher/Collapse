@@ -35,7 +35,7 @@ namespace CollapseLauncher.GameSettings.StarRail
         /// Range: en. // jp.
         /// Default: en.
         /// </summary>
-        public string LocalTextLang { get; set; } = "en";
+        private string LocalTextLang { get; set; } = "en";
 
         /// <summary>
         /// This defines "<c>Text</c>" language In-game settings -> Text.<br/><br/>

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 #nullable enable
@@ -10,7 +9,11 @@ public class HypLauncherGameResourceWpfApi : HypApiResponse<HypWpfPackageList>;
 public class HypWpfPackageList : HypApiDataLookupable<HypWpfPackageData>
 {
     [JsonPropertyName("wpf_packages")]
-    public override List<HypWpfPackageData> List { get; init; } = [];
+    public override List<HypWpfPackageData> List
+    {
+        get;
+        set => field = Init(value);
+    } = [];
 }
 
 public class HypWpfPackageData : HypApiIdentifiable

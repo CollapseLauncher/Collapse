@@ -57,7 +57,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     internal PluginGameInstallWrapper(UIElement parentUi, PluginPresetConfigWrapper pluginPresetConfig, PluginGameVersionWrapper pluginVersionManager)
         : base(parentUi, pluginVersionManager, pluginVersionManager.GameDirPath, null, null)
     {
-        ParentUI        = parentUi ?? throw new ArgumentNullException(nameof(parentUi));
         IsRunning       = false;
 
         _pluginPresetConfig = pluginPresetConfig ?? throw new ArgumentNullException(nameof(pluginPresetConfig));

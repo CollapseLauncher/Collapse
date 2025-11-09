@@ -62,7 +62,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
         return RunGameContext;
     }
 
-    public static PluginPresetConfigWrapper Create(PluginInfo pluginInfo, IPluginPresetConfig presetConfig)
+    private static PluginPresetConfigWrapper Create(PluginInfo pluginInfo, IPluginPresetConfig presetConfig)
         => new(pluginInfo, presetConfig);
 
     public static bool TryCreate(
@@ -71,7 +71,7 @@ public partial class PluginPresetConfigWrapper : PresetConfig, IDisposable
         [NotNullWhen(true)] out PluginPresetConfigWrapper? wrapper)
     {
         Unsafe.SkipInit(out wrapper);
-        ArgumentNullException.ThrowIfNull(presetConfig, nameof(presetConfig));
+        ArgumentNullException.ThrowIfNull(presetConfig);
 
         try
         {

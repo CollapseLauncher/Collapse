@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Velopack;
 using Velopack.Locators;
 using Velopack.Logging;
-
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CommentTypo

@@ -8,6 +8,7 @@ using System.Net.Security;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
+// ReSharper disable MemberCanBePrivate.Global
 
 // ReSharper disable StringLiteralTypo
 // ReSharper disable UnusedMember.Global
@@ -19,28 +20,28 @@ namespace CollapseLauncher.Helper
 {
     public partial class HttpClientBuilder
     {
-        protected const int    MaxConnectionsDefault = 32;
-        protected const double HttpTimeoutDefault    = 90; // in Seconds
+        private const int    MaxConnectionsDefault = 32;
+        private const double HttpTimeoutDefault    = 90; // in Seconds
 
         protected static readonly Lock HttpClientBuilderSharedLock = new();
-        protected                 bool IsUseProxy              { get; set; } = true;
-        protected                 bool IsUseSystemProxy        { get; set; } = true;
-        protected                 bool IsAllowHttpRedirections { get; set; }
-        protected                 bool IsAllowHttpCookies      { get; set; }
-        protected                 bool IsAllowUntrustedCert    { get; set; }
+        private                   bool IsUseProxy              { get; set; } = true;
+        private                   bool IsUseSystemProxy        { get; set; } = true;
+        private                   bool IsAllowHttpRedirections { get; set; }
+        private                   bool IsAllowHttpCookies      { get; set; }
+        private                   bool IsAllowUntrustedCert    { get; set; }
 
-        protected int                  MaxConnections      { get; set; } = MaxConnectionsDefault;
-        protected DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
-        protected WebProxy?            ExternalProxy       { get; set; }
+        private int                  MaxConnections      { get; set; } = MaxConnectionsDefault;
+        private DecompressionMethods DecompressionMethod { get; set; } = DecompressionMethods.All;
+        private WebProxy?            ExternalProxy       { get; set; }
 
-        protected Version           HttpProtocolVersion       { get; set; } = HttpVersion.Version30;
-        protected string?           HttpUserAgent             { get; set; } = GetDefaultUserAgent();
-        protected string?           HttpAuthHeader            { get; set; }
-        protected HttpVersionPolicy HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
-        protected TimeSpan          HttpTimeout               { get; set; } = TimeSpan.FromSeconds(HttpTimeoutDefault);
-        protected Uri?              HttpBaseUri               { get; set; }
+        private Version           HttpProtocolVersion       { get; set; } = HttpVersion.Version30;
+        private string?           HttpUserAgent             { get; set; } = GetDefaultUserAgent();
+        private string?           HttpAuthHeader            { get; set; }
+        private HttpVersionPolicy HttpProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
+        private TimeSpan          HttpTimeout               { get; set; } = TimeSpan.FromSeconds(HttpTimeoutDefault);
+        private Uri?              HttpBaseUri               { get; set; }
 
-        protected Dictionary<string, string?> HttpHeaders { get; } = new();
+        private Dictionary<string, string?> HttpHeaders { get; } = new();
 
         private static string GetDefaultUserAgent()
         {
@@ -208,7 +209,7 @@ namespace CollapseLauncher.Helper
         public HttpClientBuilder AddHeader(string key, string? value)
         {
             // Throw if the key is null or empty
-            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+            ArgumentException.ThrowIfNullOrEmpty(key);
 
             // Try check if the key is user-agent. If the user-agent has already
             // been set, then override the value from HttpUserAgent property

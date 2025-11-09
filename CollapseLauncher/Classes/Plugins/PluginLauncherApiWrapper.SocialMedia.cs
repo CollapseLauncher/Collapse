@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace CollapseLauncher.Plugins;
 
 #nullable enable
-internal partial class PluginLauncherApiWrapper
+internal sealed partial class PluginLauncherApiWrapper
 {
     private async ValueTask ConvertSocialMediaEntries(HypLauncherContentApi contentApi, CancellationToken token)
     {

@@ -786,7 +786,6 @@ public partial class HomePage
 
                     RepairGameButton.IsEnabled       = false;
                     UninstallGameButton.IsEnabled    = false;
-                    ConvertVersionButton.IsEnabled   = false;
                     CustomArgsTextBox.IsEnabled      = false;
                     MoveGameLocationButton.IsEnabled = false;
                     StopGameButton.IsEnabled         = true;
@@ -866,7 +865,6 @@ public partial class HomePage
             RepairGameButton.IsEnabled       = true;
             MoveGameLocationButton.IsEnabled = true;
             UninstallGameButton.IsEnabled    = true;
-            ConvertVersionButton.IsEnabled   = true;
             CustomArgsTextBox.IsEnabled      = true;
             StopGameButton.IsEnabled         = false;
 

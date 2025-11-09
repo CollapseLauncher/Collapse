@@ -228,7 +228,7 @@ namespace CollapseLauncher
 
                     // Remove plugin from assetIndex
                     // Skip the removal for Delta-Patch
-                    EliminatePluginAssetIndex(assetIndex);
+                    EliminatePluginAssetIndex(assetIndex, x => x.N, x => x.RN);
 
                     // Alter the asset bundle hash with the reference span
                     /* 2025-05-01: This is disabled for now as we now fully use MhyMurmurHash2_64B for the hash
@@ -367,24 +367,6 @@ namespace CollapseLauncher
                 throw new InvalidDataException($"Daftar pustaka file is corrupted! Expecting header: 0x{BinaryPrimitives.ReadInt64LittleEndian(_collapseHeader):x8} but got: 0x{BinaryPrimitives.ReadInt64LittleEndian(header.Span):x8} instead!");
         }
 
-        private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
-        {
-            GameVersionManager.GameApiProp?.data!.plugins?.ForEach(plugin =>
-              {
-                  if (plugin.package?.validate == null) return;
-                  assetIndex.RemoveAll(asset =>
-                  {
-                      bool? r = plugin.package?.validate.Any(validate => validate.path != null &&
-                                                                         (asset.N.Contains(validate.path) || asset.RN.Contains(validate.path)));
-                      if (r ?? false)
-                      {
-                          LogWriteLine($"[EliminatePluginAssetIndex] Removed: {asset.N}", LogType.Warning, true);
-                      }
-                      return r ?? false;
-                  });
-              });
-        }
-
         #region Registry Utils
         private HonkaiRepairAssetIgnore GetIgnoredAssetsProperty()
         {
@@ -473,7 +455,7 @@ namespace CollapseLauncher
             string baseURL = CombineURLFromString((GetAppConfigValue("EnableHTTPRepairOverride") ? "http://" : "https://") + assetBundleURL, "/Video/");
 
             // Get FileInfo of the version.txt file
-            FileInfo fileInfo = new FileInfo(Path.Combine(GamePath!, NormalizePath(VideoBaseLocalPath)!, "Version.txt"))
+            FileInfo fileInfo = new FileInfo(Path.Combine(GamePath!, NormalizePath(VideoBaseLocalPath), "Version.txt"))
                                .EnsureCreationOfDirectory()
                                .StripAlternateDataStream()
                                .EnsureNoReadOnly();
@@ -563,7 +545,7 @@ namespace CollapseLauncher
             }
 
             // Set manifest.m local path and remote URL
-            string manifestLocalPath = Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "manifest.m");
+            string manifestLocalPath = Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath), "manifest.m");
             string manifestRemotePath = string.Format(CombineURLFromString(AudioBaseRemotePath, GameServer.Manifest!.ManifestAudio!.ManifestAudioPlatform!.ManifestWindows!), 
                                                       $"{GameVersion.Major}_{GameVersion.Minor}", GameServer.Manifest.ManifestAudio.ManifestAudioRevision);
 
@@ -594,15 +576,15 @@ namespace CollapseLauncher
             string gameVersion = $"{GameVersion.Major}.{GameVersion.Minor}";
             ManifestAssetInfo? audioDefaultAsset = audioManifest
                                                     .AudioAssets
-                                                    .FirstOrDefault(x => x.Name?.StartsWith("AUDIO_Default") ?? false);
+                                                    .FirstOrDefault(x => x.Name.StartsWith("AUDIO_Default"));
             ulong audioDefaultAssetHash = GetLongFromHashStr(audioDefaultAsset?.HashString);
             Span<byte> audioDefaultManifestBuffer = stackalloc byte[16];
             audioDefaultAsset?.Hash.CopyTo(audioDefaultManifestBuffer);
-            File.WriteAllText(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "AUDIO_Default_Version.txt"), $"{gameVersion}\t{audioDefaultAssetHash}");
-            File.WriteAllBytes(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "AUDIO_Default_manifest.m"), audioDefaultManifestBuffer);
+            File.WriteAllText(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath), "AUDIO_Default_Version.txt"), $"{gameVersion}\t{audioDefaultAssetHash}");
+            File.WriteAllBytes(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath), "AUDIO_Default_manifest.m"), audioDefaultManifestBuffer);
 
             // Build audio versioning file
-            using StreamWriter sw = new StreamWriter(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath)!, "Version.txt"), false);
+            using StreamWriter sw = new(Path.Combine(GamePath!, NormalizePath(AudioBaseLocalPath), "Version.txt"), false);
             // Edit: 2023-12-09
             // Starting from 7.1, the Audio Packages that have included in ignoredAssetIDs (which is marked as deleted) will be ignored.
             foreach (ManifestAssetInfo audioAsset in audioManifest
@@ -684,11 +666,6 @@ namespace CollapseLauncher
             Status.IsProgressAllIndetermined = true;
             Status.IsProgressPerFileIndetermined = true;
             UpdateStatus();
-
-            if (audioInfo.Path == null)
-            {
-                return false;
-            }
 
             // Set the URL and try get the status
             UrlStatus urlStatus = await client.GetURLStatusCode(audioInfo.Path, token);
@@ -1035,7 +1012,7 @@ namespace CollapseLauncher
             assetIndex.AddRange(fileEntriesXmfOnlyLookup.Values);
 
             // Write the blockVerifiedVersion based on secondary XMF
-            File.WriteAllText(Path.Combine(GamePath!, NormalizePath(BlockBasePath)!, "blockVerifiedVersion.txt"), string.Join('_', xmfParser.Version!));
+            File.WriteAllText(Path.Combine(GamePath!, NormalizePath(BlockBasePath), "blockVerifiedVersion.txt"), string.Join('_', xmfParser.Version!));
         }
 
         private void CountAssetIndex(List<FilePropertiesRemote> assetIndex)

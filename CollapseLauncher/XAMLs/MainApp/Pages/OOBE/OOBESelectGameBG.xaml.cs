@@ -71,7 +71,7 @@ namespace CollapseLauncher.Pages.OOBE
     {
         internal static string      _gameDescription;
         internal static string      _gamePosterPath;
-        internal static string      _gameLogoPath;
+        private  static string     _gameLogoPath;
         internal static string      _gameHomepageLink;
         internal static Bitmap      _gamePosterBitmap;
         internal static BitmapImage _gamePosterBitmapImage;

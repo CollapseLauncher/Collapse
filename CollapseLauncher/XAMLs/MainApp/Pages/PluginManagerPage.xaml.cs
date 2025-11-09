@@ -21,8 +21,8 @@ namespace CollapseLauncher.Pages
 {
     public sealed partial class PluginManagerPage
     {
-        public static PluginManagerPageContext Context { get; }      = new();
-        public static PluginManagerPage        This    { get; set; } = null!;
+        public static PluginManagerPageContext Context { get; }              = new();
+        public static PluginManagerPage        This    { get; private set; } = null!;
 
         public PluginManagerPage()
         {

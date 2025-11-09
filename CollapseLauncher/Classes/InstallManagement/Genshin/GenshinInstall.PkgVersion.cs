@@ -3,6 +3,7 @@ using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.InstallManager.Base;
 using CollapseLauncher.Interfaces;
+using CollapseLauncher.Interfaces.Class;
 using CollapseLauncher.Statics;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -28,8 +29,8 @@ internal sealed partial class GenshinInstall
     private readonly List<PkgVersionProperties>               _repairAssetIndex     = [];
     private readonly Dictionary<string, PkgVersionProperties> _repairAssetIndexDict = [];
 
-    protected override async Task<string> DownloadPkgVersion(DownloadClient         downloadClient,
-                                                             RegionResourceVersion? _)
+    protected override async Task<string> DownloadPkgVersion(DownloadClient     downloadClient,
+                                                             GamePackageResult? _)
     {
         string pkgVersionPath = Path.Combine(GamePath, "pkg_version");
 
@@ -51,12 +52,14 @@ internal sealed partial class GenshinInstall
                                                          _repairAssetIndexDict,
                                                          CancellationToken.None);
 
+        /*
         // Call and borrow persistent manifest method from GenshinRepair instance
         await genshinRepairInstance.BuildPersistentManifest(downloadClient,
                                                             null!,
                                                             _repairAssetIndex,
                                                             _repairAssetIndexDict,
                                                             CancellationToken.None);
+        */
 
         return pkgVersionPath;
     }

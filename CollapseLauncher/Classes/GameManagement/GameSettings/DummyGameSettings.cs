@@ -1,8 +1,9 @@
 ﻿using CollapseLauncher.GameSettings.Base;
 using System.Text;
 // ReSharper disable VirtualMemberCallInConstructor
+#pragma warning disable IDE0130
 
-namespace CollapseLauncher.Classes.GameManagement.GameSettings;
+namespace CollapseLauncher.GameSettings;
 
 internal class DummyGameSettings : SettingsBase
 {

@@ -587,7 +587,8 @@ namespace CollapseLauncher.Dialogs
         #endregion
 
         #region Default/Forbidden Keyboard Shortcuts
-        public static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new()
+
+        private static readonly Dictionary<string, KbShortcut> DefaultShortcutList = new()
         {
             { "GameSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Control, Key = VirtualKey.None } },
             { "RegionSelection", new KbShortcut { Modifier = VirtualKeyModifiers.Shift, Key = VirtualKey.None } },
@@ -684,7 +685,7 @@ namespace CollapseLauncher.Dialogs
                 SaveKbShortcuts();
         }
 
-        public static void SaveKbShortcuts()
+        private static void SaveKbShortcuts()
         {
             KbShortcutList ??= DefaultShortcutList;
             string res = "";

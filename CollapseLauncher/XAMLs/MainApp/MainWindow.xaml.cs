@@ -108,7 +108,7 @@ namespace CollapseLauncher
             }
         }
 
-        public void StartMainPage()
+        private void StartMainPage()
         {
             WindowUtility.SetWindowSize(WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Width, WindowSize.WindowSize.CurrentWindowSize.WindowBounds.Height);
 
@@ -194,7 +194,7 @@ namespace CollapseLauncher
             WindowUtility.CurrentWindowTitlebarIconShowOption = IconShowOptions.HideIconAndSystemMenu;
         }
 
-        public void InitializeWindowSettings()
+        private void InitializeWindowSettings()
         {
             InitializeAppWindowAndIntPtr();
             LoadWindowIcon();

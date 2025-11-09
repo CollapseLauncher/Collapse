@@ -46,7 +46,7 @@ namespace CollapseLauncher.Pages
             RunCheckRoutine(sender, isFast, false);
         }
 
-        public async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
+        private async void RunCheckRoutine(object sender, bool isFast, bool isMainButton)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace CollapseLauncher.Pages
             }
         }
 
-        public async void StartCachesUpdate(object sender, RoutedEventArgs e)
+        private async void StartCachesUpdate(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -239,7 +239,7 @@ namespace CollapseLauncher.Pages
             UpdateCachesBtn.Visibility = Visibility.Collapsed;
         }
 
-        public void CancelOperation(object sender, RoutedEventArgs e)
+        private void CancelOperation(object sender, RoutedEventArgs e)
         {
             CurrentGameProperty.GameCache?.CancelRoutine();
         }

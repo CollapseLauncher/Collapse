@@ -48,6 +48,7 @@ using ThumbPlacement = Hi3Helper.CommunityToolkit.WinUI.Controls.ThumbPlacement;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable GrammarMistakeInComment
 // ReSharper disable CommentTypo
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace CollapseLauncher.Helper.Image
 {

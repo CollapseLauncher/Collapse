@@ -302,7 +302,7 @@ namespace CollapseLauncher.Helper.Background.Loaders
             }
         }
 
-        public void DisposeMediaModules()
+        private void DisposeMediaModules()
         {
 #if !USEFFMPEGFORVIDEOBG
             if (_currentMediaPlayer != null)

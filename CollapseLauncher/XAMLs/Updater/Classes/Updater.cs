@@ -215,7 +215,7 @@ public partial class Updater
         UpdateProgress();
     }
 
-    internal static bool IsCurrentHasLatestVersion(string latestVersionString)
+    private static bool IsCurrentHasLatestVersion(string latestVersionString)
     {
         // Check legacy version first
         string filePath = Path.Combine(AppExecutableDir, $@"..\app-{latestVersionString}\{Path.GetFileName(AppExecutablePath)}");
@@ -313,12 +313,12 @@ public partial class Updater
         (WindowUtility.CurrentWindow as MainWindow)?.CloseApp();
     }
 
-    public void UpdateStatus()
+    private void UpdateStatus()
     {
         UpdaterStatusChanged?.Invoke(this, _status);
     }
 
-    public void UpdateProgress()
+    private void UpdateProgress()
     {
         UpdaterProgressChanged?.Invoke(this, _progress);
     }

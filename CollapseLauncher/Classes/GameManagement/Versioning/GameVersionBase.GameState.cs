@@ -1,8 +1,9 @@
 using CollapseLauncher.CustomControls;
 using CollapseLauncher.Dialogs;
 using CollapseLauncher.Extension;
-using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
 using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Helper.StreamUtility;
 using Hi3Helper;
 using Hi3Helper.Data;
 using Hi3Helper.EncTool.Hashes;
@@ -26,6 +27,7 @@ using System.Threading.Tasks;
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
 // ReSharper disable CheckNamespace
+// ReSharper disable MemberCanBeProtected.Global
 
 #nullable enable
 namespace CollapseLauncher.GameManagement.Versioning
@@ -116,9 +118,9 @@ namespace CollapseLauncher.GameManagement.Versioning
         public virtual bool IsGameHasPreload()
         {
             if (GamePreset.LauncherType == LauncherType.Sophon)
-                return GameApiProp?.data?.pre_download_game != null;
+                return GameDataSophonBranchPreload != null;
 
-            return GameApiProp?.data?.pre_download_game?.latest != null || GameApiProp?.data?.pre_download_game?.diffs != null;
+            return GameDataPackagePreload is { CurrentVersion: not null };
         }
 
         public virtual bool IsGameHasDeltaPatch() => false;
@@ -136,11 +138,11 @@ namespace CollapseLauncher.GameManagement.Versioning
             return true;
 #else
             // Get the pluginVersions and installedPluginVersions
-            Dictionary<string, GameVersion>  pluginVersions          = PluginVersionsAPI;
-            Dictionary<string, GameVersion>? pluginVersionsInstalled = PluginVersionsInstalled;
+            Dictionary<string, GameVersion> pluginVersions          = PluginVersionsAPI;
+            Dictionary<string, GameVersion> pluginVersionsInstalled = PluginVersionsInstalled;
 
             // If the plugin version installed is null, return true as it doesn't need to check
-            if (pluginVersionsInstalled == null)
+            if (pluginVersionsInstalled.Count == 0)
             {
                 return true;
             }
@@ -151,7 +153,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return false;
             }
 
-            MismatchPlugin = null;
+            MismatchPlugin.Clear();
             foreach (KeyValuePair<string, GameVersion> pluginVersion in pluginVersions)
             {
                 if (pluginVersionsInstalled.TryGetValue(pluginVersion.Key, out GameVersion installedPluginVersion) &&
@@ -181,7 +183,7 @@ namespace CollapseLauncher.GameManagement.Versioning
             return true;
 #else
             // Get the pluginVersions and installedPluginVersions
-            GameVersion? sdkVersion = SdkVersionAPI;
+            GameVersion? sdkVersion          = SdkVersionAPI;
             GameVersion? installedSdkVersion = SdkVersionInstalled;
 
             // If the SDK API has no value, return true
@@ -189,8 +191,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return true;
 
             // If the SDK Resource is null, return true
-            RegionResourcePlugin? sdkResource = GetGameSdkZip()?.FirstOrDefault();
-            if (sdkResource == null)
+            if (GetGameSdkZip().FirstOrDefault() is not {} sdk)
                 return true;
 
             // If the installed SDK returns empty (null), return false
@@ -198,12 +199,12 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return false;
 
             // Compare the version and the current SDK state if the indicator file is exist
-            string validatePath = Path.Combine(GameDirPath, sdkResource.package?.pkg_version ?? string.Empty);
-            bool isVersionEqual = installedSdkVersion.Equals(sdkVersion);
-            bool isValidatePathExist = File.Exists(validatePath);
-            bool isPkgVersionMatch = isValidatePathExist && await CheckSdkUpdate(validatePath);
+            string validatePath        = Path.Combine(GameDirPath, sdk.PkgVersionFileName ?? string.Empty);
+            bool   isVersionEqual      = installedSdkVersion.Equals(sdkVersion);
+            bool   isValidatePathExist = File.Exists(validatePath);
+            bool   isPkgVersionMatch   = isValidatePathExist && await CheckSdkUpdate(validatePath);
+            bool   isSdkInstalled      = isVersionEqual && isPkgVersionMatch;
 
-            bool isSdkInstalled = isVersionEqual && isPkgVersionMatch;
             return isSdkInstalled;
 #endif
         }
@@ -427,58 +428,67 @@ namespace CollapseLauncher.GameManagement.Versioning
             }
         }
 
-        public virtual async ValueTask<List<RegionResourcePlugin>> CheckPluginUpdate(string pluginKey)
+        protected virtual async Task<List<HypPluginPackageInfo>> CheckPluginUpdate(string pluginKey)
         {
-            List<RegionResourcePlugin> result = [];
-            if (GameApiProp?.data?.plugins == null)
+            List<HypPluginPackageInfo> result = [];
+            if (GameDataPlugin?.Plugins == null ||
+                GameDataPlugin.Plugins.Count == 0)
             {
                 return result;
             }
 
-            RegionResourcePlugin? plugin = GameApiProp.data?.plugins?
-                .FirstOrDefault(x => x.plugin_id != null && x.plugin_id.Equals(pluginKey, StringComparison.OrdinalIgnoreCase));
-            if (plugin?.package?.validate == null)
+            var pluginList = GameDataPlugin.Plugins;
+            if (pluginList.FirstOrDefault(x => x.PluginId?.Equals(pluginKey, StringComparison.OrdinalIgnoreCase) ??
+                                               false) is not { PluginPackage: { } packageData } packageInfo ||
+                packageData.PackageAssetValidationList.Count == 0)
             {
                 return result;
             }
 
-            foreach (HypPackageFileValidationInfo validate in plugin.package?.validate!)
+            foreach (HypPackageData validate in packageData.PackageAssetValidationList)
             {
-                if (validate.path == null)
+                if (validate.FilePath == null)
                 {
                     continue;
                 }
 
-                string path = Path.Combine(GameDirPath, validate.path);
+                string path = Path.Combine(GameDirPath, validate.FilePath);
                 try
                 {
-                    if (!File.Exists(path))
+                    FileInfo fileInfo = new FileInfo(path)
+                                       .EnsureNoReadOnly()
+                                       .StripAlternateDataStream();
+
+                    if (!fileInfo.Exists)
                     {
-                        result.Add(plugin);
+                        result.Add(packageInfo);
                         break;
                     }
 
-                    await using FileStream fs  = new FileStream(path, FileMode.Open, FileAccess.Read);
-                    string?                md5 = HexTool.BytesToHexUnsafe(await MD5.HashDataAsync(fs));
-                    if (md5 == validate.md5)
+                    await using FileStream fs = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+                    byte[]  hashBytes = await CryptoHashUtility<MD5>.ThreadSafe.GetHashFromStreamAsync(fs);
+                    string? md5       = HexTool.BytesToHexUnsafe(hashBytes);
+
+                    if (md5?.Equals(validate.PackageMD5HashString, StringComparison.OrdinalIgnoreCase) ?? false)
                     {
                         continue;
                     }
 
-                    result.Add(plugin);
+                    result.Add(packageInfo);
                     break;
                 }
                 catch (FileNotFoundException)
                 {
-                    result.Add(plugin);
+                    result.Add(packageInfo);
                 }
             }
 
             return result;
         }
 
-        public virtual DeltaPatchProperty? CheckDeltaPatchUpdate(string gamePath, string profileName,
-                                                                 GameVersion gameVersion)
+        protected virtual DeltaPatchProperty? CheckDeltaPatchUpdate(string gamePath, string profileName,
+                                                                    GameVersion gameVersion)
         {
             // If GameVersionInstalled doesn't have a value (null). then return null.
             if (!GameVersionInstalled.HasValue)

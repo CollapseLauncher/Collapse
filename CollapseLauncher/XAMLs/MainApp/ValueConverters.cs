@@ -397,6 +397,7 @@ namespace CollapseLauncher.Pages
         }
     }
 
+    /*
     public partial class LocaleCodeToFlagUrlConverter : IValueConverter
     {
         private const string Separator = "-_";
@@ -432,6 +433,7 @@ namespace CollapseLauncher.Pages
             throw new NotImplementedException();
         }
     }
+    */
 
     public partial class UpdateToVersionStringConverter : IValueConverter
     {

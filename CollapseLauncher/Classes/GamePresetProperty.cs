@@ -1,5 +1,5 @@
-﻿using CollapseLauncher.Classes.GameManagement.GameSettings;
-using CollapseLauncher.GamePlaytime;
+﻿using CollapseLauncher.GamePlaytime;
+using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
 using CollapseLauncher.GameSettings.Honkai;
@@ -49,7 +49,7 @@ namespace CollapseLauncher
             switch (gamePreset.GameType)
             {
                 case GameNameType.Honkai:
-                    property.GameVersion  = new GameTypeHonkaiVersion(launcherApis, gameName, gameRegion);
+                    property.GameVersion  = new GameTypeHonkaiVersion(launcherApis, gamePreset);
                     property.GameSettings = new HonkaiSettings(property.GameVersion);
                     property.GameCache    = new HonkaiCache(uiElementParent, property.GameVersion);
                     // property.GameRepair   = new HonkaiRepair(uiElementParent, property.GameVersion, property.GameCache, property.GameSettings);
@@ -57,21 +57,21 @@ namespace CollapseLauncher
                     property.GameInstall  = new HonkaiInstall(uiElementParent, property.GameVersion, property.GameCache);
                     break;
                 case GameNameType.StarRail:
-                    property.GameVersion  = new GameTypeStarRailVersion(launcherApis, gameName, gameRegion);
+                    property.GameVersion  = new GameTypeStarRailVersion(launcherApis, gamePreset);
                     property.GameSettings = new StarRailSettings(property.GameVersion);
                     property.GameCache    = new StarRailCache(uiElementParent, property.GameVersion);
                     property.GameRepair   = new StarRailRepair(uiElementParent, property.GameVersion);
                     property.GameInstall  = new StarRailInstall(uiElementParent, property.GameVersion);
                     break;
                 case GameNameType.Genshin:
-                    property.GameVersion = new GameTypeGenshinVersion(launcherApis, gameName, gameRegion);
+                    property.GameVersion = new GameTypeGenshinVersion(launcherApis, gamePreset);
                     property.GameSettings = new GenshinSettings(property.GameVersion);
                     property.GameCache = null;
-                    property.GameRepair = new GenshinRepair(uiElementParent, property.GameVersion, property.GameVersion.GameApiProp?.data?.game?.latest?.decompressed_path ?? "");
+                    property.GameRepair = new GenshinRepair(uiElementParent, property.GameVersion);
                     property.GameInstall = new GenshinInstall(uiElementParent, property.GameVersion);
                     break;
                 case GameNameType.Zenless:
-                    property.GameVersion = new GameTypeZenlessVersion(launcherApis, gamePreset, gameName, gameRegion);
+                    property.GameVersion = new GameTypeZenlessVersion(launcherApis, gamePreset);
                     property.GameSettings = new ZenlessSettings(property.GameVersion);
                     property.GameCache = new ZenlessCache(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);
                     property.GameRepair = new ZenlessRepair(uiElementParent, property.GameVersion, (property.GameSettings as ZenlessSettings)!);

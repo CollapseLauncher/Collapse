@@ -90,41 +90,59 @@ namespace CollapseLauncher
         }
 
         internal static IEnumerable<FilePropertiesRemote?> RegisterMainCategorizedAssetsToHashSet(
-            this IEnumerable<PkgVersionProperties>                                       assetEnumerable,
-            List<FilePropertiesRemote>                                                   assetIndex,
-            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternativeHashSet,
-            string                                                                       baseLocalPath,
-            string                                                                       baseUrl)
-            => assetEnumerable.Select(asset => ReturnCategorizedYieldValue(alternativeHashSet, assetIndex, asset, baseLocalPath, baseUrl, null));
+            this IEnumerable<PkgVersionProperties>   assetEnumerable,
+            List<FilePropertiesRemote>               assetIndex,
+            Dictionary<string, FilePropertiesRemote> alternativeHashSet,
+            string                                   baseLocalPath,
+            string                                   baseUrl)
+            => assetEnumerable.Select(asset =>
+                                          ReturnCategorizedYieldValue(alternativeHashSet.GetAlternateLookup<ReadOnlySpan<char>>(),
+                                                                      assetIndex,
+                                                                      asset,
+                                                                      baseLocalPath,
+                                                                      baseUrl,
+                                                                      null));
 
         internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterMainCategorizedAssetsToHashSetAsync(
-            this IAsyncEnumerable<PkgVersionProperties>                                  assetEnumerable,
-            List<FilePropertiesRemote>                                                   assetIndex,
-            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternativeHashSet,
-            string                                                                       baseLocalPath,
-            string                                                                       baseUrl,
-            [EnumeratorCancellation] CancellationToken                                   token = default)
+            this IAsyncEnumerable<PkgVersionProperties> assetEnumerable,
+            List<FilePropertiesRemote>                  assetIndex,
+            Dictionary<string, FilePropertiesRemote>    alternativeHashSet,
+            string                                      baseLocalPath,
+            string                                      baseUrl,
+            [EnumeratorCancellation] CancellationToken  token = default)
 
         {
+            var alternateLookup = alternativeHashSet.GetAlternateLookup<ReadOnlySpan<char>>();
             await foreach (PkgVersionProperties asset in assetEnumerable.WithCancellation(token))
             {
-                yield return ReturnCategorizedYieldValue(alternativeHashSet, assetIndex, asset, baseLocalPath, baseUrl, null);
+                yield return ReturnCategorizedYieldValue(alternateLookup,
+                                                         assetIndex,
+                                                         asset,
+                                                         baseLocalPath,
+                                                         baseUrl,
+                                                         null);
             }
         }
 
         internal static async IAsyncEnumerable<FilePropertiesRemote?> RegisterResCategorizedAssetsToHashSetAsync(
-            this IAsyncEnumerable<PkgVersionProperties>                                  assetEnumerable,
-            List<FilePropertiesRemote>                                                   assetIndex,
-            Dictionary<string, FilePropertiesRemote>.AlternateLookup<ReadOnlySpan<char>> alternativeHashSet,
-            string                                                                       baseLocalPath,
-            string                                                                       basePatchUrl,
-            string                                                                       baseResUrl)
+            this IAsyncEnumerable<PkgVersionProperties> assetEnumerable,
+            List<FilePropertiesRemote>                  assetIndex,
+            Dictionary<string, FilePropertiesRemote>    alternativeHashSet,
+            string                                      baseLocalPath,
+            string                                      basePatchUrl,
+            string                                      baseResUrl)
         {
+            var alternateLookup = alternativeHashSet.GetAlternateLookup<ReadOnlySpan<char>>();
             await foreach (PkgVersionProperties asset in assetEnumerable)
             {
                 string baseLocalPathMerged = Path.Combine(baseLocalPath, asset.isPatch ? PersistentAssetsPath : StreamingAssetsPath);
 
-                yield return ReturnCategorizedYieldValue(alternativeHashSet, assetIndex, asset, baseLocalPathMerged, basePatchUrl, baseResUrl);
+                yield return ReturnCategorizedYieldValue(alternateLookup,
+                                                         assetIndex,
+                                                         asset,
+                                                         baseLocalPathMerged,
+                                                         basePatchUrl,
+                                                         baseResUrl);
             }
         }
 
@@ -184,14 +202,15 @@ namespace CollapseLauncher
             return null;
         }
 
-        private static FilePropertiesRemote GetNormalizedFilePropertyTypeBased(string remoteParentURL,
-                                                                               string baseLocalPath,
-                                                                               string remoteRelativePath,
-                                                                               long fileSize,
-                                                                               string hash,
-                                                                               FileType type = FileType.Generic,
-                                                                               object associatedObject = null!,
-                                                                               bool isPatchApplicable = false)
+        private static FilePropertiesRemote GetNormalizedFilePropertyTypeBased(
+            string   remoteParentURL,
+            string   baseLocalPath,
+            string   remoteRelativePath,
+            long     fileSize,
+            string   hash,
+            FileType type              = FileType.Generic,
+            object   associatedObject  = null!,
+            bool     isPatchApplicable = false)
         {
             string remoteAbsolutePath = type switch
             {

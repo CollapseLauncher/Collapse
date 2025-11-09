@@ -11,7 +11,7 @@ using static Hi3Helper.Shared.Region.LauncherConfig;
 
 namespace CollapseLauncher.GameSettings
 {
-    internal class PresetConst
+    internal static class PresetConst
     {
         public const string DefaultPresetName = "Custom";
     }
@@ -29,7 +29,7 @@ namespace CollapseLauncher.GameSettings
         /// <summary>
         /// The preset of the given settings
         /// </summary>
-        public Dictionary<string, T1>? Presets
+        private Dictionary<string, T1>? Presets
         {
             get;
             init
@@ -45,11 +45,12 @@ namespace CollapseLauncher.GameSettings
         /// <summary>
         /// The preset keys of the given settings
         /// </summary>
-        public IList<string>? PresetKeys { get; init; }
+        public IList<string>? PresetKeys { get; }
         #endregion
 
         #region Methods
-        public Preset(string presetJsonPath, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
+
+        private Preset(string presetJsonPath, JsonTypeInfo<Dictionary<string, T1>?> jsonType)
         {
             using FileStream fs = new FileStream(presetJsonPath, FileMode.Open, FileAccess.Read);
             Presets    = fs.Deserialize(jsonType);
