@@ -1608,6 +1608,7 @@
     "General_OpenNotifTray": "通知トレイを開く",
     "General_ReloadRegion": "ページを再読み込み",
     "General_ReloadRegion_Desc": "F5キーを押してページを再読み込みすることもできます。\n再読み込みによってサーバーと接続し直します。",
+    "General_OpenPluginManager": "プラグインマネージャーを開く",
 
     "Switch_Title": "ゲーム/サーバーのクイック切り替え",
     "Switch_Subtitle": "注：ショートカットの数字は上部タブの表示順に従っています。",
@@ -1731,6 +1732,7 @@
   },
 
   "_ZenlessGameSettingsPage": {
+    "Mark_Experimental": "（実験的）",
     "Graphics_ColorFilter": "カラーフィルター",
     "Graphics_RenderRes": "レンダリング精度",
     "Graphics_EffectsQ": "SFX品質",
@@ -1741,7 +1743,18 @@
     "Audio_PlaybackDev_Headphones": "ヘッドホン",
     "Audio_PlaybackDev_Speakers": "スピーカー",
     "Audio_PlaybackDev_TV": "TV",
-    "Audio_Ambient": "アンビエント音量"
+    "Audio_Ambient": "アンビエント音量",
+    "AdvancedGraphics_Title": "拡張的な画質設定",
+    "AdvancedGraphics_Tooltip1": "一部の設定には、Nvidia GeForce RTXシリーズのグラフィックボードとDirectX 12 APIの有効化が必要です。",
+    "AdvancedGraphics_Tooltip2": "このコーナーにある全ての設定は実験的な機能です。ご利用は自己責任でお願いします！",
+    "AdvancedGraphics_UseDirectX12API": "DirectX 12 APIを使う",
+    "AdvancedGraphics_RayTracing": "レイトレーシング",
+    "AdvancedGraphics_RayTracingQ": "レイトレーシング品質",
+    "AdvancedGraphics_SuperScaling": "スーパースケーリング",
+    "AdvancedGraphics_SuperScalingQ": "スーパースケーリング優先度",
+    "AdvancedGraphics_SuperScalingQ_Performance": "パフォーマンス",
+    "AdvancedGraphics_SuperScalingQ_Balanced": "バランス",
+    "AdvancedGraphics_SuperScalingQ_Quality": "クォリティ"
   },
 
   "_NotificationToast": {
