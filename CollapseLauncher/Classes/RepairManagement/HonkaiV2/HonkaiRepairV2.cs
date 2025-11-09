@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Helper;
 using CollapseLauncher.Interfaces;
+using Hi3Helper.EncTool.Parser.AssetMetadata;
 using Hi3Helper.Shared.ClassStruct;
 using Microsoft.UI.Xaml;
 using System;
@@ -10,6 +11,18 @@ using System.Net.Http;
 
 #nullable enable
 namespace CollapseLauncher;
+
+internal class HonkaiRepairAssetIgnore
+{
+    internal static HonkaiRepairAssetIgnore CreateEmpty() => new()
+    {
+        IgnoredAudioPckType       = [],
+        IgnoredVideoCgSubCategory = []
+    };
+
+    internal required AudioPCKType[] IgnoredAudioPckType;
+    internal required int[]          IgnoredVideoCgSubCategory;
+}
 
 // TODO: Implement Repair + Cache Update Mechanism just like Zenless Zone Zero's one.
 internal partial class HonkaiRepairV2
@@ -31,7 +44,7 @@ internal partial class HonkaiRepairV2
     {
     }
 
-    private HonkaiRepairV2(
+    public HonkaiRepairV2(
         UIElement    parentInterface,
         IGameVersion gameVersionManager,
         string?      useCustomVersion,

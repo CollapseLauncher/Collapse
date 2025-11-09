@@ -40,12 +40,12 @@ namespace CollapseLauncher.InstallManager.Honkai
 
         #region Properties
 
-        private HonkaiCache  _gameCacheManager  { get; }
-        private HonkaiRepair _gameRepairManager { get; set; }
+        private HonkaiCache    _gameCacheManager  { get; }
+        private HonkaiRepairV2 _gameRepairManager { get; set; }
 
         #endregion
 
-        public HonkaiInstall(UIElement     parentUI, IGameVersion GameVersionManager, ICache GameCacheManager)
+        public HonkaiInstall(UIElement parentUI, IGameVersion GameVersionManager, ICache GameCacheManager)
             : base(parentUI, GameVersionManager)
         {
             _gameCacheManager = GameCacheManager as HonkaiCache;
@@ -65,7 +65,7 @@ namespace CollapseLauncher.InstallManager.Honkai
 
             // If the confirm is 1 (verified) or -1 (cancelled), then return the code
             int deltaPatchConfirm = await ConfirmDeltaPatchDialog(_gameDeltaPatchProperty,
-                                                                  _gameRepairManager = GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer) as HonkaiRepair);
+                                                                  _gameRepairManager ??= GetGameRepairInstance(_gameDeltaPatchProperty.SourceVer));
             if (deltaPatchConfirm is -1 or 1)
             {
                 return deltaPatchConfirm;
@@ -76,12 +76,12 @@ namespace CollapseLauncher.InstallManager.Honkai
         }
 
 #nullable enable
-        protected override IRepair GetGameRepairInstance(string? versionString) =>
-            new HonkaiRepair(ParentUI,
-                        GameVersionManager,
-                        _gameCacheManager, GameSettings,
-                        true,
-                        versionString);
+        protected override HonkaiRepairV2 GetGameRepairInstance(string? versionString) =>
+            new HonkaiRepairV2(ParentUI,
+                               GameVersionManager,
+                               versionString,
+                               true,
+                               false);
 #nullable restore
 
         protected override async Task StartPackageInstallationInner(List<GameInstallPackage> gamePackage = null,

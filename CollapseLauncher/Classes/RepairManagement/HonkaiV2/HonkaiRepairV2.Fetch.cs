@@ -144,7 +144,7 @@ internal partial class HonkaiRepairV2
                .GetVideoAssetListAsync(gamePresetConfig,
                                        gameServerInfo,
                                        this,
-                                       ignoredAssets.IgnoredVideoCGSubCategory,
+                                       ignoredAssets.IgnoredVideoCgSubCategory,
                                        token)
                .GetResultFromAction(result =>
                                     {
@@ -162,7 +162,7 @@ internal partial class HonkaiRepairV2
                                        gameServerInfo,
                                        senadinaResult.Audio,
                                        this,
-                                       ignoredAssets.IgnoredAudioPCKType,
+                                       ignoredAssets.IgnoredAudioPckType,
                                        token)
                .GetResultFromAction(async result =>
                                     {
@@ -276,8 +276,8 @@ internal partial class HonkaiRepairV2
         // Return the property value
         return new HonkaiRepairAssetIgnore
         {
-            IgnoredAudioPCKType       = ignoredAudioPckTypes,
-            IgnoredVideoCGSubCategory = ignoredVideoCgSubCategory
+            IgnoredAudioPckType       = ignoredAudioPckTypes,
+            IgnoredVideoCgSubCategory = ignoredVideoCgSubCategory
         };
     }
 
