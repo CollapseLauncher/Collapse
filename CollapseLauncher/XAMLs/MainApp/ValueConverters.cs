@@ -1,3 +1,4 @@
+using CollapseLauncher.Helper.Image;
 using CollapseLauncher.Plugins;
 using Hi3Helper;
 using Hi3Helper.Data;
@@ -13,6 +14,7 @@ using System.Collections;
 using System.IO;
 using Windows.Globalization.NumberFormatting;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable ConvertIfStatementToSwitchStatement
 
 namespace CollapseLauncher.Pages
 {
@@ -485,6 +487,31 @@ namespace CollapseLauncher.Pages
     {
         public object Convert(object value, Type targetType, object parameter, string language)
             => value is null ? Visibility.Collapsed : Visibility.Visible;
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class GetCachedUrlDataConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value is string stringUrl &&
+                stringUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                return ImageLoaderHelper.GetCachedSprites(stringUrl);
+            }
+
+            if (value is Uri uri &&
+                uri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                return ImageLoaderHelper.GetCachedSprites(uri.AbsolutePath);
+            }
+
+            return value;
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {

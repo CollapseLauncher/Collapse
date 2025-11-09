@@ -512,8 +512,7 @@ namespace CollapseLauncher.Helper.Image
             return true;
         }
 
-        private static readonly HashSet<FileInfo> ProcessingFiles = [];
-        private static readonly HashSet<string>   ProcessingUrls  = [];
+        private static readonly HashSet<string> ProcessingUrls = new(StringComparer.OrdinalIgnoreCase);
 
         public static async void TryDownloadToCompletenessDetached(string? url, HttpClient? useHttpClient, FileInfo fileInfo, bool isSkipCheck, CancellationToken token)
         {
@@ -536,16 +535,16 @@ namespace CollapseLauncher.Helper.Image
 
             fileInfo.EnsureCreationOfDirectory().EnsureNoReadOnly();
 
-            if (ProcessingFiles.Contains(fileInfo) || ProcessingUrls.Contains(url))
+            if (ProcessingUrls.Contains(url))
             {
                 Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
                                     $"URL : {url}", LogType.Warning, true);
                 return false;
             }
+
             byte[] buffer = ArrayPool<byte>.Shared.Rent(4 << 10);
             try
             {
-                ProcessingFiles.Add(fileInfo);
                 ProcessingUrls.Add(url);
                 // Initialize file temporary name
                 FileInfo fileInfoTemp = new FileInfo(fileInfo.FullName + "_temp")
@@ -638,7 +637,6 @@ namespace CollapseLauncher.Helper.Image
             finally
             {
                 ArrayPool<byte>.Shared.Return(buffer);
-                ProcessingFiles.Remove(fileInfo);
                 ProcessingUrls.Remove(url);
             }
         }
@@ -683,14 +681,23 @@ namespace CollapseLauncher.Helper.Image
             if (client == null)
                 return await FallbackCDNUtil.GetHttpStreamFromResponse(urlLocal, tokenLocal);
 
-            return await BridgedNetworkStream.CreateStream(
-                                                           await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
+            return await BridgedNetworkStream.CreateStream(await client.GetAsync(urlLocal, HttpCompletionOption.ResponseHeadersRead, tokenLocal),
                                                            tokenLocal);
         }
 
-        public static string? GetCachedSprites(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
+        public static string? GetCachedSprites(string? url, bool isSkipHashCheck = false)
         {
-            if (string.IsNullOrEmpty(url) || token.IsCancellationRequested) return url;
+            if (string.IsNullOrEmpty(url))
+            {
+                return url;
+            }
+
+            if (ProcessingUrls.Contains(url))
+            {
+                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                                    $"URL : {url}", LogType.Warning, true);
+                return url;
+            }
 
             string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(url));
             if (!Directory.Exists(AppGameImgCachedFolder))
@@ -702,9 +709,8 @@ namespace CollapseLauncher.Helper.Image
                 return cachePath;
             }
 
-            TryDownloadToCompletenessDetached(url, httpClient, fInfo, isSkipHashCheck, token);
+            TryDownloadToCompletenessDetached(url, null, fInfo, isSkipHashCheck, CancellationToken.None);
             return url;
-
         }
 
         public static async Task<string?> GetCachedSpritesAsync(string? url, bool isSkipHashCheck, CancellationToken token)
@@ -712,7 +718,13 @@ namespace CollapseLauncher.Helper.Image
 
         public static async Task<string?> GetCachedSpritesAsync(HttpClient? httpClient, string? url, bool isSkipHashCheck, CancellationToken token)
         {
-            if (string.IsNullOrEmpty(url)) return url;
+            if (string.IsNullOrEmpty(url) ||
+                ProcessingUrls.Contains(url))
+            {
+                Logger.LogWriteLine("Found duplicate download request, skipping...\r\n\t" +
+                                    $"URL : {url}", LogType.Warning, true);
+                return url;
+            }
 
             string cachePath = Path.Combine(AppGameImgCachedFolder, Path.GetFileNameWithoutExtension(url));
             if (!Directory.Exists(AppGameImgCachedFolder))
