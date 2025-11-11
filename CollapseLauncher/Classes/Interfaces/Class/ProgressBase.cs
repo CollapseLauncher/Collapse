@@ -41,19 +41,17 @@ using Logger = Hi3Helper.Logger;
 #nullable enable
 namespace CollapseLauncher.Interfaces;
 
-internal class ProgressBase : GamePropertyBase
+internal abstract class ProgressBase : GamePropertyBase
 {
     protected ProgressBase(
         UIElement      parentUI,
-        IGameVersion?  gameVersionManager,
+        IGameVersion   gameVersionManager,
         IGameSettings? gameSettings,
-        string?        gamePath,
         string?        gameRepoURL,
         string?        versionOverride)
         : base(parentUI,
                gameVersionManager,
                gameSettings,
-               gamePath,
                gameRepoURL,
                versionOverride)
     {
@@ -66,8 +64,17 @@ internal class ProgressBase : GamePropertyBase
         AssetEntry = [];
     }
 
-    protected ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
-        : this(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
+    protected ProgressBase(
+        UIElement    parentUI,
+        IGameVersion gameVersionManager,
+        string?      gameRepoURL,
+        string?      versionOverride)
+        : this(parentUI,
+               gameVersionManager,
+               null,
+               gameRepoURL,
+               versionOverride)
+    { }
 
     public event EventHandler<TotalPerFileProgress>? ProgressChanged;
     public event EventHandler<TotalPerFileStatus>?   StatusChanged;

@@ -40,7 +40,17 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
     public event EventHandler? FlushingTrigger;
 
-    public bool IsRunning { get; private set; }
+    public bool IsRunning
+    {
+        get;
+        private set;
+    }
+
+    public override string GamePath
+    {
+        get => GameVersionManager.GameDirPath;
+        set => GameVersionManager.GameDirPath = value;
+    }
 
     private readonly IPlugin                   _plugin;
     private readonly PluginPresetConfigWrapper _pluginPresetConfig;
@@ -54,8 +64,14 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
     private PluginGameVersionWrapper GameManager =>
         GameVersionManager as PluginGameVersionWrapper ?? throw new InvalidCastException("GameVersionManager is not PluginGameVersionWrapper");
 
-    internal PluginGameInstallWrapper(UIElement parentUi, PluginPresetConfigWrapper pluginPresetConfig, PluginGameVersionWrapper pluginVersionManager)
-        : base(parentUi, pluginVersionManager, pluginVersionManager.GameDirPath, null, null)
+    internal PluginGameInstallWrapper(
+        UIElement                 parentUi,
+        PluginPresetConfigWrapper pluginPresetConfig,
+        PluginGameVersionWrapper  pluginVersionManager)
+        : base(parentUi,
+               pluginVersionManager,
+               null,
+               null)
     {
         IsRunning       = false;
 

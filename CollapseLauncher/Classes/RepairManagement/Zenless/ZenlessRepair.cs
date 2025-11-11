@@ -19,7 +19,11 @@ namespace CollapseLauncher
         bool          isOnlyRecoverMain = false,
         string?       versionOverride   = null,
         bool          isCacheUpdateMode = false)
-        : ProgressBase<FilePropertiesRemote>(parentUI, gameVersionManager, gameSettings, null, "", versionOverride),
+        : ProgressBase<FilePropertiesRemote>(parentUI,
+                                             gameVersionManager,
+                                             gameSettings,
+                                             null,
+                                             versionOverride),
           IRepair,
           IRepairAssetIndex
     {
@@ -37,6 +41,12 @@ namespace CollapseLauncher
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private List<FilePropertiesRemote>? OriginAssetIndex { get; set; }
         private GameTypeZenlessVersion? GameVersionManagerCast { get => GameVersionManager as GameTypeZenlessVersion; }
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => GameVersionManager.GameDirPath = value;
+        }
 
         private string GameDataPersistentPath { get => Path.Combine(GamePath, string.Format(AssetGamePersistentPath, ExecutableName)); }
 

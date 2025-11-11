@@ -156,13 +156,26 @@ namespace CollapseLauncher.InstallManager.Base
         #endregion
 
         #region Public Properties
-        public event EventHandler FlushingTrigger;
-        public virtual bool       IsRunning         { get; protected set; }
-        public PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
+        public event EventHandler           FlushingTrigger;
+        public virtual bool                 IsRunning            { get; protected set; }
+        public         PostInstallBehaviour PostInstallBehaviour { get; set; } = PostInstallBehaviour.Nothing;
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => GameVersionManager.GameDirPath = value;
+        }
         #endregion
 
-        public InstallManagerBase(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
-            : base(parentUI, gameVersionManager, gameSettings, "", "", null)
+        public InstallManagerBase(
+            UIElement     parentUI,
+            IGameVersion  gameVersionManager,
+            IGameSettings gameSettings)
+            : base(parentUI,
+                   gameVersionManager,
+                   gameSettings,
+                   "",
+                   null)
         {
             _gamePersistentFolderBasePath =
                 $"{Path.GetFileNameWithoutExtension(gameVersionManager!.GamePreset!.GameExecutableName)}_Data\\Persistent";

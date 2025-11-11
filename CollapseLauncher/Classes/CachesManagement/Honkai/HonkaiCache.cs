@@ -20,13 +20,22 @@ namespace CollapseLauncher
         private       KianaDispatch    GameGateway      { get; set; }
         private       List<CacheAsset> UpdateAssetIndex { get; set; }
         private       int              LuckyNumber      { get; set; }
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirAppDataPath;
+            set => throw new InvalidOperationException();
+        }
+
         #endregion
 
-        public HonkaiCache(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
+        public HonkaiCache(
+            UIElement parentUI,
+            IGameVersion gameVersionManager,
+            IGameSettings gameSettings)
             : base(parentUI,
-                   gameVersionManager!,
+                   gameVersionManager,
                    gameSettings,
-                   gameVersionManager!.GameDirAppDataPath,
                    null,
                    gameVersionManager.GetGameVersionApi()?.VersionString)
         {

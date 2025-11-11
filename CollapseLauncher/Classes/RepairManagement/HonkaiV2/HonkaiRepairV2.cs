@@ -37,6 +37,27 @@ internal partial class HonkaiRepairV2
     private HttpClient HttpClientAssetBundle { get; }
     private HttpClient HttpClientGeneric     { get; }
 
+    public override string GamePath
+    {
+        get
+        {
+            string dir = IsCacheMode
+                ? GameVersionManager.GameDirAppDataPath
+                : GameVersionManager.GameDirPath;
+
+            return dir;
+        }
+        set
+        {
+            if (IsCacheMode)
+            {
+                throw new InvalidOperationException("You cannot apply GamePath while CacheMode is enabled!");
+            }
+
+            GameVersionManager.GameDirPath = value;
+        }
+    }
+
     public HonkaiRepairV2(
         UIElement     parentInterface,
         IGameVersion  gameVersionManager,
@@ -47,7 +68,6 @@ internal partial class HonkaiRepairV2
         : base(parentInterface,
                gameVersionManager,
                gameSettings,
-               null,
                null,
                useCustomVersion)
     {

@@ -5,14 +5,13 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0130
 
 #nullable enable
 namespace CollapseLauncher.Interfaces;
 
-internal class GamePropertyBase : NotifyPropertyChanged
+internal abstract class GamePropertyBase : NotifyPropertyChanged
 {
     protected const int    BufferMediumLength                        = 1 << 20; // 1 MiB
     protected const int    BufferBigLength                           = 2 << 20; // 2 MiB
@@ -21,16 +20,14 @@ internal class GamePropertyBase : NotifyPropertyChanged
     protected virtual string UserAgent => "UnityPlayer/2017.4.18f1 (UnityWebRequest/1.0, libcurl/7.51.0-DEV)";
 
     protected GamePropertyBase(UIElement      parentUI,
-                               IGameVersion?  gameVersionManager,
+                               IGameVersion   gameVersionManager,
                                IGameSettings? gameSettings,
-                               string?        gamePath,
                                string?        gameRepoURL,
                                string?        versionOverride)
     {
         GameSettings       = gameSettings;
         GameVersionManager = gameVersionManager;
         ParentUI           = parentUI;
-        GamePath           = gamePath ?? null!;
         GameRepoURL        = gameRepoURL;
         Token              = new CancellationTokenSourceWrapper();
         IsVersionOverride  = versionOverride != null;
@@ -82,7 +79,7 @@ internal class GamePropertyBase : NotifyPropertyChanged
     {
         get
         {
-            if (GameVersionManager != null && IsVersionOverride)
+            if (IsVersionOverride)
             {
                 return GameVersionOverride;
             }
@@ -90,7 +87,7 @@ internal class GamePropertyBase : NotifyPropertyChanged
         }
     }
 
-    protected IGameVersion? GameVersionManager
+    protected IGameVersion GameVersionManager
     {
         get;
     }
@@ -101,11 +98,10 @@ internal class GamePropertyBase : NotifyPropertyChanged
         init;
     }
 
-    [field: AllowNull, MaybeNull]
-    protected string GamePath
+    public abstract string GamePath
     {
-        get => field ??= GameVersionManager?.GameDirPath ?? "";
-        private init;
+        get;
+        set;
     }
 
     protected string? GameRepoURL
@@ -117,9 +113,9 @@ internal class GamePropertyBase : NotifyPropertyChanged
                 return field;
             }
 
-            string gameBiz = GameVersionManager?.LauncherApi.GameBiz ?? "";
-            string gameId = GameVersionManager?.LauncherApi.GameId ?? "";
-            HypLauncherGameResourcePackageApi? resourcePackage = GameVersionManager?.LauncherApi.LauncherGameResourcePackage;
+            string                             gameBiz         = GameVersionManager.LauncherApi.GameBiz ?? "";
+            string                             gameId          = GameVersionManager.LauncherApi.GameId ?? "";
+            HypLauncherGameResourcePackageApi? resourcePackage = GameVersionManager.LauncherApi.LauncherGameResourcePackage;
 
             if (!(resourcePackage?.Data?.TryFindByBizOrId(gameBiz, gameId, out HypResourcesData? data) ?? false))
             {

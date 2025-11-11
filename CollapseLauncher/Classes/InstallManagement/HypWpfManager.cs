@@ -2,7 +2,6 @@
 using CollapseLauncher.Interfaces;
 using Microsoft.UI.Xaml;
 using WinRT;
-
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -11,15 +10,20 @@ namespace CollapseLauncher.InstallManagement;
 [GeneratedBindableCustomProperty]
 internal partial class HypWpfManager : ProgressBase
 {
-    protected HypWpfManager(UIElement parentUI,
-                            IGameVersion? gameVersionManager)
+    protected HypWpfManager(UIElement    parentUI,
+                            IGameVersion gameVersionManager)
         : base(parentUI,
                gameVersionManager,
                null,
                null,
-               null,
                null)
     {
+    }
+
+    public override string GamePath
+    {
+        get => GameVersionManager.GameDirPath;
+        set => GameVersionManager.GameDirPath = value;
     }
 
     public HypPackageData? WpfPackage

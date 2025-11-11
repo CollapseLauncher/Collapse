@@ -19,26 +19,33 @@ using CollapseUIExtension = CollapseLauncher.Extension.UIElementExtensions;
 #nullable enable
 namespace CollapseLauncher.Interfaces;
 
-internal class ProgressBase<T1> : ProgressBase where T1 : IAssetIndexSummary
+internal abstract class ProgressBase<T1> : ProgressBase where T1 : IAssetIndexSummary
 {
     protected ProgressBase(
         UIElement      parentUI,
-        IGameVersion?  gameVersionManager,
+        IGameVersion  gameVersionManager,
         IGameSettings? gameSettings,
-        string?        gamePath,
         string?        gameRepoURL,
         string?        versionOverride)
         : base(parentUI,
                gameVersionManager,
                gameSettings,
-               gamePath,
                gameRepoURL,
                versionOverride)
     {
     }
 
-    protected ProgressBase(UIElement parentUI, IGameVersion? gameVersionManager, string? gamePath, string? gameRepoURL, string? versionOverride)
-        : base(parentUI, gameVersionManager, null, gamePath, gameRepoURL, versionOverride) { }
+    protected ProgressBase(
+        UIElement    parentUI,
+        IGameVersion gameVersionManager,
+        string?      gameRepoURL,
+        string?      versionOverride)
+        : base(parentUI,
+               gameVersionManager,
+               null,
+               gameRepoURL,
+               versionOverride)
+    { }
 
     internal List<T1> AssetIndex { get; set; } = [];
 

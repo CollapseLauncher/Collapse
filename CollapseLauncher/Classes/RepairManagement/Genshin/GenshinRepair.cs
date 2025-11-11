@@ -24,8 +24,16 @@ namespace CollapseLauncher
         Korean = 3
     }
 
-    internal partial class GenshinRepair(UIElement parentUI, IGameVersion gameVersionManager, IGameSettings gameSettings)
-        : ProgressBase<PkgVersionProperties>(parentUI, gameVersionManager, gameSettings, null, null, null), IRepair
+    internal partial class GenshinRepair(
+        UIElement     parentUI,
+        IGameVersion  gameVersionManager,
+        IGameSettings gameSettings)
+        : ProgressBase<PkgVersionProperties>(parentUI,
+                                             gameVersionManager,
+                                             gameSettings,
+                                             null,
+                                             null)
+        , IRepair
     {
         #region ExtensionProperties
         private           string               ExecPrefix              { get => Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName); }
@@ -38,6 +46,12 @@ namespace CollapseLauncher
         private           string               GamePersistentPath      { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "Persistent"); }
         private           string               GameStreamingAssetsPath { get => Path.Combine(GamePath, $"{Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName)}_Data", "StreamingAssets"); }
         private protected GenshinAudioLanguage AudioLanguage           { get; init; } = (GenshinAudioLanguage)gameVersionManager.GamePreset.GetVoiceLanguageID();
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => GameVersionManager.GameDirPath = value;
+        }
 
         #endregion
 

@@ -15,7 +15,6 @@ namespace CollapseLauncher
         : ProgressBase<SRAsset>(parentUI,
                                 gameVersionManager,
                                 gameSettings,
-                                gameVersionManager.GameDirPath,
                                 null,
                                 gameVersionManager.GetGameVersionApi()?.VersionString), ICache
     {
@@ -23,6 +22,12 @@ namespace CollapseLauncher
         private            GameTypeStarRailVersion InnerGameVersionManager { get; } = gameVersionManager as GameTypeStarRailVersion;
         private            List<SRAsset>           UpdateAssetIndex        { get; set; }
         protected override string                  UserAgent               => "UnityPlayer/2019.4.34f1 (UnityWebRequest/1.0, libcurl/7.75.0-DEV)";
+
+        public override string GamePath
+        {
+            get => GameVersionManager.GameDirPath;
+            set => throw new InvalidOperationException();
+        }
         #endregion
 
         ~StarRailCache() => Dispose();
