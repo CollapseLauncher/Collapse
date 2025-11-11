@@ -91,7 +91,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
         protected override IRepair GetGameRepairInstance(string? versionString) =>
             new ZenlessRepair(ParentUI,
-                              GameVersionManager,
+                              GameVersionManager!,
                               (GameSettings as ZenlessSettings)!,
                               true,
                               versionString);
@@ -113,7 +113,7 @@ namespace CollapseLauncher.InstallManager.Zenless
 
             // Then start on processing hdifffiles list and deletefiles list
             await ApplyHdiffListPatch();
-            await ApplyDeleteFileActionAsync(Token.Token);
+            await ApplyDeleteFileActionAsync(Token!.Token);
 
             // Update the audio lang list if not in isOnlyInstallPackage mode
             if (!isOnlyInstallPackage)

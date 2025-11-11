@@ -38,7 +38,7 @@ namespace CollapseLauncher.InstallManager.Zenless
         private async Task<HashSet<int>> GetExceptMatchFieldHashSet(CancellationToken token)
         {
             string gameExecDataName =
-                Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
+                Path.GetFileNameWithoutExtension(GameVersionManager?.GamePreset.GameExecutableName) ?? "ZenlessZoneZero";
             string gameExecDataPath         = $"{gameExecDataName}_Data";
             string gamePersistentDataPath   = Path.Combine(GamePath,               gameExecDataPath, "Persistent");
             string gameExceptMatchFieldFile = Path.Combine(gamePersistentDataPath, "KDelResource");

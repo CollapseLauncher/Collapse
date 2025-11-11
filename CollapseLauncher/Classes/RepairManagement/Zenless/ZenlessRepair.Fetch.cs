@@ -468,7 +468,7 @@ namespace CollapseLauncher
 
         private void EliminatePluginAssetIndex(List<FilePropertiesRemote> assetIndex)
         {
-            HypLauncherGameResourcePluginApi? pluginApi = GameVersionManager.LauncherApi.LauncherGameResourcePlugin;
+            HypLauncherGameResourcePluginApi? pluginApi = GameVersionManager?.LauncherApi.LauncherGameResourcePlugin;
             pluginApi?.Data?.List.ForEach(Impl);
 
             return;

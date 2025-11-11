@@ -90,7 +90,7 @@ internal sealed partial class GenshinInstall
             pkgFileInfo.Add(assetLocalInfo);
         }
 
-        string? execPrefix = Path.GetFileNameWithoutExtension(GameVersionManager.GamePreset.GameExecutableName);
+        string? execPrefix = Path.GetFileNameWithoutExtension(GameVersionManager?.GamePreset.GameExecutableName);
         if (string.IsNullOrEmpty(execPrefix))
         {
             return ValueTask.CompletedTask;

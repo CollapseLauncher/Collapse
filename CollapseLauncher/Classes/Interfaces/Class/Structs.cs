@@ -1,8 +1,11 @@
 ﻿using CollapseLauncher.Helper.Metadata;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper;
 using Hi3Helper.Data;
 using System;
 using System.IO;
+using WinRT;
+
 // ReSharper disable CheckNamespace
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
@@ -11,44 +14,133 @@ using System.IO;
 
 namespace CollapseLauncher
 {
-    internal class TotalPerFileProgress
+    [GeneratedBindableCustomProperty]
+    internal partial class TotalPerFileProgress : NotifyPropertyChanged
     {
-        public double ProgressPerFilePercentage;
-        public double ProgressPerFileSpeed;
-        public double ProgressAllPercentage;
-        public double ProgressAllSpeed;
+        public double ProgressPerFilePercentage
+        {
+            get;
+            set;
+        }
 
-        public long ProgressPerFileEntryCountCurrent;
-        public long ProgressPerFileEntryCountTotal;
-        public long ProgressAllEntryCountCurrent;
-        public long ProgressAllEntryCountTotal;
+        public double ProgressPerFileSpeed
+        {
+            get;
+            set;
+        }
+
+        public double ProgressAllPercentage
+        {
+            get;
+            set;
+        }
+
+        public double ProgressAllSpeed
+        {
+            get;
+            set;
+        }
 
         // Extension for IGameInstallManager
-        public long ProgressPerFileSizeCurrent;
-        public long ProgressPerFileSizeTotal;
-        public long ProgressAllSizeCurrent;
-        public long ProgressAllSizeTotal;
-        public TimeSpan ProgressAllTimeLeft;
+        public long ProgressPerFileSizeCurrent
+        {
+            get;
+            set;
+        }
+
+        public long ProgressPerFileSizeTotal
+        {
+            get;
+            set;
+        }
+
+        public long ProgressAllSizeCurrent
+        {
+            get;
+            set;
+        }
+
+        public long ProgressAllSizeTotal
+        {
+            get;
+            set;
+        }
+
+        public TimeSpan ProgressAllTimeLeft
+        {
+            get;
+            set;
+        }
     }
 
-    internal class TotalPerFileStatus
+    [GeneratedBindableCustomProperty]
+    internal partial class TotalPerFileStatus : NotifyPropertyChanged
     {
-        public string ActivityStatus { get; set; }
-        public bool ActivityStatusInternet { get; set; }
+        public string ActivityStatus
+        {
+            get;
+            set;
+        }
 
-        public string ActivityAll { get; set; }
-        public bool IsProgressAllIndetermined { get; set; }
+        public bool ActivityStatusInternet
+        {
+            get;
+            set;
+        }
 
-        public string ActivityPerFile { get; set; }
-        public bool IsProgressPerFileIndetermined { get; set; }
+        public string ActivityAll
+        {
+            get;
+            set;
+        }
 
-        public bool IsAssetEntryPanelShow { get; set; }
+        public bool IsProgressAllIndetermined
+        {
+            get;
+            set;
+        }
 
-        public bool IsCompleted { get; set; }
-        public bool IsCanceled { get; set; }
-        public bool IsRunning { get; set; }
+        public string ActivityPerFile
+        {
+            get;
+            set;
+        }
 
-        public bool IsIncludePerFileIndicator { get; set; }
+        public bool IsProgressPerFileIndetermined
+        {
+            get;
+            set;
+        }
+
+        public bool IsAssetEntryPanelShow
+        {
+            get;
+            set;
+        }
+
+        public bool IsCompleted
+        {
+            get;
+            set;
+        }
+
+        public bool IsCanceled
+        {
+            get;
+            set;
+        }
+
+        public bool IsRunning
+        {
+            get;
+            set;
+        }
+
+        public bool IsIncludePerFileIndicator
+        {
+            get;
+            set;
+        }
     }
 
 #nullable enable

@@ -72,16 +72,17 @@ internal class ProgressBase : GamePropertyBase
     public event EventHandler<TotalPerFileProgress>? ProgressChanged;
     public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-    internal readonly TotalPerFileStatus   Status;
-    internal readonly TotalPerFileProgress Progress;
-    internal          int                  ProgressAllCountCurrent;
-    internal          int                  ProgressAllCountFound;
-    internal          int                  ProgressAllCountTotal;
-    internal          long                 ProgressAllSizeCurrent;
-    internal          long                 ProgressAllSizeFound;
-    internal          long                 ProgressAllSizeTotal;
-    internal          long                 ProgressPerFileSizeCurrent;
-    internal          long                 ProgressPerFileSizeTotal;
+    public TotalPerFileStatus   Status   { get; }
+    public TotalPerFileProgress Progress { get; }
+
+    internal int                  ProgressAllCountCurrent;
+    internal int                  ProgressAllCountFound;
+    internal int                  ProgressAllCountTotal;
+    internal long                 ProgressAllSizeCurrent;
+    internal long                 ProgressAllSizeFound;
+    internal long                 ProgressAllSizeTotal;
+    internal long                 ProgressPerFileSizeCurrent;
+    internal long                 ProgressPerFileSizeTotal;
 
     /// <summary>
     /// Normalized app download thread configured within app global config.<br/>
@@ -502,10 +503,6 @@ internal class ProgressBase : GamePropertyBase
         Progress.ProgressAllSpeed     = speedAll;
         Progress.ProgressPerFileSpeed = speedDownloadClamped;
 
-        // Calculate Count
-        Progress.ProgressAllEntryCountCurrent = ProgressAllCountCurrent;
-        Progress.ProgressAllEntryCountTotal   = ProgressAllCountTotal;
-
         // Always change the status progress to determined
         Status.IsProgressAllIndetermined     = false;
         Status.IsProgressPerFileIndetermined = false;
@@ -784,11 +781,6 @@ internal class ProgressBase : GamePropertyBase
                 Progress.ProgressAllPercentage     = 0;
                 Progress.ProgressPerFileSpeed      = 0;
                 Progress.ProgressAllSpeed          = 0;
-
-                Progress.ProgressAllEntryCountCurrent     = 0;
-                Progress.ProgressAllEntryCountTotal       = 0;
-                Progress.ProgressPerFileEntryCountCurrent = 0;
-                Progress.ProgressPerFileEntryCountTotal   = 0;
             }
             // Reset all inner counter
             ProgressAllCountCurrent      = 0;

@@ -90,7 +90,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             get
             {
-                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager.GamePreset.LauncherResourceChunksURL == null)
+                if ((_canDeltaPatch && !_forceIgnoreDeltaPatch) || GameVersionManager?.GamePreset.LauncherResourceChunksURL == null)
                 {
                     return false;
                 }
@@ -188,13 +188,16 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get the requested URL and version based on current state.
-                if (GameVersionManager.GamePreset
-                                      .LauncherResourceChunksURL != null)
+                if (GameVersionManager?
+                   .GamePreset
+                   .LauncherResourceChunksURL != null)
                 {
                     // Reassociate the URL if branch url exist
-                    string? branchUrl = GameVersionManager.GamePreset
-                                                           .LauncherResourceChunksURL
-                                                           .BranchUrl;
+                    string? branchUrl = GameVersionManager
+                                       .GamePreset
+                                       .LauncherResourceChunksURL
+                                       .BranchUrl;
+
                     if (!string.IsNullOrEmpty(branchUrl)
                         && !string.IsNullOrEmpty(GameVersionManager.GamePreset.LauncherBizName))
                     {
@@ -204,7 +207,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                      branchUrl,
                                                                      GameVersionManager.GamePreset.LauncherBizName,
                                                                      false,
-                                                                     Token.Token);
+                                                                     Token!.Token);
                     }
 
                 #if SIMULATEAPPLYPRELOAD
@@ -250,7 +253,7 @@ namespace CollapseLauncher.InstallManager.Base
                             SophonManifest.CreateSophonChunkManifestInfoPair(httpClient,
                                                                              requestedUrl,
                                                                              GameVersionManager.GamePreset.LauncherResourceChunksURL.MainBranchMatchingField,
-                                                                             Token.Token);
+                                                                             Token!.Token);
 
                         // Ensure that the manifest is ordered based on _gameVoiceLanguageLocaleIdOrdered
                         RearrangeDataListLocaleOrder(sophonMainInfoPair.OtherSophonBuildData!.ManifestIdentityList,
@@ -721,7 +724,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                      branchUrl,
                                                                      GameVersionManager.GamePreset.LauncherBizName,
                                                                      false,
-                                                                     Token.Token);
+                                                                     Token!.Token);
                     }
 
                     string? requestedBaseUrlFrom = isPreloadMode
@@ -816,7 +819,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Filter asset list
-                await FilterSophonPatchAssetList(sophonUpdateAssetList, Token.Token);
+                await FilterSophonPatchAssetList(sophonUpdateAssetList, Token!.Token);
 
                 // Get the remote chunk size
                 ProgressPerFileSizeTotal   = sophonUpdateAssetList.GetCalculatedDiffSize(!isPreloadMode);
@@ -1095,7 +1098,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                                 SophonDownloadSpeedLimiter downloadSpeedLimiter)
         {
             SophonChunkManifestInfoPair manifestPair = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, mainMatchingField, false, Token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, mainMatchingField, false, Token!.Token);
 
             if (!manifestPair.IsFound)
             {
@@ -1136,7 +1139,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Get the manifest pair for both previous (from) and next (to) version
             SophonChunkManifestInfoPair requestPairFrom = await SophonManifest
-               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, false, Token.Token);
+               .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlFrom, matchingField, false, Token!.Token);
             SophonChunkManifestInfoPair requestPairTo = await SophonManifest
                .CreateSophonChunkManifestInfoPair(httpClient, requestedUrlTo, matchingField, false, Token.Token);
 

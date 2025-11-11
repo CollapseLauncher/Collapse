@@ -141,10 +141,9 @@ namespace CollapseLauncher
             TryDeleteDownloadPref();
 
             // Get Sophon Properties
-            IGameVersion     gameVersionManager = GameVersionManager;
-            string           gameAudioListPath  = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
-            SophonChunkUrls? sophonManifestUrls = gameVersionManager.GamePreset.LauncherResourceChunksURL;
-            HttpClient       httpClient         = downloadClient.GetHttpClient();
+            string gameAudioListPath = Path.Combine(GamePath, $"{ExecPrefix}_Data", "Persistent", "audio_lang_14");
+            SophonChunkUrls? sophonManifestUrls = GameVersionManager?.GamePreset.LauncherResourceChunksURL;
+            HttpClient httpClient = downloadClient.GetHttpClient();
 
             if (sophonManifestUrls == null)
             {
@@ -166,7 +165,7 @@ namespace CollapseLauncher
             // Create fake pkg_version(s) from Sophon and get the list of SphonAsset(s)
             List<SophonAsset> sophonAssetList = [];
             await GenshinInstall.DownloadPkgVersionStatic(httpClient,
-                                                          gameVersionManager,
+                                                          GameVersionManager!,
                                                           GamePath,
                                                           gameAudioListPath,
                                                           manifestMainInfoPair,

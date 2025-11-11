@@ -73,13 +73,13 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
     public void CancelRoutine()
     {
-        Token.Cancel();
+        Token?.Cancel();
         ResetAndCancelTokenSource();
     }
 
     private void ResetAndCancelTokenSource()
     {
-        Token.Dispose();
+        Token?.Dispose();
         ResetStatusAndProgressProperty();
     }
 
@@ -209,7 +209,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
             Status.IsIncludePerFileIndicator     = false;
             UpdateStatus();
 
-            Guid cancelGuid = _plugin.RegisterCancelToken(Token.Token);
+            Guid cancelGuid = _plugin.RegisterCancelToken(Token!.Token);
             await _gameInstaller.InitPluginComAsync(_plugin, Token.Token);
 
             GameInstallerKind sizeInstallerKind = _updateProgressProperty.IsUpdateMode ? GameInstallerKind.Update : GameInstallerKind.Install;
@@ -246,7 +246,7 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             await routineTask.ConfigureAwait(false);
         }
-        catch (OperationCanceledException) when (Token.IsCancellationRequested)
+        catch (OperationCanceledException) when (Token!.IsCancellationRequested)
         {
             Status.IsCanceled = true;
             throw;
@@ -274,9 +274,6 @@ internal partial class PluginGameInstallWrapper : ProgressBase<PkgVersionPropert
 
             long   readDownload = delegateProgress.DownloadedBytes - _updateProgressProperty.LastDownloaded;
             double currentSpeed = CalculateSpeed(readDownload);
-
-            Progress.ProgressAllEntryCountCurrent = _updateProgressProperty.AssetCount;
-            Progress.ProgressAllEntryCountTotal   = _updateProgressProperty.AssetCountTotal;
 
             Progress.ProgressAllSizeCurrent = downloadedBytes;
             Progress.ProgressAllSizeTotal = downloadedBytesTotal;

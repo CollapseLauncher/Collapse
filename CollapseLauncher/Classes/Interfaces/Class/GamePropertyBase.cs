@@ -5,6 +5,8 @@ using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
 using System;
+using System.Diagnostics.CodeAnalysis;
+
 #pragma warning disable IDE0130
 
 #nullable enable
@@ -28,7 +30,7 @@ internal class GamePropertyBase : NotifyPropertyChanged
         GameSettings       = gameSettings;
         GameVersionManager = gameVersionManager;
         ParentUI           = parentUI;
-        GamePathField      = gamePath;
+        GamePath           = gamePath ?? null!;
         GameRepoURL        = gameRepoURL;
         Token              = new CancellationTokenSourceWrapper();
         IsVersionOverride  = versionOverride != null;
@@ -38,11 +40,6 @@ internal class GamePropertyBase : NotifyPropertyChanged
         {
             GameVersionOverride = versionOverride;
         }
-    }
-
-    private string? GamePathField
-    {
-        get;
     }
 
     private GameVersion GameVersionOverride
@@ -104,9 +101,11 @@ internal class GamePropertyBase : NotifyPropertyChanged
         init;
     }
 
+    [field: AllowNull, MaybeNull]
     protected string GamePath
     {
-        get => (string.IsNullOrEmpty(GamePathField) ? GameVersionManager?.GameDirPath : GamePathField) ?? "";
+        get => field ??= GameVersionManager?.GameDirPath ?? "";
+        private init;
     }
 
     protected string? GameRepoURL

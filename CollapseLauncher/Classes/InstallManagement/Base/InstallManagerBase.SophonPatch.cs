@@ -78,7 +78,7 @@ namespace CollapseLauncher.InstallManager.Base
                                                      branchUrl,
                                                      bizName,
                                                      isPreloadMode,
-                                                     Token.Token);
+                                                     Token!.Token);
 
             // Fetch manifest info and get patch metadata
             SophonChunkManifestInfoPair patchManifest =

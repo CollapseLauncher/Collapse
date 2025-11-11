@@ -215,7 +215,7 @@ namespace CollapseLauncher.InstallManager.Base
                 }
 
                 // Get game state
-                GameInstallStateEnum gameStateEnum = await GameVersionManager.GetGameState();
+                GameInstallStateEnum gameStateEnum = await GameVersionManager!.GetGameState();
 
                 // Do pkg_version check if Zip Check is used
                 if (includeZipCheck)
@@ -247,7 +247,7 @@ namespace CollapseLauncher.InstallManager.Base
                 // Try parse the pkg_versions (including the audio one)
                 List<LocalFileInfo> pkgFileInfo        = [];
                 HashSet<string>     pkgFileInfoHashSet = [];
-                await ParsePkgVersions2FileInfo(pkgFileInfo, pkgFileInfoHashSet, Token.Token);
+                await ParsePkgVersions2FileInfo(pkgFileInfo, pkgFileInfoHashSet, Token!.Token);
 
                 string[] ignoredFiles = [];
                 if (File.Exists(Path.Combine(GamePath, "@IgnoredFiles")))

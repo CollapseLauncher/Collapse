@@ -113,7 +113,7 @@ namespace CollapseLauncher
             ResetStatusAndProgress();
 
             // Step 1: Fetch asset indexes
-            await Fetch(AssetIndex, Token.Token);
+            await Fetch(AssetIndex, Token!.Token);
 
             // Step 2: Calculate the total size and count of the files
             CountAssetIndex(AssetIndex);
@@ -134,7 +134,7 @@ namespace CollapseLauncher
         private async Task<bool> RepairRoutine()
         {
             // Assign repair task
-            Task<bool> repairTask = Repair(AssetIndex, Token.Token);
+            Task<bool> repairTask = Repair(AssetIndex, Token!.Token);
 
             // Run repair process
             bool repairTaskSuccess = await TryRunExamineThrow(repairTask);

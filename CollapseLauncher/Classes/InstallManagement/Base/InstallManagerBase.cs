@@ -1632,7 +1632,10 @@ namespace CollapseLauncher.InstallManager.Base
                     Options = FileOptions.DeleteOnClose
                 });
 #nullable enable
-                HDiffMap? currentDeserialize = await JsonSerializer.DeserializeAsync(hdiffMapStream, HDiffMapEntryJsonContext.Default.HDiffMap, Token.Token);
+                HDiffMap? currentDeserialize = await JsonSerializer
+                   .DeserializeAsync(hdiffMapStream,
+                                     HDiffMapEntryJsonContext.Default.HDiffMap,
+                                     Token!.Token);
 
                 if (currentDeserialize?.Entries != null)
                 {
@@ -1694,7 +1697,7 @@ namespace CollapseLauncher.InstallManager.Base
                 Task parallelTask = Parallel.ForEachAsync(hDiffMapEntries, new ParallelOptions
                 {
                     MaxDegreeOfParallelism = ThreadCount,
-                    CancellationToken      = Token.Token
+                    CancellationToken      = Token!.Token
                 },
                 async (entry, ctx) =>
                 {
@@ -1842,7 +1845,10 @@ namespace CollapseLauncher.InstallManager.Base
 
             void ForceUpdateProgress(HDiffMapEntry entry)
             {
-                Interlocked.Add(ref Progress.ProgressAllSizeCurrent, entry.TargetFileSize);
+                lock (Progress)
+                {
+                    Progress.ProgressAllSizeCurrent += entry.TargetFileSize;
+                }
                 Progress.ProgressAllPercentage = ConverterTool.ToPercentage(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent);
                 Progress.ProgressAllSpeed = CalculateSpeed(entry.TargetFileSize);
                 Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
@@ -1961,7 +1967,10 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            Interlocked.Add(ref Progress.ProgressAllSizeCurrent, e.Read);
+            lock (Progress)
+            {
+                Progress.ProgressAllSizeCurrent += e.Read;
+            }
             double speed = CalculateSpeed(e.Read);
 
             if (!CheckIfNeedRefreshStopwatch())
@@ -2466,7 +2475,7 @@ namespace CollapseLauncher.InstallManager.Base
         private async Task StartSteamMigration()
         {
             // Get game repair instance and if it's null, then return;
-            string? latestGameVersionString = GameVersionManager.GetGameVersionApi()?.VersionString;
+            string? latestGameVersionString = GameVersionManager?.GetGameVersionApi()?.VersionString;
             if (string.IsNullOrEmpty(latestGameVersionString))
                 return;
 
@@ -2694,7 +2703,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
 #nullable enable
             // If the preset doesn't have BetterHi3Launcher registry ver info, then return false
-            if (GameVersionManager.GamePreset.BetterHi3LauncherVerInfoReg == null)
+            if (GameVersionManager?.GamePreset.BetterHi3LauncherVerInfoReg == null)
             {
                 return false;
             }
@@ -2756,11 +2765,11 @@ namespace CollapseLauncher.InstallManager.Base
                 {
                     // If primary button is clicked, then set folder with the default path
                     case ContentDialogResult.Primary:
-                        if (GameVersionManager.GamePreset is { ProfileName: not null, GameDirectoryName: not null })
+                        if (GameVersionManager?.GamePreset is { ProfileName: not null, GameDirectoryName: not null })
                         {
                             folder = Path.Combine(LauncherConfig.AppGameFolder,
-                                                  GameVersionManager.GamePreset.ProfileName,
-                                                  GameVersionManager.GamePreset.GameDirectoryName);
+                                                  GameVersionManager.GamePreset.ProfileName!,
+                                                  GameVersionManager.GamePreset.GameDirectoryName!);
                         }
 
                         isChoosen = true;
@@ -2825,7 +2834,7 @@ namespace CollapseLauncher.InstallManager.Base
             const string pluginKeyEnd   = "_version";
 
             // Get the plugin resource list and if it's empty, return
-            List<HypPluginPackageInfo> pluginResourceList = GameVersionManager.GetGamePluginZip();
+            List<HypPluginPackageInfo> pluginResourceList = GameVersionManager?.GetGamePluginZip() ?? [];
             if (pluginResourceList.Count == 0)
             {
                 return;
@@ -2837,7 +2846,7 @@ namespace CollapseLauncher.InstallManager.Base
                .ToDictionary(asset => asset.PluginId ?? "", StringComparer.OrdinalIgnoreCase);
 
             // If the game ini section is not null, then try eliminate the version section
-            if (GameVersionManager.GameIniVersionSection != null)
+            if (GameVersionManager?.GameIniVersionSection != null)
             {
                 foreach ((string? iniKey, IniValue value) in GameVersionManager.GameIniVersionSection
                             .Where(x => x.Key.StartsWith(pluginKeyStart) && x.Key.EndsWith(pluginKeyEnd)))

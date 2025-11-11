@@ -50,7 +50,7 @@ internal partial class HonkaiRepairV2
         Status.IsIncludePerFileIndicator = false;
         UpdateStatus();
 
-        PresetConfig gamePreset    = GameVersionManager.GamePreset;
+        PresetConfig gamePreset    = GameVersionManager!.GamePreset;
         string?      sophonApiUrl  = gamePreset.LauncherResourceChunksURL?.MainUrl;
         string?      matchingField = gamePreset.LauncherResourceChunksURL?.MainBranchMatchingField;
 
@@ -108,7 +108,7 @@ internal partial class HonkaiRepairV2
     #region Fetch by Game AssetBundle
     private async Task FetchAssetFromGameAssetBundle(List<FilePropertiesRemote> assetIndex, CancellationToken token)
     {
-        PresetConfig gamePresetConfig = GameVersionManager.GamePreset;
+        PresetConfig gamePresetConfig = GameVersionManager!.GamePreset;
         FinalizeBasicAssetsPath(assetIndex);
 
         // Get ignored assets from registry

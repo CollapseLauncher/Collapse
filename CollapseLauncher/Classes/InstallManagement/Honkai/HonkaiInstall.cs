@@ -76,8 +76,8 @@ namespace CollapseLauncher.InstallManager.Honkai
 #nullable enable
         protected override HonkaiRepairV2 GetGameRepairInstance(string? versionString) =>
             new HonkaiRepairV2(ParentUI,
-                               GameVersionManager,
-                               GameSettings,
+                               GameVersionManager!,
+                               GameSettings!,
                                versionString,
                                true,
                                false);
