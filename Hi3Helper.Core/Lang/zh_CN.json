@@ -736,7 +736,7 @@
   },
 
   "_PluginManagerPage": {
-    "PageTitle": "插件管理菜单",
+    "PageTitle": "插件管理器菜单",
 
     "FileDialogTitle": "导入 Collapse 启动器插件",
     "FileDialogFileFilter1": "Collapse 启动器插件",
@@ -1608,6 +1608,7 @@
     "General_OpenNotifTray": "打开通知托盘",
     "General_ReloadRegion": "重新加载当前页面",
     "General_ReloadRegion_Desc": "F5 为备用快捷键。\n请注意，重新加载主页将会重新加载区服。",
+    "General_OpenPluginManager": "打开插件管理器叠加层",
 
     "Switch_Title": "快速游戏/区服切换",
     "Switch_Subtitle": "注意：此类快捷键仅可切换修饰键。",

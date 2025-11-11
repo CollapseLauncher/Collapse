@@ -72,8 +72,9 @@ namespace CollapseLauncher.Helper.Metadata
 
         #region Current Game Name and Max Region Counts
 
-        internal static int CurrentGameNameCount { get; private set; }
-        internal static int CurrentGameRegionMaxCount { get; private set; }
+        internal static int CurrentGameNameCount => LauncherGameNameRegionCollection?.Count ?? 0;
+        internal static int CurrentGameRegionMaxCount => LauncherGameNameRegionCollection?
+            .GetValueOrDefault(CurrentMetadataConfigGameName ?? "")?.Count ?? 0;
 
         #endregion
 
@@ -494,10 +495,6 @@ namespace CollapseLauncher.Helper.Metadata
                 }
             }
             #endregion
-
-            // Save the current count of game name and game regions
-            CurrentGameNameCount      = LauncherMetadataConfig.Keys.Count;
-            CurrentGameRegionMaxCount = LauncherMetadataConfig.Max(x => x.Value?.Count ?? 0);
         }
 
         private static async Task<FileStream> LoadOrGetConfigStream(

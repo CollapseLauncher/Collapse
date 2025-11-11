@@ -1,5 +1,6 @@
 using CollapseLauncher.Helper.Metadata;
 using CollapseLauncher.Pages;
+using CollapseLauncher.XAMLs.Theme.CustomControls.FullPageOverlay;
 using Hi3Helper;
 using Hi3Helper.SentryHelper;
 using Hi3Helper.Shared.ClassStruct;
@@ -76,7 +77,7 @@ public partial class MainPage : Page
             if (KbShortcutList != null)
             {
                 VirtualKeyModifiers keyModifier = KbShortcutList["GameSelection"].Modifier;
-                for (; numIndex <= LauncherMetadataHelper.CurrentGameNameCount; numIndex++)
+                while (numIndex < LauncherMetadataHelper.CurrentGameNameCount)
                 {
                     KeyboardAccelerator keystroke = new KeyboardAccelerator
                     {
@@ -92,6 +93,8 @@ public partial class MainPage : Page
                     };
                     keystrokeNP.Invoked += KeyboardGameShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystrokeNP);
+
+                    numIndex++;
                 }
 
                 numIndex    = 0;
@@ -101,10 +104,12 @@ public partial class MainPage : Page
                     KeyboardAccelerator keystroke = new KeyboardAccelerator
                     {
                         Modifiers = keyModifier,
-                        Key       = VirtualKey.Number1 + numIndex++
+                        Key       = VirtualKey.Number1 + numIndex
                     };
                     keystroke.Invoked += KeyboardGameRegionShortcut_Invoked;
                     KeyboardHandler.KeyboardAccelerators.Add(keystroke);
+
+                    numIndex++;
                 }
             }
 
@@ -122,6 +127,7 @@ public partial class MainPage : Page
                 { "HomePage", GoHome_Invoked },
                 { "SettingsPage", GoSettings_Invoked },
                 { "NotificationPanel", OpenNotify_Invoked },
+                { "PluginManager", OpenPluginManager_Invoked },
 
                 // Game Related
                 { "ScreenshotFolder", OpenScreenshot_Invoked},
@@ -285,6 +291,22 @@ public partial class MainPage : Page
     {
         ToggleNotificationPanelBtn.IsChecked = !ToggleNotificationPanelBtn.IsChecked;
         ToggleNotificationPanelBtnClick(null, null);
+    }
+
+    private void OpenPluginManager_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        FullPageOverlay overlayMenu = new FullPageOverlay(new PluginManagerPage(), XamlRoot, true)
+        {
+            Size = FullPageOverlaySize.Full,
+            OverlayTitleSource = () => Lang._PluginManagerPage.PageTitle,
+            OverlayTitleIcon = new FontIconSource
+            {
+                Glyph = "\uE912",
+                FontSize = 16
+            }
+        };
+
+        _ = overlayMenu.ShowAsync();
     }
 
     private string GameDirPath => CurrentGameProperty.GameVersion?.GameDirPath!;

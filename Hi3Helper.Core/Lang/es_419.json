@@ -1608,6 +1608,7 @@
     "General_OpenNotifTray": "Abrir la bandeja de notificaciones",
     "General_ReloadRegion": "Recargar página actual",
     "General_ReloadRegion_Desc": "Presionar F5 es una alternativa a este atajo.\nTenga en cuenta que recargar la página de inicio volverá a cargar la región.",
+    "General_OpenPluginManager": "Abre el overlay de gestión de plugins",
 
     "Switch_Title": "Juego rápido / Cambio de región",
     "Switch_Subtitle": "Nota: Las combinaciones de teclas siguen el orden del selector.",
