@@ -1,5 +1,6 @@
 ﻿using CollapseLauncher.Extension;
 using CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay;
+using CollapseLauncher.Interfaces.Class;
 using Hi3Helper.Plugin.Core.Management;
 using Hi3Helper.Shared.Region;
 using Microsoft.UI.Xaml;
@@ -9,7 +10,7 @@ using System;
 #nullable enable
 namespace CollapseLauncher.Interfaces;
 
-internal class GamePropertyBase
+internal class GamePropertyBase : NotifyPropertyChanged
 {
     protected const int    BufferMediumLength                        = 1 << 20; // 1 MiB
     protected const int    BufferBigLength                           = 2 << 20; // 2 MiB
