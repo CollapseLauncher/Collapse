@@ -48,11 +48,27 @@ public abstract class LookupableApiResponse<T>
         set;
     }
 
-    public bool TryFindByBiz(string? key, [NotNullWhen(true)] out T? result) =>
-        DictBiz.TryGetValue(key ?? "", out result);
+    public bool TryFindByBiz(string? key, [NotNullWhen(true)] out T? result)
+    {
+        if (DictBiz.TryGetValue(key ?? "", out result) &&
+            result != null)
+        {
+            return true;
+        }
 
-    public bool TryFindById(string? key, [NotNullWhen(true)] out T? result) =>
-        DictId.TryGetValue(key ?? "", out result);
+        return false;
+    }
+
+    public bool TryFindById(string? key, [NotNullWhen(true)] out T? result)
+    {
+        if (DictId.TryGetValue(key ?? "", out result) &&
+            result != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     protected abstract List<T> Init(List<T> value);
 
