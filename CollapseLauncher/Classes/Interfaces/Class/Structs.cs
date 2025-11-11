@@ -20,56 +20,92 @@ namespace CollapseLauncher
         public double ProgressPerFilePercentage
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public double ProgressPerFileSpeed
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public double ProgressAllPercentage
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public double ProgressAllSpeed
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         // Extension for IGameInstallManager
         public long ProgressPerFileSizeCurrent
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public long ProgressPerFileSizeTotal
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public long ProgressAllSizeCurrent
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public long ProgressAllSizeTotal
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public TimeSpan ProgressAllTimeLeft
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
     }
 
@@ -79,67 +115,111 @@ namespace CollapseLauncher
         public string ActivityStatus
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool ActivityStatusInternet
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public string ActivityAll
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsProgressAllIndetermined
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public string ActivityPerFile
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsProgressPerFileIndetermined
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsAssetEntryPanelShow
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsCompleted
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsCanceled
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsRunning
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
 
         public bool IsIncludePerFileIndicator
         {
             get;
-            set;
+            set
+            {
+                OnPropertyChanged();
+                field = value;
+            }
         }
     }
 

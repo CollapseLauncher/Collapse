@@ -1120,8 +1120,8 @@ namespace CollapseLauncher.InstallManager.Base
                     outputStream.Write(bufferInner, 0, read);
 
                     // Increment total size
-                    ProgressAllSizeCurrent     += read;
-                    ProgressPerFileSizeCurrent += read;
+                    Interlocked.Add(ref ProgressAllSizeCurrent,     read);
+                    Interlocked.Add(ref ProgressPerFileSizeCurrent, read);
                     
                     // Calculate the speed
                     double speed = CalculateSpeed(read);
@@ -1848,10 +1848,10 @@ namespace CollapseLauncher.InstallManager.Base
                 lock (Progress)
                 {
                     Progress.ProgressAllSizeCurrent += entry.TargetFileSize;
+                    Progress.ProgressAllPercentage = ConverterTool.ToPercentage(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent);
+                    Progress.ProgressAllSpeed = CalculateSpeed(entry.TargetFileSize);
+                    Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
                 }
-                Progress.ProgressAllPercentage = ConverterTool.ToPercentage(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent);
-                Progress.ProgressAllSpeed = CalculateSpeed(entry.TargetFileSize);
-                Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
 
                 UpdateProgress();
             }
@@ -1967,10 +1967,7 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void EventListener_PatchEvent(object sender, PatchEvent e)
         {
-            lock (Progress)
-            {
-                Progress.ProgressAllSizeCurrent += e.Read;
-            }
+            Interlocked.Add(ref ProgressAllSizeCurrent, e.Read);
             double speed = CalculateSpeed(e.Read);
 
             if (!CheckIfNeedRefreshStopwatch())
@@ -1980,9 +1977,10 @@ namespace CollapseLauncher.InstallManager.Base
 
             lock (Progress)
             {
-                Progress.ProgressAllSpeed      = speed;
+                Progress.ProgressAllSizeCurrent = ProgressAllSizeCurrent;
+                Progress.ProgressAllSpeed = speed;
                 Progress.ProgressAllPercentage = ConverterTool.ToPercentage(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent);
-                Progress.ProgressAllTimeLeft   = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
+                Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(Progress.ProgressAllSizeTotal, Progress.ProgressAllSizeCurrent, Progress.ProgressAllSpeed);
             }
             UpdateProgress();
         }
@@ -3558,6 +3556,11 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected void DeltaPatchCheckProgress(object sender, PatchEvent e)
         {
+            if (!CheckIfNeedRefreshStopwatch())
+            {
+                return;
+            }
+
             lock (Progress)
             {
                 Progress.ProgressAllPercentage = e.ProgressPercentage;
@@ -3567,11 +3570,6 @@ namespace CollapseLauncher.InstallManager.Base
 
                 Progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
                 Progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
-            }
-
-            if (!CheckIfNeedRefreshStopwatch())
-            {
-                return;
             }
 
             Status.IsProgressAllIndetermined = false;
@@ -3607,21 +3605,22 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected void DeltaPatchCheckProgress(object sender, TotalPerFileProgress e)
         {
+            if (!CheckIfNeedRefreshStopwatch())
+            {
+                return;
+            }
+
             lock (Progress)
             {
-                Progress.ProgressAllPercentage =
-                    e.ProgressAllPercentage == 0 ? e.ProgressPerFilePercentage : e.ProgressAllPercentage;
+                Progress.ProgressAllPercentage = e.ProgressAllPercentage == 0
+                    ? e.ProgressPerFilePercentage
+                    : e.ProgressAllPercentage;
 
                 Progress.ProgressAllTimeLeft = e.ProgressAllTimeLeft;
                 Progress.ProgressAllSpeed    = e.ProgressAllSpeed;
 
                 Progress.ProgressAllSizeTotal   = e.ProgressAllSizeTotal;
                 Progress.ProgressAllSizeCurrent = e.ProgressAllSizeCurrent;
-            }
-
-            if (!CheckIfNeedRefreshStopwatch())
-            {
-                return;
             }
 
             Status.IsProgressAllIndetermined = false;
@@ -3631,18 +3630,18 @@ namespace CollapseLauncher.InstallManager.Base
 
         private void ZipProgressAdapter(object sender, ExtractProgressProp e)
         {
+            long   lastSize = GetLastSize((long)e.TotalRead);
+            double speed    = CalculateSpeed(lastSize);
+            Interlocked.Add(ref ProgressAllSizeCurrent, lastSize);
+
+            if (!CheckIfNeedRefreshStopwatch())
+            {
+                return;
+            }
+
             // Increment current total size
             lock (Progress)
             {
-                long lastSize = GetLastSize((long)e.TotalRead);
-                double speed = CalculateSpeed(lastSize);
-                ProgressAllSizeCurrent += lastSize;
-
-                if (!CheckIfNeedRefreshStopwatch())
-                {
-                    return;
-                }
-
                 // Assign per file size
                 ProgressPerFileSizeCurrent = (long)e.TotalRead;
                 ProgressPerFileSizeTotal   = (long)e.TotalSize;
@@ -3685,7 +3684,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Set the progress bar not indetermined
             Status.IsProgressPerFileIndetermined = false;
-            Status.IsProgressAllIndetermined = false;
+            Status.IsProgressAllIndetermined     = false;
 
             // Increment the total current size if status is not merging
             Interlocked.Add(ref ProgressAllSizeCurrent, read);
@@ -3729,7 +3728,7 @@ namespace CollapseLauncher.InstallManager.Base
             if (e.State != DownloadState.Merging)
             {
                 // Increment the total current size if status is not merging
-                ProgressAllSizeCurrent += e.Read;
+                Interlocked.Add(ref ProgressAllSizeCurrent, e.Read);
             }
 
             // Calculate the speed
@@ -3771,8 +3770,7 @@ namespace CollapseLauncher.InstallManager.Base
                 lock (Progress)
                 {
                     Progress.ProgressAllTimeLeft = e.TimeLeft;
-
-                    Progress.ProgressAllSpeed = speedAll;
+                    Progress.ProgressAllSpeed    = speedAll;
 
                     Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
                     Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;

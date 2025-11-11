@@ -72,17 +72,34 @@ internal class ProgressBase : GamePropertyBase
     public event EventHandler<TotalPerFileProgress>? ProgressChanged;
     public event EventHandler<TotalPerFileStatus>?   StatusChanged;
 
-    public TotalPerFileStatus   Status   { get; }
-    public TotalPerFileProgress Progress { get; }
+    public TotalPerFileStatus Status
+    {
+        get;
+        private init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
 
-    internal int                  ProgressAllCountCurrent;
-    internal int                  ProgressAllCountFound;
-    internal int                  ProgressAllCountTotal;
-    internal long                 ProgressAllSizeCurrent;
-    internal long                 ProgressAllSizeFound;
-    internal long                 ProgressAllSizeTotal;
-    internal long                 ProgressPerFileSizeCurrent;
-    internal long                 ProgressPerFileSizeTotal;
+    public TotalPerFileProgress Progress
+    {
+        get;
+        private init
+        {
+            OnPropertyChanged();
+            field = value;
+        }
+    }
+
+    internal int  ProgressAllCountCurrent;
+    internal int  ProgressAllCountFound;
+    internal int  ProgressAllCountTotal;
+    internal long ProgressAllSizeCurrent;
+    internal long ProgressAllSizeFound;
+    internal long ProgressAllSizeTotal;
+    internal long ProgressPerFileSizeCurrent;
+    internal long ProgressPerFileSizeTotal;
 
     /// <summary>
     /// Normalized app download thread configured within app global config.<br/>

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Hashing;
 using System.Linq;
+using System.Runtime;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,25 +49,29 @@ namespace CollapseLauncher
             try
             {
                 var threadCount = ThreadCount;
-                var isSsd = DriveTypeChecker.IsDriveSsd(GameStreamingAssetsPath, ILoggerHelper.GetILogger());
+                var isSsd       = DriveTypeChecker.IsDriveSsd(GameStreamingAssetsPath, ILoggerHelper.GetILogger());
                 if (!isSsd)
                 {
                     threadCount = 1;
                     LogWriteLine($"The drive is not SSD, the repair process will be slower!.\r\n\t" +
                                  $"Thread count set to {threadCount}.", LogType.Warning, true);
                 }
-                
+
                 // Await the task for parallel processing
                 // and iterate assetIndex and check it using different method for each type and run it in parallel
-                await Parallel.ForEachAsync(assetIndex, new ParallelOptions { MaxDegreeOfParallelism = threadCount, CancellationToken = token }, async (asset, threadToken) =>
-                {
-                    await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
-                });
+                await Parallel.ForEachAsync(assetIndex,
+                                            new ParallelOptions
+                                                { MaxDegreeOfParallelism = threadCount, CancellationToken = token },
+                                            async (asset, threadToken) =>
+                                            {
+                                                await CheckAssetAllType(asset, brokenAssetIndex, threadToken);
+                                            });
             }
             catch (AggregateException ex)
             {
                 var innerExceptionsFirst = ex.Flatten().InnerExceptions.First();
-                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst, SentryHelper.ExceptionType.UnhandledOther);
+                await SentryHelper.ExceptionHandlerAsync(innerExceptionsFirst,
+                                                         SentryHelper.ExceptionType.UnhandledOther);
                 throw innerExceptionsFirst;
             }
 
