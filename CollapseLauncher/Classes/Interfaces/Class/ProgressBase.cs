@@ -1164,7 +1164,7 @@ internal class ProgressBase : GamePropertyBase
         return await GetCryptoHashAsync<T>(fileStream, hmacKey, updateProgress, updateTotalProgress, token);
     }
 
-    protected virtual ConfiguredTaskAwaitable<byte[]> GetCryptoHashAsync<T>(
+    protected virtual Task<byte[]> GetCryptoHashAsync<T>(
         Stream            stream,
         byte[]?           hmacKey             = null,
         bool              updateProgress      = true,
@@ -1179,9 +1179,8 @@ internal class ProgressBase : GamePropertyBase
                                                          updateProgress,
                                                          updateTotalProgress),
                                                     hmacKey,
-                                                    512 << 10,
-                                                    token)
-                            .ConfigureAwait(false);
+                                                    stream.Length.GetFileStreamBufferSize(),
+                                                    token);
 
     protected virtual byte[] GetCryptoHash<T>(
         string            filePath,
@@ -1218,7 +1217,7 @@ internal class ProgressBase : GamePropertyBase
                                                                           updateProgress,
                                                                           updateTotalProgress),
                                                hmacKey,
-                                               32 << 10,
+                                               stream.Length.GetFileStreamBufferSize(),
                                                token);
 
     protected virtual Task<byte[]> GetHashAsync<T>(
@@ -1243,7 +1242,7 @@ internal class ProgressBase : GamePropertyBase
         return await GetHashAsync<T>(fileStream, updateProgress, updateTotalProgress, token);
     }
 
-    protected virtual ConfiguredTaskAwaitable<byte[]> GetHashAsync<T>(
+    protected virtual Task<byte[]> GetHashAsync<T>(
         Stream            stream,
         bool              updateProgress      = true,
         bool              updateTotalProgress = true,
@@ -1255,9 +1254,8 @@ internal class ProgressBase : GamePropertyBase
                                                   UpdateHashReadProgress(read,
                                                                          updateProgress,
                                                                          updateTotalProgress),
-                                              512 << 10,
-                                              token)
-                      .ConfigureAwait(false);
+                                              stream.Length.GetFileStreamBufferSize(),
+                                              token);
 
     protected virtual byte[] GetHash<T>(
         string            filePath,
@@ -1293,7 +1291,7 @@ internal class ProgressBase : GamePropertyBase
                                                 UpdateHashReadProgress(read,
                                                                        updateProgress,
                                                                        updateTotalProgress),
-                                            32 << 10,
+                                            stream.Length.GetFileStreamBufferSize(),
                                             token);
 
     protected void UpdateHashReadProgress(int read, bool updateProgress, bool updateTotalProgress)
