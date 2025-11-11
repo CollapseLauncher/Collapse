@@ -8,9 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
 // ReSharper disable StringLiteralTypo
@@ -410,7 +408,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                                              version);
             }
 
-            if (GameDataPackagePreload?.CurrentVersion is not { } preloadRegionPackage)
+            if (GameDataPackagePreload?.CurrentVersion is not {} preloadRegionPackage)
             {
                 return new GamePackageResult(returnMain,
                                              returnAudio);
