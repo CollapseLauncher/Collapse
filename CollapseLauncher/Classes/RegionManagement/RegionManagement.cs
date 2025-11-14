@@ -319,35 +319,39 @@ namespace CollapseLauncher
                 }
 
                 if (NotificationData.RegionPush == null) return;
-                
-                List<NotificationProp> regionPushCopy = new List<NotificationProp>(NotificationData.RegionPush);
+                List<NotificationProp> regionPushCopy = new(NotificationData.RegionPush);
 
                 foreach (NotificationProp Entry in regionPushCopy)
                 {
+                    DispatcherQueue.TryEnqueue(() => Spawner(Entry));
+                    await Task.Delay(250);
+                }
+
+                void Spawner(NotificationProp entry)
+                {
                     NotificationInvokerProp toEntry = new NotificationInvokerProp
                     {
-                        CloseAction = null,
-                        IsAppNotif = false,
-                        Notification = Entry,
+                        CloseAction  = null,
+                        IsAppNotif   = false,
+                        Notification = entry,
                         OtherContent = null
                     };
 
-                    if (Entry.ActionProperty != null)
+                    if (entry.ActionProperty != null)
                     {
-                        toEntry.OtherContent = Entry.ActionProperty.GetFrameworkElement();
+                        toEntry.OtherContent = entry.ActionProperty.GetFrameworkElement();
                     }
 
-                    GameVersion? ValidForVerBelow = Entry.ValidForVerBelow;
-                    GameVersion? ValidForVerAbove = Entry.ValidForVerAbove;
+                    GameVersion? ValidForVerBelow = entry.ValidForVerBelow;
+                    GameVersion? ValidForVerAbove = entry.ValidForVerAbove;
 
-                    if (Entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(Entry) && (Entry.ValidForVerBelow == null
+                    if (entry.RegionProfile == RegionProfileName && IsNotificationTimestampValid(entry) && (entry.ValidForVerBelow == null
                             || (LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow
                                 && ValidForVerAbove < LauncherUpdateHelper.LauncherCurrentVersion)
                             || LauncherUpdateHelper.LauncherCurrentVersion < ValidForVerBelow))
                     {
                         NotificationSender.SendNotification(toEntry);
                     }
-                    await Task.Delay(250);
                 }
             }
             catch (Exception ex)
