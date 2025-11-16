@@ -39,8 +39,6 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
-using SevenZipExtractor;
-using SevenZipExtractor.Event;
 using SharpHDiffPatch.Core;
 using SharpHDiffPatch.Core.Event;
 using System;
@@ -63,18 +61,12 @@ using static CollapseLauncher.Dialogs.SimpleDialogs;
 using static Hi3Helper.Locale;
 using static Hi3Helper.Logger;
 
-#if USENEWZIPDECOMPRESS
-using ZipArchive = SharpCompress.Archives.Zip.ZipArchive;
-using ZipArchiveEntry = SharpCompress.Archives.Zip.ZipArchiveEntry;
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-#endif
-
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable AccessToDisposedClosure
-
 // ReSharper disable UnusedMember.Global
 
 namespace CollapseLauncher.InstallManager.Base
@@ -108,8 +100,6 @@ namespace CollapseLauncher.InstallManager.Base
             public string[] foldersToDelete;
             public string[] foldersToKeepInData;
         }
-
-        private delegate Task InstallPackageExtractorDelegate(GameInstallPackage asset);
 
         #endregion
 
@@ -149,9 +139,6 @@ namespace CollapseLauncher.InstallManager.Base
 
         protected List<GameInstallPackage> _gameDeltaPatchPreReqList { get; } = [];
         protected bool                     _forceIgnoreDeltaPatch;
-        private   long                     _totalLastSizeCurrent;
-
-        protected bool _isAllowExtractCorruptZip  { get; set; }
         protected UninstallGameProperty? _uninstallGameProperty { get; set; }
         #endregion
 
@@ -201,7 +188,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             UpdateCompletenessStatus(CompletenessStatus.Idle);
             _gameRepairTool?.Dispose();
-            AssetIndex?.Clear();
+            AssetIndex.Clear();
 
             FlushingTrigger?.Invoke(this, EventArgs.Empty);
 
@@ -395,7 +382,7 @@ namespace CollapseLauncher.InstallManager.Base
             await TryAddResourceVersionList(packageResult, gamePackage, true);
 
             // Start getting the size of the packages
-            await GetPackagesRemoteSize(gamePackage, Token.Token);
+            await GetPackagesRemoteSize(gamePackage, Token!.Token);
 
             // Get the required disk size
             long totalDownloadSize = gamePackage.Sum(x => x.Size);
@@ -751,7 +738,7 @@ namespace CollapseLauncher.InstallManager.Base
                             return -1;
                         }
 
-                        _isAllowExtractCorruptZip = true;
+                        IsAllowExtractCorruptZip = true;
                         break;
                 }
             }
@@ -761,65 +748,6 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Return 1 as OK
             return 1;
-        }
-
-        private long GetAssetIndexTotalUncompressSize(List<GameInstallPackage> assetIndex)
-        {
-            ArgumentNullException.ThrowIfNull(assetIndex);
-
-            long returnSize = assetIndex.Sum(GetSingleOrSegmentedUncompressedSize);
-            return returnSize;
-        }
-
-        private long GetSingleOrSegmentedUncompressedSize(GameInstallPackage asset)
-        {
-            using Stream stream = GetSingleOrSegmentedDownloadStream(asset);
-
-        #if USENEWZIPDECOMPRESS
-            Func<Stream, long> summaryDelegate;
-            if (LauncherConfig.IsEnforceToUse7zipOnExtract)
-            {
-                summaryDelegate = GetArchiveUncompressedSizeNative7zip;
-            }
-            else if ((asset.PathOutput.EndsWith(".zip",     StringComparison.OrdinalIgnoreCase) ||
-                      asset.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase)) &&
-                      !_isAllowExtractCorruptZip)
-            {
-                summaryDelegate = GetArchiveUncompressedSizeManaged;
-            }
-            else
-            {
-                summaryDelegate = GetArchiveUncompressedSizeNative7zip;
-            }
-        #else
-            Func<Stream, long> summaryDelegate = GetArchiveUncompressedSizeNative7zip;
-        #endif
-
-            return summaryDelegate(stream);
-        }
-
-    #if USENEWZIPDECOMPRESS
-        private long GetArchiveUncompressedSizeManaged(Stream archiveStream)
-        {
-            using ZipArchive archive = ZipArchive.Open(archiveStream);
-            return archive.Entries.Select(x => x.Size).ToArray().Sum();
-        }
-    #endif
-
-        private long GetArchiveUncompressedSizeNative7zip(Stream archiveStream)
-        {
-            using ArchiveFile archiveFile = ArchiveFile.Create(archiveStream, true);
-            return archiveFile.Entries.Select(x => (long)x.Size).ToArray().Sum();
-        }
-
-        private Stream GetSingleOrSegmentedDownloadStream(GameInstallPackage asset)
-        {
-            return asset?.GetReadStream(DownloadThreadCount);
-        }
-
-        private void DeleteSingleOrSegmentedDownloadStream(GameInstallPackage asset)
-        {
-            asset?.DeleteFile(DownloadThreadCount);
         }
 
         public async Task StartPackageInstallation()
@@ -842,7 +770,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             // Get the sum of uncompressed size and
             // Set progress count to beginning
-            ProgressAllSizeTotal = GetAssetIndexTotalUncompressSize(gamePackage);
+            ProgressAllSizeTotal = gamePackage.Sum(GetSingleOrSegmentedUncompressedSize);
 
             // Sanity Check: Check if the package list is empty or not
             if (gamePackage == null || gamePackage.Count == 0)
@@ -860,9 +788,6 @@ namespace CollapseLauncher.InstallManager.Base
             ProgressAllCountCurrent           = 1;
             ProgressAllCountTotal             = gamePackage.Count;
             Status.IsIncludePerFileIndicator = gamePackage.Count > 1;
-
-            // Reset the last size counter
-            _totalLastSizeCurrent = 0;
 
             // Try to unassign read-only and redundant diff files
             TryUnassignReadOnlyFiles();
@@ -888,32 +813,34 @@ namespace CollapseLauncher.InstallManager.Base
                 InstallPackageExtractorDelegate installTaskDelegate;
                 if (LauncherConfig.IsEnforceToUse7zipOnExtract)
                 {
-                    installTaskDelegate = ExtractUsingNative7zip;
+                    installTaskDelegate = ExtractUsingNative7Zip;
                 }
                 else if ((asset!.PathOutput.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
                        || asset!.PathOutput.EndsWith(".zip.001", StringComparison.OrdinalIgnoreCase))
-                       && !_isAllowExtractCorruptZip)
+                       && !IsAllowExtractCorruptZip)
                 {
                     installTaskDelegate = ExtractUsingManagedZip;
                 }
                 else
                 {
-                    installTaskDelegate = ExtractUsingNative7zip;
+                    installTaskDelegate = ExtractUsingNative7Zip;
                 }
-            #else
-                InstallPackageExtractorDelegate installTaskDelegate = ExtractUsingNative7zip;
-            #endif
+#else
+                InstallPackageExtractorDelegate installTaskDelegate = ExtractUsingNative7Zip;
+#endif
 
                 // Execute method delegate for the extractor
-                await installTaskDelegate(asset);
+                await installTaskDelegate(() => GetSingleOrSegmentedDownloadStream(asset),
+                                          GamePath,
+                                          Token.Token);
 
                 // Get the information about diff and delete list file
                 FileInfo hdiffMapList = new FileInfo(Path.Combine(GamePath, "hdiffmap.json"))
                                        .StripAlternateDataStream()
                                        .EnsureNoReadOnly();
-                FileInfo hdiffList    = new FileInfo(Path.Combine(GamePath, "hdifffiles.txt"))
-                                       .StripAlternateDataStream()
-                                       .EnsureNoReadOnly();
+                FileInfo hdiffList = new FileInfo(Path.Combine(GamePath, "hdifffiles.txt"))
+                                    .StripAlternateDataStream()
+                                    .EnsureNoReadOnly();
                 FileInfo deleteList = new FileInfo(Path.Combine(GamePath, "deletefiles.txt"))
                                      .StripAlternateDataStream()
                                      .EnsureNoReadOnly();
@@ -1042,163 +969,7 @@ namespace CollapseLauncher.InstallManager.Base
                 ProgressAllCountCurrent++;
             }
         }
-
-    #if USENEWZIPDECOMPRESS
-        private async Task ExtractUsingManagedZip(GameInstallPackage asset)
-        {
-            int threadCounts = ThreadCount;
-
-            await using Stream packageStream = GetSingleOrSegmentedDownloadStream(asset);
-            using ZipArchive   archive       = ZipArchive.Open(packageStream);
-
-            int entriesCount = archive.Entries.Count;
-            int entriesChunk = (int)Math.Ceiling((double)entriesCount / threadCounts);
-
-            if (entriesCount < threadCounts)
-            {
-                entriesChunk = entriesCount;
-            }
-
-            IReadOnlyCollection<int>      zipEntries       = Enumerable.Range(0, entriesCount).ToList();
-            IEnumerable<IEnumerable<int>> zipEntriesChunks = zipEntries.Chunk(entriesChunk);
-
-            // Run the workers
-            await Parallel.ForEachAsync(zipEntriesChunks, new ParallelOptions
-                                        {
-                                            CancellationToken = Token.Token
-                                        },
-                                        async (entry, token) =>
-                                        {
-                                            await using Stream    fs = GetSingleOrSegmentedDownloadStream(asset);
-                                            using var             zipArchive = ZipArchive.Open(fs);
-                                            List<ZipArchiveEntry> entries = zipArchive.Entries.ToList();
-                                            await ExtractUsingManagedZipWorker(entry, entries, token);
-                                        });
-        }
-
-        private async Task ExtractUsingManagedZipWorker(IEnumerable<int>  entriesIndex, List<ZipArchiveEntry> entries,
-                                                        CancellationToken cancellationToken)
-        {
-            byte[] buffer = GC.AllocateUninitializedArray<byte>(BufferBigLength);
-
-            foreach (int entryIndex in entriesIndex)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                ZipArchiveEntry zipEntry = entries[entryIndex];
-
-                if (zipEntry.IsDirectory)
-                {
-                    continue;
-                }
-
-                if (zipEntry.Key == null)
-                {
-                    continue;
-                }
-
-                string outputPath = Path.Combine(GamePath, zipEntry.Key);
-                FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory()
-                                                              .StripAlternateDataStream()
-                                                              .EnsureNoReadOnly();
-
-                await using FileStream outputStream = outputFile.Open(FileMode.Create, FileAccess.Write, FileShare.Write);
-                await using Stream entryStream = zipEntry.OpenEntryStream();
-
-                Task runningTask = Task.Factory.StartNew(
-                    () => StartWriteInner(buffer, outputStream, entryStream, cancellationToken),
-                    cancellationToken,
-                    TaskCreationOptions.DenyChildAttach,
-                    TaskScheduler.Default);
-
-                await runningTask.ConfigureAwait(false);
-            }
-
-            return;
-
-            void StartWriteInner(byte[] bufferInner, FileStream outputStream, Stream entryStream, CancellationToken cancellationTokenInner)
-            {
-                int read;
-
-                // Perform async read
-                while ((read = entryStream.Read(bufferInner, 0, bufferInner.Length)) > 0)
-                {
-                    // Throw if cancellation requested
-                    cancellationTokenInner.ThrowIfCancellationRequested();
-
-                    // Perform sync write
-                    outputStream.Write(bufferInner, 0, read);
-
-                    // Increment total size
-                    Interlocked.Add(ref ProgressAllSizeCurrent,     read);
-                    Interlocked.Add(ref ProgressPerFileSizeCurrent, read);
-                    
-                    // Calculate the speed
-                    double speed = CalculateSpeed(read);
-
-                    if (!CheckIfNeedRefreshStopwatch())
-                    {
-                        continue;
-                    }
-
-                    // Assign local sizes to progress
-                    lock (Progress)
-                    {
-                        Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
-                        Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
-                        Progress.ProgressAllSizeCurrent     = ProgressAllSizeCurrent;
-                        Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
-                        Progress.ProgressAllSpeed           = speed;
-
-                        // Calculate percentage
-                        Progress.ProgressAllPercentage     = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
-                        Progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent);
-                        // Calculate the timelapse
-                        Progress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speed);
-                    }
-
-                    UpdateAll();
-                }
-            }
-        }
-    #endif
-
-        private async Task ExtractUsingNative7zip(GameInstallPackage asset)
-        {
-            // Start Async Thread
-            // Since the ArchiveFile (especially with the callbacks) can't run under
-            // different thread, so the async call will be called at the start
-            Stream      stream      = null;
-            ArchiveFile archiveFile = null;
-
-            try
-            {
-                // Load the zip
-                stream      = GetSingleOrSegmentedDownloadStream(asset);
-                archiveFile = ArchiveFile.Create(stream, true);
-
-                // Start extraction
-                archiveFile.ExtractProgress += ZipProgressAdapter;
-                await archiveFile.ExtractAsync(e => Path.Combine(GamePath, e!.FileName!), true, BufferMediumLength, Token!.Token);
-            }
-            finally
-            {
-                if (archiveFile != null)
-                {
-                    archiveFile.ExtractProgress -= ZipProgressAdapter;
-                    archiveFile.Dispose();
-                }
-
-                if (stream != null)
-                {
-                    await stream.DisposeAsync();
-                }
-            }
-        }
-
+        
         public virtual void ApplyGameConfig(bool forceUpdateToLatest = false)
         {
             GameVersionManager!.UpdateGamePath(GamePath);
@@ -1480,7 +1251,7 @@ namespace CollapseLauncher.InstallManager.Base
         {
             // Always cancel PreventSleep token when cancelling any installation process
             _gameRepairTool?.CancelRoutine();
-            Token.Cancel();
+            Token?.Cancel();
             Flush();
         }
 
@@ -1891,7 +1662,7 @@ namespace CollapseLauncher.InstallManager.Base
 
             Task parallelTask = Parallel.ForEachAsync(hdiffEntry, new ParallelOptions
             {
-                CancellationToken = Token.Token,
+                CancellationToken = Token!.Token,
                 MaxDegreeOfParallelism = ThreadCount
             }, async (entry, innerToken) =>
             {
@@ -3576,11 +3347,9 @@ namespace CollapseLauncher.InstallManager.Base
 
             lock (Progress)
             {
-                Progress.ProgressAllPercentage = e.ProgressPercentage;
-
-                Progress.ProgressAllTimeLeft = e.TimeLeft;
-                Progress.ProgressAllSpeed    = e.Speed;
-
+                Progress.ProgressAllPercentage  = e.ProgressPercentage;
+                Progress.ProgressAllTimeLeft    = e.TimeLeft;
+                Progress.ProgressAllSpeed       = e.Speed;
                 Progress.ProgressAllSizeTotal   = e.TotalSizeToBePatched;
                 Progress.ProgressAllSizeCurrent = e.CurrentSizePatched;
             }
@@ -3639,167 +3408,6 @@ namespace CollapseLauncher.InstallManager.Base
             Status.IsProgressAllIndetermined = false;
             UpdateProgressBase();
             UpdateStatus();
-        }
-
-        private void ZipProgressAdapter(object sender, ExtractProgressProp e)
-        {
-            long   lastSize = GetLastSize((long)e.TotalRead);
-            double speed    = CalculateSpeed(lastSize);
-            Interlocked.Add(ref ProgressAllSizeCurrent, lastSize);
-
-            if (!CheckIfNeedRefreshStopwatch())
-            {
-                return;
-            }
-
-            // Increment current total size
-            lock (Progress)
-            {
-                // Assign per file size
-                ProgressPerFileSizeCurrent = (long)e.TotalRead;
-                ProgressPerFileSizeTotal   = (long)e.TotalSize;
-
-                lock (Progress)
-                {
-                    // Assign local sizes to progress
-                    Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
-                    Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
-                    Progress.ProgressAllSizeCurrent     = ProgressAllSizeCurrent;
-                    Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
-
-                    // Calculate the speed
-                    Progress.ProgressAllSpeed = CalculateSpeed(lastSize);
-
-                    // Calculate percentage
-                    Progress.ProgressAllPercentage     = ConverterTool.ToPercentage(ProgressAllSizeTotal,     ProgressAllSizeCurrent);
-                    Progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent);
-                    // Calculate the timelapse
-                    Progress.ProgressAllTimeLeft = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speed);
-                }
-
-                UpdateAll();
-            }
-        }
-
-        private long GetLastSize(long input)
-        {
-            if (_totalLastSizeCurrent > input)
-            {
-                _totalLastSizeCurrent = input;
-            }
-
-            long a = input - _totalLastSizeCurrent;
-            _totalLastSizeCurrent = input;
-            return a;
-        }
-
-        private void HttpClientDownloadProgressAdapter(int read, DownloadProgress downloadProgress)
-        {
-            // Set the progress bar not indetermined
-            Status.IsProgressPerFileIndetermined = false;
-            Status.IsProgressAllIndetermined     = false;
-
-            // Increment the total current size if status is not merging
-            Interlocked.Add(ref ProgressAllSizeCurrent, read);
-
-            // Calculate the speed
-            double speedAll = CalculateSpeed(read);
-
-            if (!CheckIfNeedRefreshStopwatch())
-            {
-                return;
-            }
-
-            lock (Progress)
-            {
-                // Assign speed with clamped value
-                double speedClamped = speedAll.ClampLimitedSpeedNumber();
-
-                // Assign local sizes to progress
-                Progress.ProgressAllSizeCurrent = ProgressAllSizeCurrent;
-                Progress.ProgressAllSizeTotal   = ProgressAllSizeTotal;
-                Progress.ProgressAllSpeed       = speedClamped;
-                Progress.ProgressAllPercentage  = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
-                Progress.ProgressAllTimeLeft    = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedClamped);
-
-                // Update the status of per file size and current progress from Http client
-                Progress.ProgressPerFileSizeCurrent = downloadProgress.BytesDownloaded;
-                Progress.ProgressPerFileSizeTotal   = downloadProgress.BytesTotal;
-                Progress.ProgressPerFileSpeed       = speedClamped;
-                Progress.ProgressPerFilePercentage  = ConverterTool.ToPercentage(downloadProgress.BytesTotal, downloadProgress.BytesDownloaded);
-            }
-            // Update the status
-            UpdateAll();
-        }
-
-        private void HttpClientDownloadProgressAdapter(object sender, DownloadEvent e)
-        {
-            // Set the progress bar not indetermined
-            Status.IsProgressPerFileIndetermined = false;
-            Status.IsProgressAllIndetermined     = false;
-
-            if (e.State != DownloadState.Merging)
-            {
-                // Increment the total current size if status is not merging
-                Interlocked.Add(ref ProgressAllSizeCurrent, e.Read);
-            }
-
-            // Calculate the speed
-            double speedAll = CalculateSpeed(e.Read);
-
-            if (!CheckIfNeedRefreshStopwatch())
-            {
-                return;
-            }
-
-            if (e.State != DownloadState.Merging)
-            {
-                lock (Progress)
-                {
-                    // Assign local sizes to progress
-                    Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
-                    Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
-                    Progress.ProgressAllSizeCurrent     = ProgressAllSizeCurrent;
-                    Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
-
-                    // Calculate the speed
-                    Progress.ProgressAllSpeed = speedAll;
-
-                    // Calculate percentage
-                    Progress.ProgressPerFilePercentage = ConverterTool.ToPercentage(ProgressPerFileSizeTotal, ProgressPerFileSizeCurrent);
-                    Progress.ProgressAllPercentage     = ConverterTool.ToPercentage(ProgressAllSizeTotal,     ProgressAllSizeCurrent);
-                    // Calculate the timelapse
-                    Progress.ProgressAllTimeLeft       = ConverterTool.ToTimeSpanRemain(ProgressAllSizeTotal, ProgressAllSizeCurrent, speedAll);
-                }
-            }
-            else
-            {
-                // If merging, show per file indicator explicitly
-                // and then update the normal progress
-                Status.IsIncludePerFileIndicator = true;
-
-                // If status is merging, then use progress for speed and timelapse from Http client
-                // and set the rest from the base class
-                lock (Progress)
-                {
-                    Progress.ProgressAllTimeLeft = e.TimeLeft;
-                    Progress.ProgressAllSpeed    = speedAll;
-
-                    Progress.ProgressPerFileSizeCurrent = ProgressPerFileSizeCurrent;
-                    Progress.ProgressPerFileSizeTotal   = ProgressPerFileSizeTotal;
-                    Progress.ProgressAllSizeCurrent     = ProgressAllSizeCurrent;
-                    Progress.ProgressAllSizeTotal       = ProgressAllSizeTotal;
-                    Progress.ProgressAllPercentage      = ConverterTool.ToPercentage(ProgressAllSizeTotal, ProgressAllSizeCurrent);
-                }
-            }
-
-            // Update the status of per file size and current progress from Http client
-            ProgressPerFileSizeCurrent = e.SizeDownloaded;
-            ProgressPerFileSizeTotal   = e.SizeToBeDownloaded;
-            lock (Progress) Progress.ProgressPerFilePercentage = e.ProgressPercentage;
-
-            // Update the status
-            UpdateAll();
         }
         #endregion
     }
