@@ -240,6 +240,11 @@ namespace CollapseLauncher.Interfaces
         void UpdateSdkVersion(GameVersion? version, bool saveValue = true);
 
         /// <summary>
+        /// Save the <see cref="GameIniVersionSection"/> changes to the game version config.ini file.
+        /// </summary>
+        void SaveVersionConfig();
+
+        /// <summary>
         /// Reinitialize the game version configs, including the INIs.
         /// </summary>
         void Reinitialize();

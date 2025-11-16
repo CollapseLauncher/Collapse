@@ -418,6 +418,8 @@ namespace CollapseLauncher.GameManagement.Versioning
                 ini.Save(filePath);
             }
         }
+
+        public void SaveVersionConfig() => SaveGameIni(GameIniVersionPath, GameIniVersion);
         #endregion
     }
 }
