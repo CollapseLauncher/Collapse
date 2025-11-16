@@ -69,7 +69,20 @@ namespace CollapseLauncher.Pages
 
     public partial class FileSizeToStringLiteralConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, string input) => ConverterTool.SummarizeSizeSimple((long)value);
+        public object Convert(object value, Type targetType, object parameter, string input)
+        {
+            if (value is double asDouble)
+            {
+                return ConverterTool.SummarizeSizeSimple(asDouble);
+            }
+
+            if (value is float asFloat)
+            {
+                return ConverterTool.SummarizeSizeSimple(asFloat);
+            }
+
+            return ConverterTool.SummarizeSizeSimple((long)value);
+        }
         public object ConvertBack(object value, Type targetType, object parameter, string input) => new NotImplementedException();
     }
 

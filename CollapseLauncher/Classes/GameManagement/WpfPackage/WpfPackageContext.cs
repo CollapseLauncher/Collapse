@@ -33,7 +33,7 @@ internal partial class WpfPackageContext : ProgressBase
             return ValueTask.FromResult(false);
         }
 
-        return StartUpdateCheckAsyncCore();
+        return TryRunExamineThrow(StartUpdateCheckAsyncCore());
     }
 
     /// <summary>

@@ -1649,6 +1649,16 @@
     "Google Play": "Google Play"
   },
 
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "Mulai Update",
+    "CancelUpdateBtn": "Batalkan Update",
+    "StartUpdateAutomatically": "Otomatis Jalankan Update"
+  },
+
+  "_WpfPackageName": {
+    "Genshin Impact": "Uji-Reka Miliastra"
+  },
+
   "_OOBEAgreementMenu": {
     "AgreementTitle": "Perjanjian:"
   },

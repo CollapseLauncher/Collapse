@@ -1661,6 +1661,12 @@
     "Google Play": "Google Play"
   },
 
+  "_WpfPackageContext": {
+    "StartUpdateBtn": "Start Update",
+    "CancelUpdateBtn": "Cancel Update",
+    "StartUpdateAutomatically": "Starts Update Automatically"
+  },
+
   "_WpfPackageName": {
     "Genshin Impact": "Miliastra Sandbox"
   },

@@ -22,8 +22,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -32,8 +32,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -42,8 +42,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -52,8 +52,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -63,8 +63,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -73,8 +73,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -83,8 +83,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -93,8 +93,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -103,8 +103,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
     }
@@ -117,8 +117,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -127,8 +127,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -137,8 +137,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -147,8 +147,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -157,8 +157,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -167,8 +167,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -177,8 +177,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -187,8 +187,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -197,8 +197,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -207,8 +207,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
 
@@ -217,8 +217,8 @@ namespace CollapseLauncher
             get;
             set
             {
-                OnPropertyChanged();
                 field = value;
+                OnPropertyChanged();
             }
         }
     }

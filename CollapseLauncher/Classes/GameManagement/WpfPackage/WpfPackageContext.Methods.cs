@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.Interfaces;
+﻿using CollapseLauncher.Helper.StreamUtility;
+using CollapseLauncher.Interfaces;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
@@ -64,7 +65,9 @@ internal partial class WpfPackageContext
                                       url,
                                       localPath,
                                       downloadSize,
-                                      CancellationToken.None);
+                                      _localCts.Token);
+
+                fileInfo.Refresh();
             }
 
             StartExtract:
@@ -92,6 +95,11 @@ internal partial class WpfPackageContext
 
             // Set version to save the config
             CurrentInstalledVersion = CurrentAvailableVersion;
+
+            if (IsDeletePackageAfterInstall)
+            {
+                fileInfo.TryDeleteFile();
+            }
         }
         catch when (_localCts.Token.IsCancellationRequested)
         {

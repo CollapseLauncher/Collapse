@@ -1205,6 +1205,58 @@ internal abstract class ProgressBase : GamePropertyBase
         }
     }
 
+    protected virtual async ValueTask<T> TryRunExamineThrow<T>(ValueTask<T> task)
+    {
+        // Define if the status is still running
+        Status.IsRunning   = true;
+        Status.IsCompleted = false;
+        Status.IsCanceled  = false;
+
+        try
+        {
+            // Run the task
+            T result = await task;
+
+            Status.IsCompleted = true;
+            return result;
+        }
+        catch (TaskCanceledException)
+        {
+            // If a cancellation was thrown, then set IsCanceled as true
+            Status.IsCompleted = false;
+            Status.IsCanceled  = true;
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            // If a cancellation was thrown, then set IsCanceled as true
+            Status.IsCompleted = false;
+            Status.IsCanceled  = true;
+            throw;
+        }
+        catch (Exception)
+        {
+            // Except, if the other exception was thrown, then set both IsCompleted
+            // and IsCanceled as false.
+            Status.IsCompleted = false;
+            Status.IsCanceled  = false;
+            throw;
+        }
+        finally
+        {
+            if (Status is { IsCompleted: false })
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.Error);
+            }
+            else
+            {
+                WindowUtility.SetTaskBarState(TaskbarState.NoProgress);
+            }
+
+            Status.IsRunning = false;
+        }
+    }
+
     private void SetFoundToTotalValue()
     {
         // Assign found count and size to total count and size
@@ -1430,7 +1482,7 @@ internal abstract class ProgressBase : GamePropertyBase
         async ValueTask Impl(IEnumerable<int> entries, CancellationToken innerToken)
         {
             await using Stream     fs            = streamFactory();
-            await using ZipArchive zipArchive    = new(packageStream);
+            await using ZipArchive zipArchive    = new(fs);
             List<ZipArchiveEntry>  entriesLocked = zipArchive.Entries.ToList();
             await ExtractUsingManagedZipWorker(entries,
                                                entriesLocked,
@@ -1459,13 +1511,13 @@ internal abstract class ProgressBase : GamePropertyBase
 
                 ZipArchiveEntry zipEntry = entries[entryIndex];
 
-                if (zipEntry.Name[^1] == '/' ||
-                    zipEntry.Name[^1] == '\\')
+                if (zipEntry.FullName[^1] == '/' ||
+                    zipEntry.FullName[^1] == '\\')
                 {
                     continue;
                 }
 
-                string outputPath = Path.Combine(outputDir, zipEntry.Name);
+                string outputPath = Path.Combine(outputDir, zipEntry.FullName);
                 FileInfo outputFile = new FileInfo(outputPath).EnsureCreationOfDirectory()
                                                               .StripAlternateDataStream()
                                                               .EnsureNoReadOnly();

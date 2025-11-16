@@ -66,6 +66,14 @@ internal partial class WpfPackageContext
     }
 
     /// <summary>
+    /// Whether to delete WPF package after installation
+    /// </summary>
+    private bool IsDeletePackageAfterInstall
+    {
+        get => !File.Exists(Path.Combine(GamePath, "@NoDeleteZip"));
+    }
+
+    /// <summary>
     /// Whether WPF package is enabled for the game
     /// </summary>
     public bool IsWpfPackageEnabled
@@ -184,15 +192,15 @@ internal partial class WpfPackageContext
             }
 
             field = value;
+
+            GameVersionManager.GameIniVersionSection["wpf_version"] = value.ToString("f");
+            GameVersionManager.SaveVersionConfig();
             OnPropertyChanged();
 
             // Note:
             // This triggers the UI binding to be updated.
             // So trigger the IsUpdateAvailable property here.
             OnPropertyChanged(nameof(IsUpdateAvailable));
-
-            GameVersionManager.GameIniVersionSection["wpf_version"] = value.ToString("f");
-            GameVersionManager.SaveVersionConfig();
         }
     }
 
@@ -232,19 +240,17 @@ internal partial class WpfPackageContext
             string? value = LauncherConfig.GetAppConfigValue(ConfigAutoUpdateKey);
 
             if (string.IsNullOrEmpty(value) ||
-                !bool.TryParse(value, out field))
+                !bool.TryParse(value, out bool isEnabled))
             {
                 return true;
             }
 
-            return field;
+            return isEnabled;
         }
         set
         {
-            field = value;
-            OnPropertyChanged();
-
             LauncherConfig.SetAndSaveConfigValue(ConfigAutoUpdateKey, value);
+            OnPropertyChanged();
         }
     }
 
@@ -260,15 +266,13 @@ internal partial class WpfPackageContext
 
     private void ResetCancelToken()
     {
-        if (_localCts.IsCancelled)
+        if (_localCts is { IsDisposed: false, IsCancelled: false })
         {
-            _localCts.TryReset();
+            return;
         }
 
-        if (_localCts.IsDisposed)
-        {
-            _localCts = new CancellationTokenSourceWrapper();
-        }
+        _localCts.Dispose();
+        _localCts = new CancellationTokenSourceWrapper();
     }
     #endregion
 }

@@ -13,6 +13,16 @@ public abstract class NotifyPropertyChanged : INotifyPropertyChanged
 
     public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
+        bool hasThreadAccess = InnerLauncherConfig.m_mainPage?.DispatcherQueue.HasThreadAccess ?? true;
+        if (!hasThreadAccess)
+        {
+            InnerLauncherConfig
+               .m_mainPage?
+               .DispatcherQueue
+               .TryEnqueue(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            return;
+        }
+
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
@@ -23,6 +33,12 @@ public partial class PageNotifyPropertyChanged : Page, INotifyPropertyChanged
 
     public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        if (DispatcherQueue.HasThreadAccess)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            return;
+        }
+
+        DispatcherQueue.TryEnqueue(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
     }
 }
