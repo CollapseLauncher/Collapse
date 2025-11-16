@@ -199,9 +199,6 @@ internal partial class WpfPackageContext
                 return field;
             }
 
-            string gameBiz = GameVersionManager.GameBiz;
-            string gameId  = GameVersionManager.GameId;
-
             if (WpfPackageData != null)
             {
                 field = WpfPackageData?.Version ?? default;

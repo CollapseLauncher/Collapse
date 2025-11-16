@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-
 #pragma warning disable IDE0290
 #pragma warning disable IDE0130
 
@@ -156,7 +155,7 @@ internal partial class WpfPackageContext
         string? packageUrl = WpfPackageData?.Url;
         if (string.IsNullOrEmpty(packageUrl))
         {
-            throw new NullReferenceException("WPF Package is available but the URL is undefined. Just a usual miHoYo moves, great job! :)");
+            throw new NullReferenceException("WPF Package is available but the URL is undefined. Just a usual miHoYo move, great job! :)");
         }
 
         long totalSize = WpfPackageData?.PackageSize ?? 0;

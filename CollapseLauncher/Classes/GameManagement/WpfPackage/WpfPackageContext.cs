@@ -19,7 +19,7 @@ internal partial class WpfPackageContext : ProgressBase
                null,
                null)
     {
-        ConfigAutoUpdateKey = $"{GameVersionManager.GameId}_EnableWpfAutoUpdate";
+        ConfigAutoUpdateKey = $"{GameVersionManager.GameBiz}_EnableWpfAutoUpdate";
     }
 
     /// <summary>

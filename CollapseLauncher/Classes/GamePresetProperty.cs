@@ -1,4 +1,5 @@
-﻿using CollapseLauncher.GamePlaytime;
+﻿using CollapseLauncher.GameManagement.WpfPackage;
+using CollapseLauncher.GamePlaytime;
 using CollapseLauncher.GameSettings;
 using CollapseLauncher.GameSettings.Base;
 using CollapseLauncher.GameSettings.Genshin;
@@ -92,7 +93,8 @@ namespace CollapseLauncher
                     throw new NotSupportedException($"[GamePresetProperty.Ctor] Game type: {gamePreset.GameType} ({gamePreset.ProfileName} - {gamePreset.ZoneName}) is not supported!");
             }
 
-            property.GamePlaytime  = new Playtime(property.GameVersion, property.GameSettings);
+            property.GameWpfContext = new WpfPackageContext(uiElementParent, property.GameVersion);
+            property.GamePlaytime   = new Playtime(property.GameVersion, property.GameSettings);
             property.GamePropLogger = ILoggerHelper.GetILogger($"GameProp: {gameName} - {gameRegion}");
 
             return property;
@@ -105,6 +107,7 @@ namespace CollapseLauncher
         internal ICache?              GameCache      { get; private set; }
         internal IGameVersion?        GameVersion    { get; private set; }
         internal IGameInstallManager? GameInstall    { get; private set; }
+        internal WpfPackageContext?   GameWpfContext { get; private set; }
         internal PresetConfig         GamePreset     { get => GameVersion?.GamePreset ?? throw new NullReferenceException(); }
 
         private ILogger? GamePropLogger { get; set; }
