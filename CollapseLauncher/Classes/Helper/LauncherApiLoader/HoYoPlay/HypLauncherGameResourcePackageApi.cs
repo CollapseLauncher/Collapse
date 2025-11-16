@@ -99,4 +99,8 @@ public class HypPackageData
 
     [JsonPropertyName("language")]
     public string? Language { get; init; }
+
+    [JsonPropertyName("version")]
+    [JsonConverter(typeof(Utf8SpanParsableJsonConverter<GameVersion>))]
+    public GameVersion Version { get; set; }
 }
