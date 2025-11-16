@@ -26,7 +26,7 @@ namespace CollapseLauncher.Helper
         internal static bool IsOnTrayEnabled()
         {
             if (!_isInitialized)
-                InvokeGetStatusCommand().GetAwaiter().GetResult();
+                InvokeGetStatusCommand();
 
             return _cachedIsOnTrayEnabled;
         }
@@ -34,12 +34,12 @@ namespace CollapseLauncher.Helper
         internal static bool IsEnabled()
         {
             if (!_isInitialized)
-                InvokeGetStatusCommand().GetAwaiter().GetResult();
+                InvokeGetStatusCommand();
 
             return _cachedIsEnabled;
         }
 
-        private static async Task InvokeGetStatusCommand()
+        private static void InvokeGetStatusCommand()
         {
             // Build the argument and mode to set
             var argumentBuilder = new StringBuilder();
@@ -52,7 +52,7 @@ namespace CollapseLauncher.Helper
             var argumentString = argumentBuilder.ToString();
 
             // Invoke command and get return code
-            var returnCode = await GetInvokeCommandReturnCode(argumentString);
+            var returnCode = GetInvokeCommandReturnCode(argumentString);
 
             (_cachedIsEnabled, _cachedIsOnTrayEnabled) = returnCode switch
             {
@@ -98,16 +98,16 @@ namespace CollapseLauncher.Helper
         internal static void ToggleTrayEnabled(bool isEnabled)
         {
             _cachedIsOnTrayEnabled = isEnabled;
-            InvokeToggleCommand().GetAwaiter().GetResult();
+            InvokeToggleCommand();
         }
 
         internal static void ToggleEnabled(bool isEnabled)
         {
             _cachedIsEnabled = isEnabled;
-            InvokeToggleCommand().GetAwaiter().GetResult();
+            InvokeToggleCommand();
         }
 
-        private static async Task InvokeToggleCommand()
+        private static void InvokeToggleCommand()
         {
             // Build the argument and mode to set
             StringBuilder argumentBuilder = new StringBuilder();
@@ -124,7 +124,7 @@ namespace CollapseLauncher.Helper
             string argumentString = argumentBuilder.ToString();
 
             // Invoke applet
-            int returnCode = await GetInvokeCommandReturnCode(argumentString);
+            int returnCode = GetInvokeCommandReturnCode(argumentString);
 
             // Print init determination
             CheckInitDetermination(returnCode);
@@ -232,7 +232,7 @@ namespace CollapseLauncher.Helper
             return (iconLocationStartMenu, iconLocationDesktop);
         }
 
-        private static async Task<int> GetInvokeCommandReturnCode(string argument)
+        private static int GetInvokeCommandReturnCode(string argument)
         {
             const string retValMark = "RETURNVAL_";
 
@@ -264,7 +264,7 @@ namespace CollapseLauncher.Helper
             {
                 // Start the applet and wait until it exit.
                 process.Start();
-                while (await process.StandardOutput.ReadLineAsync() is {} consoleStdOut)
+                while (process.StandardOutput.ReadLine() is {} consoleStdOut)
                 {
                     Logger.LogWriteLine("[TaskScheduler] " + consoleStdOut, LogType.Debug, true);
 
@@ -280,12 +280,12 @@ namespace CollapseLauncher.Helper
                         lastErrCode = resultReturnCode;
                     }
                 }
-                await process.WaitForExitAsync();
+                process.WaitForExit();
             }
             catch (Exception ex)
             {
                 // If error happened, then return.
-                await SentryHelper.ExceptionHandlerAsync(ex, SentryHelper.ExceptionType.UnhandledOther);
+                SentryHelper.ExceptionHandler(ex, SentryHelper.ExceptionType.UnhandledOther);
                 Logger.LogWriteLine($"An error has occurred while invoking Task Scheduler applet!\r\n{ex}", LogType.Error, true);
                 return short.MaxValue;
             }
