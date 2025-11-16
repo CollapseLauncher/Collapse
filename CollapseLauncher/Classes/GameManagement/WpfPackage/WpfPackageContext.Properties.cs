@@ -57,9 +57,23 @@ internal partial class WpfPackageContext
             : null;
     }
 
+    /// <summary>
+    /// Whether to skip WPF package verification before update if flag file exists
+    /// </summary>
     private bool IsSkipPackageVerification
     {
         get => File.Exists(Path.Combine(GamePath, "@NoVerification"));
+    }
+
+    /// <summary>
+    /// Whether WPF package is enabled for the game
+    /// </summary>
+    public bool IsWpfPackageEnabled
+    {
+        get => GameVersionManager.IsGameInstalled() &&
+               GameVersionManager.GamePreset.IsWpfUpdateEnabled &&
+               WpfPackageData != null &&
+               WpfGetGameData != null;
     }
 
     /// <summary>
@@ -135,7 +149,7 @@ internal partial class WpfPackageContext
     {
         get
         {
-            if (!GameVersionManager.IsGameInstalled())
+            if (!IsWpfPackageEnabled)
             {
                 return GameVersion.Empty;
             }
@@ -158,7 +172,7 @@ internal partial class WpfPackageContext
         }
         set
         {
-            if (!GameVersionManager.IsGameInstalled() ||
+            if (!IsWpfPackageEnabled ||
                 GameVersionManager.GameIniVersionSection == null)
             {
                 return;
@@ -189,7 +203,7 @@ internal partial class WpfPackageContext
     {
         get
         {
-            if (!GameVersionManager.IsGameInstalled())
+            if (!IsWpfPackageEnabled)
             {
                 return GameVersion.Empty;
             }
