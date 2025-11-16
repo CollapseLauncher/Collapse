@@ -352,10 +352,9 @@ namespace CollapseLauncher.InstallManager.Base
             // Initialize reader
             using StreamReader reader = new StreamReader(audioListFilePath);
             // Read until EOF
-            while (!reader.EndOfStream)
+            while (await reader.ReadLineAsync() is {} line)
             {
                 // Read the line and skip if it's empty
-                string? line = await reader.ReadLineAsync();
                 if (string.IsNullOrEmpty(line))
                 {
                     continue;
@@ -400,11 +399,10 @@ namespace CollapseLauncher.InstallManager.Base
             // Assign path to reader
             using StreamReader reader = new StreamReader(path, true);
             // Do loop until EOF
-            while (!reader.EndOfStream)
+            while (await reader.ReadLineAsync(token) is {} line)
             {
                 // Read line and deserialize
-                string?        line          = await reader.ReadLineAsync(token);
-                LocalFileInfo? localFileInfo = line?.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
+                LocalFileInfo? localFileInfo = line.Deserialize(LocalFileInfoJsonContext.Default.LocalFileInfo);
 
                 // Assign the values
                 if (localFileInfo == null)

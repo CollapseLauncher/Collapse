@@ -478,9 +478,8 @@ public partial class HomePage
 
             while (true)
             {
-                while (!reader.EndOfStream)
+                while (await reader.ReadLineAsync(WatchOutputLog.Token) is {} line)
                 {
-                    var line = await reader.ReadLineAsync(WatchOutputLog.Token);
                     if (requireWindowExclusivePayload && line == "MoleMole.MonoGameEntry:Awake()")
                     {
                         StartExclusiveWindowPayload();

@@ -1329,9 +1329,9 @@ namespace CollapseLauncher.InstallManager.Base
                                                                      ? FileOptions.DeleteOnClose
                                                                      : FileOptions.None
                                                              });
-                    while (!sw.EndOfStream)
+                    while (await sw.ReadLineAsync(innerToken) is {} line)
                     {
-                        string   deleteFile = GetBasePersistentDirectory(GamePath, await sw.ReadLineAsync(innerToken));
+                        string   deleteFile = GetBasePersistentDirectory(GamePath, line);
                         FileInfo fileInfo   = new FileInfo(deleteFile);
                         yield return fileInfo;
                     }
@@ -1814,9 +1814,8 @@ namespace CollapseLauncher.InstallManager.Base
                                                                              ? FileOptions.DeleteOnClose
                                                                              : FileOptions.None
                                                                      });
-                    while (!listReader.EndOfStream)
+                    while (listReader.ReadLine() is {} currentLine)
                     {
-                        string currentLine = listReader.ReadLine();
                         var    prop = currentLine?.Deserialize(CoreLibraryJsonContext.Default.PkgVersionProperties);
 
                         if (prop == null)

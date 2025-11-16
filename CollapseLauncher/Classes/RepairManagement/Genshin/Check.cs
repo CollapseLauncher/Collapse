@@ -243,11 +243,11 @@ namespace CollapseLauncher
                 // Use deletefiles files to get the list of the redundant file
                 await using Stream fs         = await listFile.NaivelyOpenFileStreamAsync(FileMode.Open, FileAccess.Read, FileShare.None, FileOptions.DeleteOnClose);
                 using StreamReader listReader = new StreamReader(fs);
-                while (!listReader.EndOfStream)
+                while (await listReader.ReadLineAsync(token) is {} currentPath)
                 {
                     // Get the File name and FileInfo
-                    var filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(await listReader.ReadLineAsync(token)));
-                    var fInfo = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly();
+                    var filePath = Path.Combine(GamePath, ConverterTool.NormalizePath(currentPath));
+                    var fInfo    = new FileInfo(filePath).StripAlternateDataStream().EnsureNoReadOnly();
 
                     // If the file doesn't exist, then continue
                     if (!fInfo.Exists)
