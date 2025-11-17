@@ -412,6 +412,31 @@ namespace CollapseLauncher.Pages
         }
     }
 
+    public partial class BooleanToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            double thisValue = value is not bool boolean || boolean ? 1.0d : 0d;
+            return typeof(float) == targetType ? (float)thisValue : thisValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public partial class FloorFloatingValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language) =>
+            Math.Floor((double)value);
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /*
     public partial class LocaleCodeToFlagUrlConverter : IValueConverter
     {

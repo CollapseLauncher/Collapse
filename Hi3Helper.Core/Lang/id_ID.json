@@ -1650,9 +1650,12 @@
   },
 
   "_WpfPackageContext": {
-    "StartUpdateBtn": "Mulai Update",
-    "CancelUpdateBtn": "Batalkan Update",
-    "StartUpdateAutomatically": "Otomatis Jalankan Update"
+    "StartUpdateBtn": "Mulai Pembaruan",
+    "CancelUpdateBtn": "Batalkan Pembaruan",
+    "ReinstallToolBtn": "Pasang Ulang",
+    "StartUpdateAutomatically": "Otomatis Jalankan Pembaruan",
+    "NotifUpdateCompletedTitle": "{0} selesai diperbarui!",
+    "NotifUpdateCompletedSubtitle": "Alat: {0} untuk game: {1} - {2} telah selesai diperbarui ke v{3}"
   },
 
   "_WpfPackageName": {

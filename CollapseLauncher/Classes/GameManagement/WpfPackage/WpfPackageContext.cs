@@ -23,9 +23,9 @@ internal partial class WpfPackageContext : ProgressBase
     }
 
     /// <summary>
-    /// Start update check progress.
+    /// Start update check process.
     /// </summary>
-    /// <returns>Returns false if an update check or the actual update process is already in progress.</returns>
+    /// <returns>Returns false if the routines are already in progress.</returns>
     public ValueTask<bool> StartUpdateCheckAsync()
     {
         if (ChangesInProgress)
@@ -37,7 +37,21 @@ internal partial class WpfPackageContext : ProgressBase
     }
 
     /// <summary>
-    /// Cancel all update progress routines.
+    /// Triggers tool reinstallation process.
+    /// </summary>
+    /// <returns>Returns false if the routines are already in progress.</returns>
+    public ValueTask<bool> ReinstallToolAsync()
+    {
+        if (ChangesInProgress)
+        {
+            return ValueTask.FromResult(false);
+        }
+
+        return TryRunExamineThrow(StartUpdateCheckAsyncCore(true));
+    }
+
+    /// <summary>
+    /// Cancel all update process routines.
     /// </summary>
     public void CancelRoutine()
     {

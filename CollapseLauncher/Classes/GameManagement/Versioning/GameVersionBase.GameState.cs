@@ -387,7 +387,6 @@ namespace CollapseLauncher.GameManagement.Versioning
                                                );
 
             return false;
-
         }
 
         public virtual async ValueTask<bool> CheckSdkUpdate(string validatePath)

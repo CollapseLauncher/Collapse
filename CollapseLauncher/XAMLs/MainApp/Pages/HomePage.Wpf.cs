@@ -117,6 +117,7 @@ public sealed partial class HomePage
 
         InputSystemCursor? cursor = InputSystemCursor.Create(InputSystemCursorShape.Hand);
         WpfPackageBtn.SetCursor(cursor);
+        WpfPackageReinstallBtn.SetCursor(cursor);
         WpfPackageStartUpdateBtn.SetCursor(cursor);
         WpfPackageCancelUpdateBtn.SetCursor(cursor);
         WpfPackageCancelUpdateBtn.SetCursor(cursor);
@@ -144,16 +145,19 @@ public sealed partial class HomePage
         }
     }
 
-    private void WpfPackageCancelUpdateBtn_OnClick(object sender, RoutedEventArgs e)
+    private async void WpfPackageReinstallBtn_OnClick(object sender, RoutedEventArgs e)
     {
-        if (WpfContext == null)
+        if (WpfContext == null ||
+            WpfContext.ChangesInProgress)
         {
             return;
         }
 
-        if (WpfContext.IsUpdateAvailable)
-        {
-            WpfContext.CancelRoutine();
-        }
+        await WpfContext.ReinstallToolAsync();
+    }
+
+    private void WpfPackageCancelUpdateBtn_OnClick(object sender, RoutedEventArgs e)
+    {
+        WpfContext?.CancelRoutine();
     }
 }

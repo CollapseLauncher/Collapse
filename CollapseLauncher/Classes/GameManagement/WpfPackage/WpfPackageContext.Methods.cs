@@ -1,14 +1,19 @@
-﻿using CollapseLauncher.Helper.StreamUtility;
+﻿using CollapseLauncher.Helper;
+using CollapseLauncher.Helper.Image;
+using CollapseLauncher.Helper.StreamUtility;
 using CollapseLauncher.Interfaces;
+using Hi3Helper;
 using Hi3Helper.EncTool;
 using Hi3Helper.Http;
 using Hi3Helper.Shared.Region;
+using Hi3Helper.Win32.WinRT.ToastCOM.Notification;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 #pragma warning disable IDE0290
 #pragma warning disable IDE0130
 
@@ -17,7 +22,7 @@ namespace CollapseLauncher.GameManagement.WpfPackage;
 
 internal partial class WpfPackageContext
 {
-    private async ValueTask<bool> StartUpdateCheckAsyncCore()
+    private async ValueTask<bool> StartUpdateCheckAsyncCore(bool isForce = false)
     {
         try
         {
@@ -31,8 +36,9 @@ internal partial class WpfPackageContext
             Status.IsProgressAllIndetermined = true;
 
             // Cancel if no update is available
-            if (!IsUpdateAvailable ||
-                WpfPackageData == null)
+            if (!isForce &&
+                (!IsUpdateAvailable ||
+                 WpfPackageData == null))
             {
                 return true;
             }
@@ -100,6 +106,8 @@ internal partial class WpfPackageContext
             {
                 fileInfo.TryDeleteFile();
             }
+
+            SpawnUpdateFinishedNotification();
         }
         catch when (_localCts.Token.IsCancellationRequested)
         {
@@ -116,6 +124,47 @@ internal partial class WpfPackageContext
         }
 
         return true;
+    }
+
+    private async void SpawnUpdateFinishedNotification()
+    {
+        try
+        {
+            string gameName   = GameVersionManager.GameName;
+            string regionName = GameVersionManager.GameRegion;
+
+            string gameNameTranslated = InnerLauncherConfig.GetGameTitleRegionTranslationString(gameName, Locale.Lang._GameClientTitles) ?? gameName;
+            string gameRegionTranslated = InnerLauncherConfig.GetGameTitleRegionTranslationString(regionName, Locale.Lang._GameClientRegions) ?? regionName;
+
+            string icon = await ImageLoaderHelper
+                             .GetCachedSpritesAsync(WpfPackageIconUrl,
+                                                    false,
+                                                    CancellationToken.None)
+                          ?? "";
+
+            // Create Toast Notification Content
+            NotificationContent toastContent =
+                NotificationContent
+                   .Create()
+                   .SetTitle(string.Format(Locale.Lang._WpfPackageContext.NotifUpdateCompletedTitle, WpfPackageNameLocalized))
+                   .SetContent(string.Format(Locale.Lang._WpfPackageContext.NotifUpdateCompletedSubtitle,
+                                             WpfPackageNameLocalized,
+                                             gameNameTranslated,
+                                             gameRegionTranslated,
+                                             CurrentAvailableVersion))
+                   .SetAppLogoPath(icon, true);
+
+            // Create Toast Notification Service
+            ToastNotification? toastService = WindowUtility.CurrentToastNotificationService?.CreateToastNotification(toastContent);
+
+            // Create Toast Notifier
+            ToastNotifier? toastNotifier = WindowUtility.CurrentToastNotificationService?.CreateToastNotifier();
+            toastNotifier?.Show(toastService);
+        }
+        catch
+        {
+            // Ignored
+        }
     }
 
     private async Task<bool> IsPackageHashMatch(

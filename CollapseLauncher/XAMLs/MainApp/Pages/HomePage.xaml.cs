@@ -275,6 +275,12 @@ namespace CollapseLauncher.Pages
                 if (!await CurrentGameProperty.GameVersion
                                               .EnsureGameConfigIniCorrectiveness(this))
                 {
+                    // Triggers WPF package reinstallation if available
+                    if (CurrentGameProperty.GameWpfContext?.IsWpfPackageEnabled ?? false)
+                    {
+                        _ = CurrentGameProperty.GameWpfContext.ReinstallToolAsync();
+                    }
+
                     // If the EnsureGameConfigIniCorrectiveness() returns false,
                     // means config.ini has been changed. Then reload and return to the HomePage
                     ReturnToHomePage();
