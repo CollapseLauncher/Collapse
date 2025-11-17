@@ -19,7 +19,6 @@
     xmlns:pages="using:CollapseLauncher.Pages"
     xmlns:s="using:CommunityToolkit.WinUI"
     xmlns:hypTypes="using:CollapseLauncher.Helper.LauncherApiLoader.HoYoPlay"
-    xmlns:class="using:CollapseLauncher.Interfaces.Class"
     CacheMode="BitmapCache"
     NavigationCacheMode="Enabled"
     Unloaded="Page_Unloaded"
