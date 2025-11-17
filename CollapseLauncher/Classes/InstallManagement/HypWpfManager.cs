@@ -39,7 +39,7 @@ internal partial class HypWpfManager : ProgressBase
             string gameBiz = GameVersionManager?.GameBiz ?? "";
 
             if (!(GameVersionManager?
-                 .LauncherApi
+                 .LauncherApi?
                  .LauncherGameResourceWpf?
                  .Data?
                  .TryFindByBizOrId(gameId, gameBiz, out HypWpfPackageData? packageData) ?? false))

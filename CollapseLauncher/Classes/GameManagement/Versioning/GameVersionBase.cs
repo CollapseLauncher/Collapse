@@ -17,8 +17,8 @@ namespace CollapseLauncher.GameManagement.Versioning
         protected GameVersionBase() {}
 
         protected GameVersionBase(
-            ILauncherApi launcherApi,
-            PresetConfig presetConfig)
+            ILauncherApi? launcherApi,
+            PresetConfig  presetConfig)
         {
             ArgumentException.ThrowIfNullOrEmpty(presetConfig.GameName);
             ArgumentException.ThrowIfNullOrEmpty(presetConfig.ZoneName);

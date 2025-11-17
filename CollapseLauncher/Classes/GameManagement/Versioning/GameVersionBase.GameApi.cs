@@ -20,7 +20,7 @@ namespace CollapseLauncher.GameManagement.Versioning
     internal partial class GameVersionBase
     {
         #region Game Region Resource Prop
-        public virtual ILauncherApi LauncherApi { get; }
+        public virtual ILauncherApi? LauncherApi { get; }
 
         protected virtual HypChannelSdkData? GameDataSdk
         {
@@ -31,7 +31,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return field;
                 }
 
-                LauncherApi
+                LauncherApi?
                    .LauncherGameResourceSdk?
                    .Data?
                    .TryFindByBizOrId(GameBiz, GameId, out field);
@@ -48,7 +48,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return field;
                 }
 
-                LauncherApi
+                LauncherApi?
                    .LauncherGameResourcePlugin?
                    .Data?
                    .TryFindByBizOrId(GameBiz, GameId, out field);
@@ -65,7 +65,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return field;
                 }
 
-                LauncherApi
+                LauncherApi?
                    .LauncherGameResourcePackage?
                    .Data?
                    .TryFindByBizOrId(GameBiz, GameId, out field);
@@ -92,7 +92,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                     return field;
                 }
 
-                LauncherApi
+                LauncherApi?
                    .LauncherGameSophonBranches?
                    .Data?
                    .TryFindByBizOrId(GameBiz, GameId, out field);

@@ -113,9 +113,9 @@ internal abstract class GamePropertyBase : NotifyPropertyChanged
                 return field;
             }
 
-            string                             gameBiz         = GameVersionManager.LauncherApi.GameBiz ?? "";
-            string                             gameId          = GameVersionManager.LauncherApi.GameId ?? "";
-            HypLauncherGameResourcePackageApi? resourcePackage = GameVersionManager.LauncherApi.LauncherGameResourcePackage;
+            string                             gameBiz         = GameVersionManager.LauncherApi?.GameBiz ?? "";
+            string                             gameId          = GameVersionManager.LauncherApi?.GameId ?? "";
+            HypLauncherGameResourcePackageApi? resourcePackage = GameVersionManager.LauncherApi?.LauncherGameResourcePackage;
 
             if (!(resourcePackage?.Data?.TryFindByBizOrId(gameBiz, gameId, out HypResourcesData? data) ?? false))
             {

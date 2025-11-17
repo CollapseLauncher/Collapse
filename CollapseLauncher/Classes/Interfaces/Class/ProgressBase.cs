@@ -1025,10 +1025,10 @@ internal abstract class ProgressBase : GamePropertyBase
     protected async Task FetchBilibiliSdk(CancellationToken token)
     {
         // Check whether the sdk is not null
-        string gameBiz = GameVersionManager.LauncherApi.GameBiz ?? "";
-        string gameId  = GameVersionManager.LauncherApi.GameId ?? "";
+        string gameBiz = GameVersionManager.LauncherApi?.GameBiz ?? "";
+        string gameId  = GameVersionManager.LauncherApi?.GameId ?? "";
         if (!(GameVersionManager
-             .LauncherApi
+             .LauncherApi?
              .LauncherGameResourceSdk?
              .Data?
              .TryFindByBizOrId(gameBiz, gameId, out HypChannelSdkData? sdkData) ?? false))
@@ -1094,11 +1094,11 @@ internal abstract class ProgressBase : GamePropertyBase
                                                         Func<T, string?> localNameSelector,
                                                         Func<T, string>  remoteNameSelector)
     {
-        string gameBiz = GameVersionManager.LauncherApi.GameBiz ?? "";
-        string gameId  = GameVersionManager.LauncherApi.GameId ?? "";
+        string gameBiz = GameVersionManager.LauncherApi?.GameBiz ?? "";
+        string gameId  = GameVersionManager.LauncherApi?.GameId ?? "";
 
         if (!(GameVersionManager
-             .LauncherApi
+             .LauncherApi?
              .LauncherGameResourcePlugin?
              .Data?
              .TryFindByBizOrId(gameBiz, gameId, out HypResourcePluginData? data) ?? false))

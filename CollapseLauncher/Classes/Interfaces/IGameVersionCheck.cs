@@ -73,7 +73,7 @@ namespace CollapseLauncher.Interfaces
         /// <summary>
         /// Returns or set the API properties
         /// </summary>
-        ILauncherApi LauncherApi { get; }
+        ILauncherApi? LauncherApi { get; }
 
         /// <summary>
         /// Returns the type of the game

@@ -30,7 +30,7 @@ internal partial class WpfPackageContext
     private HypGameInfoData? WpfGetGameData
     {
         get => field ??= GameVersionManager
-                        .LauncherApi
+                        .LauncherApi?
                         .LauncherGetGame?
                         .Data?
                         .TryFindByBizOrId(GameVersionManager.GameBiz,
@@ -46,7 +46,7 @@ internal partial class WpfPackageContext
     private HypPackageData? WpfPackageData
     {
         get => field ??= (GameVersionManager
-                        .LauncherApi
+                        .LauncherApi?
                         .LauncherGameResourceWpf?
                         .Data?
                         .TryFindByBizOrId(GameVersionManager.GameBiz,

@@ -286,7 +286,7 @@ namespace CollapseLauncher.GameManagement.Versioning
                 return;
 
             // If the sdk is empty, ignore it
-            if (!(LauncherApi
+            if (!(LauncherApi?
                  .LauncherGameResourceSdk?
                  .Data?
                  .TryFindByBizOrId(LauncherApi.GameBiz,
