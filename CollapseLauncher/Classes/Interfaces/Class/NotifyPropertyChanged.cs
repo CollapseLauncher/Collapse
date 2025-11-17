@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 // ReSharper disable CheckNamespace
@@ -9,7 +9,13 @@ namespace CollapseLauncher.Interfaces.Class;
 
 public abstract class NotifyPropertyChanged : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private PropertyChangedEventHandler? _propertyChanged;
+
+    public event PropertyChangedEventHandler? PropertyChanged
+    {
+        add => _propertyChanged += value;
+        remove => _propertyChanged -= value;
+    }
 
     public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
@@ -19,26 +25,10 @@ public abstract class NotifyPropertyChanged : INotifyPropertyChanged
             InnerLauncherConfig
                .m_mainPage?
                .DispatcherQueue
-               .TryEnqueue(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+               .TryEnqueue(() => _propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
             return;
         }
 
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-}
-
-public partial class PageNotifyPropertyChanged : Page, INotifyPropertyChanged
-{
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        if (DispatcherQueue.HasThreadAccess)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            return;
-        }
-
-        DispatcherQueue.TryEnqueue(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+        _propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

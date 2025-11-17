@@ -333,7 +333,7 @@ namespace CollapseLauncher.Pages
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            IsPageUnload                                     =  true;
+            IsPageUnload = true;
             if (CurrentGameProperty.GamePlaytime != null)
             {
                 CurrentGameProperty.GamePlaytime.PlaytimeUpdated -= UpdatePlaytime;
@@ -341,6 +341,51 @@ namespace CollapseLauncher.Pages
 
             if (!PageToken.IsDisposed && !PageToken.IsCancelled) PageToken.Cancel();
             if (!CarouselToken.IsDisposed && !CarouselToken.IsCancelled) CarouselToken.Cancel();
+        }
+
+        private void ApplyShadowToImageElement(object sender, RoutedEventArgs e)
+        {
+            if (sender is not ButtonBase { Content: Panel panel })
+            {
+                return;
+            }
+
+            bool isStart = true;
+            foreach (Image imageElement in panel.Children.OfType<Image>())
+            {
+                imageElement.ApplyDropShadow(opacity: 0.5f);
+                if (!isStart)
+                {
+                    continue;
+                }
+
+                imageElement.Opacity = 0.0f;
+                imageElement.Loaded += (_, _) =>
+                                       {
+                                           Compositor compositor = imageElement.GetElementCompositor();
+                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
+                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+                                       };
+                isStart = false;
+            }
+
+            foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
+            {
+                imageElement.ApplyDropShadow(opacity: 0.5f);
+                if (!isStart)
+                {
+                    continue;
+                }
+
+                imageElement.Opacity = 0.0f;
+                imageElement.Loaded += (_, _) =>
+                                       {
+                                           Compositor compositor = imageElement.GetElementCompositor();
+                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
+                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
+                                       };
+                isStart = false;
+            }
         }
         #endregion
 
@@ -1040,6 +1085,7 @@ namespace CollapseLauncher.Pages
             }
         }
         #endregion
+
         #region Set Hand Cursor
         private void SetHandCursor(object sender, RoutedEventArgs e = null) =>
             (sender as UIElement)?.SetCursor(InputSystemCursor.Create(InputSystemCursorShape.Hand));
@@ -1252,50 +1298,5 @@ namespace CollapseLauncher.Pages
         }
         
         #endregion
-
-        private void ApplyShadowToImageElement(object sender, RoutedEventArgs e)
-        {
-            if (sender is not ButtonBase { Content: Panel panel })
-            {
-                return;
-            }
-
-            bool isStart = true;
-            foreach (Image imageElement in panel.Children.OfType<Image>())
-            {
-                imageElement.ApplyDropShadow(opacity: 0.5f);
-                if (!isStart)
-                {
-                    continue;
-                }
-
-                imageElement.Opacity = 0.0f;
-                imageElement.Loaded += (_, _) =>
-                                       {
-                                           Compositor compositor = imageElement.GetElementCompositor();
-                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
-                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-                                       };
-                isStart = false;
-            }
-
-            foreach (ImageEx.ImageEx imageElement in panel.Children.OfType<ImageEx.ImageEx>())
-            {
-                imageElement.ApplyDropShadow(opacity: 0.5f);
-                if (!isStart)
-                {
-                    continue;
-                }
-
-                imageElement.Opacity = 0.0f;
-                imageElement.Loaded += (_, _) =>
-                                       {
-                                           Compositor compositor = imageElement.GetElementCompositor();
-                                           imageElement.StartAnimationDetached(TimeSpan.FromSeconds(0.25f),
-                                                                               compositor.CreateScalarKeyFrameAnimation("Opacity", 1.0f));
-                                       };
-                isStart = false;
-            }
-        }
     }
 }
