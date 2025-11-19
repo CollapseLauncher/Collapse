@@ -36,9 +36,8 @@ internal partial class WpfPackageContext
             Status.IsProgressAllIndetermined = true;
 
             // Cancel if no update is available
-            if (!isForce &&
-                (!IsUpdateAvailable ||
-                 WpfPackageData == null))
+            if (WpfPackageData == null ||
+                (!isForce && !IsUpdateAvailable))
             {
                 return true;
             }

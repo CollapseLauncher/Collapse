@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml;
 using System.Threading.Tasks;
 using WinRT;
+// ReSharper disable CheckNamespace
 #pragma warning disable IDE0290
 #pragma warning disable IDE0130
 
@@ -28,12 +29,9 @@ internal partial class WpfPackageContext : ProgressBase
     /// <returns>Returns false if the routines are already in progress.</returns>
     public ValueTask<bool> StartUpdateCheckAsync()
     {
-        if (ChangesInProgress)
-        {
-            return ValueTask.FromResult(false);
-        }
-
-        return TryRunExamineThrow(StartUpdateCheckAsyncCore());
+        return ChangesInProgress
+            ? ValueTask.FromResult(false)
+            : TryRunExamineThrow(StartUpdateCheckAsyncCore());
     }
 
     /// <summary>
@@ -42,12 +40,9 @@ internal partial class WpfPackageContext : ProgressBase
     /// <returns>Returns false if the routines are already in progress.</returns>
     public ValueTask<bool> ReinstallToolAsync()
     {
-        if (ChangesInProgress)
-        {
-            return ValueTask.FromResult(false);
-        }
-
-        return TryRunExamineThrow(StartUpdateCheckAsyncCore(true));
+        return ChangesInProgress
+            ? ValueTask.FromResult(false)
+            : TryRunExamineThrow(StartUpdateCheckAsyncCore(true));
     }
 
     /// <summary>
